@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="COM_KINOARHIV_VIEW_GENRES_TITLE" option="">
+		<message>
+			<![CDATA[COM_KINOARHIV_VIEW_GENRES_DESC]]>
+		</message>
+	</layout>
+</metadata>

@@ -1,0 +1,51 @@
+.wysiwyg-font-type-arial { font-family: "Arial", sans-serif; }
+.wysiwyg-font-type-courier-new { font-family: "Courier New", sans-serif; }
+.wysiwyg-font-type-georgia { font-family: "Georgia", sans-serif; }
+.wysiwyg-font-type-helvetica-neue { font-family: "Helvetica Neue", Helvetica, sans-serif; }
+.wysiwyg-font-type-times-new-roman { font-family: "Times New Roman", sans-serif; }
+.wysiwyg-font-type-verdana { font-family: "Verdana", sans-serif; }
+
+.wysiwyg-font-size-8 { font-size: 8pt; }
+.wysiwyg-font-size-9 { font-size: 9pt; }
+.wysiwyg-font-size-10 { font-size: 10pt; }
+.wysiwyg-font-size-11 { font-size: 11pt; }
+.wysiwyg-font-size-12 { font-size: 12pt; }
+.wysiwyg-font-size-14 { font-size: 14pt; }
+.wysiwyg-font-size-16 { font-size: 16pt; line-height: 100%; }
+.wysiwyg-font-size-18 { font-size: 18pt; line-height: 100%; }
+.wysiwyg-font-size-20 { font-size: 20pt; line-height: 100%; }
+.wysiwyg-font-size-22 { font-size: 22pt; line-height: 100%; }
+.wysiwyg-font-size-24 { font-size: 24pt; line-height: 100%; }
+.wysiwyg-font-size-26 { font-size: 26pt; line-height: 100%; }
+.wysiwyg-font-size-28 { font-size: 28pt; line-height: 100%; }
+.wysiwyg-font-size-36 { font-size: 36pt; line-height: 100%; }
+.wysiwyg-font-size-48 { font-size: 48pt; line-height: 100%; }
+.wysiwyg-font-size-72 { font-size: 72pt; line-height: 100%; }
+
+.wysiwyg-color-black { color: black; }
+.wysiwyg-color-silver { color: silver; }
+.wysiwyg-color-gray { color: gray; }
+.wysiwyg-color-white { color: white; }
+.wysiwyg-color-maroon { color: maroon; }
+.wysiwyg-color-red { color: red; }
+.wysiwyg-color-purple { color: purple; }
+.wysiwyg-color-fuchsia { color: fuchsia; }
+.wysiwyg-color-green { color: green; }
+.wysiwyg-color-lime { color: lime; }
+.wysiwyg-color-olive { color: olive; }
+.wysiwyg-color-yellow { color: yellow; }
+.wysiwyg-color-navy { color: navy; }
+.wysiwyg-color-blue { color: blue; }
+.wysiwyg-color-teal { color: teal; }
+.wysiwyg-color-aqua { color: aqua; }
+
+.wysiwyg-text-align-right { text-align: right; }
+.wysiwyg-text-align-center { text-align: center; }
+.wysiwyg-text-align-left { text-align: left; }
+.wysiwyg-text-align-justify { text-align: justify; }
+
+.wysiwyg-float-left { float: left; margin: 0 8px 8px 0; }
+.wysiwyg-float-right { float: right; margin: 0 0 8px 8px; }
+
+.wysiwyg-clear-right { clear: right; }
+.wysiwyg-clear-left { clear: left; }

@@ -1,0 +1,147 @@
+.red {
+	color: red;
+}
+
+.red-label {
+	color: red;
+	font-weight: bold;
+}
+
+/* override joomla styles */
+select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus {
+    outline: none !important;
+    outline-offset: -2px;
+}
+/* */
+
+.control-panel a.btn, #toolbar .btn {
+	margin: 4px 0 4px 4px;
+	min-width: 100px;
+}
+
+.ui-progressbar {
+	position: relative;
+}
+
+.ui-menu .ui-menu-item a {
+	padding: 2px 0.8em !important;
+}
+
+.form-horizontal .controls {
+	margin-left: 200px !important;
+}
+
+.nav-tabs a:focus {
+	outline: none !important;
+}
+
+label.hasTip {
+	border-bottom: 1px dashed #ddd;
+}
+
+.table th, .table td {
+	border-left: 1px solid #eee;
+	border-top: none !important;
+	border-bottom: 1px solid #eee;
+}
+
+.table thead {
+	border-top: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+}
+
+.table th:last-child, .table td:last-child {
+	border-right: 1px solid #eee;
+}
+
+.flag-dd {
+	margin: 0 4px 2px 0;
+}
+
+.rel-menu {
+	display: none;
+	position: absolute;
+}
+
+#relations_menu {
+	position: relaive;
+}
+
+.searchFilter .input-elm {
+	width: 300px !important;
+}
+
+.searchFilter .error th {
+	border: none !important;
+	font-weight: normal !important;
+	padding: 3px 5px;
+}
+
+.toggle-editor {
+	float: left !important;
+}
+
+.rel-link {
+	display: inline-block;
+	margin: 5px 0 0 10px;
+}
+
+.span12.actors-container, .span12.awards-container {
+	margin-left: 0 !important;
+	margin-top: 3px;
+}
+
+.dd-relations {
+	display: inline-block;
+}
+
+.dd-relations-menu {
+	list-style: none outside none;
+	font-size: 1.2em !important;
+    margin: 0;
+    outline: 0 none;
+    padding: 2px 6px;
+	display: none;
+	position: absolute;
+}
+
+.ajax-loading {
+	background: url('../images/icons/spinner.gif') no-repeat left center !important;
+	padding-left: 20px;
+}
+
+.rel-names-dlg label.hasTip, .rel-awards-dlg label.hasTip {
+	border-bottom: 1px dashed #fff;
+}
+
+.rel-names-dlg a.btn-small, .rel-awards-dlg a.btn-small {
+	margin-top: 3px;
+}
+
+.form_career, .form_name, .rel-form_name {
+	margin-left: 0 !important;
+}
+
+#dialog-name-add legend {
+	margin-bottom: 8px !important;
+}
+
+table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+#articleList .ui-sortable td { background: #fff; }
+.sortable-handler { display: inline-block; padding-top: 4px; }
+.sortable-handler:hover { cursor: move;}
+
+.ui-message a {
+	text-decoration: underline;
+}
+
+#form_is_actors input, #form_voice_artists input {
+	display: inline-block;
+	float: none;
+	margin-right: 10px;
+}
+
+#form_is_actors label, #form_voice_artists label {
+	display: inline-block;
+	margin-right: 50px;
+}

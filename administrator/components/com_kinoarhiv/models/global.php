@@ -1,0 +1,150 @@
+<?php defined('_JEXEC') or die;
+
+class KinoarhivModelGlobal extends JModelLegacy {
+	// Ajax'ed data for autocomplete
+	public function getAjaxData($element='') {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$element = !empty($element) ? $element : $app->input->get('element', '', 'string');
+		$all = $app->input->get('showAll', 0, 'int');
+		$term = $app->input->get('term', '', 'string');
+		$id = $app->input->get('id', 0, 'int');
+		$lang = $app->input->get('lang', '', 'string');
+
+		if ($element == 'countries') {
+			// Do not remove `code` field from the query. It's necessary for flagging row in select
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					if (empty($term)) return array();
+					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `name` LIKE '".$db->escape($term)."%'".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries').$where_lang);
+				$result = $db->loadObjectList();
+			}
+		} elseif ($element == 'genres') {
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					if (empty($term)) return array();
+					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `name` LIKE '".$db->escape($term)."%'".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres').$where_lang);
+				$result = $db->loadObjectList();
+			}
+		} elseif ($element == 'movies') {
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies').$where_lang);
+				$result = $db->loadObjectList();
+			}
+		} elseif ($element == 'awards') {
+			$type = $app->input->get('type', -1, 'int');
+
+			if ($type == 0) {
+				$result = $this->getAjaxData('movies');
+			} elseif ($type == 1) {
+				$result = $this->getAjaxData('names');
+			} else {
+				if (empty($all)) {
+					$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+					if (empty($id)) {
+						$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+						$result = $db->loadObjectList();
+					} else {
+						$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." WHERE `id` = ".(int)$id.$where_lang);
+						$result = $db->loadObject();
+					}
+				} else {
+					$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards').$where_lang);
+					$result = $db->loadObjectList();
+				}
+			}
+		} elseif ($element == 'names') {
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." WHERE (`name` LIKE '".$db->escape($term)."%' OR `latin_name` LIKE '".$db->escape($term)."%')".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names').$where_lang);
+				$result = $db->loadObjectList();
+			}
+		} elseif ($element == 'tags') {
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags').$where_lang);
+				$result = $db->loadObjectList();
+			}
+		} elseif ($element == 'career' || $element == 'careers') {
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career').$where_lang);
+				$result = $db->loadObjectList();
+			}
+		} else {
+			$result = array();
+		}
+
+		return $result;
+	}
+}

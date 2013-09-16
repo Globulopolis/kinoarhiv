@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="edit">
+		<field name="company_name" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE" class="span5" required="true" filter="string" size="45" />
+		<field name="company_name_intl" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE_INTL" class="span5" filter="string" size="45" />
+		<field name="company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string" />
+		<field name="description" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="JComponentHelper::filterText" width="40%" cols="6" rows="5" buttons="false" editor="alternative" />
+		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
+		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field>
+	</fieldset>
+</form>

@@ -35,7 +35,7 @@ JHtml::_('behavior.tooltip');
 						dialog.remove();
 					}
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=upload&model=mediamanager&view=movies&format=raw');
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=upload&model=mediamanager&view=mediamanager&format=raw');
 			});
 
 			return false;

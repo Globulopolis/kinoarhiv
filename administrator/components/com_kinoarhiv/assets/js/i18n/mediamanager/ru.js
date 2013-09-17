@@ -17,5 +17,6 @@ plupload.addI18n({
     'HTTP Error.': 'Ошибка HTTP.',
     'Security error.': 'Ошибка безопасности.',
     'Generic error.': 'Общая ошибка.',
-    'IO error.': 'Ошибка ввода-вывода.'
+    'IO error.': 'Ошибка ввода-вывода.',
+	'Start upload': 'Начать загрузку'
 });

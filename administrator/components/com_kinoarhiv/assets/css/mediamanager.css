@@ -52,7 +52,10 @@
 	width: 98%;
 }
 
-.plupload_header {background: #2A2C2E url('../images/icons/mediamanager/backgrounds.gif') repeat-x;}
+.plupload_header {
+	display: none;
+	background: #2A2C2E url('../images/icons/mediamanager/backgrounds.gif') repeat-x;
+}
 .plupload_header_content {
 	background: url('../images/icons/mediamanager/backgrounds.gif') no-repeat 0 -317px;
 	min-height: 56px;
@@ -74,7 +77,7 @@
 }
 
 .plupload_scroll .plupload_filelist {
-	height: 185px;
+	height: 370px;
 	background: #F5F5F5;
 	overflow-y: scroll;
 }
@@ -171,7 +174,7 @@ li.plupload_droptext {
 	text-align: center;
 	vertical-align: middle;
 	border: 0;
-	line-height: 165px;
+	line-height: 350px;
 }
 
 /* UI */
@@ -232,9 +235,9 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 }
 
 .plupload_scroll {
-	max-height: 180px;
-	min-height: 168px;
-	_height: 168px;
+	max-height: 500px;
+	min-height: 200px;
+	_height: 500px;
 	overflow-y: auto;
 }
 

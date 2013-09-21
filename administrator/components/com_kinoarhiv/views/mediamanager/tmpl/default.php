@@ -1,5 +1,8 @@
 <?php defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
+$input = JFactory::getApplication()->input;
+$section = $input->get('section', '', 'word');
+$type = $input->get('type', '', 'word');
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
@@ -42,9 +45,29 @@ JHtml::_('behavior.tooltip');
 		}
 		Joomla.submitform(task);
 	}
+
+	jQuery(document).ready(function($){
+		$('#tabs').tabs({
+			beforeLoad: function(event, ui){
+				blockUI('show');
+				ui.jqXHR.error(function(){
+					ui.panel.html("Couldn't load this tab.");
+					blockUI('hide');
+				});
+			},
+			load: function(event, ui){
+				blockUI('hide');
+			}
+		});
+	});
 </script>
 <div id="j-main-container">
 	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=mediamanager'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+		<?php if ($section == 'movie' && $type == 'gallery'): ?>
+			<?php echo $this->loadTemplate('movie_gallery_tabs'); ?>
+		<?php elseif ($section == 'movie' && $type == 'trailers'): ?>
+		<?php elseif ($section == 'movie' && $type == 'sounds'): ?>
+		<?php endif; ?>
 		<input type="hidden" name="controller" value="mediamanager" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />

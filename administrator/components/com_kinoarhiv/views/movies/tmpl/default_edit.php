@@ -37,7 +37,7 @@ JHtml::_('behavior.keepalive');
 				return;
 			}
 		} else if (task == 'gallery' || task == 'trailers' || task == 'sounds') {
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&task='+task+'<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+task+'<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');

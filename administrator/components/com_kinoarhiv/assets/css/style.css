@@ -149,3 +149,11 @@ table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 #uploader a:focus {
 	outline: none !important;
 }
+
+.table.gallery-list th, .table.gallery-list td {
+	padding: 4px 8px;
+}
+
+.gallery_tabs .ui-tabs-panel {
+	padding: .5em !important;
+}

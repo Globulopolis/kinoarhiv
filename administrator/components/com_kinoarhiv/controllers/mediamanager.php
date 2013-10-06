@@ -2,10 +2,14 @@
 
 class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function upload() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
 		$app = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$model = $this->getModel('mediamanager');
 
 		JResponse::setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
 		JResponse::setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
@@ -14,7 +18,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		JResponse::setHeader('Pragma', 'no-cache', true);
 		JResponse::sendHeaders();
 
-		$dest_dir = $this->getPath();
+		$dest_dir = $model->getPath();
 		$cleanup_dir = true;
 		$max_file_age = 5 * 3600;
 		@set_time_limit(0);
@@ -110,14 +114,40 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			rename("{$file_path}.part", $file_path);
 		}
 
+		// Proccess watermarks and thumbnails
+		JLoader::register('KAImage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'image.php');
+		$image = new KAImage();
+
+		if ($app->input->get('section', '', 'word') == 'movie') {
+			if ($app->input->get('type') == 'gallery') {
+				$tab = $app->input->get('tab', 0, 'int');
+				$orig_image = @getimagesize($file_path);
+
+				if ($tab == 1) {
+					$width = (int)$params->get('size_x_wallpp');
+					$height = ($width * $orig_image[1]) / $orig_image[0];
+				} elseif ($tab == 2) {
+					$width = (int)$params->get('size_x_posters');
+					$height = ($width * $orig_image[1]) / $orig_image[0];
+				} elseif ($tab == 3) {
+					$width = (int)$params->get('size_x_scr');
+					$height = ($width * $orig_image[1]) / $orig_image[0];
+				}
+
+				// Add watermark
+				$watermark_img = $params->get('upload_gallery_watermark_image');
+
+				if (!empty($watermark_img) && file_exists($watermark_img)) {
+					$image->addWatermark($dest_dir, $filename, $watermark_img);
+				}
+
+				$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
+				$model->saveImageInDB($image, $filename, $orig_image, $tab, $app->input->get('id', 0, 'int'));
+			}
+		}
+
+		// Success
 		die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
-	}
-
-	protected function getPath() {
-		$model = $this->getModel('mediamanager');
-		$path = $model->getPath();
-
-		return $path;
 	}
 
 	public function gallery() {
@@ -128,5 +158,52 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$view->display('movie_gallery_list');
 
 		return $this;
+	}
+
+	/**
+	 * Proxy for $this->fp_on() method
+	 *
+	 */
+	public function fpOff() {
+		$this->fpOn(1);
+	}
+
+	/**
+	 * Method to publish or unpublish posters on movie info page(not on posters page)
+	 *
+	 * @param	int		 $action		  0 - unpublish from frontpage, 1 - publish poster on frontpage
+	 *
+	 */
+	public function fpOn($action=0) {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+
+		// Unpublish item from frontpage
+		$result = $model->publishOnFrontpage((int)$action);
+
+		$this->setRedirect(JURI::getInstance()->toString(), $result);
+	}
+
+	public function unpublish() {
+		$this->publish(0);
+	}
+
+	public function publish($action=1) {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->publish((int)$action);
+
+		$this->setRedirect(JURI::getInstance()->toString(), $result);
+	}
+
+	public function remove() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->remove();
+
+		$this->setRedirect(JURI::getInstance()->toString(), implode("<br />", $result));
 	}
 }

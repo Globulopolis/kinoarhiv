@@ -1,9 +1,13 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+$input = JFactory::getApplication()->input;
+$section = $input->get('section', '', 'word');
+$type = $input->get('type', '', 'word');
+?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 
-<!-- Uncomment line below to load B+ from YDN -->
+<!-- Uncomment line below to load Browser+ from YDN -->
 <!-- <script src="http://bp.yahooapis.com/2.4.21/browserplus-min.js" type="text/javascript"></script> -->
-<!-- Comment line below if load B+ from YDN -->
+<!-- Comment line below if load Browser+ from YDN -->
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js" type="text/javascript"></script>
 
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js" type="text/javascript"></script>
@@ -13,19 +17,25 @@
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
+		$('#dialog-upload').prev('.ui-dialog-titlebar').find('button.ui-button').addClass('stateChanged');
 		$('#uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&tab=<?php echo $input->get('tab', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&<?php echo JSession::getFormToken(); ?>=1',
 			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 			<?php if ($this->params->get('upload_chunk') == 1): ?>chunk_size: '<?php echo $this->params->get('upload_chunk_size'); ?>',<?php endif; ?>
 			unique_names: false,
 			filters: [
-				{title: 'Image files', extensions: 'jpg,gif,png'},
-				{title: 'Video files', extensions: '3gp,3g2,h261,h263,h264,jpgv,jpm,jpgm,mj2,mjp2,mp4,mp4v,mpg4,mpeg,mpg,mpe,m1v,m2v,ogv,qt,mov,fvt,mxu,m4u,asf,asx,wmv,avi,movie,ice'},
-				{title: 'Captions', extensions: 'vtt,sub,sup,txt'}
+				{title: 'Image files', extensions: 'jpg,jpeg,jpe,gif,png'}<?php if ($type !== 'gallery'): ?>,
+				{title: 'Video files', extensions: '3gp,3g2,h261,h263,h264,jpgv,jpm,jpgm,mj2,mjp2,mp4,mp4v,mpg4,mpeg,mpg,mpe,m1v,m2v,ogv,qt,mov,fvt,mxu,m4u,asf,asx,wmv,avi,movie,ice,mpd'},
+				{title: 'Captions', extensions: 'vtt,sub,sup,txt'}<?php endif; ?>
 			],
 			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap'
+			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+			init: {
+				StateChanged: function(up){
+					$('#dialog-upload').addClass('stateChanged');
+				}
+			}
 		});
 	});
 //]]>
@@ -40,4 +50,5 @@
 	<input type="hidden" name="controller" value="mediamanager" />
 	<input type="hidden" name="task" value="upload" />
 	<input type="hidden" name="format" value="raw" />
+	<?php echo JHtml::_('form.token'); ?>
 </form>

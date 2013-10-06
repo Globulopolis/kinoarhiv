@@ -55,6 +55,11 @@ JHtml::_('behavior.tooltip');
 							<?php echo $this->loadTemplate('paths'); ?>
 						</div>
 					</div>
+					<div class="row-fluid">
+						<div class="span12">
+							<?php echo $this->loadTemplate('gallery'); ?>
+						</div>
+					</div>
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 
 				<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-appearance', JText::_('COM_KA_APPEARANCE_TAB', true)); ?>

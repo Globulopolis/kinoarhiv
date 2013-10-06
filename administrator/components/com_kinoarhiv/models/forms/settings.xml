@@ -63,19 +63,38 @@
 	<fieldset name="paths" label="COM_KA_PATHS_LABEL">
 		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red" />
 		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/" label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_posters_root" type="text" default="images/movies" label="COM_KA_FIELD_PATHS_PO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_wallpapers_root" type="text" default="images/movies" label="COM_KA_FIELD_PATHS_WP_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_posters_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_PO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
+		<field name="media_wallpapers_root" type="text" default="images/movies" label="COM_KA_FIELD_PATHS_WP_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_wallpapers_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_WP_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_scr_root" type="text" default="images/movies" label="COM_KA_FIELD_PATHS_SCR_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_scr_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_SCR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_actor_photo_root" type="text" default="images/names" label="COM_KA_FIELD_PATHS_PHOTO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_actor_photo_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_PHOTO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_actor_wallpapers_root" type="text" default="images/names" label="COM_KA_FIELD_PATHS_WP_NAMES_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_actor_wallpapers_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_WP_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_trailers_root" type="text" default="downloads/trailers" label="COM_KA_FIELD_PATHS_TR_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_rating_image_root" type="text" default="images/rating" label="COM_KA_FIELD_PATHS_RT_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
+	</fieldset>
+	<fieldset name="gallery" label="COM_KA_SETTINGS_GALLERY_LABEL">
 		<field name="upload_chunk" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_UPLOAD_CHUNK_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
+
+		<field name="upload_gallery_watermark_image" type="text" default="" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
+
+		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_GALLERY_POSTERS_X_LABEL" description="COM_KA_FIELD_GALLERY_XSIZE_LABEL_DESC" required="true" filter="integer" size="16" />
+		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_GALLERY_SCR_X_LABEL" description="COM_KA_FIELD_GALLERY_XSIZE_LABEL_DESC" required="true" filter="integer" size="16" />
+		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_GALLERY_WALLPP_X_LABEL" description="COM_KA_FIELD_GALLERY_XSIZE_LABEL_DESC" required="true" filter="integer" size="16" />
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_APPEARANCE_SETTINGS_LABEL">
 		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" filter="" />

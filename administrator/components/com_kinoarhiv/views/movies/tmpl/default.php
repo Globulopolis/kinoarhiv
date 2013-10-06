@@ -184,9 +184,9 @@ $sortFields = $this->getSortFields();
 						</div>
 					</td>
 					<td class="small hidden-phone">
-						<a href="index.php?option=com_kinoarhiv&view=gallery&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
-						<a href="index.php?option=com_kinoarhiv&view=trailers&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0" /></a>
-						<a href="index.php?option=com_kinoarhiv&view=sounds&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/music.png" border="0" /></a>
+						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
+						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=trailers&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0" /></a>
+						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=sounds&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/music.png" border="0" /></a>
 						<a href="javascript:void(0);" class="hasTooltip dd-relations" title="<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all">
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (int)$item->id; ?>">-> <?php echo JText::_('COM_KA_CP_COUNTRIES'); ?></a></li>

@@ -52,7 +52,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 			$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 			$item->y_poster = '';
 		} else {
-			$item->poster = JURI::base().$params->get('media_posters_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+			$item->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
 			$item->y_poster = ' y-poster';
 		}
 
@@ -89,11 +89,13 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
-		if ($config->get('captcha') != '0' && $params->get('reviews_save_captcha') != 0) {
-			JPluginHelper::importPlugin('captcha');
-			$dispatcher->trigger('onInit', 'captcha');
-			$results = $dispatcher->trigger('onDisplay', array('captcha', 'captcha', 'captcha'));
-			$item->event->afterDisplayReview = trim(implode("\n", $results));
+		if (!$user->get('guest')) {
+			if ($config->get('captcha') != '0' && $params->get('reviews_save_captcha') != 0) {
+				JPluginHelper::importPlugin('captcha');
+				$dispatcher->trigger('onInit', 'captcha');
+				$results = $dispatcher->trigger('onDisplay', array('captcha', 'captcha', 'captcha'));
+				$item->event->afterDisplayReview = trim(implode("\n", $results));
+			}
 		}
 
 		$this->params = &$params;
@@ -158,15 +160,20 @@ class KinoarhivViewMovie extends JViewLegacy {
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
 
+			// Strip first slash
+			if (strpos($params->get('media_posters_root'), '/', 0) === false) {
+				$file_path = substr($file_path, 1);
+			}
+
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 			} else {
-				$items[$key]->image = JURI::base().$params->get('media_wallpapers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
+				$items[$key]->image = JURI::base().$params->get('media_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
 				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
 				if ($size !== false) {
-					$items[$key]->th_image = JURI::base().$params->get('media_wallpapers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+					$items[$key]->th_image = JURI::base().$params->get('media_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
 				} else {
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 				}
@@ -207,15 +214,20 @@ class KinoarhivViewMovie extends JViewLegacy {
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_posters_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'posters'.DIRECTORY_SEPARATOR;
 
+			// Strip first slash
+			if (strpos($params->get('media_posters_root'), '/', 0) === false) {
+				$file_path = substr($file_path, 1);
+			}
+
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 			} else {
-				$items[$key]->image = JURI::base().$params->get('media_posters_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$_item->filename;
+				$items[$key]->image = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$_item->filename;
 				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
 				if ($size !== false) {
-					$items[$key]->th_image = JURI::base().$params->get('media_posters_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$_item->filename;
+					$items[$key]->th_image = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$_item->filename;
 				} else {
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 				}
@@ -255,15 +267,21 @@ class KinoarhivViewMovie extends JViewLegacy {
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_scr_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'screenshots'.DIRECTORY_SEPARATOR;
 
+			// Strip first slash
+			if (strpos($params->get('media_posters_root'), '/', 0) === false) {
+				$file_path = substr($file_path, 1);
+			}
+			
+
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 			} else {
-				$items[$key]->image = JURI::base().$params->get('media_scr_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/screenshots/'.$_item->filename;
+				$items[$key]->image = JURI::base().$params->get('media_scr_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/screenshots/'.$_item->filename;
 				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
 				if ($size !== false) {
-					$items[$key]->th_image = JURI::base().$params->get('media_scr_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/screenshots/thumb_'.$_item->filename;
+					$items[$key]->th_image = JURI::base().$params->get('media_scr_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/screenshots/thumb_'.$_item->filename;
 				} else {
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 				}

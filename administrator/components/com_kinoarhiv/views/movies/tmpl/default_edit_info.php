@@ -1,4 +1,6 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+JHtml::_('behavior.keepalive');
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('#form_rate_sum_loc, #form_rate_loc').blur(function(){

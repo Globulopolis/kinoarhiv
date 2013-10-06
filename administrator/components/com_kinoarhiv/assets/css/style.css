@@ -2,6 +2,10 @@
 	color: red;
 }
 
+.gray {
+	color: #999;
+}
+
 .red-label {
 	color: red;
 	font-weight: bold;
@@ -156,4 +160,23 @@ table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 
 .gallery_tabs .ui-tabs-panel {
 	padding: .5em !important;
+}
+
+.gallery-list a.error_image {
+	background: url("../images/icons/error.png") no-repeat left center;
+	padding-left: 20px;
+}
+
+.gallery-list a.error_image + a {
+	color: red !important;
+}
+
+.tooltip-img-content {
+	background-color: #fff;
+	border: 1px solid #ccc;
+	display: none;
+	position: absolute;
+	padding: 4px;
+	z-index: 10001;
+	*zoom: 1;
 }

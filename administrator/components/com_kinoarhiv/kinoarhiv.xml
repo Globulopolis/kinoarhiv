@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.0" method="upgrade">
-	<name>com_kinoarhiv</name>
+	<name>Kinoarhiv</name>
 	<author>Viper</author>
 	<creationDate>April 2006</creationDate>
 	<copyright>(C) 2014 Libra.ms All rights reserved.</copyright>
@@ -37,4 +37,7 @@
 			<language tag="ru-RU">language/ru-RU.com_kinoarhiv.sys.ini</language>
 		</languages>
 	</administration>
+	<updateservers>
+		<server type="extension" priority="1" name="Kinoarhiv Updates"><![CDATA[http://localhost/updates/index.php]]></server>
+	</updateservers>
 </extension>

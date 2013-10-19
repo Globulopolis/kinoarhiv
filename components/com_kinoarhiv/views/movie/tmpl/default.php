@@ -182,22 +182,22 @@
 						<?php if ($this->params->get('ratings_show_img') == 1): ?>
 							<div style="text-align: center;">
 								<?php if (!empty($this->item->imdb_id)) {
-									if (file_exists(JPATH_ROOT.'/'.$this->params->get('media_rating_image_root').'/imdb/'.$this->item->id.'_big.png')) { ?>
-									<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root'); ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+									if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$this->item->id.'_big.png')) { ?>
+									<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
 									<?php }
 								} ?>
 								<?php if (!empty($this->item->kp_id)): ?>
 									<a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
 									<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
-										<img src="<?php echo $this->params->get('media_rating_image_root'); ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0" />
+										<img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0" />
 									<?php else: ?>
 										<img src="http://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;" />
 									<?php endif; ?>
 									</a>
 								<?php endif; ?>
 								<?php if (!empty($this->item->rottentm_id)) {
-									if (file_exists(JPATH_ROOT.'/'.$this->params->get('media_rating_image_root').'/rottentomatoes/'.$this->item->id.'_big.png')) { ?>
-									<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root'); ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+									if (file_exists($this->params->get('media_rating_image_root').'/rottentomatoes/'.$this->item->id.'_big.png')) { ?>
+									<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
 									<?php }
 								} ?>
 							</div>

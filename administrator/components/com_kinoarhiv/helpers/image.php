@@ -2,7 +2,7 @@
 define('DS', DIRECTORY_SEPARATOR);
 
 class ImageHelper {
-	private function rgb2array($rgb) {
+	private static function rgb2array($rgb) {
 		$rgb = str_replace('#', '', $rgb);
 
 		return array(
@@ -66,11 +66,11 @@ class ImageHelper {
 			JResponse::allowCache(false);
 
 			if ($cmd == 'rt_vote') {
-				$result = imagepng($src_im, JPATH_ROOT.DS.$params->get('media_rating_image_root').DS.'rottentomatoes'.DS.$id.'_big.png', 1);
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DS.'rottentomatoes'.DS.$id.'_big.png', 1);
 			} elseif ($cmd == 'kp_vote') {
-				$result = imagepng($src_im, JPATH_ROOT.DS.$params->get('media_rating_image_root').DS.'kinopoisk'.DS.$id.'_big.png', 1);
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DS.'kinopoisk'.DS.$id.'_big.png', 1);
 			} elseif ($cmd == 'imdb_vote') {
-				$result = imagepng($src_im, JPATH_ROOT.DS.$params->get('media_rating_image_root').DS.'imdb'.DS.$id.'_big.png', 1);
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DS.'imdb'.DS.$id.'_big.png', 1);
 			}
 
 			imagedestroy($src_im);

@@ -18,6 +18,14 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 }
 /* */
 
+.uploader .ui-accordion-content {
+	padding: 0 !important;
+}
+
+.uploader .ui-accordion-content #uploader_container {
+	padding: 0 !important;
+}
+
 .control-panel a.btn, #toolbar .btn {
 	margin: 4px 0 4px 4px;
 	min-width: 100px;
@@ -179,4 +187,8 @@ table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 	padding: 4px;
 	z-index: 10001;
 	*zoom: 1;
+}
+
+span.icon {
+	cursor: default;
 }

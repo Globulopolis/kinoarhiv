@@ -34,12 +34,12 @@ class KinoarhivController extends JControllerLegacy {
 	}
 
 	public function loadTemplate() {
-		$format = $this->input->get('format', 'html', 'cmd');
+		$format = $this->input->get('format', 'html', 'word');
 		$template = $this->input->get('template', '', 'string');
 		$model = $this->input->get('model', '', 'cmd');
 		$view = $this->input->get('view', '', 'cmd');
 
-		$view = $this->getView($view, (string)$format);
+		$view = $this->getView($view, $format);
 		$model = $this->getModel($model);
 		$view->setModel($model, true);
 

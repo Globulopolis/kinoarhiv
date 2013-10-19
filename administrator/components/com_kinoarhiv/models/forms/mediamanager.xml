@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="tr_edit">
+		<field name="title" type="text" default="" label="JGLOBAL_TITLE" class="span12" filter="string" size="35" />
+		<field name="frontpage" type="list" label="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE" description="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE_DESC" class="span12" filter="intval" size="1" default="0">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="is_movie" type="list" label="COM_KA_TRAILERS_ISMOVIE" description="COM_KA_TRAILERS_ISMOVIE_DESC" class="span12" filter="intval" size="1" default="0">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="span12" size="1" />
+		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
+		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="span12" filter="intval" size="1" default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field>
+		<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_EMBED" class="span12" rows="5" cols="30" />
+	</fieldset>
+</form>

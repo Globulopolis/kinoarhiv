@@ -82,6 +82,10 @@
 	overflow-y: scroll;
 }
 
+.tr-uploader .plupload_scroll .plupload_filelist {
+	height: 170px;
+}
+
 .plupload_filelist li {
 	padding: 10px 8px;
 	background: #F5F5F5 url('../images/icons/mediamanager/backgrounds.gif') repeat-x 0 -156px;
@@ -175,6 +179,10 @@ li.plupload_droptext {
 	vertical-align: middle;
 	border: 0;
 	line-height: 350px;
+}
+
+.tr-uploader li.plupload_droptext {
+	line-height: 150px;
 }
 
 /* UI */

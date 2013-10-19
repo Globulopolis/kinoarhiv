@@ -4,7 +4,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function upload() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		jimport('joomla.filesystem.file');
+		/*jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
 		$app = JFactory::getApplication();
@@ -144,7 +144,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 				$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
 				$model->saveImageInDB($image, $filename, $orig_image, $tab, $app->input->get('id', 0, 'int'));
 			}
-		}
+		}*/
 
 		// Success
 		die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');

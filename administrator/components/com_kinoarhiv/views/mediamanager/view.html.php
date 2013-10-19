@@ -4,6 +4,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 	protected $items;
 	protected $pagination;
 	protected $state;
+	protected $form;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
@@ -56,21 +57,38 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 						$item->th_filepath = JURI::root().$path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$folder.'/thumb_'.$item->filename;
 					}
 				}
+
+				$this->items = &$items;
+				$this->pagination = &$pagination;
+				$this->state = &$state;
+				$this->params = &$params;
+
+				$this->addToolbar();
+
+				parent::display($tpl);
+			} elseif ($type == 'trailers') {
+				$form = $this->get('Form');
+				$this->form = &$form;
+
+				$this->items = &$items;
+				$this->pagination = &$pagination;
+				$this->state = &$state;
+				$this->params = &$params;
+
+				$this->addToolbar();
+
+				if ($app->input->get('task', '', 'cmd') == 'edit') {
+					parent::display('upload_trailer');
+				} else {
+					parent::display($tpl);
+				}
 			}
 		}
-
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
-		$this->params = &$params;
-
-		$this->addToolbar();
-
-		parent::display($tpl);
 	}
 
-	protected function addToolbar() {
+	protected function addToolbar($task='') {
 		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
 
 		JToolbarHelper::title(JText::_('COM_KA_MEDIAMANAGER'), 'cpanel.png');
 
@@ -91,12 +109,25 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 	}
 
 	protected function getSortFields() {
-		return array(
-			'g.filename' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
-			'g.dimension' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'),
-			'g.poster_frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
-			'g.state' => JText::_('JSTATUS'),
-			'g.id' => JText::_('JGRID_HEADING_ID')
-		);
+		$input = JFactory::getApplication()->input;
+
+		if ($input->get('type') == 'gallery') {
+			return array(
+				'g.filename' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
+				'g.dimension' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'),
+				'g.poster_frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
+				'g.state' => JText::_('JSTATUS'),
+				'g.id' => JText::_('JGRID_HEADING_ID')
+			);
+		} elseif ($input->get('type') == 'trailers') {
+			return array(
+				'g.filename' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
+				'g.access' => JText::_('JGRID_HEADING_ACCESS'),
+				'language' => JText::_('JGRID_HEADING_LANGUAGE'),
+				'g.frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
+				'g.state' => JText::_('JSTATUS'),
+				'g.id' => JText::_('JGRID_HEADING_ID')
+			);
+		}
 	}
 }

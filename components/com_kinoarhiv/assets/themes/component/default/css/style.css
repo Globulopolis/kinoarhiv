@@ -107,6 +107,12 @@ div.clear {
 	font-size: 1.6em;
 }
 
+h3.title {
+	color: #333;
+	font-size: 1em;
+	margin-bottom: 1px;
+}
+
 .title-small {
 	background-color: #f5f5f5;
 	border: 1px solid #e3e3e3;
@@ -681,10 +687,6 @@ div.rating {
 
 .trailer .content {
 	text-align: center;
-}
-
-.trailer {
-	background-color: #000;
 }
 
 /* Do not remove if you using a template other than the default template. */

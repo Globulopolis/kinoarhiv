@@ -355,7 +355,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->trailers = $db->loadObjectList();
 
 		foreach ($result->trailers as $key=>$value) {
-			$result->trailers[$key]->file = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.$value->filename;
+			$result->trailers[$key]->file = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.$value->filename;
 			$result->trailers[$key]->tracks = array();
 
 			// Proccess captions for video
@@ -366,10 +366,10 @@ class KinoarhivModelMovie extends JModelForm {
 					$caption = trim($captions[$i]);
 					$caption_data = explode('|', $caption);
 
-					$result->trailers[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($caption_data[0]);
+					$result->trailers[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($caption_data[0]);
 					$result->trailers[$key]->tracks[$i]['srclang'] = str_replace(' ', '', $caption_data[1]);
 					$result->trailers[$key]->tracks[$i]['label'] = trim($caption_data[2]);
-					$result->trailers[$key]->tracks[$i]['default'] = (str_replace(' ', '', $caption_data[1]) != substr($lang->getTag(), 0, 2)) ? '' : ' default';
+					$result->trailers[$key]->tracks[$i]['default'] = '';
 					$result->trailers[$key]->tracks[$i]['type'] = 'captions';
 				}
 			}
@@ -381,10 +381,10 @@ class KinoarhivModelMovie extends JModelForm {
 					$subtitles = trim($subtitles[$i]);
 					$subtitles_data = explode('|', $subtitles);
 
-					$result->trailer[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($subtitles_data[0]);
+					$result->trailer[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($subtitles_data[0]);
 					$result->trailers[$key]->tracks[$i]['srclang'] = str_replace(' ', '', $subtitles_data[1]);
 					$result->trailers[$key]->tracks[$i]['label'] = trim($subtitles_data[2]);
-					$result->trailers[$key]->tracks[$i]['default'] = (str_replace(' ', '', $subtitles_data[1]) != substr($lang->getTag(), 0, 2)) ? '' : ' default';
+					$result->trailers[$key]->tracks[$i]['default'] = '';
 					$result->trailers[$key]->tracks[$i]['type'] = 'subtitles';
 				}
 			}
@@ -396,10 +396,10 @@ class KinoarhivModelMovie extends JModelForm {
 					$chapters = trim($chapters[$i]);
 					$chapters_data = explode('|', $chapters);
 
-					$result->trailers[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($chapters_data[0]);
+					$result->trailers[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($chapters_data[0]);
 					$result->trailers[$key]->tracks[$i]['srclang'] = str_replace(' ', '', $chapters_data[1]);
 					$result->trailers[$key]->tracks[$i]['label'] = trim($chapters_data[2]);
-					$result->trailers[$key]->tracks[$i]['default'] = (str_replace(' ', '', $chapters_data[1]) != substr($lang->getTag(), 0, 2)) ? '' : ' default';
+					$result->trailers[$key]->tracks[$i]['default'] = '';
 					$result->trailers[$key]->tracks[$i]['type'] = 'chapters';
 				}
 			}
@@ -408,10 +408,12 @@ class KinoarhivModelMovie extends JModelForm {
 			unset($result->trailers[$key]->_subtitles);
 			unset($result->trailers[$key]->_chapters);
 
-			$wh = explode('x', $value->w_h);
-			if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
-				$result->trailers[$key]->player_width = $params->get('player_width');
-				$result->trailers[$key]->player_height = ($wh[1]*(int)$params->get('player_width'))/$wh[0];
+			if ($value->w_h != '') {
+				$wh = explode('x', $value->w_h);
+				if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
+					$result->trailers[$key]->player_width = $params->get('player_width');
+					$result->trailers[$key]->player_height = ($wh[1]*(int)$params->get('player_width'))/$wh[0];
+				}
 			}
 		}
 
@@ -448,7 +450,7 @@ class KinoarhivModelMovie extends JModelForm {
 			return array();
 		}
 
-		$result->file = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->filename;
+		$result->file = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->filename;
 		$result->tracks = array();
 
 		// Proccess captions for video
@@ -459,10 +461,10 @@ class KinoarhivModelMovie extends JModelForm {
 				$caption = trim($captions[$i]);
 				$caption_data = explode('|', $caption);
 
-				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($caption_data[0]);
+				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($caption_data[0]);
 				$result->tracks[$i]['srclang'] = str_replace(' ', '', $caption_data[1]);
 				$result->tracks[$i]['label'] = trim($caption_data[2]);
-				$result->tracks[$i]['default'] = (str_replace(' ', '', $caption_data[1]) != substr($lang->getTag(), 0, 2)) ? '' : ' default';
+				$result->tracks[$i]['default'] = '';
 				$result->tracks[$i]['type'] = 'captions';
 			}
 		}
@@ -474,10 +476,10 @@ class KinoarhivModelMovie extends JModelForm {
 				$subtitles = trim($subtitles[$i]);
 				$subtitles_data = explode('|', $subtitles);
 
-				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($subtitles_data[0]);
+				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($subtitles_data[0]);
 				$result->tracks[$i]['srclang'] = str_replace(' ', '', $subtitles_data[1]);
 				$result->tracks[$i]['label'] = trim($subtitles_data[2]);
-				$result->tracks[$i]['default'] = (str_replace(' ', '', $subtitles_data[1]) != substr($lang->getTag(), 0, 2)) ? '' : ' default';
+				$result->tracks[$i]['default'] = '';
 				$result->tracks[$i]['type'] = 'subtitles';
 			}
 		}
@@ -489,10 +491,10 @@ class KinoarhivModelMovie extends JModelForm {
 				$chapters = trim($chapters[$i]);
 				$chapters_data = explode('|', $chapters);
 
-				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($chapters_data[0]);
+				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($chapters_data[0]);
 				$result->tracks[$i]['srclang'] = str_replace(' ', '', $chapters_data[1]);
 				$result->tracks[$i]['label'] = trim($chapters_data[2]);
-				$result->tracks[$i]['default'] = (str_replace(' ', '', $chapters_data[1]) != substr($lang->getTag(), 0, 2)) ? '' : ' default';
+				$result->tracks[$i]['default'] = '';
 				$result->tracks[$i]['type'] = 'chapters';
 			}
 		}
@@ -501,10 +503,12 @@ class KinoarhivModelMovie extends JModelForm {
 		unset($result->_subtitles);
 		unset($result->_chapters);
 
-		$wh = explode('x', $result->w_h);
-		if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
-			$result->player_width = $params->get('player_width');
-			$result->player_height = ($wh[1]*(int)$params->get('player_width'))/$wh[0];
+		if ($result->w_h != '') {
+			$wh = explode('x', $result->w_h);
+			if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
+				$result->player_width = $params->get('player_width');
+				$result->player_height = ($wh[1]*(int)$params->get('player_width'))/$wh[0];
+			}
 		}
 
 		return $result;

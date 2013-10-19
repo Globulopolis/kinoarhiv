@@ -80,6 +80,8 @@
 		<field name="media_actor_wallpapers_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_WP_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 
 		<field name="media_trailers_root" type="text" default="downloads/trailers" label="COM_KA_FIELD_PATHS_TR_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_trailers_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_TR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_rating_image_root" type="text" default="images/rating" label="COM_KA_FIELD_PATHS_RT_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
 	</fieldset>

@@ -25,9 +25,7 @@ $type = $input->get('type', '', 'word');
 			<?php if ($this->params->get('upload_chunk') == 1): ?>chunk_size: '<?php echo $this->params->get('upload_chunk_size'); ?>',<?php endif; ?>
 			unique_names: false,
 			filters: [
-				{title: 'Image files', extensions: 'jpg,jpeg,jpe,gif,png'}<?php if ($type !== 'gallery'): ?>,
-				{title: 'Video files', extensions: '3gp,3g2,h261,h263,h264,jpgv,jpm,jpgm,mj2,mjp2,mp4,mp4v,mpg4,mpeg,mpg,mpe,m1v,m2v,ogv,qt,mov,fvt,mxu,m4u,asf,asx,wmv,avi,movie,ice,mpd'},
-				{title: 'Captions', extensions: 'vtt,sub,sup,txt'}<?php endif; ?>
+				{title: 'Image files', extensions: 'jpg,jpeg,jpe,gif,png'}
 			],
 			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
 			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',

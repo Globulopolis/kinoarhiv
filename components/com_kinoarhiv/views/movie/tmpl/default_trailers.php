@@ -11,21 +11,21 @@
 			GlobalHelper::loadPlayerAssets(); ?>
 		<div class="trailer">
 			<?php foreach ($this->item->trailers as $trailer): ?>
-			<div class="ui-widget-header header-small" style="margin: .4em 0 0 0;">
-				<?php echo ($trailer->title == '') ? JText::_('COM_KA_TRAILER') : $trailer->title; ?> <img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/clock_16.png" border="0"> <?php echo $trailer->duration; ?>
-			</div>
-			<div class="content">
+			<h3 class="title title-small">
+				<?php echo ($trailer->title == '') ? JText::_('COM_KA_TRAILER') : $trailer->title; ?><?php if ($trailer->duration != '00:00:00'): ?> <img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/clock_16.png" border="0"> <?php echo $trailer->duration; ?><?php endif; ?>
+			</h3>
+			<div class="content center video">
 				<?php if ($trailer->embed_code != ''):
 					echo $trailer->embed_code;
 				else: ?>
-				<video class="video-js vjs-default-skin" controls preload="none" poster="<?php echo $trailer->file; ?>.jpg" width="<?php echo $trailer->player_width; ?>" height="<?php echo $trailer->player_height; ?>" data-setup="{&quot;techOrder&quot;: [&quot;html5&quot;, &quot;flash&quot;], &quot;plugins&quot;: {&quot;persistVolume&quot;: {&quot;namespace&quot;: &quot;<?php echo $this->user->get('guest') ? md5('video-js'.$trailer->id) : md5(crc32($this->user->get('id')).$trailer->id); ?>&quot;}}}">
-					<source type="video/mp4" src="<?php echo $trailer->file; ?>.mp4" />
-					<source type="video/webm" src="<?php echo $trailer->file; ?>.webm" />
-					<source type="video/ogg" src="<?php echo $trailer->file; ?>.ogv" />
-					<?php foreach ($trailer->tracks as $track): ?>
-					<track kind="<?php echo $track['type']; ?>" src="<?php echo $track['file']; ?>" srclang="<?php echo $track['srclang']; ?>" label="<?php echo $track['label']; ?>"<?php echo $track['default']; ?> />
-					<?php endforeach; ?>
-				</video>
+					<video class="video-js vjs-default-skin" controls preload="none" poster="<?php echo $trailer->file; ?>.jpg" width="<?php echo $trailer->player_width; ?>" height="<?php echo $trailer->player_height; ?>" data-setup="{&quot;techOrder&quot;: [&quot;html5&quot;, &quot;flash&quot;], &quot;plugins&quot;: {&quot;persistVolume&quot;: {&quot;namespace&quot;: &quot;<?php echo $this->user->get('guest') ? md5('video-js'.$trailer->id) : md5(crc32($this->user->get('id')).$trailer->id); ?>&quot;}}}">
+						<source type="video/mp4" src="<?php echo $trailer->file; ?>.mp4" />
+						<source type="video/webm" src="<?php echo $trailer->file; ?>.webm" />
+						<source type="video/ogg" src="<?php echo $trailer->file; ?>.ogv" />
+						<?php foreach ($trailer->tracks as $track): ?>
+						<track kind="<?php echo $track['type']; ?>" src="<?php echo $track['file']; ?>" srclang="<?php echo $track['srclang']; ?>" label="<?php echo $track['label']; ?>"<?php echo $track['default']; ?> />
+						<?php endforeach; ?>
+					</video>
 				<?php endif; ?>
 			</div>
 			<div class="clear"></div>

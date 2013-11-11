@@ -3,6 +3,7 @@
 /administrator/components/index.html
 /administrator/components/index.php
 /administrator/components/com_admin
+/administrator/components/com_ajax
 /administrator/components/com_banners
 /administrator/components/com_cache
 /administrator/components/com_categories
@@ -10,6 +11,7 @@
 /administrator/components/com_config
 /administrator/components/com_contact
 /administrator/components/com_content
+/administrator/components/com_contenthistory
 /administrator/components/com_cpanel
 /administrator/components/com_finder
 /administrator/components/com_installer
@@ -23,6 +25,7 @@
 /administrator/components/com_modules
 /administrator/components/com_newsfeeds
 /administrator/components/com_plugins
+/administrator/components/com_postinstall
 /administrator/components/com_redirect
 /administrator/components/com_search
 /administrator/components/com_tags
@@ -240,9 +243,12 @@
 /bin/
 /cli/
 /components/index.html
+/components/com_ajax/
 /components/com_banners/
+/components/com_config/
 /components/com_contact/
 /components/com_content/
+/components/com_contenthistory/
 /components/com_finder/
 /components/com_jce/
 /components/com_mailto/

@@ -18,7 +18,7 @@
 				<?php if ($trailer->embed_code != ''):
 					echo $trailer->embed_code;
 				else: ?>
-					<video class="video-js vjs-default-skin" controls preload="none" poster="<?php echo $trailer->file; ?>.jpg" width="<?php echo $trailer->player_width; ?>" height="<?php echo $trailer->player_height; ?>" data-setup="{&quot;techOrder&quot;: [&quot;html5&quot;, &quot;flash&quot;], &quot;plugins&quot;: {&quot;persistVolume&quot;: {&quot;namespace&quot;: &quot;<?php echo $this->user->get('guest') ? md5('video-js'.$trailer->id) : md5(crc32($this->user->get('id')).$trailer->id); ?>&quot;}}}">
+					<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" poster="<?php echo $trailer->file; ?>.jpg" width="<?php echo $trailer->player_width; ?>" height="<?php echo $trailer->player_height; ?>" data-setup="{&quot;techOrder&quot;: [&quot;html5&quot;, &quot;flash&quot;], &quot;plugins&quot;: {&quot;persistVolume&quot;: {&quot;namespace&quot;: &quot;<?php echo $this->user->get('guest') ? md5('video-js'.$trailer->id) : md5(crc32($this->user->get('id')).$trailer->id); ?>&quot;}}}">
 						<source type="video/mp4" src="<?php echo $trailer->file; ?>.mp4" />
 						<source type="video/webm" src="<?php echo $trailer->file; ?>.webm" />
 						<source type="video/ogg" src="<?php echo $trailer->file; ?>.ogv" />

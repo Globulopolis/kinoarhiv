@@ -1,6 +1,7 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewMediamanager extends JViewLegacy {
+	protected $item;
 	protected $items;
 	protected $pagination;
 	protected $state;
@@ -9,9 +10,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$this->params = &$params;
 
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
@@ -23,6 +22,10 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 		if ($app->input->get('section', '', 'word') == 'movie') {
 			if ($type == 'gallery') {
+				$items = $this->get('Items');
+				$pagination = $this->get('Pagination');
+				$state = $this->get('State');
+
 				if ($tab == 1) {
 					$path = $params->get('media_wallpapers_root');
 					$path_www = $params->get('media_wallpapers_root_www');
@@ -61,25 +64,29 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				$this->items = &$items;
 				$this->pagination = &$pagination;
 				$this->state = &$state;
-				$this->params = &$params;
 
 				$this->addToolbar();
 
 				parent::display($tpl);
 			} elseif ($type == 'trailers') {
-				$form = $this->get('Form');
-				$this->form = &$form;
-
-				$this->items = &$items;
-				$this->pagination = &$pagination;
-				$this->state = &$state;
-				$this->params = &$params;
-
 				$this->addToolbar();
 
 				if ($app->input->get('task', '', 'cmd') == 'edit') {
+					$item = $this->get('Item');
+					$form = $this->get('Form');
+					$this->item = &$item;
+					$this->form = &$form;
+
 					parent::display('upload_trailer');
 				} else {
+					$items = $this->get('Items');
+					$pagination = $this->get('Pagination');
+					$state = $this->get('State');
+
+					$this->items = &$items;
+					$this->pagination = &$pagination;
+					$this->state = &$state;
+
 					parent::display($tpl);
 				}
 			}
@@ -92,19 +99,27 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 		JToolbarHelper::title(JText::_('COM_KA_MEDIAMANAGER'), 'cpanel.png');
 
-		if ($user->authorise('core.create', 'com_kinoarhiv')) {
-			JToolbarHelper::custom('upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
+		if ($app->input->get('task') == 'edit' && $app->input->get('type') == 'trailers') {
+			JToolbarHelper::apply('apply');
+			JToolbarHelper::save('save');
+			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
-		}
+			JToolbarHelper::cancel();
+		} else {
+			if ($user->authorise('core.create', 'com_kinoarhiv')) {
+				JToolbarHelper::custom('upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
+				JToolbarHelper::divider();
+			}
 
-		if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
-			JToolbarHelper::publishList();
-			JToolbarHelper::unpublishList();
-			JToolbarHelper::divider();
-		}
+			if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
+				JToolbarHelper::publishList();
+				JToolbarHelper::unpublishList();
+				JToolbarHelper::divider();
+			}
 
-		if ($user->authorise('core.delete', 'com_kinoarhiv')) {
-			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+			}
 		}
 	}
 

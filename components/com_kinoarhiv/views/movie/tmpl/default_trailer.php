@@ -20,14 +20,21 @@
 		<?php if ($this->item->embed_code != ''):
 			echo $this->item->embed_code;
 		else: ?>
-		<video id="trailer" class="video-js vjs-default-skin" controls preload="none" poster="<?php echo $this->item->file; ?>.jpg" width="<?php echo $this->item->player_width; ?>" height="<?php echo $this->item->player_height; ?>" data-setup="{&quot;techOrder&quot;: [&quot;html5&quot;, &quot;flash&quot;], &quot;plugins&quot;: {&quot;persistVolume&quot;: {&quot;namespace&quot;: &quot;<?php echo $this->user->get('guest') ? md5('video-js'.$this->item->id) : md5(crc32($this->user->get('id')).$this->item->id); ?>&quot;}}}">
-			<source type="video/mp4" src="<?php echo $this->item->file; ?>.mp4" />
-			<source type="video/webm" src="<?php echo $this->item->file; ?>.webm" />
-			<source type="video/ogg" src="<?php echo $this->item->file; ?>.ogv" />
-			<?php foreach ($this->item->tracks as $track): ?>
-			<track kind="<?php echo $track['type']; ?>" src="<?php echo $track['file']; ?>" srclang="<?php echo $track['srclang']; ?>" label="<?php echo $track['label']; ?>"<?php echo $track['default']; ?> />
-			<?php endforeach; ?>
-		</video>
+			<video id="trailer" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" poster="<?php echo $this->item->path.$this->item->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $this->item->player_height; ?>" data-setup="{&quot;techOrder&quot;: [&quot;html5&quot;, &quot;flash&quot;], &quot;plugins&quot;: {&quot;persistVolume&quot;: {&quot;namespace&quot;: &quot;<?php echo $this->user->get('guest') ? md5('video-js'.$this->item->id) : md5(crc32($this->user->get('id')).$this->item->id); ?>&quot;}}}">
+				<?php foreach (json_decode($this->item->filename) as $item): ?>
+					<source type="<?php echo $item->type; ?>" src="<?php echo $this->item->path.$item->src; ?>" />
+				<?php endforeach; ?>
+				<?php $subtitles = json_decode($this->item->_subtitles);
+				foreach ($subtitles as $lang_tag=>$subtitle):
+					foreach ($subtitle as $sub): ?>
+					<track kind="subtitles" src="<?php echo $this->item->path.$sub->file; ?>" srclang="<?php echo $lang_tag; ?>" label="<?php echo $sub->lang; ?>"<?php echo $sub->default ? ' default' : ''; ?> />
+					<?php endforeach;
+				endforeach; ?>
+				<?php $chapters = json_decode($this->item->_chapters);
+				if (!is_array($chapters)): // Chapters is broken in VideoJS 4.x ?>
+					<track kind="chapters" src="<?php echo $this->item->path.$chapters[0]; ?>" srclang="en" default />
+				<?php endif; ?>
+			</video>
 		<?php endif; ?>
 	</div>
 <?php else:

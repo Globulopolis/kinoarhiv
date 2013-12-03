@@ -142,12 +142,14 @@ $sortFields = $this->getSortFields();
 					</td>
 					<td class="hidden-phone">
 						<?php if ($item->embed_code != ''): ?>
-							<span class="icon icon-play hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_ISCODE'); ?>"></span>
+							<span class="icon icon-play-2 hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_ISCODE'); ?>"></span>
 						<?php elseif ($item->filename != ''): ?>
 							<span class="icon icon-camera-2 hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_ISFILE'); ?>"></span>
+						<?php else: ?>
+							<a class="error_image"></a>
 						<?php endif; ?>
 						&nbsp;<a href="index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=movie&type=trailers&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $item->id; ?>"><?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></a>
-						<?php if ($item->embed_code == ''): ?> <span class="small">(<?php echo $item->duration; ?>)</span><?php endif; ?>
+						<?php if ($item->filename != ''): ?> <span class="small">(<?php echo $item->duration; ?>)</span><?php endif; ?>
 					</td>
 					<td class="center">
 						<div class="btn-group">

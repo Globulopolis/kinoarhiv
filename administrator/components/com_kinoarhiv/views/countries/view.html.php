@@ -71,14 +71,14 @@ class KinoarhivViewCountries extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_ADD_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_ADD_TITLE'), 'location');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_COUNTRIES_EDIT_TITLE'), $this->items->name), 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_COUNTRIES_EDIT_TITLE'), $this->items->name), 'location');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -88,7 +88,7 @@ class KinoarhivViewCountries extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_TITLE'), 'location');
 
 			if ($user->authorise('core.create.country', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

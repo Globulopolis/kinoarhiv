@@ -71,21 +71,21 @@ class KinoarhivViewVendors extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_VENDORS_ADD_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_VENDORS_ADD_TITLE'), 'basket');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_VENDORS_EDIT_TITLE'), $this->items->company_name), 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_VENDORS_EDIT_TITLE'), $this->items->company_name), 'basket');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_VENDORS_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_VENDORS_TITLE'), 'basket');
 
 			if ($user->authorise('core.create.vendor', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

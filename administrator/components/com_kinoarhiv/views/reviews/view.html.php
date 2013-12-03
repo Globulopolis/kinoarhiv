@@ -64,13 +64,13 @@ class KinoarhivViewReviews extends JViewLegacy {
 		$app = JFactory::getApplication();
 
 		if ($task == 'edit') {
-			JToolbarHelper::title(JText::_('COM_KA_REVIEWS_EDIT_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_REVIEWS_EDIT_TITLE'), 'comments-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_REVIEWS_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_REVIEWS_TITLE'), 'comments-2');
 			JToolbarHelper::editList('edit');
 			JToolbarHelper::divider();
 			JToolbarHelper::publishList();

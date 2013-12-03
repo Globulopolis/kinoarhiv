@@ -71,14 +71,14 @@ class KinoarhivViewAwards extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_AW_ADD_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_AW_ADD_TITLE'), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_AW_EDIT_TITLE'), $this->items->title), 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_AW_EDIT_TITLE'), $this->items->title), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -88,7 +88,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_AW_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_AW_TITLE'), 'asterisk');
 
 			if ($user->authorise('core.create.award', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

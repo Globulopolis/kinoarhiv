@@ -349,7 +349,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$result = $this->getMovieData();
 
-		$db->setQuery("SELECT `id`, `title`, `embed_code`, `filename`, `w_h`, `duration`, `_captions`, `_subtitles`, `_chapters`"
+		$db->setQuery("SELECT `id`, `title`, `embed_code`, `filename`, `w_h`, `duration`, `_subtitles`, `_chapters`"
 			. "\n FROM ".$db->quoteName('#__ka_trailers')
 			. "\n WHERE `movie_id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		$result->trailers = $db->loadObjectList();
@@ -358,21 +358,6 @@ class KinoarhivModelMovie extends JModelForm {
 			$result->trailers[$key]->file = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.$value->filename;
 			$result->trailers[$key]->tracks = array();
 
-			// Proccess captions for video
-			if ($value->_captions != '') {
-				$captions = explode("\n", $value->_captions);
-
-				for ($i=0, $n=count($captions); $i<$n; $i++) {
-					$caption = trim($captions[$i]);
-					$caption_data = explode('|', $caption);
-
-					$result->trailers[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($caption_data[0]);
-					$result->trailers[$key]->tracks[$i]['srclang'] = str_replace(' ', '', $caption_data[1]);
-					$result->trailers[$key]->tracks[$i]['label'] = trim($caption_data[2]);
-					$result->trailers[$key]->tracks[$i]['default'] = '';
-					$result->trailers[$key]->tracks[$i]['type'] = 'captions';
-				}
-			}
 			// Proccess subtitles for video
 			if ($value->_subtitles != '') {
 				$subtitles = explode("\n", $value->_subtitles);
@@ -404,7 +389,6 @@ class KinoarhivModelMovie extends JModelForm {
 				}
 			}
 
-			unset($result->trailers[$key]->_captions);
 			unset($result->trailers[$key]->_subtitles);
 			unset($result->trailers[$key]->_chapters);
 
@@ -412,7 +396,7 @@ class KinoarhivModelMovie extends JModelForm {
 				$wh = explode('x', $value->w_h);
 				if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
 					$result->trailers[$key]->player_width = $params->get('player_width');
-					$result->trailers[$key]->player_height = ($wh[1]*(int)$params->get('player_width'))/$wh[0];
+					$result->trailers[$key]->player_height = floor(($wh[1]*(int)$params->get('player_width'))/$wh[0]);
 				}
 			}
 		}
@@ -439,7 +423,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$frontpage = " AND `tr`.`frontpage` = 1";
 		}
 
-		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`filename`, `tr`.`w_h`, `tr`.`duration`, `tr`.`_captions`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`alias`"
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`filename`, `tr`.`w_h`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`alias`"
 			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
 			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `tr`.`is_movie` = ".$is_movie.$frontpage
@@ -450,64 +434,13 @@ class KinoarhivModelMovie extends JModelForm {
 			return array();
 		}
 
-		$result->file = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->filename;
-		$result->tracks = array();
-
-		// Proccess captions for video
-		if ($result->_captions != '') {
-			$captions = explode("\n", $result->_captions);
-
-			for ($i=0, $n=count($captions); $i<$n; $i++) {
-				$caption = trim($captions[$i]);
-				$caption_data = explode('|', $caption);
-
-				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($caption_data[0]);
-				$result->tracks[$i]['srclang'] = str_replace(' ', '', $caption_data[1]);
-				$result->tracks[$i]['label'] = trim($caption_data[2]);
-				$result->tracks[$i]['default'] = '';
-				$result->tracks[$i]['type'] = 'captions';
-			}
-		}
-		// Proccess subtitles for video
-		if ($result->_subtitles != '') {
-			$subtitles = explode("\n", $result->_subtitles);
-
-			for ($i=0, $n=count($subtitles); $i<$n; $i++) {
-				$subtitles = trim($subtitles[$i]);
-				$subtitles_data = explode('|', $subtitles);
-
-				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($subtitles_data[0]);
-				$result->tracks[$i]['srclang'] = str_replace(' ', '', $subtitles_data[1]);
-				$result->tracks[$i]['label'] = trim($subtitles_data[2]);
-				$result->tracks[$i]['default'] = '';
-				$result->tracks[$i]['type'] = 'subtitles';
-			}
-		}
-		// Proccess chapters for video
-		if ($result->_chapters != '') {
-			$chapters = explode("\n", $result->_chapters);
-
-			for ($i=0, $n=count($chapters); $i<$n; $i++) {
-				$chapters = trim($chapters[$i]);
-				$chapters_data = explode('|', $chapters);
-
-				$result->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.trim($chapters_data[0]);
-				$result->tracks[$i]['srclang'] = str_replace(' ', '', $chapters_data[1]);
-				$result->tracks[$i]['label'] = trim($chapters_data[2]);
-				$result->tracks[$i]['default'] = '';
-				$result->tracks[$i]['type'] = 'chapters';
-			}
-		}
-
-		unset($result->_captions);
-		unset($result->_subtitles);
-		unset($result->_chapters);
+		$result->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
 
 		if ($result->w_h != '') {
 			$wh = explode('x', $result->w_h);
 			if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
 				$result->player_width = $params->get('player_width');
-				$result->player_height = ($wh[1]*(int)$params->get('player_width'))/$wh[0];
+				$result->player_height = floor(($wh[1]*(int)$params->get('player_width'))/$wh[0]);
 			}
 		}
 

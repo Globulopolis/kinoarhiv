@@ -16,14 +16,14 @@ class KinoarhivModelMediamanager extends JModelList {
 		parent::__construct($config);
 	}
 
-	public function getPath() {
+	public function getPath($section='', $type='', $tab=0, $id=0) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', 0, 'int');
-		$id = $app->input->get('id', 0, 'int');
+		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
+		$type = empty($type) ? $app->input->get('type', '', 'word') : $type;
+		$tab = empty($tab) ? $app->input->get('tab', 0, 'int') : $tab;
+		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
 
 		if ($section == 'movie') {
 			$table = '#__ka_movies';
@@ -39,6 +39,9 @@ class KinoarhivModelMediamanager extends JModelList {
 					$path = $params->get('media_scr_root');
 					$folder = 'screenshots';
 				}
+			} elseif ($type == 'trailers') {
+				$path = $params->get('media_trailers_root');
+				$folder = '';
 			}
 		} elseif ($section == 'names') {
 			$table = '#__ka_names';
@@ -419,5 +422,83 @@ class KinoarhivModelMediamanager extends JModelList {
 		$result = $db->loadObject();
 
 		return $result;
+	}
+
+	public function saveOrderTrailerVideofile() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$items = $app->input->get('ord', array(), 'array');
+		$success = true;
+		$message = '';
+
+		$db->setQuery("SELECT `filename` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".$item_id);
+		$result = $db->loadResult();
+
+		if (empty($result)) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		$result_arr = json_decode($result, true);
+		$new_arr = (object)array();
+
+		foreach ($items as $new_index=>$old_index) {
+			foreach ($result_arr as $value) {
+				$new_arr->$new_index = $result_arr[$old_index];
+			}
+		}
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
+		$query = $db->execute();
+
+		if ($query !== true) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
+	public function removeTrailerVideofile() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$filename = $app->input->get('file', '', 'string');
+		$success = true;
+		$message = '';
+
+		$db->setQuery("SELECT `filename` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".$item_id);
+		$result = $db->loadResult();
+
+		if (empty($result)) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		$result_arr = json_decode($result, true);
+		$new_arr = array();
+
+		foreach ($result_arr as $k=>$v) {
+			if ($v != $filename) {
+				$new_arr[] = $v;
+			}
+		}
+
+		$new_arr = JArrayHelper::toObject($new_arr);
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
+		$query = $db->execute();
+
+		if ($query !== true) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		// Removing file
+		if (unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+			$success = false;
+			$message = JText::_('JERROR');
+		}
+
+		return json_encode(array('success'=>$success, 'message'=>$message));
 	}
 }

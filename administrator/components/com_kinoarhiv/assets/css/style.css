@@ -192,3 +192,11 @@ table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 span.icon {
 	cursor: default;
 }
+
+#v_sortable, #sub_sortable, #cap_sortable, #chap_sortable {
+	list-style-type: none; margin: 0; padding: 0;
+}
+
+#v_sortable li, #sub_sortable li, #cap_sortable li, #chap_sortable li {
+	margin: 0 3px 3px 3px; padding: 0.2em; height: 14px; cursor: default;
+}

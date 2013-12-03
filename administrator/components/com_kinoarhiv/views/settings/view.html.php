@@ -37,7 +37,7 @@ class KinoarhivViewSettings extends JViewLegacy {
 	}
 
 	protected function addToolbar() {
-		JToolbarHelper::title(JText::_('COM_KA_SETTINGS_TITLE'), 'cpanel.png');
+		JToolbarHelper::title(JText::_('COM_KA_SETTINGS_TITLE'), 'options');
 		JToolbarHelper::apply('apply');
 		JToolbarHelper::save('save');
 		JToolbarHelper::divider();

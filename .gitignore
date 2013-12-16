@@ -240,7 +240,7 @@
 /administrator/modules
 /administrator/templates
 /cache/
-/bin/
+/bin/*.php
 /cli/
 /components/index.html
 /components/com_ajax/

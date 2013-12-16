@@ -2,13 +2,21 @@
 
 class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function upload() {
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		JSession::checkToken() or jexit('{"jsonrpc" : "2.0", "result" : "'.JText::_('JINVALID_TOKEN').'"}');
 
-		/*jimport('joomla.filesystem.file');
+		$document = JFactory::getDocument();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		// Check mime types
+		$allowed_mimes = str_replace(' ', '', $params->get('upload_mime_video').','.$params->get('upload_mime_subtitles').','.$params->get('upload_mime_chapters').','.$params->get('upload_mime_images'));
+		$allowed_mimes_arr = explode(',', $allowed_mimes);
+		if (!in_array(, $allowed_mimes_arr)) {
+		}
+
+		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
 		$app = JFactory::getApplication();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$model = $this->getModel('mediamanager');
 
 		JResponse::setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
@@ -143,10 +151,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 				$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
 				$model->saveImageInDB($image, $filename, $orig_image, $tab, $app->input->get('id', 0, 'int'));
+			} elseif ($app->input->get('type') == 'trailers') {
+				if ($app->input->get('upload') == 'video') {
+					
+				} elseif ($app->input->get('upload') == 'subtitles') {
+					
+				} elseif ($app->input->get('upload') == 'chapters') {
+					echo $this->getMimeType($dest_dir.DIRECTORY_SEPARATOR.$filename);
+				}
 			}
-		}*/
+		}
 
 		// Success
+		$document->setMimeEncoding('application/json');
 		die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
 	}
 
@@ -216,6 +233,24 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
+	public function saveDefaultTrailerSubtitlefile() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->saveDefaultTrailerSubtitlefile();
+
+		echo $result;
+	}
+
+	public function saveOrderTrailerSubtitlefile() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->saveOrderTrailerSubtitlefile();
+
+		echo $result;
+	}
+
 	public function removeTrailerVideofile() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -225,9 +260,33 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
+	public function removeTrailerSubtitlefile() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->removeTrailerSubtitlefile();
+
+		echo $result;
+	}
+
+	public function removeTrailerChapterfile() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->removeTrailerChapterfile();
+
+		echo $result;
+	}
+
 	public function cancel() {
 		$app = JFactory::getApplication();
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
+	}
+
+	protected function getMimeType($path) {
+		$finfo = new finfo(FILEINFO_MIME_TYPE);
+
+		return $finfo->file($path);
 	}
 }

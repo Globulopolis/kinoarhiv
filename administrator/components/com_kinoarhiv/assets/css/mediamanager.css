@@ -131,16 +131,16 @@ li.plupload_uploading {background: #ECF3DC url('../images/icons/mediamanager/bac
 li.plupload_done {color:#AAA}
 
 li.plupload_delete a {
-	background: url('../images/icons/mediamanager/delete.gif');
+	background: url('../images/icons/mediamanager/delete.png');
 }
 
 li.plupload_failed a {
-	background: url('../images/icons/mediamanager/error.gif');
+	background: url('../images/icons/mediamanager/error.png');
 	cursor: default;
 }
 
 li.plupload_done a {
-	background: url('../images/icons/mediamanager/done.gif');
+	background: url('../images/icons/mediamanager/done.png');
 	cursor: default;
 }
 
@@ -335,4 +335,23 @@ plupload_message i {
 
 .plupload .ui-sortable-placeholder {
 	height:35px;
+}
+
+.plupload_clear_all {
+	display: -moz-inline-box; /* FF < 3*/
+	display: inline-block;
+	font: normal 12px sans-serif;
+	text-decoration: none;
+    color: #42454a;
+    border: 1px solid #bababa;
+    padding: 2px 8px 3px 20px;
+	margin-right: 4px;
+    background: #f3f3f3 url('../images/icons/mediamanager/delete.png') no-repeat 0 center;
+	outline: 0;
+
+    /* Optional rounded corners for browsers that support it */
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }

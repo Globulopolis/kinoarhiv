@@ -349,48 +349,14 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$result = $this->getMovieData();
 
-		$db->setQuery("SELECT `id`, `title`, `embed_code`, `filename`, `w_h`, `duration`, `_subtitles`, `_chapters`"
-			. "\n FROM ".$db->quoteName('#__ka_trailers')
-			. "\n WHERE `movie_id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`filename`, `tr`.`w_h`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
+			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
+			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		$result->trailers = $db->loadObjectList();
 
 		foreach ($result->trailers as $key=>$value) {
-			$result->trailers[$key]->file = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.$value->filename;
-			$result->trailers[$key]->tracks = array();
-
-			// Proccess subtitles for video
-			if ($value->_subtitles != '') {
-				$subtitles = explode("\n", $value->_subtitles);
-
-				for ($i=0, $n=count($subtitles); $i<$n; $i++) {
-					$subtitles = trim($subtitles[$i]);
-					$subtitles_data = explode('|', $subtitles);
-
-					$result->trailer[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($subtitles_data[0]);
-					$result->trailers[$key]->tracks[$i]['srclang'] = str_replace(' ', '', $subtitles_data[1]);
-					$result->trailers[$key]->tracks[$i]['label'] = trim($subtitles_data[2]);
-					$result->trailers[$key]->tracks[$i]['default'] = '';
-					$result->trailers[$key]->tracks[$i]['type'] = 'subtitles';
-				}
-			}
-			// Proccess chapters for video
-			if ($value->_chapters != '') {
-				$chapters = explode("\n", $value->_chapters);
-
-				for ($i=0, $n=count($chapters); $i<$n; $i++) {
-					$chapters = trim($chapters[$i]);
-					$chapters_data = explode('|', $chapters);
-
-					$result->trailers[$key]->tracks[$i]['file'] = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$result->id.'/'.trim($chapters_data[0]);
-					$result->trailers[$key]->tracks[$i]['srclang'] = str_replace(' ', '', $chapters_data[1]);
-					$result->trailers[$key]->tracks[$i]['label'] = trim($chapters_data[2]);
-					$result->trailers[$key]->tracks[$i]['default'] = '';
-					$result->trailers[$key]->tracks[$i]['type'] = 'chapters';
-				}
-			}
-
-			unset($result->trailers[$key]->_subtitles);
-			unset($result->trailers[$key]->_chapters);
+			$result->trailers[$key]->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
 
 			if ($value->w_h != '') {
 				$wh = explode('x', $value->w_h);

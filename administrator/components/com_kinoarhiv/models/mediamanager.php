@@ -109,7 +109,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				$query->select(
 					$this->getState(
 						'list.select',
-						'`g`.`id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_captions`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
+						'`g`.`id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
 					)
 				);
 				$query->from($db->quoteName('#__ka_trailers').' AS `g`');
@@ -396,6 +396,25 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $this->getItem();
 	}
 
+	public function getItems() {
+		$items = parent::getItems();
+		$app = JFactory::getApplication();
+
+		if ($app->isSite()) {
+			$user = JFactory::getUser();
+			$groups = $user->getAuthorisedViewLevels();
+
+			for ($x = 0, $count = count($items); $x < $count; $x++) {
+				//Check the access level. Remove articles the user shouldn't see
+				if (!in_array($items[$x]->access, $groups)) {
+					unset($items[$x]);
+				}
+			}
+		}
+
+		return $items;
+	}
+
 	public function getItem($pk = null) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -405,7 +424,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_captions`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
+				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
 			)
 		);
 		$query->from($db->quoteName('#__ka_trailers').' AS `g`');
@@ -458,6 +477,71 @@ class KinoarhivModelMediamanager extends JModelList {
 		return json_encode(array('success'=>$success, 'message'=>$message));
 	}
 
+	public function saveDefaultTrailerSubtitlefile() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$id = $app->input->get('default', 0, 'int'); // Item ID in array of subtitles which should be default
+		$success = true;
+		$message = '';
+
+		$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".$item_id);
+		$result = $db->loadResult();
+
+		if (empty($result)) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		$result_arr = json_decode($result);
+
+		foreach ($result_arr as $key=>$value) {
+			$result_arr->$key->default = ($key != $id) ? (bool)false : (bool)true;
+		}
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".json_encode($result_arr)."' WHERE `id` = ".(int)$item_id);
+		$query = $db->execute();
+
+		if ($query !== true) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
+	public function saveOrderTrailerSubtitlefile() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$items = $app->input->get('cord', array(), 'array');
+		$success = true;
+		$message = '';
+
+		$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".$item_id);
+		$result = $db->loadResult();
+
+		if (empty($result)) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		$result_arr = json_decode($result, true);
+		$new_arr = (object)array();
+
+		foreach ($items as $new_index=>$old_index) {
+			foreach ($result_arr as $value) {
+				$new_arr->$new_index = $result_arr[$old_index];
+			}
+		}
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
+		$query = $db->execute();
+
+		if ($query !== true) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
 	public function removeTrailerVideofile() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -494,11 +578,87 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 
 		// Removing file
-		if (unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+		if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
 			$success = false;
 			$message = JText::_('JERROR');
 		}
 
 		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
+	public function removeTrailerSubtitlefile() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$filename = $app->input->get('file', '', 'string');
+		$success = true;
+		$message = '';
+
+		$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".$item_id);
+		$result = $db->loadResult();
+
+		if (empty($result)) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		$result_arr = json_decode($result, true);
+		$new_arr = array();
+
+		foreach ($result_arr as $k=>$v) {
+			if ($v['file'] != $filename) {
+				$new_arr[] = $v;
+			}
+		}
+
+		$new_arr = JArrayHelper::toObject($new_arr);
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
+		$query = $db->execute();
+
+		if ($query !== true) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		// Removing file
+		if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+			$success = false;
+			$message = JText::_('JERROR');
+		}
+
+		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
+	public function removeTrailerChapterfile() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$filename = $app->input->get('file', '', 'string');
+		$success = true;
+		$message = '';
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_chapters` = '".json_encode((object)array())."' WHERE `id` = ".(int)$item_id);
+		$query = $db->execute();
+
+		if ($query !== true) {
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+		}
+
+		// Removing file
+		if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+			$success = false;
+			$message = JText::_('JERROR');
+		}
+
+		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
+	public function saveChapters($data) {
+		$db = $this->getDBO();
+
+		
 	}
 }

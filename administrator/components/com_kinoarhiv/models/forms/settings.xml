@@ -62,6 +62,7 @@
 	</fieldset>
 	<fieldset name="paths" label="COM_KA_PATHS_LABEL">
 		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red" />
+		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/" label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 
 		<field name="media_posters_root" type="text" default="images/movies" label="COM_KA_FIELD_PATHS_PO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
@@ -84,10 +85,14 @@
 
 		<field name="media_rating_image_root" type="text" default="images/rating" label="COM_KA_FIELD_PATHS_RT_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_rating_image_root_www" type="text" default="images/rating" label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-
-		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
 	</fieldset>
 	<fieldset name="gallery" label="COM_KA_SETTINGS_GALLERY_LABEL">
+		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
+		<field name="upload_mime_video" type="text" default="h264,mp4,mp4v,mpg4,mpeg,mpg,ogv,qt,mov,wmv,avi,mpd,mkv" label="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL" required="true" filter="string" size="64" />
+		<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64" />
+		<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_CHAPTERS_LABEL" required="true" filter="string" size="64" />
+		<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif" label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" />
+
 		<field name="upload_chunk" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_UPLOAD_CHUNK_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

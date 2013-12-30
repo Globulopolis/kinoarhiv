@@ -166,7 +166,6 @@ class KinoarhivModelMediamanager extends JModelList {
 	 * @param	int		 $action		  0 - unpublish from frontpage, 1 - publish poster on frontpage
 	 *
 	 * @return array
-	 *
 	 */
 	public function publishOnFrontpage($action) {
 		$app = JFactory::getApplication();
@@ -656,9 +655,58 @@ class KinoarhivModelMediamanager extends JModelList {
 		return json_encode(array('success'=>$success, 'message'=>$message));
 	}
 
-	public function saveChapters($data) {
+	/**
+	 * Save info about chapter file into DB
+	 *
+	 * @param	string	$file		  	Filename
+	 * @param	int		$trailer_id 	ID of the trailer
+	 * @param	int		$movie_id 		ID of the movie
+	 *
+	 * @return	mixed	Last insert ID on INSERT or true on UPDATE
+	 */
+	public function saveChapters($file, $trailer_id, $movie_id) {
 		$db = $this->getDBO();
 
-		
+		$db->setQuery("SELECT COUNT(`id`) FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
+		$total = $db->loadResult();
+
+		$chapters = array('file'=>$file);
+
+		if ($total == 0) {
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `filename`, `w_h`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
+				. "\n VALUES ('', '".(int)$movie_id."', '', '', '', '{}', '', '00:00:00', '{}', '".$chapters."', '0', '1', '0', 'language', '0')");
+			$query = $db->execute();
+
+			return $query ? (int)$db->insertid() : false;
+		} else {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_chapters` = '".json_encode($chapters)."' WHERE `id` = ".(int)$trailer_id);
+			$query = $db->execute();
+
+			return $query ? true : false;
+		}
+	}
+
+	public function getSubtitleEdit() {
+		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
+		$language = new KALanguage();
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$lang_list = $language::listOfLanguages();
+		$trailer_id = $app->input->get('trailer_id', 0, 'int');
+		$subtitle_id = $app->input->get('subtitle_id', 0, 'int');
+
+		$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
+		$result = $db->loadResult();
+
+		$subtl_arr = json_decode($result);
+
+		return array(
+			'langs'=>$lang_list,
+			'lang_code'=>$subtl_arr->$subtitle_id->lang_code,
+			'lang'=>$subtl_arr->$subtitle_id->lang,
+			'is_default'=>$subtl_arr->$subtitle_id->default,
+			'trailer_id'=>$trailer_id,
+			'subtitle_id'=>$subtitle_id
+		);
 	}
 }

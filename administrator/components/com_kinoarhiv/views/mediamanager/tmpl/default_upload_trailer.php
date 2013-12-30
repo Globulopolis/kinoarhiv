@@ -148,7 +148,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#chap_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -290,6 +290,31 @@ $type = $input->get('type', '', 'word');
 				}
 			});
 		});
+
+		$('#sub_sortable').on('click', 'a.lang-edit', function(e){
+			e.preventDefault();
+			var _this = $(this);
+			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT'); ?>"><p class="ajax-loading"></p></div>').appendTo('body');
+
+			dlg.dialog({
+				buttons: {
+					'<?php echo JText::_('JAPPLY'); ?>': function(){
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&format=raw', $('#subtl_edit_form').serialize(), function(response){
+							
+						});
+					},
+					'<?php echo JText::_('JCANCEL'); ?>': function(){
+						dlg.dialog('close');
+					}
+				},
+				resizable: false,
+				modal: true,
+				height: 300,
+				width: 450
+			});
+
+			dlg.load(_this.attr('href'));
+		});
 	});
 //]]>
 </script>
@@ -353,7 +378,7 @@ $type = $input->get('type', '', 'word');
 							foreach ($subtitles as $k=>$sub_data): ?>
 								<li>
 									<input type="hidden" name="cord[]" value="<?php echo (int)$k; ?>" />
-									<div style="float: left;"><span class="ord_numbering"><?php echo $k; ?></span>. <?php echo $sub_data->file; ?> (<?php echo $sub_data->lang_code; ?>, <?php echo $sub_data->lang; ?>)</div>
+									<div style="float: left;"><span class="ord_numbering"><?php echo $k; ?></span>. <?php echo $sub_data->file; ?> (<?php echo $sub_data->lang_code; ?>, <?php echo $sub_data->lang; ?> <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $this->item->id; ?>&subtitle_id=<?php echo (int)$k; ?>" class="lang-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a>)</div>
 									<div style="float: right;"><input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0px 4px 4px 0px;" autocomplete="off"<?php echo $sub_data->default ? ' checked="checked"' : ''; ?> /> <a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerSubtitlefile&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $sub_data->file; ?>&id=<?php echo $this->item->movie_id; ?>&format=json" class="subtitle-file-remove"><span class="icon-delete"></span></a></div>
 								</li>
 							<?php endforeach;

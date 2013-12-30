@@ -13,6 +13,10 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 			$this->item = &$item;
 			$this->form = &$form;
+		} else {
+			$data = $this->get('SubtitleEdit');
+
+			$this->data = &$data;
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');

@@ -4,20 +4,48 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function upload() {
 		JSession::checkToken() or jexit('{"jsonrpc" : "2.0", "result" : "'.JText::_('JINVALID_TOKEN').'"}');
 
-		$document = JFactory::getDocument();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		// Check mime types
-		$allowed_mimes = str_replace(' ', '', $params->get('upload_mime_video').','.$params->get('upload_mime_subtitles').','.$params->get('upload_mime_chapters').','.$params->get('upload_mime_images'));
-		$allowed_mimes_arr = explode(',', $allowed_mimes);
-		if (!in_array(, $allowed_mimes_arr)) {
-		}
-
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
 		$app = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$model = $this->getModel('mediamanager');
+		$dest_dir = $model->getPath();
+		$filename = JFile::makeSafe($app->input->get('name', '', 'string'));
+		$id = 0;
+		$trailer_id = $app->input->get('item_id', 0, 'int');
+		$movie_id = $app->input->get('id', 0, 'int');
+
+		// Getting extensions from settings
+		$original_extension = pathinfo($dest_dir.$filename, PATHINFO_EXTENSION);
+
+		if ($app->input->get('type') == 'gallery') {
+			$allowed_ext = explode(',', str_replace(' ', '', $params->get('upload_mime_images')));
+
+			if (!in_array($original_extension, $allowed_ext)) {
+				die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
+			}
+		} elseif ($app->input->get('type') == 'trailers') {
+			if ($app->input->get('upload') == 'video') {
+				$allowed_ext = explode(',', str_replace(' ', '', $params->get('upload_mime_video')));
+
+				if (!in_array($original_extension, $allowed_ext)) {
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
+				}
+			} elseif ($app->input->get('upload') == 'subtitles') {
+				$allowed_ext = explode(',', str_replace(' ', '', $params->get('upload_mime_subtitles')));
+
+				if (!in_array($original_extension, $allowed_ext)) {
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
+				}
+			} elseif ($app->input->get('upload') == 'chapters') {
+				$allowed_ext = explode(',', str_replace(' ', '', $params->get('upload_mime_chapters')));
+
+				if (!in_array($original_extension, $allowed_ext)) {
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
+				}
+			}
+		}
 
 		JResponse::setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
 		JResponse::setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
@@ -26,14 +54,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		JResponse::setHeader('Pragma', 'no-cache', true);
 		JResponse::sendHeaders();
 
-		$dest_dir = $model->getPath();
 		$cleanup_dir = true;
 		$max_file_age = 5 * 3600;
 		@set_time_limit(0);
 
 		$chunk = $app->input->get('chunk', 0, 'int');
 		$chunks = $app->input->get('chunks', 0, 'int');
-		$filename = JFile::makeSafe($app->input->get('name', '', 'string'));
 
 		if ($chunks < 2 && file_exists($dest_dir.DIRECTORY_SEPARATOR.$filename)) {
 			$ext = strrpos($filename, '.');
@@ -120,51 +146,54 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		if (!$chunks || $chunk == $chunks - 1) {
 			// Strip the temp .part suffix off 
 			rename("{$file_path}.part", $file_path);
-		}
 
-		// Proccess watermarks and thumbnails
-		JLoader::register('KAImage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'image.php');
-		$image = new KAImage();
+			// Proccess watermarks and thumbnails
+			JLoader::register('KAImage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'image.php');
+			$image = new KAImage();
 
-		if ($app->input->get('section', '', 'word') == 'movie') {
-			if ($app->input->get('type') == 'gallery') {
-				$tab = $app->input->get('tab', 0, 'int');
-				$orig_image = @getimagesize($file_path);
+			if ($app->input->get('section', '', 'word') == 'movie') {
+				if ($app->input->get('type') == 'gallery') {
+					$tab = $app->input->get('tab', 0, 'int');
+					$orig_image = @getimagesize($file_path);
 
-				if ($tab == 1) {
-					$width = (int)$params->get('size_x_wallpp');
-					$height = ($width * $orig_image[1]) / $orig_image[0];
-				} elseif ($tab == 2) {
-					$width = (int)$params->get('size_x_posters');
-					$height = ($width * $orig_image[1]) / $orig_image[0];
-				} elseif ($tab == 3) {
-					$width = (int)$params->get('size_x_scr');
-					$height = ($width * $orig_image[1]) / $orig_image[0];
-				}
+					if ($tab == 1) {
+						$width = (int)$params->get('size_x_wallpp');
+						$height = ($width * $orig_image[1]) / $orig_image[0];
+					} elseif ($tab == 2) {
+						$width = (int)$params->get('size_x_posters');
+						$height = ($width * $orig_image[1]) / $orig_image[0];
+					} elseif ($tab == 3) {
+						$width = (int)$params->get('size_x_scr');
+						$height = ($width * $orig_image[1]) / $orig_image[0];
+					}
 
-				// Add watermark
-				$watermark_img = $params->get('upload_gallery_watermark_image');
+					// Add watermark
+					$watermark_img = $params->get('upload_gallery_watermark_image');
 
-				if (!empty($watermark_img) && file_exists($watermark_img)) {
-					$image->addWatermark($dest_dir, $filename, $watermark_img);
-				}
+					if (!empty($watermark_img) && file_exists($watermark_img)) {
+						$image->addWatermark($dest_dir, $filename, $watermark_img);
+					}
 
-				$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
-				$model->saveImageInDB($image, $filename, $orig_image, $tab, $app->input->get('id', 0, 'int'));
-			} elseif ($app->input->get('type') == 'trailers') {
-				if ($app->input->get('upload') == 'video') {
-					
-				} elseif ($app->input->get('upload') == 'subtitles') {
-					
-				} elseif ($app->input->get('upload') == 'chapters') {
-					echo $this->getMimeType($dest_dir.DIRECTORY_SEPARATOR.$filename);
+					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
+					$model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id);
+				} elseif ($app->input->get('type') == 'trailers') {
+					if ($app->input->get('upload') == 'video') {
+						
+					} elseif ($app->input->get('upload') == 'subtitles') {
+						
+					} elseif ($app->input->get('upload') == 'chapters') {
+						$result = $model->saveChapters($filename, $trailer_id, $movie_id);
+
+						if (is_int($result)) {
+							$id = $result;
+						}
+					}
 				}
 			}
 		}
 
 		// Success
-		$document->setMimeEncoding('application/json');
-		die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
+		die('{"jsonrpc" : "2.0", "result" : null, "id" : "$id"}');
 	}
 
 	public function gallery() {
@@ -284,9 +313,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
 	}
 
-	protected function getMimeType($path) {
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
+	public function saveSubtitles() {
+		$app = JFactory::getApplication();
 
-		return $finfo->file($path);
+		var_dump($_POST);
 	}
 }

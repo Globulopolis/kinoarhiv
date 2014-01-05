@@ -1,7 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivModelGlobal extends JModelLegacy {
-	// Ajax'ed data for autocomplete
 	public function getAjaxData($element='') {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -140,6 +139,22 @@ class KinoarhivModelGlobal extends JModelLegacy {
 
 				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career').$where_lang);
 				$result = $db->loadObjectList();
+			}
+		} elseif ($element == 'trailer_files') {
+			$type = $app->input->get('type', '', 'string');
+			if (empty($type)) {
+				$result = array();
+			} else {
+				if ($type == 'video') {
+					$col = '`filename`';
+				} elseif ($type == 'subtitles') {
+					$col = '`_subtitles`';
+				} elseif ($type == 'chapters') {
+					$col = '`_chapters`';
+				}
+
+				$db->setQuery("SELECT ".$col." FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$id);
+				$result = json_decode($db->loadResult());
 			}
 		} else {
 			$result = array();

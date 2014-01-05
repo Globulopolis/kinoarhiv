@@ -74,6 +74,9 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				if ($app->input->get('task', '', 'cmd') == 'edit') {
 					$item = $this->get('Item');
 					$form = $this->get('Form');
+					$item->screenshot_path_www = JURI::root().$params->get('media_trailers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
+					$item->screenshot_path = $params->get('media_trailers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
+
 					$this->item = &$item;
 					$this->form = &$form;
 

@@ -3,6 +3,7 @@
     The following CSS is consistent between example themes and should not be altered.
 */
 #colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
+#cboxWrapper {max-width:none;}
 #cboxOverlay{position:fixed; width:100%; height:100%;}
 #cboxMiddleLeft, #cboxBottomLeft{clear:left;}
 #cboxContent{position:relative;}
@@ -42,7 +43,6 @@
 #cboxNext:hover{background-position:bottom right;}
 #cboxClose{position:absolute; top:5px; right:5px; display:block; background:url(../images/controls.png) no-repeat top center; width:38px; height:19px; text-indent:-9999px;}
 #cboxClose:hover{background-position:bottom center;}
-/* End ColorBox Core Style */
 
 /* RateIt Core Style */
 .rateit {

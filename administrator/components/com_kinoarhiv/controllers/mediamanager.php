@@ -150,8 +150,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			// Proccess watermarks and thumbnails
 			JLoader::register('KAImage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'image.php');
 			$image = new KAImage();
+			$section = $app->input->get('section', '', 'word');
 
-			if ($app->input->get('section', '', 'word') == 'movie') {
+			if ($section == 'movie') {
 				if ($app->input->get('type') == 'gallery') {
 					$tab = $app->input->get('tab', 0, 'int');
 					$orig_image = @getimagesize($file_path);
@@ -177,12 +178,30 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
 					$model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id);
 				} elseif ($app->input->get('type') == 'trailers') {
+					$alias = $model->getAlias($section, $movie_id);
+
 					if ($app->input->get('upload') == 'video') {
-						
+						//$result = $model->saveVideo($filename, $trailer_id, $movie_id);
 					} elseif ($app->input->get('upload') == 'subtitles') {
-						
+						if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches)) {
+							$lang_code = strtolower($matches[1]);
+						}
+
+						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir.$filename;
+						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_code.'.'.$ext;
+						rename($old_filename, $rn_dest_dir.$rn_filename);
+
+						$result = $model->saveSubtitles(false, $rn_filename, $trailer_id, $movie_id);
 					} elseif ($app->input->get('upload') == 'chapters') {
-						$result = $model->saveChapters($filename, $trailer_id, $movie_id);
+						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir.$filename;
+						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$rn_filename = $alias.'-'.$trailer_id.'.chapters.'.$ext;
+						rename($old_filename, $rn_dest_dir.$rn_filename);
+
+						$result = $model->saveChapters($rn_filename, $trailer_id, $movie_id);
 
 						if (is_int($result)) {
 							$id = $result;
@@ -193,7 +212,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		}
 
 		// Success
-		die('{"jsonrpc" : "2.0", "result" : null, "id" : "$id"}');
+		die('{"jsonrpc" : "2.0", "result" : null, "id" : "'.$id.'"}');
 	}
 
 	public function gallery() {
@@ -314,8 +333,23 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	}
 
 	public function saveSubtitles() {
-		$app = JFactory::getApplication();
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		var_dump($_POST);
+		$app = JFactory::getApplication();
+		$movie_id = $app->input->get('movie_id', 0, 'int');
+		$trailer_id = $app->input->get('trailer_id', 0, 'int');
+		$subtitle_id = $app->input->get('subtitle_id', 0, 'int');
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->saveSubtitles(true, '', $trailer_id, $movie_id, $subtitle_id);
+
+		echo $result;
+	}
+
+	public function create_screenshot() {
+		$model = $this->getModel('mediamanager');
+		$result = $model->create_screenshot();
+
+		echo $result;
 	}
 }

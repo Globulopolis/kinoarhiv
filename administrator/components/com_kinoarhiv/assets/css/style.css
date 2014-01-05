@@ -200,3 +200,20 @@ span.icon {
 #v_sortable li, #sub_sortable li, #cap_sortable li, #chap_sortable li {
 	margin: 0 3px 3px 3px; padding: 0.2em; height: 14px; cursor: default;
 }
+
+.cmd-refresh-filelist, .file-remove-all {
+	display: inline-block;
+	float: right;
+}
+
+.admform-upload-trailers h3 {
+	padding: 3px 4px;
+}
+
+.video_screenshot {
+	margin: 0 3px; padding: 0.2em; height: 14px; cursor: default;
+}
+
+#screenshot_file {
+	display: none;
+}

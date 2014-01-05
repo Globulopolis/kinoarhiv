@@ -50,9 +50,26 @@ class KinoarhivModelMediamanager extends JModelList {
 		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
 		$alias = $db->loadResult();
 
-		$result = $path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder;
+		$result = str_replace('\\', '/', $path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder);
 
 		return $result;
+	}
+
+	public function getAlias($section, $id) {
+		$db = $this->getDBO();
+		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
+		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
+
+		if ($section == 'movie') {
+			$table = '#__ka_movies';
+		} elseif ($section == 'names') {
+			$table = '#__ka_names';
+		}
+
+		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+		$alias = $db->loadResult();
+
+		return $alias;
 	}
 
 	protected function populateState($ordering = null, $direction = null) {
@@ -423,10 +440,13 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
+				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`screenshot`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
 			)
 		);
 		$query->from($db->quoteName('#__ka_trailers').' AS `g`');
+
+		$query->select(' `m`.`alias`')
+			->leftJoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `g`.`movie_id`');
 
 		$query->select(' `l`.`title` AS `language_title`')
 			->leftJoin($db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `g`.`language`');
@@ -603,27 +623,40 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 
 		$result_arr = json_decode($result, true);
-		$new_arr = array();
 
-		foreach ($result_arr as $k=>$v) {
-			if ($v['file'] != $filename) {
-				$new_arr[] = $v;
+		if ($app->input->get('all', 0, 'int') == 0) {
+			$new_arr = array();
+
+			foreach ($result_arr as $k=>$v) {
+				if ($v['file'] != $filename) {
+					$new_arr[] = $v;
+				}
 			}
-		}
 
-		$new_arr = JArrayHelper::toObject($new_arr);
+			$new_arr = JArrayHelper::toObject($new_arr);
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
-		$query = $db->execute();
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
+			$query = $db->execute();
 
-		if ($query !== true) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
-		}
+			if ($query !== true) {
+				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			}
 
-		// Removing file
-		if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
-			$success = false;
-			$message = JText::_('JERROR');
+			// Removing file
+			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+				$success = false;
+				$message = JText::_('JERROR');
+			}
+		} else {
+			foreach ($result_arr as $val) {
+				if (file_exists($this->getPath('movie', 'trailers', 0, $id).$val['file']) && unlink($this->getPath('movie', 'trailers', 0, $id).$val['file']) !== true) {
+					$success = false;
+					$message .= JText::_('JERROR');
+				}
+			}
+
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '{}' WHERE `id` = ".(int)$item_id);
+			$query = $db->execute();
 		}
 
 		return json_encode(array('success'=>$success, 'message'=>$message));
@@ -689,6 +722,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	public function getSubtitleEdit() {
 		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
 		$language = new KALanguage();
+
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$lang_list = $language::listOfLanguages();
@@ -698,15 +732,131 @@ class KinoarhivModelMediamanager extends JModelList {
 		$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
 		$result = $db->loadResult();
 
-		$subtl_arr = json_decode($result);
+		$subtl_obj = json_decode($result);
 
 		return array(
 			'langs'=>$lang_list,
-			'lang_code'=>$subtl_arr->$subtitle_id->lang_code,
-			'lang'=>$subtl_arr->$subtitle_id->lang,
-			'is_default'=>$subtl_arr->$subtitle_id->default,
+			'lang_code'=>$subtl_obj->$subtitle_id->lang_code,
+			'lang'=>$subtl_obj->$subtitle_id->lang,
+			'is_default'=>$subtl_obj->$subtitle_id->default,
 			'trailer_id'=>$trailer_id,
 			'subtitle_id'=>$subtitle_id
 		);
+	}
+
+	public function saveSubtitles($edit=false, $file='', $trailer_id, $movie_id=0, $subtitle_id=null) {
+		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
+		$language = new KALanguage();
+		$lang_list = $language::listOfLanguages();
+
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+
+		$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
+		$result = $db->loadResult();
+
+		if ($edit === true) {
+			$subtl_obj = json_decode($result);
+			$lang_data = json_decode($app->input->get('language', '', 'string'));
+			$default = $app->input->get('default', 'false', 'string');
+			$desc = $app->input->get('desc', '', 'string');
+			$desc = $desc != '' ? ' '.$desc : '';
+
+			if (isset($subtl_obj->$subtitle_id)) {
+				if ($default == 'true') {
+					// Set to false all 'default' flags
+					foreach ($subtl_obj as $key=>$subtl) {
+						$subtl_obj->$key->default = false;
+					}
+
+					$subtl_obj->$subtitle_id->default = true;
+				}
+
+				$subtl_obj->$subtitle_id->lang_code = $lang_data->lang_code;
+				$subtl_obj->$subtitle_id->lang = $lang_data->lang.$desc;
+
+				$alias = $this->getAlias('movie', $movie_id);
+				$rn_dest_dir = $this->getPath('movie', 'trailers', 0, $movie_id);
+				$old_filename = $rn_dest_dir.$subtl_obj->$subtitle_id->file;
+				$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+				$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_data->lang_code.'.'.$ext;
+				$subtl_obj->$subtitle_id->file = $rn_filename;
+
+				rename($old_filename, $rn_dest_dir.$rn_filename);
+			}
+
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".$db->escape(json_encode($subtl_obj))."' WHERE `id` = ".(int)$trailer_id);
+			$query = $db->execute();
+
+			return $query ? true : false;
+		} else {
+			// On 'else' condition we do nothing because no information about trailer exists in DB. In this situation files will be successfully uploaded, but not saved in DB.
+			if (!empty($result) && count(json_decode($result)) > 0) {
+				if (preg_match('#subtitles\.(.*?)\.#si', $file, $matches)) {
+					$lang_code = strtolower($matches[1]);
+				}
+
+				$subtl_arr = json_decode($result, true);
+				// Checking if lang allready exists and return false
+				$lang_exists = false;
+				foreach ($subtl_arr as $k=>$v) {
+					if ($v['lang_code'] == $lang_code) {
+						$lang_exists = true;
+						return;
+					}
+				}
+
+				if ($lang_exists) {
+					return false;
+				}
+
+				$subtl_arr[] = array(
+					'default'=> false,
+					'lang_code'=>$lang_code,
+					'lang'=>$lang_list[$lang_code],
+					'file'=>$file
+				);
+
+				$subtl_obj = JArrayHelper::toObject($subtl_arr);
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".$db->escape(json_encode($subtl_obj))."' WHERE `id` = ".(int)$trailer_id);
+				$query = $db->execute();
+			}
+		}
+	}
+
+	public function create_screenshot() {
+		JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
+		$media = KAMedia::getInstance();
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$id = $app->input->get('id', 0, 'int');
+		$trailer_id = $app->input->get('item_id', 0, 'int');
+
+		$db->setQuery("SELECT `tr`.`screenshot`, `tr`.`filename`, `m`.`alias`"
+			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
+			. "\n WHERE `tr`.`id` = ".(int)$trailer_id);
+		$result = $db->loadObject();
+		$files = json_decode($result->filename, true);
+
+		$data = array(
+			'folder'=>$this->getPath('movie', 'trailers', 0, $id),
+			'screenshot'=>$result->screenshot,
+			'filename'=>$files[0]['src']
+		);
+
+		return $media->createScreenshot($data);
+	}
+
+	public function saveVideo($file='', $trailer_id, $movie_id) {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+
+		$db->setQuery("SELECT `filename` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
+		$result = $db->loadResult();
+
+		if (!empty($result) && count(json_decode($result)) > 0) {
+			
+		}
 	}
 }

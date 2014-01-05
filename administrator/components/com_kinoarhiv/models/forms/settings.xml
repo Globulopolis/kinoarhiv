@@ -63,6 +63,7 @@
 	<fieldset name="paths" label="COM_KA_PATHS_LABEL">
 		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red" />
 		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="ffprobe_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFPROBE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/" label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 
 		<field name="media_posters_root" type="text" default="images/movies" label="COM_KA_FIELD_PATHS_PO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
@@ -100,10 +101,6 @@
 		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
 
 		<field name="upload_gallery_watermark_image" type="text" default="" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
-
-		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_GALLERY_POSTERS_X_LABEL" description="COM_KA_FIELD_GALLERY_XSIZE_LABEL_DESC" required="true" filter="integer" size="16" />
-		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_GALLERY_SCR_X_LABEL" description="COM_KA_FIELD_GALLERY_XSIZE_LABEL_DESC" required="true" filter="integer" size="16" />
-		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_GALLERY_WALLPP_X_LABEL" description="COM_KA_FIELD_GALLERY_XSIZE_LABEL_DESC" required="true" filter="integer" size="16" />
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_APPEARANCE_SETTINGS_LABEL">
 		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" filter="" />
@@ -120,9 +117,11 @@
 		</field>
 		<field name="limit_text" type="text" default="250" label="COM_KA_FIELD_AP_LIMITTEXT_LABEL" description="COM_KA_FIELD_AP_LIMITTEXT_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="person_list_limit" type="text" default="3" label="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="poster_height" type="text" default="190" label="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL" description="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="wp_height" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" description="COM_KA_FIELD_AP_WP_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="player_width" type="text" default="688" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" description="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
+
+		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="player_width" type="text" default="688" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
 	</fieldset>
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
 		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL" description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6" />

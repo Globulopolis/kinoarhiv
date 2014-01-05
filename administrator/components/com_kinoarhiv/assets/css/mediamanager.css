@@ -254,7 +254,7 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 .plupload_file_action {width: 16px;}
 .plupload_file_name {
 	overflow: hidden;
-	padding-left: 10px;
+	padding-left: 2px;
 }
 
 .plupload_file_rename {

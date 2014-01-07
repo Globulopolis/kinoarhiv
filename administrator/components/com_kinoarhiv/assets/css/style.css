@@ -201,7 +201,7 @@ span.icon {
 	margin: 0 3px 3px 3px; padding: 0.2em; height: 14px; cursor: default;
 }
 
-.cmd-refresh-filelist, .file-remove-all {
+.cmd-refresh-filelist, .cmd-file-remove.all.subtitle {
 	display: inline-block;
 	float: right;
 }
@@ -212,8 +212,4 @@ span.icon {
 
 .video_screenshot {
 	margin: 0 3px; padding: 0.2em; height: 14px; cursor: default;
-}
-
-#screenshot_file {
-	display: none;
 }

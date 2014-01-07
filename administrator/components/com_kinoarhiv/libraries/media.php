@@ -33,9 +33,9 @@ class KAMedia {
 			@set_time_limit(0);
 
 			if (IS_WIN) {
-				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -i '.$data['folder'].$data['filename'].' -ss 00:02:48.000 -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename.'.png '."2>&1");
+				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -i '.$data['folder'].$data['filename'].' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename.'.png '."2>&1");
 			} else {
-				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -i '.$data['folder'].$data['filename'].' -ss 00:02:48.000 -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename.'.png '."2>&1");
+				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -i '.$data['folder'].$data['filename'].' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename.'.png '."2>%1");
 			}
 
 			return '<pre>'.$output.'</pre>';
@@ -60,8 +60,12 @@ class KAMedia {
 		return $mime;
 	}
 
-	public function getVideoInfo($path, $format='json') {
-		$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams v:0 '.$path.' 2>&1');
+	public function getVideoInfo($path, $stream='v:0', $format='json') {
+		if (IS_WIN) {
+			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.$path.' 2>&1');
+		} else {
+			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.$path.' 2>%1');
+		}
 
 		return $output;
 	}

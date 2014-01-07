@@ -299,29 +299,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function removeTrailerVideofile() {
+	public function removeTrailerFiles() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$model = $this->getModel('mediamanager');
-		$result = $model->removeTrailerVideofile();
-
-		echo $result;
-	}
-
-	public function removeTrailerSubtitlefile() {
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('mediamanager');
-		$result = $model->removeTrailerSubtitlefile();
-
-		echo $result;
-	}
-
-	public function removeTrailerChapterfile() {
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('mediamanager');
-		$result = $model->removeTrailerChapterfile();
+		$result = $model->removeTrailerFiles();
 
 		echo $result;
 	}

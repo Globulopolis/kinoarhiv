@@ -474,7 +474,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$result = $db->loadResult();
 
 		if (empty($result)) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		$result_arr = json_decode($result, true);
@@ -490,7 +490,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query = $db->execute();
 
 		if ($query !== true) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		return json_encode(array('success'=>$success, 'message'=>$message));
@@ -508,7 +508,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$result = $db->loadResult();
 
 		if (empty($result)) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		$result_arr = json_decode($result);
@@ -521,7 +521,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query = $db->execute();
 
 		if ($query !== true) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		return json_encode(array('success'=>$success, 'message'=>$message));
@@ -539,7 +539,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$result = $db->loadResult();
 
 		if (empty($result)) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		$result_arr = json_decode($result, true);
@@ -555,7 +555,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query = $db->execute();
 
 		if ($query !== true) {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		return json_encode(array('success'=>$success, 'message'=>$message));
@@ -720,10 +720,15 @@ class KinoarhivModelMediamanager extends JModelList {
 			'time'=>$time
 		);
 
-		if ($time != '') {
-			return $media->createScreenshot($data);
+		if ($time != '00:00:00.000') {
+			if (preg_match('#^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])\.[0-1][0-9][0-9]?$#', $time)) {
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".pathinfo($files[0]['src'], PATHINFO_FILENAME).".png' WHERE `id` = ".(int)$trailer_id);
+				$query = $db->execute();
+
+				return json_encode(array('file'=>$result->screenshot, 'output'=>$media->createScreenshot($data)));
+			}
 		} else {
-			return JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR');
+			return 'error:'.JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR');
 		}
 	}
 
@@ -751,7 +756,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$message = '';
 
 		if ($type == '') {
-			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+			return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 		}
 
 		if ($type == 'video') {
@@ -759,7 +764,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			$result = $db->loadResult();
 
 			if (empty($result)) {
-				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 
 			$result_arr = json_decode($result, true);
@@ -777,20 +782,20 @@ class KinoarhivModelMediamanager extends JModelList {
 			$query = $db->execute();
 
 			if ($query !== true) {
-				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 
 			// Removing file
-			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && @unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
 				$success = false;
-				$message = JText::_('JERROR');
+				$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 			}
 		} elseif ($type == 'subtitle' || $type == 'subtitles') {
 			$db->setQuery("SELECT `_subtitles` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".$item_id);
 			$result = $db->loadResult();
 
 			if (empty($result)) {
-				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 
 			$result_arr = json_decode($result, true);
@@ -810,19 +815,19 @@ class KinoarhivModelMediamanager extends JModelList {
 				$query = $db->execute();
 
 				if ($query !== true) {
-					return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+					return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 				}
 
 				// Removing file
-				if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+				if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && @unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
 					$success = false;
-					$message = JText::_('JERROR');
+					$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 				}
 			} else {
 				foreach ($result_arr as $val) {
-					if (file_exists($this->getPath('movie', 'trailers', 0, $id).$val['file']) && unlink($this->getPath('movie', 'trailers', 0, $id).$val['file']) !== true) {
+					if (file_exists($this->getPath('movie', 'trailers', 0, $id).$val['file']) && @unlink($this->getPath('movie', 'trailers', 0, $id).$val['file']) !== true) {
 						$success = false;
-						$message .= JText::_('JERROR');
+						$message .= JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 					}
 				}
 
@@ -831,7 +836,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				if ($query !== true) {
 					$success = false;
-					$message .= JText::_('JERROR');
+					$message .= JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 				}
 			}
 		} elseif ($type == 'chapter' || $type == 'chapters') {
@@ -839,26 +844,26 @@ class KinoarhivModelMediamanager extends JModelList {
 			$query = $db->execute();
 
 			if ($query !== true) {
-				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 
 			// Removing file
-			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && @unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
 				$success = false;
-				$message = JText::_('JERROR');
+				$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 			}
 		} elseif ($type == 'image' || $type == 'images') {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '' WHERE `id` = ".(int)$item_id);
 			$query = $db->execute();
 
 			if ($query !== true) {
-				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR')));
+				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 
 			// Removing file
-			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
+			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && @unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
 				$success = false;
-				$message = JText::_('JERROR');
+				$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 			}
 		}
 

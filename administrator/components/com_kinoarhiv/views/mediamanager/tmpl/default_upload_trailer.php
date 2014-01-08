@@ -1,4 +1,6 @@
 <?php defined('_JEXEC') or die;
+JHtml::_('behavior.keepalive');
+
 $input = JFactory::getApplication()->input;
 $section = $input->get('section', '', 'word');
 $type = $input->get('type', '', 'word');
@@ -287,7 +289,7 @@ $type = $input->get('type', '', 'word');
 							});
 						}
 					} else if (_this.hasClass('scrimage')) {
-						
+						_this.closest('div.video_screenshot').find('#screenshot_file').hide();
 					}
 
 					showMsg(_this.closest('ul'), '<?php echo JText::_('COM_KA_FILE_DELETED_SUCCESS'); ?>');
@@ -296,7 +298,7 @@ $type = $input->get('type', '', 'word');
 				}
 				blockUI();
 			}).fail(function(xhr, status, error){
-				showMsg('#system-message-container', '<strong>'+status+'</strong>: '+error);
+				showMsg('#system-message-container', error);
 				blockUI();
 			});
 		});
@@ -320,10 +322,10 @@ $type = $input->get('type', '', 'word');
 							if (response) {
 								$('.t-subtitles').trigger('click');
 							} else {
-								showMsg('#subtl_edit_form .message', '<?php echo JText::_('JERROR'); ?>');
+								showMsg('#subtl_edit_form .message', '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
 							}
 						}).fail(function(xhr, status, error){
-							showMsg('#subtl_edit_form .message', status+': '+error);
+							showMsg('#subtl_edit_form .message', error);
 						});
 					},
 					'<?php echo JText::_('JCANCEL'); ?>': function(){
@@ -411,37 +413,61 @@ $type = $input->get('type', '', 'word');
 					blockUI('hide');
 				}
 			}).fail(function(xhr, status, error){
-				showMsg(_this.closest('h3').find('ul'), status+': '+error);
+				showMsg(_this.closest('h3').find('ul'), error);
 				blockUI('hide');
 			});
 		});
 
-		$('a.tooltip-img').colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
+		$('.video_screenshot').on('click', 'a.tooltip-img', function(e){
+			e.preventDefault();
+			var url = $(this).attr('href');
+			$.colorbox({ href: url, maxHeight: '95%', maxWidth: '95%', fixed: true });
+		});
 
 		$('a.file-create-scr').click(function(e){
 			e.preventDefault();
 			var _this = $(this);
-			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><p><label for="time"><?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_DESC'); ?></label><br /><input type="text" name="time" id="time" value="00:02:00.000" required="required" size="16" maxlength="12" placeholder="00:00:00.000" /></p></div>').appendTo('body');
+			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><p><label for="time"><?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_DESC'); ?></label><br /><input type="text" name="time" id="time" value="00:02:00.000" required="required" size="16" maxlength="12" placeholder="00:00:00.000" /><br /><span class="err_msg red"></span></p></div>').appendTo('body');
 
 			dlg.dialog({
 				buttons: {
 					'<?php echo JText::_('JTOOLBAR_NEW'); ?>': function(){
 						blockUI('show');
 						$.post(_this.attr('href'), {'time': $('#time').val(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
+							$('.err_msg', dlg).text('').hide();
+
+							if (response.test(/error:/)) {
+								$('.err_msg', dlg).text(response.substr(6)).show();
+								blockUI();
+								return false;
+							}
+
 							dlg.dialog('option', {
 								height: parseInt($(window).height() - 100),
 								width: parseInt($(window).width() - 100)
 							});
-							
-							$('p', dlg).html(response);
+
+							var obj = $.parseJSON(response);
+
+							$('p', dlg).html(obj.output);
+							if (_this.closest('div.video_screenshot').find('#screenshot_file').length == 0) {
+								var a = '<a href="<?php echo $this->item->screenshot_folder_www; ?>' + obj.file + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.file +'</a>';
+								_this.closest('div').prev('div').html('').append(a);
+							} else {
+								_this.closest('div.video_screenshot').find('#screenshot_file').text(obj.file);
+								_this.closest('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->screenshot_folder_www; ?>' + obj.file + '?_=' + new Date().getTime());
+							}
+							_this.closest('div.video_screenshot').find('#screenshot_file').show();
+
+							$('.ui-dialog .ui-dialog-buttonset button').eq(0).remove();
 							blockUI();
 						}).fail(function(xhr, status, error){
-							showMsg('#system-message-container', '<strong>'+status+'</strong>: '+error);
+							showMsg('#system-message-container', error);
 							blockUI();
 							dlg.remove();
 						});
 					},
-					'<?php echo JText::_('JCANCEL'); ?>': function(){
+					'<?php echo JText::_('JTOOLBAR_CLOSE'); ?>': function(){
 						dlg.remove();
 					}
 				},
@@ -516,6 +542,8 @@ $type = $input->get('type', '', 'word');
 						<div style="float: left;">
 							<?php if (file_exists($this->item->screenshot_path)): ?>
 								<a href="<?php echo $this->item->screenshot_path_www; ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->item->screenshot; ?></a>
+							<?php else: ?>
+								&nbsp;
 							<?php endif; ?>
 						</div>
 						<div style="float: right;">

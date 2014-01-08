@@ -17,13 +17,13 @@ class KAMedia {
 	}
 
 	public function createScreenshot(&$data) {
-		if (file_exists($data['folder'].$data['screenshot'])) {
-			unlink($data['folder'].$data['screenshot']);
+		if (!empty($data['screenshot']) && file_exists($data['folder'].$data['screenshot'])) {
+			@unlink($data['folder'].$data['screenshot']);
 		}
 
 		$ffmpeg_path = $this->params->get('ffmpeg_path', '', 'string');
 		if ($ffmpeg_path  != '') {
-			$result_filename = pathinfo($data['filename'], PATHINFO_FILENAME);
+			$result_filename = pathinfo($data['filename'], PATHINFO_FILENAME).'.png';
 			$video_info = $this->getVideoInfo($data['folder'].$data['filename']);
 			$video_info = json_decode($video_info);
 
@@ -33,9 +33,9 @@ class KAMedia {
 			@set_time_limit(0);
 
 			if (IS_WIN) {
-				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -i '.$data['folder'].$data['filename'].' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename.'.png '."2>&1");
+				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -nostats -i '.escapeshellcmd($data['folder'].$data['filename']).' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename." 2>&1");
 			} else {
-				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -i '.$data['folder'].$data['filename'].' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename.'.png '."2>%1");
+				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -nostats -i '.escapeshellcmd($data['folder'].$data['filename']).' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename." 2>%1");
 			}
 
 			return '<pre>'.$output.'</pre>';
@@ -62,9 +62,9 @@ class KAMedia {
 
 	public function getVideoInfo($path, $stream='v:0', $format='json') {
 		if (IS_WIN) {
-			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.$path.' 2>&1');
+			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.escapeshellcmd($path).' 2>&1');
 		} else {
-			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.$path.' 2>%1');
+			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.escapeshellcmd($path).' 2>%1');
 		}
 
 		return $output;

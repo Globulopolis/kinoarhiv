@@ -213,3 +213,7 @@ span.icon {
 .video_screenshot {
 	margin: 0 3px; padding: 0.2em; height: 14px; cursor: default;
 }
+
+.dialog .err_msg {
+	display: none;
+}

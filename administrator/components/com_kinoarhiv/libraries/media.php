@@ -38,7 +38,7 @@ class KAMedia {
 				$output = shell_exec(escapeshellcmd($ffmpeg_path).' -hide_banner -nostats -i '.escapeshellcmd($data['folder'].$data['filename']).' -ss '.$data['time'].' -f image2 -vframes 1 -s '.floor($scr_w).'x'.floor($scr_h).' '.$data['folder'].$result_filename." 2>%1");
 			}
 
-			return '<pre>'.$output.'</pre>';
+			return array($result_filename, '<pre>'.$output.'</pre>');
 		} else {
 			die(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND'));
 		}
@@ -68,5 +68,24 @@ class KAMedia {
 		}
 
 		return $output;
+	}
+
+	public function getVideoDuration($path, $format=false) {
+		if (IS_WIN) {
+			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -loglevel error -show_format -show_streams '.escapeshellcmd($path).' -print_format json 2>&1');
+		} else {
+			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -loglevel error -show_format -show_streams '.escapeshellcmd($path).' -print_format json 2>%1');
+		}
+
+		$object = json_decode($output);
+
+		if ($format) {
+			$seconds = round($object->format->duration);
+			$duration = sprintf('%02d:%02d:%02d', ($seconds / 3600), ($seconds / 60 % 60), $seconds % 60);
+		} else {
+			$duration = $object->format->duration;
+		}
+
+		return $duration;
 	}
 }

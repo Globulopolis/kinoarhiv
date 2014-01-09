@@ -181,7 +181,18 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					$alias = $model->getAlias($section, $movie_id);
 
 					if ($app->input->get('upload') == 'video') {
-						//$result = $model->saveVideo($filename, $trailer_id, $movie_id);
+						JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
+						$media = KAMedia::getInstance();
+
+						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir.$filename;
+						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$video_info = json_decode($media->getVideoInfo($rn_dest_dir.$filename));
+						$video_height = $video_info->streams[0]->height;
+						$rn_filename = $alias.'-'.$trailer_id.'-'.$movie_id.'.'.$video_height.'p.'.$ext;
+						rename($old_filename, $rn_dest_dir.$rn_filename);
+
+						$result = $model->saveVideo($rn_filename, $trailer_id, $movie_id);
 					} elseif ($app->input->get('upload') == 'subtitles') {
 						if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches)) {
 							$lang_code = strtolower($matches[1]);

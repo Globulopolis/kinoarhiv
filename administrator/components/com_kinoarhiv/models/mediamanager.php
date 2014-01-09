@@ -126,7 +126,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				$query->select(
 					$this->getState(
 						'list.select',
-						'`g`.`id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
+						'`g`.`id`, `g`.`title`, `g`.`embed_code`, `g`.`filename`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
 					)
 				);
 				$query->from($db->quoteName('#__ka_trailers').' AS `g`');
@@ -440,7 +440,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`screenshot`, `g`.`filename`, `g`.`w_h`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
+				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`screenshot`, `g`.`filename`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
 			)
 		);
 		$query->from($db->quoteName('#__ka_trailers').' AS `g`');
@@ -579,8 +579,8 @@ class KinoarhivModelMediamanager extends JModelList {
 		$chapters = array('file'=>$file);
 
 		if ($total == 0) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `filename`, `w_h`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
-				. "\n VALUES ('', '".(int)$movie_id."', '', '', '', '{}', '', '00:00:00', '{}', '".$chapters."', '0', '1', '0', 'language', '0')");
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `filename`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
+				. "\n VALUES ('', '".(int)$movie_id."', '', '', '', '{}', '00:00:00', '{}', '".$chapters."', '0', '1', '0', 'language', '0')");
 			$query = $db->execute();
 
 			return $query ? (int)$db->insertid() : false;
@@ -663,13 +663,14 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			return $query ? true : false;
 		} else {
+			$subtl_arr = json_decode($result, true);
+
 			// On 'else' condition we do nothing because no information about trailer exists in DB. In this situation files will be successfully uploaded, but not saved in DB.
-			if (!empty($result) && count(json_decode($result)) > 0) {
+			if (!empty($result) && count($subtl_arr) > 0) {
 				if (preg_match('#subtitles\.(.*?)\.#si', $file, $matches)) {
 					$lang_code = strtolower($matches[1]);
 				}
 
-				$subtl_arr = json_decode($result, true);
 				// Checking if lang allready exists and return false
 				$lang_exists = false;
 				foreach ($subtl_arr as $k=>$v) {
@@ -714,10 +715,10 @@ class KinoarhivModelMediamanager extends JModelList {
 		$files = json_decode($result->filename, true);
 
 		$data = array(
-			'folder'=>$this->getPath('movie', 'trailers', 0, $id),
-			'screenshot'=>$result->screenshot,
-			'filename'=>$files[0]['src'],
-			'time'=>$time
+			'folder' 		=> $this->getPath('movie', 'trailers', 0, $id),
+			'screenshot' 	=> $result->screenshot,
+			'filename'		=> $files[0]['src'],
+			'time' 			=> $time
 		);
 
 		if ($time != '00:00:00.000') {
@@ -725,7 +726,8 @@ class KinoarhivModelMediamanager extends JModelList {
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".pathinfo($files[0]['src'], PATHINFO_FILENAME).".png' WHERE `id` = ".(int)$trailer_id);
 				$query = $db->execute();
 
-				return json_encode(array('file'=>$result->screenshot, 'output'=>$media->createScreenshot($data)));
+				$output = $media->createScreenshot($data);
+				return json_encode(array('file'=>$output[0], 'output'=>$output[1]));
 			}
 		} else {
 			return 'error:'.JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR');
@@ -733,14 +735,63 @@ class KinoarhivModelMediamanager extends JModelList {
 	}
 
 	public function saveVideo($file='', $trailer_id, $movie_id) {
+		JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
+		$media = KAMedia::getInstance();
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 
 		$db->setQuery("SELECT `filename` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
 		$result = $db->loadResult();
 
-		if (!empty($result) && count(json_decode($result)) > 0) {
-			
+		$result_arr = json_decode($result, true);
+
+		// If not empty and items more than 0 when add to array and store
+		if (!empty($result) && count($result_arr) > 0) {
+			// Checking if file allready exists in DB
+			$file_exists = false;
+			foreach ($result_arr as $k=>$v) {
+				if ($v['src'] == $file) {
+					$file_exists = true;
+					return;
+				}
+			}
+
+			if ($file_exists) {
+				return false;
+			}
+			// end
+
+			$files_arr = $result_arr;
+			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id).$file);
+			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id).$file));
+			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id).$file, true);
+			$files_arr[] = array(
+				'src'		=> $file,
+				'type'		=> $mime_type,
+				'resolution'=> $video_info->streams->width.'x'.$video_info->streams->height
+			);
+
+			$new_obj = JArrayHelper::toObject($files_arr);
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
+			$query = $db->execute();
+						print_r($video_info->streams);
+		} else {
+			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id).$file);
+			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id).$file));
+			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id).$file, true);
+
+			$files_arr = array(
+				0 => array(
+					'src'	=> $file,
+					'type'	=> $mime_type,
+					'resolution'=> $video_info->streams[0]->width.'x'.$video_info->streams[0]->height
+				)
+			);
+
+			$new_obj = JArrayHelper::toObject($files_arr);
+
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
+			$query = $db->execute();
 		}
 	}
 
@@ -771,7 +822,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			$new_arr = array();
 
 			foreach ($result_arr as $k=>$v) {
-				if ($v != $filename) {
+				if ($v['src'] != $filename) {
 					$new_arr[] = $v;
 				}
 			}
@@ -779,9 +830,10 @@ class KinoarhivModelMediamanager extends JModelList {
 			$new_arr = JArrayHelper::toObject($new_arr);
 
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_arr)."' WHERE `id` = ".(int)$item_id);
-			$query = $db->execute();
 
-			if ($query !== true) {
+			try {
+				$db->execute();
+			} catch(Exception $e) {
 				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 

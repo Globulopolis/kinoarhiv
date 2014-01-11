@@ -108,12 +108,10 @@ $type = $input->get('type', '', 'word');
 				StateChanged: function(up){
 					if (up.state == plupload.STARTED) {
 						// Block 'Save' and 'Close' buttons
-						$('.ui-dialog-titlebar .ui-button').button('disable');
-						$('#tr_save, #tr_cancel').button('disable');
+						$('#toolbar button').prop('disabled', 'disabled');
 					} else if (up.state == plupload.STOPPED) {
 						// Unblock 'Save' and 'Close' buttons
-						$('.ui-dialog-titlebar .ui-button').button('enable');
-						$('#tr_save, #tr_cancel').button('enable');
+						$('#toolbar button').removeProp('disabled');
 					}
 				}
 			}
@@ -150,12 +148,10 @@ $type = $input->get('type', '', 'word');
 				StateChanged: function(up){
 					if (up.state == plupload.STARTED) {
 						// Block 'Save' and 'Close' buttons
-						$('.ui-dialog-titlebar .ui-button').button('disable');
-						$('#tr_save, #tr_cancel').button('disable');
+						$('#toolbar button').prop('disabled', 'disabled');
 					} else if (up.state == plupload.STOPPED) {
 						// Unblock 'Save' and 'Close' buttons
-						$('.ui-dialog-titlebar .ui-button').button('enable');
-						$('#tr_save, #tr_cancel').button('enable');
+						$('#toolbar button').removeProp('disabled');
 					}
 				}
 			}
@@ -192,12 +188,10 @@ $type = $input->get('type', '', 'word');
 				StateChanged: function(up){
 					if (up.state == plupload.STARTED) {
 						// Block 'Save' and 'Close' buttons
-						$('.ui-dialog-titlebar .ui-button').button('disable');
-						$('#tr_save, #tr_cancel').button('disable');
+						$('#toolbar button').prop('disabled', 'disabled');
 					} else if (up.state == plupload.STOPPED) {
 						// Unblock 'Save' and 'Close' buttons
-						$('.ui-dialog-titlebar .ui-button').button('enable');
-						$('#tr_save, #tr_cancel').button('enable');
+						$('#toolbar button').removeProp('disabled');
 					}
 				}
 			}
@@ -288,6 +282,8 @@ $type = $input->get('type', '', 'word');
 								$(el).next().find('.ord_numbering').text(i);
 							});
 						}
+					} else if (_this.hasClass('chapter')) {
+						_this.closest('li').remove();
 					} else if (_this.hasClass('scrimage')) {
 						_this.closest('div.video_screenshot').find('#screenshot_file').hide();
 					}
@@ -479,6 +475,33 @@ $type = $input->get('type', '', 'word');
 				}
 			});
 		});
+
+		$('.cmd-form-urls').click(function(e){
+			e.preventDefault();
+			var _this = $(this),
+				dlg = $('<div style="display: none;" class="dialog" title=""><p></p></div>').appendTo('body');
+
+			if ($(this).hasClass('video')) {
+			} else if ($(this).hasClass('subtitles')) {
+			} else if ($(this).hasClass('chapters')) {
+			} else if ($(this).hasClass('help')) {
+				$('p', dlg).html('<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_HELP', true); ?>');
+				dlg.dialog({
+					title: '<?php echo JText::_('JHELP'); ?>',
+					buttons: {
+						'<?php echo JText::_('JTOOLBAR_CLOSE'); ?>': function(){
+							dlg.remove();
+						}
+					},
+					modal: true,
+					height: 400,
+					width: 600,
+					close: function(e, ui){
+						dlg.remove();
+					}
+				});
+			}
+		});
 	});
 //]]>
 </script>
@@ -497,6 +520,18 @@ $type = $input->get('type', '', 'word');
 								<div class="controls"><?php echo $field->input; ?></div>
 							</div>
 						<?php endforeach; ?>
+							<div class="control-group">
+								<div class="control-label"><label id="form_urls-lbl" class="hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_DESC'); ?>" for="form_urls" aria-invalid="false"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS'); ?></label></div>
+								<div class="controls">
+									<div class="urls_form_toolbar">
+										<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0" /></a>
+										<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0" /></a>
+										<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0" /></a>
+										<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="components/com_kinoarhiv/assets/images/icons/help.png" border="0" /></a>
+									</div>
+									<textarea id="form_urls" class="span12" rows="5" cols="30" name="form[urls]"><?php echo $this->item->urls; ?></textarea>
+								</div>
+							</div>
 					</fieldset>
 
 					<div class="small red"><?php echo JText::_('COM_KA_TRAILERS_EDIT_UPLOAD_ONLY_ONE'); ?></div>

@@ -217,3 +217,11 @@ span.icon {
 .dialog .err_msg {
 	display: none;
 }
+
+.urls_form_toolbar {
+	margin: 3px 0;
+}
+
+.urls_form_toolbar a {
+	padding-right: 5px;
+}

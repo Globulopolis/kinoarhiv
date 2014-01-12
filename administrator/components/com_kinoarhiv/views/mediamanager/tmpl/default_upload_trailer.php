@@ -255,10 +255,8 @@ $type = $input->get('type', '', 'word');
 			e.preventDefault();
 			var _this = $(this);
 
-			if (_this.hasClass('all')) {
-				if (!confirm('<?php echo JText::_('COM_KA_DELETE_ALL'); ?>')) {
-					return false;
-				}
+			if (!confirm((_this.hasClass('all')) ? '<?php echo JText::_('COM_KA_DELETE_ALL'); ?>' : '<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+				return false;
 			}
 
 			blockUI('show');
@@ -479,11 +477,85 @@ $type = $input->get('type', '', 'word');
 		$('.cmd-form-urls').click(function(e){
 			e.preventDefault();
 			var _this = $(this),
+				url_regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/, // from angular.js
 				dlg = $('<div style="display: none;" class="dialog" title=""><p></p></div>').appendTo('body');
 
 			if ($(this).hasClass('video')) {
+				$('p', dlg).html($('#urls_layout_video'));
+				dlg.dialog({
+					title: '<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>',
+					buttons: {
+						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
+							var input = $('.dialog #urls_url_video');
+							if (input.val() != '' && url_regex.test(input.val())) {
+								var form_urls = $('#form_urls').val();
+								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'", type="'+ $('#urls_url_video_type').val() +'", player="'+ $('#urls_url_video_inplayer').val() +'"]'); // Set value
+								$('#urls_layout_video_form')[0].reset();
+							} else {
+								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
+							}
+						},
+						'<?php echo JText::_('JTOOLBAR_CLOSE'); ?>': function(){
+							// We should use close instead of remove so div isn't removed from DOM
+							dlg.dialog('close');
+						}
+					},
+					modal: true,
+					height: 360,
+					width: 600,
+					open: function(e, ui){ $('#urls_layout_video').show(); }
+				});
 			} else if ($(this).hasClass('subtitles')) {
+				$('p', dlg).html($('#urls_layout_subtitles'));
+				dlg.dialog({
+					title: '<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>',
+					buttons: {
+						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
+							var input = $('.dialog #urls_url_subtitles');
+							if (input.val() != '' && url_regex.test(input.val())) {
+								var form_urls = $('#form_urls').val();
+								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'", kind="subtitles", srclang="'+ $('#urls_url_subtitles_lang').val() +'", label="'+ $('#urls_url_subtitles_lang :selected').text() +'", default="'+ $('#urls_url_subtitles_default').val() +'"]'); // Set value
+								$('#urls_layout_subtitles_form')[0].reset();
+							} else {
+								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
+							}
+						},
+						'<?php echo JText::_('JTOOLBAR_CLOSE'); ?>': function(){
+							// We should use close instead of remove so div isn't removed from DOM
+							dlg.dialog('close');
+						}
+					},
+					modal: true,
+					height: 360,
+					width: 600,
+					open: function(e, ui){ $('#urls_layout_subtitles').show(); }
+				});
 			} else if ($(this).hasClass('chapters')) {
+				$('p', dlg).html('<label for="urls_url_chp"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_CHAPTERS'); ?></label><input id="urls_url_chp" class="span6" type="text" size="35" value="" name="urls_url_chp" /><div class="err_msg"></div>');
+				dlg.dialog({
+					title: '<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>',
+					buttons: {
+						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
+							var input = $('.dialog #urls_url_chp');
+							if (input.val() != '' && url_regex.test(input.val())) {
+								var form_urls = $('#form_urls').val();
+								$('#form_urls').val(form_urls + "\n"+'[url="'+ input.val() +'", kind="chapters"]'); // Set value
+								input.val(''); // Clear input in dialog
+							} else {
+								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
+							}
+						},
+						'<?php echo JText::_('JTOOLBAR_CLOSE'); ?>': function(){
+							dlg.remove();
+						}
+					},
+					modal: true,
+					height: 240,
+					width: 600,
+					close: function(e, ui){
+						dlg.remove();
+					}
+				});
 			} else if ($(this).hasClass('help')) {
 				$('p', dlg).html('<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_HELP', true); ?>');
 				dlg.dialog({
@@ -501,6 +573,10 @@ $type = $input->get('type', '', 'word');
 					}
 				});
 			}
+		});
+
+		$('a.file-upload-scr').click(function(e){
+			e.preventDefault();
 		});
 	});
 //]]>
@@ -521,16 +597,14 @@ $type = $input->get('type', '', 'word');
 							</div>
 						<?php endforeach; ?>
 							<div class="control-group">
-								<div class="control-label"><label id="form_urls-lbl" class="hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_DESC'); ?>" for="form_urls" aria-invalid="false"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS'); ?></label></div>
-								<div class="controls">
-									<div class="urls_form_toolbar">
-										<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0" /></a>
-										<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0" /></a>
-										<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0" /></a>
-										<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="components/com_kinoarhiv/assets/images/icons/help.png" border="0" /></a>
-									</div>
-									<textarea id="form_urls" class="span12" rows="5" cols="30" name="form[urls]"><?php echo $this->item->urls; ?></textarea>
+								<label id="form_urls-lbl" for="form_urls" aria-invalid="false"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS'); ?></label>
+								<div class="urls_form_toolbar">
+									<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0" /></a>
+									<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0" /></a>
+									<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0" /></a>
+									<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="components/com_kinoarhiv/assets/images/icons/help.png" border="0" /></a>
 								</div>
+								<textarea id="form_urls" class="span12" rows="5" cols="30" name="form[urls]"><?php echo $this->item->urls; ?></textarea>
 							</div>
 					</fieldset>
 
@@ -582,6 +656,7 @@ $type = $input->get('type', '', 'word');
 							<?php endif; ?>
 						</div>
 						<div style="float: right;">
+							<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
 							<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $this->item->movie_id; ?>&format=raw" class="file-create-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
 							<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->item->screenshot; ?>&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
 						</div>
@@ -631,3 +706,59 @@ $type = $input->get('type', '', 'word');
 	<input type="hidden" name="id" value="<?php echo !empty($this->item->movie_id) ? $this->item->movie_id : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
+
+<div id="urls_layout_video" style="display: none;">
+	<form id="urls_layout_video_form">
+		<label for="urls_url_video"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO'); ?></label>
+		<input id="urls_url_video" class="span6" type="text" size="35" value="" name="urls_url_video" />
+		<label for="urls_url_video_type"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE'); ?></label>
+		<?php echo JHTML::_('select.genericlist',
+			array(''=>JText::_('JNONE'), 'video/mp4'=>'video/mp4', 'video/webm'=>'video/webm', 'video/ogv'=>'video/ogv'),
+			'urls_url_video_type',
+			array('class'=>'span3'),
+			'value',
+			'text',
+			'',
+			'urls_url_video_type'
+		); ?>
+		<label for="urls_url_video_inplayer"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_INPLAYER'); ?></label>
+		<?php echo JHTML::_('select.genericlist',
+			array('false'=>JText::_('JNO'), 'true'=>JText::_('JYES')),
+			'urls_url_video_inplayer',
+			array('class'=>'span3'),
+			'value',
+			'text',
+			'false',
+			'urls_url_video_inplayer'
+		); ?>
+		<div class="err_msg"></div>
+	</form>
+</div>
+
+<div id="urls_layout_subtitles" style="display: none;">
+	<form id="urls_layout_subtitles_form">
+		<label for="urls_url_subtitles"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_SUBTITLES'); ?></label>
+		<input id="urls_url_subtitles" class="span6" type="text" size="35" value="" name="urls_url_subtitles" />
+		<label for="urls_url_subtitles_lang"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_SELECT'); ?></label>
+		<?php echo JHTML::_('select.genericlist',
+			$this->item->subtitles_lang_list,
+			'urls_url_subtitles_lang',
+			array('class'=>'span3'),
+			'value',
+			'text',
+			'en',
+			'urls_url_subtitles_lang'
+		); ?>
+		<label for="urls_url_subtitles_default"><?php echo JText::_('JDEFAULT'); ?></label>
+		<?php echo JHTML::_('select.genericlist',
+			array('false'=>JText::_('JNO'), 'true'=>JText::_('JYES')),
+			'urls_url_subtitles_default',
+			array('class'=>'span3'),
+			'value',
+			'text',
+			'false',
+			'urls_url_subtitles_default'
+		); ?>
+		<div class="err_msg"></div>
+	</form>
+</div>

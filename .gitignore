@@ -41,6 +41,8 @@
 /administrator/language/ru-RU/install.xml
 /administrator/language/ru-RU/ru-RU.com_admin.ini
 /administrator/language/ru-RU/ru-RU.com_admin.sys.ini
+/administrator/language/ru-RU/ru-RU.com_ajax.ini
+/administrator/language/ru-RU/ru-RU.com_ajax.sys.ini
 /administrator/language/ru-RU/ru-RU.com_banners.ini
 /administrator/language/ru-RU/ru-RU.com_banners.sys.ini
 /administrator/language/ru-RU/ru-RU.com_cache.ini
@@ -55,6 +57,8 @@
 /administrator/language/ru-RU/ru-RU.com_contact.sys.ini
 /administrator/language/ru-RU/ru-RU.com_content.ini
 /administrator/language/ru-RU/ru-RU.com_content.sys.ini
+/administrator/language/ru-RU/ru-RU.com_contenthistory.ini
+/administrator/language/ru-RU/ru-RU.com_contenthistory.sys.ini
 /administrator/language/ru-RU/ru-RU.com_cpanel.ini
 /administrator/language/ru-RU/ru-RU.com_cpanel.sys.ini
 /administrator/language/ru-RU/ru-RU.com_finder.ini
@@ -80,6 +84,8 @@
 /administrator/language/ru-RU/ru-RU.com_newsfeeds.sys.ini
 /administrator/language/ru-RU/ru-RU.com_plugins.ini
 /administrator/language/ru-RU/ru-RU.com_plugins.sys.ini
+/administrator/language/ru-RU/ru-RU.com_postinstall.ini
+/administrator/language/ru-RU/ru-RU.com_postinstall.sys.ini
 /administrator/language/ru-RU/ru-RU.com_redirect.ini
 /administrator/language/ru-RU/ru-RU.com_redirect.sys.ini
 /administrator/language/ru-RU/ru-RU.com_search.ini
@@ -128,6 +134,8 @@
 /administrator/language/ru-RU/ru-RU.mod_toolbar.sys.ini
 /administrator/language/ru-RU/ru-RU.mod_version.ini
 /administrator/language/ru-RU/ru-RU.mod_version.sys.ini
+/administrator/language/ru-RU/ru-RU.plg_authentication_cookie.ini
+/administrator/language/ru-RU/ru-RU.plg_authentication_cookie.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_authentication_gmail.ini
 /administrator/language/ru-RU/ru-RU.plg_authentication_gmail.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_authentication_joomla.ini
@@ -142,6 +150,8 @@
 /administrator/language/ru-RU/ru-RU.plg_content_emailcloak.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_content_finder.ini
 /administrator/language/ru-RU/ru-RU.plg_content_finder.sys.ini
+/administrator/language/ru-RU/ru-RU.plg_installer_webinstaller.ini
+/administrator/language/ru-RU/ru-RU.plg_installer_webinstaller.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_content_geshi.ini
 /administrator/language/ru-RU/ru-RU.plg_content_geshi.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_content_joomla.ini
@@ -220,6 +230,10 @@
 /administrator/language/ru-RU/ru-RU.plg_system_remember.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_system_sef.ini
 /administrator/language/ru-RU/ru-RU.plg_system_sef.sys.ini
+/administrator/language/ru-RU/ru-RU.plg_twofactorauth_totp.ini
+/administrator/language/ru-RU/ru-RU.plg_twofactorauth_totp.sys.ini
+/administrator/language/ru-RU/ru-RU.plg_twofactorauth_yubikey.ini
+/administrator/language/ru-RU/ru-RU.plg_twofactorauth_yubikey.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_user_contactcreator.ini
 /administrator/language/ru-RU/ru-RU.plg_user_contactcreator.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_user_joomla.ini

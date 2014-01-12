@@ -774,7 +774,6 @@ class KinoarhivModelMediamanager extends JModelList {
 			$new_obj = JArrayHelper::toObject($files_arr);
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
 			$query = $db->execute();
-						print_r($video_info->streams);
 		} else {
 			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id).$file);
 			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id).$file));

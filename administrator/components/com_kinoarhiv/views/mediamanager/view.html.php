@@ -72,16 +72,21 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				$this->addToolbar();
 
 				if ($app->input->get('task', '', 'cmd') == 'edit') {
+					JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
+					$_lang = new KALanguage();
+
 					$item = $this->get('Item');
 					$form = $this->get('Form');
 					$item->screenshot_path_www = JURI::root().$params->get('media_trailers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
 					$item->screenshot_folder_www = JURI::root().$params->get('media_trailers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/';
 					$item->screenshot_path = $params->get('media_trailers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
+					$item->subtitles_lang_list = $_lang::listOfLanguages();
 
 					$this->item = &$item;
 					$this->form = &$form;
 
 					parent::display('upload_trailer');
+					$app->input->set('hidemainmenu', true);
 				} else {
 					$items = $this->get('Items');
 					$pagination = $this->get('Pagination');

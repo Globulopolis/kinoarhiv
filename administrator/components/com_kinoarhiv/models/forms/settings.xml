@@ -100,6 +100,10 @@
 		</field>
 		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
 
+		<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="upload_gallery_watermark_image" type="text" default="" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_APPEARANCE_SETTINGS_LABEL">

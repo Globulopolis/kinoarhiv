@@ -58,6 +58,8 @@ class KAImage extends JImage {
 					$thumbFileName 	= $filename . '_' . $thumbWidth . 'x' . $thumbHeight . '.' . $fileExtension;
 				} elseif ($thumbsName === false) {
 					$thumbFileName 	= 'thumb_' . $filename . '.' . $fileExtension;
+				} elseif ($thumbsName === null) {
+					$thumbFileName 	= $filename . '.' . $fileExtension;
 				} else {
 					$thumbFileName 	= $thumbsName . '_' . $filename . '.' . $fileExtension;
 				}

@@ -44,6 +44,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 				if (!in_array($original_extension, $allowed_ext)) {
 					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
 				}
+			} elseif ($app->input->get('upload') == 'images') {
+				$allowed_ext = explode(',', str_replace(' ', '', $params->get('upload_mime_images')));
+
+				if (!in_array($original_extension, $allowed_ext)) {
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
+				}
 			}
 		}
 
@@ -169,10 +175,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					}
 
 					// Add watermark
-					$watermark_img = $params->get('upload_gallery_watermark_image');
+					if ($params->get('upload_gallery_watermark_image_on') == 1) {
+						$watermark_img = $params->get('upload_gallery_watermark_image');
 
-					if (!empty($watermark_img) && file_exists($watermark_img)) {
-						$image->addWatermark($dest_dir, $filename, $watermark_img);
+						if (!empty($watermark_img) && file_exists($watermark_img)) {
+							$image->addWatermark($dest_dir, $filename, $watermark_img);
+						}
 					}
 
 					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
@@ -217,6 +225,27 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						if (is_int($result)) {
 							$id = $result;
 						}
+					} elseif ($app->input->get('upload') == 'images') {
+						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir.$filename;
+						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$rn_filename = $alias.'-'.$trailer_id.'.'.$ext;
+						rename($old_filename, $rn_dest_dir.$rn_filename);
+
+						if ($params->get('upload_gallery_watermark_image_on') == 1) {
+							$watermark_img = $params->get('upload_gallery_watermark_image');
+
+							if (!empty($watermark_img) && file_exists($watermark_img)) {
+								$image->addWatermark($dest_dir, $rn_filename, $watermark_img);
+							}
+						}
+
+						list($width, $height) = @getimagesize($rn_dest_dir.$rn_filename);
+						$th_w = (int)$params->get('player_width');
+						$th_h = ($height * $th_w) / $width;
+						$image->_createThumbs($dest_dir, $rn_filename, $th_w.'x'.$th_h, 1, $dest_dir, null);
+						$result = $model->saveImageInDB($image, $rn_filename, array(), null, $movie_id, $trailer_id);
+						$id = $result['filename'];
 					}
 				}
 			}
@@ -317,6 +346,55 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$result = $model->removeTrailerFiles();
 
 		echo $result;
+	}
+
+	public function save() {
+		$this->apply();
+	}
+
+	public function save2new() {
+		$this->apply();
+	}
+
+	public function apply() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.create.movie', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.movie', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		$app = JFactory::getApplication();
+		$model = $this->getModel('mediamanager');
+		$result = $model->apply();
+
+		if ($result === false) {
+			// Save the data in the session.
+			$app->setUserState('com_kinoarhiv.trailer.global.data', $data);
+
+			// Save failed, go back to the screen and display a notice.
+			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message, 'error');
+			return false;
+		}
+
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		switch ($this->getTask()) {
+			case 'save2new':
+				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=add&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message);
+				break;
+			case 'apply':
+				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'), $message);
+				break;
+			case 'save':
+			default:
+				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message);
+				break;
+		}
+
+		return true;
 	}
 
 	public function cancel() {

@@ -76,7 +76,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#video_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=video&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=video&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -119,7 +119,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#subtl_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=subtitles&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=subtitles&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -159,7 +159,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#chap_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -193,6 +193,55 @@ $type = $input->get('type', '', 'word');
 						// Unblock 'Save' and 'Close' buttons
 						$('#toolbar button').removeProp('disabled');
 					}
+				}
+			}
+		});
+
+		$('#image_uploader').pluploadQueue({
+			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=images&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			multi_selection: false,
+			multipart_params: {
+				'<?php echo JSession::getFormToken(); ?>': 1
+			},
+			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+			unique_names: false,
+			filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
+			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+			preinit: {
+				init: function(up, info){
+					$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+					$('#image_uploader .plupload_clear_all').click(function(e){
+						e.preventDefault();
+						up.splice();
+						$.each(up.files, function(i, file){
+							up.removeFile(file);
+						});
+					});
+				},
+				UploadComplete: function(up, files){
+					$('#image_uploader').find('.plupload_buttons').show();
+				}
+			},
+			init: {
+				StateChanged: function(up){
+					if (up.state == plupload.STARTED) {
+						$('.cmd-file-remove.scrimage').trigger('click', [0]);
+					}
+				},
+				FileUploaded: function(up, file, info){
+					var obj = $.parseJSON(info.response);
+
+					if ($('div.video_screenshot').find('#screenshot_file').length == 0) {
+						var a = '<a href="<?php echo $this->item->screenshot_folder_www; ?>' + obj.id + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.id +'</a>';
+						$('div.video_screenshot div').eq(0).html('').append(a);
+					} else {
+						$('div.video_screenshot').find('#screenshot_file').text(obj.id);
+						$('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->screenshot_folder_www; ?>' + obj.id + '?_=' + new Date().getTime());
+					}
+					$('#screenshot_file').show();
+					$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.id +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json');
 				}
 			}
 		});
@@ -251,12 +300,14 @@ $type = $input->get('type', '', 'word');
 			});
 		});
 
-		$('#filelist').on('click', 'a.cmd-file-remove', function(e){
+		$('#filelist').on('click', 'a.cmd-file-remove', function(e, all){
 			e.preventDefault();
 			var _this = $(this);
 
-			if (!confirm((_this.hasClass('all')) ? '<?php echo JText::_('COM_KA_DELETE_ALL'); ?>' : '<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
-				return false;
+			if (all != 0) {
+				if (!confirm((_this.hasClass('all')) ? '<?php echo JText::_('COM_KA_DELETE_ALL'); ?>' : '<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+					return false;
+				}
 			}
 
 			blockUI('show');
@@ -284,6 +335,7 @@ $type = $input->get('type', '', 'word');
 						_this.closest('li').remove();
 					} else if (_this.hasClass('scrimage')) {
 						_this.closest('div.video_screenshot').find('#screenshot_file').hide();
+						_this.attr('href', 'javascript:void(0);');
 					}
 
 					showMsg(_this.closest('ul'), '<?php echo JText::_('COM_KA_FILE_DELETED_SUCCESS'); ?>');
@@ -451,6 +503,7 @@ $type = $input->get('type', '', 'word');
 								_this.closest('div.video_screenshot').find('#screenshot_file').text(obj.file);
 								_this.closest('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->screenshot_folder_www; ?>' + obj.file + '?_=' + new Date().getTime());
 							}
+							$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.file +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json');
 							_this.closest('div.video_screenshot').find('#screenshot_file').show();
 
 							$('.ui-dialog .ui-dialog-buttonset button').eq(0).remove();
@@ -577,6 +630,12 @@ $type = $input->get('type', '', 'word');
 
 		$('a.file-upload-scr').click(function(e){
 			e.preventDefault();
+
+			$('.layout_img_upload').dialog({
+				modal: true,
+				height: 330,
+				width: 600
+			});
 		});
 	});
 //]]>
@@ -604,7 +663,7 @@ $type = $input->get('type', '', 'word');
 									<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0" /></a>
 									<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="components/com_kinoarhiv/assets/images/icons/help.png" border="0" /></a>
 								</div>
-								<textarea id="form_urls" class="span12" rows="5" cols="30" name="form[urls]"><?php echo $this->item->urls; ?></textarea>
+								<textarea id="form_urls" class="span12" rows="5" cols="30" name="form[urls]" spellcheck="false"><?php echo $this->item->urls; ?></textarea>
 							</div>
 					</fieldset>
 
@@ -650,7 +709,7 @@ $type = $input->get('type', '', 'word');
 					<div class="video_screenshot">
 						<div style="float: left;">
 							<?php if (file_exists($this->item->screenshot_path)): ?>
-								<a href="<?php echo $this->item->screenshot_path_www; ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->item->screenshot; ?></a>
+								<a href="<?php echo $this->item->screenshot_path_www; ?>?_=<?php echo time(); ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->item->screenshot; ?></a>
 							<?php else: ?>
 								&nbsp;
 							<?php endif; ?>
@@ -761,4 +820,8 @@ $type = $input->get('type', '', 'word');
 		); ?>
 		<div class="err_msg"></div>
 	</form>
+</div>
+
+<div style="display: none;" class="layout_img_upload" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE'); ?>">
+	<div id="image_uploader" class="tr-uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
 </div>

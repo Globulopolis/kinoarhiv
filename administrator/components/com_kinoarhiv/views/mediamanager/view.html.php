@@ -106,7 +106,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 
-		JToolbarHelper::title(JText::_('COM_KA_MEDIAMANAGER'), 'cpanel.png');
+		JToolbarHelper::title(JText::_('COM_KA_MEDIAMANAGER'), 'images');
 
 		if ($app->input->get('task') == 'edit' && $app->input->get('type') == 'trailers') {
 			JToolbarHelper::apply('apply');

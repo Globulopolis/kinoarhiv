@@ -167,12 +167,22 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $query;
 	}
 
-	public function saveImageInDB($image, $filename, $image_sizes, $type, $id) {
+	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $type=null, $id, $trailer_id=0) {
 		$db = $this->getDBO();
 
-		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies_gallery')." (`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`)"
-			. "\n VALUES ('', '".$filename."', '".$image_sizes[0].'x'.$image_sizes[1]."', '".(int)$id."', '".(int)$type."', '0', '1')");
-		$result = $db->execute();
+		if (!is_null($type)) {
+			if (count($image_sizes) == 0) {
+				$image_sizes = array(0=>0, 1=>0);
+			}
+
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies_gallery')." (`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`)"
+				. "\n VALUES ('', '".$filename."', '".$image_sizes[0].'x'.$image_sizes[1]."', '".(int)$id."', '".(int)$type."', '0', '1')");
+			$result = $db->execute();
+		} else {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".$filename."' WHERE `id` = ".(int)$trailer_id);
+			$result['success'] = $db->execute();
+			$result['filename'] = $filename;
+		}
 
 		return $result;
 	}
@@ -248,6 +258,23 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $this->getError();
 	}
 
+	public function apply() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$movie_id = $app->input->get('id', 0, 'int');
+		$type = $app->input->get('type', '', 'word');
+		$section = $input->get('section', '', 'word');
+
+		if ($section == 'movie') {
+			if ($type == 'trailers') {
+				
+			}
+		}
+
+		return false;
+	}
+
 	public function remove() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -258,7 +285,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$tab = $app->input->get('tab', 0, 'int');
 		$query = true;
 
-		// A code block to remove files from the disk to be in the beginning.
+		// A code to remove files from the disk must be at the beginning.
 		$db->setQuery("SELECT `g`.`id`, `g`.`filename`, `g`.`movie_id`, `m`.`alias`"
 			. "\n FROM ".$db->quoteName('#__ka_movies_gallery')." AS `g`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `g`.`movie_id`"
@@ -285,7 +312,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			$_path = $path.DIRECTORY_SEPARATOR.JString::substr($filename->alias, 0, 1).DIRECTORY_SEPARATOR.$filename->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.$filename->filename;
 			$_th_path = $path.DIRECTORY_SEPARATOR.JString::substr($filename->alias, 0, 1).DIRECTORY_SEPARATOR.$filename->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.'thumb_'.$filename->filename;
 
-			// Remove original image
+			// Removing original image
 			if (file_exists($_path) && is_file($_path)) {
 				if (!unlink($_path)) {
 					$errors[] = '<strong>ID: '.$filename->id.'; '.$filename->filename.'</strong>: Error deleting the image file.';
@@ -294,7 +321,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				$errors[] = '<strong>ID: '.$filename->id.'; '.$filename->filename.'</strong>: The image file doesn\'t exists.';
 			}
 
-			// Remove thumbnail
+			// Removing thumbnail
 			if (file_exists($_th_path) && is_file($_th_path)) {
 				if (!unlink($_th_path)) {
 					$errors[] = '<strong>ID: '.$filename->id.'; thumb_'.$filename->filename.'</strong>: Error deleting the thumbnail image file.';

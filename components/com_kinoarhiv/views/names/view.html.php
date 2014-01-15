@@ -56,8 +56,8 @@ class KinoarhivViewNames extends JViewLegacy {
 				$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$no_cover.'.png';
 				$item->y_poster = '';
 			} else {
-				$items[$key]->big_poster = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$item->filename;
-				$item->poster = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
+				$items[$key]->big_poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$item->filename;
+				$item->poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
 				$item->y_poster = ' y-poster';
 			}
 		}

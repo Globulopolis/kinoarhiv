@@ -367,9 +367,23 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
-		$result = $model->apply();
+		$form = $model->getForm();
+		$data = $this->input->post->get('form', array(), 'array');
+		$valid = $form->validate($data);
 
-		if ($result === false) {
+		if ($valid === false) {
+			/*foreach () {
+			}
+
+			$message = $message = JText::sprintf('JERROR_SAVE_FAILED', $form->getErrors());*/
+		}
+		//$result = $model->apply($data);
+echo '<pre>';
+$a = GlobalHelper::getMessages($form->getErrors());
+
+		print_r($a);
+		print_r($form->getErrors());
+		/*if ($result === false) {
 			// Save the data in the session.
 			$app->setUserState('com_kinoarhiv.trailer.global.data', $data);
 
@@ -392,7 +406,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			default:
 				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message);
 				break;
-		}
+		}*/
 
 		return true;
 	}

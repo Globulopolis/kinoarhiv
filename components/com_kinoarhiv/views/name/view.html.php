@@ -68,7 +68,7 @@ class KinoarhivViewName extends JViewLegacy {
 			$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$no_cover.'.png';
 			$item->y_poster = '';
 		} else {
-			$item->poster = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
+			$item->poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
 			$item->y_poster = ' y-poster';
 		}
 
@@ -133,17 +133,17 @@ class KinoarhivViewName extends JViewLegacy {
 
 		// Check for files
 		foreach ($items as $key=>$_item) {
-			$file_path = $params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
+			$file_path = $params->get('media_actor_wallpapers_root_www').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
 
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 			} else {
-				$items[$key]->image = JURI::base().$params->get('media_actor_wallpapers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
+				$items[$key]->image = JURI::base().$params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
 				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
 				if ($size !== false) {
-					$items[$key]->th_image = JURI::base().$params->get('media_actor_wallpapers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+					$items[$key]->th_image = JURI::base().$params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
 				} else {
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 				}
@@ -242,7 +242,7 @@ class KinoarhivViewName extends JViewLegacy {
 
 		// Check for files
 		foreach ($items as $key=>$_item) {
-			$file_path = $params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR;
+			$file_path = $params->get('media_actor_photo_root_www').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR;
 
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';
@@ -252,11 +252,11 @@ class KinoarhivViewName extends JViewLegacy {
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_f.png';
 				}
 			} else {
-				$items[$key]->image = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
+				$items[$key]->image = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
 				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
 				if ($size !== false) {
-					$items[$key]->th_image = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
+					$items[$key]->th_image = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
 				} else {
 					if ($_item->gender == 1) {
 						$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_m.png';

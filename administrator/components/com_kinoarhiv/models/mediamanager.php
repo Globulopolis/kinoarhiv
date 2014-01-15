@@ -258,21 +258,23 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $this->getError();
 	}
 
-	public function apply() {
+	public function apply($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
 		$type = $app->input->get('type', '', 'word');
-		$section = $input->get('section', '', 'word');
+		$section = $app->input->get('section', '', 'word');
 
 		if ($section == 'movie') {
 			if ($type == 'trailers') {
 				
+				echo '<pre>';
+				print_r($data);
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	public function remove() {

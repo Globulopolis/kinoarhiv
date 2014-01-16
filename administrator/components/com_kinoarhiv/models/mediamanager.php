@@ -263,18 +263,35 @@ class KinoarhivModelMediamanager extends JModelList {
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
+		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$type = $app->input->get('type', '', 'word');
 		$section = $app->input->get('section', '', 'word');
 
 		if ($section == 'movie') {
 			if ($type == 'trailers') {
-				
-				echo '<pre>';
-				print_r($data);
+				if ($trailer_id == 0) {
+					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `urls`, `filename`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
+						. "\n VALUES ('', '".$movie_id."', '".$db->escape($data['title'])."', '".$db->escape($data['embed_code'])."', '', '".$db->escape($data['urls'])."', '{}', '', '{}', '{}', '".(int)$data['frontpage']."', '".(int)$data['access']."', '".(int)$data['state']."', '".$data['language']."', '".(int)$data['is_movie']."')");
+					try {
+						$db->execute();
+						return $db->insertid();
+					} catch (Exception $e) {
+						$this->setError($e->getMessage());
+						return false;
+					}
+				} else {
+					$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')
+						. "\n SET `title` = '".$db->escape($data['title'])."', `embed_code` = '".$data['embed_code']."', `urls` = '".$data['urls']."', `frontpage` = '".(int)$data['frontpage']."', `access` = '".(int)$data['access']."', `state` = '".(int)$data['state']."', `language` = '".$data['language']."', `is_movie` = '".$data['is_movie']."'"
+						. "\n WHERE `id` = ".(int)$trailer_id);
+					try {
+						$db->execute();
+					} catch (Exception $e) {
+						$this->setError($e->getMessage());
+						return false;
+					}
+				}
 			}
 		}
-
-		return true;
 	}
 
 	public function remove() {
@@ -948,5 +965,42 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 
 		return json_encode(array('success'=>$success, 'message'=>$message));
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null) {
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			$this->setError($return->getMessage());
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

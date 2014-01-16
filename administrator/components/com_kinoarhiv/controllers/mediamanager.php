@@ -367,46 +367,59 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
-		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
-		$valid = $form->validate($data);
+		$form = $model->getForm($data, false);
 
-		if ($valid === false) {
-			/*foreach () {
-			}
-
-			$message = $message = JText::sprintf('JERROR_SAVE_FAILED', $form->getErrors());*/
-		}
-		//$result = $model->apply($data);
-echo '<pre>';
-$a = GlobalHelper::getMessages($form->getErrors());
-
-		print_r($a);
-		print_r($form->getErrors());
-		/*if ($result === false) {
-			// Save the data in the session.
-			$app->setUserState('com_kinoarhiv.trailer.global.data', $data);
-
-			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message, 'error');
+		if (!$form) {
+			$app->enqueueMessage($model->getError(), 'error');
 			return false;
 		}
 
-		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false) {
+			$errors = $model->getErrors();
+
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
+
+
+			return false;
+		}
+
+		$result = $model->apply($validData);
+
+		if (!$result) {
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+			$this->setMessage($this->getError(), 'error');
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
+
+			return false;
+		}
+
+		$this->setMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
 
 		switch ($this->getTask()) {
 			case 'save2new':
-				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=add&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'));
 				break;
 			case 'apply':
-				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'), $message);
+				$item_id = is_int($result) ? $result : $app->input->get('item_id', 0, 'int');
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$item_id);
 				break;
 			case 'save':
 			default:
-				//$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'), $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'));
 				break;
-		}*/
+		}
 
 		return true;
 	}

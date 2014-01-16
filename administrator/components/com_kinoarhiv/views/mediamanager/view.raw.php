@@ -13,7 +13,9 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 			$this->item = &$item;
 			$this->form = &$form;
-		} else {
+		}
+
+		if ($tpl == 'upload_subtitles_lang_edit') {
 			$data = $this->get('SubtitleEdit');
 
 			$this->data = &$data;

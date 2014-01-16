@@ -225,3 +225,7 @@ span.icon {
 .urls_form_toolbar a {
 	padding-right: 5px;
 }
+
+.urls_form_toolbar a:focus {
+	outline: none !important;
+}

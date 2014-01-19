@@ -7,6 +7,17 @@ $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
 ?>
+<link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
+
+<!-- Uncomment line below to load Browser+ from YDN -->
+<!-- <script src="http://bp.yahooapis.com/2.4.21/browserplus-min.js" type="text/javascript"></script> -->
+<!-- Comment line below if load Browser+ from YDN -->
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js" type="text/javascript"></script>
+
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/mediamanager/<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	Joomla.orderTable = function() {
@@ -55,6 +66,35 @@ $sortFields = $this->getSortFields();
 		});
 		$('a.tooltip-img').colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
 
+		$('#image_uploader').pluploadQueue({
+			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&tab=<?php echo $input->get('tab', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>',
+			multipart_params: {
+				'<?php echo JSession::getFormToken(); ?>': 1
+			},
+			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+			unique_names: false,
+			filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
+			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+			preinit: {
+				init: function(up, info){
+					$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+					$('#image_uploader .plupload_clear_all').click(function(e){
+						e.preventDefault();
+						up.splice();
+						$.each(up.files, function(i, file){
+							up.removeFile(file);
+						});
+					});
+				},
+				UploadComplete: function(up, files){
+					$('#image_uploader').find('.plupload_buttons').show();
+					$('input[name="file_uploaded"]').val(1);
+				}
+			}
+		});
+
 		<?php if ($input->get('tab', 0, 'int') == 2): ?>
 		$('.cmd-fp_off, .cmd-fp_on').click(function(){
 			$(this).closest('tr').find(':checkbox').prop('checked', true);
@@ -72,22 +112,14 @@ $sortFields = $this->getSortFields();
 
 		Joomla.submitbutton = function(task) {
 			if (task == 'upload') {
-				var dialog = $('<div id="dialog-upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
-
-				$(dialog).dialog({
-					dialogClass: 'dialog-upload-dlg',
+				$('.layout_img_upload').dialog({
 					modal: true,
-					width: 800,
-					height: 520,
+					height: 330,
+					width: 600,
 					close: function(event, ui){
-						dialog.remove();
-					}
-				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=upload&model=mediamanager&view=mediamanager&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&tab=<?php echo $input->get('tab', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw');
-
-				$(dialog).on('dialogclose', function(event, ui){
-					if ($('#dialog-upload').hasClass('stateChanged')) {
-						document.location.reload();
+						if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
+							document.location.reload();
+						}
 					}
 				});
 
@@ -197,9 +229,16 @@ $sortFields = $this->getSortFields();
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
 	<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
+	<input type="hidden" name="file_uploaded" value="0" />
 	<div class="pagination bottom">
 		<?php echo $this->pagination->getListFooter(); ?><br />
 		<?php echo $this->pagination->getResultsCounter(); ?>
 	</div>
 	<?php echo JHtml::_('form.token'); ?>
 </form>
+
+<div style="display: none;" class="layout_img_upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>">
+	<!-- At this first hidden input we will remove autofocus -->
+	<input type="hidden" autofocus="autofocus" />
+	<div id="image_uploader" class="tr-uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
+</div>

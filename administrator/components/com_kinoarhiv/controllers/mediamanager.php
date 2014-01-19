@@ -184,7 +184,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					}
 
 					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
-					$model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id);
+					$result = $model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id);
+					$id = $result;
 				} elseif ($app->input->get('type') == 'trailers') {
 					$alias = $model->getAlias($section, $movie_id);
 
@@ -252,7 +253,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		}
 
 		// Success
-		die('{"jsonrpc" : "2.0", "result" : null, "id" : "'.$id.'"}');
+		$response = json_encode(array(
+			'jsonrpc' => '2.0',
+			'result' => null,
+			'id' => is_array($id) ? json_encode($id) : $id
+		));
+		die($response);
 	}
 
 	public function gallery() {
@@ -282,12 +288,15 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function fpOn($action=0) {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
 
 		// Unpublish item from frontpage
 		$result = $model->publishOnFrontpage((int)$action);
 
-		$this->setRedirect(JURI::getInstance()->toString(), $result);
+		if ($app->input->get('reload', 1, 'int') == 1) {
+			$this->setRedirect(JURI::getInstance()->toString(), $result);
+		}
 	}
 
 	public function unpublish() {
@@ -306,10 +315,24 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function remove() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
 		$result = $model->remove();
+		$errors = $model->getErrors();
 
-		$this->setRedirect(JURI::getInstance()->toString(), implode("<br />", $result));
+		if (count($errors) > 0) {
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'error');
+				} else {
+					$app->enqueueMessage($errors[$i], 'error');
+				}
+			}
+		}
+
+		if ($app->input->get('reload', 1, 'int') == 1) {
+			$this->setRedirect(JURI::getInstance()->toString());
+		}
 	}
 
 	public function saveOrderTrailerVideofile() {

@@ -180,6 +180,83 @@ JHtml::_('behavior.keepalive');
 				});
 			}
 		}
+
+		$('.movie-poster-preview').parent().colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
+
+		$('#image_uploader').pluploadQueue({
+			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>',
+			multipart_params: {
+				'<?php echo JSession::getFormToken(); ?>': 1
+			},
+			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+			unique_names: false,
+			filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
+			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+			preinit: {
+				init: function(up, info){
+					$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+					$('#image_uploader .plupload_clear_all').click(function(e){
+						e.preventDefault();
+						up.splice();
+						$.each(up.files, function(i, file){
+							up.removeFile(file);
+						});
+					});
+				},
+				UploadComplete: function(up, files){
+					$('#image_uploader').find('.plupload_buttons').show();
+				}
+			},
+			init: {
+				FileUploaded: function(up, file, info){
+					var obj = $.parseJSON(info.response);
+					var file = $.parseJSON(obj.id);
+					var url = '<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items['data']->alias, 0, 1).'/'.$this->items['data']->id.'/posters/'; ?>';
+
+					blockUI('show');
+					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>&format=raw',
+						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
+					).done(function(response){
+						$('img.movie-poster-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime());
+						$('img.movie-poster-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
+						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>&_id[]='+ file.id +'&format=raw');
+						blockUI();
+					}).fail(function(xhr, status, error){
+						showMsg('#system-message-container', error);
+						blockUI();
+					});
+				}
+			}
+		});
+
+		$('a.file-upload-scr').click(function(e){
+			e.preventDefault();
+
+			$('.layout_img_upload').dialog({
+				modal: true,
+				height: 330,
+				width: 600
+			});
+		});
+
+		$('a.cmd-scr-delete').click(function(e){
+			e.preventDefault();
+
+			if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+				return false;
+			}
+
+			blockUI('show');
+			$.post($(this).attr('href'), { '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
+			).done(function(response){
+				blockUI();
+			}).fail(function(xhr, status, error){
+				showMsg('#system-message-container', error);
+				blockUI();
+			});
+		});
 	});
 </script>
 <div class="row-fluid">
@@ -209,19 +286,28 @@ JHtml::_('behavior.keepalive');
 		</fieldset>
 	</div>
 	<div class="span6">
+		<div class="span9">
+			<fieldset class="form-horizontal">
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('year'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('year'); ?></div>
+				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('length'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('length'); ?></div>
+				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('budget'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('budget'); ?></div>
+				</div>
+			</fieldset>
+		</div>
+		<div class="span3">
+			<a href="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items['data']->alias, 0, 1).'/'.$this->items['data']->id.'/posters/'.$this->items['data']->filename; ?>"><img src="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items['data']->alias, 0, 1).'/'.$this->items['data']->id.'/posters/thumb_'.$this->items['data']->filename; ?>" class="movie-poster-preview" height="110" /></a>
+			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
+			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>&_id[]=<?php echo $this->items['data']->gid; ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+		</div>
 		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('year'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('year'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('length'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('length'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('budget'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('budget'); ?></div>
-			</div>
 			<div class="control-group">
 				<div class="control-label">
 					<label id="form_countries-lbl" for="form_countries" class="hasTip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_COUNTRIES_DESC'); ?>"><?php echo JText::_('COM_KA_FIELD_MOVIE_COUNTRIES'); ?></label>
@@ -325,4 +411,10 @@ JHtml::_('behavior.keepalive');
 			</div>
 		</fieldset>
 	</div>
+</div>
+
+<div style="display: none;" class="layout_img_upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>">
+	<!-- At this first hidden input we will remove autofocus -->
+	<input type="hidden" autofocus="autofocus" />
+	<div id="image_uploader" class="tr-uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
 </div>

@@ -23,44 +23,12 @@ $sortFields = $this->getSortFields();
 
 	jQuery(document).ready(function($){
 		Joomla.submitbutton = function(task) {
-			if (task == 'upload') {
-				var dialog = $('<div id="dialog-upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
-				var item_id = $('#articleList tbody :checkbox').filter(':checked').length == 1 ? $('#articleList tbody :checkbox').filter(':checked').val() : 0;
+			if (task == 'add') {
+				document.location.href = 'index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=movie&type=trailers&id=<?php echo $input->get('id', 0, 'int'); ?>';
 
-				$(dialog).dialog({
-					dialogClass: 'dialog-upload-dlg',
-					modal: true,
-					width: 1024,
-					height: 520,
-					buttons: [
-						{
-							text: '<?php echo JText::_('JAPPLY'); ?>',
-							id: 'tr_save',
-							click: function(){
-								alert('ok');
-							}
-						},
-						{
-							text: '<?php echo JText::_('JCANCEL'); ?>',
-							id: 'tr_cancel',
-							click: function(){
-								$('#articleList :checkbox:checked').attr('checked', false);
-								dialog.remove();
-							}
-						}
-					],
-					close: function(event, ui){
-						$('#articleList :checkbox:checked').attr('checked', false);
-						dialog.remove();
-					}
-				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_trailer&model=mediamanager&view=mediamanager&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw&item_id=' + item_id);
-
-				$(dialog).on('dialogclose', function(event, ui){
-					if ($('#dialog-upload').hasClass('stateChanged')) {
-						document.location.reload();
-					}
-				});
+				return false;
+			} else if (task == 'edit') {
+				document.location.href = 'index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=movie&type=trailers&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id='+ $('tbody tr input:checked').eq(0).val();
 
 				return false;
 			}

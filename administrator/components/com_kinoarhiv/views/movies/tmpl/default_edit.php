@@ -1,9 +1,10 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('behavior.tooltip');
 JHtml::_('behavior.keepalive');
 ?>
+<link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.ui.tooltip.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jqGrid.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/grid/grid.locale-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
@@ -12,6 +13,18 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
+<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
+
+<!-- Uncomment line below to load Browser+ from YDN -->
+<!-- <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script> -->
+<!-- Comment line below if load Browser+ from YDN -->
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js"></script>
+
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/mediamanager/<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js"></script>
 <script type="text/javascript">
 	function showMsg(selector, text) {
 		jQuery(selector).aurora({
@@ -24,9 +37,9 @@ JHtml::_('behavior.keepalive');
 
 	function blockUI(action) {
 		if (action == 'show') {
-			jQuery('<div class="ui-widget-overlay" style="z-index: 10001;"></div>').appendTo('body').show();
+			jQuery('<div class="ui-widget-overlay" id="blockui" style="z-index: 10001;"></div>').appendTo('body').show();
 		} else {
-			jQuery('.ui-widget-overlay').remove();
+			jQuery('#blockui').remove();
 		}
 	}
 
@@ -37,7 +50,8 @@ JHtml::_('behavior.keepalive');
 				return;
 			}
 		} else if (task == 'gallery' || task == 'trailers' || task == 'sounds') {
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+task+'<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>';
+			var tab = (task == 'gallery') ? '&tab=3' : '';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -49,7 +63,7 @@ JHtml::_('behavior.keepalive');
 	}
 
 	jQuery(document).ready(function($){
-		$('label.tip, td[title]').tooltip({
+		$('.hasTip, .hasTooltip, td[title]').tooltip({
 			show: null,
 			position: {
 				my: 'left top',
@@ -57,6 +71,22 @@ JHtml::_('behavior.keepalive');
 			},
 			open: function(event, ui){
 				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
+			},
+			content: function(){
+				var parts = $(this).attr('title').split('::', 2),
+					title = '';
+
+				if (parts.length == 2) {
+					if (parts[0] != '') {
+						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
+					} else {
+						title += parts[1];
+					}
+				} else {
+					title += $(this).attr('title');
+				}
+
+				return title;
 			}
 		});
 	});
@@ -134,6 +164,6 @@ JHtml::_('behavior.keepalive');
 	<?php echo $this->form->getInput('asset_id'); ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items['data']->id) ? $this->items['data']->id : ''; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items['data']->id) ? $this->items['data']->id : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

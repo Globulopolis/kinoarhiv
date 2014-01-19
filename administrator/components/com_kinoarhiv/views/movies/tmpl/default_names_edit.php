@@ -185,6 +185,7 @@ $name_id = $input->get('name_id', 0, 'int');
 			escapeMarkup: function(m) { return m; }
 		});
 
+		/* Something wrong if ID is not defined
 		$('#form_dub_id').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
@@ -216,7 +217,7 @@ $name_id = $input->get('name_id', 0, 'int');
 			formatResult: formatNames,
 			formatSelection: formatNames,
 			escapeMarkup: function(m) { return m; }
-		});
+		});*/
 
 		$('#form_n_date_of_birth').datepicker({
 			dateFormat: 'yy-mm-dd',

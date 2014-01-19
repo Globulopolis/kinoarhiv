@@ -13,7 +13,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		$this->params = &$params;
 
 		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
 			return false;
 		}
 
@@ -109,29 +109,51 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 	protected function addToolbar($task='') {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
+		$task = $app->input->get('task', '', 'cmd');
+		$type = $app->input->get('type', '', 'cmd');
 
 		JToolbarHelper::title(JText::_('COM_KA_MEDIAMANAGER'), 'images');
 
-		if ($app->input->get('task') == 'edit' && $app->input->get('type') == 'trailers') {
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
-			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+		if ($task == 'edit') {
+			if ($type == 'trailers') {
+				JToolbarHelper::apply('apply');
+				JToolbarHelper::save('save');
+				JToolbarHelper::save2new('save2new');
+				JToolbarHelper::divider();
+				JToolbarHelper::cancel();
+			}
 		} else {
-			if ($user->authorise('core.create', 'com_kinoarhiv')) {
-				JToolbarHelper::custom('upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
-				JToolbarHelper::divider();
-			}
+			if ($type == 'gallery') {
+				if ($user->authorise('core.create', 'com_kinoarhiv')) {
+					JToolbarHelper::custom('upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
+					JToolbarHelper::divider();
+				}
 
-			if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
-				JToolbarHelper::divider();
-			}
+				if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
+					JToolbarHelper::publishList();
+					JToolbarHelper::unpublishList();
+					JToolbarHelper::divider();
+				}
 
-			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				if ($user->authorise('core.delete', 'com_kinoarhiv')) {
+					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				}
+			} elseif ($type == 'trailers') {
+				if ($user->authorise('core.create', 'com_kinoarhiv')) {
+					JToolbarHelper::custom('add', 'new', 'new', JText::_('JTOOLBAR_NEW'), false);
+					JToolbarHelper::editList('edit');
+					JToolbarHelper::divider();
+				}
+
+				if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
+					JToolbarHelper::publishList();
+					JToolbarHelper::unpublishList();
+					JToolbarHelper::divider();
+				}
+
+				if ($user->authorise('core.delete', 'com_kinoarhiv')) {
+					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				}
 			}
 		}
 	}

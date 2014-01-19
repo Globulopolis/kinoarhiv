@@ -7,7 +7,7 @@ class KinoarhivViewSettings extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if (!$user->authorise('core.admin', 'com_kinoarhiv')) {
-			JError::raiseError(403, JText::_('COM_KA_NO_ACCESS_RIGHTS'));
+			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 			return false;
 		}
 
@@ -18,7 +18,7 @@ class KinoarhivViewSettings extends JViewLegacy {
 		$lang = JFactory::getLanguage();
 
 		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
 			return false;
 		}
 

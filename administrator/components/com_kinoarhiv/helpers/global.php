@@ -38,18 +38,4 @@ class GlobalHelper {
 
 		return $response;
 	}
-
-	static public function getMessages($messages) {
-		$lists = array();
-
-		if (is_array($messages) && !empty($messages)) {
-			foreach ($messages as $msg) {
-				if (isset($msg->message)) {
-					$lists[] = $msg->message;
-				}
-			}
-		}
-
-		return $lists;
-	}
 }

@@ -16,6 +16,17 @@ class KinoarhivModelMediamanager extends JModelList {
 		parent::__construct($config);
 	}
 
+	/**
+	 * Method to get the path to a file.
+	 *
+	 * @param   string   $section	Type of the item. Can be 'movie' or 'names'.
+	 * @param   string   $type		Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   string   $tab		Tab number from gallery.
+	 * @param   string   $id		The item ID (movie or name).
+	 *
+	 * @return  string   Absolute filesystem path to a file.
+	 *
+	 */
 	public function getPath($section='', $type='', $tab=0, $id=0) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -177,7 +188,9 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies_gallery')." (`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`)"
 				. "\n VALUES ('', '".$filename."', '".$image_sizes[0].'x'.$image_sizes[1]."', '".(int)$id."', '".(int)$type."', '0', '1')");
-			$result = $db->execute();
+			$result['success'] = $db->execute();
+			$result['filename'] = $filename;
+			$result['id'] = $db->insertid();
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".$filename."' WHERE `id` = ".(int)$trailer_id);
 			$result['success'] = $db->execute();
@@ -300,83 +313,125 @@ class KinoarhivModelMediamanager extends JModelList {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
 		$ids = $app->input->get('_id', array(), 'array');
-		$type = $app->input->get('type', '', 'word');
+		$section = $app->input->get('section', '', 'cmd');
+		$type = $app->input->get('type', '', 'cmd');
 		$tab = $app->input->get('tab', 0, 'int');
 		$query = true;
 
-		// A code to remove files from the disk must be at the beginning.
-		$db->setQuery("SELECT `g`.`id`, `g`.`filename`, `g`.`movie_id`, `m`.`alias`"
-			. "\n FROM ".$db->quoteName('#__ka_movies_gallery')." AS `g`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `g`.`movie_id`"
-			. "\n WHERE `g`.`id` IN (".implode(',', $ids).")");
-		$filenames = $db->loadObjectList();
-
-		if ($app->input->get('section', '', 'word') == 'movie') {
+		if ($section == 'movie') {
 			if ($type == 'gallery') {
-				if ($tab == 1) {
-					$path = $params->get('media_wallpapers_root');
-					$folder = 'wallpapers';
-				} elseif ($tab == 2) {
-					$path = $params->get('media_posters_root');
-					$folder = 'posters';
-				} elseif ($tab == 3) {
-					$path = $params->get('media_scr_root');
-					$folder = 'screenshots';
+				$db->setQuery("SELECT `id`, `filename`"
+					. "\n FROM ".$db->quoteName('#__ka_movies_gallery')
+					. "\n WHERE `id` IN (".implode(',', $ids).")");
+				$files_obj = $db->loadObjectList();
+
+				$db->setDebug(true);
+				$db->lockTable('#__ka_movies_gallery');
+				$db->transactionStart();
+
+				$path = $this->getPath('movie', 'gallery', $tab, $movie_id).'/';
+				foreach ($files_obj as $file) {
+					$this->removeFile($path.$file->filename);
+					$this->removeFile($path.'thumb_'.$file->filename);
+
+					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `id` = ".(int)$file->id.";");
+					$result = $db->execute();
+
+					if ($result === false) {
+						$query = false;
+						break;
+					}
 				}
-			}
-		}
 
-		$errors = array();
-		foreach ($filenames as $filename) {
-			$_path = $path.DIRECTORY_SEPARATOR.JString::substr($filename->alias, 0, 1).DIRECTORY_SEPARATOR.$filename->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.$filename->filename;
-			$_th_path = $path.DIRECTORY_SEPARATOR.JString::substr($filename->alias, 0, 1).DIRECTORY_SEPARATOR.$filename->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.'thumb_'.$filename->filename;
-
-			// Removing original image
-			if (file_exists($_path) && is_file($_path)) {
-				if (!unlink($_path)) {
-					$errors[] = '<strong>ID: '.$filename->id.'; '.$filename->filename.'</strong>: Error deleting the image file.';
+				if ($query === false) {
+					$db->transactionRollback();
+				} else {
+					$db->transactionCommit();
 				}
-			} else {
-				$errors[] = '<strong>ID: '.$filename->id.'; '.$filename->filename.'</strong>: The image file doesn\'t exists.';
-			}
 
-			// Removing thumbnail
-			if (file_exists($_th_path) && is_file($_th_path)) {
-				if (!unlink($_th_path)) {
-					$errors[] = '<strong>ID: '.$filename->id.'; thumb_'.$filename->filename.'</strong>: Error deleting the thumbnail image file.';
+				$db->unlockTables();
+				$db->setDebug(false);
+			} elseif ($type == 'trailers') {
+				$db->setQuery("SELECT `id`, `screenshot`, `filename`, `_subtitles`, `_chapters`"
+					. "\n FROM ".$db->quoteName('#__ka_trailers')
+					. "\n WHERE `id` IN (".implode(',', $ids).")");
+				$rows = $db->loadObjectList();
+
+				$path = $this->getPath('movie', 'trailers', 0, $movie_id);
+				$db->setDebug(true);
+				$db->lockTable('#__ka_trailers');
+				$db->transactionStart();
+
+				foreach ($rows as $row) {
+					if (!empty($row->screenshot)) {
+						$this->removeFile($path.$row->screenshot);
+					}
+
+					$video = json_decode($row->filename, true);
+					if (count($video) > 0) {
+						foreach ($video as $file) {
+							$this->removeFile($path.$file['src']);
+						}
+					}
+
+					$subtitles = json_decode($row->_subtitles, true);
+					if (count($subtitles) > 0) {
+						foreach ($subtitles as $file) {
+							$this->removeFile($path.$file['file']);
+						}
+					}
+
+					$chapters = json_decode($row->_chapters, true);
+					if (count($chapters) > 0) {
+						$this->removeFile($path.$chapters['file']);
+					}
+
+					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$row->id.";");
+					$result = $db->execute();
+
+					if ($result === false) {
+						$query = false;
+						break;
+					}
 				}
-			} else {
-				$errors[] = '<strong>ID: '.$filename->id.'; thumb_'.$filename->filename.'</strong>: The thumbnail image file doesn\'t exists.';
+
+				if ($query === false) {
+					$db->transactionRollback();
+				} else {
+					$db->transactionCommit();
+				}
+
+				$db->unlockTables();
+				$db->setDebug(false);
 			}
-
-			$this->setError($errors);
-		}
-
-		// Deleting files from the database
-		$db->setDebug(true);
-		$db->lockTable('#__ka_movies_gallery');
-		$db->transactionStart();
-
-		foreach ($ids as $row_id) {
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `id` = ".(int)$row_id.";");
-			$result = $db->execute();
-
-			if ($result === false) {
-				$query = false;
-				break;
-			}
-		}
-
-		if ($query === false) {
-			$db->transactionRollback();
+		} elseif ($section == 'names') {
+			
 		} else {
-			$db->transactionCommit();
+			$this->setError(JText::_('COM_KA_ITEMS_DELETED_ERROR'));
+			return false;
+		}
+	}
+
+	/**
+	 * Method to remove a file.
+	 *
+	 * @param   mixed   $path	Array of the paths or single path.
+	 *
+	 * @return  mixed   True on success, false otherwise.
+	 *
+	 */
+	protected function removeFile($path) {
+		if (!file_exists($path) || !is_file($path)) {
+			$this->setError(JText::sprintf('COM_KA_FILE_NOTFOUND', $path));
+			return false;
+		} else {
+			if (@unlink($path) === false) {
+				$this->setError(JText::sprintf('COM_KA_FILE_DELETE_ERROR', $path));
+				return false;
+			}
 		}
 
-		$db->unlockTables();
-		$db->setDebug(false);
-
-		return $this->getError();
+		return true;
 	}
 
 	protected function loadForm($name, $source = null, $options = array(), $clear = false, $xpath = false) {

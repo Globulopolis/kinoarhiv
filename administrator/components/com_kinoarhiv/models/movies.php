@@ -296,9 +296,10 @@ class KinoarhivModelMovies extends JModelList {
 				`m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`,
 				`m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`created`, `m`.`modified`, `m`.`state`,
 				`m`.`ordering`, `m`.`metakey`, `m`.`metadesc`, `m`.`access`, `m`.`metadata`, `m`.`language`,
-				`l`.`title` AS `language_title`"
+				`l`.`title` AS `language_title`, `g`.`id` AS `gid`, `g`.`filename`"
 				. "\n FROM ".$db->quoteName('#__ka_movies')." AS `m`"
 				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `m`.`language`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies_gallery')." AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1"
 				. "\n WHERE `m`.`id` = ".(int)$id[0]);
 			$result = $db->loadObject();
 		}

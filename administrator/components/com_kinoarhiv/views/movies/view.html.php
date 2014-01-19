@@ -23,7 +23,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$state = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
 			return false;
 		}
 

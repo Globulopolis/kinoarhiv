@@ -117,32 +117,32 @@ JHtml::_('behavior.keepalive');
 							<div class="span6">
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('created', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('created', $this->form_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('modified', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('modified', $this->form_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('ordering'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('ordering'); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_group); ?></div>
 									</div>
 								</fieldset>
 							</div>
 							<div class="span6">
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('language'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('language'); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('language', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('language', $this->form_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('access', $this->form_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('state', $this->form_group); ?></div>
 									</div>
 								</fieldset>
 							</div>
@@ -150,7 +150,7 @@ JHtml::_('behavior.keepalive');
 								<legend><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></legend>
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<?php echo $this->form->getInput('rules'); ?>
+										<?php echo $this->form->getInput('rules', $this->form_group); ?>
 									</div>
 								</fieldset>
 							</div>
@@ -161,7 +161,7 @@ JHtml::_('behavior.keepalive');
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('asset_id'); ?>
+	<?php echo $this->form->getInput('asset_id', $this->form_group); ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items['data']->id) ? $this->items['data']->id : 0; ?>" />

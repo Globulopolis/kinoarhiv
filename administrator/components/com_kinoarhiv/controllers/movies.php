@@ -21,36 +21,53 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		return $this;
 	}
 
-	public function apply() {
+	public function save() {
 		$this->save();
 	}
 
-	public function save() {
+	public function save2new() {
+		$this->apply();
+	}
+
+	public function apply() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.create.movie', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.movie', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('movies');
-		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
-		$id = $this->input->post->get('id', 0, 'int');
-		$return = $model->save($data);
+		$form = $model->getForm($data, false);
+		$id = $app->input->get('id', array(), 'array');
 
-		// Check the return value.
-		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_kinoarhiv.movies.global.data', $data);
-
-			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', $message, 'error');
+		if (!$form) {
+			$app->enqueueMessage($model->getError(), 'error');
 			return false;
 		}
+
+		$validData = $model->validate($form, $data, 'edit_movie');
+
+		if ($validData === false) {
+			$app->setUserState('com_kinoarhiv.movies.global.data', $data);
+			$errors = $model->getErrors();
+
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			//$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$id[0]);
+
+			return false;
+		}
+
 echo '<pre>';
 print_r($_POST);
 		// Set the success message.

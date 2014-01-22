@@ -1,75 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="edit">
-		<field name="asset_id" type="hidden" filter="unset" />
-		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="movie" validate="rules" />
-		<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12" required="true" filter="string" size="45" />
-		<field name="year" type="text" default="" label="COM_KA_FIELD_MOVIE_YEAR" class="span6" required="true" filter="string" />
-		<field name="length" type="text" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6" required="true" filter="string" />
-		<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span12" size="45" />
-		<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
-		<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
-		<field name="desc" type="editor" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
-		<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
-		<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
+	<fields name="movie">
+		<fieldset name="edit">
+			<field name="asset_id" type="hidden" filter="unset" />
+			<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="movie" validate="rules" />
+			<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12" required="true" filter="string" size="45" />
+			<field name="year" type="text" default="" label="COM_KA_FIELD_MOVIE_YEAR" class="span6" required="true" filter="string" />
+			<field name="length" type="text" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6" required="true" filter="string" />
+			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span12" size="45" />
+			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="desc" type="editor" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
+			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
 
-		<field name="mpaa" type="list" label="COM_KA_FIELD_MOVIE_RATES_MPAA" description="COM_KA_FIELD_MOVIE_RATES_MPAA_DESC" class="span10" filter="string" default="g">
-			<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
-			<option value="g">COM_KA_FIELD_MOVIE_RATES_MPAA_G</option>
-			<option value="pg">COM_KA_FIELD_MOVIE_RATES_MPAA_PG</option>
-			<option value="pg-13">COM_KA_FIELD_MOVIE_RATES_MPAA_PG13</option>
-			<option value="r">COM_KA_FIELD_MOVIE_RATES_MPAA_R</option>
-			<option value="nc-17">COM_KA_FIELD_MOVIE_RATES_MPAA_NC17</option>
-		</field>
-		<field name="age_restrict" type="list" label="COM_KA_FIELD_MOVIE_RATES_RU" class="span10" filter="intval" default="-1">
-			<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
-			<option value="0">COM_KA_FIELD_MOVIE_RATES_RU_0</option>
-			<option value="12">COM_KA_FIELD_MOVIE_RATES_RU_12</option>
-			<option value="14">COM_KA_FIELD_MOVIE_RATES_RU_14</option>
-			<option value="16">COM_KA_FIELD_MOVIE_RATES_RU_16</option>
-			<option value="18">COM_KA_FIELD_MOVIE_RATES_RU_18</option>
-			<option value="21">COM_KA_FIELD_MOVIE_RATES_RU_21</option>
-		</field>
-		<field name="ua_rate" type="list" label="COM_KA_FIELD_MOVIE_RATES_UA" description="COM_KA_FIELD_MOVIE_RATES_UA_DESC" class="span10" filter="intval" default="0">
-			<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
-			<option value="0">COM_KA_FIELD_MOVIE_RATES_UA_0</option>
-			<option value="1">COM_KA_FIELD_MOVIE_RATES_UA_1</option>
-			<option value="2">COM_KA_FIELD_MOVIE_RATES_UA_2</option>
-		</field>
-		<field name="imdb_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_IMDB" class="span6" filter="string" size="15" />
-		<field name="imdb_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_IMDB_VOTES" class="span6" filter="intval" size="15" />
-		<field name="imdb_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_IMDB_ID" class="span12" filter="intval" size="45" />
-		<field name="kp_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_KP" class="span6" filter="string" size="15" />
-		<field name="kp_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_KP_VOTES" class="span6" filter="intval" size="15" />
-		<field name="kp_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_KP_ID" class="span12" filter="intval" size="45" />
-		<field name="rate_fc" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT" class="span6" filter="string" size="45" />
-		<field name="rottentm_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT_ID" class="span12" filter="string" size="45" />
-		<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="intval" size="45" />
-		<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM" class="span6" filter="intval" size="45" />
-		<field name="rate_custom" type="editor" default="" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="mpaa" type="list" label="COM_KA_FIELD_MOVIE_RATES_MPAA" description="COM_KA_FIELD_MOVIE_RATES_MPAA_DESC" class="span10" filter="string" default="g">
+				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
+				<option value="g">COM_KA_FIELD_MOVIE_RATES_MPAA_G</option>
+				<option value="pg">COM_KA_FIELD_MOVIE_RATES_MPAA_PG</option>
+				<option value="pg-13">COM_KA_FIELD_MOVIE_RATES_MPAA_PG13</option>
+				<option value="r">COM_KA_FIELD_MOVIE_RATES_MPAA_R</option>
+				<option value="nc-17">COM_KA_FIELD_MOVIE_RATES_MPAA_NC17</option>
+			</field>
+			<field name="age_restrict" type="list" label="COM_KA_FIELD_MOVIE_RATES_RU" class="span10" filter="intval" default="-1">
+				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
+				<option value="0">COM_KA_FIELD_MOVIE_RATES_RU_0</option>
+				<option value="12">COM_KA_FIELD_MOVIE_RATES_RU_12</option>
+				<option value="14">COM_KA_FIELD_MOVIE_RATES_RU_14</option>
+				<option value="16">COM_KA_FIELD_MOVIE_RATES_RU_16</option>
+				<option value="18">COM_KA_FIELD_MOVIE_RATES_RU_18</option>
+				<option value="21">COM_KA_FIELD_MOVIE_RATES_RU_21</option>
+			</field>
+			<field name="ua_rate" type="list" label="COM_KA_FIELD_MOVIE_RATES_UA" description="COM_KA_FIELD_MOVIE_RATES_UA_DESC" class="span10" filter="intval" default="0">
+				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
+				<option value="0">COM_KA_FIELD_MOVIE_RATES_UA_0</option>
+				<option value="1">COM_KA_FIELD_MOVIE_RATES_UA_1</option>
+				<option value="2">COM_KA_FIELD_MOVIE_RATES_UA_2</option>
+			</field>
+			<field name="imdb_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_IMDB" class="span6" filter="string" size="15" />
+			<field name="imdb_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_IMDB_VOTES" class="span6" filter="intval" size="15" />
+			<field name="imdb_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_IMDB_ID" class="span12" filter="intval" size="45" />
+			<field name="kp_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_KP" class="span6" filter="string" size="15" />
+			<field name="kp_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_KP_VOTES" class="span6" filter="intval" size="15" />
+			<field name="kp_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_KP_ID" class="span12" filter="intval" size="45" />
+			<field name="rate_fc" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT" class="span6" filter="string" size="45" />
+			<field name="rottentm_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT_ID" class="span12" filter="string" size="45" />
+			<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="intval" size="45" />
+			<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM" class="span6" filter="intval" size="45" />
+			<field name="rate_custom" type="editor" default="" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 
-		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
-		<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
-		<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="index, follow">JGLOBAL_INDEX_FOLLOW</option>
-			<option value="noindex, follow">JGLOBAL_NOINDEX_FOLLOW</option>
-			<option value="index, nofollow">JGLOBAL_INDEX_NOFOLLOW</option>
-			<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
-		</field>
+			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
+			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
+			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="index, follow">JGLOBAL_INDEX_FOLLOW</option>
+				<option value="noindex, follow">JGLOBAL_NOINDEX_FOLLOW</option>
+				<option value="index, nofollow">JGLOBAL_INDEX_NOFOLLOW</option>
+				<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
+			</field>
 
-		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
-		<field name="created" type="calendar" label="JGLOBAL_CREATED_DATE" class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
-		<field name="modified" type="calendar" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
-			<option value="*">JALL</option>
-		</field>
-		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-		</field>
-	</fieldset>
+			<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+			<field name="created" type="calendar" label="JGLOBAL_CREATED_DATE" class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+			<field name="modified" type="calendar" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
+			<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+				<option value="*">JALL</option>
+			</field>
+			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+				<option value="1">JPUBLISHED</option>
+				<option value="0">JUNPUBLISHED</option>
+			</field>
+		</fieldset>
+	</fields>
 
 	<fieldset name="rel_name_edit">
 		<field name="name_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" class="span10 required" required="true" default="" />

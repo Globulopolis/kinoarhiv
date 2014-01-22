@@ -49,10 +49,11 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$genres = $this->get('Genres');
 		$tags = $this->get('Tags');
 
-		$this->items['data'] = &$items;
+		$this->items['data'] = &$items['movie'];
 		$this->items['countries'] = &$countries;
 		$this->items['genres'] = &$genres;
 		$this->items['tags'] = &$tags;
+		$this->form_group = 'movie';
 		$this->form = &$form;
 		$this->params = &$params;
 		$this->lang = &$lang;

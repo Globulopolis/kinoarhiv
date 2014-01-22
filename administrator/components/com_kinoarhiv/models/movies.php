@@ -286,8 +286,9 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n WHERE `id` = ".(int)$award_id);
 			$result = $db->loadObject();
 		} else {
+			$result = array();
 			if (count($id) == 0) {
-				return array();
+				return $result;
 			}
 
 			$db->setQuery("SELECT `m`.`id`, `m`.`asset_id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext`,
@@ -301,7 +302,7 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `m`.`language`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies_gallery')." AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1"
 				. "\n WHERE `m`.`id` = ".(int)$id[0]);
-			$result = $db->loadObject();
+			$result['movie'] = $db->loadObject();
 		}
 
 		return $result;
@@ -702,5 +703,42 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		return array('success'=>$success, 'message'=>$message);
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null) {
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			$this->setError($return->getMessage());
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

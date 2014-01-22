@@ -185,7 +185,6 @@ $name_id = $input->get('name_id', 0, 'int');
 			escapeMarkup: function(m) { return m; }
 		});
 
-		/* Something wrong if ID is not defined
 		$('#form_dub_id').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
@@ -195,7 +194,7 @@ $name_id = $input->get('name_id', 0, 'int');
 			<?php if ($movie_id != 0 && $name_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "") {
+				if (id !== "" && id != 0) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json', {
 						data: {
 							id: id
@@ -217,7 +216,7 @@ $name_id = $input->get('name_id', 0, 'int');
 			formatResult: formatNames,
 			formatSelection: formatNames,
 			escapeMarkup: function(m) { return m; }
-		});*/
+		});
 
 		$('#form_n_date_of_birth').datepicker({
 			dateFormat: 'yy-mm-dd',

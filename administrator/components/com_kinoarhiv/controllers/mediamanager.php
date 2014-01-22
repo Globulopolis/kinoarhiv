@@ -413,7 +413,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
 
-
 			return false;
 		}
 

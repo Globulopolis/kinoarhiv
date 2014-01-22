@@ -263,16 +263,16 @@ JHtml::_('behavior.keepalive');
 	<div class="span6">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('title'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('title', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('title', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('alias', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('slogan'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('slogan'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('slogan', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('slogan', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
 				<div class="control-label">
@@ -289,16 +289,16 @@ JHtml::_('behavior.keepalive');
 		<div class="span9">
 			<fieldset class="form-horizontal">
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('year'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('year'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('year', $this->form_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('year', $this->form_group); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('length'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('length'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('length', $this->form_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('length', $this->form_group); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('budget'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('budget'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('budget', $this->form_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('budget', $this->form_group); ?></div>
 				</div>
 			</fieldset>
 		</div>
@@ -324,16 +324,16 @@ JHtml::_('behavior.keepalive');
 	<div class="span12">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('plot'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('plot'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('plot', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('plot', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('known'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('known'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('known', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('known', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('desc'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('desc'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('desc', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('desc', $this->form_group); ?></div>
 			</div>
 		</fieldset>
 	</div>
@@ -343,60 +343,60 @@ JHtml::_('behavior.keepalive');
 	<div class="span7">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('mpaa'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('mpaa'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('mpaa', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('mpaa', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('age_restrict'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('age_restrict'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('age_restrict', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('age_restrict', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('ua_rate'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('ua_rate'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('ua_rate', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('ua_rate', $this->form_group); ?></div>
 			</div>
 		</fieldset>
 	</div>
 	<div class="span5">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('imdb_votesum'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_votesum'); ?> <a href="#" id="imdb_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+				<div class="control-label"><?php echo $this->form->getLabel('imdb_votesum', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('imdb_votesum', $this->form_group); ?> <a href="#" id="imdb_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('imdb_votes'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_votes'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('imdb_votes', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('imdb_votes', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('imdb_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_id'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('imdb_id', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('imdb_id', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('kp_votesum'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_votesum'); ?> <a href="#" id="kp_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+				<div class="control-label"><?php echo $this->form->getLabel('kp_votesum', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('kp_votesum', $this->form_group); ?> <a href="#" id="kp_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('kp_votes'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_votes'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('kp_votes', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('kp_votes', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('kp_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_id'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('kp_id', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('kp_id', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_fc'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_fc'); ?> <a href="#" id="rt_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+				<div class="control-label"><?php echo $this->form->getLabel('rate_fc', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('rate_fc', $this->form_group); ?> <a href="#" id="rt_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rottentm_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rottentm_id'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('rottentm_id', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('rottentm_id', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_sum_loc'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_sum_loc'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('rate_sum_loc', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('rate_sum_loc', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_loc'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_loc'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('rate_loc', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('rate_loc', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
 				<div class="span12"><?php echo JText::_('COM_KA_FIELD_MOVIE_VOTESUMM'); ?> / <?php echo JText::_('COM_KA_FIELD_MOVIE_VOTES'); ?> = <span id="vote">0</span></div>
@@ -406,8 +406,8 @@ JHtml::_('behavior.keepalive');
 	<div class="span12">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_custom'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_custom'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('rate_custom', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('rate_custom', $this->form_group); ?></div>
 			</div>
 		</fieldset>
 	</div>

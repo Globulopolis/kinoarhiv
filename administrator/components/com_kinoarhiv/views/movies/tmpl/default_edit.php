@@ -25,6 +25,8 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/mediamanager/<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/timepicker/jquery-ui-timepicker-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript">
 	function showMsg(selector, text) {
 		jQuery(selector).aurora({
@@ -89,6 +91,12 @@ JHtml::_('behavior.keepalive');
 				return title;
 			}
 		});
+
+		$('.hasDatetime').each(function(i, el){
+			$(el).timepicker({
+				timeFormat: $(el).data('format')
+			});
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
@@ -150,7 +158,7 @@ JHtml::_('behavior.keepalive');
 								<legend><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></legend>
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<?php echo $this->form->getInput('rules', $this->form_group); ?>
+										<?php //echo $this->form->getInput('rules', $this->form_group); ?>
 									</div>
 								</fieldset>
 							</div>

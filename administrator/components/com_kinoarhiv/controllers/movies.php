@@ -49,7 +49,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 			return false;
 		}
 
-		$validData = $model->validate($form, $data, 'edit_movie');
+		$validData = $model->validate($form, $data, 'movie');
 
 		if ($validData === false) {
 			$app->setUserState('com_kinoarhiv.movies.global.data', $data);
@@ -71,17 +71,17 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 echo '<pre>';
 print_r($_POST);
 		// Set the success message.
-		/*$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+		/*$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
 
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$id, $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$id);
 				break;
 
 			case 'save':
 			default:
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 				break;
 		}
 

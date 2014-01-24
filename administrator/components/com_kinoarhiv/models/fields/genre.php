@@ -3,7 +3,7 @@
 JFormHelper::loadFieldClass('list');
 
 class JFormFieldGenre extends JFormFieldList {
-	public $type = 'Genre';
+	protected $type = 'Genre';
 	protected $comParams = null;
 
 	public function __construct() {

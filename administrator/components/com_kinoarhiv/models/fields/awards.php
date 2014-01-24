@@ -1,7 +1,7 @@
 <?php defined('JPATH_PLATFORM') or die;
 
 class JFormFieldAwards extends JFormField {
-	public $type = 'Awards';
+	protected $type = 'Awards';
 
 	protected function getInput() {
 		$app = JFactory::getApplication();

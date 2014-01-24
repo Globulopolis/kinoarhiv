@@ -3,7 +3,7 @@
 JFormHelper::loadFieldClass('list');
 
 class JFormFieldCareer extends JFormFieldList {
-	public $type = 'Career';
+	protected $type = 'Career';
 	protected $comParams = null;
 
 	public function __construct() {

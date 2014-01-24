@@ -1,7 +1,7 @@
 <?php defined('JPATH_PLATFORM') or die;
 
 class JFormFieldCareers extends JFormField {
-	public $type = 'Careers';
+	protected $type = 'Careers';
 
 	protected function getInput() {
 		// Initialize some field attributes.

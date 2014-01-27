@@ -53,7 +53,7 @@ JHtml::_('behavior.keepalive');
 			}
 		} else if (task == 'gallery' || task == 'trailers' || task == 'sounds') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -93,9 +93,24 @@ JHtml::_('behavior.keepalive');
 		});
 
 		$('.hasDatetime').each(function(i, el){
-			$(el).timepicker({
-				timeFormat: $(el).data('format')
-			});
+			if ($(el).hasClass('time')) {
+				$(el).timepicker({
+					timeFormat: $(el).data('time-format')
+				});
+			} else if ($(el).hasClass('date')) {
+				
+			} else if ($(el).hasClass('datetime')) {
+				$(el).datetimepicker({
+					dateFormat: $(el).data('date-format'),
+					timeFormat: $(el).data('time-format')
+				});
+			}
+		});
+
+		$('.cmd-datetime').click(function(e){
+			e.preventDefault();
+
+			$(this).prev('input').trigger('focus');
 		});
 	});
 </script>
@@ -158,7 +173,7 @@ JHtml::_('behavior.keepalive');
 								<legend><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></legend>
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<?php //echo $this->form->getInput('rules', $this->form_group); ?>
+										<?php echo $this->form->getInput('rules', $this->form_group); ?>
 									</div>
 								</fieldset>
 							</div>
@@ -172,6 +187,6 @@ JHtml::_('behavior.keepalive');
 	<?php echo $this->form->getInput('asset_id', $this->form_group); ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items['data']->id) ? $this->items['data']->id : 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items->id) ? $this->items->id : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

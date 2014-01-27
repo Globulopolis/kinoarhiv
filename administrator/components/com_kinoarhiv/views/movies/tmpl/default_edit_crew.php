@@ -17,7 +17,7 @@
 		c_grid_cfg.grid_height = (c_grid_cfg.grid_height < 100) ? 200 : c_grid_cfg.grid_height;
 
 		$('#list_actors').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>',
 			datatype: 'json',
 			height: c_grid_cfg.grid_height,
 			width: c_grid_cfg.grid_width,
@@ -66,7 +66,7 @@
 					'<?php echo JSession::getFormToken(); ?>': 1,
 					'ids': $('#list_actors').jqGrid('getDataIDs').join(','),
 					'id': ui.item.attr('id'),
-					'item_id': <?php echo ($this->items['data']->id != 0) ? $this->items['data']->id : ''; ?>
+					'item_id': <?php echo ($this->items->id != 0) ? $this->items->id : ''; ?>
 				}, function(response){
 					if (response.success) {
 						$('#list_actors').trigger('reloadGrid');
@@ -234,7 +234,7 @@
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.actors-container', response.message);
 					$('#list_actors').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

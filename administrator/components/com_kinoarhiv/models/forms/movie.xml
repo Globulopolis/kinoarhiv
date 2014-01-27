@@ -6,13 +6,15 @@
 			<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="movie" validate="rules" />
 			<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12" required="true" filter="string" size="45" />
 			<field name="year" type="text" default="" label="COM_KA_FIELD_MOVIE_YEAR" class="span6" required="true" filter="string" />
-			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6 hasDatetime" required="true" format="HH:mm:ss" />
-			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span12" size="45" />
+			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6 hasDatetime time" required="true" timeformat="HH:mm:ss" />
+			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span12" required="true" size="45" />
 			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="desc" type="editor" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
+			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
+			<field name="countries" type="countries" default="" label="COM_KA_FIELD_MOVIE_COUNTRIES" description="COM_KA_FIELD_MOVIE_COUNTRIES_DESC" class="span11" filter="string" data-ac-type="countries" />
 
 			<field name="mpaa" type="list" label="COM_KA_FIELD_MOVIE_RATES_MPAA" description="COM_KA_FIELD_MOVIE_RATES_MPAA_DESC" class="span10" filter="string" default="g">
 				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
@@ -58,10 +60,11 @@
 				<option value="index, nofollow">JGLOBAL_INDEX_NOFOLLOW</option>
 				<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
 			</field>
+			<field name="tags" type="tags" default="" label="JTAG" description="JTAG_DESC" class="span11" filter="string" data-ac-type="tags" />
 
 			<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
-			<field name="created" type="calendar" label="JGLOBAL_CREATED_DATE" class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
-			<field name="modified" type="calendar" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+			<field name="created" type="datetime" label="JGLOBAL_CREATED_DATE" class="inputbox hasDatetime datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
+			<field name="modified" type="datetime" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox hasDatetime datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
 			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
 			<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 				<option value="*">JALL</option>

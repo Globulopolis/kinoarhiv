@@ -303,12 +303,15 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies_gallery')." AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1"
 				. "\n WHERE `m`.`id` = ".(int)$id[0]);
 			$result['movie'] = $db->loadObject();
+			$result['movie']->genres = $this->getGenres();
+			$result['movie']->countries = $this->getCountries();
+			$result['movie']->tags = $this->getTags();
 		}
 
 		return $result;
 	}
 
-	public function getCountries() {
+	protected function getCountries() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
@@ -327,7 +330,7 @@ class KinoarhivModelMovies extends JModelList {
 		return $result;
 	}
 
-	public function getGenres() {
+	protected function getGenres() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
@@ -346,7 +349,7 @@ class KinoarhivModelMovies extends JModelList {
 		return $result;
 	}
 
-	public function getTags() {
+	protected function getTags() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
@@ -399,17 +402,32 @@ class KinoarhivModelMovies extends JModelList {
 		return $result ? true : false;
 	}
 
-	public function save($data) {
-		/*$app = JFactory::getApplication();
+	public function apply($data) {
+		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$id = $app->input->post->get('id', null, 'int');
+		$id = $app->input->post->get('id', 0, 'int');
+		$data = $data['movie'];
+echo '<pre>';
+print_r($data);
+		if (empty($id)) {
+			
+		} else {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
+				. "\n SET `parent_id` = '0', `title` = '".$db->escape($data['title'])."', `alias` = '".JFilterOutput::stringURLSafe($data['alias'])."',"
+				. " `introtext` = 'introtext', `plot` = '".$db->escape($data['plot'])."', `desc` = '".$db->escape($data['desc'])."',"
+				. " `known` = '".$db->escape($data['known'])."', `year` = '".$data['year']."', `slogan` = '".$db->escape($data['slogan'])."',"
+				. " `budget` = '".$data['budget']."', `age_restrict` = '".$data['age_restrict']."', `ua_rate` = '".$data['ua_rate']."',"
+				. " `mpaa` = '".$data['mpaa']."', `length` = '".$data['length']."', `rate_loc` = '".(int)$data['rate_loc']."',"
+				. " `rate_sum_loc` = '".(int)$data['rate_sum_loc']."', `imdb_votesum` = '".$data['imdb_votesum']."', `imdb_votes` = '".(int)$data['imdb_votes']."',"
+				. " `imdb_id` = '".(int)$data['imdb_id']."', `kp_votesum` = '".$data['kp_votesum']."', `kp_votes` = '".(int)$data['kp_votes']."',"
+				. " `kp_id` = '".(int)$data['kp_id']."', `rate_fc` = '".(int)$data['imdb_id']."', `rottentm_id` = '".$data['imdb_id']."',"
+				. " `rate_custom` = 'rate_custom', `urls` = 'urls', `created` = 'created',"
+				. " `modified` = 'modified', `state` = 'state', `ordering` = 'ordering',"
+				. " `metakey` = 'metakey', `metadesc` = 'metadesc', `access` = 'access',"
+				. " `metadata` = 'metadata', `language` = 'language'"
+				. "\n WHERE `id` = ".(int)$id);
+		}
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')
-			. "\n SET `uid` = '".(int)$data['uid']."', `movie_id` = '".(int)$data['movie_id']."', `review` = '".$db->escape($data['review'])."', `r_datetime` = '".$data['r_datetime']."', `type` = '".(int)$data['type']."', `ip` = '".(string)$data['ip']."', `state` = '".(int)$data['state']."'"
-			. "\n WHERE `id` = ".(int)$id);
-		$result = $db->execute();
-
-		return ($result === true) ? true : false;*/
 		return true;
 	}
 

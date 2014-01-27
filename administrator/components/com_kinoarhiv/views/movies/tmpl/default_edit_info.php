@@ -8,7 +8,7 @@ JHtml::_('behavior.keepalive');
 			$('#vote').text(vote);
 		}).trigger('blur');
 
-		$('#form_countries').select2({
+		$('#form_movie_countries').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
@@ -25,7 +25,7 @@ JHtml::_('behavior.keepalive');
 				}
 			},
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->items['countries']['data']); ?>;
+				var data = <?php echo json_encode($this->items->countries['data']); ?>;
 				callback(data);
 			},
 			formatResult: function(data){
@@ -37,11 +37,11 @@ JHtml::_('behavior.keepalive');
 			escapeMarkup: function(m) { return m; }
 		}).select2('container').find('ul.select2-choices').sortable({
 			containment: 'parent',
-			start: function() { $("#form_countries").select2('onSortStart'); },
-			update: function() { $("#form_countries").select2('onSortEnd'); }
+			start: function() { $("#form_movie_countries").select2('onSortStart'); },
+			update: function() { $("#form_movie_countries").select2('onSortEnd'); }
 		});
 
-		$('#form_genres').select2({
+		$('#form_movie_genres').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
@@ -58,7 +58,7 @@ JHtml::_('behavior.keepalive');
 				}
 			},
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->items['genres']['data']); ?>;
+				var data = <?php echo json_encode($this->items->genres['data']); ?>;
 				callback(data);
 			},
 			formatResult: function(data){
@@ -70,8 +70,8 @@ JHtml::_('behavior.keepalive');
 			escapeMarkup: function(m) { return m; }
 		}).select2('container').find('ul.select2-choices').sortable({
 			containment: 'parent',
-			start: function() { $("#form_genres").select2('onSortStart'); },
-			update: function() { $("#form_genres").select2('onSortEnd'); }
+			start: function() { $("#form_movie_genres").select2('onSortStart'); },
+			update: function() { $("#form_movie_genres").select2('onSortEnd'); }
 		});
 
 		$('a.update-vote').click(function(e){
@@ -150,7 +150,7 @@ JHtml::_('behavior.keepalive');
 
 				$.ajax({
 					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($this->items['data']->id != 0) ? $this->items['data']->id : ''; ?>&elem=' + elem,
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($this->items->id != 0) ? $this->items->id : ''; ?>&elem=' + elem,
 					data: data
 				}).done(function(response){
 					var mktime = new Date().getTime();
@@ -185,7 +185,7 @@ JHtml::_('behavior.keepalive');
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo $this->items->id; ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -213,15 +213,15 @@ JHtml::_('behavior.keepalive');
 				FileUploaded: function(up, file, info){
 					var obj = $.parseJSON(info.response);
 					var file = $.parseJSON(obj.id);
-					var url = '<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items['data']->alias, 0, 1).'/'.$this->items['data']->id.'/posters/'; ?>';
+					var url = '<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'; ?>';
 
 					blockUI('show');
-					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>&format=raw',
+					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo $this->items->id; ?>&format=raw',
 						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
 					).done(function(response){
 						$('img.movie-poster-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime());
 						$('img.movie-poster-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
-						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>&_id[]='+ file.id +'&format=raw');
+						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items->id; ?>&_id[]='+ file.id +'&format=raw');
 						blockUI();
 					}).fail(function(xhr, status, error){
 						showMsg('#system-message-container', error);
@@ -275,12 +275,10 @@ JHtml::_('behavior.keepalive');
 				<div class="controls"><?php echo $this->form->getInput('slogan', $this->form_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label">
-					<label id="form_genres-lbl" for="form_genres" class="hasTip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_GENRES_DESC'); ?>"><?php echo JText::_('COM_KA_FIELD_MOVIE_GENRES'); ?></label>
-				</div>
+				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_group); ?></div>
 				<div class="controls">
-					<input type="hidden" name="form[genres]" id="form_genres" value="<?php echo implode(',', $this->items['genres']['ids']); ?>" class="span11 autocomplete" data-ac-type="genres" />
-					<span class="rel-link"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&mid='.$this->items['data']->id); ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php echo $this->form->getInput('genres', $this->form_group); ?>
+					<span class="rel-link"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&mid='.$this->items->id); ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>
@@ -303,18 +301,16 @@ JHtml::_('behavior.keepalive');
 			</fieldset>
 		</div>
 		<div class="span3">
-			<a href="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items['data']->alias, 0, 1).'/'.$this->items['data']->id.'/posters/'.$this->items['data']->filename; ?>"><img src="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items['data']->alias, 0, 1).'/'.$this->items['data']->id.'/posters/thumb_'.$this->items['data']->filename; ?>" class="movie-poster-preview" height="110" /></a>
+			<a href="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'.$this->items->filename; ?>"><img src="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/thumb_'.$this->items->filename; ?>" class="movie-poster-preview" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items['data']->id; ?>&_id[]=<?php echo $this->items['data']->gid; ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items->id; ?>&_id[]=<?php echo $this->items->gid; ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 		</div>
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label">
-					<label id="form_countries-lbl" for="form_countries" class="hasTip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_COUNTRIES_DESC'); ?>"><?php echo JText::_('COM_KA_FIELD_MOVIE_COUNTRIES'); ?></label>
-				</div>
+				<div class="control-label"><?php echo $this->form->getLabel('countries', $this->form_group); ?></div>
 				<div class="controls">
-					<input type="hidden" name="form[countries]" id="form_countries" value="<?php echo implode(',', $this->items['countries']['ids']); ?>" class="span11 autocomplete" data-ac-type="countries" />
-					<span class="rel-link"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=countries&mid='.$this->items['data']->id); ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php echo $this->form->getInput('countries', $this->form_group); ?>
+					<span class="rel-link"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=countries&mid='.$this->items->id); ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>

@@ -344,6 +344,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = $app->getParams('com_kinoarhiv');
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
+		//$item->player_width = $params->get('player_width');
+		//$item->player_height = 0;
 
 		$this->params = &$params;
 		$this->item = &$item;

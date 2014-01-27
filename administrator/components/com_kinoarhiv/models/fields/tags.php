@@ -1,7 +1,7 @@
 <?php defined('JPATH_PLATFORM') or die;
 
-class JFormFieldGenres extends JFormField {
-	protected $type = 'Genres';
+class JFormFieldTags extends JFormField {
+	protected $type = 'Tags';
 
 	protected function getInput() {
 		// Initialize some field attributes.

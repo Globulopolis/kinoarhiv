@@ -349,7 +349,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$result = $this->getMovieData();
 
-		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`filename`, `tr`.`w_h`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`filename`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
 			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
 			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
@@ -357,14 +357,14 @@ class KinoarhivModelMovie extends JModelForm {
 
 		foreach ($result->trailers as $key=>$value) {
 			$result->trailers[$key]->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+			$result->trailers[$key]->player_width = $params->get('player_width');
 
-			if ($value->w_h != '') {
+			/*if ($value->w_h != '') {
 				$wh = explode('x', $value->w_h);
 				if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
-					$result->trailers[$key]->player_width = $params->get('player_width');
 					$result->trailers[$key]->player_height = floor(($wh[1]*(int)$params->get('player_width'))/$wh[0]);
 				}
-			}
+			}*/
 		}
 
 		return $result;
@@ -389,7 +389,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$frontpage = " AND `tr`.`frontpage` = 1";
 		}
 
-		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`filename`, `tr`.`w_h`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`alias`"
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`alias`"
 			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
 			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `tr`.`is_movie` = ".$is_movie.$frontpage
@@ -401,14 +401,6 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$result->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
-
-		if ($result->w_h != '') {
-			$wh = explode('x', $result->w_h);
-			if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
-				$result->player_width = $params->get('player_width');
-				$result->player_height = floor(($wh[1]*(int)$params->get('player_width'))/$wh[0]);
-			}
-		}
 
 		return $result;
 	}

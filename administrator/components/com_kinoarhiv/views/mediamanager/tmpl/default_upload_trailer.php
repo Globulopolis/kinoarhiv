@@ -274,11 +274,7 @@ $type = $input->get('type', '', 'word');
 			update: function(e, ui){
 				$.post('index.php?option=com_kinoarhiv&controller=mediamanager&task=saveOrderTrailerSubtitlefile&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&format=json', $('#sub_sortable input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (response.success) {
-						$.each($('#sub_sortable input:hidden'), function(n, el){
-							$(el).val(n);
-							$(el).next().find('.ord_numbering').text(n);
-						});
-						showMsg('#sub_sortable', '<?php echo JText::_('COM_KA_SAVED'); ?>');
+						$('.t-subtitles').trigger('click');
 					} else {
 						showMsg('#sub_sortable', response.message);
 					}
@@ -352,7 +348,7 @@ $type = $input->get('type', '', 'word');
 			});
 		});
 
-		$('#sub_sortable').on('click', 'a.lang-edit', function(e){
+		$('#sub_sortable').on('click', '.lang-edit', function(e){
 			e.preventDefault();
 			var _this = $(this);
 			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT'); ?>"><p class="ajax-loading"></p></div>').appendTo('body');

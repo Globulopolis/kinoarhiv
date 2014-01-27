@@ -45,14 +45,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$items = $this->get('Item');
 		$form = $this->get('Form');
-		$countries = $this->get('Countries');
-		$genres = $this->get('Genres');
-		$tags = $this->get('Tags');
 
-		$this->items['data'] = &$items['movie'];
-		$this->items['countries'] = &$countries;
-		$this->items['genres'] = &$genres;
-		$this->items['tags'] = &$tags;
+		$this->items = &$items['movie'];
 		$this->form_group = 'movie';
 		$this->form = &$form;
 		$this->params = &$params;
@@ -78,8 +72,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			if (!empty($this->items['data']->id)) {
-				JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_MOVIES_EDIT_TITLE'), $this->items['data']->title), 'play');
+			if (!empty($this->items->id)) {
+				JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_MOVIES_EDIT_TITLE'), $this->items->title), 'play');
 			} else {
 				JToolbarHelper::title(JText::_('COM_KA_MOVIES_ADD_TITLE'), 'play');
 			}

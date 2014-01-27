@@ -12,11 +12,12 @@ class JFormFieldCountries extends JFormField {
 		$disabled = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$required = $this->required ? ' required="required" aria-required="true"' : '';
 		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="'.$this->element['data-ac-type'].'"' : '';
+		$value = is_array($this->value) ? implode(',', $this->value['ids']) : htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
 
 		// Initialize JavaScript field attributes.
 		$onchange = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
 		return '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="'
-			. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . $data_type . '/>';
+			. $value . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . $data_type . '/>';
 	}
 }

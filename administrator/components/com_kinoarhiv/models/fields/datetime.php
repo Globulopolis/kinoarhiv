@@ -5,8 +5,6 @@ class JFormFieldDatetime extends JFormField {
 	protected $maxLength;
 
 	protected function getInput() {
-		//$format = $this->element['format'] ? (string) $this->element['format'] : '%Y-%m-%d';
-
 		$attributes = ' ';
 
 		if (!empty($this->size)) {
@@ -27,8 +25,11 @@ class JFormFieldDatetime extends JFormField {
 		if ($this->element['required']) {
 			$attributes .= 'required aria-required="true" ';
 		}
-		if (!empty($this->element['format'])) {
-			$attributes .= 'data-format="'.$this->element['format'].'" ';
+		if (!empty($this->element['dateformat'])) {
+			$attributes .= 'data-date-format="'.$this->element['dateformat'].'" ';
+		}
+		if (!empty($this->element['timeformat'])) {
+			$attributes .= 'data-time-format="'.$this->element['timeformat'].'" ';
 		}
 
 		$html = '<div class="input-append">

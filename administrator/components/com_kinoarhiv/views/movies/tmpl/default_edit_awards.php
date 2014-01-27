@@ -17,7 +17,7 @@
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
 
 		$('#list_awards').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
 			width: aw_grid_cfg.grid_width,
@@ -192,7 +192,7 @@
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo ($this->items['data']->id != 0) ? '&id='.$this->items['data']->id : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.awards-container', response.message);
 					$('#list_awards').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

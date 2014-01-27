@@ -63,18 +63,27 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				}
 			}
 
-			//$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$id[0]);
+			$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$id[0]);
 
 			return false;
 		}
 
-echo '<pre>';
-print_r($_POST);
+		$result = $model->apply($validData);
+
+		if (!$result) {
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+			$this->setMessage($this->getError(), 'error');
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
+
+			return false;
+		}
+
 		// Set the success message.
-		/*$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
+		$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
 
 		// Set the redirect based on the task.
-		switch ($this->getTask()) {
+		/*switch ($this->getTask()) {
 			case 'apply':
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$id);
 				break;

@@ -767,13 +767,13 @@ class KinoarhivModelMediamanager extends JModelList {
 			$subtl_arr = json_decode($result, true);
 
 			// On 'else' condition we do nothing because no information about trailer exists in DB. In this situation files will be successfully uploaded, but not saved in DB.
-			if (!empty($result) && count($subtl_arr) > 0) {
+			if (!empty($trailer_id)) {
 				if (preg_match('#subtitles\.(.*?)\.#si', $file, $matches)) {
 					$lang_code = strtolower($matches[1]);
 				}
 
-				// Checking if lang allready exists and return false
-				$lang_exists = false;
+				// Checking if lang allready exists and return false. Uncomment block below if want to check for duplicate languages.
+				/*$lang_exists = false;
 				foreach ($subtl_arr as $k=>$v) {
 					if ($v['lang_code'] == $lang_code) {
 						$lang_exists = true;
@@ -783,7 +783,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				if ($lang_exists) {
 					return false;
-				}
+				}*/
 
 				$subtl_arr[] = array(
 					'default'=> false,
@@ -869,7 +869,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			$files_arr[] = array(
 				'src'		=> $file,
 				'type'		=> $mime_type,
-				'resolution'=> $video_info->streams->width.'x'.$video_info->streams->height
+				'resolution'=> $video_info->streams[0]->width.'x'.$video_info->streams[0]->height
 			);
 
 			$new_obj = JArrayHelper::toObject($files_arr);

@@ -105,24 +105,139 @@ class GlobalHelper {
 
 	/**
 	 * Load all necessary CSS and Javascript for HTML5/Flash player
-	 * Supported players: VideoJS
 	 *
 	*/
-	static function loadPlayerAssets() {
-		$app = JFactory::getApplication();
+	static function loadPlayerAssets($theme='default', $player) {
 		$document = JFactory::getDocument();
-		$params = $app->getParams('com_kinoarhiv');
+
+		$paths = array(
+			'flowplayer'=>array(
+				'css'=>array(
+					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/flowplayer-minimalist.css'
+				),
+				'js'=>array(
+					'media/jui/js/jquery.js',
+					'components/com_kinoarhiv/assets/js/players/flowplayer/flowplayer.min.js'
+				)
+			),
+			'jwplayer'=>array(
+				'js'=>array(
+					'components/com_kinoarhiv/assets/js/players/jwplayer/jwplayer.js'
+				)
+			),
+			'mediaelement'=>array(
+				'css'=>array(
+					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/mediaelement-default.css'
+				),
+				'js'=>array(
+					'media/jui/js/jquery.js',
+					'components/com_kinoarhiv/assets/js/players/mediaelement/mediaelement-and-player.min.js'
+				)
+			),
+			'videojs'=>array(
+				'css'=>array(
+					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/videojs-default.css'
+				),
+				'js'=>array(
+					'components/com_kinoarhiv/assets/js/players/videojs/video.min.js',
+					'components/com_kinoarhiv/assets/js/players/videojs/video.persistvolume.min.js'
+				)
+			)
+		);
 
 		if ($document->getType() == 'html') {
-			$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/vjs-player-default.css', 'stylesheet', 'rel', array('type'=>'text/css'));
-			$document->addScript(JURI::base().'components/com_kinoarhiv/assets/js/players/vjs/video.min.js');
-			$document->addScript(JURI::base().'components/com_kinoarhiv/assets/js/players/vjs/video.persistvolume.min.js');
-			$document->addScriptDeclaration("
-			//<![CDATA[
-				videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/js/players/vjs/video.swf';
-			//]]>");
+			foreach ($paths[$player] as $k=>$v) {
+				foreach ($v as $url) {
+					if ($k == 'css') {
+						$document->addHeadLink($url, 'stylesheet', 'rel', array('type'=>'text/css'));
+					} elseif ($k == 'js') {
+						$document->addScript($url);
+						if ($player == 'jwplayer') {
+							$document->addScriptDeclaration("jwplayer.key='OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==';");
+						}
+					}
+				}
+			}
+
+			return true;
+		} elseif ($document->getType() == 'raw') {
+			$html = '';
+
+			foreach ($paths[$player] as $k=>$v) {
+				foreach ($v as $url) {
+					if ($k == 'css') {
+						$html .= '<link href="'.$url.'" rel="stylesheet" type="text/css" />'."\n";
+					} elseif ($k == 'js') {
+						$html .= "\t".'<script src="'.$url.'" type="text/javascript"></script>'."\n";
+						if ($player == 'jwplayer') {
+							$html .= "\t".'<script type="text/javascript">jwplayer.key="OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==";</script>'."\n";
+						}
+					}
+				}
+			}
+
+			echo $html;
 		}
 	}
+
+	/**
+	 * Setup HTML5/Flash player config
+	 *
+	*/
+	/*static function configPlayer($theme='default', $player) {
+		$document = JFactory::getDocument();
+
+		if ($player == 'flowplayer') {
+			if ($document->getType() == 'html') {
+			} elseif ($document->getType() == 'raw') {
+			}
+		} elseif ($player == 'jwplayer') {
+			if ($document->getType() == 'html') {
+			} elseif ($document->getType() == 'raw') {
+				echo "<script type=\"text/javascript\">
+					jwplayer('.trailer').setup({
+						skin: 'components/com_kinoarhiv/assets/themes/component/".$theme."/css/jwplayer-five.xml'
+					});
+				</script>\n";
+			}
+		} elseif ($player == 'mediaelement') {
+			if ($document->getType() == 'html') {
+				$document->addScriptDeclaration("
+					jQuery(document).ready(function($){
+						$('video').mediaelementplayer({
+							mode: 'auto',
+							plugins: ['flash', 'silverlight'],
+							pluginPath: 'components/com_kinoarhiv/assets/js/players/mediaelement/',
+							flashName: 'flashmediaelement.swf',
+							silverlightName: 'silverlightmediaelement.xap'
+						});
+					});
+				");
+			} elseif ($document->getType() == 'raw') {
+				echo "<script type=\"text/javascript\">
+					jQuery(document).ready(function($){
+						$('video').mediaelementplayer({
+							mode: 'auto',
+							plugins: ['flash', 'silverlight'],
+							pluginPath: 'components/com_kinoarhiv/assets/js/players/mediaelement/',
+							flashName: 'flashmediaelement.swf',
+							silverlightName: 'silverlightmediaelement.xap'
+						});
+					});
+				</script>\n";
+			}
+		} elseif ($player == 'videojs') {
+			if ($document->getType() == 'html') {
+				$document->addScriptDeclaration("
+					videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/js/players/videojs/video.swf';
+				");
+			} elseif ($document->getType() == 'raw') {
+				echo '<script type="text/javascript">
+					videojs.options.flash.swf = "components/com_kinoarhiv/assets/js/players/videojs/video.swf";
+				</script>'."\n";
+			}
+		}
+	}*/
 
 	/**
 	 * Load all necessary CSS and Javascript for HTML5 editor

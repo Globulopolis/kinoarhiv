@@ -13,7 +13,7 @@
 			$('video').mediaelementplayer({
 				mode: 'auto',
 				plugins: ['flash', 'silverlight'],
-				pluginPath: 'components/com_kinoarhiv/assets/js/players/mediaelement/',
+				pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
 				flashName: 'flashmediaelement.swf',
 				silverlightName: 'silverlightmediaelement.xap'
 			});
@@ -30,26 +30,24 @@
 			<?php else:
 				$mp4_file = ''; ?>
 				<video id="trailer" controls preload="none" poster="<?php echo $this->item->path.$this->item->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $this->item->player_height; ?>">
-					<?php if (count($this->item->files) > 0):
-						foreach ($this->item->files as $item):
+					<?php if (count($this->item->files['video']) > 0):
+						foreach ($this->item->files['video'] as $item):
 							if ($item['type'] == 'video/mp4') {
 								$mp4_file = $this->item->path.$item['src'];
 							} ?>
 							<source type="<?php echo $item['type']; ?>" src="<?php echo $this->item->path.$item['src']; ?>" />
 						<?php endforeach;
 					endif; ?>
-					<?php $subtitles = json_decode($this->item->_subtitles);
-					if (is_object($subtitles) && count($subtitles) > 0):
-						foreach ($subtitles as $subtitle): ?>
-							<track kind="subtitles" src="<?php echo $this->item->path.$subtitle->file; ?>" srclang="<?php echo $subtitle->lang_code; ?>" label="<?php echo $subtitle->lang; ?>"<?php echo $subtitle->default ? ' default' : ''; ?> />
+					<?php if (count($this->item->files['subtitles']) > 0):
+						foreach ($this->item->files['subtitles'] as $subtitle): ?>
+							<track kind="subtitles" src="<?php echo $this->item->path.$subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 						<?php endforeach;
 					endif; ?>
-					<?php $chapters = json_decode($this->item->_chapters);
-					if (is_object($chapters) && count($chapters) > 0): ?>
-						<track kind="chapters" src="<?php echo $this->item->path.$chapters->file; ?>" srclang="en" default />
+					<?php if (count($this->item->files['chapters']) > 0): ?>
+						<track kind="chapters" src="<?php echo $this->item->path.$this->item->files['chapters']['file']; ?>" srclang="en" default />
 					<?php endif; ?>
 					<object width="<?php echo $this->item->player_width; ?>" height="<?php echo $this->item->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf">
-						<param name="movie" value="components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf" />
+						<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf" />
 						<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>" />
 						<img src="<?php echo $this->item->path.$this->item->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $this->item->player_height; ?>" title="No video playback capabilities" />
 					</object>

@@ -400,7 +400,22 @@ class KinoarhivModelMovie extends JModelForm {
 			return array();
 		}
 
-		$result->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+		$result->player_width = $params->get('player_width');
+//echo '<pre>';
+		if (!empty($result->urls)) {
+			$urls_arr = explode("\n", $result->urls);
+			print_r($urls_arr);
+			$result->files['video'] = array();
+		} else {
+			$result->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+			$result->files['video'] = json_decode($result->filename, true);
+			$tr_resolution = explode('x', $result->files['video'][0]['resolution']);
+			$tr_height = $tr_resolution[1];
+			$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+
+			$result->files['subtitles'] = json_decode($result->_subtitles, true);
+			$result->files['chapters'] = json_decode($result->_chapters, true);
+		}
 
 		return $result;
 	}

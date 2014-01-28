@@ -24,16 +24,6 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		if ($params->get('watch_trailer_button') == 1 || $params->get('watch_movie_button') == 1) {
 			$item = $this->get('Trailer');
-			$item->player_width = $params->get('player_width');
-
-			if (!empty($item->urls)) {
-				$item->files = array();
-			} else {
-				$item->files = json_decode($item->filename, true);
-				$tr_resolution = explode('x', $item->files[0]['resolution']);
-				$tr_height = $tr_resolution[1];
-				$item->player_height = floor(($tr_height * $item->player_width) / $tr_resolution[0]);
-			}
 
 			$this->item = &$item;
 			$this->params = &$params;

@@ -237,7 +237,7 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						$value->poster = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						$value->poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
 						$value->y_poster = ' y-poster';
 					}
 
@@ -262,7 +262,7 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						$value->poster = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						$value->poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
 						$value->y_poster = ' y-poster';
 					}
 
@@ -271,7 +271,7 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->dub_url_photo = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->dub_y_poster = '';
 					} else {
-						$value->dub_url_photo = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->dub_url_photo;
+						$value->dub_url_photo = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/'.$value->dub_url_photo;
 						$value->dub_y_poster = ' y-poster';
 					}
 
@@ -304,7 +304,7 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						$value->poster = JURI::base().$params->get('media_actor_photo_root').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						$value->poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
 						$value->y_poster = ' y-poster';
 					}
 
@@ -374,6 +374,8 @@ class KinoarhivModelMovie extends JModelForm {
 	 * Method to get trailer or movie
 	 */
 	public function getTrailer() {
+		jimport('joomla.filesystem.file');
+
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
@@ -409,7 +411,22 @@ class KinoarhivModelMovie extends JModelForm {
 		} else {
 			$result->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
 			$result->files['video'] = json_decode($result->filename, true);
-			$tr_resolution = explode('x', $result->files['video'][0]['resolution']);
+			$result->files['video_links'] = array();
+			$_resolution = '';
+
+			// Checking extentions
+			foreach ($result->files['video'] as $key=>$value) {
+				if (!in_array(JFile::getExt($value['src']), explode(',', $params->get('upload_mime_video')))) {
+					$result->files['video_links'][] = $result->files['video'][$key];
+					unset($result->files['video'][$key]);
+				}
+				$_resolution = $value['resolution'];
+			}
+
+			$resolution = isset($result->files['video'][0]['resolution']) ? $result->files['video'][0]['resolution'] : $_resolution;
+
+//print_r($result->files['video_links']);
+			$tr_resolution = explode('x', $resolution);
 			$tr_height = $tr_resolution[1];
 			$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
 

@@ -181,65 +181,6 @@ class GlobalHelper {
 	}
 
 	/**
-	 * Setup HTML5/Flash player config
-	 *
-	*/
-	/*static function configPlayer($theme='default', $player) {
-		$document = JFactory::getDocument();
-
-		if ($player == 'flowplayer') {
-			if ($document->getType() == 'html') {
-			} elseif ($document->getType() == 'raw') {
-			}
-		} elseif ($player == 'jwplayer') {
-			if ($document->getType() == 'html') {
-			} elseif ($document->getType() == 'raw') {
-				echo "<script type=\"text/javascript\">
-					jwplayer('.trailer').setup({
-						skin: 'components/com_kinoarhiv/assets/themes/component/".$theme."/css/jwplayer-five.xml'
-					});
-				</script>\n";
-			}
-		} elseif ($player == 'mediaelement') {
-			if ($document->getType() == 'html') {
-				$document->addScriptDeclaration("
-					jQuery(document).ready(function($){
-						$('video').mediaelementplayer({
-							mode: 'auto',
-							plugins: ['flash', 'silverlight'],
-							pluginPath: 'components/com_kinoarhiv/assets/js/players/mediaelement/',
-							flashName: 'flashmediaelement.swf',
-							silverlightName: 'silverlightmediaelement.xap'
-						});
-					});
-				");
-			} elseif ($document->getType() == 'raw') {
-				echo "<script type=\"text/javascript\">
-					jQuery(document).ready(function($){
-						$('video').mediaelementplayer({
-							mode: 'auto',
-							plugins: ['flash', 'silverlight'],
-							pluginPath: 'components/com_kinoarhiv/assets/js/players/mediaelement/',
-							flashName: 'flashmediaelement.swf',
-							silverlightName: 'silverlightmediaelement.xap'
-						});
-					});
-				</script>\n";
-			}
-		} elseif ($player == 'videojs') {
-			if ($document->getType() == 'html') {
-				$document->addScriptDeclaration("
-					videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/js/players/videojs/video.swf';
-				");
-			} elseif ($document->getType() == 'raw') {
-				echo '<script type="text/javascript">
-					videojs.options.flash.swf = "components/com_kinoarhiv/assets/js/players/videojs/video.swf";
-				</script>'."\n";
-			}
-		}
-	}*/
-
-	/**
 	 * Load all necessary CSS and Javascript for HTML5 editor
 	 *
 	*/

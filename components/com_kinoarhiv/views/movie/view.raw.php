@@ -29,7 +29,11 @@ class KinoarhivViewMovie extends JViewLegacy {
 			$this->params = &$params;
 			$this->user = &$user;
 
-			parent::display('trailer_'.$params->get('player_type'));
+			if ($params->get('player_type') == -1) {
+				parent::display('trailer');
+			} else {
+				parent::display('trailer_'.$params->get('player_type'));
+			}
 		} else {
 			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">'.GlobalHelper::showMsg(JText::_('ERROR'), array('icon'=>'alert', 'type'=>'error')).'</div>';
 		}

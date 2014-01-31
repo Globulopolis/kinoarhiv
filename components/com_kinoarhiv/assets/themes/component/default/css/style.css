@@ -617,7 +617,12 @@ div.rating {
 
 .cast-row {
 	border-bottom: 1px solid #eee;
+	min-height: 84px;
 	padding: 3px;
+}
+
+.cast-row.hasPoster {
+	min-height: 108px;
 }
 
 .cast-row:hover {

@@ -43,7 +43,7 @@
 				<div class="ui-corner-all ui-widget-header header-small"><a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?><span class="dub"><?php echo JText::_('COM_KA_CAST_DUB'); ?></span></div>
 				<div class="content">
 					<?php foreach ($row['items'] as $key=>$name): ?>
-					<div class="cast-row">
+					<div class="cast-row<?php echo ($name['y_poster'] != '' || $name['dub_y_poster'] != '') ? ' hasPoster' : ''; ?>">
 						<span class="number"><?php echo $key+1; ?>. </span>
 						<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" border="0" /></span>
 						<span class="actor">

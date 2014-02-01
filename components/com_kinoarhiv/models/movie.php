@@ -414,7 +414,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$result->files['video_links'] = array();
 			$_resolution = '';
 
-			// Checking extentions
+			// Checking video extentions
 			foreach ($result->files['video'] as $key=>$value) {
 				if (!in_array(JFile::getExt($value['src']), explode(',', $params->get('upload_mime_video')))) {
 					$result->files['video_links'][] = $result->files['video'][$key];
@@ -423,9 +423,16 @@ class KinoarhivModelMovie extends JModelForm {
 				$_resolution = $value['resolution'];
 			}
 
-			$resolution = isset($result->files['video'][0]['resolution']) ? $result->files['video'][0]['resolution'] : $_resolution;
+			if (isset($result->files['video'][0]['resolution'])) {
+				$resolution = $result->files['video'][0]['resolution'];
+			} else {
+				if ($_resolution != '' && $_resolution != 'x') {
+					$resolution = $_resolution;
+				} else {
+					$resolution = '1280x720';
+				}
+			}
 
-//print_r($result->files['video_links']);
 			$tr_resolution = explode('x', $resolution);
 			$tr_height = $tr_resolution[1];
 			$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
@@ -628,7 +635,7 @@ class KinoarhivModelMovie extends JModelForm {
 			// Select reviews
 			$review_id = $app->input->get('review', null, 'int');
 			if (!empty($review_id) && $review_id > 0) {
-				$this->setState('list.start', $review_id-1);
+				$this->setState('list.start', $review_id - 1);
 			}
 
 			$query->select('`rev`.`id`, `rev`.`review`, `rev`.`r_datetime` AS `review_date`, `rev`.`type`, `u`.`name`, `u`.`username`');
@@ -651,6 +658,8 @@ class KinoarhivModelMovie extends JModelForm {
 		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
 		$page = new JPagination($this->getTotal(), $this->getStart(), $limit);
 		$page->set('viewall', false);
+
+		$page->setAdditionalUrlParam('review', 0);
 
 		$this->cache[$store] = $page;
 
@@ -738,13 +747,12 @@ class KinoarhivModelMovie extends JModelForm {
 
 	public function getUserStateFromRequest($key, $request, $default = null, $type = 'none', $resetPage = true) {
 		$app = JFactory::getApplication();
-		$input     = $app->input;
 		$old_state = $app->getUserState($key);
 		$cur_state = (!is_null($old_state)) ? $old_state : $default;
-		$new_state = $input->get($request, null, $type);
+		$new_state = $app->input->get($request, null, $type);
 
 		if (($cur_state != $new_state) && ($resetPage)) {
-			$input->set('limitstart', 0);
+			$app->input->set('limitstart', 0);
 		}
 
 		if ($new_state !== null) {

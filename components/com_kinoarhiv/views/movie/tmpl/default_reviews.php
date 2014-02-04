@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-$review_number = $this->pagination->get('limitstart')+1;
+$review_number = $this->pagination->limitstart + 1;
 
 if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
 	GlobalHelper::loadEditorAssets(); ?>

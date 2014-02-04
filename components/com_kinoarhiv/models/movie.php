@@ -649,6 +649,9 @@ class KinoarhivModelMovie extends JModelForm {
 	}
 
 	public function getPagination() {
+		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+
+		$app = JFactory::getApplication();
 		$store = $this->getStoreId('getPagination');
 
 		if (isset($this->cache[$store])) {
@@ -656,10 +659,11 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
-		$page = new JPagination($this->getTotal(), $this->getStart(), $limit);
-		$page->set('viewall', false);
+		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
 
-		$page->setAdditionalUrlParam('review', 0);
+		if ($app->input->get('review')) {
+			$page->setAdditionalUrlParam('review', 0);
+		}
 
 		$this->cache[$store] = $page;
 

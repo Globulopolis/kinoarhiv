@@ -1,6 +1,8 @@
 <?php defined('_JEXEC') or die; ?>
 <script src="components/com_kinoarhiv/assets/js/players/mediaelement/mediaelement-and-player.min.js" type="text/javascript"></script>
 <?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
+<?php if (isset($this->item->trailer) && count($this->item->trailer) > 0):
+$item_trailer = $this->item->trailer; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('#trailer').mediaelementplayer({
@@ -9,17 +11,8 @@
 			silverlightName: 'silverlightmediaelement.xap',
 			poster: '<?php echo $this->item->trailer->path.$this->item->trailer->screenshot; ?>'
 		});
-		$('#movie').mediaelementplayer({
-			pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
-			flashName: 'flashmediaelement.swf',
-			silverlightName: 'silverlightmediaelement.xap',
-			poster: '<?php echo $this->item->movie->path.$this->item->movie->screenshot; ?>'
-		});
 	});
 </script>
-
-<?php if (isset($this->item->trailer) && count($this->item->trailer) > 0):
-$item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>
 	<div class="ui-widget trailer">
 		<h3><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></h3>
@@ -68,6 +61,16 @@ $item_trailer = $this->item->trailer; ?>
 
 if ((isset($this->item->movie) && count($this->item->movie) > 0) && ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')):
 $item_movie = $this->item->movie; ?>
+<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$('#movie').mediaelementplayer({
+			pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
+			flashName: 'flashmediaelement.swf',
+			silverlightName: 'silverlightmediaelement.xap',
+			poster: '<?php echo $this->item->movie->path.$this->item->movie->screenshot; ?>'
+		});
+	});
+</script>
 	<div class="clear"></div>
 	<div class="ui-widget trailer">
 		<h3><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></h3>

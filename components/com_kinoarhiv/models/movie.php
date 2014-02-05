@@ -381,16 +381,14 @@ class KinoarhivModelMovie extends JModelForm {
 				return array();
 			}
 			$is_movie = 1;
-			$frontpage = "";
 		} else {
 			$is_movie = 0;
-			$frontpage = " AND `tr`.`frontpage` = 1";
 		}
 
 		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`alias`"
 			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
-			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `tr`.`is_movie` = ".$is_movie.$frontpage
+			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `tr`.`is_movie` = ".$is_movie." AND `tr`.`frontpage` = 1"
 			. "\n LIMIT 1");
 		$result = $db->loadObject();
 

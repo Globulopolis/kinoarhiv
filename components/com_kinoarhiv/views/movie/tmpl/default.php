@@ -339,7 +339,9 @@
 		</div>
 		<?php
 			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$this->params->get('player_type');
-			echo $this->loadTemplate($player_layout);
+			if (count($this->item->trailer) > 0 || count($this->item->movie) > 0) {
+				echo $this->loadTemplate($player_layout);
+			}
 		?>
 		<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>
 			<div class="clear"></div>

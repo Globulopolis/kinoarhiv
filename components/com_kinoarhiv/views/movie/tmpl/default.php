@@ -118,43 +118,16 @@
 				_this.removeClass('up').addClass('down');
 			}
 		});
-		<?php if ($this->params->get('watch_trailer_button') == 1 || $this->params->get('watch_movie_button') == 1): ?>
-		$('.watch-buttons a').button({
-			icons: { primary: 'ui-icon-play' }
-		}).click(function(e){
-			e.preventDefault();
-
-			if ($(this).hasClass('watch-trailer')) {
-				$.colorbox({
-					href: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&watch=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>',
-					fixed: true,
-					scrolling: false
-				});
-			}<?php if ($this->params->get('allow_guest_watch') == 1 && $this->user->get('guest') || $this->user->get('id') != ''): ?> else if ($(this).hasClass('watch-movie')) {
-				$.colorbox({
-					href: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&watch=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>',
-					fixed: true,
-					scrolling: false
-				});
-			}<?php endif; ?>
-		});
-		<?php endif; ?>
 		$('.premiere-info-icon').click(function(e){
 			e.preventDefault();
 			var _this = $(this);
 
 			$.colorbox({ html: '<div class="overlay">'+_this.next('div').html()+'</div>' });
 		});
-		<?php if ($this->params->get('allow_movie_download') == 1): ?>
-		$('.download-movie').button({
-			text: false,
-			icons: { primary: 'ui-icon-disk' }
-		}).click(function(e){
-			e.preventDefault();
-
-			$.colorbox({ html: '<div class="overlay">'+$('div.urls').html()+'</div>' });
-		}).parent().buttonset();
-		<?php endif; ?>
+		$('.trailer').accordion({
+			collapsible: true,
+			heightStyle: 'content'
+		});
 	});
 //]]>
 </script>
@@ -362,25 +335,12 @@
 						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?> | <?php echo $this->item->_length; ?></span>
 					</div>
 				</div>
-				<div class="watch-buttons">
-					<?php if ($this->params->get('watch_trailer_button') == 1):
-						if ($this->item->total_video->total_trailers == 1): ?>
-						<a href="#" class="watch-trailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
-						<?php endif;
-					endif; ?>
-					<?php if ($this->params->get('watch_movie_button') == 1):
-						if ($this->item->total_video->total_movies == 1): ?>
-						<?php if ($this->params->get('allow_guest_watch') == 1 && $this->user->get('guest') || $this->user->get('id') != ''): ?>
-						<span>
-							<a href="#" class="watch-movie"><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
-							<?php if ($this->params->get('allow_movie_download') == 1): ?><a href="#" class="download-movie"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE'); ?></a><?php endif; ?>
-						</span>
-						<?php endif;
-					endif; ?>
-					<?php endif; ?>
-				</div>
 			</div>
 		</div>
+		<?php
+			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$this->params->get('player_type');
+			echo $this->loadTemplate($player_layout);
+		?>
 		<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>
 			<div class="clear"></div>
 			<div class="rate">
@@ -407,7 +367,7 @@
 		<div class="clear"></div>
 		<?php if (!empty($this->item->plot)): ?>
 		<div class="plot">
-			<div class="ui-corner-all ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_PLOT'); ?></div>
+			<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_PLOT'); ?></div>
 			<div class="content"><?php echo $this->item->plot; ?></div>
 		</div>
 		<?php endif; ?>

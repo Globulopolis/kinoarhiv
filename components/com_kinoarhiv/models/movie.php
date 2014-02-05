@@ -164,15 +164,8 @@ class KinoarhivModelMovie extends JModelForm {
 			. "\n LIMIT 2");
 		$result->releases = $db->loadObjectList();
 
-		// Get trailer and movie state for wath buttons
-		if ($params->get('watch_trailer_button') == 1 || $params->get('watch_movie_button') == 1) {
-			$db->setQuery("SELECT"
-				. "\n (SELECT COUNT(`id`) FROM ".$db->quoteName('#__ka_trailers')." WHERE `is_movie` = 0 AND `movie_id` = ".(int)$id." AND `frontpage` = 1 AND `access` IN (".$groups.") AND `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').") LIMIT 1) AS `total_trailers`,"
-				. "\n (SELECT COUNT(`id`) FROM ".$db->quoteName('#__ka_trailers')." WHERE `is_movie` = 1 AND `movie_id` = ".(int)$id." AND `frontpage` = 1 AND `access` IN (".$groups.") AND `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').") LIMIT 1) AS `total_movies`"
-				. "\n FROM ".$db->quoteName('#__ka_trailers')
-				. "\n GROUP BY `total_trailers`, `total_movies`");
-			$result->total_video = $db->loadObject();
-		}
+		$result->trailer = $this->getTrailer($id, 'trailer');
+		$result->movie = $this->getTrailer($id, 'movie');
 
 		return $result;
 	}
@@ -373,7 +366,7 @@ class KinoarhivModelMovie extends JModelForm {
 	/**
 	 * Method to get trailer or movie
 	 */
-	public function getTrailer() {
+	public function getTrailer($id, $type='trailer') {
 		jimport('joomla.filesystem.file');
 
 		$db = $this->getDBO();
@@ -382,8 +375,11 @@ class KinoarhivModelMovie extends JModelForm {
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$params = $app->getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
-		if ($app->input->get('watch', 'trailer', 'cmd') == 'movie') {
+		$id = $app->input->get('id', $id, 'int');
+		if ($type == 'movie') {
+			if ($params->get('allow_guest_watch') != 1) {
+				return array();
+			}
 			$is_movie = 1;
 			$frontpage = "";
 		} else {

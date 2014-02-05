@@ -130,8 +130,8 @@ class GlobalHelper {
 					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/mediaelement-default.css'
 				),
 				'js'=>array(
-					'media/jui/js/jquery.js',
-					'components/com_kinoarhiv/assets/js/players/mediaelement/mediaelement-and-player.min.js'
+					//'media/jui/js/jquery.js',
+					//'components/com_kinoarhiv/assets/js/players/mediaelement/mediaelement-and-player.min.js'
 				)
 			),
 			'videojs'=>array(

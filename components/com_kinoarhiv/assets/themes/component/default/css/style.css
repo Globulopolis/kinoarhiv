@@ -925,10 +925,20 @@ div.rating {
 	vertical-align: top !important;
 }
 
-.watch-buttons a:hover {
-	-moz-box-shadow: 0px 0px 3px 0px #ccc;
-	-webkit-box-shadow: 0px 0px 3px 0px #ccc;
-	box-shadow: 0px 0px 3px 0px #ccc;
-	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=0, Color='#cccccc')";
-	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=0, Color='#cccccc');
+.trailer {
+	margin-top: 1em;
+}
+
+.trailer .ui-accordion-content {
+	border-left: 0;
+	border-right: 0;
+	padding: 0;
+}
+
+.video-links {
+	padding: 2px 4px;
+}
+
+.video-links .title {
+	font-size: 1.1em;
 }

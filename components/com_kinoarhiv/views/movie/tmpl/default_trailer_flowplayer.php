@@ -1,27 +1,22 @@
 <?php defined('_JEXEC') or die; ?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<link href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/ui/<?php echo $this->params->get('ui_theme'); ?>/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-	<link href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/css/style.css" rel="stylesheet" type="text/css" />
-	<?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
-	<script type="text/javascript">
-		jQuery(document).ready(function($){
-			$('#trailer').flowplayer({
-				swf: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/flowplayer/flowplayer.swf',
-				embed: {
-					library: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/flowplayer/flowplayer.min.js',
-					script: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/flowplayer/embed.min.js'
-				}
-			});
+<?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
+<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$('#trailer').flowplayer({
+			swf: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/flowplayer/flowplayer.swf',
+			embed: {
+				library: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/flowplayer/flowplayer.min.js',
+				script: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/flowplayer/embed.min.js'
+			}
 		});
-	</script>
-</head>
-<body style="margin: 0; padding: 0; width: <?php echo $this->item->player_width; ?>px;">
-<?php if (isset($this->item) && count($this->item) > 0): ?>
-	<div class="ui-widget trailer" style="background-color: #000; height: <?php echo $this->item->player_height; ?>px;">
+	});
+</script>
+<?php if (isset($this->item->trailer) && count($this->item->trailer) > 0):
+$item_trailer = $this->item->trailer; ?>
+	<div class="clear"></div>
+	<div class="ui-widget trailer">
+		<h3><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></h3>
+		<div>
 		<?php if ($this->item->embed_code != ''):
 			echo $this->item->embed_code;
 		else: ?>
@@ -50,9 +45,6 @@
 			</div>
 			<?php endif; ?>
 		<?php endif; ?>
+		</div>
 	</div>
-<?php else:
-	echo JText::_('COM_KA_NO_ITEMS');
-endif; ?>
-</body>
-</html>
+<?php endif; ?>

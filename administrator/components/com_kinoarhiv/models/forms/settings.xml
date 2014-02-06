@@ -126,7 +126,7 @@
 		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="player_width" type="text" default="688" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="player_type" type="folderlist" default="mediaelement" directory="components/com_kinoarhiv/assets/js/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL" description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" />
+		<field name="player_type" type="folderlist" default="mediaelement" directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL" description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" />
 	</fieldset>
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
 		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL" description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6" />

@@ -20,8 +20,8 @@ The control icons are from a custom font. Each icon corresponds to a character
 */
 @font-face {
   font-family: 'VideoJS';
-  src: url('../../../../fonts/players/videojs/vjs.eot');
-  src: url('../../../../fonts/players/videojs/vjs.eot?#iefix') format('embedded-opentype'), url('../../../../fonts/players/videojs/vjs.woff') format('woff'), url('../../../../fonts/players/videojs/vjs.ttf') format('truetype');
+  src: url('font/vjs.eot');
+  src: url('font/vjs.eot?#iefix') format('embedded-opentype'), url('font/vjs.woff') format('woff'), url('font/vjs.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -761,3 +761,6 @@ body.vjs-full-window {
   opacity: 1;
   visibility: visible;
 }
+/* -----------------------------------------------------------------------------
+The original source of this file lives at
+https://github.com/videojs/video.js/blob/master/src/css/video-js.less */

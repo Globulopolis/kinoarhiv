@@ -113,21 +113,21 @@ class GlobalHelper {
 		$paths = array(
 			'flowplayer'=>array(
 				'css'=>array(
-					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/flowplayer-minimalist.css'
+					'components/com_kinoarhiv/assets/players/flowplayer/skin/minimalist.css'
 				),
 				'js'=>array(
-					'media/jui/js/jquery.js',
-					'components/com_kinoarhiv/assets/js/players/flowplayer/flowplayer.min.js'
+					//'media/jui/js/jquery.js',
+					//'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js'
 				)
 			),
 			'jwplayer'=>array(
 				'js'=>array(
-					'components/com_kinoarhiv/assets/js/players/jwplayer/jwplayer.js'
+					'components/com_kinoarhiv/assets/players/jwplayer/jwplayer.js'
 				)
 			),
 			'mediaelement'=>array(
 				'css'=>array(
-					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/mediaelement-default.css'
+					'components/com_kinoarhiv/assets/players/mediaelement/mediaelementplayer.css'
 				),
 				'js'=>array(
 					//'media/jui/js/jquery.js',
@@ -136,11 +136,11 @@ class GlobalHelper {
 			),
 			'videojs'=>array(
 				'css'=>array(
-					'components/com_kinoarhiv/assets/themes/component/'.$theme.'/css/videojs-default.css'
+					'components/com_kinoarhiv/assets/players/videojs/video-js.css'
 				),
 				'js'=>array(
-					'components/com_kinoarhiv/assets/js/players/videojs/video.min.js',
-					'components/com_kinoarhiv/assets/js/players/videojs/video.persistvolume.min.js'
+					'components/com_kinoarhiv/assets/players/videojs/video.js',
+					'components/com_kinoarhiv/assets/players/videojs/videojs.persistvolume.js'
 				)
 			)
 		);

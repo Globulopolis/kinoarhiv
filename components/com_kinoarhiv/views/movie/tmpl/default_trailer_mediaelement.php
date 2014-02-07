@@ -1,18 +1,18 @@
 <?php defined('_JEXEC') or die; ?>
-<script src="components/com_kinoarhiv/assets/js/players/mediaelement/mediaelement-and-player.min.js" type="text/javascript"></script>
+<script src="components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js" type="text/javascript"></script>
 <?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
 <?php if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 $item_trailer = $this->item->trailer; ?>
-<script type="text/javascript">
-	jQuery(document).ready(function($){
-		$('#trailer').mediaelementplayer({
-			pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
-			flashName: 'flashmediaelement.swf',
-			silverlightName: 'silverlightmediaelement.xap',
-			poster: '<?php echo $this->item->trailer->path.$this->item->trailer->screenshot; ?>'
+	<script type="text/javascript">
+		jQuery(document).ready(function($){
+			$('#trailer').mediaelementplayer({
+				pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
+				flashName: 'flashmediaelement.swf',
+				silverlightName: 'silverlightmediaelement.xap',
+				poster: '<?php echo $this->item->trailer->path.$this->item->trailer->screenshot; ?>'
+			});
 		});
-	});
-</script>
+	</script>
 	<div class="clear"></div>
 	<div class="ui-widget trailer">
 		<h3><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></h3>
@@ -36,8 +36,8 @@ $item_trailer = $this->item->trailer; ?>
 					<?php if (count($item_trailer->files['chapters']) > 0): ?>
 						<track kind="chapters" src="<?php echo $item_trailer->path.$item_trailer->files['chapters']['file']; ?>" srclang="en" default="default" />
 					<?php endif; ?>
-					<object width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf">
-						<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf" />
+					<object width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf">
+						<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf" />
 						<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>" />
 						<img src="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" title="No video playback capabilities" />
 					</object>
@@ -61,16 +61,16 @@ $item_trailer = $this->item->trailer; ?>
 
 if ((isset($this->item->movie) && count($this->item->movie) > 0) && ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')):
 $item_movie = $this->item->movie; ?>
-<script type="text/javascript">
-	jQuery(document).ready(function($){
-		$('#movie').mediaelementplayer({
-			pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
-			flashName: 'flashmediaelement.swf',
-			silverlightName: 'silverlightmediaelement.xap',
-			poster: '<?php echo $this->item->movie->path.$this->item->movie->screenshot; ?>'
+	<script type="text/javascript">
+		jQuery(document).ready(function($){
+			$('#movie').mediaelementplayer({
+				pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
+				flashName: 'flashmediaelement.swf',
+				silverlightName: 'silverlightmediaelement.xap',
+				poster: '<?php echo $this->item->movie->path.$this->item->movie->screenshot; ?>'
+			});
 		});
-	});
-</script>
+	</script>
 	<div class="clear"></div>
 	<div class="ui-widget trailer">
 		<h3><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></h3>
@@ -94,8 +94,8 @@ $item_movie = $this->item->movie; ?>
 					<?php if (count($item_movie->files['chapters']) > 0): ?>
 						<track kind="chapters" src="<?php echo $item_movie->path.$item_movie->files['chapters']['file']; ?>" srclang="en" default="default" />
 					<?php endif; ?>
-					<object width="<?php echo $item_movie->player_width; ?>" height="<?php echo $item_movie->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf">
-						<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/flashmediaelement.swf" />
+					<object width="<?php echo $item_movie->player_width; ?>" height="<?php echo $item_movie->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf">
+						<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf" />
 						<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>" />
 						<img src="<?php echo $item_movie->path.$item_movie->screenshot; ?>" width="<?php echo $item_movie->player_width; ?>" height="<?php echo $item_movie->player_height; ?>" title="No video playback capabilities" />
 					</object>

@@ -1,4 +1,7 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+$total_trailers = count($this->item->trailer);
+$total_movies = count($this->item->movie);
+?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
@@ -128,6 +131,23 @@
 			collapsible: true,
 			heightStyle: 'content'
 		});
+		<?php if (($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') && ($total_trailers > 0 || $total_movies > 0)): ?>
+		$('.watch-buttons a').button({
+			icons: { primary: 'ui-icon-play' }
+		}).click(function(e){
+			e.preventDefault();
+
+			if ($(this).hasClass('watch-trailer')) {
+				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
+					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+				}
+			} else if ($(this).hasClass('watch-movie')) {
+				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
+					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+				}
+			}
+		});
+		<?php endif; ?>
 	});
 //]]>
 </script>
@@ -339,8 +359,23 @@
 		</div>
 		<?php
 			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$this->params->get('player_type');
-			if (count($this->item->trailer) > 0 || count($this->item->movie) > 0) {
-				echo $this->loadTemplate($player_layout);
+			if ($total_trailers > 0 || $total_movies > 0) {
+				// Needed to avoid a bugs. Flowplayer redirecting when SEF is turned on. JWplayer show an error(but playing w/o errors).
+				if ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') {
+				?>
+					<div class="clear"></div>
+					<div class="watch-buttons">
+						<?php if ($total_trailers > 0): ?>
+							<a href="#" class="watch-trailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
+						<?php endif; ?>
+						<?php if ($total_movies > 0): ?>
+							<a href="#" class="watch-movie"><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
+						<?php endif; ?>
+					</div>
+				<?php
+				} else {
+					echo $this->loadTemplate($player_layout);
+				}
 			}
 		?>
 		<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>

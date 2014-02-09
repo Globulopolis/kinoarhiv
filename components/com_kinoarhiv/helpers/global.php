@@ -113,11 +113,11 @@ class GlobalHelper {
 		$paths = array(
 			'flowplayer'=>array(
 				'css'=>array(
-					'components/com_kinoarhiv/assets/players/flowplayer/skin/minimalist.css'
+					'components/com_kinoarhiv/assets/players/flowplayer/skin/all-skins.css'
 				),
 				'js'=>array(
-					//'media/jui/js/jquery.js',
-					//'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js'
+					'media/jui/js/jquery.js',
+					'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js'
 				)
 			),
 			'jwplayer'=>array(

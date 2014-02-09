@@ -164,8 +164,8 @@ class KinoarhivModelMovie extends JModelForm {
 			. "\n LIMIT 2");
 		$result->releases = $db->loadObjectList();
 
-		$result->trailer = $this->getTrailer($id, 'trailer');
-		$result->movie = $this->getTrailer($id, 'movie');
+		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();
+		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
 
 		return $result;
 	}
@@ -366,7 +366,7 @@ class KinoarhivModelMovie extends JModelForm {
 	/**
 	 * Method to get trailer or movie
 	 */
-	public function getTrailer($id, $type='trailer') {
+	public function getTrailer($id=null, $type=null) {
 		jimport('joomla.filesystem.file');
 
 		$db = $this->getDBO();
@@ -375,7 +375,15 @@ class KinoarhivModelMovie extends JModelForm {
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$params = $app->getParams('com_kinoarhiv');
-		$id = $app->input->get('id', $id, 'int');
+
+		if (is_null($id)) {
+			$id = $app->input->get('id', null, 'int');
+		}
+
+		if (is_null($type)) {
+			$type = $app->input->get('type', '');
+		}
+
 		if ($type == 'movie') {
 			if ($params->get('allow_guest_watch') != 1) {
 				return array();

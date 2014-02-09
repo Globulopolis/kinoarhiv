@@ -322,6 +322,7 @@ h3.title {
 
 .info .left-col {
 	float: left;
+	min-width: 128px;
 	width: 20%;
 }
 
@@ -350,6 +351,7 @@ h3.title {
 .movie-info .f-col, .name-info .f-col {
 	display: inline-block;
 	margin: 2px;
+	min-width: 128px;
 	padding: 2px 4px;
 	width: 25%;
 }
@@ -933,6 +935,14 @@ div.rating {
 	border-left: 0;
 	border-right: 0;
 	padding: 0;
+}
+
+.watch-buttons a:hover {
+	-moz-box-shadow: 0px 0px 3px 0px #ccc;
+	-webkit-box-shadow: 0px 0px 3px 0px #ccc;
+	box-shadow: 0px 0px 3px 0px #ccc;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=0, Color='#cccccc')";
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=0, Color='#cccccc');
 }
 
 .video-links {

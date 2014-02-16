@@ -29,7 +29,7 @@ $item_trailer = $this->item->trailer; ?>
 			<?php else: ?>
 			<div style="height: <?php echo $item_trailer->player_height; ?>px;"><img src="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" /></div>
 			<?php endif; ?>
-			<?php if (count($item_trailer->files['video_links']) > 0): ?>
+			<?php if (isset($item_trailer->files['video_links']) && (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)): ?>
 			<div class="video-links">
 				<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
 				<?php foreach ($item_trailer->files['video_links'] as $item): ?>
@@ -68,7 +68,7 @@ $item_movie = $this->item->movie; ?>
 			<?php else: ?>
 			<div style="height: <?php echo $item_movie->player_height; ?>px;"><img src="<?php echo $item_movie->path.$item_movie->screenshot; ?>" /></div>
 			<?php endif; ?>
-			<?php if (count($item_movie->files['video_links']) > 0): ?>
+			<?php if (isset($item_movie->files['video_links']) && (count($item_movie->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)): ?>
 			<div class="video-links">
 				<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
 				<?php foreach ($item_movie->files['video_links'] as $item): ?>

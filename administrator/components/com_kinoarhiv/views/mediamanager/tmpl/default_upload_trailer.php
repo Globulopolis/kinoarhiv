@@ -552,7 +552,7 @@ $type = $input->get('type', '', 'word');
 							var input = $('.dialog #urls_url_video');
 							if (input.val() != '' && url_regex.test(input.val())) {
 								var form_urls = $('#form_urls').val();
-								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'", type="'+ $('#urls_url_video_type').val() +'", player="'+ $('#urls_url_video_inplayer').val() +'"]'); // Set value
+								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'" type="'+ $('#urls_url_video_type').val() +'" player="'+ $('#urls_url_video_inplayer').val() +'"]'); // Set value
 								$('#urls_layout_video_form')[0].reset();
 							} else {
 								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
@@ -577,7 +577,7 @@ $type = $input->get('type', '', 'word');
 							var input = $('.dialog #urls_url_subtitles');
 							if (input.val() != '' && url_regex.test(input.val())) {
 								var form_urls = $('#form_urls').val();
-								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'", kind="subtitles", srclang="'+ $('#urls_url_subtitles_lang').val() +'", label="'+ $('#urls_url_subtitles_lang :selected').text() +'", default="'+ $('#urls_url_subtitles_default').val() +'"]'); // Set value
+								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'" kind="subtitles" srclang="'+ $('#urls_url_subtitles_lang').val() +'" label="'+ $('#urls_url_subtitles_lang :selected').text() +'" default="'+ $('#urls_url_subtitles_default').val() +'"]'); // Set value
 								$('#urls_layout_subtitles_form')[0].reset();
 							} else {
 								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
@@ -602,7 +602,7 @@ $type = $input->get('type', '', 'word');
 							var input = $('.dialog #urls_url_chp');
 							if (input.val() != '' && url_regex.test(input.val())) {
 								var form_urls = $('#form_urls').val();
-								$('#form_urls').val(form_urls + "\n"+'[url="'+ input.val() +'", kind="chapters"]'); // Set value
+								$('#form_urls').val(form_urls + "\n"+'[url="'+ input.val() +'" kind="chapters"]'); // Set value
 								input.val(''); // Clear input in dialog
 							} else {
 								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');

@@ -873,7 +873,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			);
 
 			$new_obj = JArrayHelper::toObject($files_arr);
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `resolution` = '".$video_info->streams[0]->width.'x'.$video_info->streams[0]->height."', `dar` = '".$video_info->streams[0]->display_aspect_ratio."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
 			$query = $db->execute();
 		} else {
 			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id).$file);
@@ -890,7 +890,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			$new_obj = JArrayHelper::toObject($files_arr);
 
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `resolution` = '".$video_info->streams[0]->width.'x'.$video_info->streams[0]->height."', `dar` = '".$video_info->streams[0]->display_aspect_ratio."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
 			$query = $db->execute();
 		}
 	}

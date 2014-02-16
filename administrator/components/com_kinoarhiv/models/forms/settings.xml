@@ -40,14 +40,6 @@
 			<option value="php">PHP</option>
 			<option value="syslog">System</option>
 		</field>
-		<field name="allow_guest_watch" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="allow_movie_download" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 	</fieldset>
 	<fieldset name="metadata" label="COM_KA_SETTINGS_META_LABEL">
 		<field name="meta_description" type="textarea" label="COM_KA_FIELD_META_LABEL" description="COM_KA_FIELD_META_LABEL_DESC" filter="string" cols="60" rows="3" class="span11" />
@@ -174,6 +166,14 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="watch_movie" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_MOVIE_LABEL" description="COM_KA_FIELD_AP_MOVIE_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="allow_guest_watch" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="allow_movie_download" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

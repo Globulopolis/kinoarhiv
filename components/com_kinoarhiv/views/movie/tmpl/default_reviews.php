@@ -2,6 +2,8 @@
 $review_number = $this->pagination->limitstart + 1;
 
 if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
+	$cmd_insert_username = ' cmd-insert-username';
+
 	GlobalHelper::loadEditorAssets(); ?>
 	<script type="text/javascript">
 	//<![CDATA[
@@ -46,6 +48,21 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
 					if ($.fn.tooltip) { $('#font-size').tooltip('enable'); }
 				}).toggle();
 			});
+			$('.cmd-insert-username').click(function(){
+				var username = $(this).text();
+
+				editor.focus();
+				editor.composer.commands.exec('insertHTML', '<strong>' + username + '</strong><br />');
+			});
+			$('.cmd-insert-quote').click(function(e){
+				e.preventDefault();
+				var quoted_text = $(this).closest('.review-row').find('.review').html(),
+					quoted_link = $(this).closest('.review-row').find('.review-row-title a.permalink').attr('href'),
+					username = $(this).closest('.review-row').find('.review-row-title span.username').text();
+
+				editor.focus();
+				editor.composer.commands.exec('insertHTML', '<a href="'+ quoted_link +'"><strong>'+ username +'</strong><?php echo JText::_('COM_KA_REVIEWS_QUOTEWROTE'); ?>:</a><br /><blockquote cite="'+ quoted_link +'">'+ quoted_text +'</blockquote><br />');
+			});
 		});
 	//]]>
 	</script>
@@ -58,7 +75,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
 			$review = $this->items[$i]; ?>
 		<div class="review-row">
 			<a name="review-<?php echo $review->id; ?>"></a>
-			<div class="review-row-title <?php if ($review->type == 2):
+			<div class="review-row-title ui-corner-top <?php if ($review->type == 2):
 					echo 'ui-state-highlight';
 				elseif ($review->type == 3):
 					echo 'ui-state-error';
@@ -66,11 +83,12 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
 					echo 'ui-state-default';
 				endif; ?>">
 				<span class="number"><?php echo $review_number++; ?>. </span>
-				<span class="username"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
-				<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&review='.$review->id.'&Itemid='.$this->itemid).'#review-'.$review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0" /></a></span>
+				<span class="username<?php echo $cmd_insert_username; ?>"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
+				<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&review='.$review->id.'&Itemid='.$this->itemid).'#review-'.$review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip permalink"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0" /></a></span>
 				<span class="date"><?php echo $review->review_date; ?></span>
 			</div>
-			<div class="review ui-widget-content"><?php echo $review->review; ?></div>
+			<div class="ui-widget ui-widget-content review"><?php echo $review->review; ?></div>
+			<div class="ui-widget ui-widget-content ui-corner-bottom footer"><a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a></div>
 		</div>
 		<?php endfor; ?>
 		<div class="pagination bottom">

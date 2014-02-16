@@ -594,9 +594,20 @@ div.rating {
 }
 
 .review-row .review {
+	background: none;
+	border-top: none;
+	padding: 4px 6px;
+}
+
+.review-row .footer {
 	border-top: none;
 	margin-bottom: .4em;
 	padding: 4px 6px;
+}
+
+.cmd-insert-username:hover {
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 .desc .content {

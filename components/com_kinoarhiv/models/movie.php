@@ -51,7 +51,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`, `m`.`ua_rate`, `m`.`mpaa`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`length`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`metakey`, `m`.`metadesc`, `m`.`metadata`, `g`.`filename`");
+		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`, `m`.`ua_rate`, `m`.`mpaa`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`length`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`metakey`, `m`.`metadesc`, `m`.`metadata`, `g`.`filename`");
 		$query->from($db->quoteName('#__ka_movies').' AS `m`');
 		$query->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
 
@@ -178,7 +178,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$id = $app->input->get('id', 0, 'int');
 
-		$db->setQuery("SELECT `id`, `title`, `alias`, `year`, DATE_FORMAT(`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`modified`, '%Y-%m-%d') AS `modified`, `metakey`, `metadesc`, `metadata`"
+		$db->setQuery("SELECT `id`, `title`, `alias`, `year`, DATE_FORMAT(`created`, '%Y-%m-%d') AS `created`, `created_by`, DATE_FORMAT(`modified`, '%Y-%m-%d') AS `modified`, `metakey`, `metadesc`, `metadata`"
 			. "\n FROM ".$db->quoteName('#__ka_movies')
 			. "\n WHERE `id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		$result = $db->loadObject();

@@ -6,6 +6,7 @@
 				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
 			</h1>
 		</header>
+		<?php echo $this->loadTemplate('tabs'); ?>
 		<div class="info">
 			<div>
 				<?php for ($i=0, $n=count($this->item->careers['crew']); $i<$n; $i++):

@@ -16,7 +16,9 @@
 				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
 			</h1>
 		</header>
+		<?php echo $this->item->event->afterDisplayTitle; ?>
 		<?php echo $this->loadTemplate('tabs'); ?>
+		<?php echo $this->item->event->beforeDisplayContent; ?>
 		<div class="posters-list">
 			<?php if (count($this->items) > 0):
 				foreach ($this->items as $poster): ?>
@@ -48,4 +50,5 @@
 			<?php endif; ?>
 		</div>
 	</article>
+	<?php echo $this->item->event->afterDisplayContent; ?>
 </div>

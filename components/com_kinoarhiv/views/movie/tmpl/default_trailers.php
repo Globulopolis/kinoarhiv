@@ -6,7 +6,9 @@
 				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
 			</h1>
 		</header>
+		<?php echo $this->item->event->afterDisplayTitle; ?>
 		<?php echo $this->loadTemplate('tabs'); ?>
+		<?php echo $this->item->event->beforeDisplayContent; ?>
 		<?php if (isset($this->item->trailers) && count($this->item->trailers) > 0):
 			GlobalHelper::loadPlayerAssets(); ?>
 		<div class="trailer">
@@ -48,4 +50,5 @@
 		<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 		<?php endif; ?>
 	</article>
+	<?php echo $this->item->event->afterDisplayContent; ?>
 </div>

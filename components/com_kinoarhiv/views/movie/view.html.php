@@ -450,8 +450,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 	protected function sound() {
 		$app = JFactory::getApplication();
 
-		$item = $this->get('MovieData');
-		$items = $this->get('Soundtracks');
+		$item = $this->get('Soundtracks');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $errors), 500);
@@ -461,10 +460,27 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = $app->getParams('com_kinoarhiv');
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
+		$item->text = '';
+
+		$item->event = new stdClass;
+		$item->params = new JObject;
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=tr&id='.$item->id.'&Itemid='.$this->itemid), false);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		JPluginHelper::importPlugin('content');
+		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.movies', &$item, &$params, 0));
+
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
+		$item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
+		$item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
+		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		$this->params = &$params;
 		$this->item = &$item;
-		$this->items = &$items;
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();

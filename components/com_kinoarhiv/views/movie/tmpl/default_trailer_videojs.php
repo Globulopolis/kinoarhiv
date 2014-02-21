@@ -1,8 +1,5 @@
 <?php defined('_JEXEC') or die; ?>
 <?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
-<script type="text/javascript">
-	videojs.options.flash.swf = 'components/com_kinoarhiv/assets/js/players/videojs/video.swf';
-</script>
 <?php if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 $item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>

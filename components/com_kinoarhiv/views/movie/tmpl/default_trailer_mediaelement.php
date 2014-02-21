@@ -1,7 +1,7 @@
-<?php defined('_JEXEC') or die; ?>
-<script src="components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js" type="text/javascript"></script>
-<?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
-<?php if (isset($this->item->trailer) && count($this->item->trailer) > 0):
+<?php defined('_JEXEC') or die;
+
+GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type'));
+if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 $item_trailer = $this->item->trailer; ?>
 	<script type="text/javascript">
 		jQuery(document).ready(function($){
@@ -64,7 +64,7 @@ $item_movie = $this->item->movie; ?>
 	<script type="text/javascript">
 		jQuery(document).ready(function($){
 			$('#movie').mediaelementplayer({
-				pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/players/mediaelement/',
+				pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
 				flashName: 'flashmediaelement.swf',
 				silverlightName: 'silverlightmediaelement.xap',
 				poster: '<?php echo $this->item->movie->path.$this->item->movie->screenshot; ?>'

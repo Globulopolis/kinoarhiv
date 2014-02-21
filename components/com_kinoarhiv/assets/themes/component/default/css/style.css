@@ -114,9 +114,6 @@ h3.title {
 }
 
 .title-small {
-	background-color: #f5f5f5;
-	border: 1px solid #e3e3e3;
-	border-radius: 3px 3px 3px 3px;
 	min-height: 16px;
 	padding: 4px 4px 4px 10px;
 }
@@ -703,8 +700,21 @@ div.rating {
 	padding-left: 18px;
 }
 
+.trailer {
+	margin: 1em 0;
+}
+
 .trailer .content {
 	text-align: center;
+}
+
+.trailer .ui-widget-header {
+	padding: 4px
+}
+
+.trailer .ui-widget-content {
+	border: none;
+	overflow: hidden;
 }
 
 /* Do not remove if you using a template other than the default template. */
@@ -936,10 +946,6 @@ div.rating {
 
 .local-rt.no-rating {
 	vertical-align: top !important;
-}
-
-.trailer {
-	margin-top: 1em;
 }
 
 .trailer .ui-accordion-content {

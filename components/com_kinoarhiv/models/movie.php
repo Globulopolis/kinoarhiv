@@ -331,33 +331,133 @@ class KinoarhivModelMovie extends JModelForm {
 		return $result;
 	}
 
-	public function getTrailers() {
+	public function getTrailers($id=null, $type=null) {
+		jimport('joomla.filesystem.file');
+
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$params = $app->getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
-
+		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
+		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
 		$result = $this->getMovieData();
+		$result->player_width = $params->get('player_width');
 
-		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`filename`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`resolution`, `tr`.`dar`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
 			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
 			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		$result->trailers = $db->loadObjectList();
 
-		foreach ($result->trailers as $key=>$value) {
-			$result->trailers[$key]->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
-			$result->trailers[$key]->player_width = $params->get('player_width');
+		if (count($result->trailers ) < 1) {
+			return array();
+		}
 
-			/*if ($value->w_h != '') {
-				$wh = explode('x', $value->w_h);
-				if ($wh[0] > $params->get('player_width') || $wh[0] < $params->get('player_width')) {
-					$result->trailers[$key]->player_height = floor(($wh[1]*(int)$params->get('player_width'))/$wh[0]);
+		foreach ($result->trailers as $key=>$value) {
+			if (!empty($value->urls)) {
+				$urls_arr = explode("\n", $value->urls);
+				if (count($urls_arr) > 0) {
+					$value->path = '';
+					$value->screenshot = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+					$value->files['video'] = array();
+					$value->files['subtitles'] = array();
+					$value->files['chapters'] = array();
+					$value->files['video_links'] = array();
+
+					foreach ($urls_arr as $v) {
+						if (preg_match('#\[(url="(?P<url>.+?)")?(\stype="(?P<type>.+?)")?(\splayer="(?P<player>.+?)")?(\sresolution="(?P<resolution>.+?)")?(\skind="(?P<kind>.+?)")?(\ssrclang="(?P<srclang>.+?)")?(\slabel="(?P<label>.+?)")?(\sdefault="(?P<default>.+?)")?\]#i', $v, $m)) {
+							if (isset($m['url']) && !empty($m['url'])) {
+								$url = $m['url'];
+								$type = (isset($m['type']) && !empty($m['type'])) ? $m['type'] : '';
+								if (isset($m['player'])) {
+									if (!empty($m['player']) && $m['player'] == 'true') {
+										$in_player = true;
+									} else {
+										$in_player = false;
+									}
+								} else {
+									$in_player = false;
+								}
+								$resolution = (isset($m['resolution']) && !empty($m['resolution'])) ? $m['resolution'] : '';
+								$kind = (isset($m['kind']) && !empty($m['kind'])) ? $m['kind'] : '';
+								$srclang = (isset($m['srclang']) && !empty($m['srclang'])) ? $m['srclang'] : '';
+								$label = (isset($m['label']) && !empty($m['label'])) ? $m['label'] : '';
+								$default = (isset($m['default']) && !empty($m['default'])) ? true : false;
+
+								if (!empty($resolution)) {
+									$resolution = $m['resolution'];
+								} else {
+									$resolution = $value->resolution;
+								}
+
+								$tr_resolution = explode('x', $resolution);
+								$tr_height = $tr_resolution[1];
+								$value->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+
+								if ($kind == '') {
+									if ($in_player === true) {
+										$value->files['video'][] = array(
+											'src'=>$url,
+											'type'=>$type,
+											'resolution'=>$resolution
+										);
+									} else {
+										$value->files['video_links'][] = array(
+											'src'=>$url,
+											'type'=>$type,
+											'resolution'=>$resolution
+										);
+									}
+								}
+								if ($kind == 'subtitles') {
+									$value->files['subtitles'][] = array(
+										'default'=>$default,
+										'lang_code'=>$srclang,
+										'lang'=>$label,
+										'file'=>$url
+									);
+								}
+								if ($kind == 'chapters') {
+									$value->files['chapters'] = array(
+										'file'=>$url
+									);
+								}
+							}
+						}
+					}
+				} else {
+					$value->files['video'] = array();
 				}
-			}*/
+			} else {
+				$value->path = JURI::base().$params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
+				$value->files['video'] = json_decode($value->filename, true);
+				$value->files['video_links'] = array();
+
+				// Checking video extentions
+				if (count($value->files['video']) > 0) {
+					foreach ($value->files['video'] as $i=>$val) {
+						if (!in_array(strtolower(JFile::getExt($val['src'])), array('mp4', 'webm', 'ogv'))) {
+							$value->files['video_links'][] = $value->files['video'][$i];
+							unset($value->files['video'][$i]);
+						}
+					}
+				}
+
+				if (isset($value->files['video'][0]['resolution']) && !empty($value->files['video'][0]['resolution'])) {
+					$resolution = $value->files['video'][0]['resolution'];
+				} else {
+					$resolution = $value->resolution;
+				}
+
+				$tr_resolution = explode('x', $resolution);
+				$tr_height = $tr_resolution[1];
+				$value->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+
+				$value->files['subtitles'] = json_decode($value->_subtitles, true);
+				$value->files['chapters'] = json_decode($value->_chapters, true);
+			}
 		}
 
 		return $result;
@@ -378,14 +478,8 @@ class KinoarhivModelMovie extends JModelForm {
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$params = $app->getParams('com_kinoarhiv');
-
-		if (is_null($id)) {
-			$id = $app->input->get('id', null, 'int');
-		}
-
-		if (is_null($type)) {
-			$type = $app->input->get('type', '');
-		}
+		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
+		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
 
 		if ($type == 'movie') {
 			if ($params->get('allow_guest_watch') != 1) {
@@ -489,10 +583,12 @@ class KinoarhivModelMovie extends JModelForm {
 			$result->files['video_links'] = array();
 
 			// Checking video extentions
-			foreach ($result->files['video'] as $key=>$value) {
-				if (!in_array(strtolower(JFile::getExt($value['src'])), array('mp4', 'webm', 'ogv'))) {
-					$result->files['video_links'][] = $result->files['video'][$key];
-					unset($result->files['video'][$key]);
+			if (count($result->files['video']) > 0) {
+				foreach ($result->files['video'] as $key=>$value) {
+					if (!in_array(strtolower(JFile::getExt($value['src'])), array('mp4', 'webm', 'ogv'))) {
+						$result->files['video_links'][] = $result->files['video'][$key];
+						unset($result->files['video'][$key]);
+					}
 				}
 			}
 

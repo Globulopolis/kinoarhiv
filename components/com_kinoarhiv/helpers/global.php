@@ -115,10 +115,7 @@ class GlobalHelper {
 				'css'=>array(
 					'components/com_kinoarhiv/assets/players/flowplayer/skin/all-skins.css'
 				),
-				'js'=>array(
-					'media/jui/js/jquery.js',
-					'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js'
-				)
+				'js'=>array()
 			),
 			'jwplayer'=>array(
 				'js'=>array(
@@ -129,10 +126,7 @@ class GlobalHelper {
 				'css'=>array(
 					'components/com_kinoarhiv/assets/players/mediaelement/mediaelementplayer.css'
 				),
-				'js'=>array(
-					//'media/jui/js/jquery.js',
-					//'components/com_kinoarhiv/assets/js/players/mediaelement/mediaelement-and-player.min.js'
-				)
+				'js'=>array()
 			),
 			'videojs'=>array(
 				'css'=>array(
@@ -152,11 +146,20 @@ class GlobalHelper {
 						$document->addHeadLink($url, 'stylesheet', 'rel', array('type'=>'text/css'));
 					} elseif ($k == 'js') {
 						$document->addScript($url);
-						if ($player == 'jwplayer') {
-							$document->addScriptDeclaration("jwplayer.key='OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==';");
-						}
 					}
 				}
+			}
+
+			if ($player == 'jwplayer') {
+				$document->addScriptDeclaration("jwplayer.key='OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==';");
+			} elseif ($player == 'videojs') {
+				$document->addScriptDeclaration("videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/players/videojs/video-js.swf';");
+			} elseif ($player == 'mediaelement') {
+				JHtml::_('jquery.framework');
+				JHtml::script(JURI::base().'components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js');
+			} elseif ($player == 'flowplayer') {
+				JHtml::_('jquery.framework');
+				JHtml::script(JURI::base().'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js');
 			}
 
 			return true;
@@ -169,11 +172,17 @@ class GlobalHelper {
 						$html .= '<link href="'.$url.'" rel="stylesheet" type="text/css" />'."\n";
 					} elseif ($k == 'js') {
 						$html .= "\t".'<script src="'.$url.'" type="text/javascript"></script>'."\n";
+
 						if ($player == 'jwplayer') {
 							$html .= "\t".'<script type="text/javascript">jwplayer.key="OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==";</script>'."\n";
 						}
 					}
 				}
+			}
+
+			if ($player == 'flowplayer') {
+				$html .= "\t".'<script src="media/jui/js/jquery.js" type="text/javascript"></script>'."\n";
+				$html .= "\t".'<script src="components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js" type="text/javascript"></script>'."\n";
 			}
 
 			echo $html;

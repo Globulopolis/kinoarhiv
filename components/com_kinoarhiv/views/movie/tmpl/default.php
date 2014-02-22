@@ -240,7 +240,7 @@ $total_movies = count($this->item->movie);
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_COUNTRY'); ?></span>
+						<span class="f-col"><?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?></span>
 						<span class="s-col">
 							<?php for ($i=0, $n=count($this->item->countries); $i<$n; $i++):
 							$country = $this->item->countries[$i]; ?>

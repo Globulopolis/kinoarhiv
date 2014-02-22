@@ -11,6 +11,7 @@
 			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="desc" type="editor" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
@@ -63,6 +64,7 @@
 			<field name="tags" type="tags" default="" label="JTAG" description="JTAG_DESC" class="span11" filter="string" data-ac-type="tags" />
 
 			<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+			<field name="created_by" type="user" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" />
 			<field name="created" type="datetime" label="JGLOBAL_CREATED_DATE" class="inputbox hasDatetime datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
 			<field name="modified" type="datetime" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox hasDatetime datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
 			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />

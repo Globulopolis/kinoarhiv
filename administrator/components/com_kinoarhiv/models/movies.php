@@ -405,27 +405,75 @@ class KinoarhivModelMovies extends JModelList {
 	public function apply($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
+		$user = JFactory::getUser();
+
 		$id = $app->input->post->get('id', 0, 'int');
 		$data = $data['movie'];
+		$created_by = $data['created_by'] == 0 ? $user->id : $data['created_by'];
+		$metadata = array(
+			'tags' => json_decode('['.$data['tags'].']', true),
+			'robots' => $data['robots']
+		);
+		$introtext = '';
+		$intro_countries = '';
+		$intro_directors = '';
+		$intro_genres = '';
+		$intro_cast = '';
+
+		// Proccess intro text for country IDs and store in relation table
+		if (!empty($data['countries'])) {
+			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
+			$countries = $db->loadObjectList();
+
+			$ln_str = count($countries) > 1 ? '[ln="COM_KA_COUNTRIES"]' : '[ln="COM_KA_COUNTRY"]';
+
+			foreach ($countries as $cn) {
+				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
+			}
+
+			$intro_countries = $ln_str.': '.JString::substr($intro_countries, 0, -2).'<br />';
+		}
+
+		/*if (!empty($data['countries'])) {
+			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
+			$countries = $db->loadObjectList();
+
+			$ln_str = count($countries) > 1 ? '[ln="COM_KA_COUNTRIES"]' : '[ln="COM_KA_COUNTRY"]';
+
+			foreach ($countries as $cn) {
+				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
+			}
+
+			$intro_countries = $ln_str.': '.JString::substr($intro_countries, 0, -2).'<br />';
+		}*/
+
+		$introtext = $intro_countries.$intro_directors.$intro_genres.$intro_cast;
+
 echo '<pre>';
-print_r($data);
+//print_r($data);
+echo $introtext;
 		if (empty($id)) {
 			
 		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
+			/*$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
 				. "\n SET `parent_id` = '0', `title` = '".$db->escape($data['title'])."', `alias` = '".JFilterOutput::stringURLSafe($data['alias'])."',"
-				. " `introtext` = 'introtext', `plot` = '".$db->escape($data['plot'])."', `desc` = '".$db->escape($data['desc'])."',"
+				. " `introtext` = '".$introtext."', `plot` = '".$db->escape($data['plot'])."', `desc` = '".$db->escape($data['desc'])."',"
 				. " `known` = '".$db->escape($data['known'])."', `year` = '".$data['year']."', `slogan` = '".$db->escape($data['slogan'])."',"
 				. " `budget` = '".$data['budget']."', `age_restrict` = '".$data['age_restrict']."', `ua_rate` = '".$data['ua_rate']."',"
 				. " `mpaa` = '".$data['mpaa']."', `length` = '".$data['length']."', `rate_loc` = '".(int)$data['rate_loc']."',"
 				. " `rate_sum_loc` = '".(int)$data['rate_sum_loc']."', `imdb_votesum` = '".$data['imdb_votesum']."', `imdb_votes` = '".(int)$data['imdb_votes']."',"
 				. " `imdb_id` = '".(int)$data['imdb_id']."', `kp_votesum` = '".$data['kp_votesum']."', `kp_votes` = '".(int)$data['kp_votes']."',"
-				. " `kp_id` = '".(int)$data['kp_id']."', `rate_fc` = '".(int)$data['imdb_id']."', `rottentm_id` = '".$data['imdb_id']."',"
-				. " `rate_custom` = 'rate_custom', `urls` = 'urls', `created` = 'created',"
-				. " `modified` = 'modified', `state` = 'state', `ordering` = 'ordering',"
-				. " `metakey` = 'metakey', `metadesc` = 'metadesc', `access` = 'access',"
-				. " `metadata` = 'metadata', `language` = 'language'"
+				. " `kp_id` = '".(int)$data['kp_id']."', `rate_fc` = '".(int)$data['rate_fc']."', `rottentm_id` = '".$data['rottentm_id']."',"
+				. " `rate_custom` = '".$db->escape($data['rate_custom'])."', `urls` = '".$db->escape($data['urls'])."', `created` = '".$data['created']."',"
+				. " `created_by` = '".$created_by."', `modified` = '".$data['modified']."', `state` = '".$data['state']."',"
+				. " `ordering` = '".(int)$data['ordering']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."',"
+				. " `access` = '".(int)$data['access']."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
 				. "\n WHERE `id` = ".(int)$id);
+			try {
+				$db->execute();
+			} catch(Exception $e) {
+				return false;
+			}*/
 		}
 
 		return true;

@@ -219,7 +219,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				'Referer'=>'http://www.kinopoisk.ru/',
 				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0'
 			);
-			$response = GlobalHelper::getRemoteData('http://www.kinopoisk.ru/rating/'.(int)$id.'.xml', $headers, 30);
+			$response = GlobalHelper::getRemoteData('http://www.kinopoisk.ru/rating/'.(int)$id.'.xml', $headers, 30, array('curl', 'socket'));
 
 			$xml = new SimpleXMLElement($response->body);
 			if ($param == 'kp_vote') {
@@ -236,7 +236,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				'Referer'=>'http://www.rottentomatoes.com/',
 				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0'
 			);
-			$response = GlobalHelper::getRemoteData('http://www.rottentomatoes.com/m/'.$id.'/', $headers, 30);
+			$response = GlobalHelper::getRemoteData('http://www.rottentomatoes.com/m/'.$id.'/', $headers, 30, array('curl', 'socket'));
 
 			// Finding the div with rating
 			if (preg_match('#<div class="meter_box right_door" comp="HoverTip">(.*)<div class="clearfix">#isU', $response->body, $matches)) {
@@ -245,7 +245,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				preg_match('#<span itemprop="ratingValue"[^>]+>(.*)<\/span>#isU', $matches[1], $_votesum);
 				preg_match('#<span itemprop="reviewCount">(.*)<\/span>#isU', $matches[1], $_votes);
 				
-				if (!is_numeric($_votesum[1])) {
+				if (!isset($_votesum[1]) || !is_numeric($_votesum[1])) {
 					$message = JText::_('ERROR').': '.JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
 					$success = false;
 				} else {

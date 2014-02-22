@@ -123,6 +123,10 @@ JHtml::_('behavior.keepalive');
 						<?php echo $this->loadTemplate('edit_info'); ?>
 					<?php echo JHtml::_('bootstrap.endTab'); ?>
 
+					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-rates', JText::_('COM_KA_MOVIES_TAB_RATE', true)); ?>
+						<?php echo $this->loadTemplate('edit_rates'); ?>
+					<?php echo JHtml::_('bootstrap.endTab'); ?>
+
 					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-cast-crew', JText::_('COM_KA_MOVIES_TAB_CAST_CREW', true)); ?>
 						<?php echo $this->loadTemplate('edit_crew'); ?>
 					<?php echo JHtml::_('bootstrap.endTab'); ?>
@@ -151,6 +155,10 @@ JHtml::_('behavior.keepalive');
 										<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_group); ?></div>
 									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('created_by', $this->form_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('created_by', $this->form_group); ?></div>
+									</div>
 								</fieldset>
 							</div>
 							<div class="span6">
@@ -173,7 +181,7 @@ JHtml::_('behavior.keepalive');
 								<legend><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></legend>
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<?php echo $this->form->getInput('rules', $this->form_group); ?>
+										<?php //echo $this->form->getInput('rules', $this->form_group); ?>
 									</div>
 								</fieldset>
 							</div>

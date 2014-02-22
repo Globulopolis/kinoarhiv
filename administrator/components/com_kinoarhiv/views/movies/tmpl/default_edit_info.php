@@ -3,8 +3,8 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('#form_rate_sum_loc, #form_rate_loc').blur(function(){
-			var vote = parseFloat($('#form_rate_sum_loc').val() / $('#form_rate_loc').val()).toFixed(<?php echo (int)$this->params->get('vote_summ_precision'); ?>);
+		$('#form_movie_rate_sum_loc, #form_movie_rate_loc').blur(function(){
+			var vote = parseFloat($('#form_movie_rate_sum_loc').val() / $('#form_movie_rate_loc').val()).toFixed(<?php echo (int)$this->params->get('vote_summ_precision'); ?>);
 			$('#vote').text(vote);
 		}).trigger('blur');
 
@@ -80,15 +80,16 @@ JHtml::_('behavior.keepalive');
 			var cmd = $(this).attr('id');
 
 			if (cmd == 'imdb_vote') {
-				if ($('#form_kp_id').val() == '') { return; }
+				// Below we use ID from Kinopoisk because they return a xml with IMDB and KP votes
+				if ($('#form_movie_kp_id').val() == '') { return; }
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_kp_id').val()
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val()
 				}).done(function(response){
 					if (response.success) {
-						$('#form_imdb_votesum').val(response.votesum);
-						$('#form_imdb_votes').val(response.votes);
+						$('#form_movie_imdb_votesum').val(response.votesum);
+						$('#form_movie_imdb_votes').val(response.votes);
 						requestUpdateStatImg(cmd, response);
 					} else {
 						showMsg('#j-main-container', response.message);
@@ -101,15 +102,15 @@ JHtml::_('behavior.keepalive');
 					blockUI('hide');
 				});
 			} else if (cmd == 'kp_vote') {
-				if ($('#form_kp_id').val() == '') { return; }
+				if ($('#form_movie_kp_id').val() == '') { return; }
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_kp_id').val()
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val()
 				}).done(function(response){
 					if (response.success) {
-						$('#form_kp_votesum').val(response.votesum);
-						$('#form_kp_votes').val(response.votes);
+						$('#form_movie_kp_votesum').val(response.votesum);
+						$('#form_movie_kp_votes').val(response.votes);
 						requestUpdateStatImg(cmd, response);
 					} else {
 						showMsg('#j-main-container', response.message);
@@ -122,14 +123,14 @@ JHtml::_('behavior.keepalive');
 					blockUI('hide');
 				});
 			} else if (cmd == 'rt_vote') {
-				if ($('#form_rottentm_id').val() == '') { return; }
+				if ($('#form_movie_rottentm_id').val() == '') { return; }
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_rottentm_id').val()
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_rottentm_id').val()
 				}).done(function(response){
 					if (response.success) {
-						$('#form_rate_fc').val(response.votesum);
+						$('#form_movie_rate_fc').val(response.votesum);
 						requestUpdateStatImg(cmd, response);
 					} else {
 						showMsg('#j-main-container', response.message);
@@ -168,6 +169,7 @@ JHtml::_('behavior.keepalive');
 						$(dlg).dialog({
 							modal: true
 						});
+						blockUI('hide');
 					} else {
 						showMsg('#j-main-container', response.message);
 						$(document).scrollTop(0);
@@ -331,79 +333,9 @@ JHtml::_('behavior.keepalive');
 				<div class="control-label"><?php echo $this->form->getLabel('desc', $this->form_group); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('desc', $this->form_group); ?></div>
 			</div>
-		</fieldset>
-	</div>
-</div>
-<div class="row-fluid">
-	<legend><?php echo JText::_('COM_KA_FIELD_MOVIE_RATES'); ?></legend>
-	<div class="span7">
-		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('mpaa', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('mpaa', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('age_restrict', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('age_restrict', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('ua_rate', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('ua_rate', $this->form_group); ?></div>
-			</div>
-		</fieldset>
-	</div>
-	<div class="span5">
-		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('imdb_votesum', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_votesum', $this->form_group); ?> <a href="#" id="imdb_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('imdb_votes', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_votes', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('imdb_id', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_id', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('kp_votesum', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_votesum', $this->form_group); ?> <a href="#" id="kp_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('kp_votes', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_votes', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('kp_id', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_id', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_fc', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_fc', $this->form_group); ?> <a href="#" id="rt_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rottentm_id', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rottentm_id', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_sum_loc', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_sum_loc', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_loc', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_loc', $this->form_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="span12"><?php echo JText::_('COM_KA_FIELD_MOVIE_VOTESUMM'); ?> / <?php echo JText::_('COM_KA_FIELD_MOVIE_VOTES'); ?> = <span id="vote">0</span></div>
-			</div>
-		</fieldset>
-	</div>
-	<div class="span12">
-		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('rate_custom', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_custom', $this->form_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('urls', $this->form_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('urls', $this->form_group); ?></div>
 			</div>
 		</fieldset>
 	</div>

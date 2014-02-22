@@ -351,8 +351,9 @@ class KinoarhivModelMovie extends JModelForm {
 			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		$result->trailers = $db->loadObjectList();
 
-		if (count($result->trailers ) < 1) {
-			return array();
+		if (count($result->trailers) < 1) {
+			$result->trailers = array();
+			return $result;
 		}
 
 		foreach ($result->trailers as $key=>$value) {
@@ -389,7 +390,11 @@ class KinoarhivModelMovie extends JModelForm {
 								if (!empty($resolution)) {
 									$resolution = $m['resolution'];
 								} else {
-									$resolution = $value->resolution;
+									if ($value->resolution != '') {
+										$resolution = $value->resolution;
+									} else {
+										$resolution = '1280x720';
+									}
 								}
 
 								$tr_resolution = explode('x', $resolution);
@@ -448,7 +453,11 @@ class KinoarhivModelMovie extends JModelForm {
 				if (isset($value->files['video'][0]['resolution']) && !empty($value->files['video'][0]['resolution'])) {
 					$resolution = $value->files['video'][0]['resolution'];
 				} else {
-					$resolution = $value->resolution;
+					if ($value->resolution != '') {
+						$resolution = $value->resolution;
+					} else {
+						$resolution = '1280x720';
+					}
 				}
 
 				$tr_resolution = explode('x', $resolution);
@@ -536,7 +545,11 @@ class KinoarhivModelMovie extends JModelForm {
 							if (!empty($resolution)) {
 								$resolution = $m['resolution'];
 							} else {
-								$resolution = $result->resolution;
+								if ($result->resolution != '') {
+									$resolution = $result->resolution;
+								} else {
+									$resolution = '1280x720';
+								}
 							}
 
 							$tr_resolution = explode('x', $resolution);
@@ -595,7 +608,11 @@ class KinoarhivModelMovie extends JModelForm {
 			if (isset($result->files['video'][0]['resolution']) && !empty($result->files['video'][0]['resolution'])) {
 				$resolution = $result->files['video'][0]['resolution'];
 			} else {
-				$resolution = $result->resolution;
+				if ($result->resolution != '') {
+					$resolution = $result->resolution;
+				} else {
+					$resolution = '1280x720';
+				}
 			}
 
 			$tr_resolution = explode('x', $resolution);

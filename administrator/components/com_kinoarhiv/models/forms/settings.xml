@@ -153,6 +153,30 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="tab_movie_wallpp" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_posters" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_POSTERS_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_scr" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_SCR_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_awards" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_AWARDS_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_tr" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_TR_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_snd" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_SND_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="pagevan_top" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_PAGENAV_TOP_LABEL" description="COM_KA_FIELD_AP_PAGENAV_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

@@ -256,4 +256,14 @@ class GlobalHelper {
 			}
 		}
 	}
+
+	static function doRedirect($url=null, $message=null, $messageType='message') {
+		if (!is_null($url)) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage($message, $messageType);
+			$app->redirect($url);
+		}
+
+		return false;
+	}
 }

@@ -42,6 +42,7 @@
 			width: aw_grid_cfg.grid_form_width, left: aw_grid_cfg.grid_form_left, top: aw_grid_cfg.grid_form_top,
 			closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 		});
+		$('#list_awards').jqGrid('gridResize', {});
 
 		$('.awards-container a.a, .awards-container a.e, .awards-container a.d').click(function(e){
 			e.preventDefault();

@@ -113,6 +113,8 @@
 		</field>
 		<field name="limit_text" type="text" default="250" label="COM_KA_FIELD_AP_LIMITTEXT_LABEL" description="COM_KA_FIELD_AP_LIMITTEXT_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="person_list_limit" type="text" default="3" label="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="premieres_list_limit" type="text" default="2" label="COM_KA_FIELD_AP_LIMIT_PREMIERELIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_PREMIERELIST_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="releases_list_limit" type="text" default="2" label="COM_KA_FIELD_AP_LIMIT_RELEASELIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_RELEASELIST_LABEL_DESC" required="true" filter="integer" size="6" />
 
 		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />

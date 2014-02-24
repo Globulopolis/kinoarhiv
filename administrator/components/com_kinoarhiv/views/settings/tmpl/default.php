@@ -3,6 +3,7 @@ JHtml::_('behavior.tooltip');
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
 <script type="text/javascript">
 	function showMsg(selector, text) {
@@ -33,6 +34,28 @@ JHtml::_('behavior.tooltip');
 
 	jQuery(document).ready(function($){
 		$('#jform_filter_genres, #jform_filter_names').select2();
+		$('#jform_premieres_list_limit, #jform_releases_list_limit').spinner({
+			spin: function(event, ui){
+				if (ui.value > 5) {
+					$(this).spinner('value', 0);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 5);
+					return false;
+				}
+			}
+		});
+		$('#jform_person_list_limit').spinner({
+			spin: function(event, ui){
+				if (ui.value > 10) {
+					$(this).spinner('value', 1);
+					return false;
+				} else if (ui.value < 1) {
+					$(this).spinner('value', 10);
+					return false;
+				}
+			}
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="application-form" method="post" name="adminForm" autocomplete="off">

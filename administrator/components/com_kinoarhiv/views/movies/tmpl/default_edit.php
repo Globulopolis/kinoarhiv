@@ -192,7 +192,10 @@ JHtml::_('behavior.keepalive');
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('asset_id', $this->form_group); ?>
+	<?php echo $this->form->getInput('asset_id', $this->form_group)."\n"; ?>
+	<?php echo $this->form->getInput('countries_orig', $this->form_group)."\n"; ?>
+	<?php echo $this->form->getInput('genres_orig', $this->form_group)."\n"; ?>
+	<?php echo $this->form->getInput('tags_orig', $this->form_group)."\n"; ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items->id) ? $this->items->id : 0; ?>" />

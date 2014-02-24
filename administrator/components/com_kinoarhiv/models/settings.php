@@ -42,7 +42,6 @@ class KinoarhivModelSettings extends JModelForm {
 	 * @return  bool	True on success, false on failure.
 	 */
 	public function save($data) {
-		//print_r($data['rules']);
 		$db = $this->getDBO();
 		$form_rules = $data['rules'];
 		// Unset rules array because we do not need it in the component parameters
@@ -57,6 +56,24 @@ class KinoarhivModelSettings extends JModelForm {
 					unset($form_rules[$rule][$group]);
 				}
 			}
+		}
+
+		if ($data['person_list_limit'] > 10) {
+			$data['person_list_limit'] = 10;
+		} elseif ($data['person_list_limit'] < 1) {
+			$data['person_list_limit'] = 1;
+		}
+
+		if ($data['premieres_list_limit'] > 5) {
+			$data['premieres_list_limit'] = 5;
+		} elseif ($data['premieres_list_limit'] < 0) {
+			$data['premieres_list_limit'] = 0;
+		}
+
+		if ($data['releases_list_limit'] > 5) {
+			$data['releases_list_limit'] = 5;
+		} elseif ($data['releases_list_limit'] < 0) {
+			$data['releases_list_limit'] = 0;
 		}
 
 		$params = json_encode($data);

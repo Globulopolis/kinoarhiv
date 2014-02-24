@@ -667,6 +667,10 @@ div.rating {
 	margin-left: 0.4em;
 }
 
+.cast-row .actor-desc {
+	color: #777;
+}
+
 .ratings {
 	margin: 2em 0;
 }

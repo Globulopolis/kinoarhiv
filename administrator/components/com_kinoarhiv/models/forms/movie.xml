@@ -75,6 +75,9 @@
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
+			<field name="countries_orig" type="hidden" />
+			<field name="genres_orig" type="hidden" />
+			<field name="tags_orig" type="hidden" />
 		</fieldset>
 	</fields>
 
@@ -92,6 +95,7 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+		<field name="r_desc" type="textarea" default="" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" />
 	</fieldset>
 
 	<fieldset name="career_quick_add">

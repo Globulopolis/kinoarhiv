@@ -271,8 +271,12 @@ $name_id = $input->get('name_id', 0, 'int');
 					<div class="controls"><?php echo $this->form->getInput('role'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('ordering'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('ordering'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('r_ordering'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_ordering'); ?></div>
+				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('r_desc'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_desc'); ?></div>
 				</div>
 			</div>
 		</fieldset>

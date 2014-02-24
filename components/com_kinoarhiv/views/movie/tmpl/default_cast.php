@@ -1,4 +1,8 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+echo '<pre>';
+print_r($this->item);
+echo '</pre>';
+?>
 <div class="content movie">
 	<article>
 		<header>
@@ -50,6 +54,7 @@
 						<span class="actor">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / '.$name['latin_name'] : ''; ?></a><br />
 							<span class="actor-role"><?php echo $name['role']; ?></span>
+							<div class="actor-desc"><?php echo $name['desc']; ?></div>
 						</span>
 						<?php if (!empty($name['dub_id'])): ?>
 						<span class="actor-dub">
@@ -75,6 +80,7 @@
 						<span class="actor">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / '.$name['latin_name'] : ''; ?></a><br />
 							<span class="actor-role"><?php echo $name['role']; ?></span>
+							<div class="actor-desc"><?php echo $name['desc']; ?></div>
 						</span>
 					</div>
 					<?php endforeach; ?>

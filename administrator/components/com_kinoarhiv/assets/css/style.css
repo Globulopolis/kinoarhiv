@@ -236,3 +236,8 @@ img.movie-poster-preview {
 	padding: 2px;
 	height: 110px !important;
 }
+
+#jform_person_list_limit, #jform_premieres_list_limit, #jform_releases_list_limit {
+	border: 0;
+	margin: 0;
+}

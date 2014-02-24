@@ -666,7 +666,8 @@ class KinoarhivModelRelations extends JModelForm {
 				'role'=>			'string',
 				'is_actors'=>		'int',
 				'voice_artists'=>	'int',
-				'r_ordering'=>		'int'
+				'ordering'=>		'int',
+				'desc'=>			'string'
 			)
 		), $_POST);
 		$isNew = $app->input->post->get('new', 1, 'int');
@@ -690,8 +691,8 @@ class KinoarhivModelRelations extends JModelForm {
 				return array('success'=>false, 'message'=>JText::_('COM_KA_ITEMS_RELATION_DUPLICATE'));
 			}
 
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_names')." (`name_id`, `movie_id`, `type`, `role`, `dub_id`, `is_actors`, `voice_artists`, `ordering`)"
-				. "\n VALUES ('".(int)$data['form']['name_id'][0]."', '".(int)$movie_id."', '".(int)$data['form']['type'][0]."', '".$data['form']['role']."', '".(int)$data['form']['dub_id'][0]."', '".(int)$data['form']['is_actors']."', '".(int)$data['form']['voice_artists']."', '".(int)$data['form']['r_ordering']."')");
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_names')." (`name_id`, `movie_id`, `type`, `role`, `dub_id`, `is_actors`, `voice_artists`, `ordering`, `desc`)"
+				. "\n VALUES ('".(int)$data['form']['name_id'][0]."', '".(int)$movie_id."', '".(int)$data['form']['type'][0]."', '".$data['form']['role']."', '".(int)$data['form']['dub_id'][0]."', '".(int)$data['form']['is_actors']."', '".(int)$data['form']['voice_artists']."', '".(int)$data['form']['ordering']."', '".$db->escape($data['form']['desc'])."')");
 			$query = $db->execute();
 
 			if ($query !== true) {
@@ -706,7 +707,7 @@ class KinoarhivModelRelations extends JModelForm {
 			$_id = substr($_id, 15);
 			$id = explode('_', $_id);
 
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_rel_names')." SET `type` = '".(int)$data['form']['type'][0]."', `role` = '".$data['form']['role']."', `dub_id` = '".(int)$data['form']['dub_id'][0]."', `is_actors` = '".(int)$data['form']['is_actors']."', `voice_artists` = '".(int)$data['form']['voice_artists']."', `ordering` = '".(int)$data['form']['r_ordering']."'"
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_rel_names')." SET `type` = '".(int)$data['form']['type'][0]."', `role` = '".$data['form']['role']."', `dub_id` = '".(int)$data['form']['dub_id'][0]."', `is_actors` = '".(int)$data['form']['is_actors']."', `voice_artists` = '".(int)$data['form']['voice_artists']."', `ordering` = '".(int)$data['form']['ordering']."', `desc` = '".$db->escape($data['form']['desc'])."'"
 				. "\n WHERE `name_id` = ".(int)$data['form']['name_id'][0]." AND `movie_id` = ".(int)$movie_id);
 			$query = $db->execute();
 

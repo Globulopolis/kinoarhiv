@@ -129,7 +129,7 @@ class KinoarhivModelMovie extends JModelForm {
 			foreach ($_result['crew'] as $row) {
 				$row['total_items'] = count($row['items']);
 				if ($row['total_items'] > 0) {
-					$row['items'] = array_slice($row['items'], 0, 3);
+					$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
 				}
 				$result->crew[] = $row;
 			}
@@ -139,30 +139,39 @@ class KinoarhivModelMovie extends JModelForm {
 			foreach ($_result['cast'] as $row) {
 				$row['total_items'] = count($row['items']);
 				if ($row['total_items'] > 0) {
-					$row['items'] = array_slice($row['items'], 0, 3);
+					$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
 				}
 				$result->cast[] = $row;
 			}
 		}
 
 		// Selecting premiere dates
-		$db->setQuery("SELECT `p`.`premiere_date`, `p`.`info`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
-			. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `p`.`vendor_id`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `p`.`country_id`"
-			. "\n WHERE `movie_id` = 2"
-			. "\n LIMIT 2");
-		$result->premieres = $db->loadObjectList();
+		if ($params->get('premieres_list_limit') > 0) {
+			$db->setQuery("SELECT `p`.`premiere_date`, `p`.`info`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
+				. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `p`.`vendor_id`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `p`.`country_id`"
+				. "\n WHERE `movie_id` = ".(int)$id
+				. "\n ORDER BY `p`.`ordering` ASC"
+				. "\n LIMIT ".(int)$params->get('premieres_list_limit'));
+			$result->premieres = $db->loadObjectList();
+		} else {
+			$result->premieres = array();
+		}
 
 		// Selecting release dates
-		$db->setQuery("SELECT `r`.`id`, `r`.`media_type`, `r`.`release_date`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
-			. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `r`.`vendor_id`"
-			. "\n WHERE `movie_id` = 2"
-			. "\n ORDER BY `ordering` ASC"
-			. "\n LIMIT 2");
-		$result->releases = $db->loadObjectList();
+		if ($params->get('releases_list_limit') > 0) {
+			$db->setQuery("SELECT `r`.`id`, `r`.`media_type`, `r`.`release_date`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
+				. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `r`.`vendor_id`"
+				. "\n WHERE `movie_id` = ".(int)$id
+				. "\n ORDER BY `ordering` ASC"
+				. "\n LIMIT ".(int)$params->get('releases_list_limit'));
+			$result->releases = $db->loadObjectList();
+		} else {
+			$result->releases = array();
+		}
 
 		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
@@ -205,7 +214,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$careers[$career->id] = $career->title;
 		}
 
-		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`url_photo`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`url_photo` AS `dub_url_photo`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`"
+		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`url_photo`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`url_photo` AS `dub_url_photo`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `r`.`desc`"
 			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `d` ON `d`.`id` = `t`.`dub_id` AND `d`.`state` = 1 AND `d`.`access` IN (".$groups.") AND `d`.`language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').")"
@@ -241,7 +250,8 @@ class KinoarhivModelMovie extends JModelForm {
 						'alias'=>		$value->alias,
 						'poster'=>		$value->poster,
 						'y_poster'=>	$value->y_poster,
-						'role'=>		$value->role
+						'role'=>		$value->role,
+						'desc'=>		$value->desc
 					);
 				}
 
@@ -283,7 +293,8 @@ class KinoarhivModelMovie extends JModelForm {
 						'dub_url_photo'=>$value->dub_url_photo,
 						'dub_y_poster'=>$value->dub_y_poster,
 						'dub_gender'=>	$value->dub_gender,
-						'dub_role'=>	$value->dub_role
+						'dub_role'=>	$value->dub_role,
+						'desc'=>		$value->desc
 					);
 				}
 
@@ -308,7 +319,8 @@ class KinoarhivModelMovie extends JModelForm {
 						'alias'=>		$value->alias,
 						'poster'=>		$value->poster,
 						'y_poster'=>	$value->y_poster,
-						'role'=>		$value->dub_role
+						'role'=>		$value->dub_role,
+						'desc'=>		$value->desc
 					);
 				}
 			}

@@ -274,7 +274,7 @@ class KinoarhivModelMovies extends JModelList {
 			$movie_id = $app->input->get('movie_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
 
-			$db->setQuery("SELECT `name_id`, `type`, `role`, `dub_id`, `is_actors`, `voice_artists`, `ordering`"
+			$db->setQuery("SELECT `name_id`, `type`, `role`, `dub_id`, `is_actors`, `voice_artists`, `ordering` AS `r_ordering`, `desc` AS `r_desc`"
 				. "\n FROM ".$db->quoteName('#__ka_rel_names')
 				. "\n WHERE `name_id` = ".(int)$name_id." AND `movie_id` = ".(int)$movie_id);
 			$result = $db->loadObject();
@@ -303,9 +303,13 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies_gallery')." AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1"
 				. "\n WHERE `m`.`id` = ".(int)$id[0]);
 			$result['movie'] = $db->loadObject();
+
 			$result['movie']->genres = $this->getGenres();
+			$result['movie']->genres_orig = implode(',', $result['movie']->genres['ids']);
 			$result['movie']->countries = $this->getCountries();
+			$result['movie']->countries_orig = implode(',', $result['movie']->countries['ids']);
 			$result['movie']->tags = $this->getTags();
+			$result['movie']->tags_orig = implode(',', $result['movie']->tags['ids']);
 		}
 
 		return $result;
@@ -406,7 +410,7 @@ class KinoarhivModelMovies extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
-
+echo '<pre>';
 		$id = $app->input->post->get('id', 0, 'int');
 		$data = $data['movie'];
 		$created_by = $data['created_by'] == 0 ? $user->id : $data['created_by'];
@@ -425,32 +429,143 @@ class KinoarhivModelMovies extends JModelList {
 			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
 			$countries = $db->loadObjectList();
 
-			$ln_str = count($countries) > 1 ? '[ln="COM_KA_COUNTRIES"]' : '[ln="COM_KA_COUNTRY"]';
+			$ln_str = count($countries) > 1 ? '[ln]COM_KA_COUNTRIES[/ln]' : '[ln]COM_KA_COUNTRY[/ln]';
 
 			foreach ($countries as $cn) {
 				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
 			}
 
 			$intro_countries = $ln_str.': '.JString::substr($intro_countries, 0, -2).'<br />';
+
+			// Compare original array with new and if difference was found when do update query
+			/*$countries_orig_arr = explode(',', $data['countries_orig']);
+			$countries_new_arr = explode(',', $data['countries']);
+			$countries_compare = array_diff_assoc($countries_orig_arr, $countries_new_arr);
+
+			if (count($countries_compare) != 0) {
+				$query = true;
+				$db->lockTable('#__ka_rel_countries');
+				$db->transactionStart();
+
+				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` = ".(int)$id);
+				$db->execute();
+
+				foreach ($countries_new_arr as $ordering=>$country_id) {
+					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_countries')." (`country_id`,`movie_id`,`ordering`) VALUES ('".(int)$country_id."', '".(int)$id."', '".(int)$ordering."');");
+					$result = $db->execute();
+
+					if ($result === false) {
+						$query = false;
+						break;
+					}
+				}
+
+				if ($query === false) {
+					$db->transactionRollback();
+				} else {
+					$db->transactionCommit();
+				}
+				$db->unlockTables();
+			}*/
+			// End compare
 		}
 
-		/*if (!empty($data['countries'])) {
-			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
-			$countries = $db->loadObjectList();
+		// Proccess intro text for genres IDs and store in relation table
+		if (!empty($data['genres'])) {
+			$db->setQuery("SELECT `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".$data['genres'].") AND `language` = '".$data['language']."'");
+			$genres = $db->loadObjectList();
 
-			$ln_str = count($countries) > 1 ? '[ln="COM_KA_COUNTRIES"]' : '[ln="COM_KA_COUNTRY"]';
+			$ln_str = count($genres) > 1 ? '[ln]COM_KA_GENRES[/ln]' : '[ln]COM_KA_GENRE[/ln]';
 
-			foreach ($countries as $cn) {
-				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
+			foreach ($genres as $genre) {
+				$intro_genres .= $genre->name.', ';
 			}
 
-			$intro_countries = $ln_str.': '.JString::substr($intro_countries, 0, -2).'<br />';
-		}*/
+			$intro_genres = $ln_str.': '.JString::substr($intro_genres, 0, -2).'<br />';
+
+			// Compare original array with new and if difference was found when do update query
+			/*$genres_orig_arr = explode(',', $data['genres_orig']);
+			$genres_new_arr = explode(',', $data['genres']);
+			$genres_compare = array_diff_assoc($genres_orig_arr, $genres_new_arr);
+
+			if (count($genres_compare) != 0) {
+				$query = true;
+				$db->lockTable('#__ka_rel_genres');
+				$db->transactionStart();
+
+				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` = ".(int)$id);
+				$db->execute();
+
+				foreach ($genres_new_arr as $ordering=>$genre_id) {
+					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_genres')." (`genre_id`,`movie_id`,`ordering`) VALUES ('".(int)$genre_id."', '".(int)$id."', '".(int)$ordering."');");
+					$result = $db->execute();
+
+					if ($result === false) {
+						$query = false;
+						break;
+					}
+				}
+
+				if ($query === false) {
+					$db->transactionRollback();
+				} else {
+					$db->transactionCommit();
+				}
+				$db->unlockTables();
+			}*/
+			// End compare
+		}
+
+		// Proccess intro text for genres IDs and store in relation table
+		if (!empty($data['genres'])) {
+			$db->setQuery("SELECT `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".$data['genres'].") AND `language` = '".$data['language']."'");
+			$genres = $db->loadObjectList();
+
+			$ln_str = count($genres) > 1 ? '[ln]COM_KA_GENRES[/ln]' : '[ln]COM_KA_GENRE[/ln]';
+
+			foreach ($genres as $genre) {
+				$intro_genres .= $genre->name.', ';
+			}
+
+			$intro_genres = $ln_str.': '.JString::substr($intro_genres, 0, -2).'<br />';
+
+			// Compare original array with new and if difference was found when do update query
+			/*$genres_orig_arr = explode(',', $data['genres_orig']);
+			$genres_new_arr = explode(',', $data['genres']);
+			$genres_compare = array_diff_assoc($genres_orig_arr, $genres_new_arr);
+
+			if (count($genres_compare) != 0) {
+				$query = true;
+				$db->lockTable('#__ka_rel_genres');
+				$db->transactionStart();
+
+				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` = ".(int)$id);
+				$db->execute();
+
+				foreach ($genres_new_arr as $ordering=>$genre_id) {
+					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_genres')." (`genre_id`,`movie_id`,`ordering`) VALUES ('".(int)$genre_id."', '".(int)$id."', '".(int)$ordering."');");
+					$result = $db->execute();
+
+					if ($result === false) {
+						$query = false;
+						break;
+					}
+				}
+
+				if ($query === false) {
+					$db->transactionRollback();
+				} else {
+					$db->transactionCommit();
+				}
+				$db->unlockTables();
+			}*/
+			// End compare
+		}
 
 		$introtext = $intro_countries.$intro_directors.$intro_genres.$intro_cast;
 
-echo '<pre>';
-//print_r($data);
+
+print_r($data);
 echo $introtext;
 		if (empty($id)) {
 			

@@ -125,6 +125,7 @@
 										'form[is_actors]':	$('#form_is_actors').val(),
 										'form[voice_artists]': $('#form_voice_artists').val(),
 										'form[ordering]':	$('#form_r_ordering').val(),
+										'form[desc]':		$('#form_r_desc').val(),
 										'new': 1
 									}
 								}).done(function(response){
@@ -196,6 +197,7 @@
 											'form[is_actors]':	$('#form_is_actors').val(),
 											'form[voice_artists]': $('#form_voice_artists').val(),
 											'form[ordering]':	$('#form_r_ordering').val(),
+											'form[desc]':		$('#form_r_desc').val(),
 											'new': 0
 										}
 									}).done(function(response){

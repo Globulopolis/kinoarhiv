@@ -58,6 +58,12 @@ class KinoarhivModelSettings extends JModelForm {
 			}
 		}
 
+		if ($data['introtext_actors_list_limit'] > 10) {
+			$data['introtext_actors_list_limit'] = 10;
+		} elseif ($data['introtext_actors_list_limit'] < 0) {
+			$data['introtext_actors_list_limit'] = 0;
+		}
+
 		if ($data['person_list_limit'] > 10) {
 			$data['person_list_limit'] = 10;
 		} elseif ($data['person_list_limit'] < 1) {

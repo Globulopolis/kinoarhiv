@@ -25,12 +25,31 @@ class KinoarhivViewMovies extends JViewLegacy {
 		// Prepare the data
 		foreach ($items as &$item) {
 			$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
+			
 
 			// Replace country BB-code
-			$item->text = preg_replace('/\[cn=(.*?)\](.*?)\[\/cn\]/isu', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/default/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $item->text);
+			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
+				$html = JText::_($matches[1]);
+
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/default/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+
+				return $html.$cn;
+			}, $item->text);
+
+			// Replace genres BB-code
+			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches) {
+				return JText::_($matches[1]).$matches[2];
+			}, $item->text);
+
 
 			// Replace person BB-code
-			$item->text = preg_replace('/\[name=(.*?)\](.*?)\[\/name\]/isu', '<a href="'.JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$this->itemid, false).'" title="$2">$2</a>', $item->text);
+			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
+				$html = JText::_($matches[1]);
+
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$this->itemid, false).'" title="$2">$2</a>', $matches[2]);
+
+				return $html.$name;
+			}, $item->text);
 
 			if (empty($item->filename)) {
 				$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';

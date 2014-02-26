@@ -56,6 +56,17 @@ JHtml::_('behavior.tooltip');
 				}
 			}
 		});
+		$('#jform_introtext_actors_list_limit').spinner({
+			spin: function(event, ui){
+				if (ui.value > 10) {
+					$(this).spinner('value', 0);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 10);
+					return false;
+				}
+			}
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="application-form" method="post" name="adminForm" autocomplete="off">

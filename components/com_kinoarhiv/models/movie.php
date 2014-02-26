@@ -214,11 +214,12 @@ class KinoarhivModelMovie extends JModelForm {
 			$careers[$career->id] = $career->title;
 		}
 
-		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`url_photo`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`url_photo` AS `dub_url_photo`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `r`.`desc`"
+		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`url_photo`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`url_photo` AS `dub_url_photo`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `ac`.`desc`"
 			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `d` ON `d`.`id` = `t`.`dub_id` AND `d`.`state` = 1 AND `d`.`access` IN (".$groups.") AND `d`.`language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').")"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`dub_id` = `n`.`id`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `ac` ON `ac`.`name_id` = `n`.`id`"
 			. "\n WHERE `n`.`id` IN (SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$id.")"
 			. "\n AND `n`.`state` = 1 AND `n`.`access` IN (".$groups.") AND `n`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
 			. "\n GROUP BY `n`.`id`"
@@ -250,6 +251,7 @@ class KinoarhivModelMovie extends JModelForm {
 						'alias'=>		$value->alias,
 						'poster'=>		$value->poster,
 						'y_poster'=>	$value->y_poster,
+						'gender'=>		$value->gender,
 						'role'=>		$value->role,
 						'desc'=>		$value->desc
 					);
@@ -285,6 +287,7 @@ class KinoarhivModelMovie extends JModelForm {
 						'alias'=>		$value->alias,
 						'poster'=>		$value->poster,
 						'y_poster'=>	$value->y_poster,
+						'gender'=>		$value->gender,
 						'role'=>		$value->role,
 						'dub_id'=>		$value->dub_id,
 						'dub_name'=>	$value->dub_name,
@@ -304,7 +307,7 @@ class KinoarhivModelMovie extends JModelForm {
 					$_careers_dub = $careers[$type];
 
 					if (empty($value->url_photo)) {
-						$ftype = $value->dub_gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
+						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
@@ -319,6 +322,7 @@ class KinoarhivModelMovie extends JModelForm {
 						'alias'=>		$value->alias,
 						'poster'=>		$value->poster,
 						'y_poster'=>	$value->y_poster,
+						'gender'=>		$value->gender,
 						'role'=>		$value->dub_role,
 						'desc'=>		$value->desc
 					);

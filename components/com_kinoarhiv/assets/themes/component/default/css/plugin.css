@@ -948,3 +948,15 @@ disabled look for disabled choices in the results dropdown
       background-position: 100% -21px !important;
   }
 }
+
+/* CSS for jQuery More plugin v2.0.0. */
+.more-hidden {
+	display: none;
+}
+.more-link {
+	margin-left: 1em;
+	padding: 0.125em;
+}
+.more-link img {
+	border: none;
+}

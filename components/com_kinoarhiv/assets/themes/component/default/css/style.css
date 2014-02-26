@@ -631,8 +631,39 @@ div.rating {
 	padding: 3px;
 }
 
+.cast-row-col-left {
+	float: left;
+	width: 49.5%;
+}
+
+.cast-row-col-left.fullwidth {
+	float: left;
+	width: 100%;
+}
+
+.cast-row-col-left .actor-photo {
+	float: left;
+	margin-right: 0.5em;
+}
+
+.cast-row-col-right .actor-dub-photo {
+	float: right;
+	margin-left: 0.5em;
+}
+.cast-row-col-right .actor-dub-info {
+	text-align: right;
+}
+.cast-row-col-right .actor-dub-info .actor-desc {
+	text-align: left;
+}
+
+.cast-row-col-right {
+	float: right;
+	width: 49.5%;
+}
+
 .cast-row.hasPoster {
-	min-height: 108px;
+	min-height: 110px;
 }
 
 .cast-row:hover {
@@ -646,7 +677,7 @@ div.rating {
 }
 
 .cast-row .number {
-	width: 4%;
+	min-width: 3%;
 }
 
 .cast-row .photo {
@@ -669,6 +700,7 @@ div.rating {
 
 .cast-row .actor-desc {
 	color: #777;
+	overflow: hidden;
 }
 
 .ratings {

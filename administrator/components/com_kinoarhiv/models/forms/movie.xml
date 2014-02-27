@@ -90,6 +90,10 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="is_directors" type="list" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR" description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="voice_artists" type="list" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB" description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

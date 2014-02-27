@@ -118,14 +118,15 @@
 									url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelNames&format=json&id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
-										'form[type]':		$('#form_type').select2('val'),
-										'form[name_id]':	$('#form_name_id').select2('val'),
-										'form[dub_id]':		$('#form_dub_id').select2('val'),
-										'form[role]':		$('#form_role').val(),
-										'form[is_actors]':	$('#form_is_actors').val(),
-										'form[voice_artists]': $('#form_voice_artists').val(),
-										'form[ordering]':	$('#form_r_ordering').val(),
-										'form[desc]':		$('#form_r_desc').val(),
+										'form[type]':			$('#form_type').select2('val'),
+										'form[name_id]':		$('#form_name_id').select2('val'),
+										'form[dub_id]':			$('#form_dub_id').select2('val'),
+										'form[role]':			$('#form_role').val(),
+										'form[is_directors]':	$('#form_is_directors').val(),
+										'form[is_actors]':		$('#form_is_actors').val(),
+										'form[voice_artists]':	$('#form_voice_artists').val(),
+										'form[ordering]':		$('#form_r_ordering').val(),
+										'form[desc]':			$('#form_r_desc').val(),
 										'new': 1
 									}
 								}).done(function(response){
@@ -190,14 +191,15 @@
 										url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelNames&format=json&id=' + $('#id').val(),
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
-											'form[type]':		$('#form_type').select2('val'),
-											'form[name_id]':	$('#form_name_id').select2('val'),
-											'form[dub_id]':		$('#form_dub_id').select2('val'),
-											'form[role]':		$('#form_role').val(),
-											'form[is_actors]':	$('#form_is_actors').val(),
-											'form[voice_artists]': $('#form_voice_artists').val(),
-											'form[ordering]':	$('#form_r_ordering').val(),
-											'form[desc]':		$('#form_r_desc').val(),
+											'form[type]':			$('#form_type').select2('val'),
+											'form[name_id]':		$('#form_name_id').select2('val'),
+											'form[dub_id]':			$('#form_dub_id').select2('val'),
+											'form[role]':			$('#form_role').val(),
+											'form[is_directors]':	$('#form_is_directors').val(),
+											'form[is_actors]':		$('#form_is_actors').val(),
+											'form[voice_artists]':	$('#form_voice_artists').val(),
+											'form[ordering]':		$('#form_r_ordering').val(),
+											'form[desc]':			$('#form_r_desc').val(),
 											'new': 0
 										}
 									}).done(function(response){
@@ -220,7 +222,7 @@
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=names_edit&model=movies&view=movies&format=raw&movie_id='+ids[1]+'&name_id='+ids[0]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=names_edit&model=movies&view=movies&format=raw&movie_id='+ids[1]+'&name_id='+ids[0]+'&career_id='+ids[2]+'#edit');
 				} else {
 					showMsg('.actors-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}

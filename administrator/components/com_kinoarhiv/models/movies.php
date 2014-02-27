@@ -274,10 +274,14 @@ class KinoarhivModelMovies extends JModelList {
 			$movie_id = $app->input->get('movie_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
 
-			$db->setQuery("SELECT `name_id`, `type`, `role`, `dub_id`, `is_actors`, `voice_artists`, `ordering` AS `r_ordering`, `desc` AS `r_desc`"
+			$db->setQuery("SELECT `name_id`, `role`, `dub_id`, `is_actors`, `voice_artists`, `is_directors`, `ordering` AS `r_ordering`, `desc` AS `r_desc`"
 				. "\n FROM ".$db->quoteName('#__ka_rel_names')
 				. "\n WHERE `name_id` = ".(int)$name_id." AND `movie_id` = ".(int)$movie_id);
 			$result = $db->loadObject();
+			
+			if (!empty($result)) {
+				$result->type = $app->input->get('career_id', 0, 'int');
+			}
 		} elseif ($tmpl == 'awards_edit') {
 			$award_id = $app->input->get('award_id', 0, 'int');
 

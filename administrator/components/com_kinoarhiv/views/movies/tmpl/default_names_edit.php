@@ -222,6 +222,11 @@ $name_id = $input->get('name_id', 0, 'int');
 			dateFormat: 'yy-mm-dd',
 			firstDay: 1
 		});
+		$('#form_is_directors').change(function(){
+			if (this.value == 1) {
+				$('#form_is_actors').val(0);
+			}
+		});
 	});
 </script>
 <div class="row-fluid">
@@ -248,6 +253,10 @@ $name_id = $input->get('name_id', 0, 'int');
 						<?php echo $this->form->getInput('name_id'); ?>&nbsp;
 						<a class="btn btn-small quick-add name hasTip" id="form_name" href="#" title="::<?php echo JText::_('COM_KA_NAMES_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
+				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('is_directors'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('is_directors'); ?></div>
 				</div>
 				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('is_actors'); ?></div>

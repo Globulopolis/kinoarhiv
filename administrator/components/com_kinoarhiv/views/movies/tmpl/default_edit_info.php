@@ -183,7 +183,17 @@ JHtml::_('behavior.keepalive');
 			}
 		}
 
-		$('.movie-poster-preview').parent().colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
+		$('.movie-poster-preview').parent().click(function(e){
+			e.preventDefault();
+
+			$('<div id="dialog-message"><img src="'+ $(this).attr('href') +'" border="0" /></div>').dialog({
+				modal: true,
+				minHeight: $(window).height() - 100,
+				minWidth: $(window).height() - 100,
+				maxHeight: $(window).height() - 100,
+				maxWidth: $(window).width() - 100
+			});
+		});
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',

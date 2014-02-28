@@ -3,12 +3,12 @@
 	<fieldset name="relations_countries">
 		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="country span5 autocomplete" filter="intval" size="11" data-ac-type="countries" />
 		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="movie span5 autocomplete" filter="intval" size="11" data-ac-type="movies" />
-		<field name="ordering" type="ordering" data="countries" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
+		<field name="ordering" type="order" data="countries" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
 	<fieldset name="relations_genres">
 		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="genre span5 autocomplete" filter="intval" size="11" data-ac-type="genres" />
 		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="movie span5 autocomplete" filter="intval" size="11" data-ac-type="movies" />
-		<field name="ordering" type="ordering" data="genres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
+		<field name="ordering" type="order" data="genres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
 	<fieldset name="relations_awards">
 		<field name="award_id" type="awards" label="COM_KA_FIELD_AW_LABEL" required="true" class="span12 autocomplete" filter="intval" size="11" data-ac-type="awards" />

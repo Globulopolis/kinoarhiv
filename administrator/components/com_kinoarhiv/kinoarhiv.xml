@@ -11,12 +11,21 @@
 	<description>COM_KA_XML_DESCRIPTION</description>
 
 	<scriptfile>installer.php</scriptfile>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install.mysql.sql</file>
+		</sql>
+	</install>
+	<!--<uninstall>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/uninstall.mysql.sql</file>
+		</sql>
+	</uninstall>-->
 
 	<files folder="site">
 		<filename>controller.php</filename>
 		<filename>index.html</filename>
 		<filename>kinoarhiv.php</filename>
-		<filename>metadata.xml</filename>
 		<folder>assets</folder>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
@@ -29,16 +38,38 @@
 	</languages>
 	<administration>
 		<files folder="admin">
+			<filename>access.xml</filename>
 			<filename>controller.php</filename>
 			<filename>index.html</filename>
 			<filename>kinoarhiv.php</filename>
 			<filename>kinoarhiv.xml</filename>
+			<folder>assets</folder>
+			<folder>controllers</folder>
+			<folder>helpers</folder>
+			<folder>libraries</folder>
+			<folder>models</folder>
+			<folder>views</folder>
 		</files>
 		<languages folder="admin">
 			<language tag="ru-RU">language/ru-RU.com_kinoarhiv.ini</language>
 			<language tag="ru-RU">language/ru-RU.com_kinoarhiv.sys.ini</language>
 		</languages>
+		<menu link="option=com_kinoarhiv">COM_KINOARHIV</menu>
+		<submenu>
+			<menu view="movies">COM_KA_MENU_MOVIES</menu>
+			<menu view="names">COM_KA_MENU_NAMES</menu>
+			<menu view="careers">COM_KA_MENU_CAREERS</menu>
+			<menu view="countries">COM_KA_MENU_COUNTRIES</menu>
+			<menu view="genres">COM_KA_MENU_GENRES</menu>
+			<menu view="vendors">COM_KA_MENU_VENDORS</menu>
+			<menu view="awards">COM_KA_MENU_AWARDS</menu>
+			<menu view="reviews">COM_KA_MENU_REVIEWS</menu>
+			<menu view="settings">COM_KA_MENU_SETTINGS</menu>
+		</submenu>
 	</administration>
+	<dependencies>
+		<dependency type="platform" name="joomla" operator="=" version="3.0" />
+	</dependencies>
 	<updateservers>
 		<server type="extension" priority="1" name="Kinoarhiv Updates"><![CDATA[http://localhost/updates/index.php]]></server>
 	</updateservers>

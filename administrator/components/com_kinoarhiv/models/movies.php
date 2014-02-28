@@ -579,10 +579,11 @@ class KinoarhivModelMovies extends JModelList {
 		$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
 		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
 echo '<pre>';
-//print_r($data);
-echo $introtext;
+print_r($data);
 		if (empty($id)) {
-			
+			//$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
+				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
+				. "\n VALUES ('', 'asset_id', 'parent_id', 'title', 'alias', 'introtext', 'plot', 'desc', 'known', 'year', 'slogan', 'budget', 'age_restrict', 'ua_rate', 'mpaa', 'length', 'rate_loc', 'rate_sum_loc', 'imdb_votesum', 'imdb_votes', 'imdb_id', 'kp_votesum', 'kp_votes', 'kp_id', 'rate_fc', 'rottentm_id', 'rate_custom', 'urls', 'created', 'created_by', 'modified', 'state', 'ordering', 'metakey', 'metadesc', 'access', 'metadata', 'language')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
 				. "\n SET `parent_id` = '0', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."',"
@@ -598,15 +599,17 @@ echo $introtext;
 				. " `ordering` = '".(int)$data['ordering']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."',"
 				. " `access` = '".(int)$data['access']."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
 				. "\n WHERE `id` = ".(int)$id);
-			/*try {
-				$db->execute();
-			} catch(Exception $e) {
-				$this->setError('Update has failed.');
-				return false;
-			}*/
 		}
 
-		return true;
+		/*try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError('Update has failed.');
+
+			return false;
+		}*/
 	}
 
 	public function getCast() {

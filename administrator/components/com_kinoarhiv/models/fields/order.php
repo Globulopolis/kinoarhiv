@@ -1,7 +1,7 @@
 <?php defined('JPATH_BASE') or die;
 
-class JFormFieldOrdering extends JFormField {
-	protected $type = 'Ordering';
+class JFormFieldOrder extends JFormField {
+	protected $type = 'Order';
 
 	protected function getInput() {
 		$html = array();

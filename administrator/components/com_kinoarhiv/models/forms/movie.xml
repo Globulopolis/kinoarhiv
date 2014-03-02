@@ -82,9 +82,9 @@
 	</fields>
 
 	<fieldset name="rel_name_edit">
-		<field name="name_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" class="span10 required" required="true" default="" />
-		<field name="dub_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB" class="span10 required" required="true" default="" />
-		<field name="type" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE" class="span10" default="" />
+		<field name="name_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" class="span9 required" required="true" default="" />
+		<field name="dub_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB" class="span9 required" required="true" default="" />
+		<field name="type" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE" class="span9" default="" />
 		<field name="role" type="text" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE" description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE_DESC" class="span12" size="55" maxlength="255" default="" />
 		<field name="is_actors" type="list" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR" description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR_DESC" filter="integer">
 			<option value="1">JYES</option>

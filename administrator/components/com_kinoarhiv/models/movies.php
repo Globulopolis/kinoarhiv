@@ -394,9 +394,16 @@ class KinoarhivModelMovies extends JModelList {
 		$state = $isUnpublish ? 0 : 1;
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function remove() {
@@ -405,9 +412,16 @@ class KinoarhivModelMovies extends JModelList {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function apply($data) {
@@ -443,7 +457,7 @@ class KinoarhivModelMovies extends JModelList {
 			$intro_countries = '[country ln='.$ln_str.']: '.JString::substr($intro_countries, 0, -2).'[/country]<br />';
 
 			// Compare original array with new and if difference was found when do update query
-			/*$countries_orig_arr = explode(',', $data['countries_orig']);
+			$countries_orig_arr = explode(',', $data['countries_orig']);
 			$countries_new_arr = explode(',', $data['countries']);
 			$countries_compare = array_diff_assoc($countries_orig_arr, $countries_new_arr);
 
@@ -475,7 +489,7 @@ class KinoarhivModelMovies extends JModelList {
 					$db->unlockTables();
 				}
 				
-			}*/
+			}
 			// End compare
 		}
 
@@ -493,7 +507,7 @@ class KinoarhivModelMovies extends JModelList {
 			$intro_genres = '[genres ln='.$ln_str.']: '.JString::substr($intro_genres, 0, -2).'[/genres]<br />';
 
 			// Compare original array with new and if difference was found when do update query
-			/*$genres_orig_arr = explode(',', $data['genres_orig']);
+			$genres_orig_arr = explode(',', $data['genres_orig']);
 			$genres_new_arr = explode(',', $data['genres']);
 			$genres_compare = array_diff_assoc($genres_orig_arr, $genres_new_arr);
 
@@ -524,7 +538,7 @@ class KinoarhivModelMovies extends JModelList {
 					$db->transactionCommit();
 					$db->unlockTables();
 				}
-			}*/
+			}
 			// End compare
 		}
 
@@ -578,12 +592,11 @@ class KinoarhivModelMovies extends JModelList {
 
 		$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
 		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
-echo '<pre>';
-print_r($data);
+
 		if (empty($id)) {
-			//$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
 				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
-				. "\n VALUES ('', 'asset_id', 'parent_id', 'title', 'alias', 'introtext', 'plot', 'desc', 'known', 'year', 'slogan', 'budget', 'age_restrict', 'ua_rate', 'mpaa', 'length', 'rate_loc', 'rate_sum_loc', 'imdb_votesum', 'imdb_votes', 'imdb_id', 'kp_votesum', 'kp_votes', 'kp_id', 'rate_fc', 'rottentm_id', 'rate_custom', 'urls', 'created', 'created_by', 'modified', 'state', 'ordering', 'metakey', 'metadesc', 'access', 'metadata', 'language')");
+				. "\n VALUES ('', '0', '0', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$data['year']."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$db->escape($data['urls'])."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
 				. "\n SET `parent_id` = '0', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."',"
@@ -601,15 +614,19 @@ print_r($data);
 				. "\n WHERE `id` = ".(int)$id);
 		}
 
-		/*try {
+		try {
 			$db->execute();
+
+			if (empty($id)) {
+				$app->input->set('id', array($db->insertid()));
+			}
 
 			return true;
 		} catch(Exception $e) {
-			$this->setError('Update has failed.');
+			$this->setError($e->getMessage());
 
 			return false;
-		}*/
+		}
 	}
 
 	public function getCast() {

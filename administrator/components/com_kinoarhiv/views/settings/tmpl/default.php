@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('behavior.tooltip');
+//JHtml::_('behavior.tooltip');
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
@@ -20,10 +20,10 @@ JHtml::_('behavior.tooltip');
 			var form = $('#application-form');
 			if (task != 'cancel' && task != 'save') {
 				$.post(form.attr('action'), form.serialize()+'&task='+task+'&format=json', function(response){
-					showMsg('#myTabTabs', response.message);
+					showMsg('.container-main', response.message);
 					$(document).scrollTop(0);
 				}).fail(function(xhr, status, error){
-					showMsg('#myTabTabs', error);
+					showMsg('.container-main', error);
 				});
 				return;
 			} else {
@@ -33,6 +33,8 @@ JHtml::_('behavior.tooltip');
 	}
 
 	jQuery(document).ready(function($){
+		$('#settings_tabs').tabs();
+
 		$('#jform_filter_genres, #jform_filter_names').select2();
 		$('#jform_premieres_list_limit, #jform_releases_list_limit').spinner({
 			spin: function(event, ui){
@@ -73,9 +75,16 @@ JHtml::_('behavior.tooltip');
 	<div class="row-fluid">
 		<!-- Begin Content -->
 		<div class="span12">
-			<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'page-global')); ?>
-
-				<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-global', JText::_('COM_KA_SETTINGS_TAB', true)); ?>
+			<div id="settings_tabs">
+				<ul>
+					<li><a href="#page-global"><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></a></li>
+					<li><a href="#page-appearance"><?php echo JText::_('COM_KA_APPEARANCE_TAB'); ?></a></li>
+					<li><a href="#page-reviews"><?php echo JText::_('COM_KA_REVIEWS_TAB'); ?></a></li>
+					<?php if ($this->userIsSuperAdmin): ?>
+					<li><a href="#page-access"><?php echo JText::_('COM_KA_PERMISSIONS_LABEL'); ?></a></li>
+					<?php endif; ?>
+				</ul>
+				<div id="page-global">
 					<div class="row-fluid">
 						<div class="span6">
 							<?php echo $this->loadTemplate('global'); ?>
@@ -94,9 +103,9 @@ JHtml::_('behavior.tooltip');
 							<?php echo $this->loadTemplate('gallery'); ?>
 						</div>
 					</div>
-				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				</div>
 
-				<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-appearance', JText::_('COM_KA_APPEARANCE_TAB', true)); ?>
+				<div id="page-appearance">
 					<div class="row-fluid">
 						<div class="span6">
 							<?php echo $this->loadTemplate('ap_global'); ?>
@@ -107,9 +116,9 @@ JHtml::_('behavior.tooltip');
 							<?php echo $this->loadTemplate('ap_rate'); ?>
 						</div>
 					</div>
-				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				</div>
 
-				<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-reviews', JText::_('COM_KA_REVIEWS_TAB', true)); ?>
+				<div id="page-reviews">
 					<div class="row-fluid">
 						<div class="span6">
 							<?php echo $this->loadTemplate('reviews'); ?>
@@ -118,22 +127,22 @@ JHtml::_('behavior.tooltip');
 							<?php echo $this->loadTemplate('reviews_save'); ?>
 						</div>
 					</div>
-				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				</div>
 
-				<?php if ($this->userIsSuperAdmin):
-					echo JHtml::_('bootstrap.addTab', 'myTab', 'page-access', JText::_('COM_KA_PERMISSIONS_LABEL', true)); ?>
+				<?php if ($this->userIsSuperAdmin): ?>
+				<div id="page-access">
 					<div class="row-fluid">
 						<div class="span12">
 							<?php echo $this->loadTemplate('access'); ?>
 						</div>
 					</div>
-					<?php echo JHtml::_('bootstrap.endTab');
-				endif; ?>
-
-			<?php echo JHtml::_('bootstrap.endTabSet'); ?>
+				</div>
+				<?php endif; ?>
+			</div>
 
 			<input type="hidden" name="controller" value="settings" />
 			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="return" id="return" value="#page-global" />
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
 		<!-- End Content -->

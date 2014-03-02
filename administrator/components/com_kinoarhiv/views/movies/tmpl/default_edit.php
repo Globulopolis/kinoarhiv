@@ -179,7 +179,7 @@ JHtml::_('behavior.keepalive');
 								<legend><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></legend>
 								<fieldset class="form-horizontal">
 									<div class="control-group">
-										<?php //echo $this->form->getInput('rules', $this->form_group); ?>
+										<?php echo $this->form->getInput('rules', $this->form_group); ?>
 									</div>
 								</fieldset>
 							</div>

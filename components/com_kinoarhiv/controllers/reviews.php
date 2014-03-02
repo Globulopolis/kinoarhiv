@@ -61,15 +61,17 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 			$tab = $this->input->get('tab', '', 'cmd');
 
 			$page = $this->input->get('page', '', 'cmd');
-			$id = $this->input->get('id', 0, 'int');
+			$id = $this->input->get('id', 0, 'int'); // Item ID. Movie, person etc. Not a review ID
 			$_id = ($id != 0) ? '&id='.$id : '';
 			$tab = !empty($tab) ? '&tab='.$tab : '';
 			$page = !empty($page) ? '&page='.$page : '';
 			$return = $this->input->get('return', 'movies', 'cmd');
+			echo '<pre>';
+			print_r($_REQUEST);
 
 			$url = JRoute::_('index.php?option=com_kinoarhiv&view='.$return.$tab.$page.$_id.'&Itemid='.$this->input->get('Itemid', 0, 'int'), false);
 
-			$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
+			$this->setMessage($result['message'], $result['success'] ? '' : 'error');
 
 			$this->setRedirect($url);
 		}

@@ -38,9 +38,16 @@ class KinoarhivModelVendor extends JModelForm {
 		$state = $isUnpublish ? 0 : 1;
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_vendors')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function remove() {
@@ -49,9 +56,16 @@ class KinoarhivModelVendor extends JModelForm {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_vendors')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function save($data) {
@@ -70,14 +84,20 @@ class KinoarhivModelVendor extends JModelForm {
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_vendors')." (`id`, `company_name`, `company_name_intl`, `company_name_alias`, `description`, `language`, `state`)"
 				. "\n VALUES ('', '".$data['company_name']."', '".$data['company_name_intl']."', '".JFilterOutput::stringURLSafe($data['company_name_alias'])."', '".$db->escape($data['description'])."', '".$data['language']."', '".$data['state']."')");
-			$result = $db->execute();
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_vendors')
 				. "\n SET `company_name` = '".$data['company_name']."', `company_name_intl` = '".$data['company_name_intl']."', `company_name_alias` = '".JFilterOutput::stringURLSafe($data['company_name_alias'])."', `description` = '".$db->escape($data['description'])."', `language` = '".$data['language']."', `state` = '".$data['state']."'"
 				. "\n WHERE `id` = ".(int)$id);
-			$result = $db->execute();
 		}
 
-		return ($result === true) ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 }

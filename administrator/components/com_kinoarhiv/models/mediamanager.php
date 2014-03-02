@@ -217,7 +217,16 @@ class KinoarhivModelMediamanager extends JModelList {
 		if ($type == 'gallery') {
 			// Reset all values to 0
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `poster_frontpage` = '0' WHERE `movie_id` = ".(int)$movie_id." AND `type` = 2");
-			$db->execute();
+			
+			try {
+				$db->execute();
+
+				return true;
+			} catch(Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
 
 			if (!isset($id[0]) || empty($id[0])) {
 				$this->setError('Unknown ID');
@@ -225,7 +234,16 @@ class KinoarhivModelMediamanager extends JModelList {
 			}
 
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `poster_frontpage` = '".(int)$action."' WHERE `id` = ".(int)$id[0]);
-			$db->execute();
+
+			try {
+				$db->execute();
+
+				return true;
+			} catch(Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
 		} elseif ($type == 'trailers') {
 			// We need to check if this is the movie to avoid errors when publishing a movie and trailer
 			$db->setQuery("SELECT `is_movie` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$id[0]);
@@ -234,11 +252,19 @@ class KinoarhivModelMediamanager extends JModelList {
 			if ($is_movie == 0) {
 				// Reset all values to 0
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '0' WHERE `movie_id` = ".(int)$movie_id." AND `is_movie` = 0");
-				$db->execute();
 			} else {
 				// Reset all values to 0
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '0' WHERE `movie_id` = ".(int)$movie_id." AND `is_movie` = 1");
+			}
+
+			try {
 				$db->execute();
+
+				return true;
+			} catch(Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
 			}
 
 			if (!isset($id[0]) || empty($id[0])) {
@@ -247,10 +273,18 @@ class KinoarhivModelMediamanager extends JModelList {
 			}
 
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '".(int)$action."' WHERE `id` = ".(int)$id[0]);
-			$db->execute();
-		}
 
-		return $this->getError();
+			
+			try {
+				$db->execute();
+
+				return true;
+			} catch(Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
 	}
 
 	public function publish($action) {
@@ -262,13 +296,19 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		if ($type == 'gallery') {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `state` = '".(int)$action."' WHERE `id` IN (".implode(',', $id).")");
-			$db->execute();
 		} elseif ($type == 'trailers') {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `state` = '".(int)$action."' WHERE `id` IN (".implode(',', $id).")");
-			$db->execute();
 		}
 
-		return $this->getError();
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function apply($data) {
@@ -285,6 +325,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				if ($trailer_id == 0) {
 					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `urls`, `filename`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
 						. "\n VALUES ('', '".$movie_id."', '".$db->escape($data['title'])."', '".$db->escape($data['embed_code'])."', '', '".$db->escape($data['urls'])."', '{}', '', '{}', '{}', '".(int)$data['frontpage']."', '".(int)$data['access']."', '".(int)$data['state']."', '".$data['language']."', '".(int)$data['is_movie']."')");
+
 					try {
 						$db->execute();
 						return $db->insertid();
@@ -296,6 +337,7 @@ class KinoarhivModelMediamanager extends JModelList {
 					$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')
 						. "\n SET `title` = '".$db->escape($data['title'])."', `embed_code` = '".$data['embed_code']."', `urls` = '".$data['urls']."', `frontpage` = '".(int)$data['frontpage']."', `access` = '".(int)$data['access']."', `state` = '".(int)$data['state']."', `language` = '".$data['language']."', `is_movie` = '".$data['is_movie']."'"
 						. "\n WHERE `id` = ".(int)$trailer_id);
+
 					try {
 						$db->execute();
 					} catch (Exception $e) {
@@ -345,6 +387,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				if ($query === false) {
 					$db->transactionRollback();
+					$this->setError('Commit failed!');
 				} else {
 					$db->transactionCommit();
 				}
@@ -397,6 +440,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				if ($query === false) {
 					$db->transactionRollback();
+					$this->setError('Commit failed!');
 				} else {
 					$db->transactionCommit();
 				}
@@ -772,7 +816,8 @@ class KinoarhivModelMediamanager extends JModelList {
 					$lang_code = strtolower($matches[1]);
 				}
 
-				// Checking if lang allready exists and return false. Uncomment block below if want to check for duplicate languages.
+				// Uncomment block below if you want to check for duplicate languages.
+				// Checking if lang allready exists and return false.
 				/*$lang_exists = false;
 				foreach ($subtl_arr as $k=>$v) {
 					if ($v['lang_code'] == $lang_code) {

@@ -31,10 +31,14 @@ class KinoarhivViewSettings extends JViewLegacy {
 
 		$this->userIsSuperAdmin = $user->authorise('core.admin');
 		$this->return = $app->input->get('return', '', 'base64');
-
+JHtml::register('behavior', 'tooltip');
 		$this->addToolbar();
 		parent::display($tpl);
 	}
+
+public function tooltip() {
+	return '';
+}
 
 	protected function addToolbar() {
 		JToolbarHelper::title(JText::_('COM_KA_SETTINGS_TITLE'), 'options');

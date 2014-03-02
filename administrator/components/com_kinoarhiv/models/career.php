@@ -53,9 +53,16 @@ class KinoarhivModelCareer extends JModelForm {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names_career')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function save($alias=0) {

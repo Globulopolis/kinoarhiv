@@ -40,7 +40,7 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 		// Check the return value.
 		if ($result === false) {
 			// Save the data in the session.
-			$app->setUserState('com_kinoarhiv.settings.global.data', $data);
+			$app->setUserState('com_kinoarhiv.settings.global.data', $this->input->post->get('jform', array(), 'array'));
 
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());

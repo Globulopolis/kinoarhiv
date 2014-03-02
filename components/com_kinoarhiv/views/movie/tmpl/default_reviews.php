@@ -1,7 +1,8 @@
 <?php defined('_JEXEC') or die;
 $review_number = $this->pagination->limitstart + 1;
+$cmd_insert_username = '';
 
-if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
+if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 	$cmd_insert_username = ' cmd-insert-username';
 
 	GlobalHelper::loadEditorAssets(); ?>
@@ -87,8 +88,17 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
 				<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&review='.$review->id.'&Itemid='.$this->itemid).'#review-'.$review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip permalink"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0" /></a></span>
 				<span class="date"><?php echo $review->review_date; ?></span>
 			</div>
-			<div class="ui-widget ui-widget-content review"><?php echo $review->review; ?></div>
-			<div class="ui-widget ui-widget-content ui-corner-bottom footer"><a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a></div>
+			<?php if (!$this->user->guest): ?>
+				<div class="ui-widget ui-widget-content review"><?php echo $review->review; ?></div>
+				<div class="ui-widget ui-widget-content ui-corner-bottom footer">
+					<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
+					<?php if ($this->user->authorise('core.delete.reviews', 'com_kinoarhiv')): ?>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=delete&return=movie&review_id='.$review->id.'&id='.$review->movie_id); ?>" class="cmd-delete-quote"><?php echo JText::_('JACTION_DELETE'); ?></a>
+					<?php endif; ?>
+				</div>
+			<?php else: ?>
+				<div class="ui-widget ui-widget-content review ui-corner-bottom footer"><?php echo $review->review; ?></div>
+			<?php endif; ?>
 		</div>
 		<?php endfor; ?>
 		<div class="pagination bottom">
@@ -108,7 +118,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->get('guest')):
 	<?php if (!$this->user->guest): // Show "Add review" form ?>
 		<?php if ($this->params->get('show_reviews') == 1): ?>
 		<div style="clear: both;">&nbsp;</div>
-		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="editor form-validate" autocomplete="off">
+		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="editor form-validate">
 			<ul id="form-editor-toolbar">
 				<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" class="e-btn hasTooltip" id="h1" title="<?php echo JText::_('COM_KA_EDITOR_H1'); ?>"></li>
 				<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" class="e-btn hasTooltip" id="h2" title="<?php echo JText::_('COM_KA_EDITOR_H2'); ?>"></li>

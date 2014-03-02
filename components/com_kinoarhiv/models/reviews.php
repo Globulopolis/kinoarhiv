@@ -134,15 +134,21 @@ class KinoarhivModelReviews extends JModelLegacy {
 	}
 
 	public function delete() {
-		
+		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
-		$review_id = $app->input->get('id', 0, 'int');
-		$review_ids = $app->input->get('ids', array(), 'array');
+		$review_id = $app->input->get('review_id', 0, 'int');
+		$review_ids = $app->input->get('review_ids', array(), 'array');
 		$success = false;
 
 		if (!empty($review_ids)) {
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		}
+
+		if ($user->get('isRoot')) {
+			$where = "";
+		} else {
+			$where = "`uid` = ".$user->id." AND ";
 		}
 
 		if (!empty($review_ids)) {
@@ -152,7 +158,7 @@ class KinoarhivModelReviews extends JModelLegacy {
 			$db->transactionStart();
 
 			foreach ($review_ids as $id) {
-				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE `uid` = ".$user->get('id')." AND `id` = ".(int)$id.";");
+				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE ".$where."`id` = ".(int)$id.";");
 				$result = $db->execute();
 
 				if ($result === false) {
@@ -173,7 +179,7 @@ class KinoarhivModelReviews extends JModelLegacy {
 			$db->unlockTables();
 			$db->setDebug(false);
 		} else {
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE `uid` = ".$user->get('id')." AND `id` = ".(int)$review_id);
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE ".$where."`id` = ".(int)$review_id);
 			$result = $db->execute();
 
 			if ($result) {

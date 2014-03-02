@@ -38,9 +38,16 @@ class KinoarhivModelAward extends JModelForm {
 		$state = $isUnpublish ? 0 : 1;
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_awards')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function remove() {
@@ -49,9 +56,16 @@ class KinoarhivModelAward extends JModelForm {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_awards')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function save($data) {
@@ -62,15 +76,20 @@ class KinoarhivModelAward extends JModelForm {
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_awards')." (`id`, `title`, `desc`, `state` `language`)"
 				. "\n VALUES ('', '".$data['title']."', '".$db->escape($data['desc'])."', '".$data['state']."', '".$data['language']."')");
-			$result = $db->execute();
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_awards')
 				. "\n SET `title` = '".$data['title']."', `desc` = '".$db->escape($data['desc'])."', `state` = '".$data['state']."', `language` = '".$data['language']."'"
-				. "\n WHERE `id` = ".(int)$id);
-			$result = $db->execute();
 		}
 
-		return ($result === true) ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function quickSave() {

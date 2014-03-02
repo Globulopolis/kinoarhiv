@@ -38,9 +38,16 @@ class KinoarhivModelCountry extends JModelForm {
 		$state = $isUnpublish ? 0 : 1;
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_countries')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function remove() {
@@ -49,9 +56,16 @@ class KinoarhivModelCountry extends JModelForm {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function save($data) {
@@ -61,15 +75,21 @@ class KinoarhivModelCountry extends JModelForm {
 
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_countries')." (`id`, `name`, `code`, `language`, `state`)"
-				. "\n VALUES ('', '".$data['name']."', '".$data['code']."', '".$data['language']."', '".$data['state']."')");
-			$result = $db->execute();
+				. "\n VALUES ('', '".$db->escape($data['name'])."', '".$data['code']."', '".$data['language']."', '".$data['state']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_countries')
-				. "\n SET `name` = '".$data['name']."', `code` = '".$data['code']."', `language` = '".$data['language']."', `state` = '".$data['state']."'"
+				. "\n SET `name` = '".$db->escape($data['name'])."', `code` = '".$data['code']."', `language` = '".$data['language']."', `state` = '".$data['state']."'"
 				. "\n WHERE `id` = ".(int)$id);
-			$result = $db->execute();
 		}
 
-		return ($result === true) ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 }

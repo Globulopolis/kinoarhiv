@@ -216,9 +216,16 @@ class KinoarhivModelReviews extends JModelList {
 		$state = $isUnpublish ? 0 : 1;
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function remove() {
@@ -227,9 +234,16 @@ class KinoarhivModelReviews extends JModelList {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function getItem() {
@@ -254,8 +268,15 @@ class KinoarhivModelReviews extends JModelList {
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')
 			. "\n SET `uid` = '".(int)$data['uid']."', `movie_id` = '".(int)$data['movie_id']."', `review` = '".$db->escape($data['review'])."', `r_datetime` = '".$data['r_datetime']."', `type` = '".(int)$data['type']."', `ip` = '".(string)$data['ip']."', `state` = '".(int)$data['state']."'"
 			. "\n WHERE `id` = ".(int)$id);
-		$result = $db->execute();
 
-		return ($result === true) ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 }

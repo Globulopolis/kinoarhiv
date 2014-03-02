@@ -38,9 +38,16 @@ class KinoarhivModelGenre extends JModelForm {
 		$state = $isUnpublish ? 0 : 1;
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_genres')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function remove() {
@@ -49,28 +56,42 @@ class KinoarhivModelGenre extends JModelForm {
 		$ids = $app->input->get('id', array(), 'array');
 
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".implode(',', $ids).")");
-		$result = $db->execute();
 
-		return $result ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function apply($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->post->get('id', null, 'int');
+		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['name']) : JFilterOutput::stringURLSafe($data['alias']);
 
 		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_genres')." (`id`, `name`, `code`, `language`, `state`)"
-				. "\n VALUES ('', '".$data['name']."', '".$data['code']."', '".$data['language']."', '".$data['state']."')");
-			$result = $db->execute();
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_genres')." (`id`, `name`, `alias`, `stats`, `state`, `access`, `language`)"
+				. "\n VALUES ('', '".$db->escape($data['name'])."', '".$alias."', '0', '".$data['state']."', '".$data['access']."', '".$data['language']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_genres')
-				. "\n SET `name` = '".$data['name']."', `code` = '".$data['code']."', `language` = '".$data['language']."', `state` = '".$data['state']."'"
+				. "\n SET `name` = '".$db->escape($data['name'])."', `alias` = '".$alias."', `stats` = '".$data['stats']."', `state` = '".$data['state']."', `access` = '".$data['access']."', `language1` = '".$data['language']."'"
 				. "\n WHERE `id` = ".(int)$id);
-			$result = $db->execute();
 		}
 
-		return ($result === true) ? true : false;
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
 	public function updateStat() {
@@ -103,6 +124,7 @@ class KinoarhivModelGenre extends JModelForm {
 
 			if ($query === false) {
 				$db->transactionRollback();
+				$this->setError('Commit failed!');
 			} else {
 				$db->transactionCommit();
 			}

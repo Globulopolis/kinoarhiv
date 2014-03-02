@@ -48,8 +48,8 @@
 		<div class="r-list">
 			<?php foreach ($this->items as $i=>$item): ?>
 			<div class="title-small">
-				<span><?php echo JHtml::_('grid.id', $i, $item->id, false, 'ids'); ?> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->movie_id.'&Itemid='.$this->itemid.'&review='.$item->id); ?>#review-<?php echo $item->id; ?>"><strong><?php echo $this->escape($item->title).$item->year_str; ?></strong></a></span>
-				<span style="float: right;"><a class="cmd-r-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=delete&Itemid='.$this->itemid.'&id='.$item->id); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
+				<span><?php echo JHtml::_('grid.id', $i, $item->id, false, 'review_ids'); ?> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->movie_id.'&Itemid='.$this->itemid.'&review='.$item->id); ?>#review-<?php echo $item->id; ?>"><strong><?php echo $this->escape($item->title).$item->year_str; ?></strong></a></span>
+				<span style="float: right;"><a class="cmd-r-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=delete&Itemid='.$this->itemid.'&review_id='.$item->id); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
 				<div class="small timestamp"><?php echo JText::sprintf('COM_KA_REVIEWS_DATETIME', $item->r_datetime, $item->ip); ?></div>
 				<div class="review"><?php echo $item->review; ?></div>
 			</div>

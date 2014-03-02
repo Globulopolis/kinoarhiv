@@ -95,10 +95,15 @@ class KinoarhivModelSettings extends JModelForm {
 			return false;
 		}
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__assets')
-			. "\n SET `rules` = '".$rules."'"
-			. "\n WHERE `name` = 'com_kinoarhiv' AND `level` = 1 AND `parent_id` = 1");
-		$query = $db->execute();
+		if (JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+			$db->setQuery("UPDATE ".$db->quoteName('#__assets')
+				. "\n SET `rules` = '".$rules."'"
+				. "\n WHERE `name` = 'com_kinoarhiv' AND `level` = 1 AND `parent_id` = 1");
+			$query = $db->execute();
+		} else {
+			$this->setError(JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
+			return false;
+		}
 
 		// Clean the component cache.
 		$this->cleanCache('_system');

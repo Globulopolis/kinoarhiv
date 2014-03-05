@@ -8,3 +8,12 @@
 		</div>
 	<?php endforeach; ?>
 </fieldset>
+<fieldset class="form-horizontal">
+	<legend><?php echo JText::_('COM_KA_SETTINGS_AP_ITEM_PLAYER'); ?></legend>
+	<?php foreach ($this->form->getFieldset('ap_item_player') as $field): ?>
+		<div class="control-group">
+			<div class="control-label"><?php echo $field->label; ?></div>
+			<div class="controls"><?php echo $field->input; ?></div>
+		</div>
+	<?php endforeach; ?>
+</fieldset>

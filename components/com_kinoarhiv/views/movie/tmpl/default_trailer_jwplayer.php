@@ -10,43 +10,40 @@ $sfw = $this->params->get('player_swf');
 	<link href="components/com_kinoarhiv/assets/themes/ui/<?php echo $this->params->get('ui_theme'); ?>/jquery-ui.css" rel="stylesheet" type="text/css" />
 	<link href="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/css/style.css" rel="stylesheet" type="text/css" />
 	<?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
-	<script type="text/javascript">
-		jQuery(document).ready(function($){
-			$('#trailer').flowplayer({
-				swf: '<?php echo !empty($sfw) ? $sfw : JURI::base().'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.swf'; ?>',
-				embed: {
-					library: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js',
-					script: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/embed.min.js'
-				},
-				key: '<?php echo $this->params->get('player_key'); ?>',
-				logo: '<?php echo $this->params->get('player_logo'); ?>'
-			});
-		});
-	</script>
 </head>
 <body style="margin: 0; padding: 0; background-color: #333333;">
 <?php if (isset($this->item) && count($this->item) > 0):
-$item_trailer = $this->item;
-$ratio_raw = explode(':', $item_trailer->dar);
-$ratio = round($ratio_raw[1] / $ratio_raw[0], 4); ?>
+$item_trailer = $this->item; ?>
 	<div class="ui-widget">
 		<div>
 		<?php if ($item_trailer->embed_code != ''):
 			echo $item_trailer->embed_code;
 		else: ?>
 			<?php if (count($item_trailer->files['video']) > 0): ?>
-			<div id="trailer" class="minimalist" data-nativesubtitles="true" data-ratio="<?php echo $ratio; ?>">
-				<video preload="none" poster="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>">
-				<?php foreach ($item_trailer->files['video'] as $item): ?>
-					<source type="<?php echo $item['type']; ?>" src="<?php echo $item_trailer->path.$item['src']; ?>" />
-				<?php endforeach; ?>
-				<?php if (count($item_trailer->files['subtitles']) > 0):
-					foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-						<track kind="subtitles" src="<?php echo $item_trailer->path.$subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
-					<?php endforeach;
-				endif; ?>
-				</video>
-			</div>
+			<div id="video"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/loading.gif"> Loading the player...</div>
+			<script type="text/javascript">
+				jwplayer('video').setup({
+					playlist: [{
+						file: '<?php echo $item_trailer->path.$item_trailer->files['video'][0]['src']; ?>',
+						image: '<?php echo $item_trailer->path.$item_trailer->screenshot; ?>',
+						tracks: [
+						<?php if (count($item_trailer->files['subtitles']) > 0):
+							foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
+							{ file: '<?php echo $item_trailer->path.$subtitle['file']; ?>', label: '<?php echo $subtitle['lang']; ?>', kind: 'captions', 'default': true },
+							<?php endforeach;
+						endif; ?>
+						<?php if (count($item_trailer->files['chapters']) > 0): ?>
+							{ file: '<?php echo $item_trailer->path.$item_trailer->files['chapters']['file']; ?>', kind: 'chapters' }
+						<?php endif; ?>
+						]
+					}],
+					skin: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/<?php echo $this->params->get('player_type'); ?>/five.xml',
+					flashplayer: '<?php echo !empty($sfw) ? $sfw : JURI::base().'components/com_kinoarhiv/assets/players/'.$this->params->get('player_type').'/jwplayer.flash.swf'; ?>',
+					html5player: '<?php echo JURI::base().'components/com_kinoarhiv/assets/players/'.$this->params->get('player_type').'/jwplayer.html5.js'; ?>',
+					width: '100%',
+					aspectratio: '<?php echo $item_trailer->dar; ?>'
+				});
+			</script>
 			<?php else: ?>
 			<div style="height: <?php echo $item_trailer->player_height; ?>px;"><img src="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" /></div>
 			<?php endif; ?>

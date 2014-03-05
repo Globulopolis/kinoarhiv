@@ -63,6 +63,13 @@ JHtml::_('behavior.keepalive');
 	}
 
 	jQuery(document).ready(function($){
+		var active_tab = 0;
+		if (typeof $.cookie('com_kinoarhiv.movie.tabs') == 'undefined') {
+			$.cookie('com_kinoarhiv.movie.tabs', 0);
+		} else {
+			active_tab = $.cookie('com_kinoarhiv.movie.tabs');
+		}
+
 		$('.hasTip, .hasTooltip, td[title]').tooltip({
 			show: null,
 			position: {
@@ -87,6 +94,15 @@ JHtml::_('behavior.keepalive');
 				}
 
 				return title;
+			}
+		});
+
+		$('#movie_tabs').tabs({
+			create: function(event, ui){
+				$(this).tabs('option', 'active', parseInt(active_tab, 10));
+			},
+			activate: function(event, ui){
+				$.cookie('com_kinoarhiv.movie.tabs', ui.newTab.index());
 			}
 		});
 
@@ -116,28 +132,31 @@ JHtml::_('behavior.keepalive');
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<div class="span12">
-				<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'page-main')); ?>
-					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-main', JText::_('COM_KA_MOVIES_TAB_MAIN', true)); ?>
+				<div id="movie_tabs">
+					<ul>
+						<li><a href="#page-main"><?php echo JText::_('COM_KA_MOVIES_TAB_MAIN'); ?></a></li>
+						<li><a href="#page-rates"><?php echo JText::_('COM_KA_MOVIES_TAB_RATE'); ?></a></li>
+						<li><a href="#page-cast-crew"><?php echo JText::_('COM_KA_MOVIES_TAB_CAST_CREW'); ?></a></li>
+						<li><a href="#page-awards"><?php echo JText::_('COM_KA_MOVIES_TAB_AWARDS'); ?></a></li>
+						<li><a href="#page-meta"><?php echo JText::_('COM_KA_MOVIES_TAB_META'); ?></a></li>
+						<li><a href="#page-publ"><?php echo JText::_('COM_KA_MOVIES_TAB_PUB'); ?></a></li>
+					</ul>
+					<div id="page-main">
 						<?php echo $this->loadTemplate('edit_info'); ?>
-					<?php echo JHtml::_('bootstrap.endTab'); ?>
-
-					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-rates', JText::_('COM_KA_MOVIES_TAB_RATE', true)); ?>
+					</div>
+					<div id="page-rates">
 						<?php echo $this->loadTemplate('edit_rates'); ?>
-					<?php echo JHtml::_('bootstrap.endTab'); ?>
-
-					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-cast-crew', JText::_('COM_KA_MOVIES_TAB_CAST_CREW', true)); ?>
+					</div>
+					<div id="page-cast-crew">
 						<?php echo $this->loadTemplate('edit_crew'); ?>
-					<?php echo JHtml::_('bootstrap.endTab'); ?>
-
-					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-awards', JText::_('COM_KA_MOVIES_TAB_AWARDS', true)); ?>
+					</div>
+					<div id="page-awards">
 						<?php echo $this->loadTemplate('edit_awards'); ?>
-					<?php echo JHtml::_('bootstrap.endTab'); ?>
-
-					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-meta', JText::_('COM_KA_MOVIES_TAB_META', true)); ?>
+					</div>
+					<div id="page-meta">
 						<?php echo $this->loadTemplate('edit_meta'); ?>
-					<?php echo JHtml::_('bootstrap.endTab'); ?>
-
-					<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'page-publ', JText::_('COM_KA_MOVIES_TAB_PUB', true)); ?>
+					</div>
+					<div id="page-publ">
 						<div class="row-fluid">
 							<div class="span6">
 								<fieldset class="form-horizontal">
@@ -175,22 +194,13 @@ JHtml::_('behavior.keepalive');
 									</div>
 								</fieldset>
 							</div>
-							<div class="span12">
-								<legend><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></legend>
-								<fieldset class="form-horizontal">
-									<div class="control-group">
-										<?php echo $this->form->getInput('rules', $this->form_group); ?>
-									</div>
-								</fieldset>
-							</div>
 						</div>
-					<?php echo JHtml::_('bootstrap.endTab'); ?>
-				<?php echo JHtml::_('bootstrap.endTabSet'); ?>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('asset_id', $this->form_group)."\n"; ?>
 	<?php echo $this->form->getInput('countries_orig', $this->form_group)."\n"; ?>
 	<?php echo $this->form->getInput('genres_orig', $this->form_group)."\n"; ?>
 	<?php echo $this->form->getInput('tags_orig', $this->form_group)."\n"; ?>

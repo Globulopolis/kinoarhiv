@@ -18,6 +18,14 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 }
 /* */
 
+#movie_tabs .ui-tabs-panel {
+	padding: 1em .5em;
+}
+
+#page-cast-crew, #page-awards {
+	padding: 1em 0 !important;
+}
+
 .uploader .ui-accordion-content {
 	padding: 0 !important;
 }

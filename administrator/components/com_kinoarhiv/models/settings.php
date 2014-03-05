@@ -51,7 +51,7 @@ class KinoarhivModelSettings extends JModelForm {
 		foreach ($form_rules as $rule=>$groups) {
 			foreach ($groups as $group=>$value) {
 				if ($value != '') {
-					$rules[$rule][$group] = $value;
+					$rules[$rule][$group] = (int)$value;
 				} else {
 					unset($form_rules[$rule][$group]);
 				}

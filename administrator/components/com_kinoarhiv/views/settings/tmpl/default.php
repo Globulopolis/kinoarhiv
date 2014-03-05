@@ -1,4 +1,5 @@
 <?php defined('_JEXEC') or die; ?>
+<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.custom.min.js"></script>
@@ -32,6 +33,13 @@
 	}
 
 	jQuery(document).ready(function($){
+		var active_tab = 0;
+		if (typeof $.cookie('com_kinoarhiv.settings.tabs') == 'undefined') {
+			$.cookie('com_kinoarhiv.settings.tabs', 0);
+		} else {
+			active_tab = $.cookie('com_kinoarhiv.settings.tabs');
+		}
+
 		$('.hasTip, .hasTooltip, td[title]').tooltip({
 			show: null,
 			position: {
@@ -59,7 +67,14 @@
 			}
 		});
 
-		$('#settings_tabs').tabs();
+		$('#settings_tabs').tabs({
+			create: function(event, ui){
+				$(this).tabs('option', 'active', parseInt(active_tab, 10));
+			},
+			activate: function(event, ui){
+				$.cookie('com_kinoarhiv.settings.tabs', ui.newTab.index());
+			}
+		});
 
 		$('#jform_filter_genres, #jform_filter_names').select2();
 		$('#jform_premieres_list_limit, #jform_releases_list_limit').spinner({
@@ -168,7 +183,6 @@
 
 			<input type="hidden" name="controller" value="settings" />
 			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="return" id="return" value="#page-global" />
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
 		<!-- End Content -->

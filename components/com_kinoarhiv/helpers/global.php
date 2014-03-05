@@ -107,7 +107,7 @@ class GlobalHelper {
 	 * Load all necessary CSS and Javascript for HTML5/Flash player
 	 *
 	*/
-	static function loadPlayerAssets($theme='default', $player) {
+	static function loadPlayerAssets($theme='default', $player, $key='') {
 		$document = JFactory::getDocument();
 
 		$paths = array(
@@ -151,7 +151,7 @@ class GlobalHelper {
 			}
 
 			if ($player == 'jwplayer') {
-				$document->addScriptDeclaration("jwplayer.key='OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==';");
+				$document->addScriptDeclaration("jwplayer.key='".$key."';");
 			} elseif ($player == 'videojs') {
 				$document->addScriptDeclaration("videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/players/videojs/video-js.swf';");
 			} elseif ($player == 'mediaelement') {
@@ -174,7 +174,7 @@ class GlobalHelper {
 						$html .= "\t".'<script src="'.$url.'" type="text/javascript"></script>'."\n";
 
 						if ($player == 'jwplayer') {
-							$html .= "\t".'<script type="text/javascript">jwplayer.key="OrXu0WhgF4x8ybHp/DwGMPvumdB3n0sSsY9miw==";</script>'."\n";
+							$html .= "\t".'<script type="text/javascript">jwplayer.key="'.$key.'";</script>'."\n";
 						}
 					}
 				}

@@ -295,7 +295,7 @@ class KinoarhivModelMovies extends JModelList {
 				return $result;
 			}
 
-			$db->setQuery("SELECT `m`.`id`, `m`.`asset_id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext`,
+			$db->setQuery("SELECT `m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext`,
 				`m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`year`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`,
 				`m`.`ua_rate`, `m`.`mpaa`, `m`.`length`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`,
 				`m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`,
@@ -313,7 +313,7 @@ class KinoarhivModelMovies extends JModelList {
 			$result['movie']->countries = $this->getCountries();
 			$result['movie']->countries_orig = implode(',', $result['movie']->countries['ids']);
 			$result['movie']->tags = $this->getTags();
-			$result['movie']->tags_orig = implode(',', $result['movie']->tags['ids']);
+			$result['movie']->tags_orig = is_array($result['movie']->tags) ? implode(',', $result['movie']->tags['ids']) : '';
 		}
 
 		return $result;
@@ -619,6 +619,8 @@ class KinoarhivModelMovies extends JModelList {
 
 			if (empty($id)) {
 				$app->input->set('id', array($db->insertid()));
+			} else {
+				$app->input->set('id', array($id));
 			}
 
 			return true;
@@ -627,6 +629,8 @@ class KinoarhivModelMovies extends JModelList {
 
 			return false;
 		}
+
+		return true;
 	}
 
 	public function getCast() {
@@ -827,7 +831,7 @@ class KinoarhivModelMovies extends JModelList {
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
 		$order = $app->input->get('sord', 'asc', 'word');
-		$limit = $app->input->get('rows', 25, 'int');
+		$limit = $app->input->get('rows', 50, 'int');
 		$page = $app->input->get('page', 0, 'int');
 		$search_field = $app->input->get('searchField', '', 'string');
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');

@@ -2,8 +2,6 @@
 <form>
 	<fields name="movie">
 		<fieldset name="edit">
-			<field name="asset_id" type="hidden" filter="unset" />
-			<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="movie" validate="rules" />
 			<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12" required="true" filter="string" size="45" />
 			<field name="year" type="text" default="" label="COM_KA_FIELD_MOVIE_YEAR" class="span6" required="true" filter="string" />
 			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6 hasDatetime time" required="true" timeformat="HH:mm:ss" />

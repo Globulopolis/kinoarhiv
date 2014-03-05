@@ -120,8 +120,13 @@
 		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="player_width" type="text" default="688" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
+	</fieldset>
+	<fieldset name="ap_item_player" label="COM_KA_SETTINGS_AP_ITEM_PLAYER">
+		<field name="player_width" type="text" default="688" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true" filter="integer" size="6" />
 		<field name="player_type" type="folderlist" default="mediaelement" directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL" description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" />
+		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL" description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12" />
+		<field name="player_logo" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL" description="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL_DESC" rows="3" cols="6" class="span12" />
+		<field name="player_swf" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_SWF_LABEL" description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12" />
 	</fieldset>
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
 		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL" description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6" />

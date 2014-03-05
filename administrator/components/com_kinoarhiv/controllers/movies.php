@@ -83,9 +83,9 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
 
 		// Set the redirect based on the task.
-		/*switch ($this->getTask()) {
+		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$id);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$id[0]);
 				break;
 
 			case 'save':
@@ -94,7 +94,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				break;
 		}
 
-		return true;*/
+		return true;
 	}
 
 	public function unpublish() {

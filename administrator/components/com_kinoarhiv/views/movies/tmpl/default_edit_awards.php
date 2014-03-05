@@ -10,8 +10,8 @@
 				refreshtext: '<?php echo JText::_('JTOOLBAR_REFRESH'); ?>',
 				searchtext: '<?php echo JText::_('JSEARCH_FILTER'); ?>'
 			},
-			grid_height: Math.round($(window).height() - ($('.tab-content').offset().top * 1.6)),
-			grid_width: $('#j-main-container').innerWidth()
+			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
+			grid_width: $('#movie_tabs').width()
 		};
 
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
@@ -35,7 +35,8 @@
 			pager: '#pager_awards',
 			sortname: 'rel.id',
 			sortorder: 'desc',
-			viewrecords: true
+			viewrecords: true,
+			rowNum: 50
 		});
 		$('#list_awards').jqGrid('navGrid', '#pager_awards', aw_grid_cfg.grid_nav_config, {}, {}, {}, {
 			// Search form config

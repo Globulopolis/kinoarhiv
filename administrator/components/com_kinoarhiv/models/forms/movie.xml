@@ -136,4 +136,11 @@
 			<option value="*">JALL</option>
 		</field>
 	</fieldset>
+	<fieldset name="premiere_edit">
+		<field name="p_vendor_id" type="text" default="" label="COM_KA_FIELD_PREMIERE_VENDOR" description="COM_KA_FIELD_PREMIERE_VENDOR_DESC" required="true" class="span10 required" filter="string" size="45" />
+		<field name="p_country_id" type="text" default="0" label="COM_KA_FIELD_PREMIERE_COUNTRY_LABEL" class="span10" filter="string" size="45" />
+		<field name="p_premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox hasDatetime datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
+		<field name="p_info" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="JComponentHelper::filterText" cols="6" rows="5" />
+		<field name="p_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+	</fieldset>
 </form>

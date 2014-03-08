@@ -187,7 +187,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			}
 
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies_gallery')." (`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`)"
-				. "\n VALUES ('', '".$filename."', '".$image_sizes[0].'x'.$image_sizes[1]."', '".(int)$id."', '".(int)$type."', '0', '1')");
+				. "\n VALUES ('', '".$filename."', '".floor($image_sizes[0]).'x'.floor($image_sizes[1])."', '".(int)$id."', '".(int)$type."', '0', '1')");
 			$result['success'] = $db->execute();
 			$result['filename'] = $filename;
 			$result['id'] = $db->insertid();

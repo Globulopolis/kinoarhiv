@@ -193,6 +193,16 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		echo json_encode($result);
 	}
 
+	public function getPremieres() {
+		$document = JFactory::getDocument();
+		$document->setName('response');
+
+		$model = $this->getModel('movies');
+		$result = $model->getPremieres();
+
+		echo json_encode($result);
+	}
+
 	public function deleteRelAwards() {
 		$document = JFactory::getDocument();
 		$document->setName('response');

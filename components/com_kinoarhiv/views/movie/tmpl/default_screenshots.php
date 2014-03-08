@@ -2,9 +2,11 @@
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
+		$('img.lazy').lazyload();
 		$('.scr-list .item a').colorbox({ maxHeight: '90%', maxWidth: '90%' });
 	});
 //]]>
@@ -25,7 +27,7 @@
 				<div class="thumb">
 					<div class="item">
 						<a href="<?php echo $scr->image; ?>" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>" rel="scrsh">
-							<img src="<?php echo $scr->th_image; ?>" border="0" alt="<?php echo JText::_('COM_KA_SCR_ALT').$this->escape($this->item->title); ?>" />
+							<img data-original="<?php echo $scr->th_image; ?>" width="<?php echo $scr->th_image_width; ?>" height="<?php echo $scr->th_image_height; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_SCR_ALT').$this->escape($this->item->title); ?>" />
 						</a>
 					</div>
 					<ul>

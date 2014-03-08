@@ -156,6 +156,23 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$db->setQuery("SELECT ".$col." FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$id);
 				$result = json_decode($db->loadResult());
 			}
+		} elseif ($element == 'vendors') {
+			if (empty($all)) {
+				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
+
+				if (empty($id)) {
+					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `company_name` LIKE '".$db->escape($term)."%' OR `company_name_intl` LIKE '".$db->escape($term)."%'".$where_lang);
+					$result = $db->loadObjectList();
+				} else {
+					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `id` = ".(int)$id.$where_lang);
+					$result = $db->loadObject();
+				}
+			} else {
+				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
+
+				$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors').$where_lang);
+				$result = $db->loadObjectList();
+			}
 		} else {
 			$result = array();
 		}

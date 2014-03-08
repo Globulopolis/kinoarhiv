@@ -147,7 +147,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		// Selecting premiere dates
 		if ($params->get('premieres_list_limit') > 0) {
-			$db->setQuery("SELECT `p`.`premiere_date`, `p`.`info`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
+			$db->setQuery("SELECT `p`.`id`, `p`.`vendor_id`, `p`.`premiere_date`, `p`.`info`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
 				. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `p`.`vendor_id`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `p`.`country_id`"

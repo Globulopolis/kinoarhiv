@@ -72,7 +72,7 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_GENRES_ADD_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_GENRES_ADD_TITLE'), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -89,7 +89,7 @@ class KinoarhivViewGenres extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_GENRES_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_GENRES_TITLE'), 'smiley-2');
 
 			if ($user->authorise('core.create.genre', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

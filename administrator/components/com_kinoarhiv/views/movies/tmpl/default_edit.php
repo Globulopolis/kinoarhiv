@@ -138,6 +138,7 @@ JHtml::_('behavior.keepalive');
 						<li><a href="#page-rates"><?php echo JText::_('COM_KA_MOVIES_TAB_RATE'); ?></a></li>
 						<li><a href="#page-cast-crew"><?php echo JText::_('COM_KA_MOVIES_TAB_CAST_CREW'); ?></a></li>
 						<li><a href="#page-awards"><?php echo JText::_('COM_KA_MOVIES_TAB_AWARDS'); ?></a></li>
+						<li><a href="#page-premieres"><?php echo JText::_('COM_KA_MOVIES_TAB_PREMIERES'); ?></a></li>
 						<li><a href="#page-meta"><?php echo JText::_('COM_KA_MOVIES_TAB_META'); ?></a></li>
 						<li><a href="#page-publ"><?php echo JText::_('COM_KA_MOVIES_TAB_PUB'); ?></a></li>
 					</ul>
@@ -152,6 +153,9 @@ JHtml::_('behavior.keepalive');
 					</div>
 					<div id="page-awards">
 						<?php echo $this->loadTemplate('edit_awards'); ?>
+					</div>
+					<div id="page-premieres">
+						<?php echo $this->loadTemplate('edit_premieres'); ?>
 					</div>
 					<div id="page-meta">
 						<?php echo $this->loadTemplate('edit_meta'); ?>

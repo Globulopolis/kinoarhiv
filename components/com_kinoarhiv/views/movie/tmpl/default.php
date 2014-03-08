@@ -309,7 +309,9 @@ $total_movies = count($this->item->movie);
 						<div>
 							<span class="f-col"><?php echo ($premiere->country == '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
 							<span class="s-col">
-								<?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($premiere->company_name != '' || $premiere->company_name_intl != ''): ?>, <?php echo ($premiere->company_name_intl != '') ? $premiere->company_name.' / '.$premiere->company_name_intl : $premiere->company_name; ?><?php if ($premiere->info != ''): ?><a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a><div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?><?php endif; ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&id='.$premiere->id.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if ($premiere->company_name != '' || $premiere->company_name_intl != ''): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$premiere->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo ($premiere->company_name_intl != '') ? $premiere->company_name.' / '.$premiere->company_name_intl : $premiere->company_name; ?></a>
+									<?php if ($premiere->info != ''): ?><a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a><div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?>
+								<?php endif; ?>
 							</span>
 						</div>
 						<?php endforeach;
@@ -319,7 +321,7 @@ $total_movies = count($this->item->movie);
 						<div>
 							<span class="f-col"><?php echo ($release->media_type == 0) ? JText::_('COM_KA_RELEASE_MEDIA_TYPE_DVD') : JText::_('COM_KA_RELEASE_MEDIA_TYPE_BD'); ?></span>
 							<span class="s-col">
-								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&movie_id='.$this->item->id.'&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
+								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
 							</span>
 						</div>
 						<?php endforeach;

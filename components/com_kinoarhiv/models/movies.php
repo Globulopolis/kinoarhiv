@@ -20,7 +20,7 @@ class KinoarhivModelMovies extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`state`, `g`.`filename`");
+		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`state`, `g`.`filename`, `g`.`dimension`");
 		$query->from($db->quoteName('#__ka_movies').' AS `m`');
 		$query->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
 
@@ -271,5 +271,22 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		return array('success'=>$success, 'message'=>$message, 'url'=>$url, 'text'=>$text);
+	}
+
+	public function getPagination() {
+		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+
+		$store = $this->getStoreId('getPagination');
+
+		if (isset($this->cache[$store])) {
+			return $this->cache[$store];
+		}
+
+		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
+		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
+
+		$this->cache[$store] = $page;
+
+		return $this->cache[$store];
 	}
 }

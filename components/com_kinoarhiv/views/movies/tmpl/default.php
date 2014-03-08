@@ -13,6 +13,7 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/rateit.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
@@ -24,6 +25,8 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 				button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
 			});
 		}
+
+		$('img.lazy').lazyload();
 
 		$('a.zoom-icon').colorbox({
 			title: function(){
@@ -110,7 +113,7 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 	</div>
 	<div class="clear"></div>
 	<?php endif; ?>
-	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
@@ -152,7 +155,9 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title.$item->year_str); ?>">
-							<div><img src="<?php echo $item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($item->title); ?>" /></div>
+							<div>
+								<img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>" />
+							</div>
 						</a>
 						<?php if ($item->y_poster != ''): ?><div class="overlay-poster">
 							<a href="<?php echo $item->big_poster; ?>" title="<?php echo JText::_('COM_KA_POSTER_ZOOM'); ?>" class="zoom-icon hasTooltip"><div></div></a>
@@ -220,10 +225,11 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 	else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
-	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>
+			<?php echo $this->pagination->getLimitBox(); ?>
 		</div>
 	<?php endif; ?>
 </div>

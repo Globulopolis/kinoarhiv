@@ -880,6 +880,65 @@ class KinoarhivModelMovies extends JModelList {
 		return $result;
 	}
 
+	public function getPremieres() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$id = $app->input->get('id', null, 'int');
+		$orderby = $app->input->get('sidx', '1', 'string');
+		$order = $app->input->get('sord', 'asc', 'word');
+		$limit = $app->input->get('rows', 50, 'int');
+		$page = $app->input->get('page', 0, 'int');
+		$search_field = $app->input->get('searchField', '', 'string');
+		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
+		$search_string = $app->input->get('searchString', '', 'string');
+		$limitstart = $limit * $page - $limit;
+		$result = (object)array('rows'=>array());
+		$where = "";
+
+		if (!empty($search_string)) {
+			$where .= " AND ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+		}
+
+		$db->setQuery("SELECT COUNT(`id`)"
+			. "\n FROM ".$db->quoteName('#__ka_premieres')
+			. "\n WHERE `movie_id` = ".(int)$id);
+		$total = $db->loadResult();
+
+		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $total_pages) ? $total_pages : $page;
+
+		$db->setQuery("SELECT `p`.`id`, `p`.`movie_id`, `p`.`premiere_date`, `p`.`info`, `p`.`ordering`, `v`.`company_name`, `v`.`company_name_intl`, `c`.`name`"
+			. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `p`.`vendor_id`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `p`.`country_id`"
+			. "\n WHERE `movie_id` = ".(int)$id.$where
+			. "\n ORDER BY ".$db->quoteName($orderby).' '.strtoupper($order), $limitstart, $limit);
+		$rows = $db->loadObjectList();
+
+		$k = 0;
+		foreach ($rows as $elem) {
+			$result->rows[$k]['id'] = $elem->id.'_'.$elem->movie_id;
+			$vendor_0 = !empty($elem->company_name) ? $elem->company_name : '';
+			$vendor_1 = (!empty($elem->company_name) && !empty($elem->company_name_intl)) ? ' / ' : '';
+			$vendor_2 = !empty($elem->company_name_intl) ? $elem->company_name_intl : '';
+			$result->rows[$k]['cell'] = array(
+				'id'			=> $elem->id,
+				'vendor'		=> $vendor_0.$vendor_1.$vendor_2,
+				'premiere_date' => $elem->premiere_date,
+				'country'		=> $elem->name,
+				'ordering'		=> $elem->ordering
+			);
+
+			$k++;
+		}
+
+		$result->page = $page;
+		$result->total = $total_pages;
+		$result->records = $total;
+
+		return $result;
+	}
+
 	public function saveOrder() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();

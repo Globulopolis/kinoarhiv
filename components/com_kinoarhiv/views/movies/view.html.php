@@ -57,6 +57,9 @@ class KinoarhivViewMovies extends JViewLegacy {
 			} else {
 				$item->big_poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
 				$item->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				$item->poster_width = (int)$params->get('size_x_posters');
+				$orig_poster_size = explode('x', $item->dimension);
+				$item->poster_height = floor(($item->poster_width * $orig_poster_size[1]) / $orig_poster_size[0]);
 				$item->y_poster = ' y-poster';
 			}
 

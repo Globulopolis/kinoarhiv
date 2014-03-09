@@ -8,9 +8,10 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
+		$state = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -21,7 +22,8 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
 
 		$this->items = &$items;
-		$this->lang = &$lang;
+		$this->pagination = &$pagination;
+		$this->state = &$state;
 
 		parent::display($tpl);
 	}
@@ -53,22 +55,56 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		JToolbarHelper::title(JText::_('COM_KA_PREMIERES_TITLE'), 'calendar');
-
-		if ($user->authorise('core.create', 'com_kinoarhiv')) {
-			JToolbarHelper::addNew('add');
-		}
-
-		if ($user->authorise('core.edit', 'com_kinoarhiv')) {
-			JToolbarHelper::editList('edit');
+		if ($task == 'add') {
+			JToolbarHelper::title(JText::_('COM_KA_PREMIERES_ADD_TITLE'), 'calendar');
+			JToolbarHelper::apply('apply');
+			JToolbarHelper::save('save');
+			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
-		}
-
-		if ($user->authorise('core.delete', 'com_kinoarhiv')) {
-			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+			JToolbarHelper::cancel();
+		} elseif ($task == 'edit') {
+			if (!empty($this->items->id)) {
+				JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_PREMIERES_EDIT_TITLE'), $this->items->title), 'calendar');
+			} else {
+				JToolbarHelper::title(JText::_('COM_KA_PREMIERES_ADD_TITLE'), 'calendar');
+			}
+			JToolbarHelper::apply('apply');
+			JToolbarHelper::save('save');
+			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
-		}
+			JToolbarHelper::cancel();
+		} else {
+			JToolbarHelper::title(JText::_('COM_KA_PREMIERES_TITLE'), 'calendar');
+			if ($user->authorise('core.create', 'com_kinoarhiv')) {
+				JToolbarHelper::addNew('add');
+			}
 
-		JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_PREMIERES_TABLES_RELATIONS_TITLE'), false);
+			if ($user->authorise('core.edit', 'com_kinoarhiv')) {
+				JToolbarHelper::editList('edit');
+				JToolbarHelper::divider();
+			}
+
+			if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
+				JToolbarHelper::publishList();
+				JToolbarHelper::unpublishList();
+			}
+
+			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+			}
+
+			JToolbarHelper::divider();
+			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_PREMIERES_TABLES_RELATIONS_TITLE'), false);
+		}
+	}
+
+	protected function getSortFields() {
+		return array(
+			'p.vendor_id' => JText::_('JSTATUS'),
+			'p.premiere_date' => JText::_('JSTATUS'),
+			'p.country_id' => JText::_('JSTATUS'),
+			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
+			'p.id' => JText::_('JGRID_HEADING_ID')
+		);
 	}
 }

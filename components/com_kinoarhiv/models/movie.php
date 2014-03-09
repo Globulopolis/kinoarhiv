@@ -14,7 +14,10 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		if (empty($this->context)) {
-			$this->context = strtolower($this->option . '.' . $this->getName());
+			$input = JFactory::getApplication()->input;
+			$page = $input->get('page', 'global');
+
+			$this->context = strtolower($this->option.'.'.$this->getName().'.'.$page);
 		}
 	}
 
@@ -687,10 +690,10 @@ class KinoarhivModelMovie extends JModelForm {
 	public function getDimensionFilters() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$tab = $app->input->get('tab', null, 'cmd');
+		$page = $app->input->get('page', null, 'cmd');
 		$filter = $app->input->get('dim_filter', 0, 'string');
 
-		if ($tab == 'wallpp') {
+		if ($page == 'wallpapers') {
 			$db->setQuery("SELECT `dimension` AS `value`, `dimension` AS `title`, SUBSTRING_INDEX(`dimension`, 'x', 1) AS `width`"
 				. "\n FROM ".$db->quoteName('#__ka_movies_gallery')
 				. "\n WHERE `type` = 1"
@@ -805,12 +808,12 @@ class KinoarhivModelMovie extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', 0, 'int');
-		$tab = $app->input->get('tab', 'reviews', 'cmd');
+		$page = $app->input->get('page', 'reviews', 'cmd');
 		$filter = $app->input->get('dim_filter', '0', 'string');
 
 		$query = $db->getQuery(true);
 
-		if ($tab == 'wallpp') {
+		if ($page == 'wallpapers') {
 			$query->select('`id`, `filename`, `dimension`');
 			$query->from($db->quoteName('#__ka_movies_gallery'));
 
@@ -821,11 +824,11 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 
 			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 1'.$where);
-		} elseif ($tab == 'posters') {
+		} elseif ($page == 'posters') {
 			$query->select('`id`, `filename`, `dimension`');
 			$query->from($db->quoteName('#__ka_movies_gallery'));
 			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 2');
-		} elseif ($tab == 'screenshots') {
+		} elseif ($page == 'screenshots') {
 			$query->select('`id`, `filename`, `dimension`');
 			$query->from($db->quoteName('#__ka_movies_gallery'));
 			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 3');
@@ -920,7 +923,7 @@ class KinoarhivModelMovie extends JModelForm {
 		if ($this->context) {
 			$app = JFactory::getApplication();
 
-			$value = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'uint');
+			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->getCfg('list_limit'), 'uint');
 			$limit = $value;
 			$this->setState('list.limit', $limit);
 

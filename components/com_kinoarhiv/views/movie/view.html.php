@@ -6,21 +6,21 @@ class KinoarhivViewMovie extends JViewLegacy {
 	protected $items = null;
 	protected $filters = null;
 	protected $pagination = null;
-	protected $tab;
+	protected $page;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
-		$this->tab = $app->input->get('tab', 'movie', 'cmd');
+		$this->page = $app->input->get('page', 'movie', 'cmd');
 		$this->itemid = $app->input->get('Itemid');
 
-		switch ($this->tab) {
+		switch ($this->page) {
 			case 'cast': $this->cast(); break;
-			case 'wallpp': $this->wallpp(); break;
+			case 'wallpapers': $this->wallpp(); break;
 			case 'posters': $this->posters(); break;
 			case 'screenshots': $this->screenshots(); break;
 			case 'awards': $this->awards(); break;
-			case 'tr': $this->trailers(); break;
-			case 'sound': $this->sound(); break;
+			case 'trailers': $this->trailers(); break;
+			case 'soundtracks': $this->sound(); break;
 			default: $this->info($tpl); break;
 		}
 	}
@@ -135,7 +135,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_CREATORS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=cast&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_CREATORS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('cast');
 	}
@@ -190,7 +190,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=wallpp&id='.$item->id.'&Itemid='.$this->itemid), false);
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=wallpapers&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -214,7 +214,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_WALLPP'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=wallpp&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_WALLPP'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=wallpapers&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('wallpp');
 	}
@@ -269,7 +269,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=posters&id='.$item->id.'&Itemid='.$this->itemid), false);
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -292,7 +292,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_POSTERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_POSTERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('posters');
 	}
@@ -348,7 +348,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=screenshots&id='.$item->id.'&Itemid='.$this->itemid), false);
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=screenshots&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -371,7 +371,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_SCRSHOTS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=screenshots&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_SCRSHOTS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=screenshots&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('screenshots');
 	}
@@ -398,7 +398,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=awards&id='.$item->id.'&Itemid='.$this->itemid), false);
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=awards&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -419,7 +419,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_AWARDS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=awards&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_AWARDS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=awards&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('awards');
 	}
@@ -450,7 +450,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=tr&id='.$item->id.'&Itemid='.$this->itemid), false);
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=trailers&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -472,7 +472,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_TRAILERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=tr&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_TRAILERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=trailers&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('trailers');
 	}
@@ -498,7 +498,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=tr&id='.$item->id.'&Itemid='.$this->itemid), false);
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=soundtracks&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -519,7 +519,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_SOUND'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=sound&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_SOUND'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=soundtracks&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('soundtracks');
 	}

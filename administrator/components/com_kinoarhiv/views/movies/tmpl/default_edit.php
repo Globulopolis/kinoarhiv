@@ -112,18 +112,17 @@ JHtml::_('behavior.keepalive');
 					timeFormat: $(el).data('time-format')
 				});
 			} else if ($(el).hasClass('date')) {
-				
+				$(el).datetimepicker({
+					dateFormat: $(el).data('date-format')
+				});
 			} else if ($(el).hasClass('datetime')) {
 				$(el).datetimepicker({
 					dateFormat: $(el).data('date-format'),
 					timeFormat: $(el).data('time-format')
 				});
 			}
-		});
-
-		$('.cmd-datetime').click(function(e){
+		}).next('.cmd-datetime').click(function(e){
 			e.preventDefault();
-
 			$(this).prev('input').trigger('focus');
 		});
 	});

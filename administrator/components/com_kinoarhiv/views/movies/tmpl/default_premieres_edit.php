@@ -1,7 +1,4 @@
-<?php defined('_JEXEC') or die;
-$input = JFactory::getApplication()->input;
-$award_id = $input->get('award_id', 0, 'int');
-?>
+<?php defined('_JEXEC') or die; ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.ui.tooltip.min.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -32,48 +29,6 @@ $award_id = $input->get('award_id', 0, 'int');
 			}
 		});
 
-		$('.form_award button').button();
-		$('a.quick-add').click(function(e){
-			e.preventDefault();
-
-			$('.form_award').slideToggle();
-
-			$('.rel-form_award .group').slideToggle();
-			$('#rel-add-apply').button('disable');
-		});
-		$('#form_award_cancel').click(function(e){
-			e.preventDefault();
-
-			$('.form_award').slideToggle();
-			$('.rel-form_award .group').slideToggle();
-			$('#rel-add-apply').button('enable');
-		});
-		$('#form_award_apply').click(function(e){
-			e.preventDefault();
-			var _this = $(this);
-
-			if ($('#form_a_title').val() != '') {
-				$.ajax({
-					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=awards&task=quickSave&format=json',
-					data: $('.form_award fieldset').serialize() + '&<?php echo JSession::getFormToken(); ?>=1'
-				}).done(function(response){
-					if (response.success) {
-						$('#form_award_id').select2('data', response.data);
-						_this.closest('fieldset').parent().slideToggle();
-						$('.rel-form_award .group').slideToggle();
-						$('#rel-add-apply').button('enable');
-					} else {
-						showMsg('.form_award .control-group:last', response.message);
-					}
-				}).fail(function(xhr, status, error){
-					showMsg('.form_award .control-group:last', error);
-				});
-			} else {
-				showMsg('.form_award .control-group:last', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
-			}
-		});
-
 		function formatVendor(data) {
 			var title = '';
 
@@ -90,7 +45,6 @@ $award_id = $input->get('award_id', 0, 'int');
 			minimumInputLength: 1,
 			maximumSelectionSize: 1,
 			multiple: true,
-			<?php if ($award_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
 				if (id !== "") {
@@ -101,7 +55,6 @@ $award_id = $input->get('award_id', 0, 'int');
 					}).done(function(data) { callback(data); });
 				}
 			},
-			<?php endif; ?>
 			ajax: {
 				cache: true,
 				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=vendors&format=json',
@@ -123,10 +76,9 @@ $award_id = $input->get('award_id', 0, 'int');
 			minimumInputLength: 1,
 			maximumSelectionSize: 1,
 			multiple: true,
-			<?php if ($award_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "") {
+				if (id !== "" && id !== "0") {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json', {
 						data: {
 							id: id
@@ -134,7 +86,6 @@ $award_id = $input->get('award_id', 0, 'int');
 					}).done(function(data) { callback(data); });
 				}
 			},
-			<?php endif; ?>
 			ajax: {
 				cache: true,
 				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json',
@@ -160,13 +111,18 @@ $award_id = $input->get('award_id', 0, 'int');
 					timeFormat: $(el).data('time-format')
 				});
 			} else if ($(el).hasClass('date')) {
-				
+				$(el).datetimepicker({
+					dateFormat: $(el).data('date-format')
+				});
 			} else if ($(el).hasClass('datetime')) {
 				$(el).datetimepicker({
 					dateFormat: $(el).data('date-format'),
 					timeFormat: $(el).data('time-format')
 				});
 			}
+		}).next('.cmd-datetime').click(function(e){
+			e.preventDefault();
+			$(this).prev('input').trigger('focus');
 		});
 	});
 </script>
@@ -177,15 +133,11 @@ $award_id = $input->get('award_id', 0, 'int');
 		<fieldset class="form-horizontal">
 			<div class="group">
 				<div class="control-group">
-					<div class="control-label">
-						<label id="form_p_vendor_id-lbl" class="hasTooltip" for="form_p_vendor_id" title="<?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR_DESC'); ?>"><?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?> <span class="star">*</span></label>
-					</div>
+					<div class="control-label"><?php echo $this->form->getLabel('p_vendor_id'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('p_vendor_id'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label">
-						<label id="form_p_country_id-lbl" for="form_p_country_id"><?php echo JText::_('COM_KA_FIELD_PREMIERE_COUNTRY_LABEL'); ?></label>
-					</div>
+					<div class="control-label"><?php echo $this->form->getLabel('p_country_id'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('p_country_id'); ?></div>
 				</div>
 				<div class="control-group">

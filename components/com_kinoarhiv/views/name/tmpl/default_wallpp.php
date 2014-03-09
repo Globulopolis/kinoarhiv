@@ -2,9 +2,11 @@
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
+		$('img.lazy').lazyload({ threshold: 100 });
 		$('.wp-list .item a').colorbox({ maxHeight: '90%' });
 	});
 //]]>
@@ -28,7 +30,7 @@
 				<div class="thumb">
 					<div class="item">
 						<a href="<?php echo $wp->image; ?>" title="<?php echo $this->item->title; ?>" rel="wp">
-							<img src="<?php echo $wp->th_image; ?>" border="0" alt="<?php echo JText::_('COM_KA_WP_NAMES_ALT').$this->item->title; ?>" />
+							<img data-original="<?php echo $wp->th_image; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_WP_NAMES_ALT').$this->item->title; ?>" width="<?php echo $wp->th_width; ?>" height="<?php echo $wp->th_height; ?>" />
 						</a>
 					</div>
 					<ul>

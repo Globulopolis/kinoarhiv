@@ -19,7 +19,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->input->get('id', 0, 'int'), false));
 	}
 
-	public function delete() {
+	/*public function delete() {
 		$user = JFactory::getUser();
 		$document = JFactory::getDocument();
 
@@ -75,5 +75,5 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 
 			$this->setRedirect($url);
 		}
-	}
+	}*/
 }

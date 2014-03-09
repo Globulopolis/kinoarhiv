@@ -31,14 +31,14 @@
 			<div>
 				<?php for ($i=0, $n=count($this->item->careers['crew']); $i<$n; $i++):
 					$career = $this->item->careers['crew'][$i];?>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($career); ?>"><?php echo $career; ?></a><?php if ($i+1 == $n) {
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($career); ?>"><?php echo $career; ?></a><?php if ($i+1 == $n) {
 					} else {
 						echo ', ';
 					} ?>
 				<?php endfor; ?>
 			</div>
 			<div>
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['cast']); ?>"><?php echo $this->item->careers['cast']; ?></a><?php if (isset($this->item->careers['dub']) && count($this->item->careers['dub']) > 0): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['dub']); ?>"><?php echo $this->item->careers['dub']; ?></a><?php endif; ?>
+				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['cast']); ?>"><?php echo $this->item->careers['cast']; ?></a><?php if (isset($this->item->careers['dub']) && count($this->item->careers['dub']) > 0): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['dub']); ?>"><?php echo $this->item->careers['dub']; ?></a><?php endif; ?>
 			</div><br />
 			<?php if (count($this->item->crew) > 0):
 				foreach ($this->item->crew as $row): ?>

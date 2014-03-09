@@ -1,16 +1,10 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('behavior.keepalive');
+$user		= JFactory::getUser();
+$listOrder	= $this->escape($this->state->get('list.ordering'));
+$listDirn	= $this->escape($this->state->get('list.direction'));
+$sortFields = $this->getSortFields();
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.ui.tooltip.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jqGrid.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/grid/grid.locale-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/timepicker/jquery-ui-timepicker-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript">
 	function showMsg(selector, text) {
 		jQuery(selector).aurora({
@@ -21,85 +15,105 @@ JHtml::_('behavior.keepalive');
 		});
 	}
 
+	Joomla.orderTable = function() {
+		table = document.getElementById("sortTable");
+		direction = document.getElementById("directionTable");
+		order = table.options[table.selectedIndex].value;
+		if (order != '<?php echo $listOrder; ?>') {
+			dirn = 'asc';
+		} else {
+			dirn = direction.options[direction.selectedIndex].value;
+		}
+		Joomla.tableOrdering(order, dirn, '');
+	}
+
+	Joomla.submitbutton = function(task) {
+		if (task == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
+			return;
+		}
+		Joomla.submitform(task);
+	}
+
 	jQuery(document).ready(function($){
-		$('.hasTip, .hasTooltip, td[title]').tooltip({
-			show: null,
-			position: {
-				my: 'left top',
-				at: 'left bottom'
-			},
-			open: function(event, ui){
-				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
-			},
-			content: function(){
-				var parts = $(this).attr('title').split('::', 2),
-					title = '';
-
-				if (parts.length == 2) {
-					if (parts[0] != '') {
-						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
-					} else {
-						title += parts[1];
-					}
-				} else {
-					title += $(this).attr('title');
-				}
-
-				return title;
-			}
-		});
-
-		var p_grid_cfg = {
-			grid_form_left: Math.round((($(document).width()/2)-($(document).width()/3))),
-			grid_form_top: Math.round((($('body').height()/2)-($('body').height()/4))),
-			grid_form_width: 780,
-			grid_nav_config: {
-				edit:false, add:false, del:false,
-				refreshtext: '<?php echo JText::_('JTOOLBAR_REFRESH'); ?>',
-				searchtext: '<?php echo JText::_('JSEARCH_FILTER'); ?>'
-			},
-			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
-			grid_width: $('#adminForm').width()
-		};
-
-		p_grid_cfg.grid_height = (p_grid_cfg.grid_height < 100) ? 200 : p_grid_cfg.grid_height;
-
-		$('#list_premieres').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=premieres&task=getPremieres&format=json<?php //echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>',
-			datatype: 'json',
-			height: p_grid_cfg.grid_height,
-			width: p_grid_cfg.grid_width,
-			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_YEAR'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_DESC'); ?>'],
-			colModel:[
-				{name:'id', index:'rel.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'award_id', index:'rel.award_id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'title', index:'rel.title', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'year', index:'rel.year', width:150, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'desc', index:'rel.desc', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}}
-			],
-			multiselect: true,
-			caption: '',
-			pager: '#pager_premieres',
-			sortname: 'rel.id',
-			sortorder: 'desc',
-			viewrecords: true,
-			rowNum: 50
-		});
-		$('#list_premieres').jqGrid('navGrid', '#pager_premieres', p_grid_cfg.grid_nav_config, {}, {}, {}, {
-			// Search form config
-			width: p_grid_cfg.grid_form_width, left: p_grid_cfg.grid_form_left, top: p_grid_cfg.grid_form_top,
-			closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
-		});
-		$('#list_premieres').jqGrid('gridResize', {});
 	});
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
-	<div class="row-fluid">
-		<div class="span12 premieres-container">
-			<table id="list_premieres"></table>
-			<div id="pager_premieres"></div>
+<div id="j-main-container">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+		<div id="filter-bar" class="btn-toolbar">
+			<div class="filter-search btn-group pull-left">
+				<label for="filter_search" class="element-invisible"><?php echo JText::_('COM_FILTER_SEARCH_DESC'); ?></label>
+				<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" style="width: 350px;" />
+			</div>
+			<div class="btn-group pull-left hidden-phone">
+				<button class="btn tip hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+				<button class="btn tip hasTooltip" type="button" onclick="document.id('filter_search').value='';this.form.submit();" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+			</div>
+			<div class="btn-group pull-right hidden-phone">
+				<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
+				<?php echo $this->pagination->getLimitBox(); ?>
+			</div>
+			<div class="btn-group pull-right hidden-phone">
+				<label for="directionTable" class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
+				<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
+					<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
+					<option value="asc" <?php if ($listDirn == 'asc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
+					<option value="desc" <?php if ($listDirn == 'desc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING');  ?></option>
+				</select>
+			</div>
+			<div class="btn-group pull-right">
+				<label for="sortTable" class="element-invisible"><?php echo JText::_('JGLOBAL_SORT_BY'); ?></label>
+				<select name="sortTable" id="sortTable" class="input-xlarge" onchange="Joomla.orderTable()">
+					<option value=""><?php echo JText::_('JGLOBAL_SORT_BY');?></option>
+					<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
+				</select>
+			</div>
 		</div>
-	</div>
-	<?php echo JHtml::_('form.token'); ?>
-</form>
+		<div class="clearfix"> </div>
+
+		<table class="table table-striped" id="articleList">
+			<thead>
+				<tr>
+					<th width="1%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+					</th>
+					<th width="1%" class="center hidden-phone">
+						<?php echo JHtml::_('grid.checkall'); ?>
+					</th>
+					<th width="1%" style="min-width:55px" class="nowrap center">
+						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+					</th>
+					<th>
+						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'a.title', $listDirn, $listOrder); ?>
+					</th>
+					<th width="1%" style="min-width:55px" class="nowrap center">
+					</th>
+					<th width="10%" class="nowrap hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+					</th>
+					<th width="10%" class="nowrap hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_LANGUAGE', 'language', $listDirn, $listOrder); ?>
+					</th>
+					<th width="5%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php if (count($this->items) == 0): ?>
+				<tr>
+					<td colspan="7" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+				</tr>
+			<?php else:
+			endif; ?>
+			</tbody>
+		</table>
+		<?php echo $this->pagination->getListFooter(); ?>
+		<input type="hidden" name="controller" value="premieres" />
+		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="boxchecked" value="0" />
+		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
+		<?php echo JHtml::_('form.token'); ?>
+	</form>
+</div>

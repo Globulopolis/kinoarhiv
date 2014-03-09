@@ -4,6 +4,7 @@
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
@@ -16,6 +17,7 @@
 			});
 		}
 
+		$('img.lazy').lazyload({ threshold: 100 });
 		$('a.zoom-icon').colorbox({
 			title: function(){
 				return $(this).closest('.poster').find('img').attr('alt');
@@ -118,7 +120,7 @@
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title); ?>">
-							<div><img src="<?php echo $item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT').$this->escape($item->title); ?>" /></div>
+							<div><img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT').$this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>" /></div>
 						</a>
 						<?php if ($item->y_poster != ''): ?><div class="overlay-poster">
 							<a href="<?php echo $item->big_poster; ?>" title="<?php echo JText::_('COM_KA_PHOTO_ZOOM'); ?>" class="zoom-icon hasTooltip"><div></div></a>
@@ -150,9 +152,9 @@
 						<?php endif; ?>
 						<div class="separator"></div>
 						<div class="tabs breadcrumb">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=wallpp&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="tab-wallpp"><?php echo JText::_('COM_KA_NAMES_TAB_WALLPP'); ?></a>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=photo&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="tab-posters"><?php echo JText::_('COM_KA_NAMES_TAB_PHOTO'); ?></a>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=awards&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="tab-awards"><?php echo JText::_('COM_KA_NAMES_TAB_AWARDS'); ?></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=wallpapers&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="tab-wallpp"><?php echo JText::_('COM_KA_NAMES_TAB_WALLPP'); ?></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="tab-posters"><?php echo JText::_('COM_KA_NAMES_TAB_PHOTO'); ?></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=awards&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="tab-awards"><?php echo JText::_('COM_KA_NAMES_TAB_AWARDS'); ?></a>
 						</div>
 					</div>
 				</div>
@@ -167,8 +169,11 @@
 	<?php endif; ?>
 	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->get('total') >= $this->pagination->get('limit')): ?>
 		<div class="pagination bottom">
+			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>
+			<?php echo $this->pagination->getLimitBox(); ?>
+			</form>
 		</div>
 	<?php endif; ?>
 </div>

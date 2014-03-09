@@ -66,12 +66,8 @@
 							click: function(){
 								var valid = true;
 
-								if ($('#form_award_id').select2('val') == '') {
-									$('#form_award_id-lbl').addClass('red-label');
-									valid = false;
-								}
-								if ($('#form_aw_year').val() == '') {
-									$('#form_aw_year-lbl').addClass('red-label');
+								if ($('#form_p_vendor_id').select2('val') == '') {
+									$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
 									valid = false;
 								}
 								if (!valid) {
@@ -81,12 +77,14 @@
 
 								$.ajax({
 									type: 'POST',
-									url: 'index.php?option=com_kinoarhiv&controller=movies&task=savePremiere&format=json&id=' + $('#id').val(),
+									url: 'index.php?option=com_kinoarhiv&controller=movies&task=savePremiere&format=json&movie_id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
-										'form[award_id]':	$('#form_award_id').select2('val'),
-										'form[desc]':		$('#form_aw_desc').val(),
-										'form[year]':		$('#form_aw_year').val(),
+										'form[p_vendor_id]':	$('#form_p_vendor_id').select2('val'),
+										'form[p_country_id]':	$('#form_p_country_id').select2('val'),
+										'form[p_premiere_date]':$('#form_p_premiere_date').val(),
+										'form[p_info]':			$('#form_p_info').val(),
+										'form[p_ordering]':		$('#form_p_ordering').val(),
 										'new': 1
 									}
 								}).done(function(response){
@@ -116,7 +114,7 @@
 				if (items.length > 1) {
 					showMsg('.premieres-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
-					var ids = items.attr('id').substr(16).split('_');
+					var ids = items.attr('id').substr(19).split('_');
 					var dialog = $('<div id="dialog-premiere-edit" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
 
 					$(dialog).dialog({
@@ -134,12 +132,8 @@
 								click: function(){
 									var valid = true;
 
-									if ($('#form_award_id').select2('val') == '') {
-										$('#form_award_id-lbl').addClass('red-label');
-										valid = false;
-									}
-									if ($('#form_aw_year').val() == '') {
-										$('#form_aw_year-lbl').addClass('red-label');
+									if ($('#form_p_vendor_id').select2('val') == '') {
+										$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
 										valid = false;
 									}
 									if (!valid) {
@@ -149,13 +143,14 @@
 
 									$.ajax({
 										type: 'POST',
-										url: 'index.php?option=com_kinoarhiv&controller=movies&task=savePremiere&format=json&id=' + $('#id').val(),
+										url: 'index.php?option=com_kinoarhiv&controller=movies&task=savePremiere&format=json&movie_id=' + $('#id').val() + '&id=' + ids[0],
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
-											'form[id]':			$('#form_rel_aw_id').val(),
-											'form[award_id]':	$('#form_award_id').select2('val'),
-											'form[desc]':		$('#form_aw_desc').val(),
-											'form[year]':		$('#form_aw_year').val(),
+											'form[p_vendor_id]':	$('#form_p_vendor_id').select2('val'),
+											'form[p_country_id]':	$('#form_p_country_id').select2('val'),
+											'form[p_premiere_date]':$('#form_p_premiere_date').val(),
+											'form[p_info]':			$('#form_p_info').val(),
+											'form[p_ordering]':		$('#form_p_ordering').val(),
 											'new': 0
 										}
 									}).done(function(response){
@@ -194,8 +189,7 @@
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deletePremieres&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray()}, function(response){
-					showMsg('.premieres-container', response.message);
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deletePremieres&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
 					$('#list_premieres').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);

@@ -6,7 +6,7 @@
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
-		$('img.lazy').lazyload();
+		$('img.lazy').lazyload({ threshold: 100 });
 		$('.scr-list .item a').colorbox({ maxHeight: '90%', maxWidth: '90%' });
 	});
 //]]>

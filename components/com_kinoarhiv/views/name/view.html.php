@@ -5,16 +5,16 @@ class KinoarhivViewName extends JViewLegacy {
 	protected $item = null;
 	protected $items = null;
 	protected $filters = null;
-	protected $tab;
+	protected $page;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
-		$this->tab = $app->input->get('tab', '', 'cmd');
+		$this->page = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid');
 
-		switch ($this->tab) {
-			case 'wallpp': $this->wallpp(); break;
-			case 'photo': $this->photo(); break;
+		switch ($this->page) {
+			case 'wallpapers': $this->wallpp(); break;
+			case 'photos': $this->photo(); break;
 			case 'awards': $this->awards(); break;
 			default: $this->info($tpl); break;
 		}
@@ -144,6 +144,9 @@ class KinoarhivViewName extends JViewLegacy {
 
 				if ($size !== false) {
 					$items[$key]->th_image = JURI::base().$params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+					$items[$key]->th_width = (int)$params->get('size_x_wallpp');
+					$orig_img_size = explode('x', $_item->dimension);
+					$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
 				} else {
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 				}
@@ -159,7 +162,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_WALLPP'), JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=wallpp&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_WALLPP'), JRoute::_('index.php?option=com_kinoarhiv&view=name&page=wallpapers&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('wallpp');
 	}
@@ -209,7 +212,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_POSTERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_POSTERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('posters');
 	}*/
@@ -257,6 +260,9 @@ class KinoarhivViewName extends JViewLegacy {
 
 				if ($size !== false) {
 					$items[$key]->th_image = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
+					$items[$key]->th_width = (int)$params->get('size_x_photo');
+					$orig_img_size = explode('x', $_item->dimension);
+					$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
 				} else {
 					if ($_item->gender == 1) {
 						$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_m.png';
@@ -275,7 +281,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_NAMES_TAB_PHOTO'), JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_NAMES_TAB_PHOTO'), JRoute::_('index.php?option=com_kinoarhiv&view=name&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('photo');
 	}
@@ -311,7 +317,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_NAMES_TAB_AWARDS'), JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=awards&id='.$this->item->id.'&Itemid='.$this->itemid));
+		$pathway->addItem(JText::_('COM_KA_NAMES_TAB_AWARDS'), JRoute::_('index.php?option=com_kinoarhiv&view=name&page=awards&id='.$this->item->id.'&Itemid='.$this->itemid));
 
 		parent::display('awards');
 	}

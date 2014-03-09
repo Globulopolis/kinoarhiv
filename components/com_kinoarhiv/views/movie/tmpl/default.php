@@ -6,7 +6,7 @@ $total_movies = count($this->item->movie);
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/rateit.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	function showMsg(selector, text) {
@@ -165,7 +165,7 @@ $total_movies = count($this->item->movie);
 			<div class="left-col">
 				<div class="poster<?php echo $this->item->y_poster; ?>">
 					<div style="text-align: center;">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=posters&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($this->item->title); ?>" /></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($this->item->title); ?>" /></a>
 					</div>
 				</div>
 				<div class="ratings">
@@ -264,7 +264,7 @@ $total_movies = count($this->item->movie);
 							<span class="s-col">
 								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
 								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
 								endif; ?>
@@ -280,7 +280,7 @@ $total_movies = count($this->item->movie);
 							<span class="s-col">
 								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
 								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&tab=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
 								endif; ?>
@@ -392,7 +392,7 @@ $total_movies = count($this->item->movie);
 				<div class="rateit" data-rateit-value="<?php echo round($this->item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field"></div>&nbsp;<span><?php echo $this->item->rate_loc_label; ?></span>
 				<div class="my_votes" style="<?php echo ($this->item->my_vote == 0) ? 'display: none;' : ''; ?>">
 					<div class="my_vote"><?php echo JText::_('COM_KA_RATE_MY'); ?><span><?php echo $this->item->my_vote; ?></span> <?php echo JText::_('COM_KA_FROM'); ?> <?php echo (int)$this->params->get('vote_summ_num'); ?> <span class="small">(<?php echo JHtml::_('date', $this->item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span></div>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=votes&Itemid='.$this->itemid); ?>" class="small"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid='.$this->itemid); ?>" class="small"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
 				</div>
 			</div>
 		<?php else: ?>

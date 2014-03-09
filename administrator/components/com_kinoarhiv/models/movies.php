@@ -289,6 +289,13 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n FROM ".$db->quoteName('#__ka_rel_awards')
 				. "\n WHERE `id` = ".(int)$award_id);
 			$result = $db->loadObject();
+		} elseif ($tmpl == 'premieres_edit') {
+			$premiere_id = $app->input->get('premiere_id', 0, 'int');
+
+			$db->setQuery("SELECT `id` AS `premiere_id`, `vendor_id` AS `p_vendor_id`, `premiere_date` AS `p_premiere_date`, `country_id` AS `p_country_id`, `info` AS `p_info`, `ordering` AS `p_ordering`"
+				. "\n FROM ".$db->quoteName('#__ka_premieres')
+				. "\n WHERE `id` = ".(int)$premiere_id);
+			$result = $db->loadObject();
 		} else {
 			$result = array();
 			if (count($id) == 0) {
@@ -921,11 +928,12 @@ class KinoarhivModelMovies extends JModelList {
 			$vendor_0 = !empty($elem->company_name) ? $elem->company_name : '';
 			$vendor_1 = (!empty($elem->company_name) && !empty($elem->company_name_intl)) ? ' / ' : '';
 			$vendor_2 = !empty($elem->company_name_intl) ? $elem->company_name_intl : '';
+			$country = !empty($elem->name) ? $elem->name : JText::_('COM_KA_PREMIERE_WORLD');
 			$result->rows[$k]['cell'] = array(
 				'id'			=> $elem->id,
 				'vendor'		=> $vendor_0.$vendor_1.$vendor_2,
 				'premiere_date' => $elem->premiere_date,
-				'country'		=> $elem->name,
+				'country'		=> $country,
 				'ordering'		=> $elem->ordering
 			);
 

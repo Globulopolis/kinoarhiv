@@ -1,6 +1,19 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivModelMovies extends JModelList {
+	protected $context = null;
+
+	public function __construct($config = array()) {
+		parent::__construct($config);
+
+		if (empty($this->context)) {
+			$input = JFactory::getApplication()->input;
+			$page = $input->get('page', 'global');
+
+			$this->context = strtolower($this->option.'.'.$this->getName().'.'.$page);
+		}
+	}
+
 	protected function populateState($ordering = null, $direction = null) {
 		$app = JFactory::getApplication();
 		$params = $app->getParams('com_kinoarhiv');

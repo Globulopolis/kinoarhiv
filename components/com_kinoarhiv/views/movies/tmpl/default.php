@@ -12,7 +12,7 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/rateit.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -26,7 +26,7 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 			});
 		}
 
-		$('img.lazy').lazyload();
+		$('img.lazy').lazyload({ threshold: 100 });
 
 		$('a.zoom-icon').colorbox({
 			title: function(){
@@ -227,9 +227,11 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 	<?php endif; ?>
 	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
+			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>
 			<?php echo $this->pagination->getLimitBox(); ?>
+			</form>
 		</div>
 	<?php endif; ?>
 </div>

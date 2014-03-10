@@ -5,6 +5,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript">
 	function showMsg(selector, text) {
 		jQuery(selector).aurora({
@@ -36,14 +37,39 @@ $sortFields = $this->getSortFields();
 	}
 
 	jQuery(document).ready(function($){
+		<?php if (count($this->items) > 1): ?>
+		$('#articleList tbody').sortable({
+			placeholder: 'ui-state-highlight',
+			helper: function(e, tr){
+				var $originals = tr.children();
+				var $helper = tr.clone();
+
+				$helper.children().each(function(index){
+					$(this).width($originals.eq(index).width());
+				});
+				return $helper;
+			},
+			handle: '.sortable-handler',
+			cursor: 'move',
+			update: function(e, ui){
+				$.post('index.php?option=com_kinoarhiv&controller=premieres&task=saveOrder&format=json', $('#articleList tbody .order input.ord').serialize()+'&<?php echo JSession::getFormToken(); ?>=1&movie_id='+$(ui.item).find('input[name="movie_id"]').val(), function(response){
+					if (!response.success) {
+						showMsg('#j-main-container', response.message);
+					}
+				}).fail(function(xhr, status, error){
+					showMsg('#j-main-container', error);
+				});
+			}
+		});
+		<?php endif; ?>
 	});
 </script>
 <div id="j-main-container">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+	<form action="index.php?option=com_kinoarhiv&view=premieres" method="post" name="adminForm" id="adminForm" autocomplete="off">
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="filter-search btn-group pull-left">
 				<label for="filter_search" class="element-invisible"><?php echo JText::_('COM_FILTER_SEARCH_DESC'); ?></label>
-				<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" style="width: 350px;" />
+				<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape(trim($this->state->get('filter.search'))); ?>" style="width: 350px;" />
 			</div>
 			<div class="btn-group pull-left hidden-phone">
 				<button class="btn tip hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
@@ -75,27 +101,25 @@ $sortFields = $this->getSortFields();
 			<thead>
 				<tr>
 					<th width="1%" class="nowrap center hidden-phone">
-						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'p.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
 					</th>
 					<th width="1%" class="center hidden-phone">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
-						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+					<th width="10%" class="center hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_PREMIERE_DATE_LABEL', 'p.premiere_date', $listDirn, $listOrder); ?>
 					</th>
-					<th>
-						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'a.title', $listDirn, $listOrder); ?>
+					<th width="30%" style="min-width:55px">
+						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
+					<th width="25%" class="nowrap hidden-phone">
+						<?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?>
 					</th>
-					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
-					</th>
-					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_LANGUAGE', 'language', $listDirn, $listOrder); ?>
+					<th width="15%" class="nowrap hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_PREMIERE_COUNTRY_LABEL', 'c.name', $listDirn, $listOrder); ?>
 					</th>
 					<th width="5%" class="nowrap center hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'p.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
 			</thead>
@@ -105,6 +129,40 @@ $sortFields = $this->getSortFields();
 					<td colspan="7" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
+				foreach ($this->items as $i => $item) :
+					$canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
+				?>
+				<tr class="row<?php echo $i % 2; ?>">
+					<td class="order nowrap center hidden-phone">
+						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv')) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
+						<?php echo (int)$item->ordering; ?>
+						<input type="hidden" name="ord[]" class="ord" value="<?php echo $item->id; ?>" />
+						<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
+					</td>
+					<td class="center hidden-phone">
+						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
+					</td>
+					<td class="center hidden-phone">
+						<?php echo $item->premiere_date; ?>
+					</td>
+					<td class="nowrap hidden-phone">
+						<?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' ('.$item->year.')' : ''; ?>
+					</td>
+					<td class="nowrap hidden-phone">
+						<?php $vendor_0 = !empty($item->company_name) ? $item->company_name : '';
+						$vendor_1 = !empty($item->company_name) && !empty($item->company_name_intl) ? ' / ' : '';
+						$vendor_2 = !empty($item->company_name_intl) ? $item->company_name_intl : '';
+						echo $vendor_0.$vendor_1.$vendor_2;
+						?>
+					</td>
+					<td class="nowrap hidden-phone">
+						<?php echo ($item->name != '') ? $item->name : JText::_('COM_KA_PREMIERE_WORLD'); ?>
+					</td>
+					<td class="center hidden-phone">
+						<?php echo (int)$item->id; ?>
+					</td>
+				</tr>
+				<?php endforeach;
 			endif; ?>
 			</tbody>
 		</table>

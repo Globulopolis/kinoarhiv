@@ -175,9 +175,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 			} else {
 				$items[$key]->image = JURI::base().$params->get('media_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
-				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
-				if ($size !== false) {
+				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
 					$items[$key]->th_image = JURI::base().$params->get('media_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
 					$items[$key]->th_image_width = (int)$params->get('size_x_wallpp');
 					$orig_wp_size = explode('x', $_item->dimension);
@@ -254,9 +253,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 			} else {
 				$items[$key]->image = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$_item->filename;
-				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
-				if ($size !== false) {
+				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
 					$items[$key]->th_image = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$_item->filename;
 					$items[$key]->th_image_width = (int)$params->get('size_x_posters');
 					$orig_poster_size = explode('x', $_item->dimension);
@@ -333,9 +331,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 			} else {
 				$items[$key]->image = JURI::base().$params->get('media_scr_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/screenshots/'.$_item->filename;
-				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
-				if ($size !== false) {
+				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
 					$items[$key]->th_image = JURI::base().$params->get('media_scr_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/screenshots/thumb_'.$_item->filename;
 					$items[$key]->th_image_width = (int)$params->get('size_x_scr');
 					$orig_scr_size = explode('x', $_item->dimension);

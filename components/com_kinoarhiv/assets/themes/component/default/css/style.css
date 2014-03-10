@@ -4,6 +4,11 @@
 	margin: 0;
 }
 
+.content.movie {
+	background-color: #fff;
+	padding: 5px;
+}
+
 .ui-widget {
 	font-size: 0.9em !important;
 }

@@ -84,11 +84,6 @@ class KinoarhivViewPremieres extends JViewLegacy {
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
-			}
-
 			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			}
@@ -100,10 +95,9 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 	protected function getSortFields() {
 		return array(
-			'p.vendor_id' => JText::_('JSTATUS'),
-			'p.premiere_date' => JText::_('JSTATUS'),
-			'p.country_id' => JText::_('JSTATUS'),
-			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
+			'p.premiere_date' => JText::_('COM_KA_FIELD_PREMIERE_DATE_LABEL'),
+			'm.title' => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
+			'c.name' => JText::_('COM_KA_FIELD_PREMIERE_COUNTRY_LABEL'),
 			'p.id' => JText::_('JGRID_HEADING_ID')
 		);
 	}

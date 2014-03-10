@@ -140,9 +140,8 @@ class KinoarhivViewName extends JViewLegacy {
 				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 			} else {
 				$items[$key]->image = JURI::base().$params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
-				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
-				if ($size !== false) {
+				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
 					$items[$key]->th_image = JURI::base().$params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
 					$items[$key]->th_width = (int)$params->get('size_x_wallpp');
 					$orig_img_size = explode('x', $_item->dimension);
@@ -166,56 +165,6 @@ class KinoarhivViewName extends JViewLegacy {
 
 		parent::display('wallpp');
 	}
-
-	/*protected function posters() {
-		$app = JFactory::getApplication();
-
-		$item = $this->get('MovieData');
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-
-		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
-			return false;
-		}
-
-		$params = $app->getParams('com_kinoarhiv');
-
-		if ($item->year != '0000') {
-			$item->year_str = '&nbsp;('.$item->year.')';
-		}
-
-		// Check for files
-		foreach ($items as $key=>$_item) {
-			$file_path = $params->get('media_posters_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'posters'.DIRECTORY_SEPARATOR;
-
-			if (!file_exists($file_path.$_item->filename)) {
-				$items[$key]->image = 'javascript:void(0);';
-				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-			} else {
-				$items[$key]->image = JURI::base().$params->get('media_posters_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$_item->filename;
-				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
-
-				if ($size !== false) {
-					$items[$key]->th_image = JURI::base().$params->get('media_posters_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$_item->filename;
-				} else {
-					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-				}
-			}
-		}
-
-		$this->params = &$params;
-		$this->item = &$item;
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-
-		$this->_prepareDocument();
-		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
-		$pathway->addItem(JText::_('COM_KA_MOVIE_TAB_POSTERS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid));
-
-		parent::display('posters');
-	}*/
 
 	protected function photo() {
 		$app = JFactory::getApplication();
@@ -256,9 +205,8 @@ class KinoarhivViewName extends JViewLegacy {
 				}
 			} else {
 				$items[$key]->image = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
-				$size = @getimagesize($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename);
 
-				if ($size !== false) {
+				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
 					$items[$key]->th_image = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
 					$items[$key]->th_width = (int)$params->get('size_x_photo');
 					$orig_img_size = explode('x', $_item->dimension);

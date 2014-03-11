@@ -18,7 +18,6 @@ class KinoarhivModelAward extends JModelForm {
 	public function getItems() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$task = $app->input->get('task', '', 'cmd');
 
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');

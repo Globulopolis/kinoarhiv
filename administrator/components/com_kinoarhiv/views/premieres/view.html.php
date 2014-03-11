@@ -9,6 +9,11 @@ class KinoarhivViewPremieres extends JViewLegacy {
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
 
+		if ($tpl == 'add' || $tpl == 'edit') {
+			$this->edit($tpl);
+			return;
+		}
+
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 		$state = $this->get('State');
@@ -32,42 +37,34 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create.genre', 'com_kinoarhiv') && !$user->authorise('core.edit.genre', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 			return false;
 		}
 
-		$items = $this->get('Items');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('Item');
 		$form = $this->get('Form');
 
-		$this->items = &$items;
+		$this->items = &$item;
+		$this->addToolbar($tpl);
 		$this->form = &$form;
-
-		if ($this->getLayout() !== 'modal') {
-			$this->addToolbar($tpl);
-		}
+		$this->params = &$params;
 
 		parent::display('edit');
-		$app->input->set('hidemainmenu', true);
 	}
 
 	protected function addToolbar($task='') {
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_PREMIERES_ADD_TITLE'), 'calendar');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
-			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
-		} elseif ($task == 'edit') {
-			if (!empty($this->items->id)) {
-				JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_PREMIERES_EDIT_TITLE'), $this->items->title), 'calendar');
+		if ($task == 'add' || $task == 'edit') {
+			if ($task == 'edit') {
+				JToolbarHelper::title(JText::_('COM_KA_PREMIERES_EDIT_TITLE'), 'calendar');
 			} else {
 				JToolbarHelper::title(JText::_('COM_KA_PREMIERES_ADD_TITLE'), 'calendar');
 			}
+
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');

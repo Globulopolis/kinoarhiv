@@ -1,5 +1,4 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('behavior.tooltip');
 JHtml::_('behavior.keepalive');
 
 $input = JFactory::getApplication()->input;

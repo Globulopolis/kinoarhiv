@@ -5,7 +5,7 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$document = JFactory::getDocument();
 
-		$model = $this->getModel('premieres');
+		$model = $this->getModel('premiere');
 		$result = $model->saveOrder();
 
 		$document->setName('response');
@@ -17,8 +17,8 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 	}
 
 	public function edit($isNew=false) {
-		/*$view = $this->getView('awards', 'html');
-		$model = $this->getModel('award');
+		$view = $this->getView('premieres', 'html');
+		$model = $this->getModel('premiere');
 		$view->setModel($model, true);
 
 		if ($isNew === true) {
@@ -29,7 +29,6 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 
 		$view->display($tpl);
 
-		return $this;*/
-		echo 'ok';
+		return $this;
 	}
 }

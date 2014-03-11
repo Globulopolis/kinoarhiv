@@ -150,7 +150,6 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::cancel();
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$lang = JFactory::getLanguage();
 
 		$item = $this->get('Item');
 		$form = $this->get('Form');
@@ -159,7 +158,6 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$this->form = &$form;
 		$this->params = &$params;
 		$this->param = $param;
-		$this->lang = &$lang;
 
 		// We need a custom edit template for awards
 		if ($param == 'awards') {

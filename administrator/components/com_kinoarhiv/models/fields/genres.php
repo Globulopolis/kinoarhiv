@@ -3,6 +3,16 @@
 class JFormFieldGenres extends JFormField {
 	protected $type = 'Genres';
 
+	public function __construct() {
+		$lang = JFactory::getLanguage()->getTag();
+
+		JHtml::_('jquery.framework');
+		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/select2.min.js');
+		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr($lang, 0, 2).'.js');
+
+		parent::__construct();
+	}
+
 	protected function getInput() {
 		// Initialize some field attributes.
 		$size = $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
@@ -12,12 +22,13 @@ class JFormFieldGenres extends JFormField {
 		$disabled = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$required = $this->required ? ' required="required" aria-required="true"' : '';
 		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="'.$this->element['data-ac-type'].'"' : '';
+		$data_allow_clear = $this->element['data-allow-clear'] ? ' data-allow-clear="1"' : '';
 		$value = is_array($this->value) ? implode(',', $this->value['ids']) : htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
 
 		// Initialize JavaScript field attributes.
 		$onchange = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
 		return '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="'
-			. $value . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . $data_type . '/>';
+			. $value . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . $data_type . $data_allow_clear . '/>';
 	}
 }

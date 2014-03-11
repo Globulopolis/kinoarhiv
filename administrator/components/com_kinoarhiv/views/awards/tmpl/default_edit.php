@@ -1,5 +1,4 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('behavior.tooltip');
 JHtml::_('behavior.keepalive');
 ?>
 <script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>

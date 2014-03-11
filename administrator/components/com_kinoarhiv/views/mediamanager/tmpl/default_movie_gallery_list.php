@@ -1,6 +1,4 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('bootstrap.tooltip');
-
 $user		= JFactory::getUser();
 $input 		= JFactory::getApplication()->input;
 $listOrder	= $this->escape($this->state->get('list.ordering'));

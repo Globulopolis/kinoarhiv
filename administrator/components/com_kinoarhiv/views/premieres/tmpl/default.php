@@ -100,13 +100,13 @@ $sortFields = $this->getSortFields();
 		<table class="table table-striped" id="articleList">
 			<thead>
 				<tr>
-					<th width="1%" class="nowrap center hidden-phone">
+					<th width="3%" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'p.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
 					</th>
 					<th width="1%" class="center hidden-phone">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="10%" class="center hidden-phone">
+					<th width="11%" class="center hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_PREMIERE_DATE_LABEL', 'p.premiere_date', $listDirn, $listOrder); ?>
 					</th>
 					<th width="30%" style="min-width:55px">
@@ -135,7 +135,7 @@ $sortFields = $this->getSortFields();
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
 						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv')) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
-						<?php echo (int)$item->ordering; ?>
+						<span class="i"><?php echo (int)$item->ordering; ?></span>
 						<input type="hidden" name="ord[]" class="ord" value="<?php echo $item->id; ?>" />
 						<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
 					</td>

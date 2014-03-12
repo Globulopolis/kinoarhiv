@@ -31,4 +31,119 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 
 		return $this;
 	}
+
+	public function apply() {
+		$this->save();
+	}
+
+	public function save2new() {
+		$this->save();
+	}
+
+	public function save() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.create', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		$app = JFactory::getApplication();
+		$model = $this->getModel('premiere');
+		$data = $this->input->post->get('form', array(), 'array');
+		$form = $model->getForm($data, false);
+		$id = $app->input->get('id', array(0), 'array');
+
+		if (!$form) {
+			$app->enqueueMessage($model->getError(), 'error');
+			return false;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false) {
+			$app->setUserState('com_kinoarhiv.premieres.global.data', $data);
+			$errors = $model->getErrors();
+
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&controller=premieres&task=edit&id[]='.$id[0]);
+
+			return false;
+		}
+
+		/*$result = $model->apply($validData);
+
+		if (!$result) {
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+			$this->setMessage($this->getError(), 'error');
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres');
+
+			return false;
+		}
+
+		// Set the success message.
+		$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
+
+		// Set the redirect based on the task.
+		switch ($this->getTask()) {
+			case 'apply':
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=premieres&task=edit&id[]='.(int)$id[0]);
+				break;
+
+			case 'save':
+			default:
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres');
+				break;
+		}
+
+		return true;*/
+	}
+
+	public function remove() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		$model = $this->getModel('premiere');
+		$result = $model->remove();
+
+		if ($result === false) {
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			return false;
+		}
+
+		// Clean the session data.
+		$app = JFactory::getApplication();
+		$app->setUserState('com_kinoarhiv.premieres.global.data', null);
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
+	}
+
+	public function cancel() {
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		// Clean the session data.
+		$app = JFactory::getApplication();
+		$app->setUserState('com_kinoarhiv.premieres.global.data', null);
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres');
+	}
 }

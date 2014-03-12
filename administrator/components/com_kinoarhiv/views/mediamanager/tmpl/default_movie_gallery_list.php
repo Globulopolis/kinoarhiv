@@ -31,6 +31,11 @@ $sortFields = $this->getSortFields();
 	}
 
 	jQuery(document).ready(function($){
+		var bootstrapTooltip = $.fn.tooltip.noConflict();
+		$.fn.bootstrapTlp = bootstrapTooltip;
+		var bootstrapButton = $.fn.button.noConflict();
+		$.fn.bootstrapBtn = bootstrapButton;
+
 		$('.hasTip, .hasTooltip').tooltip({
 			show: null,
 			position: {

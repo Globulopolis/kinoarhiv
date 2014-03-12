@@ -14,15 +14,42 @@ JHtml::_('behavior.keepalive');
 
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_title').val() == '') {
+			/*if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '') {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
-			}
+			}*/
 		}
 		Joomla.submitform(task);
 	}
 
 	jQuery(document).ready(function($){
+		$('.hasTip, .hasTooltip, td[title]').tooltip({
+			show: null,
+			position: {
+				my: 'left top',
+				at: 'left bottom'
+			},
+			open: function(event, ui){
+				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
+			},
+			content: function(){
+				var parts = $(this).attr('title').split('::', 2),
+					title = '';
+
+				if (parts.length == 2) {
+					if (parts[0] != '') {
+						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
+					} else {
+						title += parts[1];
+					}
+				} else {
+					title += $(this).attr('title');
+				}
+
+				return title;
+			}
+		});
+
 		$('input.autocomplete').each(function(){
 			var datatype = $(this).data('ac-type'),
 				allow_clear = $(this).data('allow-clear');
@@ -69,12 +96,12 @@ JHtml::_('behavior.keepalive');
 					} else if (datatype == 'movies') {
 						if (data.year == '0000') return data.title;
 						return data.title+' ('+data.year+')';
-					} else if (datatype == 'names') {
+					} else if (datatype == 'vendors') {
 						title = '';
-						if (data.name != '') title += data.name;
-						if (data.name != '' && data.latin_name != '') title += ' / ';
-						if (data.latin_name != '') title += data.latin_name;
-						if (data.date_of_birth != '0000-00-00') title += ' ('+data.date_of_birth+')';
+						if (data.company_name != '') title += data.company_name;
+						if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
+						if (data.company_name_intl != '') title += data.company_name_intl;
+
 						return title;
 					}
 				},
@@ -88,17 +115,37 @@ JHtml::_('behavior.keepalive');
 					} else if (datatype == 'movies') {
 						if (data.year == '0000') return data.title;
 						return data.title+' ('+data.year+')';
-					} else if (datatype == 'names') {
+					} else if (datatype == 'vendors') {
 						title = '';
-						if (data.name != '') title += data.name;
-						if (data.name != '' && data.latin_name != '') title += ' / ';
-						if (data.latin_name != '') title += data.latin_name;
-						if (data.date_of_birth != '0000-00-00') title += ' ('+data.date_of_birth+')';
+						if (data.company_name != '') title += data.company_name;
+						if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
+						if (data.company_name_intl != '') title += data.company_name_intl;
+
 						return title;
 					}
 				},
 				escapeMarkup: function(m) { return m; }
 			});
+		});
+
+		$('.hasDatetime').each(function(i, el){
+			if ($(el).hasClass('time')) {
+				$(el).timepicker({
+					timeFormat: $(el).data('time-format')
+				});
+			} else if ($(el).hasClass('date')) {
+				$(el).datetimepicker({
+					dateFormat: $(el).data('date-format')
+				});
+			} else if ($(el).hasClass('datetime')) {
+				$(el).datetimepicker({
+					dateFormat: $(el).data('date-format'),
+					timeFormat: $(el).data('time-format')
+				});
+			}
+		}).next('.cmd-datetime').click(function(e){
+			e.preventDefault();
+			$(this).prev('input').trigger('focus');
 		});
 	});
 </script>

@@ -12,6 +12,8 @@ class GlobalHelper {
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/css/style.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/css/plugins.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::root().'components/com_kinoarhiv/assets/themes/ui/'.$params->get('ui_theme').'/jquery-ui.css', 'stylesheet', 'rel', array('type'=>'text/css'));
+		JHtml::_('jquery.framework');
+		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 	}
 
 	/**

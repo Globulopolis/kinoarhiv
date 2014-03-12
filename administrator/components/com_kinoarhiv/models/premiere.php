@@ -18,8 +18,11 @@ class KinoarhivModelPremiere extends JModelForm {
 	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-
 		$id = $app->input->post->get('id', array(), 'array');
+
+		if (empty($id)) {
+			return array();
+		}
 
 		$db->setQuery("SELECT `id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `ordering`"
 			. "\n FROM ".$db->quoteName('#__ka_premieres')
@@ -116,5 +119,60 @@ class KinoarhivModelPremiere extends JModelForm {
 		}
 
 		return array('success'=>$success, 'message'=>$message);
+	}
+
+	public function remove() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->get('id', array(), 'array');
+
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null) {
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			$this->setError($return->getMessage());
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

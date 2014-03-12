@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="movie span5 autocomplete" filter="intval" size="11" data-ac-type="movies" />
-		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" class="country span5 autocomplete" filter="intval" size="11" data-ac-type="countries" data-allow-clear="1" />
-		<field name="world_premiere" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
+		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="movie span5 require autocomplete" filter="intval" size="11" data-ac-type="movies" />
+		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="country span5 autocomplete" filter="intval" size="11" data-ac-type="countries" data-allow-clear="1" />
+		<field name="vendor_id" type="vendors" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="vendor span5 autocomplete" filter="intval" size="11" data-ac-type="vendors" />
+		<field name="premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox hasDatetime datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
+		<field name="ordering" type="order" data="premieres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
+		<field name="info" type="editor" default="" label="COM_KA_FIELD_PREMIERE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 	</fieldset>
 </form>

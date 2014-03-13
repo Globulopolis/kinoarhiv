@@ -129,15 +129,15 @@ JHtml::_('behavior.keepalive');
 		});
 
 		$('.hasDatetime').each(function(i, el){
-			if ($(el).hasClass('time')) {
+			if ($(el).data('type') == 'time') {
 				$(el).timepicker({
 					timeFormat: $(el).data('time-format')
 				});
-			} else if ($(el).hasClass('date')) {
-				$(el).datetimepicker({
+			} else if ($(el).data('type') == 'date') {
+				$(el).datepicker({
 					dateFormat: $(el).data('date-format')
 				});
-			} else if ($(el).hasClass('datetime')) {
+			} else if ($(el).data('type') == 'datetime') {
 				$(el).datetimepicker({
 					dateFormat: $(el).data('date-format'),
 					timeFormat: $(el).data('time-format')

@@ -61,8 +61,10 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 		}
 
 		$validData = $model->validate($form, $data);
-
-		if ($validData === false) {
+echo '<pre>';
+print_r($data);
+print_r($model->getErrors());
+		/*if ($validData === false) {
 			$app->setUserState('com_kinoarhiv.premieres.global.data', $data);
 			$errors = $model->getErrors();
 

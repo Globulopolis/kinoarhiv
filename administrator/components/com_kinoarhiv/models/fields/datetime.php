@@ -17,6 +17,7 @@ class JFormFieldDatetime extends JFormField {
 
 	protected function getInput() {
 		$attributes = ' ';
+		$class = 'hasDatetime ';
 
 		if (!empty($this->size)) {
 			$attributes .= 'size="'.$this->size.'" ';
@@ -25,7 +26,7 @@ class JFormFieldDatetime extends JFormField {
 			$attributes .= 'maxlength="'.$this->maxlength.'" ';
 		}
 		if (!empty($this->class)) {
-			$attributes .= 'class="'.$this->class.'" ';
+			$class .= $this->class.' ';
 		}
 		if ($this->readonly) {
 			$attributes .= 'readonly ';
@@ -42,9 +43,14 @@ class JFormFieldDatetime extends JFormField {
 		if (!empty($this->element['timeformat'])) {
 			$attributes .= 'data-time-format="'.$this->element['timeformat'].'" ';
 		}
+		if (!empty($this->element['datatype'])) {
+			$attributes .= 'data-type="'.$this->element['datatype'].'" ';
+		} else {
+			$attributes .= 'data-type="datetime" ';
+		}
 
 		$html = '<div class="input-append">
-			<input type="text" name="'.$this->name.'" id="'.$this->id.'" value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8').'" '.$attributes.' />
+			<input type="text" name="'.$this->name.'" id="'.$this->id.'" value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8').'" class="'.$class.'" '.$attributes.' />
 			<button class="btn cmd-datetime" style="padding: 5px 12px;" id="'.$this->id.'_img"><i class="ui-icon ui-icon-calendar"></i></button>
 		</div>';
 

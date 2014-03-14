@@ -110,13 +110,13 @@
 	<?php endif; ?>
 	<?php if (count($this->items['names']) > 0):
 		foreach ($this->items['names'] as $item): ?>
-		<article class="ui-widget ui-corner-all item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>">
+		<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>">
 			<header>
-				<h1 class="ui-widget-header ui-corner-top title">
+				<h1 class="title title-small">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($item->title); ?>"><?php echo $this->escape($item->title); ?><?php echo $item->date_range; ?></a>
 				</h1>
 			</header>
-			<div class="ui-widget-content content clearfix">
+			<div class="content clearfix">
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title); ?>">
@@ -158,9 +158,9 @@
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="ui-widget-content ui-corner-bottom links">
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="brand readmore-link hasTooltip" title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?></a> <span class="icon-chevron-right"></span>
+				<div class="links">
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="brand readmore-link hasTooltip" title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?></a> <span class="icon-chevron-right"></span>
+				</div>
 			</div>
 		</article>
 		<?php endforeach;

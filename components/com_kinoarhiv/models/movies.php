@@ -66,7 +66,7 @@ class KinoarhivModelMovies extends JModelList {
 		return $query;
 	}
 
-	/*public function getGenres() {
+	public function getGenres() {
 		$db = JFactory::getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
@@ -86,7 +86,7 @@ class KinoarhivModelMovies extends JModelList {
 		);
 
 		return $result;
-	}*/
+	}
 
 	public function favorite() {
 		$db = $this->getDBO();

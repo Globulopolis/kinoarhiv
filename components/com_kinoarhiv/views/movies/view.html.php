@@ -11,6 +11,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$state = $this->get('State');
 		$items = $this->get('Items');
+		$genres = $this->get('Genres');
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -96,6 +97,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$this->params = &$params;
 		$this->items['movies'] = &$items;
+		$this->items['genres'] = &$genres;
 		$this->pagination = &$pagination;
 		$this->user = &$user;
 

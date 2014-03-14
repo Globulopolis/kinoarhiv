@@ -10,44 +10,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
 		$this->page = $app->input->get('page', 'movie', 'cmd');
 		$this->itemid = $app->input->get('Itemid');
-
-		if ($params->get('ui_use_theme') == 'bootstrap') {
-			$this->class = array(
-				'article'=>'item',
-				'header' =>'panel-heading',
-				'header_subhead'=>'',
-				'tabs'=>'breadcrumb',
-				'review_container'=>'panel panel-default review-row',
-				'review_top'=>'panel-heading',
-				'review_content'=>'panel-body review',
-				'review_bottom'=>'panel-footer',
-			);
-		} elseif ($params->get('ui_use_theme') == 'uikit') {
-			$this->class = array(
-				'article'=>'uk-article tm-article',
-				'header' =>'',
-				'header_subhead'=>'uk-article-lead',
-				'tabs'=>'breadcrumb',
-				'review_container'=>'uk-panel uk-panel-box review-row',
-				'review_top'=>'uk-panel-title review-row-title',
-				'review_content'=>'review',
-				'review_bottom'=>'panel-footer',
-			);
-		} else {
-			$this->class = array(
-				'article'=>'item',
-				'header' =>'',
-				'header_subhead'=>'header-small',
-				'tabs'=>'breadcrumb',
-				'review_container'=>'review-row',
-				'review_top'=>'ui-corner-top review-row-title',
-				'review_content'=>'ui-widget ui-widget-content review',
-				'review_bottom'=>'ui-widget ui-widget-content ui-corner-bottom footer',
-			);
-		}
 
 		switch ($this->page) {
 			case 'cast': $this->cast(); break;

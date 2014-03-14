@@ -4,43 +4,13 @@ class GlobalHelper {
 	static function setHeadTags() {
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
-		$lang = JFactory::getLanguage();
 		$params = $app->getParams('com_kinoarhiv');
 
 		if ($document->getType() != 'html') {
 			return;
 		}
 
-		JHtml::_('jquery.framework');
-
-		if ($params->get('ui_use_theme') == 'bootstrap') {
-			$document->addHeadLink(JURI::base().'media/jui/css/bootstrap.css', 'stylesheet', 'rel', array('type'=>'text/css'));
-			JHtml::_('bootstrap.framework');
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-'.substr($lang->getTag(), 0, 2).'.js');
-		} elseif ($params->get('ui_use_theme') == 'uikit') {
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-'.substr($lang->getTag(), 0, 2).'.js');
-		} else {
-			$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/ui/'.$params->get('ui_theme').'/jquery-ui.css', 'stylesheet', 'rel', array('type'=>'text/css'));
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-'.substr($lang->getTag(), 0, 2).'.js');
-			$document->addScriptDeclaration("
-			jQuery(document).ready(function($){
-				function showMsg(selector, text) {
-					$(selector).aurora({
-						text: text,
-						placement: 'after',
-						button: 'close',
-						button_title: '[".JText::_('COM_KA_CLOSE')."]'
-					});
-				}
-			});
-			");
-		}
-
+		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/ui/'.$params->get('ui_theme').'/jquery-ui.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/plugin.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/style.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 
@@ -76,27 +46,17 @@ class GlobalHelper {
 	 *
 	*/
 	static function showMsg($text, $extra=array()) {
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$icon = !isset($extra['icon']) ? 'info' : $extra['icon'];
 		$type = !isset($extra['type']) ? 'highlight' : $extra['type'];
 
-		if ($params->get('ui_use_theme') == 'bootstrap') {
-			$html = '<div class="alert alert-warning">'.$text.'</div>';
-		} elseif ($params->get('ui_use_theme') == 'uikit') {
-			$html = '<div class="uk-alert uk-alert-warning">
-				<a class="uk-alert-close uk-close"></a>
-				<p>'.$text.'</p>
-			</div>';
-		} else {
-			$html = '<div class="ui-message"><div class="ui-widget">
-				<div class="ui-corner-all ui-state-'.$type.'" style="padding: 0pt 0.5em;">
-					<div style="margin: 5px ! important;">
-						<span class="ui-icon ui-icon-'.$icon.'" style="float: left; margin-right: 0.3em;"></span>
-						<span style="overflow: hidden; display: block;">'.$text.'</span>
-					</div>
+		$html = '<div class="ui-message"><div class="ui-widget">
+			<div class="ui-corner-all ui-state-'.$type.'" style="padding: 0pt 0.5em;">
+				<div style="margin: 5px ! important;">
+					<span class="ui-icon ui-icon-'.$icon.'" style="float: left; margin-right: 0.3em;"></span>
+					<span style="overflow: hidden; display: block;">'.$text.'</span>
 				</div>
-			</div></div>';
-		}
+			</div>
+		</div></div>';
 
 		return $html;
 	}

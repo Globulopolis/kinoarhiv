@@ -5,7 +5,7 @@
 }
 
 .content.movie {
-	background-color: #fff;
+	/*background-color: #fff;*/
 	padding: 5px;
 }
 
@@ -45,9 +45,7 @@ div.clear {
 }
 
 .ka-content .item {
-	border-bottom: 1px dashed #ccc;
 	margin-bottom: 1em;
-	padding-bottom: 1em;
 }
 
 .poster {
@@ -98,37 +96,25 @@ div.clear {
 	visibility: visible;
 }
 
+.content {
+	border-top: none;
+	border-bottom: none;
+	padding: 5px;
+}
+
 .content .introtext {
 	float: left;
 	margin: 0.3em 0.5em 1em 1em;
-	width: 78%;
-}
-
-.content .links {
-	clear: both;
+	width: 75%;
 }
 
 .title {
-	font-size: 1.6em;
+	font-size: 1.3em;
+	padding: 4px 6px;
+	margin: 0;
 }
 
-h3.title {
-	color: #333;
-	font-size: 1em;
-	margin-bottom: 1px;
-}
-
-.title-small {
-	min-height: 16px;
-	padding: 4px 4px 4px 10px;
-}
-
-.header-small {
-	margin-bottom: 4px;
-	padding: 4px;
-}
-
-.title a.brand {
+.ka-content a.brand {
 	background: url("../images/icons/movie_16.png") no-repeat left center;
 	padding-left: 22px;
 }
@@ -141,6 +127,10 @@ h3.title {
 .item .fav {
 	float: right;
 	margin: 0 4px;
+}
+
+.links {
+	padding: 5px;
 }
 
 .fav a.add {
@@ -175,10 +165,6 @@ h3.title {
 	text-align: center;
 }
 
-.tabbar div {
-	float: left;
-}
-
 .genre-list {
 	margin: 1em 0;
 }
@@ -192,13 +178,8 @@ h3.title {
 }
 
 .tabs a {
-	font-size: 1.1em;
+	font-size: 1.2em;
 	margin-right: .5em;
-}
-
-.tabs a.current, .subtabs a.current {
-	color: #006699;
-	text-decoration: underline;
 }
 
 .subtabs {
@@ -624,6 +605,11 @@ div.rating {
 	font-family: monospace;
 	padding: 5px;
 	white-space: pre;
+}
+
+.header-small {
+	font-size: 1.1em;
+	padding: 5px;
 }
 
 .header-small .dub {

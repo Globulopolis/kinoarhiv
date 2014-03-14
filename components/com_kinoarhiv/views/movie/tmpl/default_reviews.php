@@ -28,7 +28,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 
 				return true;
 			});
-			$('#review-form :submit').button();
+			$('#review_submit').button();
 			$('#font').click(function(){
 				if ($('#font-size-list').is(':visible')) {
 					$('#font-size-list').hide();
@@ -69,14 +69,20 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 	</script>
 <?php endif; ?>
 <div class="reviews">
-	<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_REVIEWS'); ?></div>
+	<h3 class="<?php echo $this->class['header_subhead']; ?>"><?php echo JText::_('COM_KA_REVIEWS'); ?></h3>
 	<?php if (count($this->items) > 0): ?>
 	<div class="content">
 		<?php for ($i=0,$n=count($this->items); $i<$n; $i++):
 			$review = $this->items[$i]; ?>
-		<div class="review-row">
+		<div class="<?php echo $this->class['review_container']; ?> <?php if ($review->type == 2):
+				echo 'uk-panel-box-secondary';
+			elseif ($review->type == 3):
+				echo 'uk-panel-box-primary';
+			else:
+				echo '';
+			endif; ?>">
 			<a name="review-<?php echo $review->id; ?>"></a>
-			<div class="review-row-title ui-corner-top <?php if ($review->type == 2):
+			<div class="<?php echo $this->class['review_top']; ?> <?php if ($review->type == 2):
 					echo 'ui-state-highlight';
 				elseif ($review->type == 3):
 					echo 'ui-state-error';
@@ -89,15 +95,15 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 				<span class="date"><?php echo $review->review_date; ?></span>
 			</div>
 			<?php if (!$this->user->guest): ?>
-				<div class="ui-widget ui-widget-content review"><?php echo $review->review; ?></div>
-				<div class="ui-widget ui-widget-content ui-corner-bottom footer">
+				<div class="<?php echo $this->class['review_content']; ?>"><?php echo $review->review; ?></div>
+				<div class="<?php echo $this->class['review_bottom']; ?>">
 					<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
 					<?php if ($this->user->authorise('core.delete.reviews', 'com_kinoarhiv')): ?>
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=delete&return=movie&review_id='.$review->id.'&id='.$review->movie_id); ?>" class="cmd-delete-quote"><?php echo JText::_('JACTION_DELETE'); ?></a>
 					<?php endif; ?>
 				</div>
 			<?php else: ?>
-				<div class="ui-widget ui-widget-content review ui-corner-bottom footer"><?php echo $review->review; ?></div>
+				<div class="<?php echo $this->class['review_bottom']; ?>"><?php echo $review->review; ?></div>
 			<?php endif; ?>
 		</div>
 		<?php endfor; ?>
@@ -193,7 +199,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 			<input type="hidden" name="movie_name" value="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>" />
 			<input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
 			<?php echo JHtml::_('form.token'); ?>
-			<input type="submit" value="<?php echo JText::_('JSUBMIT'); ?>" />
+			<input type="submit" id="review_submit" value="<?php echo JText::_('JSUBMIT'); ?>" />
 		</form>
 		<?php endif; ?>
 	<?php else: ?>

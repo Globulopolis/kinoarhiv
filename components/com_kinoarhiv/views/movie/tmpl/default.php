@@ -2,9 +2,6 @@
 $total_trailers = count($this->item->trailer);
 $total_movies = count($this->item->movie);
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -127,10 +124,6 @@ $total_movies = count($this->item->movie);
 
 			$.colorbox({ html: '<div class="overlay">'+_this.next('div').html()+'</div>' });
 		});
-		$('.trailer').accordion({
-			collapsible: true,
-			heightStyle: 'content'
-		});
 		<?php if (($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') && ($total_trailers > 0 || $total_movies > 0)): ?>
 		$('.watch-buttons a').button({
 			icons: { primary: 'ui-icon-play' }
@@ -151,210 +144,213 @@ $total_movies = count($this->item->movie);
 	});
 //]]>
 </script>
-<div class="content movie">
-	<article>
-		<header>
-			<h1 class="title">
+<div class="ka-content uk-grid content movie">
+	<article class="<?php echo $this->class['article']; ?>">
+		<header class="<?php echo $this->class['header']; ?>">
+			<h3 class="<?php echo $this->class['header_subhead']; ?>">
 				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title); ?></a>
-			</h1>
+			</h3>
+			<?php echo $this->item->event->afterDisplayTitle; ?>
 		</header>
-		<?php echo $this->item->event->afterDisplayTitle; ?>
-		<?php echo $this->loadTemplate('tabs'); ?>
-		<?php echo $this->item->event->beforeDisplayContent; ?>
-		<div class="info">
-			<div class="left-col">
-				<div class="poster<?php echo $this->item->y_poster; ?>">
-					<div style="text-align: center;">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($this->item->title); ?>" /></a>
+
+		<div class="content clearfix">
+			<div class="<?php echo $this->class['tabs']; ?>"><?php echo $this->loadTemplate('tabs'); ?></div>
+			<?php echo $this->item->event->beforeDisplayContent; ?>
+			<div class="info">
+				<div class="left-col">
+					<div class="poster<?php echo $this->item->y_poster; ?>">
+						<div style="text-align: center;">
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($this->item->title); ?>" /></a>
+						</div>
 					</div>
-				</div>
-				<div class="ratings">
-					<?php if (!empty($this->item->rate_custom)): ?>
-					<div><?php echo $this->item->rate_custom; ?></div>
-					<?php else: ?>
-						<?php if ($this->params->get('ratings_show_img') == 1): ?>
-							<div style="text-align: center;">
-								<?php if (!empty($this->item->imdb_id)) {
-									if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$this->item->id.'_big.png')) { ?>
-									<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
-									<?php }
-								} ?>
-								<?php if (!empty($this->item->kp_id)): ?>
-									<a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
-									<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
-										<img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0" />
-									<?php else: ?>
-										<img src="http://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;" />
+					<div class="ratings">
+						<?php if (!empty($this->item->rate_custom)): ?>
+						<div><?php echo $this->item->rate_custom; ?></div>
+						<?php else: ?>
+							<?php if ($this->params->get('ratings_show_img') == 1): ?>
+								<div style="text-align: center;">
+									<?php if (!empty($this->item->imdb_id)) {
+										if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$this->item->id.'_big.png')) { ?>
+										<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+										<?php }
+									} ?>
+									<?php if (!empty($this->item->kp_id)): ?>
+										<a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
+										<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
+											<img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0" />
+										<?php else: ?>
+											<img src="http://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;" />
+										<?php endif; ?>
+										</a>
 									<?php endif; ?>
-									</a>
+									<?php if (!empty($this->item->rottentm_id)) {
+										if (file_exists($this->params->get('media_rating_image_root').'/rottentomatoes/'.$this->item->id.'_big.png')) { ?>
+										<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+										<?php }
+									} ?>
+								</div>
+							<?php else: ?>
+								<?php if (!empty($this->item->imdb_votesum) && !empty($this->item->imdb_votes)): ?>
+									<div id="rate-imdb"><span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <span class="b"><a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank"><?php echo $this->item->imdb_votesum; ?> (<?php echo $this->item->imdb_votes; ?>)</a></span></div>
+								<?php else: ?>
+									<div id="rate-imdb"><span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
 								<?php endif; ?>
-								<?php if (!empty($this->item->rottentm_id)) {
-									if (file_exists($this->params->get('media_rating_image_root').'/rottentomatoes/'.$this->item->id.'_big.png')) { ?>
-									<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
-									<?php }
-								} ?>
-							</div>
-						<?php else: ?>
-							<?php if (!empty($this->item->imdb_votesum) && !empty($this->item->imdb_votes)): ?>
-								<div id="rate-imdb"><span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <span class="b"><a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank"><?php echo $this->item->imdb_votesum; ?> (<?php echo $this->item->imdb_votes; ?>)</a></span></div>
-							<?php else: ?>
-								<div id="rate-imdb"><span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
-							<?php endif; ?>
-							<?php if (!empty($this->item->kp_votesum) && !empty($this->item->kp_votes)): ?>
-								<br /><br /><div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <span class="b"><a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->kp_votesum; ?> (<?php echo $this->item->kp_votes; ?>)</a></span></div>
-							<?php else: ?>
-								<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+								<?php if (!empty($this->item->kp_votesum) && !empty($this->item->kp_votes)): ?>
+									<br /><br /><div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <span class="b"><a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->kp_votesum; ?> (<?php echo $this->item->kp_votes; ?>)</a></span></div>
+								<?php else: ?>
+									<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+								<?php endif; ?>
 							<?php endif; ?>
 						<?php endif; ?>
-					<?php endif; ?>
+					</div>
 				</div>
-			</div>
-			<div class="right-col">
-				<?php if (!$this->user->guest): ?>
-				<div class="mark-links">
-					<?php if ($this->params->get('link_watched') == 1): ?>
-					<div class="watched">
-						<?php if ($this->item->watched == 1): ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watched&action=delete&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?></a>
-						<?php else: ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watched&action=add&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_WATCHED'); ?></a>
+				<div class="right-col">
+					<?php if (!$this->user->guest): ?>
+					<div class="mark-links">
+						<?php if ($this->params->get('link_watched') == 1): ?>
+						<div class="watched">
+							<?php if ($this->item->watched == 1): ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watched&action=delete&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?></a>
+							<?php else: ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watched&action=add&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_WATCHED'); ?></a>
+							<?php endif; ?>
+						</div>
+						<?php endif; ?>
+						<?php if ($this->params->get('link_favorite') == 1): ?>
+						<div class="fav">
+							<?php if ($this->item->favorite == 1): ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+							<?php else: ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=favorite&action=add&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+							<?php endif; ?>
+						</div>
 						<?php endif; ?>
 					</div>
+					<div class="clear"></div>
 					<?php endif; ?>
-					<?php if ($this->params->get('link_favorite') == 1): ?>
-					<div class="fav">
-						<?php if ($this->item->favorite == 1): ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
-						<?php else: ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=favorite&action=add&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
-						<?php endif; ?>
-					</div>
-					<?php endif; ?>
-				</div>
-				<div class="clear"></div>
-				<?php endif; ?>
-				<div class="movie-info">
-					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=year&year[start]='.$this->item->year.'&Itemid='.$this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
-					</div>
-					<?php if (!empty($this->item->countries)): ?>
-					<div>
-						<span class="f-col"><?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?></span>
-						<span class="s-col">
-							<?php for ($i=0, $n=count($this->item->countries); $i<$n; $i++):
-							$country = $this->item->countries[$i]; ?>
-							<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>" /> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=country&country_id[]='.$country->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $country->name; ?>"><?php echo $country->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
-							<?php endfor; ?>
-						</span>
-					</div>
-					<?php endif; ?>
-					<?php if (!empty($this->item->slogan)): ?>
-					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_SLOGAN'); ?></span>
-						<span class="s-col">
-							<span lang="<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"><q><?php echo $this->item->slogan; ?></q></span>
-						</span>
-					</div>
-					<?php endif; ?>
-					<?php if (isset($this->item->crew) && count($this->item->crew) > 0):
-						foreach ($this->item->crew as $person): ?>
+					<div class="movie-info">
 						<div>
-							<span class="f-col"><?php echo $person['career']; ?></span>
+							<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
+							<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=year&year[start]='.$this->item->year.'&Itemid='.$this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
+						</div>
+						<?php if (!empty($this->item->countries)): ?>
+						<div>
+							<span class="f-col"><?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?></span>
 							<span class="s-col">
-								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
-								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
-								<?php else:
-									echo ', ';
-								endif; ?>
+								<?php for ($i=0, $n=count($this->item->countries); $i<$n; $i++):
+								$country = $this->item->countries[$i]; ?>
+								<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>" /> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=country&country_id[]='.$country->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $country->name; ?>"><?php echo $country->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
 						</div>
-						<?php endforeach;
-					endif; ?>
-					<?php if (isset($this->item->cast) && count($this->item->cast) > 0):
-						foreach ($this->item->cast as $person): ?>
+						<?php endif; ?>
+						<?php if (!empty($this->item->slogan)): ?>
 						<div>
-							<span class="f-col"><?php echo $person['career']; ?></span>
+							<span class="f-col"><?php echo JText::_('COM_KA_SLOGAN'); ?></span>
 							<span class="s-col">
-								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
-								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
-								<?php else:
-									echo ', ';
-								endif; ?>
+								<span lang="<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"><q><?php echo $this->item->slogan; ?></q></span>
+							</span>
+						</div>
+						<?php endif; ?>
+						<?php if (isset($this->item->crew) && count($this->item->crew) > 0):
+							foreach ($this->item->crew as $person): ?>
+							<div>
+								<span class="f-col"><?php echo $person['career']; ?></span>
+								<span class="s-col">
+									<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
+									$name = $person['items'][$i]; ?>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
+									<?php else:
+										echo ', ';
+									endif; ?>
+									<?php endfor; ?>
+								</span>
+							</div>
+							<?php endforeach;
+						endif; ?>
+						<?php if (isset($this->item->cast) && count($this->item->cast) > 0):
+							foreach ($this->item->cast as $person): ?>
+							<div>
+								<span class="f-col"><?php echo $person['career']; ?></span>
+								<span class="s-col">
+									<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
+									$name = $person['items'][$i]; ?>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
+									<?php else:
+										echo ', ';
+									endif; ?>
+									<?php endfor; ?>
+								</span>
+							</div>
+							<?php endforeach;
+						endif; ?>
+						<div>
+							<span class="f-col"><?php echo JText::_('COM_KA_GENRE'); ?></span>
+							<span class="s-col">
+								<?php for ($i=0,$n=count($this->item->genres); $i<$n; $i++):
+								$genre = $this->item->genres[$i]; ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=genre&genre_id[]='.$genre->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $genre->name; ?>"><?php echo $genre->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
 						</div>
-						<?php endforeach;
-					endif; ?>
-					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_GENRE'); ?></span>
-						<span class="s-col">
-							<?php for ($i=0,$n=count($this->item->genres); $i<$n; $i++):
-							$genre = $this->item->genres[$i]; ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=genre&genre_id[]='.$genre->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $genre->name; ?>"><?php echo $genre->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
-							<?php endfor; ?>
-						</span>
-					</div>
-					<?php if (!empty($this->item->budget)): ?>
-					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_BUDGET'); ?></span>
-						<span class="s-col"><?php echo $this->item->budget; ?></span>
-					</div>
-					<?php endif; ?>
-					<?php if (count($this->item->premieres) > 0):
-						foreach ($this->item->premieres as $premiere): ?>
+						<?php if (!empty($this->item->budget)): ?>
 						<div>
-							<span class="f-col"><?php echo ($premiere->country == '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
+							<span class="f-col"><?php echo JText::_('COM_KA_BUDGET'); ?></span>
+							<span class="s-col"><?php echo $this->item->budget; ?></span>
+						</div>
+						<?php endif; ?>
+						<?php if (count($this->item->premieres) > 0):
+							foreach ($this->item->premieres as $premiere): ?>
+							<div>
+								<span class="f-col"><?php echo ($premiere->country == '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
+								<span class="s-col">
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&id='.$premiere->id.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if ($premiere->company_name != '' || $premiere->company_name_intl != ''): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$premiere->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo ($premiere->company_name_intl != '') ? $premiere->company_name.' / '.$premiere->company_name_intl : $premiere->company_name; ?></a>
+										<?php if ($premiere->info != ''): ?><a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a><div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?>
+									<?php endif; ?>
+								</span>
+							</div>
+							<?php endforeach;
+						endif; ?>
+						<?php if (count($this->item->releases) > 0):
+							foreach ($this->item->releases as $release): ?>
+							<div>
+								<span class="f-col"><?php echo ($release->media_type == 0) ? JText::_('COM_KA_RELEASE_MEDIA_TYPE_DVD') : JText::_('COM_KA_RELEASE_MEDIA_TYPE_BD'); ?></span>
+								<span class="s-col">
+									<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
+								</span>
+							</div>
+							<?php endforeach;
+						endif; ?>
+						<?php if ($this->item->mpaa == -1 && $this->item->age_restrict == -1 && $this->item->ua_rate == -1): ?>
+						<?php else: ?>
+						<div>
+							<span class="f-col"><?php echo JText::_('COM_KA_RATES'); ?></span>
 							<span class="s-col">
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&id='.$premiere->id.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if ($premiere->company_name != '' || $premiere->company_name_intl != ''): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$premiere->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo ($premiere->company_name_intl != '') ? $premiere->company_name.' / '.$premiere->company_name_intl : $premiere->company_name; ?></a>
-									<?php if ($premiere->info != ''): ?><a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a><div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?>
+								<?php if ($this->item->mpaa > -1): ?>
+								<div class="rating">
+									<div id="mpaa" class="mpaa-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_MPAA')); ?>"><strong><?php echo strtoupper($this->item->mpaa); ?></strong></div>
+									<div class="mpaa-desc"><?php echo JText::_('COM_KA_MPAA_DESC'); ?></div>
+								</div>
+								<?php endif; ?>
+								<?php if ($this->item->age_restrict > -1): ?>
+								<div class="rating">
+									<div id="rrate" class="rrate-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>"><strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
+									<div class="rrate-desc"><?php echo JText::_('COM_KA_RU_RATE_DESC'); ?></div>
+								</div>
+								<?php endif; ?>
+								<?php if ($this->item->ua_rate > -1): ?>
+								<div class="rating">
+									<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int)$this->item->ua_rate; ?> hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
+									<div class="uarate-desc"><?php echo JText::_('COM_KA_UA_RATE_DESC'); ?></div>
+								</div>
 								<?php endif; ?>
 							</span>
 						</div>
-						<?php endforeach;
-					endif; ?>
-					<?php if (count($this->item->releases) > 0):
-						foreach ($this->item->releases as $release): ?>
+						<?php endif; ?>
 						<div>
-							<span class="f-col"><?php echo ($release->media_type == 0) ? JText::_('COM_KA_RELEASE_MEDIA_TYPE_DVD') : JText::_('COM_KA_RELEASE_MEDIA_TYPE_BD'); ?></span>
-							<span class="s-col">
-								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
-							</span>
+							<span class="f-col"><?php echo JText::_('COM_KA_LENGTH'); ?></span>
+							<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?> | <?php echo $this->item->_length; ?></span>
 						</div>
-						<?php endforeach;
-					endif; ?>
-					<?php if ($this->item->mpaa == -1 && $this->item->age_restrict == -1 && $this->item->ua_rate == -1): ?>
-					<?php else: ?>
-					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_RATES'); ?></span>
-						<span class="s-col">
-							<?php if ($this->item->mpaa > -1): ?>
-							<div class="rating">
-								<div id="mpaa" class="mpaa-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_MPAA')); ?>"><strong><?php echo strtoupper($this->item->mpaa); ?></strong></div>
-								<div class="mpaa-desc"><?php echo JText::_('COM_KA_MPAA_DESC'); ?></div>
-							</div>
-							<?php endif; ?>
-							<?php if ($this->item->age_restrict > -1): ?>
-							<div class="rating">
-								<div id="rrate" class="rrate-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>"><strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
-								<div class="rrate-desc"><?php echo JText::_('COM_KA_RU_RATE_DESC'); ?></div>
-							</div>
-							<?php endif; ?>
-							<?php if ($this->item->ua_rate > -1): ?>
-							<div class="rating">
-								<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int)$this->item->ua_rate; ?> hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
-								<div class="uarate-desc"><?php echo JText::_('COM_KA_UA_RATE_DESC'); ?></div>
-							</div>
-							<?php endif; ?>
-						</span>
-					</div>
-					<?php endif; ?>
-					<div>
-						<span class="f-col"><?php echo JText::_('COM_KA_LENGTH'); ?></span>
-						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?> | <?php echo $this->item->_length; ?></span>
 					</div>
 				</div>
 			</div>
@@ -406,19 +402,19 @@ $total_movies = count($this->item->movie);
 		<div class="clear"></div>
 		<?php if (!empty($this->item->plot)): ?>
 		<div class="plot">
-			<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_PLOT'); ?></div>
-			<div class="content"><?php echo $this->item->plot; ?></div>
+			<h3 class="<?php echo $this->class['header_subhead']; ?>"><?php echo JText::_('COM_KA_PLOT'); ?></h3>
+			<p><?php echo $this->item->plot; ?></p>
 		</div>
 		<?php endif; ?>
 		<?php if (!empty($this->item->known)): ?>
 		<div class="known">
-			<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_KNOWN'); ?></div>
+			<h3 class="<?php echo $this->class['header_subhead']; ?>"><?php echo JText::_('COM_KA_KNOWN'); ?></h3>
 			<div class="content"><?php echo $this->item->known; ?></div>
 		</div>
 		<?php endif; ?>
 		<?php if (!empty($this->item->desc)): ?>
 		<div class="desc">
-			<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_TECH'); ?> <span class="toggle down">&nbsp;</span> <a href="#" id="open-desc"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/new_window_14.png" border="0" /></a></div>
+			<h3 class="<?php echo $this->class['header_subhead']; ?>"><?php echo JText::_('COM_KA_TECH'); ?> <span class="toggle down">&nbsp;</span> <a href="#" id="open-desc"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/new_window_14.png" border="0" /></a></h3>
 			<div class="content"><p><?php echo $this->item->desc; ?></p></div>
 		</div>
 		<?php endif; ?>
@@ -427,9 +423,10 @@ $total_movies = count($this->item->movie);
 			<div class="content"><p><?php echo $this->item->urls; ?></p></div>
 		</div>
 		<?php endif; ?>
-	</article>
+	
 	<?php echo $this->item->event->afterDisplayContent; ?>
 	<?php if ($this->params->get('show_reviews') == 1):
 		echo $this->loadTemplate('reviews');
 	endif; ?>
+	</article>
 </div>

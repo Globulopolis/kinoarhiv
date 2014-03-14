@@ -1,33 +1,43 @@
 <?php defined('_JEXEC') or die;
-$filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['list'], 'genre_id[]',
-	array(
-		'data-placeholder'=>JText::_('COM_KA_FILTERS_NAMES_GENRE_PLACEHOLDER'),
-		'multiple'=>'multiple',
-		'style'=>'min-width: 290px; width: 293px;'
-	), 'id', 'name', $this->items['genres']['selected'], 'filter_genre'
-);
+if ($this->params->get('ui_use_theme') == 'bootstrap') {
+	$class = array(
+		'article'=>'panel panel-default item',
+		'header' =>'panel-heading',
+		'header_subhead'=>'panel-title',
+		'content'=>'panel-body',
+		'content_meta'=>'',
+		'bottom' =>'panel-footer',
+		'bottom_a' =>''
+	);
+} elseif ($this->params->get('ui_use_theme') == 'uikit') {
+	$class = array(
+		'article'=>'uk-article tm-article',
+		'header' =>'',
+		'header_subhead'=>'uk-article-title',
+		'content'=>'tm-article-content',
+		'content_meta'=>'uk-article-meta',
+		'bottom' =>'',
+		'bottom_a' =>'uk-button'
+	);
+} else {
+	$class = array(
+		'article'=>'ui-widget ui-corner-all item',
+		'header' =>'',
+		'header_subhead'=>'ui-widget-header ui-corner-top title',
+		'content'=>'ui-widget-content',
+		'content_meta'=>'',
+		'bottom' =>'ui-widget-content ui-corner-bottom links',
+		'bottom_a' =>''
+	);
+}
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/select2.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
-		function showMsg(selector, text) {
-			$(selector).aurora({
-				text: text,
-				placement: 'after',
-				button: 'close',
-				button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-			});
-		}
-
 		$('img.lazy').lazyload({ threshold: 100 });
-
+		
 		$('a.zoom-icon').colorbox({
 			title: function(){
 				return $(this).closest('.poster').find('img').attr('alt');
@@ -36,27 +46,6 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 			maxWidth: '90%',
 			returnFocus: false
 		});
-
-		$('.tabbar .movies, .tabbar .names, .tabbar .premieres, .filters .filter-submit').button();
-		$('.filters .filter-clear').button({
-			text: false,
-			icons: { primary: 'ui-icon-cancel' }
-		}).click(function(){
-			document.location.href = 'index.php';
-		});
-
-		$('#filter_ca').submit(function(){
-			if ($(this).serialize() == '') {
-				return false;
-			} else {
-				return true;
-			}
-		});
-
-		$('.filter-fields-title').click(function(){
-			$('.filter-fields').toggle();
-		});
-		$('#filter_genre').select2();
 
 		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function(e){
@@ -86,47 +75,27 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 	});
 //]]>
 </script>
-<div class="ka-content">
-	<?php if ($this->params->get('tabbar_frontpage') == 1): ?>
-	<div class="tabbar">
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid); ?>" class="button movies"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&Itemid='.$this->itemid); ?>" class="button names"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid='.$this->itemid); ?>" class="button premieres"><?php echo JText::_('COM_KA_PREMIERES'); ?></a>
-	</div>
-	<div class="clear"></div><br />
-	<?php endif; ?>
-	<?php if ($this->params->get('filters_frontpage') == 1): ?>
-	<div class="filters">
-		<div class="filter-fields-title ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_FILTERS'); ?></div>
-		<div class="filter-fields">
-			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" autocomplete="off" id="filter_ca">
-				<input type="hidden" name="option" value="com_kinoarhiv" />
-				<input type="hidden" name="view" value="movies" />
-				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
-				<input type="hidden" name="lang" value="<?php echo JFactory::getApplication()->input->get('lang', '', 'string'); ?>" />
-				<input type="hidden" name="filter_by[]" value="genre" />
-				<?php echo $filter_select_genres; ?>
-				<input type="submit" class="filter-submit" value="<?php echo JText::_('JGLOBAL_FILTER_LABEL'); ?>" />
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid); ?>" class="filter-clear hasTooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>">&nbsp;</a>
-			</form>
-		</div>
-	</div>
-	<div class="clear"></div>
-	<?php endif; ?>
+<div class="ka-content uk-grid">
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
 	<?php endif; ?>
+
 	<?php if (count($this->items['movies']) > 0):
 		foreach ($this->items['movies'] as $item): ?>
-		<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
-			<header>
-				<h1 class="title title-small">
+		<article class="<?php echo $class['article']; ?>" data-permalink="<?php echo $item->params->get('url'); ?>">
+			<header class="<?php echo $class['header']; ?>">
+				<h3 class="<?php echo $class['header_subhead']; ?>">
 					<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $this->escape($item->title.$item->year_str); ?>"><?php echo $this->escape($item->title.$item->year_str); ?></a>
-				</h1>
-				<div class="middle-nav clearfix">
-					<p class="meta">
+				</h3>
+				<?php echo $item->event->afterDisplayTitle; ?>
+			</header>
+
+			<div class="<?php echo $class['content']; ?> content clearfix">
+				<?php echo $item->event->beforeDisplayContent; ?>
+				<div class="<?php echo $class['content_meta']; ?> middle-nav clearfix">
+					<div class="meta">
 						<?php if ($this->params->get('show_pubdate') == 1 && $item->created !== '0000-00-00'): ?>
 							<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?><time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
 						<?php endif;
@@ -136,22 +105,18 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 							<?php echo JText::_('COM_KA_LAST_UPDATED'); ?><time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
 							<?php endif;
 						endif; ?>
-					</p>
+					</div>
 					<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-					<p class="fav">
+					<div class="fav">
 						<?php if ($item->favorite == 1): ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 						<?php else: ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid='.$this->itemid.'&id='.$item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 						<?php endif; ?>
-					</p>
+					</div>
 					<?php endif; ?>
 				</div>
-			</header>
-			<?php echo $item->event->afterDisplayTitle; ?>
-			<?php echo $item->event->beforeDisplayContent; ?>
-			<div class="clear"></div>
-			<div class="content clearfix">
+
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title.$item->year_str); ?>">
@@ -215,9 +180,9 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 						<?php endif; ?>
 					</div>
 				</div>
-				<div class="links">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="brand readmore-link hasTooltip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?></a> <span class="icon-chevron-right"></span>
-				</div>
+			</div>
+			<div class="<?php echo $class['bottom']; ?>">
+				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="<?php echo $class['bottom_a']; ?> readmore-link" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?></a>
 			</div>
 		</article>
 		<?php echo $item->event->afterDisplayContent; ?>

@@ -99,6 +99,11 @@
 		<field name="upload_gallery_watermark_image" type="text" default="" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_APPEARANCE_SETTINGS_LABEL">
+		<field name="ui_use_theme" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" class="inputbox" default="">
+			<option value="jqueryui">jQueryUI</option>
+			<option value="bootstrap">Bootstrap</option>
+			<option value="uikit">UIkit</option>
+		</field>
 		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" />
 		<field name="ui_theme" type="folderlist" default="base" directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL" description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" />
 	</fieldset>

@@ -20,17 +20,13 @@ class KinoarhivModelNames extends JModelList {
 
 		parent::populateState($params->get('sort_namelist_field'), strtoupper($params->get('sort_namelist_ord')));
 	}
+
 	protected function getListQuery() {
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$params = $app->getParams('com_kinoarhiv');
-
-		// Filter by genre or something else
-		$filter_by = $app->input->get('filter_by', array(), 'array');
-		$c_ids = $app->input->get('career_id', $params->get('filter_names'), 'array');
-		$g_ids = $app->input->get('genre_id', $params->get('filter_genres'), 'array');
 
 		$query = $db->getQuery(true);
 
@@ -48,37 +44,6 @@ class KinoarhivModelNames extends JModelList {
 
 		$where = '`n`.`state` = 1 AND `n`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `n`.`state` = 1 AND `n`.`access` IN ('.$groups.')';
 
-		/*//if (!empty($filter_by)) {
-			// Filter by career
-			$career_where_def = ' AND `n`.`id` IN (SELECT DISTINCT `name_id` FROM '.$db->quoteName('#__ka_rel_names_career').')';
-			if (in_array('career', $filter_by)) {
-				// Check if career is not contain an 'all' value (0)
-				if (in_array(0, $c_ids)) {
-					$where .= $career_where_def;
-				} else {
-					$where .= ' AND `n`.`id` IN (SELECT DISTINCT `name_id` FROM '.$db->quoteName('#__ka_rel_names_career').' WHERE `career_id` IN ('.implode(',', $c_ids).'))';
-				}
-			} else {
-				if (in_array(0, $c_ids)) {
-					$where .= $career_where_def;
-				} else {
-					$where .= ' AND `n`.`id` IN (SELECT DISTINCT `name_id` FROM '.$db->quoteName('#__ka_rel_names_career').' WHERE `career_id` IN ('.implode(',', $c_ids).'))';
-				}
-			}
-			// Filter by genre
-			$genre_where_def .= ' AND `n`.`id` IN (SELECT DISTINCT `name_id` FROM '.$db->quoteName('#__ka_rel_names_genres').')';
-			if (in_array('genre', $filter_by)) {
-				// Check if genre is not contain an 'all' value (0)
-				if (in_array(0, $g_ids)) {
-					$where .= $genre_where_def;
-				} else {
-					$where .= ' AND `n`.`id` IN (SELECT DISTINCT `name_id` FROM '.$db->quoteName('#__ka_rel_names_genres').' WHERE `genre_id` IN ('.implode(',', $g_ids).'))';
-				}
-			} else {
-				//$where .= $genre_where_def;
-			}
-		//}*/
-
 		$query->where($where);
 		$query->group('`id`');
 
@@ -87,48 +52,6 @@ class KinoarhivModelNames extends JModelList {
 		$query->order($db->escape('`n`.'.$orderCol.' '.$orderDirn));
 
 		return $query;
-	}
-
-	public function getCareer() {
-		$db = JFactory::getDBO();
-		$app = JFactory::getApplication();
-		$career_id = $app->input->get('career_id', array(2, 3), 'array');
-
-		$db->setQuery("SELECT `id`, CONCAT(UPPER(SUBSTRING(`title`, 1, 1)), LOWER(SUBSTRING(`title` FROM 2))) AS `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').") ORDER BY `title` ASC");
-		$result['list'] = $db->loadObjectList();
-
-		$result['selected'] = $career_id;
-
-		array_push($result['list'],
-			(object)array(
-				'id'=>'0',
-				'title'=>JText::_('JALL')
-			)
-		);
-
-		return $result;
-	}
-
-	public function getGenres() {
-		$db = JFactory::getDBO();
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$genre_id = $app->input->get('genre_id', array(0), 'array');
-
-		$db->setQuery("SELECT `id`, CONCAT(UPPER(SUBSTRING(`name`, 1, 1)), LOWER(SUBSTRING(`name` FROM 2))) AS `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.") ORDER BY `name` ASC");
-		$result['list'] = $db->loadObjectList();
-
-		$result['selected'] = $genre_id;
-
-		array_push($result['list'],
-			(object)array(
-				'id'=>'0',
-				'name'=>JText::_('JALL')
-			)
-		);
-
-		return $result;
 	}
 
 	public function favorite() {

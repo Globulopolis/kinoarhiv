@@ -167,6 +167,12 @@ class KinoarhivModelPremiere extends JModelForm {
 		if ($return === false) {
 			// Get the validation messages from the form.
 			foreach ($form->getErrors() as $message) {
+				if (empty($data['movie_id'])) {
+					$this->setError(JText::sprintf('JLIB_FORM_VALIDATE_FIELD_REQUIRED', JText::_('COM_KA_FIELD_MOVIE_LABEL')));
+				}
+				if (empty($data['vendor_id'])) {
+					$this->setError(JText::sprintf('JLIB_FORM_VALIDATE_FIELD_REQUIRED', JText::_('COM_KA_FIELD_PREMIERE_VENDOR')));
+				}
 				$this->setError($message);
 			}
 

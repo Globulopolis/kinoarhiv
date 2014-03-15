@@ -65,35 +65,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 			}
 
 			$item->plot = GlobalHelper::limitText($item->plot, $params->get('limit_text'));
-
-			if ($params->get('ratings_show_frontpage') == 1) {
-				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc)) {
-					$item->rate_loc = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
-					$item->rate_loc_label = $item->rate_loc.' '.JText::_('COM_KA_FROM').(int)$params->get('vote_summ_num');
-					$item->rate_loc_label_class = ' has-rating';
-				} else {
-					$item->rate_loc = 0;
-					$item->rate_loc_label = '<br />'.JText::_('COM_KA_RATE_NO');
-					$item->rate_loc_label_class = ' no-rating';
-				}
-			}
-
-			$item->event = new stdClass;
-			$item->params = new JObject;
-			$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid), false);
-
-			$dispatcher = JEventDispatcher::getInstance();
-			JPluginHelper::importPlugin('content');
-			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.movies', &$item, &$params, 0));
-
-			$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
-			$item->event->afterDisplayTitle = trim(implode("\n", $results));
-
-			$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
-			$item->event->beforeDisplayContent = trim(implode("\n", $results));
-
-			$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
-			$item->event->afterDisplayContent = trim(implode("\n", $results));
 		}
 
 		$this->params = &$params;
@@ -103,7 +74,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$this->_prepareDocument();
 
-		parent::display($tpl);
+		//parent::display($tpl);
 	}
 
 	/**
@@ -114,16 +85,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$menus = $app->getMenu();
 		$title = '';
 		$menu = $menus->getActive();
-		$pathway = $app->getPathway();
 
 		$title = JText::_('COM_KA_MOVIES');
-		// Create a new pathway object
-		$path = (object)array(
-			'name' => $title,
-			'link' => 'index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid
-		);
-
-		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
 		if ($menu->params->get('menu-meta_description') != '') {
@@ -150,15 +113,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 			$this->document->setGenerator($this->document->getGenerator());
 		} else {
 			$this->document->setGenerator($this->params->get('generator'));
-		}
-
-		// Add feed links
-		if ($this->params->get('show_feed_link', 1)) {
-			$link = '&format=feed&limitstart=';
-			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
-			$this->document->addHeadLink(JRoute::_($link.'&type=rss'), 'alternate', 'rel', $attribs);
-			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');
-			$this->document->addHeadLink(JRoute::_($link.'&type=atom'), 'alternate', 'rel', $attribs);
 		}
 	}
 }

@@ -164,6 +164,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 		// Check for files
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
+			$items[$key]->th_image_width = 200;
+			$items[$key]->th_image_height = 200;
 
 			// Strip first slash
 			if (strpos($params->get('media_posters_root'), '/', 0) === false) {
@@ -242,6 +244,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 		// Check for files
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_posters_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'posters'.DIRECTORY_SEPARATOR;
+			$items[$key]->th_image_width = 128;
+			$items[$key]->th_image_height = 128;
 
 			// Strip first slash
 			if (strpos($params->get('media_posters_root'), '/', 0) === false) {
@@ -319,12 +323,13 @@ class KinoarhivViewMovie extends JViewLegacy {
 		// Check for files
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_scr_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'screenshots'.DIRECTORY_SEPARATOR;
+			$items[$key]->th_image_width = 200;
+			$items[$key]->th_image_height = 200;
 
 			// Strip first slash
 			if (strpos($params->get('media_posters_root'), '/', 0) === false) {
 				$file_path = substr($file_path, 1);
 			}
-			
 
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';

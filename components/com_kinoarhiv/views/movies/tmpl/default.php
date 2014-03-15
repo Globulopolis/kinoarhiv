@@ -1,13 +1,4 @@
-<?php defined('_JEXEC') or die;
-$filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['list'], 'genre_id[]',
-	array(
-		'data-placeholder'=>JText::_('COM_KA_FILTERS_NAMES_GENRE_PLACEHOLDER'),
-		'multiple'=>'multiple',
-		'style'=>'min-width: 290px; width: 293px;'
-	), 'id', 'name', $this->items['genres']['selected'], 'filter_genre'
-);
-?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/select2.min.js" type="text/javascript"></script>
+<?php defined('_JEXEC') or die; ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
@@ -38,25 +29,6 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 		});
 
 		$('.tabbar .movies, .tabbar .names, .tabbar .premieres, .filters .filter-submit').button();
-		$('.filters .filter-clear').button({
-			text: false,
-			icons: { primary: 'ui-icon-cancel' }
-		}).click(function(){
-			document.location.href = 'index.php';
-		});
-
-		$('#filter_ca').submit(function(){
-			if ($(this).serialize() == '') {
-				return false;
-			} else {
-				return true;
-			}
-		});
-
-		$('.filter-fields-title').click(function(){
-			$('.filter-fields').toggle();
-		});
-		$('#filter_genre').select2();
 
 		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function(e){
@@ -95,24 +67,7 @@ $filter_select_genres = JHTML::_('select.genericlist', $this->items['genres']['l
 	</div>
 	<div class="clear"></div><br />
 	<?php endif; ?>
-	<?php if ($this->params->get('filters_frontpage') == 1): ?>
-	<div class="filters">
-		<div class="filter-fields-title ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_FILTERS'); ?></div>
-		<div class="filter-fields">
-			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" autocomplete="off" id="filter_ca">
-				<input type="hidden" name="option" value="com_kinoarhiv" />
-				<input type="hidden" name="view" value="movies" />
-				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
-				<input type="hidden" name="lang" value="<?php echo JFactory::getApplication()->input->get('lang', '', 'string'); ?>" />
-				<input type="hidden" name="filter_by[]" value="genre" />
-				<?php echo $filter_select_genres; ?>
-				<input type="submit" class="filter-submit" value="<?php echo JText::_('JGLOBAL_FILTER_LABEL'); ?>" />
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid); ?>" class="filter-clear hasTooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>">&nbsp;</a>
-			</form>
-		</div>
-	</div>
-	<div class="clear"></div>
-	<?php endif; ?>
+
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>

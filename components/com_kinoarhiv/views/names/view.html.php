@@ -11,8 +11,6 @@ class KinoarhivViewNames extends JViewLegacy {
 
 		$state = $this->get('State');
 		$items = $this->get('Items');
-		$career = $this->get('Career');
-		$genres = $this->get('Genres');
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -54,6 +52,8 @@ class KinoarhivViewNames extends JViewLegacy {
 					$no_cover = 'no_name_cover_m';
 				}
 				$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$no_cover.'.png';
+				$item->poster_width = 128;
+				$item->poster_height = 128;
 				$item->y_poster = '';
 			} else {
 				$items[$key]->big_poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$item->filename;
@@ -67,8 +67,6 @@ class KinoarhivViewNames extends JViewLegacy {
 
 		$this->params = &$params;
 		$this->items['names'] = &$items;
-		$this->items['career'] = &$career;
-		$this->items['genres'] = &$genres;
 		$this->pagination = &$pagination;
 		$this->user = &$user;
 

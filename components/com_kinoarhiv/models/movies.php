@@ -28,9 +28,6 @@ class KinoarhivModelMovies extends JModelList {
 		$app = JFactory::getApplication();
 		$params = $app->getParams('com_kinoarhiv');
 
-		// Filter by genre or something else
-		$filter_by = $app->input->get('filter_by', array(), 'array');
-
 		$query = $db->getQuery(true);
 
 		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`state`, `g`.`filename`, `g`.`dimension`");
@@ -43,19 +40,6 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
-		if (!empty($filter_by)) {
-			// Filter by genre if not empty
-			if (in_array('genre', $filter_by)) {
-				$g_ids = $app->input->get('genre_id', $params->get('filter_genres'), 'array');
-
-				// Check if genre is not contain an 'all' value (0)
-				if (in_array(0, $g_ids)) {
-					$where .= '';
-				} else {
-					$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_rel_genres').' WHERE `genre_id` IN ('.implode(',', $g_ids).'))';
-				}
-			}
-		}
 
 		$query->where($where);
 
@@ -64,28 +48,6 @@ class KinoarhivModelMovies extends JModelList {
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 
 		return $query;
-	}
-
-	public function getGenres() {
-		$db = JFactory::getDBO();
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$genre_id = $app->input->get('genre_id', array(0), 'array');
-
-		$db->setQuery("SELECT `id`, CONCAT(UPPER(SUBSTRING(`name`, 1, 1)), LOWER(SUBSTRING(`name` FROM 2))) AS `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.") ORDER BY `name` ASC");
-		$result['list'] = $db->loadObjectList();
-
-		$result['selected'] = $genre_id;
-
-		array_push($result['list'],
-			(object)array(
-				'id'=>'0',
-				'name'=>JText::_('JALL')
-			)
-		);
-
-		return $result;
 	}
 
 	public function favorite() {

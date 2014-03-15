@@ -1,7 +1,5 @@
 <?php defined('_JEXEC') or die; ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
 <script type="text/javascript">
 	function showMsg(selector, text) {
@@ -74,7 +72,6 @@
 			}
 		});
 
-		$('#jform_filter_genres, #jform_filter_names').select2();
 		$('#jform_premieres_list_limit, #jform_releases_list_limit').spinner({
 			spin: function(event, ui){
 				if (ui.value > 5) {

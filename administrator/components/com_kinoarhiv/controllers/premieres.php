@@ -61,10 +61,8 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 		}
 
 		$validData = $model->validate($form, $data);
-echo '<pre>';
-print_r($data);
-print_r($model->getErrors());
-		/*if ($validData === false) {
+
+		if ($validData === false) {
 			$app->setUserState('com_kinoarhiv.premieres.global.data', $data);
 			$errors = $model->getErrors();
 
@@ -81,7 +79,7 @@ print_r($model->getErrors());
 			return false;
 		}
 
-		/*$result = $model->apply($validData);
+		/*$result = $model->savePremiere($validData);
 
 		if (!$result) {
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));

@@ -134,6 +134,8 @@ class KinoarhivViewName extends JViewLegacy {
 		// Check for files
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_actor_wallpapers_root_www').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
+			$items[$key]->th_image_width = 200;
+			$items[$key]->th_image_height = 200;
 
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';
@@ -195,6 +197,8 @@ class KinoarhivViewName extends JViewLegacy {
 		// Check for files
 		foreach ($items as $key=>$_item) {
 			$file_path = $params->get('media_actor_photo_root_www').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR;
+			$items[$key]->th_image_width = 128;
+			$items[$key]->th_image_height = 128;
 
 			if (!file_exists($file_path.$_item->filename)) {
 				$items[$key]->image = 'javascript:void(0);';

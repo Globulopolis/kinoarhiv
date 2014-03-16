@@ -14,10 +14,10 @@ JHtml::_('behavior.keepalive');
 
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			/*if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '') {
+			if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '' || jQuery('#form_premiere_date').val() == '') {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
-			}*/
+			}
 		}
 		Joomla.submitform(task);
 	}
@@ -163,6 +163,6 @@ JHtml::_('behavior.keepalive');
 
 	<input type="hidden" name="controller" value="premieres" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" value="<?php echo !empty($this->items->id) ? $this->items->id : ''; ?>" />
+	<input type="hidden" name="id[]" value="<?php echo !empty($this->items->id) ? $this->items->id : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

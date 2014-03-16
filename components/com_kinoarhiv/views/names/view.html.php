@@ -81,11 +81,10 @@ class KinoarhivViewNames extends JViewLegacy {
 	protected function _prepareDocument() {
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();
-		$title = '';
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
+		$title = $menu->title;
 
-		$title = JText::_('COM_KA_PERSONS');
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,

@@ -18,7 +18,7 @@ class KinoarhivModelPremiere extends JModelForm {
 	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$id = $app->input->post->get('id', array(), 'array');
+		$id = $app->input->get('id', array(0), 'array');
 
 		if (empty($id)) {
 			return array();
@@ -32,7 +32,7 @@ class KinoarhivModelPremiere extends JModelForm {
 		return $result;
 	}
 
-	public function savePremiere() {
+	public function savePremiereAjax() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', null, 'int');
@@ -45,14 +45,6 @@ class KinoarhivModelPremiere extends JModelForm {
 				$country_id = $data['p_country_id'][1];
 			} else {
 				$country_id = $data['p_country_id'][0];
-			}
-
-			// Prevent duplicates
-			$db->setQuery("SELECT COUNT(`id`) FROM ".$db->quoteName('#__ka_premieres')." WHERE `movie_id` = ".$movie_id." AND `vendor_id` = ".$data['p_vendor_id'][0]." AND `country_id` = ".$country_id);
-			$c = $db->loadResult();
-
-			if ($c > 0 && $is_new != 0) {
-				return array('success'=>false, 'message'=>'Error');
 			}
 
 			if ($is_new == 1) {
@@ -72,6 +64,32 @@ class KinoarhivModelPremiere extends JModelForm {
 			}
 		} else {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_FIELD_PREMIERE_VENDOR_REQUIRED'));
+		}
+	}
+
+	public function savePremiere($data) {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$id = $app->input->get('id', array(0), 'array');
+
+		if (empty($id[0])) {
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_premieres')." (`id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `ordering`)"
+				. "\n VALUES ('', '".(int)$data['movie_id']."', '".(int)$data['vendor_id']."', '".$data['premiere_date']."', '".$data['country_id']."', '".$db->escape($data['info'])."', '".(int)$data['ordering']."')");
+		} else {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_premieres')
+				. "\n SET `movie_id` = '".$data['movie_id']."', `vendor_id` = '".(int)$data['vendor_id']."', `premiere_date` = '".$data['premiere_date']."', `country_id` = '".$data['country_id']."', `info` = '".$db->escape($data['info'])."', `ordering` = '".(int)$data['ordering']."'"
+				. "\n WHERE `id` = ".(int)$id);
+		}
+
+		try {
+			$db->execute();
+			if (empty($id[0])) {
+				$app->input->set('id', array($db->insertid()));
+			}
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
 		}
 	}
 

@@ -43,7 +43,7 @@
 <div class="ka-content user-profile votes">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
-		<div class="total-votes"><?php echo JText::sprintf('COM_KA_PROFILE_TOTAL_VOTES', $this->pagination->get('total')); ?></div>
+		<div class="total-votes"><?php echo JText::sprintf('COM_KA_PROFILE_TOTAL_VOTES', $this->pagination->total); ?></div>
 		<div class="v-list">
 			<?php foreach ($this->items as $item): ?>
 			<div class="title-small item-row">
@@ -68,7 +68,7 @@
 	<?php else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_RATE_NORATE')); ?></div>
 	<?php endif; ?>
-	<?php if ($this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>

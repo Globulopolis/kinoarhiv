@@ -36,7 +36,6 @@ class KinoarhivViewProfile extends JViewLegacy {
 
 	protected function favorite() {
 		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
 		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
@@ -80,16 +79,16 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$pathway = $app->getPathway();
 
 		if ($this->page == '') {
-			$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_FAVORITE'));
+			$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_FAVORITE'));
 
 			$pathway->addItem(JText::_('COM_KA_FAVORITE'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&Itemid='.$this->itemid));
 		} elseif ($this->page == 'movies') {
-			$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_FAVORITE').' - '.JText::_('COM_KA_MOVIES'));
+			$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_FAVORITE').' - '.JText::_('COM_KA_MOVIES'));
 
 			$pathway->addItem(JText::_('COM_KA_FAVORITE'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&Itemid='.$this->itemid));
 			$pathway->addItem(JText::_('COM_KA_MOVIES'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&page=movies&Itemid='.$this->itemid));
 		} elseif ($this->page == 'names') {
-			$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_FAVORITE').' - '.JText::_('COM_KA_PERSONS'));
+			$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_FAVORITE').' - '.JText::_('COM_KA_PERSONS'));
 
 			$pathway->addItem(JText::_('COM_KA_FAVORITE'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&Itemid='.$this->itemid));
 			$pathway->addItem(JText::_('COM_KA_PERSONS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&page=names&Itemid='.$this->itemid));
@@ -100,7 +99,6 @@ class KinoarhivViewProfile extends JViewLegacy {
 
 	protected function watched() {
 		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
 		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
@@ -122,7 +120,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$this->pagination = &$pagination;
 		$this->lang = &$lang;
 
-		$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_WATCHED'));
+		$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_WATCHED'));
 		$pathway = $app->getPathway();
 		$pathway->addItem(JText::_('COM_KA_WATCHED'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=watched&Itemid='.$this->itemid));
 
@@ -131,7 +129,6 @@ class KinoarhivViewProfile extends JViewLegacy {
 
 	protected function votes() {
 		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -159,7 +156,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$this->items = &$items;
 		$this->pagination = &$pagination;
 
-		$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_PROFILE_VOTES'));
+		$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_PROFILE_VOTES'));
 		$pathway = $app->getPathway();
 		$pathway->addItem(JText::_('COM_KA_PROFILE_VOTES'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=votes&Itemid='.$this->itemid));
 
@@ -168,7 +165,6 @@ class KinoarhivViewProfile extends JViewLegacy {
 
 	public function reviews() {
 		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -189,7 +185,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$this->items = &$items;
 		$this->pagination = &$pagination;
 
-		$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_REVIEWS'));
+		$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_REVIEWS'));
 		$pathway = $app->getPathway();
 		$pathway->addItem(JText::_('COM_KA_REVIEWS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid='.$this->itemid));
 
@@ -198,9 +194,8 @@ class KinoarhivViewProfile extends JViewLegacy {
 
 	protected function settings() {
 		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
 
-		$document->setTitle($document->getTitle().' - '.JText::_('COM_KA_PROFILE_TITLE').' - '.JText::_('COM_KA_SETTINGS'));
+		$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_PROFILE_TITLE').' - '.JText::_('COM_KA_SETTINGS'));
 		$pathway = $app->getPathway();
 		$pathway->addItem(JText::_('COM_KA_SETTINGS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=settings&Itemid='.$this->itemid));
 

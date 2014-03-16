@@ -44,7 +44,7 @@
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
 	<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
-		<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS').$this->pagination->get('total'); ?></div>
+		<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS').$this->pagination->total; ?></div>
 		<div class="r-list">
 			<?php foreach ($this->items as $i=>$item): ?>
 			<div class="title-small">
@@ -68,7 +68,7 @@
 	<?php else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
-	<?php if ($this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>

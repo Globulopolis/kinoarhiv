@@ -600,6 +600,9 @@ class KinoarhivModelMovies extends JModelList {
 		$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
 		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
 
+		// Update statistics on genres
+		$this->updateGenresStat($data['genres_orig'], $data['genres']);
+
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
 				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
@@ -635,6 +638,52 @@ class KinoarhivModelMovies extends JModelList {
 			$this->setError($e->getMessage());
 
 			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Update statistics on genres
+	 *
+	 * @param   array   $old		Original genres list(before edit).
+	 * @param   array   $new		New genres list.
+	 *
+	 * @return  mixed   True on success, exception otherwise
+	 *
+	*/
+	protected function updateGenresStat($old, $new) {
+		$db = $this->getDBO();
+		$diff = array_diff($old, $new)
+
+		if (count($diff) > 0) {
+			/*$query = true;
+			$db->setDebug(true);
+			$db->lockTable('#__ka_genres');
+			$db->transactionStart();*/
+
+			/*foreach ($gid as $genre_id) {
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_genres')
+				. "\n SET `stats` = (SELECT COUNT(`genre_id`) FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `genre_id` = ".(int)$genre_id.")"
+				. "\n WHERE `id` = ".(int)$genre_id.";");
+				$_query = $db->execute();
+
+				if ($_query === false) {
+					$query = false;
+					break;
+				}
+			}
+
+			if ($query === false) {
+				$db->transactionRollback();
+				$this->setError('Commit failed!');
+				return false;
+			} else {
+				$db->transactionCommit();
+			}*/
+
+			/*$db->unlockTables();
+			$db->setDebug(false);*/
 		}
 
 		return true;

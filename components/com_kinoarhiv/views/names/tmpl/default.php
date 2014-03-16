@@ -2,7 +2,6 @@
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -23,8 +22,6 @@
 			},
 			maxHeight: '90%'
 		});
-
-		$('.tabbar .movies, .tabbar .names, .tabbar .premieres, .filters .filter-submit').button();
 
 		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function(e){
@@ -55,15 +52,7 @@
 //]]>
 </script>
 <div class="ka-content">
-	<?php if ($this->params->get('tabbar_frontpage') == 1): ?>
-	<div class="tabbar">
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid); ?>" class="button movies"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&Itemid='.$this->itemid); ?>" class="button names"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid='.$this->itemid); ?>" class="button premieres"><?php echo JText::_('COM_KA_PREMIERES'); ?></a>
-	</div>
-	<div class="clear"></div><br />
-	<?php endif; ?>
-	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
@@ -127,7 +116,7 @@
 	else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
-	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
 			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />

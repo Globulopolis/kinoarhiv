@@ -79,7 +79,7 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 			return false;
 		}
 
-		/*$result = $model->savePremiere($validData);
+		$result = $model->savePremiere($validData);
 
 		if (!$result) {
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
@@ -96,17 +96,18 @@ class KinoarhivControllerPremieres extends JControllerLegacy {
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-			case 'save2new':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=premieres&task=edit&id[]='.(int)$id[0]);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=premieres&task=edit&id[]='.(int)$app->input->get('id', array(0), 'array')[0]);
 				break;
-
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=premieres&task=edit&id[]=0');
+				break;
 			case 'save':
 			default:
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres');
 				break;
 		}
 
-		return true;*/
+		return true;
 	}
 
 	public function remove() {

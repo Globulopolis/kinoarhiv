@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-$plural = $this->lang->getPluralSuffixes($this->pagination->get('total'));
+$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -46,7 +46,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->get('total'));
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
 	<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
-		<div class="total-watched"><?php echo JText::_('COM_KA_PROFILE_TOTAL_WATCHED').$this->pagination->get('total').JText::_('COM_KA_PROFILE_TOTAL_MOVIES_'.$plural[0]); ?></div>
+		<div class="total-watched"><?php echo JText::_('COM_KA_PROFILE_TOTAL_WATCHED').$this->pagination->total.JText::_('COM_KA_PROFILE_TOTAL_MOVIES_'.$plural[0]); ?></div>
 		<div class="wt-list">
 			<?php foreach ($this->items as $i=>$item): ?>
 			<div class="title-small">
@@ -67,7 +67,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->get('total'));
 	<?php else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
-	<?php if ($this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>

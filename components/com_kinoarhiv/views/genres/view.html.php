@@ -22,7 +22,6 @@ class KinoarhivViewGenres extends JViewLegacy {
 
 		$this->params = &$params;
 		$this->items = &$items;
-		$this->doctype = $document->getType();
 
 		$this->_prepareDocument();
 

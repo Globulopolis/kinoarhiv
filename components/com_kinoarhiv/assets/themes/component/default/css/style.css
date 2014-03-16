@@ -164,7 +164,7 @@ h3.title {
 }
 
 .pagination.top {
-	text-align: right;
+	text-align: center;
 }
 
 .pagination.top a, .pagination span {
@@ -173,10 +173,6 @@ h3.title {
 
 .pagination.bottom {
 	text-align: center;
-}
-
-.tabbar div {
-	float: left;
 }
 
 .genre-list {
@@ -306,6 +302,14 @@ h3.title {
 
 .user-profile .review {
 	margin-left: 22px;
+}
+
+.user-profile .wt-list > div:nth-child(even), .user-profile .fav-list > div:nth-child(even) {
+	background-color: #f5f5f5;
+}
+
+.user-profile .wt-list > div:nth-child(odd):hover, .user-profile .fav-list > div:nth-child(odd):hover {
+	background-color: #f5f5f5;
 }
 
 .mark-links {

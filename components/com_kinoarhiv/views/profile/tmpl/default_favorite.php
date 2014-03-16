@@ -4,7 +4,7 @@ if ($this->page == 'names') {
 } else {
 	$view = 'movie';
 }
-$plural = $this->lang->getPluralSuffixes($this->pagination->get('total'));
+$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -55,7 +55,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->get('total'));
 	</div>
 	<?php if (count($this->items) > 0): ?>
 	<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
-		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE').$this->pagination->get('total').JText::_('COM_KA_PROFILE_TOTAL_'.strtoupper($this->page).'_'.$plural[0]); ?></div>
+		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE').$this->pagination->total.JText::_('COM_KA_PROFILE_TOTAL_'.strtoupper($this->page).'_'.$plural[0]); ?></div>
 		<div class="fav-list">
 			<?php foreach ($this->items as $i=>$item): ?>
 			<div class="title-small">
@@ -79,7 +79,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->get('total'));
 	<?php else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
-	<?php if ($this->pagination->get('total') >= $this->pagination->get('limit')): ?>
+	<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination bottom">
 			<?php echo $this->pagination->getPagesLinks(); ?><br />
 			<?php echo $this->pagination->getResultsCounter(); ?>

@@ -26,32 +26,6 @@
 			maxWidth: '90%',
 			returnFocus: false
 		});
-
-		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-		$('.fav a').click(function(e){
-			e.preventDefault();
-			var _this = $(this);
-
-			$.ajax({
-				url: _this.attr('href') + '&format=raw'
-			}).done(function(response){
-				if (response.success) {
-					_this.text(response.text);
-					_this.attr('href', response.url);
-					if (_this.hasClass('delete')) {
-						_this.removeClass('delete').addClass('add');
-					} else {
-						_this.removeClass('add').addClass('delete');
-					}
-					showMsg(_this.closest('header'), response.message);
-				} else {
-					showMsg(_this.closest('header'), '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
-				}
-			}).fail(function(xhr, status, error){
-				showMsg(_this.closest('header'), error);
-			});
-		});
-		<?php endif; ?>
 	});
 //]]>
 </script>
@@ -61,35 +35,18 @@
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
 	<?php endif; ?>
-	<?php if (count($this->items['movies']) > 0):
-		foreach ($this->items['movies'] as $item): ?>
-		<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
+	<div class="selectlist">
+		<div class="selectlist-premieres">
+			<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country_list', null, 'code', 'name', substr($this->lang->getTag(), 0, 2)); ?>
+		</div>
+	</div>
+	<?php if (count($this->items) > 0):
+		foreach ($this->items as $item): ?>
+		<article class="item" data-permalink="<?php //echo $item->params->get('url'); ?>">
 			<header>
 				<h1 class="title title-small">
-					<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $this->escape($item->title.$item->year_str); ?>"><?php echo $this->escape($item->title.$item->year_str); ?></a>
+					<a href="<?php //echo $item->params->get('url'); ?>" class="brand" title="<?php //echo $this->escape($item->title.$item->year_str); ?>"><?php //echo $this->escape($item->title.$item->year_str); ?></a>
 				</h1>
-				<div class="middle-nav clearfix">
-					<p class="meta">
-						<?php if ($this->params->get('show_pubdate') == 1 && $item->created !== '0000-00-00'): ?>
-							<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?><time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
-						<?php endif;
-						if ($this->params->get('show_pubdate') == 1 && $this->params->get('show_moddate') == 1) { echo ' &bull; '; }
-						if ($this->params->get('show_moddate') == 1):
-							if ($item->modified !== '0000-00-00'): ?>
-							<?php echo JText::_('COM_KA_LAST_UPDATED'); ?><time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
-							<?php endif;
-						endif; ?>
-					</p>
-					<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-					<p class="fav">
-						<?php if ($item->favorite == 1): ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
-						<?php else: ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid='.$this->itemid.'&id='.$item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
-						<?php endif; ?>
-					</p>
-					<?php endif; ?>
-				</div>
 			</header>
 			<?php echo $item->event->afterDisplayTitle; ?>
 			<?php echo $item->event->beforeDisplayContent; ?>

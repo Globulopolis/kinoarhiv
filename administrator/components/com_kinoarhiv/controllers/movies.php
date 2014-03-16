@@ -368,7 +368,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document->setName('response');
 
 		$model = $this->getModel('premiere');
-		$result = $model->savePremiere();
+		$result = $model->savePremiereAjax();
 
 		echo json_encode($result);
 	}

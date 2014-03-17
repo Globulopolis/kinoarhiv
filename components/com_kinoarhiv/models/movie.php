@@ -179,6 +179,10 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
 
+		// Get tags
+		$metadata = json_decode($result->metadata);
+		$result->tags = $this->getTags(implode(',', $metadata->tags));
+
 		return $result;
 	}
 
@@ -194,6 +198,17 @@ class KinoarhivModelMovie extends JModelForm {
 			. "\n FROM ".$db->quoteName('#__ka_movies')
 			. "\n WHERE `id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		$result = $db->loadObject();
+
+		return $result;
+	}
+
+	protected function getTags($ids) {
+		$db = $this->getDBO();
+
+		$db->setQuery("SELECT `id` AS `tag_id`, `title` AS `tag_title`, `alias` AS `tag_alias`"
+			. "\n FROM ".$db->quoteName('#__tags')
+			. "\n WHERE `id` IN (".$ids.")");
+		$result = $db->loadObjectList();
 
 		return $result;
 	}

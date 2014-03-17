@@ -1,6 +1,4 @@
-<?php defined('_JEXEC') or die;
-JHtml::_('behavior.keepalive');
-?>
+<?php defined('_JEXEC') or die; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('#form_movie_rate_sum_loc, #form_movie_rate_loc').blur(function(){
@@ -45,7 +43,7 @@ JHtml::_('behavior.keepalive');
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
-			maximumSelectionSize: 10,
+			maximumSelectionSize: 5,
 			multiple: true,
 			ajax: {
 				cache: true,
@@ -313,7 +311,7 @@ JHtml::_('behavior.keepalive');
 			</fieldset>
 		</div>
 		<div class="span3">
-			<a href="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'.$this->items->filename; ?>"><img src="<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/thumb_'.$this->items->filename; ?>" class="movie-poster-preview" height="110" /></a>
+			<a href="<?php echo $this->items->poster; ?>"><img src="<?php echo $this->items->th_poster; ?>" class="movie-poster-preview <?php echo $this->items->y_poster; ?>" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
 			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items->id; ?>&_id[]=<?php echo $this->items->gid; ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 		</div>

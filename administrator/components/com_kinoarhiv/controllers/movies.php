@@ -22,7 +22,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 	}
 
 	public function save() {
-		$this->save();
+		$this->apply();
 	}
 
 	public function save2new() {
@@ -42,7 +42,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$model = $this->getModel('movies');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
-		$id = $app->input->get('id', array(), 'array');
+		$id = $app->input->get('id', array(0), 'array');
 
 		if (!$form) {
 			$app->enqueueMessage($model->getError(), 'error');
@@ -85,7 +85,11 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$id[0]);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$app->input->get('id', array(0), 'array')[0]);
+				break;
+
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=');
 				break;
 
 			case 'save':

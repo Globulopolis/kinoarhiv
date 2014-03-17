@@ -111,7 +111,7 @@ class KinoarhivViewGenres extends JViewLegacy {
 			}
 
 			if ($user->authorise('core.recount.genre', 'com_kinoarhiv')) {
-				JToolbarHelper::custom('updateStat', 'tools', 'tools', JText::_('COM_KA_GENRES_STATS_UPDATE'), true);
+				JToolbarHelper::custom('updateStat', 'chart', 'chart', JText::_('COM_KA_GENRES_STATS_UPDATE'), true);
 			}
 
 			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE'), false);

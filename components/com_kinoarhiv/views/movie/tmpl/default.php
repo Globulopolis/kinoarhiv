@@ -1,8 +1,10 @@
 <?php defined('_JEXEC') or die;
 $total_trailers = count($this->item->trailer);
 $total_movies = count($this->item->movie);
+
+JHtml::_('jquery.framework');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery-ui.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
@@ -355,6 +357,15 @@ $total_movies = count($this->item->movie);
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_LENGTH'); ?></span>
 						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?> | <?php echo $this->item->_length; ?></span>
+					</div>
+					<div>
+						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
+						<span class="s-col">
+							<?php for ($i=0,$n=count($this->item->tags); $i<$n; $i++):
+							$tags = $this->item->tags[$i]; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=tag&tag_id[]='.$tags->tag_id.'&Itemid='.$this->itemid); ?>" class="tags" title="<?php echo $tags->tag_title; ?>"><?php echo $tags->tag_title; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
+							<?php endfor; ?>
+						</span>
 					</div>
 				</div>
 			</div>

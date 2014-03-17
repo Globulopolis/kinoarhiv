@@ -46,6 +46,16 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$items = $this->get('Item');
 		$form = $this->get('Form');
 
+		if (empty($items['movie']->filename)) {
+			$items['movie']->poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
+			$items['movie']->th_poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
+			$items['movie']->y_poster = '';
+		} else {
+			$items['movie']->poster = JURI::root().$params->get('media_posters_root_www').'/'.JString::substr($items['movie']->alias, 0, 1).'/'.$items['movie']->id.'/posters/'.$items['movie']->filename;
+			$items['movie']->th_poster = JURI::root().$params->get('media_posters_root_www').'/'.JString::substr($items['movie']->alias, 0, 1).'/'.$items['movie']->id.'/posters/thumb_'.$items['movie']->filename;
+			$items['movie']->y_poster = 'y-poster';
+		}
+
 		$this->items = &$items['movie'];
 		$this->form_group = 'movie';
 		$this->form = &$form;

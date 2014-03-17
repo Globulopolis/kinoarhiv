@@ -104,6 +104,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->items = &$items; // Reviews
 		$this->user = &$user;
 		$this->pagination = &$pagination;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -131,6 +132,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$this->params = &$params;
 		$this->item = &$item;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -211,6 +213,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->items = &$items;
 		$this->filters = $this->getDimensionList();
 		$this->pagination = &$pagination;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -290,6 +293,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->item = &$item;
 		$this->items = &$items;
 		$this->pagination = &$pagination;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -369,6 +373,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->item = &$item;
 		$this->items = &$items;
 		$this->pagination = &$pagination;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -417,6 +422,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$this->params = &$params;
 		$this->item = &$item;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -470,6 +476,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->params = &$params;
 		$this->item = &$item;
 		$this->user = &$user;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -517,6 +524,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$this->params = &$params;
 		$this->item = &$item;
+		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -552,7 +560,6 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$metadata = json_decode($this->item->metadata);
 
 		// Create a new pathway object
 		$path = (object)array(
@@ -578,7 +585,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		if ($menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
-			$this->document->setMetadata('robots', $metadata->robots);
+			$this->document->setMetadata('robots', $this->metadata->robots);
 		}
 
 		if ($this->params->get('generator') == 'none') {

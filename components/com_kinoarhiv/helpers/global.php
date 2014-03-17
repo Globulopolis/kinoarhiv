@@ -136,7 +136,11 @@ class GlobalHelper {
 					'components/com_kinoarhiv/assets/players/videojs/video.js',
 					'components/com_kinoarhiv/assets/players/videojs/videojs.persistvolume.js'
 				)
-			)
+			),
+			'jplayer'=>array(
+				'css'=>array(),
+				'js'=>array()
+			),
 		);
 
 		if ($document->getType() == 'html') {
@@ -156,10 +160,14 @@ class GlobalHelper {
 				$document->addScriptDeclaration("videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/players/videojs/video-js.swf';");
 			} elseif ($player == 'mediaelement') {
 				JHtml::_('jquery.framework');
-				JHtml::script(JURI::base().'components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js');
+				JHtml::script('components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js');
 			} elseif ($player == 'flowplayer') {
 				JHtml::_('jquery.framework');
-				JHtml::script(JURI::base().'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js');
+				JHtml::script('components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js');
+			} elseif ($player == 'jplayer') {
+				JHtml::_('jquery.framework');
+				JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+				JHtml::_('script', 'components/com_kinoarhiv/assets/players/jplayer/jquery.jplayer.min.js');
 			}
 
 			return true;

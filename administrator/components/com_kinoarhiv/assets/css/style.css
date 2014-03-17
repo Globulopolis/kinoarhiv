@@ -243,10 +243,15 @@ span.icon {
 }
 
 img.movie-poster-preview {
-	background-color: #FFFFFF;
-	border: 1px solid #CCCCCC;
 	padding: 2px;
 	height: 110px !important;
+	max-width: 110px;
+	display: block;
+}
+
+img.movie-poster-preview.y-poster {
+	background-color: #FFFFFF;
+	border: 1px solid #CCCCCC;
 }
 
 #jform_person_list_limit, #jform_premieres_list_limit, #jform_releases_list_limit, #jform_introtext_actors_list_limit {

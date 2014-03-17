@@ -126,6 +126,75 @@ JHtml::_('behavior.keepalive');
 			e.preventDefault();
 			$(this).prev('input').trigger('focus');
 		});
+
+		$('.cmd-rules').click(function(e){
+			e.preventDefault();
+			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+
+			$(dialog).dialog({
+				dialogClass: 'rules-dlg',
+				modal: true,
+				width: 800,
+				height: 520,
+				close: function(event, ui){
+					dialog.remove();
+				},
+				buttons: [
+					{
+						text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
+						id: 'rules-apply',
+						click: function(){
+							/*var valid = true;
+							if ($('#form_type').select2('val') == '' || $('#form_type').select2('val') == 0) {
+								$('#form_type-lbl').addClass('red-label');
+								valid = false;
+							}
+							if ($('#form_name_id').select2('val') == '' || $('#form_name_id').select2('val') == 0) {
+								$('#form_name_id-lbl').addClass('red-label');
+								valid = false;
+							}
+							if (!valid) {
+								showMsg('.rel-names-dlg .placeholder', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+								return;
+							}
+
+							$.ajax({
+								type: 'POST',
+								url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelNames&format=json&id=' + $('#id').val(),
+								data: {
+									'<?php echo JSession::getFormToken(); ?>': 1,
+									'form[type]':			$('#form_type').select2('val'),
+									'form[name_id]':		$('#form_name_id').select2('val'),
+									'form[dub_id]':			$('#form_dub_id').select2('val'),
+									'form[role]':			$('#form_role').val(),
+									'form[is_directors]':	$('#form_is_directors').val(),
+									'form[is_actors]':		$('#form_is_actors').val(),
+									'form[voice_artists]':	$('#form_voice_artists').val(),
+									'form[ordering]':		$('#form_r_ordering').val(),
+									'form[desc]':			$('#form_r_desc').val(),
+									'new': 1
+								}
+							}).done(function(response){
+								if (response.success) {
+									dialog.remove();
+								} else {
+									showMsg('.rules-dlg .placeholder', response.message);
+								}
+							}).fail(function(xhr, status, error){
+								showMsg('.rules-dlg .placeholder', error);
+							});*/
+						}
+					},
+					{
+						text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
+						click: function(){
+							dialog.remove();
+						}
+					}
+				]
+			});
+			dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=rules_edit&model=movies&view=movies&format=raw');
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
@@ -195,6 +264,10 @@ JHtml::_('behavior.keepalive');
 									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('state', $this->form_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
+										<div class="controls"><button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button></div>
 									</div>
 								</fieldset>
 							</div>

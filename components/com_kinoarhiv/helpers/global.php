@@ -10,6 +10,9 @@ class GlobalHelper {
 			return;
 		}
 
+		JHtml::_('jquery.framework');
+		JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/ui/'.$params->get('ui_theme').'/jquery-ui.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/plugin.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/style.css', 'stylesheet', 'rel', array('type'=>'text/css'));
@@ -138,7 +141,7 @@ class GlobalHelper {
 				)
 			),
 			'jplayer'=>array(
-				'css'=>array(),
+				'css'=>array('components/com_kinoarhiv/assets/players/jplayer/theme.ui.css'),
 				'js'=>array()
 			),
 		);
@@ -159,15 +162,12 @@ class GlobalHelper {
 			} elseif ($player == 'videojs') {
 				$document->addScriptDeclaration("videojs.options.flash.swf = '".JURI::base()."components/com_kinoarhiv/assets/players/videojs/video-js.swf';");
 			} elseif ($player == 'mediaelement') {
-				JHtml::_('jquery.framework');
 				JHtml::script('components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js');
 			} elseif ($player == 'flowplayer') {
-				JHtml::_('jquery.framework');
 				JHtml::script('components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js');
 			} elseif ($player == 'jplayer') {
-				JHtml::_('jquery.framework');
-				JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 				JHtml::_('script', 'components/com_kinoarhiv/assets/players/jplayer/jquery.jplayer.min.js');
+				JHtml::_('script', 'components/com_kinoarhiv/assets/players/jplayer/jplayer.playlist.min.js');
 			}
 
 			return true;

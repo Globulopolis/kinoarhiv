@@ -1,9 +1,6 @@
 <?php defined('_JEXEC') or die;
 $total_trailers = count($this->item->trailer);
 $total_movies = count($this->item->movie);
-
-JHtml::_('jquery.framework');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>

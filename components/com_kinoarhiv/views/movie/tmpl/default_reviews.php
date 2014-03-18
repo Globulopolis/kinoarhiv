@@ -17,18 +17,18 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 
 			$('#review-form').submit(function(e){
 				editor.disable();
-				$('#review-form :submit').button('disable');
+				$('#review-form input[type="submit"]').prop('disable', true);
 
 				if (editor.parse(editor.getValue()).length < <?php echo $this->params->get('reviews_length_min'); ?> || editor.parse(editor.getValue()).length > <?php echo $this->params->get('reviews_length_max'); ?>) {
 					showMsg('#form_editor', '<?php echo JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $this->params->get('reviews_length_min'), $this->params->get('reviews_length_max')); ?>');
 					editor.enable();
-					$('#review-form :submit').button('enable');
+					$('#review-form input[type="submit"]').prop('disable', false);
 					return false;
 				}
 
 				return true;
 			});
-			$('#review-form :submit').button();
+
 			$('#font').click(function(){
 				if ($('#font-size-list').is(':visible')) {
 					$('#font-size-list').hide();
@@ -182,9 +182,9 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 			<label id="type-lbl" for="type"><?php echo JText::_('COM_KA_REVIEWS_TYPE_LABEL'); ?></label>
 			<select id="type" name="type" class="inputbox review_type" size="1">
 				<option value="0" selected="selected"><?php echo JText::_('COM_KA_REVIEWS_TYPE_0'); ?></option>
-				<option value="1"><?php echo JText::_('COM_KA_REVIEWS_TYPE_1'); ?></option>
-				<option value="2"><?php echo JText::_('COM_KA_REVIEWS_TYPE_2'); ?></option>
-				<option value="3"><?php echo JText::_('COM_KA_REVIEWS_TYPE_3'); ?></option>
+				<option value="1" class="ui-state-default"><?php echo JText::_('COM_KA_REVIEWS_TYPE_1'); ?></option>
+				<option value="2" class="ui-state-highlight"><?php echo JText::_('COM_KA_REVIEWS_TYPE_2'); ?></option>
+				<option value="3" class="ui-state-error"><?php echo JText::_('COM_KA_REVIEWS_TYPE_3'); ?></option>
 			</select>
 			<div class="clear"></div>
 			<?php echo ($this->config->get('captcha') != '0' && $this->params->get('reviews_save_captcha') != 0) ? $this->item->event->afterDisplayReview : ''; ?><br />
@@ -193,7 +193,8 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 			<input type="hidden" name="movie_name" value="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>" />
 			<input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
 			<?php echo JHtml::_('form.token'); ?>
-			<input type="submit" value="<?php echo JText::_('JSUBMIT'); ?>" />
+			<input type="submit" class="btn btn-default" value="<?php echo JText::_('JSUBMIT'); ?>" />
+			<input type="reset" class="btn btn-default cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
 		</form>
 		<?php endif; ?>
 	<?php else: ?>

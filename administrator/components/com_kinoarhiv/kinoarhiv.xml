@@ -64,6 +64,7 @@
 			<menu view="vendors">COM_KA_MENU_VENDORS</menu>
 			<menu view="awards">COM_KA_MENU_AWARDS</menu>
 			<menu view="reviews">COM_KA_MENU_REVIEWS</menu>
+			<menu view="premieres">COM_KA_MENU_PREMIERES</menu>
 			<menu view="settings">COM_KA_MENU_SETTINGS</menu>
 		</submenu>
 	</administration>

@@ -144,36 +144,10 @@ JHtml::_('behavior.keepalive');
 						text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 						id: 'rules-apply',
 						click: function(){
-							/*var valid = true;
-							if ($('#form_type').select2('val') == '' || $('#form_type').select2('val') == 0) {
-								$('#form_type-lbl').addClass('red-label');
-								valid = false;
-							}
-							if ($('#form_name_id').select2('val') == '' || $('#form_name_id').select2('val') == 0) {
-								$('#form_name_id-lbl').addClass('red-label');
-								valid = false;
-							}
-							if (!valid) {
-								showMsg('.rel-names-dlg .placeholder', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
-								return;
-							}
-
 							$.ajax({
 								type: 'POST',
-								url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelNames&format=json&id=' + $('#id').val(),
-								data: {
-									'<?php echo JSession::getFormToken(); ?>': 1,
-									'form[type]':			$('#form_type').select2('val'),
-									'form[name_id]':		$('#form_name_id').select2('val'),
-									'form[dub_id]':			$('#form_dub_id').select2('val'),
-									'form[role]':			$('#form_role').val(),
-									'form[is_directors]':	$('#form_is_directors').val(),
-									'form[is_actors]':		$('#form_is_actors').val(),
-									'form[voice_artists]':	$('#form_voice_artists').val(),
-									'form[ordering]':		$('#form_r_ordering').val(),
-									'form[desc]':			$('#form_r_desc').val(),
-									'new': 1
-								}
+								url: $('#rulesForm', this).attr('action') + '&id=' + $('#id').val(),
+								data: $('#rulesForm', this).serialize()
 							}).done(function(response){
 								if (response.success) {
 									dialog.remove();
@@ -182,7 +156,7 @@ JHtml::_('behavior.keepalive');
 								}
 							}).fail(function(xhr, status, error){
 								showMsg('.rules-dlg .placeholder', error);
-							});*/
+							});
 						}
 					},
 					{

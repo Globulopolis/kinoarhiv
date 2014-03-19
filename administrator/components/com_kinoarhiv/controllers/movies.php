@@ -101,6 +101,11 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		return true;
 	}
 
+	public function saveMovieAccessRules() {
+		echo '<pre>';
+		print_r($_POST);
+	}
+
 	public function unpublish() {
 		$this->publish(true);
 	}

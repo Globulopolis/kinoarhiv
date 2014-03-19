@@ -139,11 +139,7 @@ class GlobalHelper {
 					'components/com_kinoarhiv/assets/players/videojs/video.js',
 					'components/com_kinoarhiv/assets/players/videojs/videojs.persistvolume.js'
 				)
-			),
-			'jplayer'=>array(
-				'css'=>array('components/com_kinoarhiv/assets/players/jplayer/theme.ui.css'),
-				'js'=>array()
-			),
+			)
 		);
 
 		if ($document->getType() == 'html') {
@@ -165,9 +161,6 @@ class GlobalHelper {
 				JHtml::script('components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js');
 			} elseif ($player == 'flowplayer') {
 				JHtml::script('components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js');
-			} elseif ($player == 'jplayer') {
-				JHtml::_('script', 'components/com_kinoarhiv/assets/players/jplayer/jquery.jplayer.min.js');
-				JHtml::_('script', 'components/com_kinoarhiv/assets/players/jplayer/jplayer.playlist.min.js');
 			}
 
 			return true;

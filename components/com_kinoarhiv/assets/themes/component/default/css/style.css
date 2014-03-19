@@ -759,7 +759,7 @@ div.rating {
 	padding: 4px
 }
 
-.trailer .ui-widget-content {
+.trailer > .ui-widget-content {
 	border: none;
 	overflow: hidden;
 }

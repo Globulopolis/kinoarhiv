@@ -1,4 +1,8 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+if (empty($this->items->id)):
+	echo JText::_('COM_KA_NO_ID');
+	return;
+endif; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var aw_grid_cfg = {
@@ -17,7 +21,7 @@
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
 
 		$('#list_awards').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
 			width: aw_grid_cfg.grid_width,
@@ -194,7 +198,7 @@
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.awards-container', response.message);
 					$('#list_awards').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

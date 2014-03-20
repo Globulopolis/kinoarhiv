@@ -17,10 +17,12 @@
 					return { results: data };
 				}
 			},
+			<?php if (isset($this->items->tags)): ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($this->items->tags['data']); ?>;
 				callback(data);
 			},
+			<?php endif; ?>
 			formatResult: function(data){
 				return data.title;
 			},

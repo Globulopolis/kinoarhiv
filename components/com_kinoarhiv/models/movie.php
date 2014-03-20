@@ -205,6 +205,14 @@ class KinoarhivModelMovie extends JModelForm {
 	protected function getTags($ids) {
 		$db = $this->getDBO();
 
+		if (empty($ids)) {
+			return array();
+		}
+
+		if (is_array($ids)) {
+			$ids = implode(',', $ids);
+		}
+
 		$db->setQuery("SELECT `id` AS `tag_id`, `title` AS `tag_title`, `alias` AS `tag_alias`"
 			. "\n FROM ".$db->quoteName('#__tags')
 			. "\n WHERE `id` IN (".$ids.")");

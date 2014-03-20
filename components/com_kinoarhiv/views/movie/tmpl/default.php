@@ -355,15 +355,18 @@ $total_movies = count($this->item->movie);
 						<span class="f-col"><?php echo JText::_('COM_KA_LENGTH'); ?></span>
 						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?> | <?php echo $this->item->_length; ?></span>
 					</div>
+					<?php $c_tags = count($this->item->tags);
+					if ($c_tags > 0): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 						<span class="s-col">
-							<?php for ($i=0,$n=count($this->item->tags); $i<$n; $i++):
+							<?php for ($i=0,$n=$c_tags; $i<$n; $i++):
 							$tags = $this->item->tags[$i]; ?>
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=tag&tag_id[]='.$tags->tag_id.'&Itemid='.$this->itemid); ?>" class="tags" title="<?php echo $tags->tag_title; ?>"><?php echo $tags->tag_title; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 					</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
@@ -384,7 +387,12 @@ $total_movies = count($this->item->movie);
 					</div>
 				<?php
 				} else {
-					echo $this->loadTemplate($player_layout);
+					if (file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$this->params->get('player_type'))) {
+						echo $this->loadTemplate($player_layout);
+					} else {
+						GlobalHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+						echo $this->loadTemplate('trailer');
+					}
 				}
 			}
 		?>

@@ -444,6 +444,14 @@ class KinoarhivViewMovie extends JViewLegacy {
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}
 
+		// Check if player folder exists.
+		if (!file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$params->get('player_type'))) {
+			$player_layout = ($params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$params->get('player_type');
+			GlobalHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+
+			$params->set('player_type', '-1');
+		}
+
 		$user = JFactory::getUser();
 
 		$item = $this->get('Trailers');

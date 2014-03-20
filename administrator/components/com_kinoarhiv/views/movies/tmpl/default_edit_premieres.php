@@ -1,4 +1,8 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+if (empty($this->items->id)):
+	echo JText::_('COM_KA_NO_ID');
+	return;
+endif; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var p_grid_cfg = {
@@ -17,7 +21,7 @@
 		p_grid_cfg.grid_height = (p_grid_cfg.grid_height < 100) ? 200 : p_grid_cfg.grid_height;
 
 		$('#list_premieres').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getPremieres&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getPremieres&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>',
 			datatype: 'json',
 			height: p_grid_cfg.grid_height,
 			width: p_grid_cfg.grid_width,
@@ -189,7 +193,7 @@
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deletePremieres&format=json<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deletePremieres&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
 					$('#list_premieres').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);

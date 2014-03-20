@@ -297,7 +297,7 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n WHERE `id` = ".(int)$premiere_id);
 			$result = $db->loadObject();
 		} else {
-			$result = array();
+			$result = array('movie'=>(object)array());
 			if (count($id) == 0) {
 				return $result;
 			}
@@ -1026,6 +1026,49 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		return array('success'=>$success, 'message'=>$message);
+	}
+
+	public function saveMovieAccessRules() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$data = $app->input->post->get('form', array(), 'array');
+		$id = $app->input->get('id', null, 'int');
+		$rules = array();
+
+		if (empty($id)) {
+			return array('success'=>false, 'message'=>'Error');
+		}
+
+		foreach ($data['movie']['rules'] as $rule=>$groups) {
+			foreach ($groups as $group=>$value) {
+				if ($value != '') {
+					$rules[$rule][$group] = (int)$value;
+				} else {
+					unset($data['rules'][$rule][$group]);
+				}
+			}
+		}
+
+		$rules = json_encode($rules);
+
+		if (JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv')) {
+			// Get parent id
+			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+			$parent_id = $db->loadResult();
+
+			$db->setQuery("UPDATE ".$db->quoteName('#__assets')
+				. "\n SET `rules` = '".$rules."'"
+				. "\n WHERE `name` = 'com_kinoarhiv.movie.".(int)$id."' AND `level` = 2 AND `parent_id` = ".(int)$parent_id);
+
+			try {
+				$db->execute();
+				return array('success'=>true);
+			} catch(Exception $e) {
+				return array('success'=>false, 'message'=>$e->getMessage());
+			}
+		} else {
+			return array('success'=>false, 'message'=>JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
+		}
 	}
 
 	/**

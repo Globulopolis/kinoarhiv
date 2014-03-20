@@ -47,7 +47,7 @@ JHtml::_('behavior.keepalive');
 			}
 		} else if (task == 'gallery' || task == 'trailers' || task == 'sounds') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->items->id != 0) ? '&id='.$this->items->id : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -108,6 +108,10 @@ JHtml::_('behavior.keepalive');
 		});
 
 		$('.hasDatetime').each(function(i, el){
+			if ($(el).val() === 'NOW') {
+				$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+			}
+
 			if ($(el).data('type') == 'time') {
 				$(el).timepicker({
 					timeFormat: $(el).data('time-format')
@@ -144,18 +148,21 @@ JHtml::_('behavior.keepalive');
 						text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 						id: 'rules-apply',
 						click: function(){
+							blockUI('show');
 							$.ajax({
 								type: 'POST',
 								url: $('#rulesForm', this).attr('action') + '&id=' + $('#id').val(),
 								data: $('#rulesForm', this).serialize()
 							}).done(function(response){
+								blockUI();
 								if (response.success) {
 									dialog.remove();
 								} else {
-									showMsg('.rules-dlg .placeholder', response.message);
+									showMsg('.rules-dlg #rulesForm', response.message);
 								}
 							}).fail(function(xhr, status, error){
-								showMsg('.rules-dlg .placeholder', error);
+								showMsg('.rules-dlg #rulesForm', error);
+								blockUI();
 							});
 						}
 					},
@@ -241,7 +248,13 @@ JHtml::_('behavior.keepalive');
 									</div>
 									<div class="control-group">
 										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
-										<div class="controls"><button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button></div>
+										<div class="controls">
+										<?php if (!empty($this->items->id)): ?>
+											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
+										<?php else: ?>
+											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
+										<?php endif; ?>
+										</div>
 									</div>
 								</fieldset>
 							</div>

@@ -102,8 +102,17 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 	}
 
 	public function saveMovieAccessRules() {
-		echo '<pre>';
-		print_r($_POST);
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv')) {
+			return array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$model = $this->getModel('movies');
+		$result = $model->saveMovieAccessRules();
+
+		echo json_encode($result);
 	}
 
 	public function unpublish() {

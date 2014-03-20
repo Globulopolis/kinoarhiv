@@ -106,15 +106,19 @@
 		});
 
 		$('.hasDatetime').each(function(i, el){
-			if ($(el).hasClass('time')) {
+			if ($(el).val() === 'NOW') {
+				$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+			}
+
+			if ($(el).data('type') == 'time') {
 				$(el).timepicker({
 					timeFormat: $(el).data('time-format')
 				});
-			} else if ($(el).hasClass('date')) {
-				$(el).datetimepicker({
+			} else if ($(el).data('type') == 'date') {
+				$(el).datepicker({
 					dateFormat: $(el).data('date-format')
 				});
-			} else if ($(el).hasClass('datetime')) {
+			} else if ($(el).data('type') == 'datetime') {
 				$(el).datetimepicker({
 					dateFormat: $(el).data('date-format'),
 					timeFormat: $(el).data('time-format')

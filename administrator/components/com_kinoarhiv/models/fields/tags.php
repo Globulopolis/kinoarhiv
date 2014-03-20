@@ -23,7 +23,7 @@ class JFormFieldTags extends JFormField {
 		$required = $this->required ? ' required aria-required="true"' : '';
 		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="'.$this->element['data-ac-type'].'"' : '';
 		$data_allow_clear = $this->element['data-allow-clear'] ? ' data-allow-clear="1"' : '';
-		$value = is_array($this->value['ids']) ? implode(',', $this->value['ids']) : '';
+		$value = (isset($this->value['ids']) && is_array($this->value['ids'])) ? implode(',', $this->value['ids']) : '';
 
 		// Initialize JavaScript field attributes.
 		$onchange = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';

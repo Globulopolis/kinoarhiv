@@ -129,6 +129,10 @@ JHtml::_('behavior.keepalive');
 		});
 
 		$('.hasDatetime').each(function(i, el){
+			if ($(el).val() === 'NOW') {
+				$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+			}
+
 			if ($(el).data('type') == 'time') {
 				$(el).timepicker({
 					timeFormat: $(el).data('time-format')

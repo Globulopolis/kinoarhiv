@@ -27,12 +27,6 @@ if ($this->params->get('player_type') == 'mediaelement'): ?>
 		});
 	});
 </script>
-<?php elseif ($this->params->get('player_type') == 'jplayer'): ?>
-<script type="text/javascript">
-	jQuery(document).ready(function($){
-		
-	});
-</script>
 <?php endif; ?>
 
 <div class="content movie trailers">
@@ -121,62 +115,6 @@ if ($this->params->get('player_type') == 'mediaelement'): ?>
 
 							<div style="height: <?php echo $item_trailer->player_height; ?>px;">
 								<a href="#" class="play hasTooltip <?php echo $watch; ?>" title="<?php echo $ln_watch; ?>"><img src="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" /></a>
-							</div>
-
-							<?php elseif ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer'):
-								$trailer_media_supplied = ''; ?>
-
-							<div id="player"></div>
-							<div id="player_container">
-								<div class="jp-gui ui-widget ui-widget-content ui-corner-all">
-									<ul>
-										<li class="jp-play ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-play ui-icon ui-icon-play hasTooltip" tabindex="1" title="play">play</a>
-										</li>
-										<li class="jp-pause ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-pause ui-icon ui-icon-pause hasTooltip" tabindex="1" title="pause">pause</a>
-										</li>
-										<li class="jp-stop ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-stop ui-icon ui-icon-stop hasTooltip" tabindex="1" title="stop">stop</a>
-										</li>
-										<li class="jp-repeat ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-repeat ui-icon ui-icon-refresh hasTooltip" tabindex="1" title="repeat">repeat</a>
-										</li>
-										<li class="jp-repeat-off ui-state-default ui-state-active ui-corner-all">
-											<a href="javascript:;" class="jp-repeat-off ui-icon ui-icon-arrow-1-e hasTooltip" tabindex="1" title="repeat off">repeat off</a>
-										</li>
-										<li class="jp-full-screen ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-full-screen ui-icon ui-icon-arrow-4-diag hasTooltip" tabindex="1" title="full screen">full screen</a>
-										</li>
-										<li class="jp-restore-screen ui-state-default ui-state-active ui-corner-all">
-											<a href="javascript:;" class="jp-restore-screen ui-icon ui-icon-arrow-2-e-w hasTooltip" tabindex="1" title="restore screen">restore screen</a>
-										</li>
-										<li class="jp-mute ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-mute ui-icon ui-icon-volume-off hasTooltip" tabindex="1" title="mute">mute</a>
-										</li>
-										<li class="jp-unmute ui-state-default ui-state-active ui-corner-all">
-											<a href="javascript:;" class="jp-unmute ui-icon ui-icon-volume-off hasTooltip" tabindex="1" title="unmute">unmute</a>
-										</li>
-										<li class="jp-volume-max ui-state-default ui-corner-all">
-											<a href="javascript:;" class="jp-volume-max ui-icon ui-icon-volume-on hasTooltip" tabindex="1" title="max volume">max volume</a>
-										</li>
-									</ul>
-									<div class="jp-progress-slider"></div>
-									<div class="jp-volume-slider"></div>
-									<div class="jp-current-volume"></div>
-									<div class="jp-current-time"></div>
-									<div class="jp-duration"></div>
-									<div class="jp-clearboth"></div>
-								</div>
-								<div class="jp-playlist">
-									<ul>
-										<li></li>
-									</ul>
-								</div>
-								<div class="jp-no-solution">
-									<span>Update Required</span>
-									To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
-								</div>
 							</div>
 
 							<?php endif; ?>

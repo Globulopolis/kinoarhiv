@@ -591,6 +591,16 @@ class KinoarhivModelMovies extends JModelList {
 		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
 
 		if (empty($id)) {
+			// Get parent id
+			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+			$parent_id = $db->loadResult();
+
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
+				. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
+				. "\n VALUES ('', '".$parent_id."', 'lft', 'rgt', '2', 'com_kinoarhiv.movie.2', '".$db->escape($data['title'])."', '{}')");
+		}
+
+		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
 				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
 				. "\n VALUES ('', '0', '0', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$data['year']."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$db->escape($data['urls'])."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
@@ -615,7 +625,26 @@ class KinoarhivModelMovies extends JModelList {
 			$db->execute();
 
 			if (empty($id)) {
-				$app->input->set('id', array($db->insertid()));
+				$insertid = $db->insertid();
+				$app->input->set('id', array($insertid)); // Need to proper redirect to edited item
+
+				// Create access rules
+				$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+				$parent_id = $db->loadResult();
+
+				$db->setQuery("SELECT MAX(`lft`)+2 AS `lft`, MAX(`rgt`)+2 AS `rgt` FROM ".$db->quoteName('#__assets'));
+				$lft_rgt = $db->loadObject();
+
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
+					. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
+					. "\n VALUES ('', '".$parent_id."', '".$lft_rgt->lft."', '".$lft_rgt->rgt."', '2', 'com_kinoarhiv.movie.".$insertid."', '".$db->escape($data['title'])."', '{}')");
+				$db->execute();
+				$asset_id = $db->insertid();
+
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
+					. "\n SET `asset_id` = '".(int)$asset_id."'"
+					. "\n WHERE `id` = ".(int)$insertid);
+				$db->execute();
 			} else {
 				$app->input->set('id', array($id));
 			}

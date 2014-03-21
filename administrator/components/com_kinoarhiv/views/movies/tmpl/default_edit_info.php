@@ -272,6 +272,38 @@
 				blockUI();
 			});
 		});
+
+		$('#form_movie_alias').attr('disabled', true);
+		$('.cmd-alias-info').click(function(e){
+			e.preventDefault();
+
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE'); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC'); ?></p></div>').appendTo('body');
+			$(dialog).dialog({
+				modal: true,
+				width: 800,
+				height: 600,
+				draggable: false,
+				close: function(event, ui){
+					dialog.remove();
+				},
+				buttons: [
+					{
+						text: '<?php echo JText::_('JMODIFY'); ?>',
+						id: 'alias-modify',
+						click: function(){
+							$('#form_movie_alias').removeAttr('disabled');
+							dialog.remove();
+						}
+					},
+					{
+						text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
+						click: function(){
+							dialog.remove();
+						}
+					}
+				]
+			});
+		});
 		<?php endif; ?>
 	});
 </script>
@@ -284,7 +316,12 @@
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias', $this->form_group); ?></div>
+				<div class="controls">
+					<div class="input-append">
+						<?php echo $this->form->getInput('alias', $this->form_group); ?>
+						<button class="btn btn-default cmd-alias-info" style="padding: 5px 12px;"><i class="ui-icon ui-icon-calendar"></i></button>
+					</div>
+				</div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('slogan', $this->form_group); ?></div>

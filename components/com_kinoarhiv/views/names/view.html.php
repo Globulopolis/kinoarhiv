@@ -56,8 +56,8 @@ class KinoarhivViewNames extends JViewLegacy {
 				$item->poster_height = 128;
 				$item->y_poster = '';
 			} else {
-				$items[$key]->big_poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$item->filename;
-				$item->poster = JURI::base().$params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
+				$items[$key]->big_poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$item->filename;
+				$item->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
 				$item->poster_width = (int)$params->get('size_x_posters');
 				$orig_poster_size = explode('x', $item->dimension);
 				$item->poster_height = floor(($item->poster_width * $orig_poster_size[1]) / $orig_poster_size[0]);

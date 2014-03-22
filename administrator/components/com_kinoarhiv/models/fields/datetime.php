@@ -51,7 +51,7 @@ class JFormFieldDatetime extends JFormField {
 
 		$html = '<div class="input-append">
 			<input type="text" name="'.$this->name.'" id="'.$this->id.'" value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8').'" class="'.$class.'" '.$attributes.' />
-			<button class="btn cmd-datetime" style="padding: 5px 12px;" id="'.$this->id.'_img"><i class="ui-icon ui-icon-calendar"></i></button>
+			<button class="btn btn-default cmd-datetime" id="'.$this->id.'_img"><i class="icon-calendar"></i></button>
 		</div>';
 
 		return $html;

@@ -4,6 +4,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 	protected $state = null;
 	protected $items = null;
 	protected $pagination = null;
+	private $ka_theme = null;
 
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
@@ -20,17 +21,17 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$params = $app->getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->ka_theme = $params->get('ka_theme');
 
 		// Prepare the data
 		foreach ($items as &$item) {
 			$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
-			
 
 			// Replace country BB-code
 			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/default/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html.$cn;
 			}, $item->text);
@@ -39,7 +40,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches) {
 				return JText::_($matches[1]).$matches[2];
 			}, $item->text);
-
 
 			// Replace person BB-code
 			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
@@ -56,8 +56,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 				$item->poster_height = 128;
 				$item->y_poster = '';
 			} else {
-				$item->big_poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
-				$item->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				$item->big_poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
+				$item->poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
 				$item->poster_width = (int)$params->get('size_x_posters');
 				$orig_poster_size = explode('x', $item->dimension);
 				$item->poster_height = floor(($item->poster_width * $orig_poster_size[1]) / $orig_poster_size[0]);

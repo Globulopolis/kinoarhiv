@@ -3,7 +3,11 @@
 	jQuery(document).ready(function($){
 		$('#form_movie_rate_sum_loc, #form_movie_rate_loc').blur(function(){
 			var vote = parseFloat($('#form_movie_rate_sum_loc').val() / $('#form_movie_rate_loc').val()).toFixed(<?php echo (int)$this->params->get('vote_summ_precision'); ?>);
-			$('#vote').text(vote);
+			if (isNaN(vote) || $('#form_movie_rate_loc').val() == '' || $('#form_movie_rate_loc').val() == '0') {
+				$('#vote').text('0');
+			} else {
+				$('#vote').text(vote);
+			}
 		}).trigger('blur');
 
 		$('#form_movie_countries').select2({
@@ -274,35 +278,51 @@
 		});
 
 		$('#form_movie_alias').attr('disabled', true);
-		$('.cmd-alias-info').click(function(e){
+		$('.cmd-alias').click(function(e){
 			e.preventDefault();
-
 			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE'); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC'); ?></p></div>').appendTo('body');
-			$(dialog).dialog({
-				modal: true,
-				width: 800,
-				height: 600,
-				draggable: false,
-				close: function(event, ui){
-					dialog.remove();
-				},
-				buttons: [
-					{
-						text: '<?php echo JText::_('JMODIFY'); ?>',
-						id: 'alias-modify',
-						click: function(){
-							$('#form_movie_alias').removeAttr('disabled');
-							dialog.remove();
-						}
-					},
-					{
-						text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
-						click: function(){
-							dialog.remove();
-						}
+
+			if ($(this).hasClass('info')) {
+				$(dialog).dialog({
+					modal: true,
+					width: 800,
+					height: $(window).height()-100,
+					draggable: false,
+					close: function(event, ui){
+						dialog.remove();
 					}
-				]
-			});
+				});
+			} else {
+				if (!$('#form_movie_alias').is(':disabled')) {
+					return;
+				}
+
+				$(dialog).dialog({
+					modal: true,
+					width: 800,
+					height: $(window).height()-100,
+					draggable: false,
+					close: function(event, ui){
+						dialog.remove();
+					},
+					buttons: [
+						{
+							text: '<?php echo JText::_('JMODIFY'); ?>',
+							id: 'alias-modify',
+							click: function(){
+								$('#form_movie_alias').removeAttr('disabled');
+								dialog.remove();
+							}
+						},
+						{
+							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
+							click: function(){
+								dialog.remove();
+							}
+						}
+					]
+				});
+			}
 		});
 		<?php endif; ?>
 	});
@@ -319,7 +339,8 @@
 				<div class="controls">
 					<div class="input-append">
 						<?php echo $this->form->getInput('alias', $this->form_group); ?>
-						<button class="btn btn-default cmd-alias-info" style="padding: 5px 12px;"><i class="ui-icon ui-icon-calendar"></i></button>
+						<button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i></button>
+						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>
 			</div>

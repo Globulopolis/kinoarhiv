@@ -18,6 +18,11 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 }
 /* */
 
+/* override jqueryUI styles: .ui-widget button */
+.input-append button {
+	font-size: 13px !important;
+}
+
 #ui-datepicker-div {
 	z-index: 10001 !important;
 }

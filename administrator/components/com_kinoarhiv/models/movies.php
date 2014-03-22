@@ -298,7 +298,7 @@ class KinoarhivModelMovies extends JModelList {
 			$result = $db->loadObject();
 		} else {
 			$result = array('movie'=>(object)array());
-			if (count($id) == 0) {
+			if (count($id) == 0 || empty($id) || empty($id[0])) {
 				return $result;
 			}
 

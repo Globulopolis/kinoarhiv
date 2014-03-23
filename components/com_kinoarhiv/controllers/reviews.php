@@ -2,8 +2,9 @@
 
 class KinoarhivControllerReviews extends JControllerLegacy {
 	public function save() {
+		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
-		$document = JFactory::getDocument();
+		$id = $this->input->get('id', null, 'int');
 
 		if ($user->guest) {
 			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
@@ -11,6 +12,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 			return false;
 		}
 
+		$app->setUserState('data.com_kinoarhiv.movie.review.'.$id, $_REQUEST['form_editor']);
 		$model = $this->getModel('reviews');
 		$result = $model->save();
 

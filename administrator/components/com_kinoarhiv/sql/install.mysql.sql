@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_reviews` (
   `uid` int(11) unsigned NOT NULL,
   `movie_id` int(11) unsigned NOT NULL,
   `review` text NOT NULL,
-  `r_datetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `type` tinyint(1) NOT NULL DEFAULT '0',
   `ip` varchar(64) NOT NULL DEFAULT '',
   `state` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0-premod, 1-published',

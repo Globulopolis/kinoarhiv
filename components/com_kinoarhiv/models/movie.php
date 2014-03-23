@@ -862,11 +862,11 @@ class KinoarhivModelMovie extends JModelForm {
 				$this->setState('list.start', $review_id - 1);
 			}
 
-			$query->select('`rev`.`id`, `rev`.`movie_id`, `rev`.`review`, `rev`.`r_datetime` AS `review_date`, `rev`.`type`, `u`.`name`, `u`.`username`');
+			$query->select('`rev`.`id`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `u`.`name`, `u`.`username`');
 			$query->from($db->quoteName('#__ka_reviews').' AS `rev`');
 			$query->leftJoin($db->quoteName('#__users').' AS `u` ON `u`.`id` = `rev`.`uid`');
 			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `u`.`id` != 0');
-			$query->order('`r_datetime` DESC');
+			$query->order('`rev`.`created` DESC');
 		}
 
 		return $query;
@@ -946,7 +946,7 @@ class KinoarhivModelMovie extends JModelForm {
 		if ($this->context) {
 			$app = JFactory::getApplication();
 
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->getCfg('list_limit'), 'uint');
+			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->get('list_limit'), 'uint');
 			$limit = $value;
 			$this->setState('list.limit', $limit);
 

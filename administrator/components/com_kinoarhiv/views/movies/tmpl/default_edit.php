@@ -2,15 +2,12 @@
 JHtml::_('behavior.keepalive');
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jqGrid.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/grid/grid.locale-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 
 <!-- Uncomment line below to load Browser+ from YDN -->
 <!-- <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script> -->
@@ -22,26 +19,9 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js"></script>
 <script type="text/javascript">
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			placement: 'before',
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
-	function blockUI(action) {
-		if (action == 'show') {
-			jQuery('<div class="ui-widget-overlay" id="blockui" style="z-index: 10001;"></div>').appendTo('body').show();
-		} else {
-			jQuery('#blockui').remove();
-		}
-	}
-
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_title').val() == '') {
+			if (jQuery('#form_movie_title').val() == '') {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
@@ -59,6 +39,7 @@ JHtml::_('behavior.keepalive');
 	}
 
 	jQuery(document).ready(function($){
+		// Strongly needed for override fucking bootstrap
 		var bootstrapTooltip = $.fn.tooltip.noConflict();
 		$.fn.bootstrapTlp = bootstrapTooltip;
 		var bootstrapButton = $.fn.button.noConflict();
@@ -71,33 +52,6 @@ JHtml::_('behavior.keepalive');
 			active_tab = $.cookie('com_kinoarhiv.movie.tabs');
 		}
 
-		$('.hasTip, .hasTooltip, td[title]').tooltip({
-			show: null,
-			position: {
-				my: 'left top',
-				at: 'left bottom'
-			},
-			open: function(event, ui){
-				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
-			},
-			content: function(){
-				var parts = $(this).attr('title').split('::', 2),
-					title = '';
-
-				if (parts.length == 2) {
-					if (parts[0] != '') {
-						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
-					} else {
-						title += parts[1];
-					}
-				} else {
-					title += $(this).attr('title');
-				}
-
-				return title;
-			}
-		});
-
 		$('#movie_tabs').tabs({
 			create: function(event, ui){
 				$(this).tabs('option', 'active', parseInt(active_tab, 10));
@@ -105,30 +59,6 @@ JHtml::_('behavior.keepalive');
 			activate: function(event, ui){
 				$.cookie('com_kinoarhiv.movie.tabs', ui.newTab.index());
 			}
-		});
-
-		$('.hasDatetime').each(function(i, el){
-			if ($(el).val() === 'NOW') {
-				$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
-			}
-
-			if ($(el).data('type') == 'time') {
-				$(el).timepicker({
-					timeFormat: $(el).data('time-format')
-				});
-			} else if ($(el).data('type') == 'date') {
-				$(el).datepicker({
-					dateFormat: $(el).data('date-format')
-				});
-			} else if ($(el).data('type') == 'datetime') {
-				$(el).datetimepicker({
-					dateFormat: $(el).data('date-format'),
-					timeFormat: $(el).data('time-format')
-				});
-			}
-		}).next('.cmd-datetime').click(function(e){
-			e.preventDefault();
-			$(this).prev('input').trigger('focus');
 		});
 
 		$('.cmd-rules').click(function(e){

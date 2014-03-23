@@ -86,7 +86,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 				<span class="number"><?php echo $review_number++; ?>. </span>
 				<span class="username<?php echo $cmd_insert_username; ?>"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
 				<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&review='.$review->id.'&Itemid='.$this->itemid).'#review-'.$review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip permalink"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0" /></a></span>
-				<span class="date"><?php echo $review->review_date; ?></span>
+				<span class="date"><?php echo $review->created; ?></span>
 			</div>
 			<?php if (!$this->user->guest): ?>
 				<div class="ui-widget ui-widget-content review"><?php echo $review->review; ?></div>

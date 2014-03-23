@@ -216,7 +216,7 @@ class KinoarhivModelName extends JModelList {
 		if ($this->context) {
 			$app = JFactory::getApplication();
 
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->getCfg('list_limit'), 'uint');
+			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->get('list_limit'), 'uint');
 			$limit = $value;
 			$this->setState('list.limit', $limit);
 

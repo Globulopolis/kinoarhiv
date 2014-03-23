@@ -12,7 +12,7 @@ class KinoarhivModelReviews extends JModelList {
 				'state', 'a.state',
 				'type', 'a.type',
 				'ip', 'a.ip',
-				'r_datetime', 'a.r_datetime',);
+				'created', 'a.created',);
 		}
 
 		parent::__construct($config);
@@ -98,7 +98,7 @@ class KinoarhivModelReviews extends JModelList {
 		$this->setState('filter.published', $published);
 
 		// List state information.
-		parent::populateState('a.r_datetime', 'asc');
+		parent::populateState('a.created', 'desc');
 	}
 
 	protected function getStoreId($id = '') {
@@ -131,7 +131,7 @@ class KinoarhivModelReviews extends JModelList {
 		$uid = $app->input->get('uid', 0, 'int');
 		$mid = $app->input->get('mid', 0, 'int');
 
-		$query->select('`a`.`id`, `a`.`uid`, `a`.`movie_id`, `a`.`review`, `a`.`r_datetime`, `a`.`type`, `a`.`ip`, `a`.`state`');
+		$query->select('`a`.`id`, `a`.`uid`, `a`.`movie_id`, `a`.`review`, `a`.`created`, `a`.`type`, `a`.`ip`, `a`.`state`');
 		$query->from('#__ka_reviews AS `a`');
 
 		$query->select(' `u`.`username` AS `username`')
@@ -166,7 +166,7 @@ class KinoarhivModelReviews extends JModelList {
 				$query->where('a.type = ' . (int) substr($search, 5));
 			} elseif (stripos($search, 'date:') === 0) {
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 5)), true) . '%');
-				$query->where('a.r_datetime LIKE ' . $search);
+				$query->where('a.created LIKE ' . $search);
 			} else {
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
 				$query->where('(a.review LIKE ' . $search . ')');
@@ -182,8 +182,8 @@ class KinoarhivModelReviews extends JModelList {
 		}
 
 		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering', 'a.r_datetime');
-		$orderDirn = $this->state->get('list.direction', 'asc');
+		$orderCol = $this->state->get('list.ordering', 'a.created');
+		$orderDirn = $this->state->get('list.direction', 'desc');
 
 		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 
@@ -252,7 +252,7 @@ class KinoarhivModelReviews extends JModelList {
 		$task = $app->input->get('task', '', 'cmd');
 		$id = $app->input->get('id', array(), 'array');
 
-		$db->setQuery("SELECT `id`, `uid`, `movie_id`, `review`, `r_datetime`, `type`, `ip`, `state`"
+		$db->setQuery("SELECT `id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`"
 			. "\n FROM ".$db->quoteName('#__ka_reviews')
 			. "\n WHERE `id` = ".(int)$id[0]);
 		$result = $db->loadObject();
@@ -266,7 +266,7 @@ class KinoarhivModelReviews extends JModelList {
 		$id = $app->input->post->get('id', null, 'int');
 
 		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')
-			. "\n SET `uid` = '".(int)$data['uid']."', `movie_id` = '".(int)$data['movie_id']."', `review` = '".$db->escape($data['review'])."', `r_datetime` = '".$data['r_datetime']."', `type` = '".(int)$data['type']."', `ip` = '".(string)$data['ip']."', `state` = '".(int)$data['state']."'"
+			. "\n SET `uid` = '".(int)$data['uid']."', `movie_id` = '".(int)$data['movie_id']."', `review` = '".$db->escape($data['review'])."', `created` = '".$data['created']."', `type` = '".(int)$data['type']."', `ip` = '".(string)$data['ip']."', `state` = '".(int)$data['state']."'"
 			. "\n WHERE `id` = ".(int)$id);
 
 		try {

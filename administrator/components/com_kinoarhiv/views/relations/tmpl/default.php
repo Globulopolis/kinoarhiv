@@ -1,15 +1,5 @@
 <?php defined('_JEXEC') or die; ?>
-<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			placement: 'before',
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	Joomla.submitbutton = function(task){
 		jQuery(document).ready(function($){
 			var _task = '<?php echo $this->task; ?>';

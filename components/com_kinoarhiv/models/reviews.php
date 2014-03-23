@@ -24,8 +24,32 @@ class KinoarhivModelReviews extends JModelLegacy {
 		if ($this->checkCaptcha($code)) {
 			$datetime = date('Y-m-d H:i:s');
 			$state = $params->get('reviews_premod') == 1 ? 0 : 1;
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_reviews')." (`id`, `uid`, `movie_id`, `review`, `r_datetime`, `type`, `ip`, `state`)"
-				. "\n VALUES ('', '".(int)$user->get('id')."', '".(int)$movie_id."', '".$cleaned_text."', '".$datetime."', '".(int)$type."', '".$ip."', '".(int)$state."')");
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_reviews')." (`id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`)"
+				. "\n VALUES ('', '".(int)$user->get('id')."', '".(int)$movie_id."', '".$db->escape($cleaned_text)."', '".$datetime."', '".(int)$type."', '".$ip."', '".(int)$state."')");
+
+			try {
+				$db->execute();
+
+				$this->sendEmails(array(
+					'review'=>$cleaned_text,
+					'id'=>(int)$movie_id,
+					'ip'=>$ip,
+					'datetime'=>$datetime,
+					'insertid'=>$db->insertid()
+				));
+
+				return array(
+					'success' => true,
+					'message' => ($params->get('reviews_premod') == 1) ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED')
+				);
+			} catch(Exception $e) {
+				GlobalHelper::eventLog($e->getMessage());
+
+				return array(
+					'success' => false,
+					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+				);
+			}
 			$query = $db->execute();
 			$insertid = $db->insertid();
 

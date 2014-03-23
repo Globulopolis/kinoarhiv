@@ -6,17 +6,7 @@ $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
 ?>
-<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			placement: 'before',
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	Joomla.orderTable = function() {
 		table = document.getElementById("sortTable");
 		direction = document.getElementById("directionTable");
@@ -94,7 +84,7 @@ $sortFields = $this->getSortFields();
 						<?php echo JText::_('COM_KA_REVIEWS_FIELD_REVIEW'); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'JGLOBAL_SHOW_PUBLISH_DATE_LABEL', 'a.r_datetime', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort', 'JGLOBAL_SHOW_PUBLISH_DATE_LABEL', 'a.created', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
@@ -141,7 +131,7 @@ $sortFields = $this->getSortFields();
 						<?php endif; ?>
 					</td>
 					<td class="small center hidden-phone">
-						<?php echo $item->r_datetime; ?>
+						<?php echo $item->created; ?>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->movie; ?><br />

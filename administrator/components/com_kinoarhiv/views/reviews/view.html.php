@@ -83,7 +83,7 @@ class KinoarhivViewReviews extends JViewLegacy {
 		return array(
 			'a.state' => JText::_('JSTATUS'),
 			'a.type' => JText::_('COM_KA_REVIEWS_FIELD_TYPE'),
-			'a.r_datetime' => JText::_('JGLOBAL_SHOW_PUBLISH_DATE_LABEL'),
+			'a.created' => JText::_('JGLOBAL_SHOW_PUBLISH_DATE_LABEL'),
 			'm.movie' => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
 			'u.username' => JText::_('COM_KA_REVIEWS_FIELD_USER'),
 			'a.ip' => JText::_('COM_KA_REVIEWS_FIELD_USER_IP'),

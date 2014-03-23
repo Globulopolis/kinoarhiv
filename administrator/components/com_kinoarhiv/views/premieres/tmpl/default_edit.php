@@ -1,17 +1,7 @@
 <?php defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 ?>
-<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			placement: 'before',
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
 			if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '' || jQuery('#form_premiere_date').val() == '') {
@@ -126,30 +116,6 @@ JHtml::_('behavior.keepalive');
 				},
 				escapeMarkup: function(m) { return m; }
 			});
-		});
-
-		$('.hasDatetime').each(function(i, el){
-			if ($(el).val() === 'NOW') {
-				$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
-			}
-
-			if ($(el).data('type') == 'time') {
-				$(el).timepicker({
-					timeFormat: $(el).data('time-format')
-				});
-			} else if ($(el).data('type') == 'date') {
-				$(el).datepicker({
-					dateFormat: $(el).data('date-format')
-				});
-			} else if ($(el).data('type') == 'datetime') {
-				$(el).datetimepicker({
-					dateFormat: $(el).data('date-format'),
-					timeFormat: $(el).data('time-format')
-				});
-			}
-		}).next('.cmd-datetime').click(function(e){
-			e.preventDefault();
-			$(this).prev('input').trigger('focus');
 		});
 	});
 </script>

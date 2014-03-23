@@ -278,6 +278,8 @@
 		});
 
 		$('#form_movie_alias').attr('disabled', true);
+		<?php endif; ?>
+
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE'); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC'); ?></p></div>').appendTo('body');
@@ -324,7 +326,6 @@
 				});
 			}
 		});
-		<?php endif; ?>
 	});
 </script>
 <div class="row-fluid">
@@ -339,7 +340,7 @@
 				<div class="controls">
 					<div class="input-append">
 						<?php echo $this->form->getInput('alias', $this->form_group); ?>
-						<button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i></button>
+						<?php if (!empty($this->items->id)): ?><button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i></button><?php endif; ?>
 						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>

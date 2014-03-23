@@ -4,17 +4,7 @@ $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
 ?>
-<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			placement: 'before',
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	Joomla.orderTable = function() {
 		table = document.getElementById("sortTable");
 		direction = document.getElementById("directionTable");

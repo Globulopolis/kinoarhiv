@@ -3,6 +3,7 @@
 class JFormFieldDatetime extends JFormField {
 	protected $type = 'Datetime';
 	protected $maxLength;
+	protected $script = null;
 
 	public function __construct() {
 		$lang = JFactory::getLanguage()->getTag();
@@ -11,6 +12,7 @@ class JFormFieldDatetime extends JFormField {
 		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js');
 		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/timepicker/jquery-ui-timepicker-'.substr($lang, 0, 2).'.js');
+		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/utils.js');
 
 		parent::__construct();
 	}

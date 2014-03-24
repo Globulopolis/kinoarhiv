@@ -45,11 +45,11 @@ class KinoarhivModelProfile extends JModelList {
 		} elseif ($tab == 'reviews') {
 			$query = $db->getQuery(true);
 
-			$query->select("`r`.`id`, `r`.`movie_id`, `r`.`review`, `r`.`r_datetime`, `r`.`type`, `r`.`ip`, `m`.`title`, `m`.`year`");
+			$query->select("`r`.`id`, `r`.`movie_id`, `r`.`review`, `r`.`created`, `r`.`type`, `r`.`ip`, `m`.`title`, `m`.`year`");
 			$query->from($db->quoteName('#__ka_reviews')." AS `r`");
 			$query->leftJoin($db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `r`.`movie_id`");
 			$query->where('`r`.`state` = 1 AND `r`.`uid` = '.(int)$user->get('id'));
-			$query->order($db->escape('`r_datetime` DESC'));
+			$query->order($db->escape('`created` DESC'));
 		} else {
 			$query = null;
 		}

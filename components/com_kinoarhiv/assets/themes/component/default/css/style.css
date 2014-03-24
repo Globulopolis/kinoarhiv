@@ -792,11 +792,11 @@ div.rating {
 	background-clip: padding-box;
 }
 
-#type-lbl, .review_type {
+#review-form .select-type label, #review-form .select-type select {
 	float: left;
 }
 
-#type-lbl {
+#review-form .select-type label {
 	margin-top: 4px;
 	margin-right: 8px;
 }

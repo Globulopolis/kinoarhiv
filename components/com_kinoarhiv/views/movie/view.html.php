@@ -2,6 +2,7 @@
 
 class KinoarhivViewMovie extends JViewLegacy {
 	protected $state = null;
+	protected $form;
 	protected $item = null;
 	protected $items = null;
 	protected $filters = null;
@@ -34,6 +35,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		$item = $this->get('Data');
 		$items = $this->get('Items');
+		$form = $this->get('Form');
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -89,15 +91,6 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
-		if (!$user->get('guest')) {
-			if ($config->get('captcha') != '0' && $params->get('reviews_save_captcha') != 0) {
-				JPluginHelper::importPlugin('captcha');
-				$dispatcher->trigger('onInit', 'captcha');
-				$results = $dispatcher->trigger('onDisplay', array('captcha', 'captcha', 'captcha'));
-				$item->event->afterDisplayReview = trim(implode("\n", $results));
-			}
-		}
-
 		$this->params = &$params;
 		$this->config = &$config;
 		$this->item = &$item;
@@ -105,6 +98,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->user = &$user;
 		$this->pagination = &$pagination;
 		$this->metadata = json_decode($item->metadata);
+		$this->form = &$form;
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();

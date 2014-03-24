@@ -163,7 +163,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		parent::display('votes');
 	}
 
-	public function reviews() {
+	protected function reviews() {
 		$app = JFactory::getApplication();
 
 		$items = $this->get('Items');

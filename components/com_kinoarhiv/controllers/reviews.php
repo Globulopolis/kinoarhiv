@@ -2,23 +2,65 @@
 
 class KinoarhivControllerReviews extends JControllerLegacy {
 	public function save() {
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
 		$id = $this->input->get('id', null, 'int');
 
+		if (JSession::checkToken() === false) {
+			GlobalHelper::eventLog(JText::_('JINVALID_TOKEN'));
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+		}
+
+		$user = JFactory::getUser();
+
 		if ($user->guest) {
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			GlobalHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+		}
+
+		$app = JFactory::getApplication();
+		$model = $this->getModel('reviews');
+		$data = $this->input->post->get('form', array(), 'array');
+		$form = $model->getForm($data, false);
+
+		if (!$form) {
+			$app->enqueueMessage($model->getError(), 'error');
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
 
 			return false;
 		}
 
-		$app->setUserState('data.com_kinoarhiv.movie.review.'.$id, $_REQUEST['form_editor']);
-		$model = $this->getModel('reviews');
-		$result = $model->save();
+		$validData = $model->validate($form, $data);
 
-		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
+		if ($validData === false) {
+			$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), $data);
+			$errors = $model->getErrors();
 
-		$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->input->get('id', 0, 'int'), false));
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+
+			return false;
+		}
+
+		$result = $model->save($validData);
+
+		if (!$result) {
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+			$this->setMessage($this->getError(), 'error');
+
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+
+			return false;
+		}
+
+		// Clear stored data in session and redirect
+		//$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), null);
+		$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
 	}
 
 	/*public function delete() {

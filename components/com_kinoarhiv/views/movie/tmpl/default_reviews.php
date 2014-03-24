@@ -9,7 +9,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 	<script type="text/javascript">
 	//<![CDATA[
 		jQuery(document).ready(function($){
-			var editor = new wysihtml5.Editor('form_editor', {
+			var editor = new wysihtml5.Editor('form_review', {
 				toolbar: 'form-editor-toolbar',
 				stylesheets: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/css/editor.css',
 				parserRules: wysihtml5ParserRules
@@ -17,12 +17,14 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 
 			$('#review-form').submit(function(e){
 				editor.disable();
-				$('#review-form input[type="submit"]').prop('disable', true);
+				$('input[type="submit"]', this).attr('disabled', true);
 
 				if (editor.parse(editor.getValue()).length < <?php echo $this->params->get('reviews_length_min'); ?> || editor.parse(editor.getValue()).length > <?php echo $this->params->get('reviews_length_max'); ?>) {
-					showMsg('#form_editor', '<?php echo JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $this->params->get('reviews_length_min'), $this->params->get('reviews_length_max')); ?>');
+					showMsg($(this), '<?php echo JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $this->params->get('reviews_length_min'), $this->params->get('reviews_length_max')); ?>');
 					editor.enable();
-					$('#review-form input[type="submit"]').prop('disable', false);
+					window.setTimeout(function(){
+						$('#review-form input[type="submit"]').removeAttr('disabled');
+					}, 5000);
 					return false;
 				}
 
@@ -118,7 +120,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 	<?php if (!$this->user->guest): // Show "Add review" form ?>
 		<?php if ($this->params->get('show_reviews') == 1): ?>
 		<div style="clear: both;">&nbsp;</div>
-		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="editor form-validate">
+		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="editor">
 			<ul id="form-editor-toolbar">
 				<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" class="e-btn hasTooltip" id="h1" title="<?php echo JText::_('COM_KA_EDITOR_H1'); ?>"></li>
 				<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" class="e-btn hasTooltip" id="h2" title="<?php echo JText::_('COM_KA_EDITOR_H2'); ?>"></li>
@@ -177,23 +179,21 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 				<li data-wysihtml5-command="redo" class="e-btn hasTooltip" id="redo" title="<?php echo JText::_('COM_KA_EDITOR_REDO'); ?>"></li>
 				<li class="e-btn separator"></li>
 				<li data-wysihtml5-action="change_view" class="e-btn hasTooltip" id="change_view" title="<?php echo JText::_('COM_KA_EDITOR_HTML'); ?>"></li>
-			</ul><br />
-			<textarea name="form_editor" id="form_editor"></textarea><br />
-			<label id="type-lbl" for="type"><?php echo JText::_('COM_KA_REVIEWS_TYPE_LABEL'); ?></label>
-			<select id="type" name="type" class="inputbox review_type" size="1">
-				<option value="0" selected="selected"><?php echo JText::_('COM_KA_REVIEWS_TYPE_0'); ?></option>
-				<option value="1" class="ui-state-default"><?php echo JText::_('COM_KA_REVIEWS_TYPE_1'); ?></option>
-				<option value="2" class="ui-state-highlight"><?php echo JText::_('COM_KA_REVIEWS_TYPE_2'); ?></option>
-				<option value="3" class="ui-state-error"><?php echo JText::_('COM_KA_REVIEWS_TYPE_3'); ?></option>
-			</select>
+			</ul>
+			<p><?php echo $this->form->getInput('review'); ?></p>
+			<div class="select-type"><?php echo $this->form->getLabel('type'); ?><?php echo $this->form->getInput('type'); ?></div>
+
 			<div class="clear"></div>
-			<?php echo ($this->config->get('captcha') != '0' && $this->params->get('reviews_save_captcha') != 0) ? $this->item->event->afterDisplayReview : ''; ?><br />
+			<?php if ($this->config->get('captcha') != '0'):
+				echo $this->form->getInput('captcha');
+			endif; ?>
+			<br />
 			<input type="hidden" name="controller" id="controller" value="reviews" />
 			<input type="hidden" name="task" id="task" value="save" />
 			<input type="hidden" name="movie_name" value="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>" />
 			<input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
 			<?php echo JHtml::_('form.token'); ?>
-			<input type="submit" class="btn btn-default" value="<?php echo JText::_('JSUBMIT'); ?>" />
+			<input type="submit" class="btn btn-primary" value="<?php echo JText::_('JSUBMIT'); ?>" />
 			<input type="reset" class="btn btn-default cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
 		</form>
 		<?php endif; ?>

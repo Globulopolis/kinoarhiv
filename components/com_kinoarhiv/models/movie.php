@@ -22,7 +22,7 @@ class KinoarhivModelMovie extends JModelForm {
 	}
 
 	public function getForm($data = array(), $loadData = true) {
-		$form = $this->loadForm('com_kinoarhiv.reviews', 'reviews', array('control' => '', 'load_data' => $loadData));
+		$form = $this->loadForm('com_kinoarhiv.reviews', 'reviews', array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form)) {
 			return false;
@@ -31,8 +31,27 @@ class KinoarhivModelMovie extends JModelForm {
 		return $form;
 	}
 
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  mixed  The data for the form.
+	 * @since   1.6
+	 */
 	protected function loadFormData() {
-		return $this->getFormData();
+		$app = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$id = $app->input->get('id', 0, 'int');
+		$itemid = $app->input->get('Itemid', 0, 'int');
+		$data = $app->getUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'));
+
+		if (empty($data)) {
+			$data = $this->getFormData();
+		} else {
+			$data['Itemid'] = $itemid;
+			$data['id'] = $id;
+		}
+
+		return $data;
 	}
 
 	protected function getFormData() {

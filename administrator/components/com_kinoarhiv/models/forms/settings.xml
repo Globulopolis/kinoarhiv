@@ -219,10 +219,6 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="reviews_save_captcha" type="radio" class="btn-group" default="0" label="COM_KA_REVIEWS_SETTINGS_SAVE_CAPTCHA_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_CAPTCHA_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 		<field name="reviews_send_email_touser" type="radio" class="btn-group" default="0" label="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_TOUSER_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_TOUSER_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

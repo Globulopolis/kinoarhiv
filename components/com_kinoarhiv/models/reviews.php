@@ -1,106 +1,78 @@
 <?php defined('_JEXEC') or die;
 
-class KinoarhivModelReviews extends JModelLegacy {
-	public function save() {
+class KinoarhivModelReviews extends JModelForm {
+	public function getForm($data = array(), $loadData = true) {
+		$form = $this->loadForm('com_kinoarhiv.reviews', 'reviews', array('control' => 'form', 'load_data' => $loadData));
+
+		if (empty($form)) {
+			return false;
+		}
+
+		return $form;
+	}
+
+	protected function loadFormData() {
+		return array();
+	}
+
+	public function save($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
-		$config = JFactory::getConfig();
 		$params = $app->getParams('com_kinoarhiv');
-		$type = $app->input->get('type', 0, 'int');
 		$movie_id = $app->input->get('id', 0, 'int');
-		$cleaned_text = GlobalHelper::cleanHTML($_REQUEST['form_editor']);
-		$strip_tag = GlobalHelper::cleanHTML($_REQUEST['form_editor'], null);
-		$code = $app->input->post->get('recaptcha_response_field', null, 'string');
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$strip_tag = GlobalHelper::cleanHTML($data['review'], null);
 
 		if (JString::strlen($strip_tag) < $params->get('reviews_length_min') || JString::strlen($strip_tag) > $params->get('reviews_length_max')) {
-			return array(
-				'success' => false,
-				'message' => JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max'))
-			);
+			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
+
+			return false;
 		}
 
-		if ($this->checkCaptcha($code)) {
-			$datetime = date('Y-m-d H:i:s');
-			$state = $params->get('reviews_premod') == 1 ? 0 : 1;
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_reviews')." (`id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`)"
-				. "\n VALUES ('', '".(int)$user->get('id')."', '".(int)$movie_id."', '".$db->escape($cleaned_text)."', '".$datetime."', '".(int)$type."', '".$ip."', '".(int)$state."')");
+		$cleaned_text = GlobalHelper::cleanHTML($data['review']);
+		$datetime = date('Y-m-d H:i:s');
+		$state = $params->get('reviews_premod') == 1 ? 0 : 1;
+		$ip = '';
 
-			try {
-				$db->execute();
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip .= $_SERVER['HTTP_CLIENT_IP'].' ';
+		}
+		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ip .= $_SERVER['HTTP_X_FORWARDED_FOR'].' ';
+		}
+		if (!empty($_SERVER['REMOTE_ADDR'])){
+			$ip .= $_SERVER['REMOTE_ADDR'];
+		}
 
-				$this->sendEmails(array(
-					'review'=>$cleaned_text,
-					'id'=>(int)$movie_id,
-					'ip'=>$ip,
-					'datetime'=>$datetime,
-					'insertid'=>$db->insertid()
-				));
+		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_reviews')." (`id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`)"
+			. "\n VALUES ('', '".(int)$user->get('id')."', '".(int)$movie_id."', '".$db->escape($cleaned_text)."', '".$datetime."', '".(int)$data['type']."', '".$ip."', '".(int)$state."')");
 
-				return array(
-					'success' => true,
-					'message' => ($params->get('reviews_premod') == 1) ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED')
-				);
-			} catch(Exception $e) {
-				GlobalHelper::eventLog($e->getMessage());
+		try {
+			$db->execute();
+			$app->enqueueMessage($params->get('reviews_premod') == 1 ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED'));
 
-				return array(
-					'success' => false,
-					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
-				);
-			}
-			$query = $db->execute();
 			$insertid = $db->insertid();
+		} catch(Exception $e) {
+			GlobalHelper::eventLog($e->getMessage());
 
-			if ($query) {
-				$this->sendEmails(array(
-					'review'=>$cleaned_text,
-					'id'=>(int)$movie_id,
-					'ip'=>$ip,
-					'datetime'=>$datetime,
-					'insertid'=>$insertid
-				));
-
-				return array(
-					'success' => true,
-					'message' => ($params->get('reviews_premod') == 1) ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED')
-				);
-			} else {
-				return array(
-					'success' => false,
-					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
-				);
-			}
-		} else {
-			return array(
-				'success' => false,
-				'message' => JText::_('COM_KA_EDITOR_EMPTY_CAPTCHA')
-			);
-		}
-	}
-
-	protected function checkCaptcha($code) {
-		$app = JFactory::getApplication();
-		$config = JFactory::getConfig();
-		$params = $app->getParams('com_kinoarhiv');
-
-		if ($config->get('captcha') != '0' && $params->get('reviews_save_captcha') == 1) {
-			$dispatcher = JEventDispatcher::getInstance();
-			JPluginHelper::importPlugin('captcha');
-
-			$result = $dispatcher->trigger('onCheckAnswer', array('captcha', $code));
-		} else {
-			$result = array(true);
+			return false;
 		}
 
-		return $result[0];
+		$this->sendEmails(array(
+			'review'=>$cleaned_text,
+			'id'=>(int)$movie_id,
+			'ip'=>$ip,
+			'datetime'=>$datetime,
+			'insertid'=>$insertid
+		));
+
+		return true;
 	}
 
 	/**
 	 * Send an email to specified users
 	 *
-	 * @param   array  $data	An array of form array('review'=>$review, 'id'=>$id, 'ip'=>$ip, 'datetime'=>$datetime)
+	 * @param   array    $data    An array of form array('review'=>$review, 'id'=>$id, 'ip'=>$ip, 'datetime'=>$datetime)
 	 *
 	 * @return  boolean
 	 *
@@ -111,7 +83,6 @@ class KinoarhivModelReviews extends JModelLegacy {
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
 		$params = $app->getParams('com_kinoarhiv');
-		$itemid = $app->input->get('Itemid', 0, 'int');
 
 		if ($params->get('reviews_send_email') == 1) {
 			$_recipients = $params->get('reviews_emails');
@@ -124,7 +95,7 @@ class KinoarhivModelReviews extends JModelLegacy {
 			}
 
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $app->input->post->get('movie_name', 'N/A', 'string'));
-			$admin_url = JURI::base().'administrator/index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.$data['id'];
+			$admin_url = JURI::base().'administrator/index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.$data['insertid'];
 			$movie_url = JRoute::_(JURI::getInstance()).'&review='.$data['insertid'].'#review='.$data['insertid'];
 
 			$body = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', '<a href="'.$movie_url.'" target="_blank">'.$app->input->post->get('movie_name', 'N/A', 'string').'</a>').'<br />'.JText::sprintf('COM_KA_REVIEWS_MAIL_INFO', $user->get('name'), $data['datetime'], $data['ip']).'<p>'.$data['review'].'</p>'.JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY').'<a href="'.$admin_url.'" target="_blank">'.$admin_url.'</a>';
@@ -140,8 +111,13 @@ class KinoarhivModelReviews extends JModelLegacy {
 		}
 
 		if ($params->get('reviews_send_email_touser') == 1) {
+			// Get Itemid for menu
+			$db = $this->getDBO();
+			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')." WHERE `link` = 'index.php?option=com_kinoarhiv&view=profile' AND `language` IN(".$db->quote(JFactory::getLanguage()->getTag()).",".$db->quote('*').") LIMIT 1");
+			$itemid = $db->loadResult();
+
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $app->input->post->get('movie_name', 'N/A', 'string'));
-			$admin_url = JURI::base().'index.php?option=com_kinoarhiv&view=profile&tab=reviews';
+			$admin_url = JURI::base().'index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid='.$itemid;
 			$movie_url = JRoute::_(JURI::getInstance()).'&review='.$data['insertid'].'#review='.$data['insertid'];
 
 			$body = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', '<a href="'.$movie_url.'" target="_blank">'.$app->input->post->get('movie_name', 'N/A', 'string').'</a>').'<br />'.JText::sprintf('COM_KA_REVIEWS_MAIL_INFO', $user->get('name'), $data['datetime'], $data['ip']).'<p>'.$data['review'].'</p>'.JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY').'<a href="'.$admin_url.'" target="_blank">'.$admin_url.'</a>';
@@ -215,5 +191,42 @@ class KinoarhivModelReviews extends JModelLegacy {
 		}
 
 		return array('success'=>$success, 'message'=>$message);
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null) {
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			$this->setError($return->getMessage());
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

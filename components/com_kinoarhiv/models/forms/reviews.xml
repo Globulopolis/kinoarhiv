@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="review_add">
+		<field name="review" type="textarea" default="" label="COM_KA_REVIEWS" translate_label="false" class="span12" filter="JComponentHelper::filterText" />
+		<field name="type" type="list" default="0" class="span6" label="COM_KA_REVIEWS_TYPE_LABEL">
+			<option value="0">COM_KA_REVIEWS_TYPE_0</option>
+			<option value="1">COM_KA_REVIEWS_TYPE_1</option>
+			<option value="2">COM_KA_REVIEWS_TYPE_2</option>
+			<option value="3">COM_KA_REVIEWS_TYPE_3</option>
+		</field>
+		<field name="captcha" type="captcha" label="COM_USERS_CAPTCHA_LABEL" translate_label="false" validate="captcha" />
+		<field name="Itemid" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" translate_label="false" default="0" />
+		<field name="id" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" translate_label="false" default="0" />
+	</fieldset>
+</form>

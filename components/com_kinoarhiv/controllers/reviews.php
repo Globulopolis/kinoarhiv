@@ -59,7 +59,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		}
 
 		// Clear stored data in session and redirect
-		//$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), null);
+		$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), null);
 		$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
 	}
 

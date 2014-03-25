@@ -30,11 +30,15 @@ class KinoarhivModelNames extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`birthplace`, `n`.`gender`, `cn`.`name` AS `country`, `cn`.`code`, `gal`.`filename`, `gal`.`dimension`, GROUP_CONCAT(DISTINCT `g`.`name` SEPARATOR ', ') AS `genres`, GROUP_CONCAT(DISTINCT `cr`.`title` SEPARATOR ', ') AS `career`");
-		$query->from($db->quoteName('#__ka_names').' AS `n`');
+		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`birthplace`, `n`.`gender`, `cn`.`name` AS `country`, `cn`.`code`, `gal`.`filename`, `gal`.`dimension`, GROUP_CONCAT(DISTINCT `g`.`name` SEPARATOR ', ') AS `genres`, GROUP_CONCAT(DISTINCT `cr`.`title` SEPARATOR ', ') AS `career`")
+			->from($db->quoteName('#__ka_names').' AS `n`');
+
 		$query->leftJoin($db->quoteName('#__ka_countries').' AS `cn` ON `cn`.`id` = `n`.`birthcountry` AND `cn`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `cn`.`state` = 1');
+
 		$query->leftJoin($db->quoteName('#__ka_names_gallery').' AS `gal` ON `gal`.`name_id` = `n`.`id` AND `gal`.`type` = 3 AND `gal`.`photo_frontpage` = 1 AND `gal`.`state` = 1');
+
 		$query->leftJoin($db->quoteName('#__ka_genres').' AS `g` ON `g`.`id` IN (SELECT `genre_id` FROM '.$db->quoteName('#__ka_rel_names_genres').' WHERE `name_id` = `n`.`id`)');
+
 		$query->leftJoin($db->quoteName('#__ka_names_career').' AS `cr` ON `cr`.`id` IN (SELECT `career_id` FROM '.$db->quoteName('#__ka_rel_names_career').' WHERE `name_id` = `n`.`id`)');
 
 		if (!$user->get('guest')) {
@@ -42,7 +46,7 @@ class KinoarhivModelNames extends JModelList {
 			$query->leftJoin($db->quoteName('#__ka_user_marked_names').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`name_id` = `n`.`id`');
 		}
 
-		$where = '`n`.`state` = 1 AND `n`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `n`.`state` = 1 AND `n`.`access` IN ('.$groups.')';
+		$where = '`n`.`state` = 1 AND `n`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `n`.`access` IN ('.$groups.')';
 
 		$query->where($where);
 		$query->group('`id`');

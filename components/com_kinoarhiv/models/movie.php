@@ -877,9 +877,9 @@ class KinoarhivModelMovie extends JModelForm {
 		} else {
 			// Select reviews
 			$review_id = $app->input->get('review', null, 'int');
-			if (!empty($review_id) && $review_id > 0) {
+			/*if (!empty($review_id) && $review_id > 0) {
 				$this->setState('list.start', $review_id - 1);
-			}
+			}*/
 
 			$query->select('`rev`.`id`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `u`.`name`, `u`.`username`');
 			$query->from($db->quoteName('#__ka_reviews').' AS `rev`');

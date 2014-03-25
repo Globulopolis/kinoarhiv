@@ -114,13 +114,13 @@ class KinoarhivModelReviews extends JModelForm {
 			// Get Itemid for menu
 			$db = $this->getDBO();
 			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')." WHERE `link` = 'index.php?option=com_kinoarhiv&view=profile' AND `language` IN(".$db->quote(JFactory::getLanguage()->getTag()).",".$db->quote('*').") LIMIT 1");
-			$itemid = $db->loadResult();
+			$menu_itemid = $db->loadResult();
 
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $app->input->post->get('movie_name', 'N/A', 'string'));
-			$admin_url = JURI::base().'index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid='.$itemid;
-			$movie_url = JRoute::_(JURI::getInstance()).'&review='.$data['insertid'].'#review='.$data['insertid'];
+			$uprofile_url = JURI::base().'index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid='.(int)$menu_itemid;
+			$movie_url = JRoute::_(JURI::getInstance().'&review='.(int)$data['insertid']).'#review-'.(int)$data['insertid'];
 
-			$body = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', '<a href="'.$movie_url.'" target="_blank">'.$app->input->post->get('movie_name', 'N/A', 'string').'</a>').'<br />'.JText::sprintf('COM_KA_REVIEWS_MAIL_INFO', $user->get('name'), $data['datetime'], $data['ip']).'<p>'.$data['review'].'</p>'.JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY').'<a href="'.$admin_url.'" target="_blank">'.$admin_url.'</a>';
+			$body = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', '<a href="'.$movie_url.'" target="_blank">'.$app->input->post->get('movie_name', 'N/A', 'string').'</a>').'<br />'.JText::sprintf('COM_KA_REVIEWS_MAIL_INFO', $user->get('name'), $data['datetime'], $data['ip']).'<p>'.$data['review'].'</p>'.JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY').'<a href="'.$uprofile_url.'" target="_blank">'.$uprofile_url.'</a>';
 
 			$mailer->sendMail(
 				$config->get('mailfrom'),

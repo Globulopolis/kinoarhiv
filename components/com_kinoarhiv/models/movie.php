@@ -88,7 +88,13 @@ class KinoarhivModelMovie extends JModelForm {
 		$query->where('`m`.`id` = '.(int)$id.' AND `m`.`state` = 1 AND `access` IN ('.$groups.') AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
+
+		try {
+			$result = $db->loadObject();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+			$result = (object)array();
+		}
 
 		// Selecting countries
 		$db->setQuery("SELECT `c`.`id`, `c`.`name`, `c`.`code`, `t`.`ordering`"
@@ -199,8 +205,10 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
 
 		// Get tags
-		$metadata = json_decode($result->metadata);
-		$result->tags = $this->getTags(implode(',', $metadata->tags));
+		if (isset($result->metadata) && !empty($result->metadata)) { // Check for an errors
+			$metadata = json_decode($result->metadata);
+			$result->tags = $this->getTags(implode(',', $metadata->tags));
+		}
 
 		return $result;
 	}
@@ -877,14 +885,14 @@ class KinoarhivModelMovie extends JModelForm {
 		} else {
 			// Select reviews
 			$review_id = $app->input->get('review', null, 'int');
-			/*if (!empty($review_id) && $review_id > 0) {
+			if (!empty($review_id) && $review_id > 0) {
 				$this->setState('list.start', $review_id - 1);
-			}*/
+			}
 
-			$query->select('`rev`.`id`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `u`.`name`, `u`.`username`');
+			$query->select('`rev`.`id`, `rev`.`uid`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `rev`.`state`, `u`.`name`, `u`.`username`');
 			$query->from($db->quoteName('#__ka_reviews').' AS `rev`');
 			$query->leftJoin($db->quoteName('#__users').' AS `u` ON `u`.`id` = `rev`.`uid`');
-			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `u`.`id` != 0');
+			$query->where('`movie_id` = '.(int)$id.' AND `rev`.`state` = 1 AND `u`.`id` != 0');
 			$query->order('`rev`.`created` DESC');
 		}
 

@@ -5,7 +5,7 @@
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
-		$('img.lazy').lazyload({ threshold: 100 });
+		$('img.lazy').lazyload({ threshold: 200 });
 		$('.posters-list .item a').colorbox({ maxHeight: '90%', maxWidth: '90%' });
 	});
 //]]>

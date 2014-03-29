@@ -15,7 +15,7 @@
 			});
 		}
 
-		$('img.lazy').lazyload({ threshold: 100 });
+		$('img.lazy').lazyload({ threshold: 200 });
 		$('a.zoom-icon').colorbox({
 			title: function(){
 				return $(this).closest('.poster').find('img').attr('alt');

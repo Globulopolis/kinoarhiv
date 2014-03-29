@@ -137,7 +137,7 @@ class KinoarhivModelReviews extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
-		$review_id = $app->input->get('review_id', 0, 'int');
+		$review_id = $app->input->get('review_id', null, 'int');
 		$review_ids = $app->input->get('review_ids', array(), 'array');
 		$success = false;
 
@@ -152,6 +152,10 @@ class KinoarhivModelReviews extends JModelForm {
 		}
 
 		if (!empty($review_ids)) {
+			if (empty($review_ids)) {
+				return false;
+			}
+
 			$query = true;
 			$db->setDebug(true);
 			$db->lockTable('#__ka_reviews');
@@ -169,28 +173,40 @@ class KinoarhivModelReviews extends JModelForm {
 
 			if ($query === true) {
 				$db->transactionCommit();
-				$success = true;
-				$message = JText::_('COM_KA_REVIEWS_DELETED');
+				if (count($review_ids) > 1) {
+					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED_MANY'));
+				} else {
+					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
+				}
 			} else {
 				$db->transactionRollback();
-				$message = JText::_('JERROR_ERROR');
+				$this->setError(JText::_('JERROR_ERROR'));
 			}
 
 			$db->unlockTables();
 			$db->setDebug(false);
-		} else {
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE ".$where."`id` = ".(int)$review_id);
-			$result = $db->execute();
 
-			if ($result) {
-				$success = true;
-				$message = JText::_('COM_KA_REVIEWS_DELETED');
-			} else {
-				$message = JText::_('JERROR_ERROR');
+			if ($query === false) {
+				return false;
+			}
+		} else {
+			if (empty($review_id)) {
+				return false;
+			}
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE ".$where."`id` = ".(int)$review_id);
+			try {
+				$db->execute();
+				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
+			} catch(Exception $e) {
+				$this->setError(JText::_('JERROR_ERROR'));
+				GlobalHelper::eventLog(JText::_('JERROR_ERROR'));
+
+				return false;
 			}
 		}
 
-		return array('success'=>$success, 'message'=>$message);
+		return true;
 	}
 
 	/**

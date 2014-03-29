@@ -200,6 +200,14 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="trailer_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="movie_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fieldset>
 	<fieldset name="reviews" label="COM_KA_REVIEWS_SETTINGS_LABEL">
 		<field name="allow_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_ALLOWREVIEWS_LABEL" description="COM_KA_FIELD_ALLOWREVIEWS_LABEL_DESC" filter="integer">

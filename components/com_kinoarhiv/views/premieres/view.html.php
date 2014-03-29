@@ -15,7 +15,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 

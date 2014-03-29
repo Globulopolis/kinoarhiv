@@ -14,7 +14,7 @@ $item_trailer = $this->item->trailer; ?>
 		});
 	</script>
 	<div class="clear"></div>
-	<div class="ui-widget trailer">
+	<div class="ui-widget trailer" id="trailer">
 		<h3><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></h3>
 		<div>
 		<?php if ($item_trailer->embed_code != ''):
@@ -72,7 +72,7 @@ $item_movie = $this->item->movie; ?>
 		});
 	</script>
 	<div class="clear"></div>
-	<div class="ui-widget trailer">
+	<div class="ui-widget trailer" id="movie">
 		<h3><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></h3>
 		<div>
 		<?php if ($item_movie->embed_code != ''):

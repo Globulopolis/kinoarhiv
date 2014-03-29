@@ -2,13 +2,16 @@
 
 class KinoarhivModelName extends JModelList {
 	protected $context = null;
+	protected $list_limit;
 
 	public function __construct($config = array()) {
 		parent::__construct($config);
 
-		$input = JFactory::getApplication()->input;
-		$page = $input->get('page', 'global');
-		$this->context = strtolower($this->option.'.'.$this->getName().'.'.$page);
+		if (empty($this->context)) {
+			$input = JFactory::getApplication()->input;
+			$page = $input->get('page', 'global');
+			$this->context = strtolower($this->option.'.'.$this->getName().'.'.$page);
+		}
 	}
 
 	public function getData() {
@@ -35,9 +38,14 @@ class KinoarhivModelName extends JModelList {
 		$query->where('`n`.`id` = '.(int)$id.' AND `n`.`state` = 1 AND `access` IN ('.$groups.') AND `n`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
+		try {
+			$result = $db->loadObject();
 
-		$result->zodiac = ($result->date_of_birth_raw != '0000-00-00') ? $this->getZodiacSign(substr($result->date_of_birth_raw, 5, 2), substr($result->date_of_birth_raw, 8, 2)) : '';
+			$result->zodiac = ($result->date_of_birth_raw != '0000-00-00') ? $this->getZodiacSign(substr($result->date_of_birth_raw, 5, 2), substr($result->date_of_birth_raw, 8, 2)) : '';
+		} catch(Exception $e) {
+			$result = (object)array();
+			$this->setError($e->getMessage());
+		}
 
 		// Select career
 		$db->setQuery("SELECT `id`, `title`"
@@ -184,9 +192,11 @@ class KinoarhivModelName extends JModelList {
 			$query->from($db->quoteName('#__ka_names_gallery'));
 			$query->where('`name_id` = '.(int)$id.' AND `state` = 1 AND `type` = 2');
 		} elseif ($page == 'photos') {
-			$query->select('`id`, `filename`, `dimension`');
-			$query->from($db->quoteName('#__ka_names_gallery'));
-			$query->where('`name_id` = '.(int)$id.' AND `state` = 1 AND `type` = 3');
+			$query->select('`g`.`id`, `g`.`filename`, `g`.`dimension`');
+			$query->from($db->quoteName('#__ka_names_gallery').' AS `g`');
+			$query->select(' `n`.`gender`');
+			$query->leftJoin($db->quoteName('#__ka_names').' AS `n` ON `n`.`id` = `g`.`name_id`');
+			$query->where('`name_id` = '.(int)$id.' AND `g`.`state` = 1 AND `type` = 3');
 		} else {
 			$query = null;
 		}

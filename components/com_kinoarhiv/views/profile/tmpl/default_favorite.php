@@ -73,16 +73,20 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 		<input type="hidden" name="action" value="delete" />
 		<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 		<input type="hidden" name="return" value="profile" />
-		<input type="submit" class="btn btn-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
 		<?php echo JHtml::_('form.token'); ?>
+		<input type="submit" class="btn btn-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
+	</form>
+
+	<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+		<?php if ($this->pagination->total >= $this->pagination->limit): ?>
+			<div class="pagination bottom">
+				<?php echo $this->pagination->getPagesLinks(); ?><br />
+				<?php echo $this->pagination->getResultsCounter(); ?>
+				<?php echo $this->pagination->getLimitBox(); ?>
+			</div>
+		<?php endif; ?>
 	</form>
 	<?php else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-	<?php endif; ?>
-	<?php if ($this->pagination->total >= $this->pagination->limit): ?>
-		<div class="pagination bottom">
-			<?php echo $this->pagination->getPagesLinks(); ?><br />
-			<?php echo $this->pagination->getResultsCounter(); ?>
-		</div>
 	<?php endif; ?>
 </div>

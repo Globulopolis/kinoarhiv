@@ -45,15 +45,32 @@ class KinoarhivModelProfile extends JModelList {
 		} elseif ($tab == 'reviews') {
 			$query = $db->getQuery(true);
 
-			$query->select("`r`.`id`, `r`.`movie_id`, `r`.`review`, `r`.`created`, `r`.`type`, `r`.`ip`, `m`.`title`, `m`.`year`");
+			$query->select("`r`.`id`, `r`.`movie_id`, `r`.`review`, `r`.`created`, `r`.`type`, `r`.`ip`, `r`.`state`, `m`.`title`, `m`.`year`");
 			$query->from($db->quoteName('#__ka_reviews')." AS `r`");
 			$query->leftJoin($db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `r`.`movie_id`");
-			$query->where('`r`.`state` = 1 AND `r`.`uid` = '.(int)$user->get('id'));
+			$query->where('`r`.`uid` = '.(int)$user->get('id'));
 			$query->order($db->escape('`created` DESC'));
 		} else {
 			$query = null;
 		}
 
 		return $query;
+	}
+
+	public function getPagination() {
+		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+
+		$store = $this->getStoreId('getPagination');
+
+		if (isset($this->cache[$store])) {
+			return $this->cache[$store];
+		}
+
+		$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
+		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
+
+		$this->cache[$store] = $page;
+
+		return $this->cache[$store];
 	}
 }

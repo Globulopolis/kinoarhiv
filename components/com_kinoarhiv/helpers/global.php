@@ -205,20 +205,13 @@ class GlobalHelper {
 	/**
 	 * Logger
 	 *
-	 * @param   string  $message	Text to log.
+	 * @param   string   $message   Text to log.
+	 * @param   mixed    $silent    Throw exception error or not. True - throw, false - not, 'ui' - show message.
 	*/
 	static function eventLog($message, $silent = true) {
 		$app = JFactory::getApplication();
 		$params = $app->getParams('com_kinoarhiv');
-		$document = JFactory::getDocument();
 		$uri = JURI::getInstance();
-
-		$doc_params = array(
-			'template' => 'system',
-			'file' => 'error.php',
-			'directory' => JPATH_THEMES,
-			'params' => array()
-		);
 
 		$message = $message."\t".$uri->current().'?'.$uri->getQuery();
 
@@ -237,8 +230,12 @@ class GlobalHelper {
 			syslog(LOG_CRIT, $message."\nBacktrace:\n".$stack);
 			closelog();
 
-			if (!$silent) {
-				echo $document->render(false, $doc_params);
+			if (!$silent || is_string($silent)) {
+				if ($silent == 'ui') {
+					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), array('icon'=>'alert', 'type'=>'error'));
+				} else {
+					throw new Exception($message, 500);
+				}
 			}
 		} else {
 			jimport('joomla.log.log');
@@ -252,8 +249,12 @@ class GlobalHelper {
 
 			JLog::add($message, JLog::WARNING, 'com_kinoarhiv');
 
-			if (!$silent) {
-				echo $document->render(false, $doc_params);
+			if (!$silent || is_string($silent)) {
+				if ($silent == 'ui') {
+					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), array('icon'=>'alert', 'type'=>'error'));
+				} else {
+					throw new Exception($message, 500);
+				}
 			}
 		}
 	}

@@ -126,14 +126,18 @@ $total_movies = count($this->item->movie);
 
 			$.colorbox({ html: '<div class="overlay">'+_this.next('div').html()+'</div>' });
 		});
-		$('.trailer').accordion({
+		$('#trailer').accordion({
+			<?php if ($this->params->get('trailer_collapsed') == 1): ?>active: false,<?php endif; ?>
+			collapsible: true,
+			heightStyle: 'content'
+		});
+		$('#movie').accordion({
+			<?php if ($this->params->get('movie_collapsed') == 1): ?>active: false,<?php endif; ?>
 			collapsible: true,
 			heightStyle: 'content'
 		});
 		<?php if (($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') && ($total_trailers > 0 || $total_movies > 0)): ?>
-		$('.watch-buttons a').button({
-			icons: { primary: 'ui-icon-play' }
-		}).click(function(e){
+		$('.watch-buttons a').click(function(e){
 			e.preventDefault();
 
 			if ($(this).hasClass('watch-trailer')) {
@@ -223,9 +227,9 @@ $total_movies = count($this->item->movie);
 					<?php if ($this->params->get('link_favorite') == 1): ?>
 					<div class="fav">
 						<?php if ($this->item->favorite == 1): ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 						<?php else: ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=favorite&action=add&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid='.$this->itemid.'&id='.$this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 						<?php endif; ?>
 					</div>
 					<?php endif; ?>
@@ -379,10 +383,10 @@ $total_movies = count($this->item->movie);
 					<div class="clear"></div>
 					<div class="watch-buttons">
 						<?php if ($total_trailers > 0): ?>
-							<a href="#" class="watch-trailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
+							<a href="#" class="btn btn-info watch-trailer"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
 						<?php endif; ?>
 						<?php if ($total_movies > 0): ?>
-							<a href="#" class="watch-movie"><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
+							<a href="#" class="btn btn-info watch-movie"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
 						<?php endif; ?>
 					</div>
 				<?php

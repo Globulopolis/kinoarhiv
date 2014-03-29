@@ -27,7 +27,6 @@ class KinoarhivViewProfile extends JViewLegacy {
 			case 'favorite': $this->favorite(); break;
 			case 'watched': $this->watched(); break;
 			case 'votes': $this->votes(); break;
-			case 'settings': $this->settings(); break;
 			default:
 				parent::display($tpl);
 				break;
@@ -42,7 +41,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors));
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -105,7 +104,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors));
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -134,7 +133,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors));
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -170,7 +169,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors));
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -190,15 +189,5 @@ class KinoarhivViewProfile extends JViewLegacy {
 		$pathway->addItem(JText::_('COM_KA_REVIEWS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid='.$this->itemid));
 
 		parent::display('reviews');
-	}
-
-	protected function settings() {
-		$app = JFactory::getApplication();
-
-		$this->document->setTitle($this->document->getTitle().' - '.JText::_('COM_KA_PROFILE_TITLE').' - '.JText::_('COM_KA_SETTINGS'));
-		$pathway = $app->getPathway();
-		$pathway->addItem(JText::_('COM_KA_SETTINGS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=settings&Itemid='.$this->itemid));
-
-		parent::display('settings');
 	}
 }

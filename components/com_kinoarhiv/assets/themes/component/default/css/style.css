@@ -255,11 +255,6 @@ h3.title {
 	padding-left: 20px;
 }
 
-.tab-settings {
-	background: url("../images/icons/wrench_16.png") no-repeat left center;
-	padding-left: 20px;
-}
-
 .subtab-movie {
 	background: url("../images/icons/movie_16.png") no-repeat left center;
 	padding-left: 20px;
@@ -274,7 +269,7 @@ h3.title {
 .user-profile.watched .title-small,
 .user-profile.votes .title-small,
 .user-profile.reviews .title-small {
-	margin-bottom: 0.2em;
+	margin-bottom: 0.4em;
 }
 
 .user-profile .total-votes, .user-profile .total-watched, .user-profile .total-favorite, .user-profile .total-reviews {
@@ -296,6 +291,7 @@ h3.title {
 
 .user-profile .timestamp {
 	border-top: 1px solid #ccc;
+	color: #777;
 	margin-top: 5px;
 	padding-left: 22px;
 }
@@ -607,7 +603,7 @@ div.rating {
 
 .review-row .footer {
 	border-top: none;
-	margin-bottom: .4em;
+	margin-bottom: .8em;
 	padding: 4px 6px;
 }
 
@@ -746,7 +742,7 @@ div.rating {
 }
 
 .trailer {
-	margin: 1em 0;
+	margin: 1.5em 0;
 }
 
 .trailer .ui-widget-content iframe {
@@ -818,16 +814,8 @@ div.rating {
 	vertical-align: middle;
 }
 
-.photos-list .item {
-	background-color: #f5f5f5;
-	display: table-cell;
-	width: 128px;
-	height: 200px;
-	margin: 2px;
-	overflow: hidden;
-	padding: 0 4px 4px;
-	text-align: center;
-	vertical-align: middle;
+.posters-list .thumb {
+	min-height: 240px;
 }
 
 .photos-list .item {
@@ -856,7 +844,6 @@ div.rating {
 }
 
 .scr-list .item {
-	background-color: #f5f5f5;
 	display: table-cell;
 	min-height: 110px;
 	width: 200px;
@@ -911,8 +898,17 @@ div.rating {
 	margin: 0.5em 0 0 0;
 }
 
-.v-list .title-small > div a {
+.v-list .item-row {
+	border-bottom: 1px solid #ccc;
+	padding: 5px;
+}
+
+.v-list .item-row > div a {
 	font-weight: bold;
+}
+
+.user-profile .v-list > div:hover {
+	background-color: #f5f5f5;
 }
 
 .rate_loc_my {
@@ -1025,4 +1021,9 @@ div.rating {
 .tags {
 	background: url('../images/icons/tag_16.png') no-repeat left center;
 	padding-left: 18px;
+}
+
+.form-horizontal .control-label {
+	text-align: left !important;
+	margin-right: 5px;
 }

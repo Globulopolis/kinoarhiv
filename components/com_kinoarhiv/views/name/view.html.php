@@ -30,7 +30,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$item = $this->get('Data');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -113,7 +113,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -132,24 +132,26 @@ class KinoarhivViewName extends JViewLegacy {
 		}
 
 		// Check for files
-		foreach ($items as $key=>$_item) {
-			$file_path = $params->get('media_actor_wallpapers_root_www').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
-			$items[$key]->th_image_width = 200;
-			$items[$key]->th_image_height = 200;
+		if (count($items) > 0) {
+			foreach ($items as $key=>$_item) {
+				$file_path = $params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'wallpapers'.DIRECTORY_SEPARATOR;
+				$items[$key]->th_image_width = 200;
+				$items[$key]->th_image_height = 200;
 
-			if (!file_exists($file_path.$_item->filename)) {
-				$items[$key]->image = 'javascript:void(0);';
-				$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
-			} else {
-				$items[$key]->image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
-
-				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
-					$items[$key]->th_image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
-					$items[$key]->th_width = (int)$params->get('size_x_wallpp');
-					$orig_img_size = explode('x', $_item->dimension);
-					$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
-				} else {
+				if (!file_exists($file_path.$_item->filename)) {
+					$items[$key]->image = 'javascript:void(0);';
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
+				} else {
+					$items[$key]->image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
+
+					if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
+						$items[$key]->th_image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+						$items[$key]->th_width = (int)$params->get('size_x_wallpp');
+						$orig_img_size = explode('x', $_item->dimension);
+						$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
+					} else {
+						$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
+					}
 				}
 			}
 		}
@@ -176,7 +178,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -195,31 +197,33 @@ class KinoarhivViewName extends JViewLegacy {
 		}
 
 		// Check for files
-		foreach ($items as $key=>$_item) {
-			$file_path = $params->get('media_actor_photo_root_www').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR;
-			$items[$key]->th_image_width = 128;
-			$items[$key]->th_image_height = 128;
+		if (count($items) > 0) {
+			foreach ($items as $key=>$_item) {
+				$file_path = $params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'photo'.DIRECTORY_SEPARATOR;
+				$items[$key]->th_image_width = 128;
+				$items[$key]->th_image_height = 128;
 
-			if (!file_exists($file_path.$_item->filename)) {
-				$items[$key]->image = 'javascript:void(0);';
-				if ($_item->gender == 1) {
-					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_m.png';
-				} else {
-					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_f.png';
-				}
-			} else {
-				$items[$key]->image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
-
-				if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
-					$items[$key]->th_image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
-					$items[$key]->th_width = (int)$params->get('size_x_photo');
-					$orig_img_size = explode('x', $_item->dimension);
-					$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
-				} else {
+				if (!file_exists($file_path.$_item->filename)) {
+					$items[$key]->image = 'javascript:void(0);';
 					if ($_item->gender == 1) {
 						$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_m.png';
 					} else {
 						$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_f.png';
+					}
+				} else {
+					$items[$key]->image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
+
+					if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
+						$items[$key]->th_image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
+						$items[$key]->th_width = (int)$params->get('size_x_photo');
+						$orig_img_size = explode('x', $_item->dimension);
+						$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
+					} else {
+						if ($_item->gender == 1) {
+							$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_m.png';
+						} else {
+							$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_f.png';
+						}
 					}
 				}
 			}
@@ -244,7 +248,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$items = $this->get('Awards');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 

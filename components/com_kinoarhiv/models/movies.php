@@ -2,15 +2,13 @@
 
 class KinoarhivModelMovies extends JModelList {
 	protected $context = null;
+	protected $list_limit;
 
 	public function __construct($config = array()) {
 		parent::__construct($config);
 
 		if (empty($this->context)) {
-			$input = JFactory::getApplication()->input;
-			$page = $input->get('page', 'global');
-
-			$this->context = strtolower($this->option.'.'.$this->getName().'.'.$page);
+			$this->context = strtolower('com_kinoarhiv.movies.global');
 		}
 	}
 
@@ -257,7 +255,7 @@ class KinoarhivModelMovies extends JModelList {
 			return $this->cache[$store];
 		}
 
-		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
+		$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
 		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
 
 		$this->cache[$store] = $page;

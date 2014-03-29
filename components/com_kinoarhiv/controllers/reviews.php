@@ -3,17 +3,18 @@
 class KinoarhivControllerReviews extends JControllerLegacy {
 	public function save() {
 		$id = $this->input->get('id', null, 'int');
+		$redir_url = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false);
 
 		if (JSession::checkToken() === false) {
 			GlobalHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+			$this->setRedirect($redir_url);
 		}
 
 		$user = JFactory::getUser();
 
 		if ($user->guest) {
 			GlobalHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+			$this->setRedirect($redir_url);
 		}
 
 		$app = JFactory::getApplication();
@@ -23,7 +24,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 
 		if (!$form) {
 			$app->enqueueMessage($model->getError(), 'error');
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+			$this->setRedirect($redir_url);
 
 			return false;
 		}
@@ -42,7 +43,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 				}
 			}
 
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+			$this->setRedirect($redir_url);
 
 			return false;
 		}
@@ -53,71 +54,36 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 			$this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+			$this->setRedirect($redir_url);
 
 			return false;
 		}
 
 		// Clear stored data in session and redirect
 		$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), null);
-		$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false));
+		$this->setRedirect($redir_url);
 	}
 
-	/*public function delete() {
+	public function delete() {
 		$user = JFactory::getUser();
-		$document = JFactory::getDocument();
+		$id = $this->input->get('id', null, 'int');
+		$return = $this->input->get('return', null, 'word');
+		$redir_url = ($return == 'movie') ? JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false) : JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=reviews', false);
 
-		if ($user->guest) {
-			if ($document->getType() == 'raw' || $document->getType() == 'json') {
-				$document->setMimeEncoding('application/json');
-
-				echo json_encode(array('success'=>0, 'message'=>JText::_('JERROR_ALERTNOAUTHOR')));
-			} else {
-				throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
-			}
-
-			return false;
+		if (!$user->authorise('core.delete.reviews', 'com_kinoarhiv')) {
+			$this->setRedirect($redir_url);
 		}
 
-		$canDelete = $user->authorise('core.delete.reviews', 'com_kinoarhiv');
+		$model = $this->getModel('reviews');
+		$result = $model->delete();
 
-		if ($canDelete !== true) {
-			if ($document->getType() == 'raw' || $document->getType() == 'json') {
-				$document->setMimeEncoding('application/json');
-
-				echo json_encode(array('success'=>0, 'message'=>JText::_('JERROR_ALERTNOAUTHOR')));
-			} else {
-				throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
-			}
+		if (!$result) {
+			$this->setMessage($model->getError(), 'error');
+			$this->setRedirect($redir_url);
 
 			return false;
 		} else {
-			$view = $this->input->get('view', 'movies', 'cmd');
-			$model = $this->getModel('reviews');
-			$result = $model->delete();
+			$this->setRedirect($redir_url);
 		}
-
-		if ($document->getType() == 'raw' || $document->getType() == 'json') {
-			$document->setMimeEncoding('application/json');
-
-			echo json_encode($result);
-		} else {
-			$tab = $this->input->get('tab', '', 'cmd');
-
-			$page = $this->input->get('page', '', 'cmd');
-			$id = $this->input->get('id', 0, 'int'); // Item ID. Movie, person etc. Not a review ID
-			$_id = ($id != 0) ? '&id='.$id : '';
-			$tab = !empty($tab) ? '&tab='.$tab : '';
-			$page = !empty($page) ? '&page='.$page : '';
-			$return = $this->input->get('return', 'movies', 'cmd');
-			echo '<pre>';
-			print_r($_REQUEST);
-
-			$url = JRoute::_('index.php?option=com_kinoarhiv&view='.$return.$tab.$page.$_id.'&Itemid='.$this->input->get('Itemid', 0, 'int'), false);
-
-			$this->setMessage($result['message'], $result['success'] ? '' : 'error');
-
-			$this->setRedirect($url);
-		}
-	}*/
+	}
 }

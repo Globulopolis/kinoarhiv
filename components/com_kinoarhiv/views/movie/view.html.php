@@ -39,7 +39,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -116,7 +116,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$item = $this->get('Cast');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -150,7 +150,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -231,7 +231,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -311,7 +311,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -389,7 +389,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$item = $this->get('Awards');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -451,7 +451,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$item = $this->get('Trailers');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
@@ -500,7 +500,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$item = $this->get('Soundtracks');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 

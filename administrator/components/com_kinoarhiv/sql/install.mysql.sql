@@ -63,6 +63,7 @@ CREATE TABLE `#__ka_movies` (
   `rottentm_id` varchar(128) NOT NULL DEFAULT '',
   `rate_custom` text NOT NULL,
   `urls` text NOT NULL,
+  `attribs` varchar(5120) NOT NULL,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',

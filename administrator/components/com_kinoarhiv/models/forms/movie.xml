@@ -79,6 +79,85 @@
 			<field name="tags_orig" type="hidden" />
 		</fieldset>
 	</fields>
+<fields name="data">
+	<fieldset name="edit">
+		<field name="abc" type="list" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option	value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+</fields>
+	<fields name="attribs">
+		<field name="link_titles" type="list" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option	value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="show_tags" type="list" default="1" label="COM_KA_MOVIES_FIELD_SHOW_TAGS_LABEL" description="COM_KA_MOVIES_FIELD_SHOW_TAGS_DESC">
+			<option value="1">JSHOW</option>
+			<option value="0">JHIDE</option>
+		</field>
+		<field name="show_author" type="list" label="JGLOBAL_SHOW_AUTHOR_LABEL" description="JGLOBAL_SHOW_AUTHOR_DESC">
+			<option	value="">JGLOBAL_USE_GLOBAL</option>
+			<option	value="0">JHIDE</option>
+			<option	value="1">JSHOW</option>
+		</field>
+		<field name="show_create_date" type="list" label="JGLOBAL_SHOW_CREATE_DATE_LABEL" description="JGLOBAL_SHOW_CREATE_DATE_DESC">
+			<option	value="">JGLOBAL_USE_GLOBAL</option>
+			<option	value="0">JHIDE</option>
+			<option	value="1">JSHOW</option>
+		</field>
+		<field name="show_modify_date" type="list" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL" description="JGLOBAL_SHOW_MODIFY_DATE_DESC">
+			<option	value="">JGLOBAL_USE_GLOBAL</option>
+			<option	value="0">JHIDE</option>
+			<option	value="1">JSHOW</option>
+		</field>
+		<field name="show_vote" type="list" default="1" label="JGLOBAL_SHOW_VOTE_LABEL" description="JGLOBAL_SHOW_VOTE_DESC">
+			<option value="0">JHIDE</option>
+			<option	value="1">JSHOW</option>
+		</field>
+		<field name="tab_movie_wallpp" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_posters" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_POSTERS_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_scr" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_SCR_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_awards" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_AWARDS_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_tr" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_TR_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_movie_snd" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_SND_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="trailer_collapsed" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="movie_collapsed" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+	</fields>
 
 	<fieldset name="rel_name_edit">
 		<field name="name_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" class="span9 required" required="true" default="" />

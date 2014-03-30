@@ -73,7 +73,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`, `m`.`ua_rate`, `m`.`mpaa`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`length`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`metakey`, `m`.`metadesc`, `m`.`metadata`, `g`.`filename`");
+		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`, `m`.`ua_rate`, `m`.`mpaa`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`length`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`metakey`, `m`.`metadesc`, `m`.`attribs`, `m`.`state`, `m`.`metadata`, `g`.`filename`");
 		$query->from($db->quoteName('#__ka_movies').' AS `m`');
 		$query->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
 
@@ -85,16 +85,26 @@ class KinoarhivModelMovie extends JModelForm {
 			$query->leftJoin($db->quoteName('#__ka_user_votes').' AS `v` ON `v`.`movie_id` = `m`.`id` AND `v`.`uid` = '.$user->get('id'));
 		}
 
+		$query->select(' `user`.`name` AS `username`');
+		$query->leftJoin($db->quoteName('#__users').' AS `user` ON `user`.`id` = `m`.`created_by`');
+
 		$query->where('`m`.`id` = '.(int)$id.' AND `m`.`state` = 1 AND `access` IN ('.$groups.') AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
 
 		$db->setQuery($query);
 
 		try {
 			$result = $db->loadObject();
+
+			if (count($result) == 0) {
+				$this->setError('Error');
+				$result = (object)array();
+			}
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 			$result = (object)array();
 		}
+
+		$result->attribs = json_decode($result->attribs);
 
 		// Selecting countries
 		$db->setQuery("SELECT `c`.`id`, `c`.`name`, `c`.`code`, `t`.`ordering`"
@@ -205,9 +215,11 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
 
 		// Get tags
-		if (isset($result->metadata) && !empty($result->metadata)) { // Check for an errors
-			$metadata = json_decode($result->metadata);
-			$result->tags = $this->getTags(implode(',', $metadata->tags));
+		if ($result->attribs->show_tags == 1) {
+			if (isset($result->metadata) && !empty($result->metadata)) { // Check for an errors
+				$metadata = json_decode($result->metadata);
+				$result->tags = $this->getTags(implode(',', $metadata->tags));
+			}
 		}
 
 		return $result;
@@ -221,10 +233,23 @@ class KinoarhivModelMovie extends JModelForm {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$id = $app->input->get('id', 0, 'int');
 
-		$db->setQuery("SELECT `id`, `title`, `alias`, `year`, DATE_FORMAT(`created`, '%Y-%m-%d') AS `created`, `created_by`, DATE_FORMAT(`modified`, '%Y-%m-%d') AS `modified`, `metakey`, `metadesc`, `metadata`"
-			. "\n FROM ".$db->quoteName('#__ka_movies')
-			. "\n WHERE `id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
-		$result = $db->loadObject();
+		$db->setQuery("SELECT `m`.`id`, `m`.`title`, `m`.`alias`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`metakey`, `m`.`metadesc`, `m`.`metadata`, `m`.`attribs`, `user`.`name` AS `username`"
+			. "\n FROM ".$db->quoteName('#__ka_movies')." AS `m`"
+			. "\n LEFT JOIN ".$db->quoteName('#__users')." AS `user` ON `user`.`id` = `m`.`created_by`"
+			. "\n WHERE `m`.`id` = ".(int)$id." AND `m`.`state` = 1 AND `m`.`access` IN (".$groups.") AND `m`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
+		try {
+			$result = $db->loadObject();
+
+			if (count($result) == 0) {
+				$this->setError('Error');
+				$result = (object)array();
+			}
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+			GlobalHelper::eventLog($e->getMessage());
+		}
+
+		$result->attribs = json_decode($result->attribs);
 
 		return $result;
 	}
@@ -885,15 +910,16 @@ class KinoarhivModelMovie extends JModelForm {
 		} else {
 			// Select reviews
 			$review_id = $app->input->get('review', null, 'int');
-			if (!empty($review_id) && $review_id > 0) {
-				$this->setState('list.start', $review_id - 1);
-			}
 
 			$query->select('`rev`.`id`, `rev`.`uid`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `rev`.`state`, `u`.`name`, `u`.`username`');
 			$query->from($db->quoteName('#__ka_reviews').' AS `rev`');
 			$query->leftJoin($db->quoteName('#__users').' AS `u` ON `u`.`id` = `rev`.`uid`');
 			$query->where('`movie_id` = '.(int)$id.' AND `rev`.`state` = 1 AND `u`.`id` != 0');
 			$query->order('`rev`.`created` DESC');
+
+			if (!empty($review_id) && $review_id > 0) {
+				$this->setState('list.start', $review_id - 1);
+			}
 		}
 
 		return $query;

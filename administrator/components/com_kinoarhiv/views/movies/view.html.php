@@ -57,8 +57,9 @@ class KinoarhivViewMovies extends JViewLegacy {
 		}
 
 		$this->items = &$items['movie'];
-		$this->form_group = 'movie';
 		$this->form = &$form;
+		$this->form_edit_group = 'movie';
+		$this->form_attribs_group = 'attribs';
 		$this->params = &$params;
 		$this->lang = &$lang;
 

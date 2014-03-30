@@ -128,7 +128,7 @@ h3.title {
 	padding: 4px;
 }
 
-.title a.brand {
+.title .brand {
 	background: url("../images/icons/movie_16.png") no-repeat left center;
 	padding-left: 22px;
 }

@@ -306,7 +306,7 @@ class KinoarhivModelMovies extends JModelList {
 				`m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`year`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`,
 				`m`.`ua_rate`, `m`.`mpaa`, `m`.`length`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`,
 				`m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`,
-				`m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`created`, `m`.`modified`, `m`.`state`,
+				`m`.`rottentm_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`attribs`, `m`.`created`, `m`.`modified`, `m`.`state`,
 				`m`.`ordering`, `m`.`metakey`, `m`.`metadesc`, `m`.`access`, `m`.`metadata`, `m`.`language`,
 				`l`.`title` AS `language_title`, `g`.`id` AS `gid`, `g`.`filename`"
 				. "\n FROM ".$db->quoteName('#__ka_movies')." AS `m`"
@@ -321,6 +321,10 @@ class KinoarhivModelMovies extends JModelList {
 			$result['movie']->countries_orig = implode(',', $result['movie']->countries['ids']);
 			$result['movie']->tags = $this->getTags();
 			$result['movie']->tags_orig = !empty($result['movie']->tags['ids']) ? implode(',', $result['movie']->tags['ids']) : '';
+
+			if (!empty($result['movie']->attribs)) {
+				$result['attribs'] = json_decode($result['movie']->attribs);
+			}
 		}
 
 		return $result;

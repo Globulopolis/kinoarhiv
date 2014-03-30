@@ -97,14 +97,23 @@
 		<field name="ui_theme" type="folderlist" default="base" directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL" description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" />
 	</fieldset>
 	<fieldset name="ap_item" label="COM_KA_SETTINGS_AP_ITEM_LABEL">
-		<field name="show_pubdate" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_PUBDATE_LABEL" description="COM_KA_FIELD_AP_PUBDATE_LABEL_DESC" filter="integer">
+		<field name="link_titles" type="radio" class="btn-group" default="1" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="show_moddate" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_MODDATE_LABEL" description="COM_KA_FIELD_AP_MODDATE_LABEL_DESC" filter="integer">
+		<field name="show_author" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_AUTHOR_LABEL" description="JGLOBAL_SHOW_AUTHOR_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="show_pubdate" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_CREATE_DATE_LABEL" description="JGLOBAL_SHOW_CREATE_DATE_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="show_moddate" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL" description="JGLOBAL_SHOW_MODIFY_DATE_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		
 		<field name="limit_text" type="text" default="250" label="COM_KA_FIELD_AP_LIMITTEXT_LABEL" description="COM_KA_FIELD_AP_LIMITTEXT_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="introtext_actors_list_limit" type="text" default="10" label="COM_KA_FIELD_AP_LIMIT_INTRO_ACTORS_LIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_INTRO_ACTORS_LIST_LABEL_DESC" required="true" filter="integer" size="6" />
 		<field name="person_list_limit" type="text" default="3" label="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL_DESC" required="true" filter="integer" size="6" />
@@ -117,6 +126,14 @@
 		<field name="size_x_photo" type="text" default="128" label="COM_KA_FIELD_AP_PHOTO_WIDTH_LABEL" required="true" filter="integer" size="6" />
 	</fieldset>
 	<fieldset name="ap_item_player" label="COM_KA_SETTINGS_AP_ITEM_PLAYER">
+		<field name="trailer_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="movie_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="player_width" type="text" default="688" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true" filter="integer" size="6" />
 		<field name="player_type" type="folderlist" default="mediaelement" directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL" description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" />
 		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL" description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12" />
@@ -197,14 +214,6 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="allow_movie_download" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="trailer_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="movie_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

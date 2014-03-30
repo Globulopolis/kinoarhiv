@@ -136,10 +136,10 @@
 						<div class="span6">
 							<?php echo $this->loadTemplate('ap_global'); ?>
 							<?php echo $this->loadTemplate('ap_nav'); ?>
+							<?php echo $this->loadTemplate('ap_rate'); ?>
 						</div>
 						<div class="span6">
 							<?php echo $this->loadTemplate('ap_item'); ?>
-							<?php echo $this->loadTemplate('ap_rate'); ?>
 						</div>
 					</div>
 				</div>

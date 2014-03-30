@@ -25,6 +25,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		// Prepare the data
 		foreach ($items as &$item) {
+			$item->attribs = json_decode($item->attribs);
 			$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
 
 			// Replace country BB-code

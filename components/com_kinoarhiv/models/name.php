@@ -41,7 +41,12 @@ class KinoarhivModelName extends JModelList {
 		try {
 			$result = $db->loadObject();
 
-			$result->zodiac = ($result->date_of_birth_raw != '0000-00-00') ? $this->getZodiacSign(substr($result->date_of_birth_raw, 5, 2), substr($result->date_of_birth_raw, 8, 2)) : '';
+			if (count($result) == 0) {
+				$this->setError('Error');
+				$result = (object)array();
+			} else {
+				$result->zodiac = ($result->date_of_birth_raw != '0000-00-00') ? $this->getZodiacSign(substr($result->date_of_birth_raw, 5, 2), substr($result->date_of_birth_raw, 8, 2)) : '';
+			}
 		} catch(Exception $e) {
 			$result = (object)array();
 			$this->setError($e->getMessage());
@@ -121,7 +126,16 @@ class KinoarhivModelName extends JModelList {
 		$db->setQuery("SELECT `id`, `name`, `latin_name`, `alias`, `metakey`, `metadesc`, `metadata`"
 			. "\n FROM ".$db->quoteName('#__ka_names')
 			. "\n WHERE `id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
-		$result = $db->loadObject();
+		try {
+			$result = $db->loadObject();
+
+			if (count($result) == 0) {
+				$this->setError('Error');
+				$result = (object)array();
+			}
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+		}
 
 		return $result;
 	}

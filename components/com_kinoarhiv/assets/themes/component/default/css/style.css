@@ -612,18 +612,14 @@ div.rating {
 	text-decoration: underline;
 }
 
-.desc .content {
-	font-family: monospace;
-	height: 350px;
-	overflow: scroll;
-	white-space: pre;
+.desc .ui-accordion-content {
+	padding: 5px;
 }
 
-.desc .pre {
-	display: block;
-	font-family: monospace;
-	padding: 5px;
-	white-space: pre;
+#open-desc span.ui-icon {
+	display: inline-block;
+	margin-left: 4px;
+	vertical-align: middle;
 }
 
 .header-small .dub {
@@ -727,18 +723,6 @@ div.rating {
 
 .desc .content {
 	display: none;
-}
-
-.toggle.down {
-	background: url("../images/icons/arrow_down_16.png") no-repeat;
-	cursor: pointer;
-	padding-left: 18px;
-}
-
-.toggle.up {
-	background: url("../images/icons/arrow_up_16.png") no-repeat;
-	cursor: pointer;
-	padding-left: 18px;
 }
 
 .trailer {

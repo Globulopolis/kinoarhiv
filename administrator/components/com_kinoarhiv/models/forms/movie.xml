@@ -8,7 +8,7 @@
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span10" required="true" size="45" />
 			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
-			<field name="desc" type="editor" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="15" />
 			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
@@ -79,15 +79,7 @@
 			<field name="tags_orig" type="hidden" />
 		</fieldset>
 	</fields>
-<fields name="data">
-	<fieldset name="edit">
-		<field name="abc" type="list" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option	value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-	</fieldset>
-</fields>
+
 	<fields name="attribs">
 		<field name="link_titles" type="list" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
 			<option value="">JGLOBAL_USE_GLOBAL</option>

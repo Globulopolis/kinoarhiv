@@ -60,6 +60,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 		if (!empty($item->desc)) {
 			$item->desc = str_replace("\n", "<br />", $item->desc);
+			$item->desc = str_replace("[code]", "<pre>", $item->desc);
+			$item->desc = str_replace("[/code]", "</pre>", $item->desc);
 		}
 
 		$item->_length = strftime('%H:%M', strtotime($item->length));

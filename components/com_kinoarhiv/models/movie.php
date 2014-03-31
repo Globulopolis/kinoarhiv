@@ -918,7 +918,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$query->order('`rev`.`created` DESC');
 
 			if (!empty($review_id) && $review_id > 0) {
-				$this->setState('list.start', $review_id - 1);
+				$this->setState('list.start', $review_id - 1); // Contain an error
 			}
 		}
 

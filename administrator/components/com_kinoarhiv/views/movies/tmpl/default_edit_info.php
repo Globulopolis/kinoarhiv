@@ -277,7 +277,7 @@
 			});
 		});
 
-		$('#form_movie_alias').attr('disabled', true);
+		$('#form_movie_alias').attr('readonly', true);
 		<?php endif; ?>
 
 		$('.cmd-alias').click(function(e){
@@ -295,7 +295,7 @@
 					}
 				});
 			} else {
-				if (!$('#form_movie_alias').is(':disabled')) {
+				if (!$('#form_movie_alias').is('[readonly]')) {
 					return;
 				}
 
@@ -312,7 +312,7 @@
 							text: '<?php echo JText::_('JMODIFY'); ?>',
 							id: 'alias-modify',
 							click: function(){
-								$('#form_movie_alias').removeAttr('disabled');
+								$('#form_movie_alias').removeAttr('readonly');
 								dialog.remove();
 							}
 						},

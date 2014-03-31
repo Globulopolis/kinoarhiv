@@ -112,8 +112,6 @@ JHtml::_('behavior.keepalive');
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
-<div class="control-label"><?php echo $this->form->getLabel('abc', 'data.edit'); ?></div>
-<div class="control-label"><?php echo $this->form->getInput('abc', 'data.edit'); ?></div>
 		<div class="row-fluid">
 			<div class="span12">
 				<div id="movie_tabs">

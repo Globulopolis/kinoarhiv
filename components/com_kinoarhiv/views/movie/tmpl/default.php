@@ -134,17 +134,13 @@ if ($this->item->attribs->movie_collapsed === '') {
 		});
 		$('#open-desc').click(function(e){
 			e.preventDefault();
-			$.colorbox({ html: '<div class="desc"><div class="pre">'+$(this).parent().next('.content').find('p').html()+'</div></div>', height: '90%', width: '90%' });
+			e.stopImmediatePropagation(); // Prevent to trigger 'activate' event on accordion header
+			$.colorbox({ html: $(this).closest('h3').next('div').html(), height: '95%', width: '95%' });
 		});
-		$('.toggle').click(function(){
-			var _this = $(this), _tg_content = _this.parent().next();
-			if (_this.hasClass('down')) {
-				_tg_content.show();
-				_this.removeClass('down').addClass('up');
-			} else {
-				_tg_content.hide();
-				_this.removeClass('up').addClass('down');
-			}
+		$('#desc').accordion({
+			active: false,
+			collapsible: true,
+			heightStyle: 'content'
 		});
 		$('.premiere-info-icon').click(function(e){
 			e.preventDefault();
@@ -192,7 +188,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 					<?php endif; ?>
 				<?php elseif ($this->item->attribs->link_titles == 1): ?>
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
-				<?php elseif ($item->attribs->link_titles == 0): ?>
+				<?php elseif ($this->item->attribs->link_titles == 0): ?>
 					<span class="brand"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></span>
 				<?php endif; ?>
 			</h1>
@@ -517,9 +513,9 @@ if ($this->item->attribs->movie_collapsed === '') {
 		<?php endif; ?>
 
 		<?php if (!empty($this->item->desc)): ?>
-		<div class="desc">
-			<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_TECH'); ?> <span class="toggle down">&nbsp;</span> <a href="#" id="open-desc"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/new_window_14.png" border="0" /></a></div>
-			<div class="content"><p><?php echo $this->item->desc; ?></p></div>
+		<div class="desc" id="desc">
+			<h3><?php echo JText::_('COM_KA_TECH'); ?> <a href="#" id="open-desc"><span class="ui-icon ui-icon-newwin"></span></a></h3>
+			<div><p><?php echo $this->item->desc; ?></p></div>
 		</div>
 		<?php endif; ?>
 

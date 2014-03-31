@@ -41,7 +41,7 @@ if ($this->params->get('player_type') == 'mediaelement'): ?>
 					<?php endif; ?>
 				<?php elseif ($this->item->attribs->link_titles == 1): ?>
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
-				<?php elseif ($item->attribs->link_titles == 0): ?>
+				<?php elseif ($this->item->attribs->link_titles == 0): ?>
 					<span class="brand"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></span>
 				<?php endif; ?>
 			</h1>

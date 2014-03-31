@@ -450,6 +450,7 @@ class KinoarhivModelMovies extends JModelList {
 			'tags' => json_decode('['.$data['tags'].']', true),
 			'robots' => $data['robots']
 		);
+		$attribs = json_encode($app->input->post->get('form', array(), 'array')['attribs']);
 		$introtext = '';
 		$intro_countries = '';
 		$intro_genres = '';
@@ -606,8 +607,8 @@ class KinoarhivModelMovies extends JModelList {
 
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
-				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
-				. "\n VALUES ('', '0', '0', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$data['year']."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$db->escape($data['urls'])."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
+				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `attribs`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
+				. "\n VALUES ('', '0', '0', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$data['year']."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$db->escape($data['urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
 				. "\n SET `parent_id` = '0', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."',"
@@ -618,7 +619,7 @@ class KinoarhivModelMovies extends JModelList {
 				. " `rate_sum_loc` = '".(int)$data['rate_sum_loc']."', `imdb_votesum` = '".$data['imdb_votesum']."', `imdb_votes` = '".(int)$data['imdb_votes']."',"
 				. " `imdb_id` = '".(int)$data['imdb_id']."', `kp_votesum` = '".$data['kp_votesum']."', `kp_votes` = '".(int)$data['kp_votes']."',"
 				. " `kp_id` = '".(int)$data['kp_id']."', `rate_fc` = '".(int)$data['rate_fc']."', `rottentm_id` = '".$data['rottentm_id']."',"
-				. " `rate_custom` = '".$db->escape($data['rate_custom'])."', `urls` = '".$db->escape($data['urls'])."', `created` = '".$data['created']."',"
+				. " `rate_custom` = '".$db->escape($data['rate_custom'])."', `urls` = '".$db->escape($data['urls'])."', `attribs` = '".$attribs."', `created` = '".$data['created']."',"
 				. " `created_by` = '".$created_by."', `modified` = '".$data['modified']."', `state` = '".$data['state']."',"
 				. " `ordering` = '".(int)$data['ordering']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."',"
 				. " `access` = '".(int)$data['access']."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"

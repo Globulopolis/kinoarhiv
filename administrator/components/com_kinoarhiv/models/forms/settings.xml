@@ -223,6 +223,10 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="custom_review_component" type="list" class="inputbox" default="" label="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL" description="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL_DESC">
+			<option value="default">JDEFAULT</option>
+			<option value="jc">JComments</option>
+		</field>
 		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL" description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

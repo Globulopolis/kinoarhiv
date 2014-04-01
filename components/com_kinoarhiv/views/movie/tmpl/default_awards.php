@@ -1,8 +1,8 @@
 <?php defined('_JEXEC') or die; ?>
 <div class="content movie awards">
-	<article>
+	<article class="uk-article">
 		<header>
-			<h1 class="title">
+			<h1 class="uk-article-title title">
 				<?php if ($this->item->attribs->link_titles === ''): ?>
 					<?php if ($this->params->get('link_titles') == 1): ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
@@ -58,8 +58,8 @@
 		<div class="awards-list">
 			<?php if (count($this->item->awards) > 0):
 				foreach ($this->item->awards as $award): ?>
-				<div class="well">
-					<h5><?php echo $this->escape($award->aw_title); ?><?php echo ($award->year != '0000') ? ', '.$award->year : ''; ?></h5>
+				<div class="well uk-panel uk-panel-box">
+					<h5 class="uk-panel-title"><?php echo $this->escape($award->aw_title); ?><?php echo ($award->year != '0000') ? ', '.$award->year : ''; ?></h5>
 					<div class="small"><?php echo $award->aw_desc; ?></div>
 					<?php echo $award->desc; ?>
 				</div>

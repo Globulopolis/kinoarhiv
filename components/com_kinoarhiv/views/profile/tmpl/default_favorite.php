@@ -19,6 +19,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			});
 		}
 
+		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		$('.cmd-fav-delete').click(function(e){
 			e.preventDefault();
 			var _this = $(this);
@@ -47,7 +48,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 	});
 //]]>
 </script>
-<div class="ka-content user-profile favorite">
+<div class="uk-article ka-content user-profile favorite">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<div class="subtabs breadcrumb">
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&page=movies&Itemid='.$this->itemid); ?>" class="subtab-movie<?php echo ($this->page == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
@@ -74,7 +75,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 		<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 		<input type="hidden" name="return" value="profile" />
 		<?php echo JHtml::_('form.token'); ?>
-		<input type="submit" class="btn btn-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
+		<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
 	</form>
 
 	<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">

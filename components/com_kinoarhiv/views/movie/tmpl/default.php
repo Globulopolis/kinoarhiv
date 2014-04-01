@@ -43,6 +43,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 	}
 
 	jQuery(document).ready(function($){
+		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		<?php if (!$this->user->guest): ?>
 		<?php if ($this->params->get('allow_votes') == 1): ?>
 		$('.rateit').bind('over', function(e, v){ $(this).attr('title', v); });
@@ -177,9 +178,9 @@ if ($this->item->attribs->movie_collapsed === '') {
 //]]>
 </script>
 <div class="content movie">
-	<article>
+	<article class="uk-article">
 		<header>
-			<h1 class="title">
+			<h1 class="uk-article-title title">
 				<?php if ($this->item->attribs->link_titles === ''): ?>
 					<?php if ($this->params->get('link_titles') == 1): ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>
@@ -524,9 +525,10 @@ if ($this->item->attribs->movie_collapsed === '') {
 			<div class="content"><p><?php echo $this->item->urls; ?></p></div>
 		</div>
 		<?php endif; ?>
+	
+		<?php echo $this->item->event->afterDisplayContent; ?>
+		<?php if ($this->params->get('show_reviews') == 1):
+			echo $this->loadTemplate('reviews');
+		endif; ?>
 	</article>
-	<?php echo $this->item->event->afterDisplayContent; ?>
-	<?php if ($this->params->get('show_reviews') == 1):
-		echo $this->loadTemplate('reviews');
-	endif; ?>
 </div>

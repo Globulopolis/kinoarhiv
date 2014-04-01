@@ -42,9 +42,9 @@
 //]]>
 </script>
 <div class="content name">
-	<article>
+	<article class="uk-article">
 		<header>
-			<h1 class="title">
+			<h1 class="uk-article-title title">
 				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->item->title; ?>"><?php echo $this->item->title; ?></a>
 			</h1>
 		</header>

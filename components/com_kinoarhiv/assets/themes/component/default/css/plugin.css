@@ -215,15 +215,17 @@
 .e-btn#blockquote {
 	background: url("../images/icons/comments_16.png") no-repeat;
 }
-.e-btn#font {
+.e-btn.font .dropdown-toggle {
 	background: url("../images/icons/editor/text_font.png") no-repeat;
+	display: inline-block;
+	height: 16px;
+	width: 16px;
 }
 #font-type-list {
 	border: 1px solid #ccc;
 	cursor: default;
 	left: auto !important;
 	list-style: none;
-	margin: 22px 0 0 0;
 	position: absolute;
 	top: auto !important;
 	width: 100px;
@@ -259,15 +261,17 @@
 #font-type-list .verdana {
 	font-family: "Verdana", sans-serif !important;
 }
-.e-btn#font-size {
+.e-btn.font-size .dropdown-toggle {
 	background: url("../images/icons/editor/text_font_size.png") no-repeat;
+	display: inline-block;
+	height: 16px;
+	width: 16px;
 }
 #font-size-list {
 	border: 1px solid #ccc;
 	cursor: default;
 	left: auto !important;
 	list-style: none;
-	margin: 22px 0 0 0;
 	position: absolute;
 	top: auto !important;
 	width: 100px;

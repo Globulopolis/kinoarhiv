@@ -14,6 +14,8 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			});
 		}
 
+		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
+
 		$('.cmd-wt-delete').click(function(e){
 			e.preventDefault();
 			var _this = $(this);
@@ -42,7 +44,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 	});
 //]]>
 </script>
-<div class="ka-content user-profile watched">
+<div class="uk-article ka-content user-profile watched">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
 	<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
@@ -62,7 +64,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 		<input type="hidden" name="action" value="delete" />
 		<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
-		<input type="submit" class="btn btn-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
+		<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
 	</form>
 
 	<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">

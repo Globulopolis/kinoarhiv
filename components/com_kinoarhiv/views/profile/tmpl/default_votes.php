@@ -39,7 +39,7 @@
 	});
 //]]>
 </script>
-<div class="ka-content user-profile votes">
+<div class="uk-article ka-content user-profile votes">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
 		<div class="total-votes"><?php echo JText::sprintf('COM_KA_PROFILE_TOTAL_VOTES', $this->pagination->total); ?></div>

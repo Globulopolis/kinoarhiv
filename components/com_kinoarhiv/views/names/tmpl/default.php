@@ -15,6 +15,7 @@
 			});
 		}
 
+		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		$('img.lazy').lazyload({ threshold: 200 });
 		$('a.zoom-icon').colorbox({
 			title: function(){
@@ -51,7 +52,7 @@
 	});
 //]]>
 </script>
-<div class="ka-content">
+<div class="uk-article ka-content">
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
@@ -61,11 +62,11 @@
 		foreach ($this->items['names'] as $item): ?>
 		<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>">
 			<header>
-				<h1 class="title title-small">
+				<h1 class="uk-article-title title title-small">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($item->title); ?>"><?php echo $this->escape($item->title); ?><?php echo $item->date_range; ?></a>
 				</h1>
 			</header>
-			<div class="content clearfix">
+			<div class="content clearfix ui-helper-clearfix">
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title); ?>">
@@ -108,21 +109,21 @@
 					</div>
 				</div>
 				<div class="links">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default readmore-link hasTooltip" title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
 				</div>
 			</div>
 		</article>
-		<?php endforeach;
+		<?php endforeach; ?>
+		<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+			<div class="pagination bottom">
+				<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+				<?php echo $this->pagination->getPagesLinks(); ?><br />
+				<?php echo $this->pagination->getResultsCounter(); ?>
+				<?php echo $this->pagination->getLimitBox(); ?>
+				</form>
+			</div>
+		<?php endif;
 	else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-	<?php endif; ?>
-	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
-		<div class="pagination bottom">
-			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
-			<?php echo $this->pagination->getPagesLinks(); ?><br />
-			<?php echo $this->pagination->getResultsCounter(); ?>
-			<?php echo $this->pagination->getLimitBox(); ?>
-			</form>
-		</div>
 	<?php endif; ?>
 </div>

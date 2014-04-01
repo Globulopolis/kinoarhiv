@@ -16,6 +16,7 @@
 			});
 		}
 
+		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		$('img.lazy').lazyload({ threshold: 200 });
 
 		$('a.zoom-icon').colorbox({
@@ -55,7 +56,7 @@
 	});
 //]]>
 </script>
-<div class="ka-content">
+<div class="uk-article ka-content">
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
@@ -65,7 +66,7 @@
 		foreach ($this->items['movies'] as $item): ?>
 		<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
 			<header>
-				<h1 class="title title-small">
+				<h1 class="uk-article-title title title-small">
 					<?php if ($item->attribs->link_titles === ''): ?>
 						<?php if ($this->params->get('link_titles') == 1): ?>
 							<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $this->escape($item->title.$item->year_str); ?>"><?php echo $this->escape($item->title.$item->year_str); ?></a>
@@ -78,7 +79,7 @@
 						<span class="brand"><?php echo $this->escape($item->title.$item->year_str); ?></span>
 					<?php endif; ?>
 				</h1>
-				<div class="middle-nav clearfix">
+				<div class="middle-nav clearfix ui-helper-clearfix">
 					<p class="meta">
 						<?php if ($item->attribs->show_author === '' && !empty($item->username)): ?>
 							<?php if ($this->params->get('show_author') == 1): ?>
@@ -127,7 +128,7 @@
 			<?php echo $item->event->afterDisplayTitle; ?>
 			<?php echo $item->event->beforeDisplayContent; ?>
 			<div class="clear"></div>
-			<div class="content clearfix">
+			<div class="content clearfix ui-helper-clearfix">
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title.$item->year_str); ?>">
@@ -192,7 +193,7 @@
 					</div>
 				</div>
 				<div class="links">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default readmore-link hasTooltip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
 				</div>
 			</div>
 		</article>

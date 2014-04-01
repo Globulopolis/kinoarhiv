@@ -29,7 +29,7 @@
 	});
 //]]>
 </script>
-<div class="ka-content">
+<div class="uk-article ka-content">
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>

@@ -11,9 +11,9 @@
 //]]>
 </script>
 <div class="content movie wallpp">
-	<article>
+	<article class="uk-article">
 		<header>
-			<h1 class="title">
+			<h1 class="uk-article-title title">
 				<?php if ($this->item->attribs->link_titles === ''): ?>
 					<?php if ($this->params->get('link_titles') == 1): ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="brand" title="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>"><?php echo $this->escape($this->item->title.$this->item->year_str); ?></a>

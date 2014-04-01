@@ -13,7 +13,7 @@
 	});
 //]]>
 </script>
-<div class="ka-content user-profile reviews">
+<div class="uk-article ka-content user-profile reviews">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
 	<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
@@ -38,7 +38,7 @@
 		<input type="hidden" name="return" value="profile" />
 		<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
-		<input type="submit" class="btn btn-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
+		<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>" />
 	</form>
 
 	<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">

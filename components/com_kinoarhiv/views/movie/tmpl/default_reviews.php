@@ -31,7 +31,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 				return true;
 			});
 
-			$('#font').click(function(){
+			/*$('#font').click(function(){
 				if ($('#font-size-list').is(':visible')) {
 					$('#font-size-list').hide();
 				}
@@ -41,7 +41,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 					if ($.fn.tooltip) { $('#font').tooltip('enable'); }
 				}).toggle();
 			});
-			$('#font-size').click(function(){
+			/*$('#font-size').click(function(){
 				if ($('#font-type-list').is(':visible')) {
 					$('#font-type-list').hide();
 				}
@@ -50,7 +50,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 				}, function(){
 					if ($.fn.tooltip) { $('#font-size').tooltip('enable'); }
 				}).toggle();
-			});
+			});*/
 			$('.cmd-insert-username').click(function(){
 				var username = $(this).text();
 
@@ -124,7 +124,7 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 	<?php if (!$this->user->guest): // Show "Add review" form ?>
 		<?php if ($this->params->get('show_reviews') == 1): ?>
 		<div style="clear: both;">&nbsp;</div>
-		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="editor">
+		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
 			<ul id="form-editor-toolbar">
 				<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" class="e-btn hasTooltip" id="h1" title="<?php echo JText::_('COM_KA_EDITOR_H1'); ?>"></li>
 				<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" class="e-btn hasTooltip" id="h2" title="<?php echo JText::_('COM_KA_EDITOR_H2'); ?>"></li>
@@ -145,35 +145,41 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 				<li data-wysihtml5-command="insertUnorderedList" class="e-btn hasTooltip" id="ul" title="<?php echo JText::_('COM_KA_EDITOR_UL'); ?>"></li>
 				<li data-wysihtml5-command="insertOrderedList" class="e-btn hasTooltip" id="ol" title="<?php echo JText::_('COM_KA_EDITOR_OL'); ?>"></li>
 				<li class="e-btn separator"></li>
-				<li class="e-btn hasTooltip" id="font" title="<?php echo JText::_('COM_KA_EDITOR_FONT'); ?>">
-					<ul id="font-type-list" class="dropdown-menu">
-						<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="arial" class="arial">Arial</li>
-						<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="courier-new" class="courier-new">Courier New</li>
-						<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="georgia" class="georgia">Georgia</li>
-						<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="helvetica-neue" class="helvetica-neue">Helvetica Neue</li>
-						<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="times-new-roman" class="times-new-roman">Times New Roman</li>
-						<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="verdana" class="verdana">Verdana</li>
-					</ul>
+				<li class="e-btn hasTooltip font" title="<?php echo JText::_('COM_KA_EDITOR_FONT'); ?>">
+					<div class="dropdown" data-uk-dropdown="{mode:'click'}">
+						<span class="dropdown-toggle" data-toggle="dropdown"></span>
+						<ul id="font-type-list" class="dropdown-menu uk-dropdown" role="menu" aria-labelledby="dLabel">
+							<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="arial" class="arial">Arial</li>
+							<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="courier-new" class="courier-new">Courier New</li>
+							<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="georgia" class="georgia">Georgia</li>
+							<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="helvetica-neue" class="helvetica-neue">Helvetica Neue</li>
+							<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="times-new-roman" class="times-new-roman">Times New Roman</li>
+							<li data-wysihtml5-command="fontType" data-wysihtml5-command-value="verdana" class="verdana">Verdana</li>
+						</ul>
+					</div>
 				</li>
-				<li class="e-btn hasTooltip" id="font-size" title="<?php echo JText::_('COM_KA_EDITOR_FONTSIZE'); ?>">
-					<ul id="font-size-list" class="dropdown-menu">
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="8" class="size-8">8pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="9" class="size-9">9pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="10" class="size-10">10pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="11" class="size-11">11pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="12" class="size-12">12pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="14" class="size-14">14pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="16" class="size-16">16pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="18" class="size-18">18pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="20" class="size-20">20pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="22" class="size-22">22pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="24" class="size-24">24pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="26" class="size-26">26pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="28" class="size-28">28pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="36" class="size-36">36pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="48" class="size-48">48pt</li>
-						<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="72" class="size-72">72pt</li>
-					</ul>
+				<li class="e-btn hasTooltip font-size" title="<?php echo JText::_('COM_KA_EDITOR_FONTSIZE'); ?>">
+					<div class="dropdown" data-uk-dropdown="{mode:'click'}">
+						<span class="dropdown-toggle" data-toggle="dropdown"></span>
+						<ul id="font-size-list" class="dropdown-menu uk-dropdown" role="menu" aria-labelledby="dLabel">
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="8" class="size-8">8pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="9" class="size-9">9pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="10" class="size-10">10pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="11" class="size-11">11pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="12" class="size-12">12pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="14" class="size-14">14pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="16" class="size-16">16pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="18" class="size-18">18pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="20" class="size-20">20pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="22" class="size-22">22pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="24" class="size-24">24pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="26" class="size-26">26pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="28" class="size-28">28pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="36" class="size-36">36pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="48" class="size-48">48pt</li>
+							<li data-wysihtml5-command="fontSize" data-wysihtml5-command-value="72" class="size-72">72pt</li>
+						</ul>
+					</div>
 				</li>
 				<li class="e-btn separator"></li>
 				<li data-wysihtml5-command="formatInline" data-wysihtml5-command-value="q" class="e-btn hasTooltip" id="q" title="<?php echo JText::_('COM_KA_EDITOR_QUOTE'); ?>"></li>
@@ -197,8 +203,8 @@ if ($this->params->get('allow_reviews') == 1 && !$this->user->guest):
 			<input type="hidden" name="movie_name" value="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>" />
 			<input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
 			<?php echo JHtml::_('form.token'); ?>
-			<input type="submit" class="btn btn-primary" value="<?php echo JText::_('JSUBMIT'); ?>" />
-			<input type="reset" class="btn btn-default cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
+			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSUBMIT'); ?>" />
+			<input type="reset" class="btn btn-default uk-button cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
 		</form>
 		<?php endif; ?>
 	<?php else: ?>

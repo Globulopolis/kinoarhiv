@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die; ?>
-<div class="ka-content">
+<div class="uk-article ka-content">
 	<div class="genre-list">
 	<?php for ($i=0, $n=count($this->items); $i<$n; $i++):
 		$item = $this->items[$i]; ?>

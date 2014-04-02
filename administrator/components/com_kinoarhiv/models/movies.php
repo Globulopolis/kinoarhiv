@@ -544,66 +544,58 @@ class KinoarhivModelMovies extends JModelList {
 		// Update statistics on genres
 		$this->updateGenresStat($data['genres_orig'], $data['genres']);
 
-		// Start processing intro text for director(s) IDs and store in relation table
-		$names_d_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
-		$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
-			. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
-			. "\n WHERE `rel`.`movie_id` = 2 AND `rel`.`is_directors` = 1"
-			. "\n ORDER BY `rel`.`ordering`"
-			. $names_d_limit);
-		$names_d = $db->loadObjectList();
+		if (!empty($id)) {
+			// Start processing intro text for director(s) IDs and store in relation table
+			$names_d_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
+			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
+				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
+				. "\n WHERE `rel`.`movie_id` = ".$id." AND `rel`.`is_directors` = 1"
+				. "\n ORDER BY `rel`.`ordering`"
+				. $names_d_limit);
+			$names_d = $db->loadObjectList();
 
-		if (count($names_d) > 0) {
-			$intro_directors .= count($names_d == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
-			foreach ($names_d as $director) {
-				$n = !empty($director->name) ? $director->name : '';
-				if (!empty($director->name) && !empty($director->latin_name)) {
-					$n .= ' / ';
+			if (count($names_d) > 0) {
+				$intro_directors .= count($names_d == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
+				foreach ($names_d as $director) {
+					$n = !empty($director->name) ? $director->name : '';
+					if (!empty($director->name) && !empty($director->latin_name)) {
+						$n .= ' / ';
+					}
+					$n .= !empty($director->latin_name) ? $director->latin_name : '';
+					$intro_directors .= '[name='.$director->name_id.']'.$n.'[/name], ';
 				}
-				$n .= !empty($director->latin_name) ? $director->latin_name : '';
-				$intro_directors .= '[name='.$director->name_id.']'.$n.'[/name], ';
+				$intro_directors = JString::substr($intro_directors, 0, -2).'[/names]<br />';
 			}
-			$intro_directors = JString::substr($intro_directors, 0, -2).'[/names]<br />';
-		}
-		// End
+			// End
 
-		// Start processing intro text for cast IDs and store in relation table
-		$names_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
-		$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
-			. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
-			. "\n WHERE `rel`.`movie_id` = 2 AND `rel`.`is_actors` = 1 AND `rel`.`voice_artists` = 0"
-			. "\n ORDER BY `rel`.`ordering`"
-			. $names_limit);
-		$names = $db->loadObjectList();
+			// Start processing intro text for cast IDs and store in relation table
+			$names_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
+			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
+				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
+				. "\n WHERE `rel`.`movie_id` = ".$id." AND `rel`.`is_actors` = 1 AND `rel`.`voice_artists` = 0"
+				. "\n ORDER BY `rel`.`ordering`"
+				. $names_limit);
+			$names = $db->loadObjectList();
 
-		if (count($names) > 0) {
-			$intro_cast .= '[names ln=COM_KA_CAST]: ';
-			foreach ($names as $name) {
-				$n = !empty($name->name) ? $name->name : '';
-				if (!empty($name->name) && !empty($name->latin_name)) {
-					$n .= ' / ';
+			if (count($names) > 0) {
+				$intro_cast .= '[names ln=COM_KA_CAST]: ';
+				foreach ($names as $name) {
+					$n = !empty($name->name) ? $name->name : '';
+					if (!empty($name->name) && !empty($name->latin_name)) {
+						$n .= ' / ';
+					}
+					$n .= !empty($name->latin_name) ? $name->latin_name : '';
+					$intro_cast .= '[name='.$name->name_id.']'.$n.'[/name], ';
 				}
-				$n .= !empty($name->latin_name) ? $name->latin_name : '';
-				$intro_cast .= '[name='.$name->name_id.']'.$n.'[/name], ';
+				$intro_cast = JString::substr($intro_cast, 0, -2).'[/names]';
 			}
-			$intro_cast = JString::substr($intro_cast, 0, -2).'[/names]';
+			// End
 		}
-		// End
 
 		$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
 		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
-
-		if (empty($id)) {
-			// Get parent id
-			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
-			$parent_id = $db->loadResult();
-
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
-				. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
-				. "\n VALUES ('', '".$parent_id."', 'lft', 'rgt', '2', 'com_kinoarhiv.movie.2', '".$db->escape($data['title'])."', '{}')");
-		}
 
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')

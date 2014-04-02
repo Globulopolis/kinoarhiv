@@ -104,7 +104,17 @@ class KinoarhivModelMovie extends JModelForm {
 			$result = (object)array();
 		}
 
-		$result->attribs = json_decode($result->attribs);
+		if (isset($result->attribs)) {
+			$result->attribs = json_decode($result->attribs);
+
+			// Get tags
+			if ($result->attribs->show_tags == 1) {
+				if (isset($result->metadata) && !empty($result->metadata)) { // Check for an errors
+					$metadata = json_decode($result->metadata);
+					$result->tags = $this->getTags(implode(',', $metadata->tags));
+				}
+			}
+		}
 
 		// Selecting countries
 		$db->setQuery("SELECT `c`.`id`, `c`.`name`, `c`.`code`, `t`.`ordering`"
@@ -213,14 +223,6 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
-
-		// Get tags
-		if ($result->attribs->show_tags == 1) {
-			if (isset($result->metadata) && !empty($result->metadata)) { // Check for an errors
-				$metadata = json_decode($result->metadata);
-				$result->tags = $this->getTags(implode(',', $metadata->tags));
-			}
-		}
 
 		return $result;
 	}

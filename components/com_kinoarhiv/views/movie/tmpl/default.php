@@ -361,6 +361,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 						</div>
 						<?php endforeach;
 					endif; ?>
+					<?php if (isset($this->item->genres) && count($this->item->genres) > 0): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_GENRE'); ?></span>
 						<span class="s-col">
@@ -370,6 +371,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 							<?php endfor; ?>
 						</span>
 					</div>
+					<?php endif; ?>
 					<?php if (!empty($this->item->budget)): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_BUDGET'); ?></span>

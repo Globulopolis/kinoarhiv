@@ -670,7 +670,7 @@ class KAPagination extends JPagination
 	protected function _list_render($list)
 	{
 		// Reverse output rendering for right-to-left display.
-		$html = '<ul>';
+		$html = '<ul class="uk-pagination">';
 		$html .= '<li class="pagination-start">' . $list['start']['data'] . '</li>';
 		$html .= '<li class="pagination-prev">' . $list['previous']['data'] . '</li>';
 
@@ -704,9 +704,8 @@ class KAPagination extends JPagination
 
 		if (!is_numeric($item->text))
 		{
-			JHtml::_('bootstrap.tooltip');
 			$title = ' title="' . $item->text . '"';
-			$class = 'hasTooltip ';
+			$class = 'hasTip ';
 		}
 
 		if ($app->isAdmin())

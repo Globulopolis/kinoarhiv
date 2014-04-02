@@ -336,7 +336,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 							<span class="s-col">
 								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
 								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
 								endif; ?>
@@ -352,7 +352,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 							<span class="s-col">
 								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
 								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
 								endif; ?>
@@ -393,7 +393,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 						<div>
 							<span class="f-col"><?php echo ($release->media_type == 0) ? JText::_('COM_KA_RELEASE_MEDIA_TYPE_DVD') : JText::_('COM_KA_RELEASE_MEDIA_TYPE_BD'); ?></span>
 							<span class="s-col">
-								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
+								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a>
 							</span>
 						</div>
 						<?php endforeach;
@@ -405,19 +405,19 @@ if ($this->item->attribs->movie_collapsed === '') {
 						<span class="s-col">
 							<?php if ($this->item->mpaa > -1): ?>
 							<div class="rating">
-								<div id="mpaa" class="mpaa-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_MPAA')); ?>"><strong><?php echo strtoupper($this->item->mpaa); ?></strong></div>
+								<div id="mpaa" class="mpaa-icon hasTip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_MPAA')); ?>"><strong><?php echo strtoupper($this->item->mpaa); ?></strong></div>
 								<div class="mpaa-desc"><?php echo JText::_('COM_KA_MPAA_DESC'); ?></div>
 							</div>
 							<?php endif; ?>
 							<?php if ($this->item->age_restrict > -1): ?>
 							<div class="rating">
-								<div id="rrate" class="rrate-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>"><strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
+								<div id="rrate" class="rrate-icon hasTip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>"><strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
 								<div class="rrate-desc"><?php echo JText::_('COM_KA_RU_RATE_DESC'); ?></div>
 							</div>
 							<?php endif; ?>
 							<?php if ($this->item->ua_rate > -1): ?>
 							<div class="rating">
-								<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int)$this->item->ua_rate; ?> hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
+								<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int)$this->item->ua_rate; ?> hasTip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
 								<div class="uarate-desc"><?php echo JText::_('COM_KA_UA_RATE_DESC'); ?></div>
 							</div>
 							<?php endif; ?>
@@ -434,10 +434,9 @@ if ($this->item->attribs->movie_collapsed === '') {
 						<div>
 							<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 							<span class="s-col">
-								<?php for ($i=0,$n=$c_tags; $i<$n; $i++):
-								$tags = $this->item->tags[$i]; ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=tag&tag_id[]='.$tags->tag_id.'&Itemid='.$this->itemid); ?>" class="tags" title="<?php echo $tags->tag_title; ?>"><?php echo $tags->tag_title; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
-								<?php endfor; ?>
+								<?php foreach ($this->item->tags as $tag): ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=tag&tag_id[]='.$tag->tag_id.'&Itemid='.$this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->tag_title; ?>"><?php echo $tag->tag_title; ?></a>
+								<?php endforeach; ?>
 							</span>
 						</div>
 						<?php endif; ?>

@@ -4,7 +4,6 @@
 
 $params = JComponentHelper::getParams('com_kinoarhiv');
 JLoader::register('GlobalHelper', dirname(__FILE__).DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'global.php');
-JLoader::register('KAUser', dirname(__FILE__).DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'user.php');
 
 if ($params->get('offline') == 1) {
 	$document = JFactory::getDocument();

@@ -147,7 +147,7 @@ if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_revie
 							</div>
 						</a>
 						<?php if ($item->y_poster != ''): ?><div class="overlay-poster">
-							<a href="<?php echo $item->big_poster; ?>" title="<?php echo JText::_('COM_KA_POSTER_ZOOM'); ?>" class="zoom-icon hasTooltip"><div></div></a>
+							<a href="<?php echo $item->big_poster; ?>" title="<?php echo JText::_('COM_KA_POSTER_ZOOM'); ?>" class="zoom-icon hasTip"><div></div></a>
 						</div><?php endif; ?>
 					</div>
 					<div class="introtext">

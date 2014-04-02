@@ -80,7 +80,7 @@
 					<div class="review-row-title ui-widget ui-widget-content ui-corner-top <?php echo $ui_class; ?>">
 						<span class="number"><?php echo $review_number++; ?>. </span>
 						<span class="username<?php echo $cmd_insert_username; ?>"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
-						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&review='.$review->id.'&Itemid='.$this->itemid).'#review-'.$review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip permalink"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0" /></a></span>
+						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&review='.$review->id.'&Itemid='.$this->itemid).'#review-'.$review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTip permalink"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0" /></a></span>
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
 					<?php if (!$this->user->guest): ?>
@@ -116,26 +116,26 @@
 			<div style="clear: both;">&nbsp;</div>
 			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
 				<ul id="form-editor-toolbar">
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" class="e-btn hasTooltip" id="h1" title="<?php echo JText::_('COM_KA_EDITOR_H1'); ?>"></li>
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" class="e-btn hasTooltip" id="h2" title="<?php echo JText::_('COM_KA_EDITOR_H2'); ?>"></li>
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3" class="e-btn hasTooltip" id="h3" title="<?php echo JText::_('COM_KA_EDITOR_H3'); ?>"></li>
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h4" class="e-btn hasTooltip" id="h4" title="<?php echo JText::_('COM_KA_EDITOR_H4'); ?>"></li>
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h5" class="e-btn hasTooltip" id="h5" title="<?php echo JText::_('COM_KA_EDITOR_H5'); ?>"></li>
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h6" class="e-btn hasTooltip" id="h6" title="<?php echo JText::_('COM_KA_EDITOR_H6'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" class="e-btn hasTip" id="h1" title="<?php echo JText::_('COM_KA_EDITOR_H1'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" class="e-btn hasTip" id="h2" title="<?php echo JText::_('COM_KA_EDITOR_H2'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3" class="e-btn hasTip" id="h3" title="<?php echo JText::_('COM_KA_EDITOR_H3'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h4" class="e-btn hasTip" id="h4" title="<?php echo JText::_('COM_KA_EDITOR_H4'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h5" class="e-btn hasTip" id="h5" title="<?php echo JText::_('COM_KA_EDITOR_H5'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h6" class="e-btn hasTip" id="h6" title="<?php echo JText::_('COM_KA_EDITOR_H6'); ?>"></li>
 					<li class="e-btn separator"></li>
-					<li data-wysihtml5-command="bold" class="e-btn hasTooltip" id="bold" title="<?php echo JText::_('COM_KA_EDITOR_BOLD'); ?> CTRL+B"></li>
-					<li data-wysihtml5-command="italic" class="e-btn hasTooltip" id="italic" title="<?php echo JText::_('COM_KA_EDITOR_ITALIC'); ?> CTRL+I"></li>
-					<li data-wysihtml5-command="underline" class="e-btn hasTooltip" id="underline" title="<?php echo JText::_('COM_KA_EDITOR_UNDERLINE'); ?> CTRL+U"></li>
+					<li data-wysihtml5-command="bold" class="e-btn hasTip" id="bold" title="<?php echo JText::_('COM_KA_EDITOR_BOLD'); ?> CTRL+B"></li>
+					<li data-wysihtml5-command="italic" class="e-btn hasTip" id="italic" title="<?php echo JText::_('COM_KA_EDITOR_ITALIC'); ?> CTRL+I"></li>
+					<li data-wysihtml5-command="underline" class="e-btn hasTip" id="underline" title="<?php echo JText::_('COM_KA_EDITOR_UNDERLINE'); ?> CTRL+U"></li>
 					<li class="e-btn separator"></li>
-					<li data-wysihtml5-command="justifyLeft" class="e-btn hasTooltip" id="justifyLeft" title="<?php echo JText::_('COM_KA_EDITOR_JLEFT'); ?>"></li>
-					<li data-wysihtml5-command="justifyCenter" class="e-btn hasTooltip" id="justifyCenter" title="<?php echo JText::_('COM_KA_EDITOR_JCENTER'); ?>"></li>
-					<li data-wysihtml5-command="justifyRight" class="e-btn hasTooltip" id="justifyRight" title="<?php echo JText::_('COM_KA_EDITOR_JRIGHT'); ?>"></li>
-					<li data-wysihtml5-command="justifyFull" class="e-btn hasTooltip" id="justifyFull" title="<?php echo JText::_('COM_KA_EDITOR_J'); ?>"></li>
+					<li data-wysihtml5-command="justifyLeft" class="e-btn hasTip" id="justifyLeft" title="<?php echo JText::_('COM_KA_EDITOR_JLEFT'); ?>"></li>
+					<li data-wysihtml5-command="justifyCenter" class="e-btn hasTip" id="justifyCenter" title="<?php echo JText::_('COM_KA_EDITOR_JCENTER'); ?>"></li>
+					<li data-wysihtml5-command="justifyRight" class="e-btn hasTip" id="justifyRight" title="<?php echo JText::_('COM_KA_EDITOR_JRIGHT'); ?>"></li>
+					<li data-wysihtml5-command="justifyFull" class="e-btn hasTip" id="justifyFull" title="<?php echo JText::_('COM_KA_EDITOR_J'); ?>"></li>
 					<li class="e-btn separator"></li>
-					<li data-wysihtml5-command="insertUnorderedList" class="e-btn hasTooltip" id="ul" title="<?php echo JText::_('COM_KA_EDITOR_UL'); ?>"></li>
-					<li data-wysihtml5-command="insertOrderedList" class="e-btn hasTooltip" id="ol" title="<?php echo JText::_('COM_KA_EDITOR_OL'); ?>"></li>
+					<li data-wysihtml5-command="insertUnorderedList" class="e-btn hasTip" id="ul" title="<?php echo JText::_('COM_KA_EDITOR_UL'); ?>"></li>
+					<li data-wysihtml5-command="insertOrderedList" class="e-btn hasTip" id="ol" title="<?php echo JText::_('COM_KA_EDITOR_OL'); ?>"></li>
 					<li class="e-btn separator"></li>
-					<li class="e-btn hasTooltip font" title="<?php echo JText::_('COM_KA_EDITOR_FONT'); ?>">
+					<li class="e-btn hasTip font" title="<?php echo JText::_('COM_KA_EDITOR_FONT'); ?>">
 						<div class="dropdown" data-uk-dropdown="{mode:'click'}">
 							<span class="dropdown-toggle" data-toggle="dropdown"></span>
 							<ul id="font-type-list" class="dropdown-menu uk-dropdown" role="menu" aria-labelledby="dLabel">
@@ -148,7 +148,7 @@
 							</ul>
 						</div>
 					</li>
-					<li class="e-btn hasTooltip font-size" title="<?php echo JText::_('COM_KA_EDITOR_FONTSIZE'); ?>">
+					<li class="e-btn hasTip font-size" title="<?php echo JText::_('COM_KA_EDITOR_FONTSIZE'); ?>">
 						<div class="dropdown" data-uk-dropdown="{mode:'click'}">
 							<span class="dropdown-toggle" data-toggle="dropdown"></span>
 							<ul id="font-size-list" class="dropdown-menu uk-dropdown" role="menu" aria-labelledby="dLabel">
@@ -172,13 +172,13 @@
 						</div>
 					</li>
 					<li class="e-btn separator"></li>
-					<li data-wysihtml5-command="formatInline" data-wysihtml5-command-value="q" class="e-btn hasTooltip" id="q" title="<?php echo JText::_('COM_KA_EDITOR_QUOTE'); ?>"></li>
-					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="blockquote" class="e-btn hasTooltip" id="blockquote" title="<?php echo JText::_('COM_KA_EDITOR_BLOCKQUOTE'); ?>"></li>
+					<li data-wysihtml5-command="formatInline" data-wysihtml5-command-value="q" class="e-btn hasTip" id="q" title="<?php echo JText::_('COM_KA_EDITOR_QUOTE'); ?>"></li>
+					<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="blockquote" class="e-btn hasTip" id="blockquote" title="<?php echo JText::_('COM_KA_EDITOR_BLOCKQUOTE'); ?>"></li>
 					<li class="e-btn separator"></li>
-					<li data-wysihtml5-command="undo" class="e-btn hasTooltip" id="undo" title="<?php echo JText::_('COM_KA_EDITOR_UNDO'); ?>"></li>
-					<li data-wysihtml5-command="redo" class="e-btn hasTooltip" id="redo" title="<?php echo JText::_('COM_KA_EDITOR_REDO'); ?>"></li>
+					<li data-wysihtml5-command="undo" class="e-btn hasTip" id="undo" title="<?php echo JText::_('COM_KA_EDITOR_UNDO'); ?>"></li>
+					<li data-wysihtml5-command="redo" class="e-btn hasTip" id="redo" title="<?php echo JText::_('COM_KA_EDITOR_REDO'); ?>"></li>
 					<li class="e-btn separator"></li>
-					<li data-wysihtml5-action="change_view" class="e-btn hasTooltip" id="change_view" title="<?php echo JText::_('COM_KA_EDITOR_HTML'); ?>"></li>
+					<li data-wysihtml5-action="change_view" class="e-btn hasTip" id="change_view" title="<?php echo JText::_('COM_KA_EDITOR_HTML'); ?>"></li>
 				</ul>
 				<p><?php echo $this->form->getInput('review'); ?></p>
 				<div class="select-type"><?php echo $this->form->getLabel('type'); ?><?php echo $this->form->getInput('type'); ?></div>

@@ -578,6 +578,7 @@ div.rating {
 }
 
 .review-row-title {
+	font-weight: bold;
 	padding: 4px 6px;
 }
 
@@ -999,11 +1000,6 @@ div.rating {
 .flowplayer .fp-logo {
 	display: block;
 	opacity: 1;
-}
-
-.tags {
-	background: url('../images/icons/tag_16.png') no-repeat left center;
-	padding-left: 18px;
 }
 
 .form-horizontal .control-label {

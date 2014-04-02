@@ -136,8 +136,7 @@ class GlobalHelper {
 					'components/com_kinoarhiv/assets/players/videojs/video-js.css'
 				),
 				'js'=>array(
-					'components/com_kinoarhiv/assets/players/videojs/video.js',
-					'components/com_kinoarhiv/assets/players/videojs/videojs.persistvolume.js'
+					'components/com_kinoarhiv/assets/players/videojs/video.js'
 				)
 			)
 		);

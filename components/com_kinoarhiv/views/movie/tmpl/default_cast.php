@@ -75,17 +75,20 @@
 		<?php echo $this->loadTemplate('tabs'); ?>
 		<div class="info">
 			<div>
-				<?php for ($i=0, $n=count($this->item->careers['crew']); $i<$n; $i++):
-					$career = $this->item->careers['crew'][$i];?>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($career); ?>"><?php echo $career; ?></a><?php if ($i+1 == $n) {
-					} else {
-						echo ', ';
-					} ?>
-				<?php endfor; ?>
+				<?php if (count($this->item->careers['crew']) > 0):
+					for ($i=0, $n=count($this->item->careers['crew']); $i<$n; $i++):
+						$career = $this->item->careers['crew'][$i];?>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($career); ?>"><?php echo $career; ?></a><?php if ($i+1 == $n) {
+						} else {
+							echo ', ';
+						} ?>
+					<?php endfor;
+				endif; ?>
 			</div>
 			<div>
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['cast']); ?>"><?php echo $this->item->careers['cast']; ?></a><?php if (isset($this->item->careers['dub']) && count($this->item->careers['dub']) > 0): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['dub']); ?>"><?php echo $this->item->careers['dub']; ?></a><?php endif; ?>
+				<?php if (!empty($this->item->careers['cast'])): ?><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['cast']); ?>"><?php echo $this->item->careers['cast']; ?></a><?php endif; ?><?php if (!empty($this->item->careers['dub'])): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($this->item->careers['dub']); ?>"><?php echo $this->item->careers['dub']; ?></a><?php endif; ?>
 			</div><br />
+
 			<?php if (count($this->item->crew) > 0):
 				foreach ($this->item->crew as $row): ?>
 				<div class="ui-corner-all ui-widget-header header-small"><a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?></div>
@@ -108,9 +111,8 @@
 					<?php endforeach; ?>
 				</div>
 				<?php endforeach;
-			else: ?>
-				<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-			<?php endif; ?>
+			endif; ?>
+
 			<?php if (count($this->item->cast) > 0):
 				foreach ($this->item->cast as $row): ?>
 				<div class="ui-corner-all ui-widget-header header-small"><a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?><span class="dub"><?php echo JText::_('COM_KA_CAST_DUB'); ?></span></div>
@@ -145,9 +147,8 @@
 					<?php endforeach; ?>
 				</div>
 				<?php endforeach;
-			else: ?>
-				<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-			<?php endif; ?>
+			endif; ?>
+
 			<?php if (count($this->item->dub) > 0):
 				foreach ($this->item->dub as $row): ?>
 				<div class="ui-corner-all ui-widget-header header-small"><a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?></div>
@@ -170,9 +171,8 @@
 					<?php endforeach; ?>
 				</div>
 				<?php endforeach;
-			else: ?>
-				<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-			<?php endif; ?>
+			endif; ?>
+
 		</div>
 	</article>
 </div>

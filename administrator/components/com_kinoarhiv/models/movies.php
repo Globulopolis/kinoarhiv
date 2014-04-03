@@ -746,7 +746,7 @@ class KinoarhivModelMovies extends JModelList {
 
 		$db->setQuery("SELECT `n`.`id` AS `name_id`, `n`.`name`, `n`.`latin_name`, `t`.`type`, `t`.`role`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `t`.`ordering`"
 			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = ".(int)$id
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `d` ON `d`.`id` = `t`.`dub_id`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`dub_id` = `n`.`id`"
 			. $where

@@ -3,6 +3,7 @@ $input = JFactory::getApplication()->input;
 $award_id = $input->get('award_id', 0, 'int');
 ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.ui.tooltip.min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('.hasTip, .hasTooltip').tooltip({
@@ -110,12 +111,6 @@ $award_id = $input->get('award_id', 0, 'int');
 			},
 			escapeMarkup: function(m) { return m; }
 		});
-
-		$('#form_aw_year').datepicker({
-			dateFormat: 'yy',
-			firstDay: 1,
-			changeYear: true
-		});
 	});
 </script>
 <div class="row-fluid">
@@ -135,12 +130,8 @@ $award_id = $input->get('award_id', 0, 'int');
 					</div>
 				</div>
 				<div class="control-group">
-					<div class="control-label">
-						<label id="form_aw_year-lbl" for="form_aw_year"><?php echo JText::_('COM_KA_FIELD_AW_YEAR'); ?> <span class="star">*</span></label>
-					</div>
-					<div class="controls">
-						<?php echo $this->form->getInput('aw_year'); ?>
-					</div>
+					<div class="control-label"><?php echo $this->form->getLabel('aw_year'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('aw_year'); ?></div>
 				</div>
 				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('aw_desc'); ?></div>

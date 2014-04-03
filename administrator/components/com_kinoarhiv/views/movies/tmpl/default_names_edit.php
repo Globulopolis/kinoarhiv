@@ -4,6 +4,7 @@ $movie_id = $input->get('movie_id', 0, 'int');
 $name_id = $input->get('name_id', 0, 'int');
 ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.ui.tooltip.min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('.hasTip, .hasTooltip').tooltip({
@@ -33,7 +34,7 @@ $name_id = $input->get('name_id', 0, 'int');
 			}
 		});
 
-		$('.form_career button, .form_name button').button();
+		$('#form_career_apply, #form_career_cancel, #form_name_apply, #form_name_cancel').button();
 		$('a.quick-add').click(function(e){
 			e.preventDefault();
 
@@ -218,10 +219,6 @@ $name_id = $input->get('name_id', 0, 'int');
 			escapeMarkup: function(m) { return m; }
 		});
 
-		$('#form_n_date_of_birth').datepicker({
-			dateFormat: 'yy-mm-dd',
-			firstDay: 1
-		});
 		$('#form_is_directors').change(function(){
 			if (this.value == 1) {
 				$('#form_is_actors').val(0);

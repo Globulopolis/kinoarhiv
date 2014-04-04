@@ -204,7 +204,7 @@
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&frontpage=1',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -232,13 +232,13 @@
 				FileUploaded: function(up, file, info){
 					var obj = $.parseJSON(info.response);
 					var file = $.parseJSON(obj.id);
-					var url = '<?php echo JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'; ?>';
+					var url = '<?php echo (JString::substr($this->params->get('media_posters_root_www'), 0, 1) == '/') ? $this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/' : JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'; ?>';
 
 					blockUI('show');
 					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&format=raw',
 						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
 					).done(function(response){
-						$('img.movie-poster-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime());
+						$('img.movie-poster-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
 						$('img.movie-poster-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
 						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&_id[]='+ file.id +'&format=raw');
 						blockUI();
@@ -268,8 +268,14 @@
 			}
 
 			blockUI('show');
-			$.post($(this).attr('href'), { '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
-			).done(function(response){
+			$.post($(this).attr('href'), { '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }, function(response){
+				
+				if (typeof response !== 'object' && response != "") {
+					showMsg('#system-message-container', response);
+				} else {
+					$('img.movie-poster-preview').attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png').removeClass('y-poster');
+					$('img.movie-poster-preview').parent('a').attr('href', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
+				}
 				blockUI();
 			}).fail(function(xhr, status, error){
 				showMsg('#system-message-container', error);

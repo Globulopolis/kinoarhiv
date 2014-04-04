@@ -323,9 +323,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		if (count($errors) > 0) {
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
 				if ($errors[$i] instanceof Exception) {
-					$app->enqueueMessage($errors[$i]->getMessage(), 'error');
+					if ($app->input->get('format', 'html', 'word') == 'raw') {
+						echo $errors[$i]->getMessage()."\n";
+					} else {
+						$app->enqueueMessage($errors[$i]->getMessage(), 'error');
+					}
 				} else {
-					$app->enqueueMessage($errors[$i], 'error');
+					if ($app->input->get('format', 'html', 'word') == 'raw') {
+						echo $errors[$i]."\n";
+					} else {
+						$app->enqueueMessage($errors[$i], 'error');
+					}
 				}
 			}
 		}

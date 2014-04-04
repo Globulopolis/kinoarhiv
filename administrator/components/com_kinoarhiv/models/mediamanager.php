@@ -178,7 +178,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $query;
 	}
 
-	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $type=null, $id, $trailer_id=0) {
+	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $type=null, $id, $trailer_id=0, $frontpage=1) {
 		$db = $this->getDBO();
 
 		if (!is_null($type)) {
@@ -187,7 +187,7 @@ class KinoarhivModelMediamanager extends JModelList {
 			}
 
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies_gallery')." (`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`)"
-				. "\n VALUES ('', '".$filename."', '".floor($image_sizes[0]).'x'.floor($image_sizes[1])."', '".(int)$id."', '".(int)$type."', '0', '1')");
+				. "\n VALUES ('', '".$filename."', '".floor($image_sizes[0]).'x'.floor($image_sizes[1])."', '".(int)$id."', '".(int)$type."', '".(int)$frontpage."', '1')");
 			$result['success'] = $db->execute();
 			$result['filename'] = $filename;
 			$result['id'] = $db->insertid();
@@ -362,10 +362,25 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		if ($section == 'movie') {
 			if ($type == 'gallery') {
+				if (empty($ids[0])) {
+					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+					return false;
+				}
+
 				$db->setQuery("SELECT `id`, `filename`"
 					. "\n FROM ".$db->quoteName('#__ka_movies_gallery')
 					. "\n WHERE `id` IN (".implode(',', $ids).")");
-				$files_obj = $db->loadObjectList();
+				try {
+					$files_obj = $db->loadObjectList();
+
+					if (count($files_obj) == 0) {
+						echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+						return false;
+					}
+				} catch(Exception $e) {
+					$this->setError($e->getMessage());
+					return false;
+				}
 
 				$db->setDebug(true);
 				$db->lockTable('#__ka_movies_gallery');
@@ -395,10 +410,25 @@ class KinoarhivModelMediamanager extends JModelList {
 				$db->unlockTables();
 				$db->setDebug(false);
 			} elseif ($type == 'trailers') {
+				if (empty($ids[0])) {
+					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+					return false;
+				}
+
 				$db->setQuery("SELECT `id`, `screenshot`, `filename`, `_subtitles`, `_chapters`"
 					. "\n FROM ".$db->quoteName('#__ka_trailers')
 					. "\n WHERE `id` IN (".implode(',', $ids).")");
-				$rows = $db->loadObjectList();
+				try {
+					$rows = $db->loadObjectList();
+
+					if (count($rows) == 0) {
+						echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+						return false;
+					}
+				} catch(Exception $e) {
+					$this->setError($e->getMessage());
+					return false;
+				}
 
 				$path = $this->getPath('movie', 'trailers', 0, $movie_id);
 				$db->setDebug(true);

@@ -1,7 +1,5 @@
 <?php defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
-//echo '<pre>';
-//print_r($this->form);
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>

@@ -15,6 +15,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$id = 0;
 		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$movie_id = $app->input->get('id', 0, 'int');
+		$frontpage = $app->input->get('frontpage', 0, 'int');
 
 		// Getting extensions from settings
 		$original_extension = pathinfo($dest_dir.$filename, PATHINFO_EXTENSION);
@@ -184,7 +185,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					}
 
 					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
-					$result = $model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id);
+					$result = $model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id, 0, $frontpage);
 					$id = $result;
 				} elseif ($app->input->get('type') == 'trailers') {
 					$alias = $model->getAlias($section, $movie_id);
@@ -293,9 +294,28 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		// Unpublish item from frontpage
 		$result = $model->publishOnFrontpage((int)$action);
+		$errors = $model->getErrors();
+
+		if (count($errors) > 0) {
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					if ($app->input->get('format', 'html', 'word') == 'raw') {
+						echo $errors[$i]->getMessage()."\n";
+					} else {
+						$app->enqueueMessage($errors[$i]->getMessage(), 'error');
+					}
+				} else {
+					if ($app->input->get('format', 'html', 'word') == 'raw') {
+						echo $errors[$i]."\n";
+					} else {
+						$app->enqueueMessage($errors[$i], 'error');
+					}
+				}
+			}
+		}
 
 		if ($app->input->get('reload', 1, 'int') == 1) {
-			$this->setRedirect(JURI::getInstance()->toString(), $result);
+			$this->setRedirect(JURI::getInstance()->toString());
 		}
 	}
 
@@ -306,10 +326,30 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	public function publish($action=1) {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
 		$result = $model->publish((int)$action);
+		$errors = $model->getErrors();
 
-		$this->setRedirect(JURI::getInstance()->toString(), $result);
+		if (count($errors) > 0) {
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					if ($app->input->get('format', 'html', 'word') == 'raw') {
+						echo $errors[$i]->getMessage()."\n";
+					} else {
+						$app->enqueueMessage($errors[$i]->getMessage(), 'error');
+					}
+				} else {
+					if ($app->input->get('format', 'html', 'word') == 'raw') {
+						echo $errors[$i]."\n";
+					} else {
+						$app->enqueueMessage($errors[$i], 'error');
+					}
+				}
+			}
+		}
+
+		$this->setRedirect(JURI::getInstance()->toString());
 	}
 
 	public function remove() {

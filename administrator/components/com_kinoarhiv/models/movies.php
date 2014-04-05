@@ -302,7 +302,7 @@ class KinoarhivModelMovies extends JModelList {
 				return $result;
 			}
 
-			$db->setQuery("SELECT `m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext`,
+			$db->setQuery("SELECT `m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`alias` AS `alias_orig`, `m`.`introtext`,
 				`m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`year`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`,
 				`m`.`ua_rate`, `m`.`mpaa`, `m`.`length`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`,
 				`m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`,
@@ -644,6 +644,11 @@ class KinoarhivModelMovies extends JModelList {
 				$db->execute();
 			} else {
 				$app->input->set('id', array($id));
+
+				// Alias was changed? Move all linked items into new filesystem location.
+				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
+					$this->moveItems($id, $alias, $data['alias_orig']);
+				}
 			}
 
 			return true;
@@ -657,10 +662,41 @@ class KinoarhivModelMovies extends JModelList {
 	}
 
 	/**
+	 * Method to move all items which linked to the movie into a new location, if movie alias was changed.
+	 *
+	 * @param   int      $id          Movie ID.
+	 * @param   string   $old_alias   Old movie alias.
+	 * @param   string   $new_alias   New movie alias.
+	 *
+	 * @return  boolean   True on success
+	 *
+	*/
+	protected function moveItems($id, $old_alias, $new_alias) {
+		if (empty($id) || empty($old_alias) || empty($new_alias)) {
+			$this->setError('Movie ID or alias cannot be null or empty!');
+
+			return false;
+		} else {
+			jimport('joomla.filesystem.folder');
+
+			$old_alias = JString::substr($old_alias, 0, 1);
+			$new_alias = JString::substr($new_alias, 0, 1);
+
+			// Move gallery items
+			
+
+			// Move trailers
+			
+		}
+
+		return true;
+	}
+
+	/**
 	 * Update statistics on genres
 	 *
-	 * @param   string   $old		Original genres list(before edit).
-	 * @param   string   $new		New genres list.
+	 * @param   string   $old   Original genres list(before edit).
+	 * @param   string   $new   New genres list.
 	 *
 	 * @return  mixed   True on success, exception otherwise
 	 *

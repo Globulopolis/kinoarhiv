@@ -242,6 +242,7 @@
 						$('img.movie-poster-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
 						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&_id[]='+ file.id +'&format=raw');
 						blockUI();
+						$('.layout_img_upload').dialog('close');
 					}).fail(function(xhr, status, error){
 						showMsg('#system-message-container', error);
 						blockUI();
@@ -350,6 +351,7 @@
 						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>
+				<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('slogan', $this->form_edit_group); ?></div>

@@ -178,19 +178,53 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $query;
 	}
 
-	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $type=null, $id, $trailer_id=0, $frontpage=1) {
+	/**
+	 * Method to save image information into DB. Accepted gallery items for movie and poster for trailer.
+	 *
+	 * @param   binary   $image         Image source.
+	 * @param   string   $filename      System filename.
+	 * @param   array    $image_sizes   Array with the sizes.
+	 * @param   int      $type          Item type.
+	 * @param   int      $id            Movie ID.
+	 * @param   int      $trailer_id    Trailer ID.
+	 * @param   int      $frontpage     Item published on frontpage.
+	 *
+	 * @return   boolean  True on success.
+	 */
+	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $type=null, $id, $trailer_id=0, $frontpage=0) {
 		$db = $this->getDBO();
+		$query = $db->getQuery(true);
 
 		if (!is_null($type)) {
 			if (count($image_sizes) == 0) {
 				$image_sizes = array(0=>0, 1=>0);
 			}
+			$dimension = floor($image_sizes[0]).'x'.floor($image_sizes[1]);
 
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies_gallery')." (`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`)"
-				. "\n VALUES ('', '".$filename."', '".floor($image_sizes[0]).'x'.floor($image_sizes[1])."', '".(int)$id."', '".(int)$type."', '".(int)$frontpage."', '1')");
-			$result['success'] = $db->execute();
-			$result['filename'] = $filename;
-			$result['id'] = $db->insertid();
+			$query->insert($db->quoteName('#__ka_movies_gallery'), 'id')
+				->columns('`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`')
+				->values("'', '".$filename."', '".$dimension."', '".(int)$id."', '".(int)$type."', '".(int)$frontpage."', '1'");
+			$db->setQuery($query);
+
+			try {
+				$result['success'] = $db->execute();
+				$result['filename'] = $filename;
+				$result['id'] = $db->insertid();
+
+				// Unpublish all items from frontpage for type of poster and movie and not for a last inserted row.
+				if ($frontpage == 1) {
+					$query->update($db->quoteName('#__ka_movies_gallery'))
+						->set("`poster_frontpage` = '0'")
+						->where("`movie_id` = ".(int)$id." AND `type` = 2 AND `id` != ".$result['id']);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			} catch (Exception $e) {
+				$result['success'] = false;
+				$result['filename'] = $filename;
+				$result['id'] = 0;
+				return false;
+			}
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".$filename."' WHERE `id` = ".(int)$trailer_id);
 			$result['success'] = $db->execute();
@@ -203,16 +237,19 @@ class KinoarhivModelMediamanager extends JModelList {
 	/**
 	 * Method to publish or unpublish posters or trailer on movie info page(not on posters or trailers page)
 	 *
-	 * @param	int		 $action		  0 - unpublish from frontpage, 1 - publish poster on frontpage
+	 * @param   int     $action     0 - unpublish from frontpage, 1 - publish poster on frontpage.
+	 * @param   int     $type       Item type.
+	 * @param   int     $movie_id   Movie ID.
+	 * @param   array   $id         Array of IDs which must be published or unpublished.
 	 *
-	 * @return array
+	 * @return   boolean  True on success.
 	 */
-	public function publishOnFrontpage($action) {
+	public function publishOnFrontpage($action, $type=null, $movie_id=0, $id=array()) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$type = $app->input->get('type', '', 'word');
-		$movie_id = $app->input->get('id', 0, 'int');
-		$id = $app->input->get('_id', array(), 'array');
+		$type = $app->input->get('type', $type, 'word');
+		$movie_id = $app->input->get('id', $movie_id, 'int');
+		$id = $app->input->get('_id', $id, 'array');
 
 		if ($type == 'gallery') {
 			// Reset all values to 0
@@ -220,8 +257,6 @@ class KinoarhivModelMediamanager extends JModelList {
 			
 			try {
 				$db->execute();
-
-				return true;
 			} catch(Exception $e) {
 				$this->setError($e->getMessage());
 
@@ -230,20 +265,21 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			if (!isset($id[0]) || empty($id[0])) {
 				$this->setError('Unknown ID');
-				return $this->getError();
+
+				return false;
 			}
 
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `poster_frontpage` = '".(int)$action."' WHERE `id` = ".(int)$id[0]);
 
 			try {
 				$db->execute();
-
-				return true;
 			} catch(Exception $e) {
 				$this->setError($e->getMessage());
 
 				return false;
 			}
+
+			return true;
 		} elseif ($type == 'trailers') {
 			// We need to check if this is the movie to avoid errors when publishing a movie and trailer
 			$db->setQuery("SELECT `is_movie` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$id[0]);
@@ -259,8 +295,6 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			try {
 				$db->execute();
-
-				return true;
 			} catch(Exception $e) {
 				$this->setError($e->getMessage());
 
@@ -269,21 +303,21 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			if (!isset($id[0]) || empty($id[0])) {
 				$this->setError('Unknown ID');
-				return $this->getError();
+				
+				return false;
 			}
 
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '".(int)$action."' WHERE `id` = ".(int)$id[0]);
 
-			
 			try {
 				$db->execute();
-
-				return true;
 			} catch(Exception $e) {
 				$this->setError($e->getMessage());
 
 				return false;
 			}
+
+			return true;
 		}
 	}
 
@@ -302,13 +336,13 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		try {
 			$db->execute();
-
-			return true;
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
 		}
+
+		return true;
 	}
 
 	public function apply($data) {
@@ -489,9 +523,9 @@ class KinoarhivModelMediamanager extends JModelList {
 	/**
 	 * Method to remove a file.
 	 *
-	 * @param   mixed   $path	Array of the paths or single path.
+	 * @param    mixed   $path   Array of the paths or single path.
 	 *
-	 * @return  mixed   True on success, false otherwise.
+	 * @return   mixed   True on success, false otherwise.
 	 *
 	 */
 	protected function removeFile($path) {

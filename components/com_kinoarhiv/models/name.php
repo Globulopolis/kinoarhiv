@@ -69,8 +69,8 @@ class KinoarhivModelName extends JModelList {
 		// Select movies
 		$db->setQuery("SELECT `m`.`id`, `m`.`title`, `m`.`alias`, `m`.`year`, `r`.`role`"
 			. "\n FROM ".$db->quoteName('#__ka_movies')." AS `m`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`name_id` = ".(int)$id
-			. "\n WHERE `id` IN (SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `name_id` = ".(int)$id.") AND `m`.`state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`name_id` = ".(int)$id." AND `r`.`movie_id` = `m`.`id`"
+			. "\n WHERE `id` IN (SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `name_id` = ".(int)$id.") AND `m`.`state` = 1 AND `m`.`access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")"
 			. "\n ORDER BY `year` ASC");
 		$result->movies = $db->loadObjectList();
 
@@ -285,62 +285,4 @@ class KinoarhivModelName extends JModelList {
 
 		return $new_state;
 	}
-
-	/*public function favorite() {
-		$db = $this->getDBO();
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$action = $app->input->get('action', '', 'cmd');
-		$name_id = $app->input->get('id', 0, 'int');
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$success = false;
-		$url = '';
-		$text = '';
-
-		$db->setQuery("SELECT `favorite` FROM `#__ka_user_marked_names` WHERE `uid` = ".(int)$user->get('id')." AND `name_id` = ".(int)$name_id);
-		$query = $db->loadResult();
-
-		if ($action == 'add') {
-			if ($query == 1) {
-				$message = JText::_('COM_KA_FAVORITE_ERROR');
-			} else {
-				if (is_null($query)) {
-					$db->setQuery("INSERT INTO `#__ka_user_marked_names` (`uid`, `name_id`, `favorite`) VALUES ('".$user->get('id')."', '".(int)$name_id."', '1')");
-				} elseif ($query == 0) {
-					$db->setQuery("UPDATE `#__ka_user_marked_names` SET `favorite` = '1' WHERE `uid` = ".$user->get('id')." AND `name_id` = ".(int)$name_id);
-				}
-
-				$r = $db->execute();
-
-				if ($r) {
-					$success = true;
-					$message = JText::_('COM_KA_FAVORITE_ADDED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&view=name&task=favorite&action=delete&Itemid='.$itemid.'&id='.$name_id, false);
-					$text = JText::_('COM_KA_REMOVEFROM_FAVORITE');
-				} else {
-					$message = JText::_('JERROR_ERROR');
-				}
-			}
-		} elseif ($action == 'delete') {
-			if ($query == 1) {
-				$db->setQuery("DELETE FROM `#__ka_user_marked_names` WHERE `uid` = ".$user->get('id')." AND `name_id` = ".(int)$name_id);
-				$r = $db->execute();
-
-				if ($r) {
-					$success = true;
-					$message = JText::_('COM_KA_FAVORITE_REMOVED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&view=name&task=favorite&action=add&Itemid='.$itemid.'&id='.$name_id, false);
-					$text = JText::_('COM_KA_ADDTO_FAVORITE');
-				} else {
-					$message = JText::_('JERROR_ERROR');
-				}
-			} else {
-				$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-			}
-		} else {
-			$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-		}
-
-		return array('success'=>$success, 'message'=>$message, 'url'=>$url, 'text'=>$text);
-	}*/
 }

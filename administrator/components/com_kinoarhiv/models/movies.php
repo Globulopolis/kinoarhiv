@@ -424,7 +424,7 @@ class KinoarhivModelMovies extends JModelList {
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
+		/*$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
 
 		try {
 			$db->execute();
@@ -434,7 +434,7 @@ class KinoarhivModelMovies extends JModelList {
 			$this->setError($e->getMessage());
 
 			return false;
-		}
+		}*/
 	}
 
 	public function apply($data) {
@@ -647,7 +647,7 @@ class KinoarhivModelMovies extends JModelList {
 
 				// Alias was changed? Move all linked items into new filesystem location.
 				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
-					$this->moveItems($id, $alias, $data['alias_orig']);
+					$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
 				}
 			}
 
@@ -662,31 +662,79 @@ class KinoarhivModelMovies extends JModelList {
 	}
 
 	/**
-	 * Method to move all items which linked to the movie into a new location, if movie alias was changed.
+	 * Method to move all media items which is linked to the movie into a new location, if movie alias was changed.
 	 *
 	 * @param   int      $id          Movie ID.
 	 * @param   string   $old_alias   Old movie alias.
 	 * @param   string   $new_alias   New movie alias.
+	 * @param   object   $params      Component parameters.
 	 *
 	 * @return  boolean   True on success
 	 *
 	*/
-	protected function moveItems($id, $old_alias, $new_alias) {
+	protected function moveMediaItems($id, $old_alias, $new_alias, &$params) {
 		if (empty($id) || empty($old_alias) || empty($new_alias)) {
-			$this->setError('Movie ID or alias cannot be null or empty!');
+			$this->setError('Movie ID or alias cannot be empty!');
 
 			return false;
 		} else {
 			jimport('joomla.filesystem.folder');
+			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
+			$fs_helper = new KAFilesystemHelper;
 
+			$error = false;
 			$old_alias = JString::substr($old_alias, 0, 1);
 			$new_alias = JString::substr($new_alias, 0, 1);
 
 			// Move gallery items
-			
+			$path_poster = $params->get('media_posters_root');
+			$path_wallpp = $params->get('media_wallpapers_root');
+			$path_screen = $params->get('media_scr_root');
+			$old_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
+			$old_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
+			$old_folder_screen = $path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'screenshots';
+			$new_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
+			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
+			$new_folder_screen = $path_screen.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'screenshots';
 
-			// Move trailers
-			
+			if (!KAFilesystemHelper::move(
+				array($old_folder_poster, $old_folder_wallpp, $old_folder_screen),
+				array($new_folder_poster, $new_folder_wallpp, $new_folder_screen))
+				) {
+				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
+			}
+
+			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
+			if ($fs_helper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+			if ($fs_helper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+			if ($fs_helper::getFolderSize($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+
+			// Move trailers and their content
+			$path_trailers = $params->get('media_trailers_root');
+			$old_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id;
+			$new_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id;
+
+			if (KAFilesystemHelper::move($old_folder_trailers, $new_folder_trailers, true)) {
+				if ($fs_helper::getFolderSize($old_folder_trailers) === 0) {
+					if (file_exists($old_folder_trailers)) {
+						JFolder::delete($old_folder_trailers);
+					}
+				}
+			} else {
+				$this->setError('Error while moving the files from trailer folders into new location! See log for more information.');
+			}
 		}
 
 		return true;

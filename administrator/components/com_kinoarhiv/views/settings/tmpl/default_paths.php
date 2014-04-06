@@ -4,7 +4,7 @@
 	<?php foreach ($this->form->getFieldset('paths') as $field): ?>
 		<div class="control-group">
 			<div class="control-label"><?php echo $field->label; ?></div>
-			<div class="controls"><?php echo $field->input; ?></div>
+			<div class="controls settings-paths"><?php echo $field->input; ?></div>
 		</div>
 	<?php endforeach; ?>
 </fieldset>

@@ -27,6 +27,12 @@ if ($this->item->attribs->movie_collapsed === '') {
 } else {
 	$mov_collapsed = '';
 }
+
+if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/') {
+	$rating_image_www = JURI::base().JString::substr($this->params->get('media_rating_image_root_www'), 1);
+} else {
+	$rating_image_www = $this->params->get('media_rating_image_root_www');
+}
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
@@ -248,13 +254,13 @@ if ($this->item->attribs->movie_collapsed === '') {
 							<div style="text-align: center;">
 								<?php if (!empty($this->item->imdb_id)) {
 									if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$this->item->id.'_big.png')) { ?>
-									<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+									<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
 									<?php }
 								} ?>
 								<?php if (!empty($this->item->kp_id)): ?>
 									<a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
 									<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
-										<img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0" />
+										<img src="<?php echo $rating_image_www; ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0" />
 									<?php else: ?>
 										<img src="http://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;" />
 									<?php endif; ?>
@@ -262,7 +268,7 @@ if ($this->item->attribs->movie_collapsed === '') {
 								<?php endif; ?>
 								<?php if (!empty($this->item->rottentm_id)) {
 									if (file_exists($this->params->get('media_rating_image_root').'/rottentomatoes/'.$this->item->id.'_big.png')) { ?>
-									<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+									<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
 									<?php }
 								} ?>
 							</div>

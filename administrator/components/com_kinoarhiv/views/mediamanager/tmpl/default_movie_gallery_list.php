@@ -118,7 +118,7 @@ $sortFields = $this->getSortFields();
 				$('.layout_img_upload').dialog({
 					modal: true,
 					height: 330,
-					width: 600,
+					width: 650,
 					close: function(event, ui){
 						if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
 							document.location.reload();

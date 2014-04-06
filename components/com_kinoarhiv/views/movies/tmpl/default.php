@@ -8,6 +8,11 @@ if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_revie
 		$custom_review_comp = true;
 	}
 }
+if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/') {
+	$rating_image_www = JURI::base().JString::substr($this->params->get('media_rating_image_root_www'), 1);
+} else {
+	$rating_image_www = $this->params->get('media_rating_image_root_www');
+}
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
@@ -164,13 +169,13 @@ if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_revie
 									<div style="text-align: center; display: inline-block;">
 										<?php if (!empty($item->imdb_id)) {
 											if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$item->id.'_big.png')) { ?>
-											<a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/imdb/<?php echo $item->id; ?>_big.png" border="0" /></a>
+											<a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0" /></a>
 											<?php }
 										} ?>
 										<?php if (!empty($item->kp_id)): ?>
 											<a href="http://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank">
 											<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
-												<img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/kinopoisk/<?php echo $item->id; ?>_big.png" border="0" />
+												<img src="<?php echo $rating_image_www; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" border="0" />
 											<?php else: ?>
 												<img src="http://www.kinopoisk.ru/rating/<?php echo $item->kp_id; ?>.gif" border="0" style="padding-left: 1px;" />
 											<?php endif; ?>
@@ -178,7 +183,7 @@ if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_revie
 										<?php endif; ?>
 										<?php if (!empty($item->rottentm_id)): ?>
 											<?php if (file_exists($this->params->get('media_rating_image_root').'/rottentomatoes/'.$item->id.'_big.png')): ?>
-											<a href="http://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $this->params->get('media_rating_image_root_www'); ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0" /></a>
+											<a href="http://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0" /></a>
 											<?php endif; ?>
 										<?php endif; ?>
 									</div>

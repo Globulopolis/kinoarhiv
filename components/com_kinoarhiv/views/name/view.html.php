@@ -68,7 +68,11 @@ class KinoarhivViewName extends JViewLegacy {
 			$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$no_cover.'.png';
 			$item->y_poster = '';
 		} else {
-			$item->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
+			if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+				$item->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
+			} else {
+				$item->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$item->filename;
+			}
 			$item->y_poster = ' y-poster';
 		}
 
@@ -142,10 +146,18 @@ class KinoarhivViewName extends JViewLegacy {
 					$items[$key]->image = 'javascript:void(0);';
 					$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_wp.png';
 				} else {
-					$items[$key]->image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
+					if (JString::substr($params->get('media_actor_wallpapers_root_www'), 0, 1) == '/') {
+						$items[$key]->image = JUri::base().JString::substr($params->get('media_actor_wallpapers_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
+					} else {
+						$items[$key]->image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/'.$_item->filename;
+					}
 
 					if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
-						$items[$key]->th_image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+						if (JString::substr($params->get('media_actor_wallpapers_root_www'), 0, 1) == '/') {
+							$items[$key]->th_image = JUri::base().JString::substr($params->get('media_actor_wallpapers_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+						} else {
+							$items[$key]->th_image = $params->get('media_actor_wallpapers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/wallpapers/thumb_'.$_item->filename;
+						}
 						$items[$key]->th_width = (int)$params->get('size_x_wallpp');
 						$orig_img_size = explode('x', $_item->dimension);
 						$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);
@@ -211,10 +223,18 @@ class KinoarhivViewName extends JViewLegacy {
 						$items[$key]->th_image = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_name_cover_f.png';
 					}
 				} else {
-					$items[$key]->image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
+					if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+						$items[$key]->image = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
+					} else {
+						$items[$key]->image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/'.$_item->filename;
+					}
 
 					if (file_exists($file_path.DIRECTORY_SEPARATOR.'thumb_'.$_item->filename)) {
-						$items[$key]->th_image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+							$items[$key]->th_image = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
+						} else {
+							$items[$key]->th_image = $params->get('media_actor_photo_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/photo/thumb_'.$_item->filename;
+						}
 						$items[$key]->th_width = (int)$params->get('size_x_photo');
 						$orig_img_size = explode('x', $_item->dimension);
 						$items[$key]->th_height = floor(($items[$key]->th_width * $orig_img_size[1]) / $orig_img_size[0]);

@@ -57,8 +57,13 @@ class KinoarhivViewMovies extends JViewLegacy {
 				$item->poster_height = 128;
 				$item->y_poster = '';
 			} else {
-				$item->big_poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
-				$item->poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
+					$item->big_poster = JURI::base().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
+					$item->poster = JURI::base().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				} else {
+					$item->big_poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
+					$item->poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				}
 				$item->poster_width = (int)$params->get('size_x_posters');
 				$orig_poster_size = explode('x', $item->dimension);
 				$item->poster_height = floor(($item->poster_width * $orig_poster_size[1]) / $orig_poster_size[0]);

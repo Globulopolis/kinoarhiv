@@ -5,7 +5,7 @@
 			<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12" required="true" filter="string" size="45" />
 			<field name="year" type="text" default="" label="COM_KA_FIELD_MOVIE_YEAR" class="span6" required="true" filter="string" />
 			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6" datatype="time" timeformat="HH:mm:ss" />
-			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span10" size="45" />
+			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
 			<field name="alias_orig" type="hidden" />
 			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />

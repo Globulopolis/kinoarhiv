@@ -320,7 +320,11 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
+							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						} else {
+							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						}
 						$value->y_poster = ' y-poster';
 					}
 
@@ -347,7 +351,11 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
+							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						} else {
+							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						}
 						$value->y_poster = ' y-poster';
 					}
 
@@ -356,7 +364,11 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->dub_url_photo = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->dub_y_poster = '';
 					} else {
-						$value->dub_url_photo = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/'.$value->dub_url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
+							$value->dub_url_photo = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/'.$value->dub_url_photo;
+						} else {
+							$value->dub_url_photo = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/'.$value->dub_url_photo;
+						}
 						$value->dub_y_poster = ' y-poster';
 					}
 
@@ -391,7 +403,11 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
+							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						} else {
+							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						}
 						$value->y_poster = ' y-poster';
 					}
 
@@ -457,7 +473,11 @@ class KinoarhivModelMovie extends JModelForm {
 				$urls_arr = explode("\n", $value->urls);
 				if (count($urls_arr) > 0) {
 					$value->path = '';
-					$value->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+					if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+						$value->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+					} else {
+						$value->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+					}
 					$value->files['video'] = array();
 					$value->files['subtitles'] = array();
 					$value->files['chapters'] = array();
@@ -532,7 +552,11 @@ class KinoarhivModelMovie extends JModelForm {
 					$value->files['video'] = array();
 				}
 			} else {
-				$value->path = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
+				if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+					$value->path = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
+				} else {
+					$value->path = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
+				}
 				$value->files['video'] = json_decode($value->filename, true);
 				$value->files['video_links'] = array();
 
@@ -612,7 +636,11 @@ class KinoarhivModelMovie extends JModelForm {
 			$urls_arr = explode("\n", $result->urls);
 			if (count($urls_arr) > 0) {
 				$result->path = '';
-				$result->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+				if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+					$result->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+				} else {
+					$result->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+				}
 				$result->files['video'] = array();
 				$result->files['subtitles'] = array();
 				$result->files['chapters'] = array();
@@ -687,7 +715,11 @@ class KinoarhivModelMovie extends JModelForm {
 				$result->files['video'] = array();
 			}
 		} else {
-			$result->path = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+			if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+				$result->path = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+			} else {
+				$result->path = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+			}
 			$result->files['video'] = json_decode($result->filename, true);
 			$result->files['video_links'] = array();
 

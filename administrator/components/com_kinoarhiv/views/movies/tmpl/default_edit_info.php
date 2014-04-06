@@ -232,7 +232,7 @@
 				FileUploaded: function(up, file, info){
 					var obj = $.parseJSON(info.response);
 					var file = $.parseJSON(obj.id);
-					var url = '<?php echo (JString::substr($this->params->get('media_posters_root_www'), 0, 1) == '/') ? $this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/' : JURI::root().$this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'; ?>';
+					var url = '<?php echo (JString::substr($this->params->get('media_posters_root_www'), 0, 1) == '/') ? JURI::root().JString::substr($this->params->get('media_posters_root_www'), 1).'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/' : $this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'; ?>';
 
 					blockUI('show');
 					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&format=raw',
@@ -289,9 +289,10 @@
 
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE'); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC'); ?></p></div>').appendTo('body');
 
 			if ($(this).hasClass('info')) {
+				var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE'); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC'); ?></p></div>').appendTo('body');
+
 				$(dialog).dialog({
 					modal: true,
 					width: 800,
@@ -306,6 +307,8 @@
 					return;
 				}
 
+				var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE'); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC'); ?></p></div>').appendTo('body');
+
 				$(dialog).dialog({
 					modal: true,
 					width: 800,
@@ -319,8 +322,9 @@
 							text: '<?php echo JText::_('JMODIFY'); ?>',
 							id: 'alias-modify',
 							click: function(){
-								$('#form_movie_alias').removeAttr('readonly');
+								$('#form_movie_alias').removeAttr('readonly').trigger('focus');
 								dialog.remove();
+								$('#form_movie_alias').focus();
 							}
 						},
 						{

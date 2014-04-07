@@ -420,21 +420,164 @@ class KinoarhivModelMovies extends JModelList {
 	}
 
 	public function remove() {
+		jimport('joomla.filesystem.folder');
+		jimport('joomla.filesystem.file');
+
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		/*$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
+		// Remove award relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `item_id` IN (".implode(',', $ids).") AND `type` = 0");
 
 		try {
 			$db->execute();
-
-			return true;
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
-		}*/
+		}
+
+		// Remove country relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove genre relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove name relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove releases
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_releases')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove reviews
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove favorited and watched movies
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_marked_movies')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove user votes
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove premieres
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove media items
+		$db->setQuery("SELECT `id`, SUBSTRING(`alias`, 1, 1) AS `alias` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
+		$items = $db->loadObjectList();
+
+		foreach ($items as $item) {
+			// Delete root folders
+			if (file_exists($params->get('media_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+			if (file_exists($params->get('media_scr_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_scr_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+			if (file_exists($params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+
+			if (file_exists($params->get('media_trailers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_trailers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+
+			// Delete rating images
+			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
+				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			}
+			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
+				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			}
+			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
+				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			}
+		}
+
+		// Remove movie(s) from DB
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `movie_id`IN (".implode(',', $ids).")");
+		$db->execute();
+
+		// Remove trailers
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_trailers')." WHERE `movie_id` IN (".implode(',', $ids).")");
+		$db->execute();
+
+		return true;
 	}
 
 	public function apply($data) {

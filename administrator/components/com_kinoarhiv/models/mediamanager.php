@@ -384,6 +384,8 @@ class KinoarhivModelMediamanager extends JModelList {
 	}
 
 	public function remove() {
+		jimport('joomla.filesystem.file');
+
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -422,8 +424,8 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				$path = $this->getPath('movie', 'gallery', $tab, $movie_id).'/';
 				foreach ($files_obj as $file) {
-					$this->removeFile($path.$file->filename);
-					$this->removeFile($path.'thumb_'.$file->filename);
+					JFile::delete($path.$file->filename);
+					JFile::delete($path.'thumb_'.$file->filename);
 
 					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `id` = ".(int)$file->id.";");
 					$result = $db->execute();
@@ -471,26 +473,26 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				foreach ($rows as $row) {
 					if (!empty($row->screenshot)) {
-						$this->removeFile($path.$row->screenshot);
+						JFile::delete($path.$row->screenshot);
 					}
 
 					$video = json_decode($row->filename, true);
 					if (count($video) > 0) {
 						foreach ($video as $file) {
-							$this->removeFile($path.$file['src']);
+							JFile::delete($path.$file['src']);
 						}
 					}
 
 					$subtitles = json_decode($row->_subtitles, true);
 					if (count($subtitles) > 0) {
 						foreach ($subtitles as $file) {
-							$this->removeFile($path.$file['file']);
+							JFile::delete($path.$file['file']);
 						}
 					}
 
 					$chapters = json_decode($row->_chapters, true);
 					if (count($chapters) > 0) {
-						$this->removeFile($path.$chapters['file']);
+						JFile::delete($path.$chapters['file']);
 					}
 
 					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$row->id.";");
@@ -518,28 +520,6 @@ class KinoarhivModelMediamanager extends JModelList {
 			$this->setError(JText::_('COM_KA_ITEMS_DELETED_ERROR'));
 			return false;
 		}
-	}
-
-	/**
-	 * Method to remove a file.
-	 *
-	 * @param    mixed   $path   Array of the paths or single path.
-	 *
-	 * @return   mixed   True on success, false otherwise.
-	 *
-	 */
-	protected function removeFile($path) {
-		if (!file_exists($path) || !is_file($path)) {
-			$this->setError(JText::sprintf('COM_KA_FILE_NOTFOUND', $path));
-			return false;
-		} else {
-			if (@unlink($path) === false) {
-				$this->setError(JText::sprintf('COM_KA_FILE_DELETE_ERROR', $path));
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	protected function loadForm($name, $source = null, $options = array(), $clear = false, $xpath = false) {

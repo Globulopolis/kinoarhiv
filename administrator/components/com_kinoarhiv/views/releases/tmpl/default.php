@@ -134,7 +134,7 @@ $sortFields = $this->getSortFields();
 					<th width="15%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_RELEASE_COUNTRY', 'c.name', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap hidden-phone">
+					<th width="15%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'COM_KA_RELEASES_MEDIATYPE_TITLE', 'r.media_type', $listDirn, $listOrder); ?>
 					</th>
 					<th width="5%" class="nowrap center hidden-phone">
@@ -177,8 +177,8 @@ $sortFields = $this->getSortFields();
 					<td class="nowrap hidden-phone">
 						<?php echo ($item->name != '') ? $item->name : 'N/a'; ?>
 					</td>
-					<td class="nowrap hidden-phone">
-						<strong><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_'.$item->media_type); ?></strong>
+					<td class="hidden-phone">
+						<?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_'.$item->media_type); ?>
 					</td>
 					<td class="center hidden-phone">
 						<?php echo (int)$item->id; ?>

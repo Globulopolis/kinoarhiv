@@ -43,7 +43,7 @@ JHtml::_('behavior.keepalive');
 	}
 
 	jQuery(document).ready(function($){
-		$('input.autocomplete').each(function(){
+		$('.hasAutocomplete').each(function(){
 			var datatype = $(this).data('ac-type'),
 				allow_clear = $(this).data('allow-clear');
 

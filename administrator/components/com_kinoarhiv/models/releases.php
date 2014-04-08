@@ -90,21 +90,21 @@ class KinoarhivModelReleases extends JModelList {
 		return $query;
 	}
 
-	public function deletePremieres() {
+	public function deleteReleases() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query = true;
 
 		$db->setDebug(true);
-		$db->lockTable('#__ka_premieres');
+		$db->lockTable('#__ka_releases');
 		$db->transactionStart();
 
 		foreach ($data as $key=>$value) {
 			$_name = explode('_', $value['name']);
 			$item_id = $_name[3];
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `id` = ".(int)$item_id.";");
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_releases')." WHERE `id` = ".(int)$item_id.";");
 			$result = $db->execute();
 
 			if ($result === false) {

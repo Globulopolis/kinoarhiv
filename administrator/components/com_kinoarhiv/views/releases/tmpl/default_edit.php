@@ -4,7 +4,7 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '' || jQuery('#form_premiere_date').val() == '') {
+			if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '' || jQuery('#form_release_date').val() == '' || jQuery('#form_country_id').select2('val') == '') {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
@@ -40,7 +40,7 @@ JHtml::_('behavior.keepalive');
 			}
 		});
 
-		$('input.autocomplete').each(function(){
+		$('.hasAutocomplete').each(function(){
 			var datatype = $(this).data('ac-type'),
 				allow_clear = $(this).data('allow-clear');
 
@@ -117,6 +117,8 @@ JHtml::_('behavior.keepalive');
 				escapeMarkup: function(m) { return m; }
 			});
 		});
+
+		$('#form_media_type').select2();
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
@@ -131,7 +133,7 @@ JHtml::_('behavior.keepalive');
 		</fieldset>
 	</div>
 
-	<input type="hidden" name="controller" value="premieres" />
+	<input type="hidden" name="controller" value="releases" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id[]" value="<?php echo !empty($this->items->id) ? $this->items->id : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>

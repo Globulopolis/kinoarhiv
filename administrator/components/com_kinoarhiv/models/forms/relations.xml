@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="relations_countries">
-		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="country span5 autocomplete" filter="intval" size="11" data-ac-type="countries" />
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="movie span5 autocomplete" filter="intval" size="11" data-ac-type="movies" />
+		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="countries" />
+		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
 		<field name="ordering" type="order" data="countries" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
 	<fieldset name="relations_genres">
-		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="genre span5 autocomplete" filter="intval" size="11" data-ac-type="genres" />
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="movie span5 autocomplete" filter="intval" size="11" data-ac-type="movies" />
+		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="genres" />
+		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
 		<field name="ordering" type="order" data="genres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
 	<fieldset name="relations_awards">
-		<field name="award_id" type="awards" label="COM_KA_FIELD_AW_LABEL" required="true" class="span12 autocomplete" filter="intval" size="11" data-ac-type="awards" />
-		<field name="item_id" type="awards" label="COM_KA_FIELD_AW_ITEM_LABEL" required="true" class="span12 autocomplete" filter="intval" size="11" data-ac-type="awards" />
+		<field name="award_id" type="awards" label="COM_KA_FIELD_AW_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
+		<field name="item_id" type="awards" label="COM_KA_FIELD_AW_ITEM_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
 		<field name="desc" type="editor" class="span6" label="COM_KA_FIELD_AW_DESC" filter="JComponentHelper::filterText" rows="5" cols="7" buttons="false" />
 		<field name="year" type="text" class="span6" label="COM_KA_FIELD_AW_YEAR" filter="intval" maxlength="4" />
 		<field name="type" type="list" label="COM_KA_FIELD_AW_TYPE" class="span6" filter="intval" size="1">
@@ -22,7 +22,7 @@
 		<field name="id" type="hidden" default="" />
 	</fieldset>
 	<fieldset name="relations_careers">
-		<field name="career_id" type="careers" label="COM_KA_CAREER_FIELD_TITLE" required="true" class="career span5 autocomplete" filter="intval" size="11" data-ac-type="careers" />
-		<field name="name_id" type="names" label="COM_KA_FIELD_NAME" required="true" class="name span5 autocomplete" filter="intval" size="11" data-ac-type="names" />
+		<field name="career_id" type="careers" label="COM_KA_CAREER_FIELD_TITLE" required="true" class="span5" filter="intval" size="11" data-ac-type="careers" />
+		<field name="name_id" type="names" label="COM_KA_FIELD_NAME" required="true" class="span5" filter="intval" size="11" data-ac-type="names" />
 	</fieldset>
 </form>

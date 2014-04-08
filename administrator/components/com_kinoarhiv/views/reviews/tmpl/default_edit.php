@@ -2,8 +2,6 @@
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.keepalive');
 ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/select2.min.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/select/select2_locale_<?php echo substr($this->lang->getTag(), 0, 2); ?>.js"></script>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save') {
@@ -16,11 +14,13 @@ JHtml::_('behavior.keepalive');
 	}
 
 	jQuery(document).ready(function($){
-		$('input.autocomplete').each(function(){
-			var datatype = $(this).data('ac-type');
+		$('.hasAutocomplete').each(function(){
+			var datatype = $(this).data('ac-type'),
+				allow_clear = $(this).data('allow-clear');;
 
 			$(this).select2({
 				placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
+				allowClear: allow_clear ? true : false,
 				quietMillis: 200,
 				minimumInputLength: 1,
 				maximumSelectionSize: 1,

@@ -2,7 +2,7 @@
 <form>
 	<fieldset name="edit">
 		<field name="review" type="editor" class="inputbox" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="JComponentHelper::filterText" buttons="false" required="true" />
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5 autocomplete" filter="intval" size="11" data-ac-type="movies" />
+		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
 		<field name="created" type="datetime" default="NOW" class="inputbox" datatype="datetime" label="JGLOBAL_SHOW_PUBLISH_DATE_LABEL" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
 		<field name="uid" type="user" label="COM_KA_REVIEWS_FIELD_USER" labelclass="control-label" />
 		<field name="ip" type="text" default="" label="COM_KA_REVIEWS_FIELD_USER_IP" class="span5" filter="string" size="45" />

@@ -4,10 +4,11 @@ class KinoarhivViewPremieres extends JViewLegacy {
 	protected $state = null;
 	protected $items = null;
 	protected $pagination = null;
+	private $ka_theme = null;
 
 	public function display($tpl = null) {
+		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
 
 		$state = $this->get('State');
 		$items = $this->get('Items');
@@ -21,17 +22,21 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 		$params = $app->getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->ka_theme = $params->get('ka_theme');
+		$this->sel_country = $app->input->get('country', '', 'string');
+		$this->sel_year = $app->input->get('year', date('Y'), 'int');
+		$this->sel_month = $app->input->get('month', date('Y-m'), 'string');
 
 		// Prepare the data
-		/*foreach ($items as &$item) {
+		foreach ($items as &$item) {
+			$item->attribs = json_decode($item->attribs);
 			$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
-			
 
 			// Replace country BB-code
 			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/default/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html.$cn;
 			}, $item->text);
@@ -40,7 +45,6 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches) {
 				return JText::_($matches[1]).$matches[2];
 			}, $item->text);
-
 
 			// Replace person BB-code
 			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
@@ -57,8 +61,13 @@ class KinoarhivViewPremieres extends JViewLegacy {
 				$item->poster_height = 128;
 				$item->y_poster = '';
 			} else {
-				$item->big_poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
-				$item->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
+					$item->big_poster = JURI::base().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
+					$item->poster = JURI::base().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				} else {
+					$item->big_poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
+					$item->poster = $params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
+				}
 				$item->poster_width = (int)$params->get('size_x_posters');
 				$orig_poster_size = explode('x', $item->dimension);
 				$item->poster_height = floor(($item->poster_width * $orig_poster_size[1]) / $orig_poster_size[0]);
@@ -85,23 +94,23 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 			$dispatcher = JEventDispatcher::getInstance();
 			JPluginHelper::importPlugin('content');
-			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.movies', &$item, &$params, 0));
+			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.premieres', &$item, &$params, 0));
 
-			$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
+			$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.premieres', &$item, &$item->params, 0));
 			$item->event->afterDisplayTitle = trim(implode("\n", $results));
 
-			$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
+			$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.premieres', &$item, &$item->params, 0));
 			$item->event->beforeDisplayContent = trim(implode("\n", $results));
 
-			$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
+			$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.premieres', &$item, &$item->params, 0));
 			$item->event->afterDisplayContent = trim(implode("\n", $results));
-		}*/
+		}
 
 		$this->params = &$params;
 		$this->items = &$items;
 		$this->selectlist = &$list;
 		$this->pagination = &$pagination;
-		$this->lang = &$lang;
+		$this->user = &$user;
 
 		$this->_prepareDocument();
 

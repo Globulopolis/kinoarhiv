@@ -2,7 +2,6 @@
 
 class KinoarhivModelMovies extends JModelList {
 	protected $context = null;
-	protected $list_limit;
 
 	public function __construct($config = array()) {
 		parent::__construct($config);

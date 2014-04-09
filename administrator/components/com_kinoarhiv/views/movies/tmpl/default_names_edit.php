@@ -7,33 +7,6 @@ $name_id = $input->get('name_id', 0, 'int');
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('.hasTip, .hasTooltip').tooltip({
-			show: null,
-			position: {
-				my: 'left top',
-				at: 'left bottom'
-			},
-			open: function(event, ui){
-				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
-			},
-			content: function(){
-				var parts = $(this).attr('title').split('::', 2),
-					title = '';
-
-				if (parts.length == 2) {
-					if (parts[0] != '') {
-						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
-					} else {
-						title += parts[1];
-					}
-				} else {
-					title += $(this).attr('title');
-				}
-
-				return title;
-			}
-		});
-
 		$('#form_career_apply, #form_career_cancel, #form_name_apply, #form_name_cancel').button();
 		$('a.quick-add').click(function(e){
 			e.preventDefault();

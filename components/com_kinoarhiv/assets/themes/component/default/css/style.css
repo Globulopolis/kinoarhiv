@@ -1006,3 +1006,7 @@ div.rating {
 	text-align: left !important;
 	margin-right: 5px;
 }
+
+.selectlist-premieres .inputbox {
+	margin: 0;
+}

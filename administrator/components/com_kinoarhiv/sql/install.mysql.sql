@@ -16,6 +16,7 @@ CREATE TABLE `#__ka_countries` (
   `language` char(7) NOT NULL,
   `state` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
+  KEY `idx_code` (`code`),
   KEY `idx_language` (`language`),
   KEY `idx_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

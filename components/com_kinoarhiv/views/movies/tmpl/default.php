@@ -216,17 +216,17 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			</div>
 		</article>
 		<?php echo $item->event->afterDisplayContent; ?>
-		<?php endforeach;
+		<?php endforeach; ?>
+		<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+			<div class="pagination bottom">
+				<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+				<?php echo $this->pagination->getPagesLinks(); ?><br />
+				<?php echo $this->pagination->getResultsCounter(); ?>
+				<?php echo $this->pagination->getLimitBox(); ?>
+				</form>
+			</div>
+		<?php endif;
 	else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-	<?php endif; ?>
-	<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
-		<div class="pagination bottom">
-			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
-			<?php echo $this->pagination->getPagesLinks(); ?><br />
-			<?php echo $this->pagination->getResultsCounter(); ?>
-			<?php echo $this->pagination->getLimitBox(); ?>
-			</form>
-		</div>
 	<?php endif; ?>
 </div>

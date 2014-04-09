@@ -13,7 +13,7 @@
 			return title;
 		}
 
-		$('#form_p_vendor_id').select2({
+		$('#form_r_vendor_id').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
@@ -44,7 +44,7 @@
 			escapeMarkup: function(m) { return m; }
 		});
 
-		$('#form_p_country_id').select2({
+		$('#form_r_country_id').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
@@ -87,24 +87,24 @@
 		<fieldset class="form-horizontal">
 			<div class="group">
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('p_vendor_id'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('p_vendor_id'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('r_vendor_id'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_vendor_id'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('p_country_id'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('p_country_id'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('r_country_id'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_country_id'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('p_premiere_date'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('p_premiere_date'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('r_release_date'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_release_date'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('p_info'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('p_info'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('r_media_type'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_media_type'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('p_ordering'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('p_ordering'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('r_ordering'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_ordering'); ?></div>
 				</div>
 			</div>
 		</fieldset>

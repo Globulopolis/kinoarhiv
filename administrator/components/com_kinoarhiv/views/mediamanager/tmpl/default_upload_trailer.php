@@ -19,6 +19,7 @@ $type = $input->get('type', '', 'word');
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js" type="text/javascript"></script>
 	<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
 	<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+	<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <?php endif; ?>
 <script type="text/javascript">
 //<![CDATA[
@@ -27,33 +28,6 @@ $type = $input->get('type', '', 'word');
 		$.fn.bootstrapTlp = bootstrapTooltip;
 		var bootstrapButton = $.fn.button.noConflict();
 		$.fn.bootstrapBtn = bootstrapButton;
-
-		$('.hasTip, .hasTooltip').tooltip({
-			show: null,
-			position: {
-				my: 'left top',
-				at: 'left bottom'
-			},
-			open: function(event, ui){
-				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
-			},
-			content: function(){
-				var parts = $(this).attr('title').split('::', 2),
-					title = '';
-
-				if (parts.length == 2) {
-					if (parts[0] != '') {
-						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
-					} else {
-						title += parts[1];
-					}
-				} else {
-					title += $(this).attr('title');
-				}
-
-				return title;
-			}
-		});
 
 		<?php if (count($this->item) > 0): ?>
 		$('#accordion').accordion({

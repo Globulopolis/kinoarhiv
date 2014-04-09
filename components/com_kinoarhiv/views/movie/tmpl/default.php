@@ -399,7 +399,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 					<?php if (count($this->item->releases) > 0):
 						foreach ($this->item->releases as $release): ?>
 						<div>
-							<span class="f-col"><?php echo ($release->media_type == 0) ? JText::_('COM_KA_RELEASE_MEDIA_TYPE_DVD') : JText::_('COM_KA_RELEASE_MEDIA_TYPE_BD'); ?></span>
+							<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JText::_('COM_KA_RELEASES_MEDIATYPE_'.$release->media_type)); ?></span>
 							<span class="s-col">
 								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a>
 							</span>

@@ -84,9 +84,6 @@ class KinoarhivViewReleases extends JViewLegacy {
 			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			}
-
-			JToolbarHelper::divider();
-			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_RELEASES_TABLES_RELATIONS_TITLE'), false);
 		}
 	}
 

@@ -41,19 +41,13 @@ class KinoarhivModelRelease extends JModelForm {
 		$data = $app->input->get('form', array(), 'array');
 		$is_new = $app->input->get('new', 0, 'int');
 
-		/*if (isset($data['p_vendor_id'][0]) && !empty($data['p_vendor_id'][0])) {
-			if (count($data['p_country_id']) > 1) {
-				$country_id = $data['p_country_id'][1];
-			} else {
-				$country_id = $data['p_country_id'][0];
-			}
-
+		if ((isset($data['r_vendor_id']) && !empty($data['r_vendor_id'])) || (isset($data['r_country_id']) && !empty($data['r_country_id']))) {
 			if ($is_new == 1) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_releases')." (`id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `ordering`)"
-					. "\n VALUES ('', '".$movie_id."', '".$data['p_vendor_id'][0]."', '".$data['p_premiere_date']."', '".$country_id."', '".$db->escape($data['p_info'])."', '".$data['p_ordering']."')");
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_releases')." (`id`, `country_id`, `vendor_id`, `movie_id`, `media_type`, `release_date`, `ordering`)"
+					. "\n VALUES ('', '".(int)$data['r_country_id']."', '".(int)$data['r_vendor_id']."', '".$movie_id."', '".(int)$data['r_media_type']."', '".$data['r_release_date']."', '".(int)$data['r_ordering']."')");
 			} else {
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_releases')
-					. "\n SET `vendor_id` = '".$data['p_vendor_id'][0]."', `premiere_date` = '".$data['p_premiere_date']."', `country_id` = '".$country_id."', `info` = '".$db->escape($data['p_info'])."', `ordering` = '".$data['p_ordering']."'"
+					. "\n SET `country_id` = '".(int)$data['r_country_id']."', `vendor_id` = '".(int)$data['r_vendor_id']."', `media_type` = '".(int)$data['r_media_type']."', `release_date` = '".$data['r_release_date']."', `ordering` = '".(int)$data['r_ordering']."'"
 					. "\n WHERE `id` = ".(int)$id);
 			}
 
@@ -64,8 +58,8 @@ class KinoarhivModelRelease extends JModelForm {
 				return array('success'=>false, 'message'=>$e->getMessage());
 			}
 		} else {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_FIELD_PREMIERE_VENDOR_REQUIRED'));
-		}*/
+			return array('success'=>false, 'message'=>JText::_('COM_KA_REQUIRED'));
+		}
 	}
 
 	public function saveRelease($data) {

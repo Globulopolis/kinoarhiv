@@ -216,4 +216,36 @@
 		<field name="p_info" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="JComponentHelper::filterText" cols="6" rows="5" />
 		<field name="p_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
 	</fieldset>
+	<fieldset name="release_edit">
+		<field name="r_vendor_id" type="text" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
+		<field name="r_country_id" type="text" default="0" label="COM_KA_FIELD_PREMIERE_COUNTRY_LABEL" required="true" class="span10 required" filter="string" size="45" />
+		<field name="r_release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox" datatype="date" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
+		<field name="r_media_type" type="groupedlist" class="span5" default="11" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
+			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
+				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>
+				<option value="1">COM_KA_RELEASES_MEDIATYPE_1</option>
+				<option value="2">COM_KA_RELEASES_MEDIATYPE_2</option>
+				<option value="3">COM_KA_RELEASES_MEDIATYPE_3</option>
+				<option value="4">COM_KA_RELEASES_MEDIATYPE_4</option>
+				<option value="5">COM_KA_RELEASES_MEDIATYPE_5</option>
+				<option value="6">COM_KA_RELEASES_MEDIATYPE_6</option>
+				<option value="7">COM_KA_RELEASES_MEDIATYPE_7</option>
+				<option value="8">COM_KA_RELEASES_MEDIATYPE_8</option>
+				<option value="9">COM_KA_RELEASES_MEDIATYPE_9</option>
+				<option value="12">COM_KA_RELEASES_MEDIATYPE_12</option>
+				<option value="13">COM_KA_RELEASES_MEDIATYPE_13</option>
+				<option value="18">COM_KA_RELEASES_MEDIATYPE_18</option>
+				<option value="17">COM_KA_RELEASES_MEDIATYPE_17</option>
+			</group>
+			<group label="COM_KA_RELEASES_MEDIATYPE_SRC">
+				<option value="10">COM_KA_RELEASES_MEDIATYPE_10</option>
+				<option value="11">COM_KA_RELEASES_MEDIATYPE_11</option>
+				<option value="14">COM_KA_RELEASES_MEDIATYPE_14</option>
+				<option value="15">COM_KA_RELEASES_MEDIATYPE_15</option>
+				<option value="16">COM_KA_RELEASES_MEDIATYPE_16</option>
+			</group>
+			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
+		</field>
+		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+	</fieldset>
 </form>

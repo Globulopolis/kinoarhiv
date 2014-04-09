@@ -31,7 +31,7 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	padding: 1em 0.5em;
 }
 
-#page-cast-crew, #page-awards, #page-premieres {
+#page-cast-crew, #page-awards, #page-premieres, #page-releases {
 	padding: .5em 0 !important;
 }
 

@@ -16,8 +16,11 @@ class KinoarhivModelPremieres extends JModelList {
 		$user = JFactory::getUser();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
+		$lang = JFactory::getLanguage();
 		$params = $app->getParams('com_kinoarhiv');
 		$country = $app->input->get('country', '', 'string');
+		$year = $app->input->get('year', date('Y'), 'int');
+		$month = $app->input->get('month', '', 'string');
 
 		$query = $db->getQuery(true);
 
@@ -30,10 +33,14 @@ class KinoarhivModelPremieres extends JModelList {
 				->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
 		}
 
-		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
+		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
 
 		if (!empty($country)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$country.'" AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').')))';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$country.'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
+		}
+
+		if (!empty($year)) {
+			
 		}
 
 		$query->where($where);

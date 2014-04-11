@@ -1,6 +1,5 @@
 /*
     Colorbox Core Style:
-    The following CSS is consistent between example themes and should not be altered.
 */
 #colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
 #cboxWrapper {max-width:none;}
@@ -16,9 +15,7 @@
 #colorbox, #cboxContent, #cboxLoadedContent{box-sizing:content-box; -moz-box-sizing:content-box; -webkit-box-sizing:content-box;}
 
 /* 
-    User Style:
-    Change the following styles to modify the appearance of Colorbox.  They are
-    ordered & tabbed in a way that represents the nesting of the generated HTML.
+    User Style
 */
 #cboxOverlay{background:#000;}
 #colorbox{outline:0;}
@@ -29,13 +26,8 @@
 #cboxTitle{position:absolute; top:-20px; left:0; color:#ccc;}
 #cboxCurrent{position:absolute; top:-20px; right:0px; color:#ccc;}
 #cboxLoadingGraphic{background:url(../images/icons/loading.gif) no-repeat center center;}
-
-/* these elements are buttons, and may need to have additional styles reset to avoid unwanted base styles */
 #cboxPrevious, #cboxNext, #cboxSlideshow, #cboxClose {border:0; padding:0; margin:0; overflow:visible; width:auto; background:none; }
-
-/* avoid outlines on :active (mouseclick), but preserve outlines on :focus (tabbed navigating) */
 #cboxPrevious:active, #cboxNext:active, #cboxSlideshow:active, #cboxClose:active {outline:0;}
-
 #cboxSlideshow{position:absolute; top:-20px; right:90px; color:#fff;}
 #cboxPrevious{position:absolute; top:50%; left:5px; margin-top:-32px; background:url(../images/controls.png) no-repeat top left; width:28px; height:65px; text-indent:-9999px;}
 #cboxPrevious:hover{background-position:bottom left;}
@@ -325,7 +317,7 @@
 }
 /* End editor styles */
 
-/* CSS for jQuery More plugin v2.0.0. */
+/* jQuery More plugin v2.0.0. */
 .more-hidden {
 	display: none;
 }

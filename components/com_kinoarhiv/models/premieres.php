@@ -19,7 +19,7 @@ class KinoarhivModelPremieres extends JModelList {
 		$lang = JFactory::getLanguage();
 		$params = $app->getParams('com_kinoarhiv');
 		$country = $app->input->get('country', '', 'string');
-		$year = $app->input->get('year', date('Y'), 'int');
+		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
 
 		$query = $db->getQuery(true);
@@ -35,12 +35,16 @@ class KinoarhivModelPremieres extends JModelList {
 
 		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
 
-		if (!empty($country)) {
+		if ($country != '') {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$country.'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
 		}
 
 		if (!empty($year)) {
-			
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE ("%'.$year.'%"))';
+		}
+
+		if ($month != '') {
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE ("%'.$month.'%"))';
 		}
 
 		$query->where($where);
@@ -54,10 +58,20 @@ class KinoarhivModelPremieres extends JModelList {
 
 	public function getSelectList() {
 		$db = $this->getDBO();
+		$app = JFactory::getApplication();
+		$country = $app->input->get('country', '', 'string');
+		$year = $app->input->get('year', 0, 'int');
+		$month = $app->input->get('month', '', 'string');
 		$result = array(
-			'countries' =>array(array('name'=>JText::_('JALL'), 'code'=>'')),
-			'years'     =>array(array('year'=>date('Y'))),
-			'months'    =>array(array('value'=>'', 'name'=>JText::_('JALL')))
+			'countries' => array(
+				array('name'=>JText::_('JALL'), 'code'=>'')
+			),
+			'years' => array(
+				array('value'=>0, 'name'=>JText::_('JALL'))
+			),
+			'months' => array(
+				array('value'=>'', 'name'=>JText::_('JALL'))
+			)
 		);
 
 		$db->setQuery("SELECT `name`, `code`"
@@ -74,9 +88,9 @@ class KinoarhivModelPremieres extends JModelList {
 			GlobalHelper::eventLog($e->getMessage());
 		}
 
-		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `year`"
+		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `value`, DATE_FORMAT(`premiere_date`, '%Y') AS `name`"
 			. "\n FROM ".$db->quoteName('#__ka_premieres')
-			. "\n GROUP BY `year`");
+			. "\n GROUP BY `value`");
 		try {
 			$years = $db->loadAssocList();
 

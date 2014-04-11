@@ -82,11 +82,14 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
 				<input type="hidden" name="option" value="com_kinoarhiv" />
 				<input type="hidden" name="view" value="premieres" />
-				<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox', 'onchange'=>'this.form.submit()'), 'code', 'name', $this->sel_country); ?>
-				<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class'=>'inputbox span2', 'onchange'=>'this.form.submit()'), 'year', 'year', $this->sel_year); ?>
-				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3', 'onchange'=>'this.form.submit()'), 'value', 'name', $this->sel_month); ?>
+				<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox'), 'code', 'name', $this->sel_country); ?>
+				<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class'=>'inputbox span2'), 'value', 'name', $this->sel_year); ?>
+				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?>
 				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
-				<input type="submit" class="btn btn-primary uk-button" value="<?php echo JText::_('JSUBMIT'); ?>" />
+				<div class="btn-group">
+					<button type="submit" class="btn btn-default uk-button"><span class="ui-icon ui-icon-search"></span></button>
+					<button type="reset" class="btn btn-default uk-button"><span class="ui-icon ui-icon-close"></span></button>
+				</div>
 			</form>
 		</div>
 	</div>

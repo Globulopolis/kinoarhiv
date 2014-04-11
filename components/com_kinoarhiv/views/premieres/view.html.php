@@ -24,8 +24,8 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->ka_theme = $params->get('ka_theme');
 		$this->sel_country = $app->input->get('country', '', 'string');
-		$this->sel_year = $app->input->get('year', date('Y'), 'int');
-		$this->sel_month = $app->input->get('month', date('Y-m'), 'string');
+		$this->sel_year = $app->input->get('year', 0, 'int');
+		$this->sel_month = $app->input->get('month', '', 'string');
 
 		// Prepare the data
 		foreach ($items as &$item) {

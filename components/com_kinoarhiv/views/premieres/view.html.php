@@ -23,7 +23,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$params = $app->getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->ka_theme = $params->get('ka_theme');
-		$this->sel_country = $app->input->get('country', '', 'string');
+		$this->sel_country = $app->input->get('country', '', 'word');  // It's a string because country_id == 0 it'a world premiere
 		$this->sel_year = $app->input->get('year', 0, 'int');
 		$this->sel_month = $app->input->get('month', '', 'string');
 
@@ -31,6 +31,11 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		foreach ($items as &$item) {
 			$item->attribs = json_decode($item->attribs);
 			$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
+			$item->vendor = $item->company_name;
+			if (!empty($item->company_name) && !empty($item->company_name_intl)) {
+				$item->vendor .= ' / ';
+			}
+			$item->vendor .= $item->company_name_intl;
 
 			// Replace country BB-code
 			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {

@@ -1010,3 +1010,33 @@ div.rating {
 .selectlist-premieres .inputbox {
 	margin: 0;
 }
+
+.selectlist-premieres .btn-group {
+	display: inline-block;
+}
+
+.introtext.premiere {
+	width: 58%;
+}
+
+.premiere-date {
+	float: left;
+	font-family: Cambria, Georgia, Droid Serif, serif;
+	margin: 0.3em 0.5em 1em 1em;
+	text-align: center;
+	width: 17%;
+}
+
+.premiere-date .date {
+	font-size: 4.5em;
+	line-height: 120%
+}
+
+.premiere-date .month {
+	font-size: 1.7em;
+	line-height: 120%
+}
+
+.premiere-date .vendor {
+	font-size: 1em;
+}

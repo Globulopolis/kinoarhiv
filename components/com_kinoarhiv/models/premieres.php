@@ -18,7 +18,7 @@ class KinoarhivModelPremieres extends JModelList {
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$params = $app->getParams('com_kinoarhiv');
-		$country = $app->input->get('country', '', 'string');
+		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 - world premiere
 		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
 
@@ -28,15 +28,29 @@ class KinoarhivModelPremieres extends JModelList {
 			->from($db->quoteName('#__ka_movies').' AS `m`')
 			->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
 
+			if ($country != '') {
+				$query->select(' `p`.`premiere_date`, `p`.`vendor_id`')
+				->leftJoin($db->quoteName('#__ka_premieres').' AS `p` ON `p`.`movie_id` = `m`.`id` AND `p`.`country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').'))');
+
+				$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
+				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `p`.`vendor_id` AND `v`.`state` = 1');
+			} else {
+				$query->select(' `p`.`premiere_date`, `p`.`vendor_id`')
+				->leftJoin($db->quoteName('#__ka_premieres').' AS `p` ON `p`.`movie_id` = `m`.`id` AND `p`.`country_id` != 0');
+
+				$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
+				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `p`.`vendor_id` AND `v`.`state` = 1 AND `v`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
+			}
+
 		if (!$user->get('guest')) {
 			$query->select(' `u`.`favorite`')
 				->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
 		}
 
-		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
+		$where = '`m`.`state` = 1 AND `m`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
 
 		if ($country != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$country.'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
 		}
 
 		if (!empty($year)) {
@@ -48,6 +62,7 @@ class KinoarhivModelPremieres extends JModelList {
 		}
 
 		$query->where($where);
+		$query->group('`m`.`id`');
 
 		$orderCol = $this->state->get('list.ordering', 'm.ordering');
 		$orderDirn = $this->state->get('list.direction', 'desc');
@@ -59,7 +74,8 @@ class KinoarhivModelPremieres extends JModelList {
 	public function getSelectList() {
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
-		$country = $app->input->get('country', '', 'string');
+		$lang = JFactory::getLanguage();
+		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 it'a world premiere
 		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
 		$result = array(
@@ -74,6 +90,7 @@ class KinoarhivModelPremieres extends JModelList {
 			)
 		);
 
+		// Countries list
 		$db->setQuery("SELECT `name`, `code`"
 			. "\n FROM ".$db->quoteName('#__ka_countries')
 			. "\n WHERE `id` IN (SELECT `country_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `country_id` != 0) AND `state` = 1"
@@ -88,8 +105,16 @@ class KinoarhivModelPremieres extends JModelList {
 			GlobalHelper::eventLog($e->getMessage());
 		}
 
+		// Years list
+		if ($country !== '') {
+			$year_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
+		} else {
+			$year_where = "";
+		}
+
 		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `value`, DATE_FORMAT(`premiere_date`, '%Y') AS `name`"
 			. "\n FROM ".$db->quoteName('#__ka_premieres')
+			. $year_where
 			. "\n GROUP BY `value`");
 		try {
 			$years = $db->loadAssocList();
@@ -101,8 +126,24 @@ class KinoarhivModelPremieres extends JModelList {
 			GlobalHelper::eventLog($e->getMessage());
 		}
 
+		// Months list
+		if ($country != '') {
+			$month_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
+
+			if (!empty($year)) {
+				$month_where .= " AND `premiere_date` LIKE ('%".$year."%')";
+			}
+		} else {
+			if (!empty($year)) {
+				$month_where = " WHERE `premiere_date` LIKE ('%".$year."%')";
+			} else {
+				$month_where = "";
+			}
+		}
+
 		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y-%m') AS `value`, `premiere_date`"
 			. "\n FROM ".$db->quoteName('#__ka_premieres')
+			. $month_where
 			. "\n GROUP BY `value`");
 		try {
 			$months = $db->loadAssocList();

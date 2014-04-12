@@ -86,9 +86,10 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class'=>'inputbox span2'), 'value', 'name', $this->sel_year); ?>
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?>
 				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
-				<div class="btn-group">
+				<div class="btn-group uk-button-group">
 					<button type="submit" class="btn btn-default uk-button"><span class="ui-icon ui-icon-search"></span></button>
 					<button type="reset" class="btn btn-default uk-button"><span class="ui-icon ui-icon-close"></span></button>
+					<button type="button" class="btn btn-default uk-button cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid='.$this->itemid, false); ?>';"><span class="ui-icon ui-icon-cancel"></span></button>
 				</div>
 			</form>
 		</div>
@@ -171,7 +172,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							<a href="<?php echo $item->big_poster; ?>" title="<?php echo JText::_('COM_KA_POSTER_ZOOM'); ?>" class="zoom-icon hasTip"><div></div></a>
 						</div><?php endif; ?>
 					</div>
-					<div class="introtext">
+					<div class="introtext premiere">
 						<?php echo $item->text; ?>
 						<div class="separator"></div>
 						<?php echo $item->plot; ?>
@@ -221,6 +222,11 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							</div>
 						</div>
 						<?php endif; ?>
+					</div>
+					<div class="premiere-date">
+						<div class="date"><?php echo date('d', strtotime($item->premiere_date)); ?></div>
+						<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?></div>
+						<div class="vendor"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$item->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo $item->vendor; ?></a></div>
 					</div>
 				</div>
 				<div class="links">

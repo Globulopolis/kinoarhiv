@@ -2,6 +2,7 @@
 
 class KinoarhivViewSettings extends JViewLegacy {
 	protected $form;
+	protected $data;
 
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
@@ -27,6 +28,7 @@ class KinoarhivViewSettings extends JViewLegacy {
 		}
 
 		$this->form = &$form;
+		$this->data = &$data;
 		$this->lang = &$lang;
 
 		$this->userIsSuperAdmin = $user->authorise('core.admin');

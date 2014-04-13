@@ -82,6 +82,23 @@ class KinoarhivModelSettings extends JModelForm {
 			$data['releases_list_limit'] = 0;
 		}
 
+		$alphabet = JFactory::getApplication()->input->post->get('letters', array(), 'array');
+		$filter = JFilterInput::getInstance();
+		$_alphabet = array();
+
+		if (count($alphabet) > 0) {
+			foreach ($alphabet as $lang) {
+			print_r($lang['letters']);
+				
+
+				//$_alphabet['alphabet'][$key]['lang'] = $filter->clean($lang['lang'], 'string');
+				//$_alphabet['alphabet'][$key]['letters'] = explode(',', str_replace(' ', '', $filter->clean($alphabet['letters'][$key], 'string')));
+			}
+		}
+
+		$data = array_merge($data, $_alphabet);
+echo '<pre>';
+//print_r($alphabet);
 		$params = json_encode($data);
 		$rules = json_encode($rules);
 

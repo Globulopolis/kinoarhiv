@@ -72,11 +72,24 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 //]]>
 </script>
 <div class="uk-article ka-content">
-	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
-		<div class="pagination top">
-			<?php echo $this->pagination->getPagesLinks(); ?>
+	<?php if ($this->params->get('use_alphabet') == 1): ?>
+	<div class="alphabet-nav">
+		<?php foreach ($this->params->get('alphabet') as $alphabet): ?>
+		<div>
+			<?php if (!empty($alphabet->lang)): ?><span class="ab_lang">[ <?php echo $alphabet->lang; ?> ]<span><?php endif; ?>
+			<span class="ab_letters btn-toolbar">
+				<span class="btn-group uk-button-group">
+					<?php foreach ($alphabet->letters as $letters): ?>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&letter='.$letters.'&Itemid='.$this->itemid); ?>" class="btn btn-mini btn-default uk-button uk-button-small"><?php echo JString::strtoupper($letters); ?></a>
+					<?php endforeach; ?>
+				</span>
+			</span>
 		</div>
+		<?php endforeach; ?>
+	</div>
+	<br />
 	<?php endif; ?>
+
 	<div class="selectlist">
 		<div class="selectlist-premieres">
 			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
@@ -87,14 +100,20 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?>
 				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 				<div class="btn-group uk-button-group">
-					<button type="submit" class="btn btn-default uk-button"><span class="ui-icon ui-icon-search"></span></button>
-					<button type="reset" class="btn btn-default uk-button"><span class="ui-icon ui-icon-close"></span></button>
-					<button type="button" class="btn btn-default uk-button cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid='.$this->itemid, false); ?>';"><span class="ui-icon ui-icon-cancel"></span></button>
+					<button type="submit" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-search"></span></button>
+					<button type="reset" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-close"></span></button>
+					<button type="button" class="btn btn-default uk-button uk-button-small cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid='.$this->itemid, false); ?>';"><span class="ui-icon ui-icon-cancel"></span></button>
 				</div>
 			</form>
 		</div>
 	</div>
-	<?php if (count($this->items) > 0):
+	<?php if (count($this->items) > 0): ?>
+	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+		<div class="pagination top">
+			<?php echo $this->pagination->getPagesLinks(); ?>
+		</div>
+	<?php endif;
+
 		foreach ($this->items as $item): ?>
 		<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
 			<header>
@@ -172,7 +191,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							<a href="<?php echo $item->big_poster; ?>" title="<?php echo JText::_('COM_KA_POSTER_ZOOM'); ?>" class="zoom-icon hasTip"><div></div></a>
 						</div><?php endif; ?>
 					</div>
-					<div class="introtext premiere">
+					<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
 						<?php echo $item->text; ?>
 						<div class="separator"></div>
 						<?php echo $item->plot; ?>
@@ -223,11 +242,15 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 						</div>
 						<?php endif; ?>
 					</div>
+
+					<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>
 					<div class="premiere-date">
 						<div class="date"><?php echo date('d', strtotime($item->premiere_date)); ?></div>
 						<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?></div>
 						<div class="vendor"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$item->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo $item->vendor; ?></a></div>
 					</div>
+					<?php endif; ?>
+
 				</div>
 				<div class="links">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>

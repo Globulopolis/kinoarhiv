@@ -95,6 +95,26 @@
 				}
 			}
 		});
+
+		var cloned_rows = 0;
+		$('.cmd-ab-new-row').click(function(e){
+			e.preventDefault();
+			var row = $(this).closest('.row-fluid');
+			var cloned_row = row.clone(true);
+
+			row.after(cloned_row);
+			$('.letters-lang', cloned_row).val('');
+			$('.letters', cloned_row).val('');
+			cloned_rows++;
+		});
+		$('.cmd-ab-remove-row').click(function(e){
+			e.preventDefault();
+
+			if (cloned_rows != 0) {
+				$(this).closest('.row-fluid').remove();
+				cloned_rows--;
+			}
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="application-form" method="post" name="adminForm" autocomplete="off">
@@ -140,6 +160,11 @@
 						</div>
 						<div class="span6">
 							<?php echo $this->loadTemplate('ap_item'); ?>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span12">
+							<?php echo $this->loadTemplate('ap_alphabet'); ?>
 						</div>
 					</div>
 				</div>

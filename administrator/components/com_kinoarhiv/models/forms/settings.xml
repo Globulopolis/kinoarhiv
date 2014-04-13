@@ -156,6 +156,10 @@
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
+	<field name="use_alphabet" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_AP_AB_USE_LABEL" filter="integer">
+		<option value="1">JYES</option>
+		<option value="0">JNO</option>
+	</field>
 	<fieldset name="ap_nav" label="COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL">
 		<field name="show_feed_link" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_LNK_FEED_LABEL" description="COM_KA_FIELD_AP_LNK_FEED_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>

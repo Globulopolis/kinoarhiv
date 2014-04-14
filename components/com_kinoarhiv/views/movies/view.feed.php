@@ -1,101 +1,96 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewMovies extends JViewLegacy {
-	protected $state = null;
 	protected $items = null;
-	protected $pagination = null;
+	protected $ka_theme;
+	protected $itemid;
 
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 
-		$state = $this->get('State');
 		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $errors), 500);
+			GlobalHelper::eventLog(implode("\n", $errors));
 			return false;
 		}
 
+		$document = JFactory::getDocument();
 		$params = $app->getParams('com_kinoarhiv');
+		$feedEmail = $app->getCfg('feed_email', 'author');
+		$siteEmail = $app->getCfg('mailfrom');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->ka_theme = $params->get('ka_theme');
+
+		$document->setTitle(JText::_('COM_KA_MOVIES'));
+		$document->setDescription($params->get('meta_description'));
+		$document->link = JRoute::_('index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid);
+		if ($params->get('generator') == 'none') {
+			$document->setGenerator('');
+		} elseif ($params->get('generator') == 'site') {
+			$document->setGenerator($document->getGenerator());
+		} else {
+			$document->setGenerator($params->get('generator'));
+		}
+
+		$app->input->set('limit', $app->getCfg('feed_limit'));
 
 		// Prepare the data
-		foreach ($items as &$item) {
-			$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
-			
+		foreach ($items as &$row) {
+			$year_str = ($row->year != '0000') ? ' ('.$row->year.')' : '';
+			$title = $this->escape($row->title.$year_str);
+			$title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
+			$link = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$row->id.'&Itemid='.$this->itemid);
+
+			$item = new JFeedItem;
+			$item->title = $title;
+			$item->link = $link;
+			$item->author = ($row->attribs->show_author === '' && !empty($row->username)) ? $row->username : '';
+
+			if ($feedEmail == 'site') {
+				$item->authorEmail = $siteEmail;
+			} elseif ($feedEmail === 'author') {
+				$item->authorEmail = $row->author_email;
+			}
 
 			// Replace country BB-code
-			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
+			$row->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/default/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html.$cn;
-			}, $item->text);
+			}, $row->text);
 
 			// Replace genres BB-code
-			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches) {
+			$row->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches) {
 				return JText::_($matches[1]).$matches[2];
-			}, $item->text);
+			}, $row->text);
 
 
 			// Replace person BB-code
-			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
+			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$this->itemid, false).'" title="$2">$2</a>', $matches[2]);
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_(JUri::base().'index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$this->itemid).'" title="$2">$2</a>', $matches[2]);
 
 				return $html.$name;
-			}, $item->text);
+			}, $row->text);
 
-			if (empty($item->filename)) {
-				$item->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-				$item->poster_width = 128;
-				$item->poster_height = 128;
-				$item->y_poster = '';
+			if (empty($row->filename)) {
+				$row->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 			} else {
-				$item->big_poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/'.$item->filename;
-				$item->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->id.'/posters/thumb_'.$item->filename;
-				$item->poster_width = (int)$params->get('size_x_posters');
-				$orig_poster_size = explode('x', $item->dimension);
-				$item->poster_height = floor(($item->poster_width * $orig_poster_size[1]) / $orig_poster_size[0]);
-				$item->y_poster = ' y-poster';
+				$row->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($row->alias, 0, 1).'/'.$row->id.'/posters/thumb_'.$row->filename;
 			}
 
-			$item->plot = GlobalHelper::limitText($item->plot, $params->get('limit_text'));
-		}
+			$row->plot = '<div class="feed-plot">'.GlobalHelper::limitText($row->plot, $params->get('limit_text')).'</div>';
+			$item->description = '<div class="feed-description">
+				<div class="poster"><img src="'.$row->poster.'" border="0" /></div>
+				<div class="introtext">'.$row->text.$row->plot.'</div>
+			</div>';
 
-		$this->params = &$params;
-		$this->items['movies'] = &$items;
-		$this->pagination = &$pagination;
-		$this->user = &$user;
-
-		$this->_prepareDocument();
-
-		parent::display('feed');
-	}
-
-	/**
-	 * Prepares the document
-	 */
-	protected function _prepareDocument() {
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$title = '';
-		$menu = $menus->getActive();
-
-		$title = JText::_('COM_KA_MOVIES');
-		$this->document->setTitle($title);
-		$this->document->setDescription($this->params->get('meta_description'));
-
-		if ($this->params->get('generator') == 'none') {
-			$this->document->setGenerator('');
-		} elseif ($this->params->get('generator') == 'site') {
-			$this->document->setGenerator($this->document->getGenerator());
-		} else {
-			$this->document->setGenerator($this->params->get('generator'));
+			$document->addItem($item);
 		}
 	}
 }

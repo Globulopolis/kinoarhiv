@@ -3,6 +3,10 @@ if (isset($this->item->soundtracks)):
 	//GlobalHelper::loadPlayerAssets();
 endif; ?>
 <div class="content movie snd">
+	<?php if ($this->params->get('use_alphabet') == 1):
+		echo $this->loadTemplate('alphabet');
+	endif; ?>
+
 	<article class="uk-article">
 		<header>
 			<h1 class="uk-article-title title">

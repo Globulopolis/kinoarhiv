@@ -30,6 +30,10 @@ if ($this->params->get('player_type') == 'mediaelement'): ?>
 <?php endif; ?>
 
 <div class="content movie trailers">
+	<?php if ($this->params->get('use_alphabet') == 1):
+		echo $this->loadTemplate('alphabet');
+	endif; ?>
+
 	<article class="uk-article">
 		<header>
 			<h1 class="uk-article-title title">

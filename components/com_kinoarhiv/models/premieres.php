@@ -49,16 +49,30 @@ class KinoarhivModelPremieres extends JModelList {
 
 		$where = '`m`.`state` = 1 AND `m`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
 
+		if ($params->get('use_alphabet') == 1) {
+			$letter = $app->input->get('letter', '', 'string');
+
+			if ($letter != '') {
+				if ($letter == '0-1') {
+					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
+				} else {
+					preg_match('#\p{L}#u', $letter, $matches); // only any kind of letter from any language.
+
+					$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+				}
+			}
+		}
+
 		if ($country != '') {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
 		}
 
 		if (!empty($year)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE ("%'.$year.'%"))';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$year.'%")';
 		}
 
 		if ($month != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE ("%'.$month.'%"))';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$month.'%")';
 		}
 
 		$query->where($where);
@@ -131,11 +145,11 @@ class KinoarhivModelPremieres extends JModelList {
 			$month_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
 
 			if (!empty($year)) {
-				$month_where .= " AND `premiere_date` LIKE ('%".$year."%')";
+				$month_where .= " AND `premiere_date` LIKE '%".$year."%'";
 			}
 		} else {
 			if (!empty($year)) {
-				$month_where = " WHERE `premiere_date` LIKE ('%".$year."%')";
+				$month_where = " WHERE `premiere_date` LIKE '%".$year."%'";
 			} else {
 				$month_where = "";
 			}

@@ -53,12 +53,13 @@
 //]]>
 </script>
 <div class="uk-article ka-content">
-	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+	<?php if (count($this->items['names']) > 0):
+	if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
-	<?php endif; ?>
-	<?php if (count($this->items['names']) > 0):
+	<?php endif;
+
 		foreach ($this->items['names'] as $item): ?>
 		<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>">
 			<header>

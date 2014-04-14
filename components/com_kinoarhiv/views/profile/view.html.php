@@ -1,7 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewProfile extends JViewLegacy {
-	protected $state = null;
 	protected $items = null;
 	protected $pagination = null;
 	protected $tab;

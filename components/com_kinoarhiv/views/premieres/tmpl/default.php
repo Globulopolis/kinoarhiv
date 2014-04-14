@@ -72,23 +72,9 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 //]]>
 </script>
 <div class="uk-article ka-content">
-	<?php if ($this->params->get('use_alphabet') == 1): ?>
-	<div class="alphabet-nav">
-		<?php foreach ($this->params->get('alphabet') as $alphabet): ?>
-		<div>
-			<?php if (!empty($alphabet->lang)): ?><span class="ab_lang">[ <?php echo $alphabet->lang; ?> ]<span><?php endif; ?>
-			<span class="ab_letters btn-toolbar">
-				<span class="btn-group uk-button-group">
-					<?php foreach ($alphabet->letters as $letters): ?>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&letter='.$letters.'&Itemid='.$this->itemid); ?>" class="btn btn-mini btn-default uk-button uk-button-small"><?php echo JString::strtoupper($letters); ?></a>
-					<?php endforeach; ?>
-				</span>
-			</span>
-		</div>
-		<?php endforeach; ?>
-	</div>
-	<br />
-	<?php endif; ?>
+	<?php if ($this->params->get('use_alphabet') == 1):
+		echo $this->loadTemplate('alphabet');
+	endif; ?>
 
 	<div class="selectlist">
 		<div class="selectlist-premieres">

@@ -1,7 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewMovies extends JViewLegacy {
-	protected $state = null;
 	protected $items = null;
 	protected $pagination = null;
 	private $ka_theme = null;
@@ -10,7 +9,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 
-		$state = $this->get('State');
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -160,7 +158,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		// Add feed links
 		if ($this->params->get('show_feed_link', 1)) {
-			$link = '&format=feed&limitstart=';
+			$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->itemid.'&limitstart=';
 			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
 			$this->document->addHeadLink(JRoute::_($link.'&type=rss'), 'alternate', 'rel', $attribs);
 			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');

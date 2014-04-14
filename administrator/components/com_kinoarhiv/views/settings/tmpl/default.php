@@ -96,7 +96,7 @@
 			}
 		});
 
-		var cloned_rows = 0;
+		var cloned_rows = $('.letters-lang').length;
 		$('.cmd-ab-new-row').click(function(e){
 			e.preventDefault();
 			var row = $(this).closest('.row-fluid');
@@ -110,7 +110,7 @@
 		$('.cmd-ab-remove-row').click(function(e){
 			e.preventDefault();
 
-			if (cloned_rows != 0) {
+			if (cloned_rows > 1) {
 				$(this).closest('.row-fluid').remove();
 				cloned_rows--;
 			}

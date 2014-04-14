@@ -184,6 +184,10 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 //]]>
 </script>
 <div class="content movie">
+	<?php if ($this->params->get('use_alphabet') == 1):
+		echo $this->loadTemplate('alphabet');
+	endif; ?>
+
 	<article class="uk-article">
 		<header>
 			<h1 class="uk-article-title title">

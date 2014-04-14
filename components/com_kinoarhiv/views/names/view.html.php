@@ -1,7 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewNames extends JViewLegacy {
-	protected $state = null;
 	protected $items = null;
 	protected $pagination = null;
 
@@ -9,7 +8,6 @@ class KinoarhivViewNames extends JViewLegacy {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 
-		$state = $this->get('State');
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 

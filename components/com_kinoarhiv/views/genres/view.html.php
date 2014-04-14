@@ -1,7 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewGenres extends JViewLegacy {
-	protected $state = null;
 	protected $items = null;
 	protected $pagination = null;
 
@@ -9,7 +8,6 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
 
-		$state = $this->get('State');
 		$items = $this->get('Items');
 
 		if (count($errors = $this->get('Errors'))) {

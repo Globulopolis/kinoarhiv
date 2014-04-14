@@ -87,18 +87,19 @@ class KinoarhivModelSettings extends JModelForm {
 		$_alphabet = array();
 
 		if (count($alphabet) > 0) {
-			foreach ($alphabet as $lang) {
-			print_r($lang['letters']);
-				
-
-				//$_alphabet['alphabet'][$key]['lang'] = $filter->clean($lang['lang'], 'string');
-				//$_alphabet['alphabet'][$key]['letters'] = explode(',', str_replace(' ', '', $filter->clean($alphabet['letters'][$key], 'string')));
+			foreach ($alphabet as $key=>$el) {
+				foreach ($el as $i=>$val) {
+					if ($key == 'lang') {
+						$_alphabet['alphabet'][$i][$key] = $filter->clean($val, 'string');
+					} elseif ($key == 'letters') {
+						$_alphabet['alphabet'][$i][$key] = explode(',', JString::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
+					}
+				}
 			}
 		}
 
 		$data = array_merge($data, $_alphabet);
-echo '<pre>';
-//print_r($alphabet);
+
 		$params = json_encode($data);
 		$rules = json_encode($rules);
 

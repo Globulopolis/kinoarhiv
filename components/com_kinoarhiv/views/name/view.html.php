@@ -1,7 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewName extends JViewLegacy {
-	protected $state = null;
 	protected $item = null;
 	protected $items = null;
 	protected $filters = null;

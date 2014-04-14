@@ -36,10 +36,24 @@ class KinoarhivModelMovies extends JModelList {
 			$query->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
 		}
 
-		$query->select(' `user`.`name` AS `username`');
+		$query->select(' `user`.`name` AS `username`, `user`.`email` AS `author_email`');
 		$query->leftJoin($db->quoteName('#__users').' AS `user` ON `user`.`id` = `m`.`created_by`');
 
 		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
+
+		if ($params->get('use_alphabet') == 1) {
+			$letter = $app->input->get('letter', '', 'string');
+
+			if ($letter != '') {
+				if ($letter == '0-1') {
+					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
+				} else {
+					preg_match('#\p{L}#u', $letter, $matches); // only any kind of letter from any language.
+
+					$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+				}
+			}
+		}
 
 		$query->where($where);
 

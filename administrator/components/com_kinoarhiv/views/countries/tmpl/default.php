@@ -132,6 +132,7 @@ $sortFields = $this->getSortFields();
 			</tbody>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
+		<?php echo $this->loadTemplate('batch'); ?>
 
 		<input type="hidden" name="controller" value="countries" />
 		<input type="hidden" name="task" value="" />

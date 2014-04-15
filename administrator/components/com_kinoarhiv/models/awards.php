@@ -58,7 +58,7 @@ class KinoarhivModelAwards extends JModelList {
 		$task = $app->input->get('task', '', 'cmd');
 
 		$query->select('`a`.`id`, `a`.`title`, `a`.`desc`, `a`.`language`, `a`.`state`');
-		$query->from('#__ka_awards AS `a`');
+		$query->from($db->quoteName('#__ka_awards').' AS `a`');
 
 		$query->select(' `l`.`title` AS `language_title`')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
@@ -118,5 +118,31 @@ class KinoarhivModelAwards extends JModelList {
 		}
 
 		return $items;
+	}
+
+	public function batch() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->post->get('id', array(), 'array');
+		$batch_data = $app->input->post->get('batch', array(), 'array');
+
+		if (!empty($batch_data['language_id'])) {
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_awards'))
+				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

@@ -150,4 +150,36 @@ class KinoarhivModelGenres extends JModelList {
 
 		return $items;
 	}
+
+	public function batch() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->post->get('id', array(), 'array');
+		$batch_data = $app->input->post->get('batch', array(), 'array');
+
+		if (!empty($batch_data['language_id']) || !empty($batch_data['assetgroup_id'])) {
+			$query = $db->getQuery(true);
+
+			$lang = !empty($batch_data['language_id']) ? "`language` = '".$db->escape((string)$batch_data['language_id'])."'" : "";
+			$access = !empty($batch_data['assetgroup_id']) ? "`access` = '".(int)$batch_data['assetgroup_id']."'" : "";
+			if ($lang && $access) {
+				$cols = $lang.', '.$access;
+			}
+
+			$query->update($db->quoteName('#__ka_genres'))
+				->set($cols)
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

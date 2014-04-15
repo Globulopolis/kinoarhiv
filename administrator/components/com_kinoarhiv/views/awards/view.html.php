@@ -110,6 +110,16 @@ class KinoarhivViewAwards extends JViewLegacy {
 			}
 
 			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_AW_TABLES_RELATIONS_TITLE'), false);
+			JToolbarHelper::divider();
+
+			if ($user->authorise('core.create.award', 'com_kinoarhiv') && $user->authorise('core.edit.award', 'com_kinoarhiv') && $user->authorise('core.edit.state.award', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 

@@ -104,6 +104,16 @@ class KinoarhivViewCareers extends JViewLegacy {
 			}
 
 			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_CAREER_RELATIONS_TITLE'), false);
+			JToolbarHelper::divider();
+
+			if ($user->authorise('core.create.career', 'com_kinoarhiv') && $user->authorise('core.edit.career', 'com_kinoarhiv') && $user->authorise('core.edit.state.career', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 

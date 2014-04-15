@@ -151,4 +151,30 @@ class KinoarhivModelCareers extends JModelList {
 
 		return array('success'=>$success, 'message'=>$message);
 	}
+
+	public function batch() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->post->get('id', array(), 'array');
+		$batch_data = $app->input->post->get('batch', array(), 'array');
+
+		if (!empty($batch_data['language_id'])) {
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_names_career'))
+				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

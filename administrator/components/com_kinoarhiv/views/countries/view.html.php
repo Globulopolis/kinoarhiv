@@ -110,6 +110,16 @@ class KinoarhivViewCountries extends JViewLegacy {
 			}
 
 			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_TABLES_RELATIONS_TITLE'), false);
+			JToolbarHelper::divider();
+
+			if ($user->authorise('core.create.country', 'com_kinoarhiv') && $user->authorise('core.edit.country', 'com_kinoarhiv') && $user->authorise('core.edit.state.country', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 

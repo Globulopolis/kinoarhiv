@@ -100,12 +100,12 @@ class KinoarhivViewGenres extends JViewLegacy {
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.edit.state.country', 'com_kinoarhiv')) {
+			if ($user->authorise('core.edit.state.genre', 'com_kinoarhiv')) {
 				JToolbarHelper::publishList();
 				JToolbarHelper::unpublishList();
 			}
 
-			if ($user->authorise('core.delete.country', 'com_kinoarhiv')) {
+			if ($user->authorise('core.delete.genre', 'com_kinoarhiv')) {
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 				JToolbarHelper::divider();
 			}
@@ -115,6 +115,16 @@ class KinoarhivViewGenres extends JViewLegacy {
 			}
 
 			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE'), false);
+			JToolbarHelper::divider();
+
+			if ($user->authorise('core.create.genre', 'com_kinoarhiv') && $user->authorise('core.edit.genre', 'com_kinoarhiv') && $user->authorise('core.edit.state.genre', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 

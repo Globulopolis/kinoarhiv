@@ -26,33 +26,6 @@
 			active_tab = $.cookie('com_kinoarhiv.settings.tabs');
 		}
 
-		$('.hasTip, .hasTooltip, td[title]').tooltip({
-			show: null,
-			position: {
-				my: 'left top',
-				at: 'left bottom'
-			},
-			open: function(event, ui){
-				ui.tooltip.animate({ top: ui.tooltip.position().top + 10 }, 'fast');
-			},
-			content: function(){
-				var parts = $(this).attr('title').split('::', 2),
-					title = '';
-
-				if (parts.length == 2) {
-					if (parts[0] != '') {
-						title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
-					} else {
-						title += parts[1];
-					}
-				} else {
-					title += $(this).attr('title');
-				}
-
-				return title;
-			}
-		});
-
 		$('#settings_tabs').tabs({
 			create: function(event, ui){
 				$(this).tabs('option', 'active', parseInt(active_tab, 10));

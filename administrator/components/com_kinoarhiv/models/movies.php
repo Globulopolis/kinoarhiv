@@ -695,7 +695,7 @@ class KinoarhivModelMovies extends JModelList {
 		$this->updateGenresStat($data['genres_orig'], $data['genres']);
 
 		if (!empty($id)) {
-			// Start processing intro text for director(s) IDs and store in relation table
+			// Start processing intro text for director(s) IDs
 			$names_d_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
 			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
 				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
@@ -719,7 +719,7 @@ class KinoarhivModelMovies extends JModelList {
 			}
 			// End
 
-			// Start processing intro text for cast IDs and store in relation table
+			// Start processing intro text for cast IDs
 			$names_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
 			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
 				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"

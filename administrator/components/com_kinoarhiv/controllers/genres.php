@@ -204,8 +204,8 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 
 				return false;
 			}
-
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres');
 		}
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres');
 	}
 }

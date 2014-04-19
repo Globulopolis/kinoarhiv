@@ -104,7 +104,7 @@ JHtml::_('behavior.keepalive');
 					}
 				]
 			});
-			dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=rules_edit&model=movies&view=movies&format=raw');
+			dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=rules_edit&model=movie&view=movies&format=raw');
 		});
 	});
 </script>

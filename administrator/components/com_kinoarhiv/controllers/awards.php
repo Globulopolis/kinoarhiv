@@ -200,8 +200,8 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 
 				return false;
 			}
-
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
 		}
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
 	}
 }

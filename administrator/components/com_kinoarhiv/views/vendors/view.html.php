@@ -99,10 +99,21 @@ class KinoarhivViewVendors extends JViewLegacy {
 			if ($user->authorise('core.edit.state.vendor', 'com_kinoarhiv')) {
 				JToolbarHelper::publishList();
 				JToolbarHelper::unpublishList();
+				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.delete.vendor', 'com_kinoarhiv')) {
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::divider();
+			}
+
+			if ($user->authorise('core.create.vendor', 'com_kinoarhiv') && $user->authorise('core.edit.vendor', 'com_kinoarhiv') && $user->authorise('core.edit.state.vendor', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
 	}

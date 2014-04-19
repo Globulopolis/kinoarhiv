@@ -18,9 +18,9 @@ class KinoarhivViewMovies extends JViewLegacy {
 	}
 
 	protected function _display($tpl) {
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -30,10 +30,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar();
 		}
-
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
 
 		parent::display($tpl);
 	}
@@ -99,9 +95,12 @@ class KinoarhivViewMovies extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 			JToolbarHelper::divider();
-			JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
-			JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
-			JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
+
+			if (!empty($this->items->id)) {
+				JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
+				JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
+				JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
+			}
 		} else {
 			JToolbarHelper::title(JText::_('COM_KA_MOVIES_TITLE'), 'play');
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {
@@ -124,6 +123,16 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+			JToolbarHelper::divider();
+
+			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 

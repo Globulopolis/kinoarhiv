@@ -163,8 +163,8 @@ class KinoarhivControllerCareers extends JControllerLegacy {
 
 				return false;
 			}
-
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=careers');
 		}
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers');
 	}
 }

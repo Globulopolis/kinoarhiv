@@ -168,8 +168,8 @@ class KinoarhivControllerCountries extends JControllerLegacy {
 
 				return false;
 			}
-
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 		}
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 	}
 }

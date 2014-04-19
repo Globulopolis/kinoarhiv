@@ -7,7 +7,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 
 	public function edit($isNew=false) {
 		$view = $this->getView('movies', 'html');
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$view->setModel($model, true);
 
 		if ($isNew === true) {
@@ -39,7 +39,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
 		$id = $app->input->get('id', array(0), 'array');
@@ -109,7 +109,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 			return array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->saveMovieAccessRules();
 
 		echo json_encode($result);
@@ -185,7 +185,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->getCast();
 
 		echo json_encode($result);
@@ -195,7 +195,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->deleteCast();
 
 		echo json_encode($result);
@@ -205,7 +205,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->getAwards();
 
 		echo json_encode($result);
@@ -215,7 +215,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->getPremieres();
 
 		echo json_encode($result);
@@ -225,7 +225,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->getReleases();
 
 		echo json_encode($result);
@@ -235,7 +235,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('movie');
 		$result = $model->deleteRelAwards();
 
 		echo json_encode($result);
@@ -429,5 +429,42 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$result = $model->deletePremieres();
 
 		echo json_encode($result);
+	}
+
+	public function batch() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$user = JFactory::getUser();
+
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv') && !$user->authorise('core.edit.state', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return false;
+		}
+
+		$app = JFactory::getApplication();
+		$ids = $app->input->post->get('id', array(), 'array');
+
+		if (count($ids) != 0) {
+			$model = $this->getModel('movies');
+			$result = $model->batch();
+
+			if ($result === false) {
+				$errors = $model->getErrors();
+
+				for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+					if ($errors[$i] instanceof Exception) {
+						$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+					} else {
+						$app->enqueueMessage($errors[$i], 'warning');
+					}
+				}
+
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
+
+				return false;
+			}
+		}
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 	}
 }

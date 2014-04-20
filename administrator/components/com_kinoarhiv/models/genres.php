@@ -10,11 +10,7 @@ class KinoarhivModelGenres extends JModelList {
 				'access', 'a.access',
 				'stats', 'a.stats',
 				'state', 'a.state',
-				'language', 'a.language',
-				'genre_id', 'rel.genre_id',
-				'name', 'g.name',
-				'title', 'm.title',
-				'movie_id', 'rel.movie_id');
+				'language', 'a.language');
 		}
 
 		parent::__construct($config);
@@ -31,7 +27,7 @@ class KinoarhivModelGenres extends JModelList {
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', 0, 'int');
+		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
 		$this->setState('filter.access', $access);
 
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
@@ -40,7 +36,7 @@ class KinoarhivModelGenres extends JModelList {
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
-		// force a language
+		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
 		if (!empty($forcedLanguage))
 		{
@@ -49,11 +45,7 @@ class KinoarhivModelGenres extends JModelList {
 		}
 
 		// List state information.
-		if ($app->input->get('task', '', 'cmd') == 'relations') {
-			parent::populateState('g.name', 'asc');
-		} else {
-			parent::populateState('a.name', 'asc');
-		}
+		parent::populateState('a.name', 'asc');
 	}
 
 	protected function getStoreId($id = '') {
@@ -80,9 +72,11 @@ class KinoarhivModelGenres extends JModelList {
 		);
 		$query->from('#__ka_genres AS `a`');
 
+		// Join over the language
 		$query->select(' `l`.`title` AS `language_title`')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
 
+		// Join over the asset groups.
 		$query->select('ag.title AS access_level')
 			->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
@@ -103,9 +97,14 @@ class KinoarhivModelGenres extends JModelList {
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = ' . (int) substr($search, 3));
+				$query->where('a.id = ' . (int) substr(trim($search), 3));
+			} elseif (stripos($search, 'alias:') === 0) {
+				$search = $db->quote('%' . $db->escape(trim(substr($search, 5)), true) . '%');
+				$query->where('(a.alias LIKE ' . $search . ')');
+			} elseif (stripos($search, 'stat:') === 0) {
+				$query->where('a.stats = ' . (int) substr(trim($search), 5));
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.name LIKE ' . $search . ')');
 			}
 		}
@@ -119,7 +118,7 @@ class KinoarhivModelGenres extends JModelList {
 		$orderCol = $this->state->get('list.ordering', 'a.name');
 		$orderDirn = $this->state->get('list.direction', 'asc');
 
-		//sqlsrv change
+		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}

@@ -6,7 +6,8 @@ class KinoarhivModelCareers extends JModelList {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'title', 'a.title',
-				'language', 'a.language',);
+				'ordering', 'a.ordering',
+				'language', 'a.language');
 		}
 
 		parent::__construct($config);
@@ -21,21 +22,21 @@ class KinoarhivModelCareers extends JModelList {
 		}
 
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-		$this->setState('filter.search', JString::trim($search));
+		$this->setState('filter.search', $search);
 
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
-		// force a language
+		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
-		if (!empty($forcedLanguage))
-		{
+
+		if (!empty($forcedLanguage)) {
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
 
 		// List state information.
-		parent::populateState('a.ordering', 'asc');
+		parent::populateState('a.title', 'asc');
 	}
 
 	protected function getStoreId($id = '') {
@@ -52,9 +53,15 @@ class KinoarhivModelCareers extends JModelList {
 		$query = $db->getQuery(true);
 		$task = $app->input->get('task', '', 'cmd');
 
-		$query->select('`a`.`id`, `a`.`title`, `a`.`ordering`, `a`.`language`');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`a`.`id`, `a`.`title`, `a`.`ordering`, `a`.`language`'
+			)
+		);
 		$query->from('#__ka_names_career AS `a`');
 
+		// Join over the language
 		$query->select(' `l`.`title` AS `language_title`')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
 
@@ -64,7 +71,7 @@ class KinoarhivModelCareers extends JModelList {
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = ' . (int) substr($search, 3));
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.title LIKE ' . $search . ')');
 			}
 		}
@@ -75,10 +82,10 @@ class KinoarhivModelCareers extends JModelList {
 		}
 
 		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering', 'a.ordering');
+		$orderCol = $this->state->get('list.ordering', 'a.title');
 		$orderDirn = $this->state->get('list.direction', 'asc');
 
-		//sqlsrv change
+		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}
@@ -90,14 +97,13 @@ class KinoarhivModelCareers extends JModelList {
 
 	public function getItems() {
 		$items = parent::getItems();
-		$app = JFactory::getApplication();
 
-		if ($app->isSite()) {
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
 			for ($x = 0, $count = count($items); $x < $count; $x++) {
-				//Check the access level. Remove articles the user shouldn't see
+				// Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}

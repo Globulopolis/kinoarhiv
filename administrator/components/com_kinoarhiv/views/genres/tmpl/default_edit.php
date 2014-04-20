@@ -5,6 +5,7 @@ JHtml::_('behavior.keepalive');
 	Joomla.submitbutton = function(task) {
 		if (task == 'relations') {
 			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres<?php echo !empty($this->items->id) ? '&id='.$this->items->id : ''; ?>';
+			return;
 		}
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
 			if (jQuery('#form_name').val() == '' || jQuery('#form_stats').val() == '') {

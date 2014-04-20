@@ -269,6 +269,14 @@ $name_id = $input->get('name_id', 0, 'int');
 				<div class="controls"><?php echo $this->form->getInput('c_title'); ?></div>
 			</div>
 			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('c_is_mainpage'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('c_is_mainpage'); ?></div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('c_is_amplua'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('c_is_amplua'); ?></div>
+			</div>
+			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('c_language'); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('c_language'); ?></div>
 			</div>

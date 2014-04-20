@@ -39,7 +39,7 @@ class KinoarhivModelCareer extends JModelForm {
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
 
-		$db->setQuery("SELECT `id`, `title`, `ordering`, `language`"
+		$db->setQuery("SELECT `id`, `title`, `is_mainpage`, `is_amplua`, `ordering`, `language`"
 			. "\n FROM ".$db->quoteName('#__ka_names_career')
 			. "\n WHERE `id` = ".(int)$id);
 		$result = $db->loadObject();
@@ -74,20 +74,26 @@ class KinoarhivModelCareer extends JModelForm {
 		// We need set alias for quick save on movie page
 		if ($alias == 1) {
 			$title = 'c_title';
+			$is_mainpage = 'c_is_mainpage';
+			$is_amplua = 'c_is_amplua';
 			$ordering = 'c_ordering';
 			$language = 'c_language';
 		} else {
 			$title = 'title';
+			$is_mainpage = 'is_mainpage';
+			$is_amplua = 'is_amplua';
 			$ordering = 'ordering';
 			$language = 'language';
 		}
 
 		$data = $app->input->getArray(array(
 			'form'=>array(
-				$title=>'string', $ordering=>'int', $language=>'string'
+				$title=>'string', $ordering=>'int', $language=>'string', $is_mainpage=>'int', $is_amplua=>'int'
 			)
 		));
 		$title = $data['form'][$title];
+		$is_mainpage = empty($data['form'][$is_mainpage]) ? 0 : $data['form'][$is_mainpage];
+		$is_amplua = empty($data['form'][$is_amplua]) ? 0 : $data['form'][$is_amplua];
 		$ordering = empty($data['form'][$ordering]) ? 0 : $data['form'][$ordering];
 		$language = empty($data['form'][$language]) ? '*' : $data['form'][$language];
 
@@ -96,11 +102,11 @@ class KinoarhivModelCareer extends JModelForm {
 		}
 
 		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names_career')." (`id`, `title`, `ordering`, `language`)"
-				. "\n VALUES ('', '".$db->escape($title)."', '".(int)$ordering."', '".$language."')");
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names_career')." (`id`, `title`, `is_mainpage`, `is_amplua`, `ordering`, `language`)"
+				. "\n VALUES ('', '".$db->escape($title)."', '".(int)$is_mainpage."', '".(int)$is_amplua."', '".(int)$ordering."', '".$language."')");
 			$query = $db->execute();
 		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names_career')." SET `title` = '".$db->escape($title)."', `ordering` = '".(int)$ordering."', `language` = '".$language."'"
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names_career')." SET `title` = '".$db->escape($title)."', `is_mainpage` = '".(int)$is_mainpage."', `is_amplua` = '".(int)$is_amplua."', `ordering` = '".(int)$ordering."', `language` = '".$language."'"
 				. "\n WHERE `id` = ".(int)$id);
 			$query = $db->execute();
 		}

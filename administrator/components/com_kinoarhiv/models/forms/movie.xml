@@ -175,6 +175,14 @@
 
 	<fieldset name="career_quick_add">
 		<field name="c_title" type="text" default="" label="COM_KA_CAREER_FIELD_TITLE" class="span12" required="true" filter="string" size="45" />
+		<field name="c_is_mainpage" type="list" default="0" label="COM_KA_FIELD_CAREER_MAINPAGE" description="COM_KA_FIELD_CAREER_MAINPAGE_DESC" filter="integer">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="c_is_amplua" type="list" default="0" label="COM_KA_FIELD_CAREER_AMPLUA" description="COM_KA_FIELD_CAREER_AMPLUA_DESC" filter="integer">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="c_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

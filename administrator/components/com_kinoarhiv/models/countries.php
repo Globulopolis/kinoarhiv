@@ -28,9 +28,6 @@ class KinoarhivModelCountries extends JModelList {
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
-		$code = $this->getUserStateFromRequest($this->context . '.filter.code', 'filter_code', '');
-		$this->setState('filter.code', $code);
-
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
@@ -50,7 +47,6 @@ class KinoarhivModelCountries extends JModelList {
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.published');
-		$id .= ':' . $this->getState('filter.code');
 		$id .= ':' . $this->getState('filter.language');
 
 		return parent::getStoreId($id);
@@ -62,9 +58,15 @@ class KinoarhivModelCountries extends JModelList {
 		$query = $db->getQuery(true);
 		$task = $app->input->get('task', '', 'cmd');
 
-		$query->select('`a`.`id`, `a`.`name`, `a`.`code`, `a`.`language`, `a`.`state`');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`a`.`id`, `a`.`name`, `a`.`code`, `a`.`language`, `a`.`state`'
+			)
+		);
 		$query->from('#__ka_countries AS `a`');
 
+		// Join over the language
 		$query->select(' `l`.`title` AS `language_title`')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
 
@@ -81,8 +83,11 @@ class KinoarhivModelCountries extends JModelList {
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = ' . (int) substr($search, 3));
+			} elseif (stripos($search, 'code:') === 0) {
+				$search = $db->quote('%' . $db->escape(trim(substr($search, 5)), true) . '%');
+				$query->where('(a.code LIKE ' . $search . ')');
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.name LIKE ' . $search . ')');
 			}
 		}
@@ -96,7 +101,7 @@ class KinoarhivModelCountries extends JModelList {
 		$orderCol = $this->state->get('list.ordering', 'a.name');
 		$orderDirn = $this->state->get('list.direction', 'asc');
 
-		//sqlsrv change
+		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}

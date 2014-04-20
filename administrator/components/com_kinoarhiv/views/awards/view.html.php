@@ -83,7 +83,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			if (!empty($this->items->id)) {
-				JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_AWARDS_RELATIONS_TITLE'), false);
+				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
@@ -109,7 +109,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 				JToolbarHelper::divider();
 			}
 
-			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_AW_TABLES_RELATIONS_TITLE'), false);
+			JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
 			if ($user->authorise('core.create.award', 'com_kinoarhiv') && $user->authorise('core.edit.award', 'com_kinoarhiv') && $user->authorise('core.edit.state.award', 'com_kinoarhiv')) {

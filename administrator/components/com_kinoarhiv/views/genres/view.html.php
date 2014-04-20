@@ -20,9 +20,11 @@ class KinoarhivViewGenres extends JViewLegacy {
 	protected function _display($tpl) {
 		$user = JFactory::getUser();
 
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -36,10 +38,6 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$this->canEdit = $user->authorise('core.edit.genre', 'com_kinoarhiv');
 		$this->canEditState = $user->authorise('core.edit.state.genre', 'com_kinoarhiv');
 		$this->canUpdateStat = $user->authorise('core.recount.genre', 'com_kinoarhiv');
-
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
 
 		parent::display($tpl);
 	}
@@ -72,24 +70,24 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_GENRES_ADD_TITLE'), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_GENRES_TITLE').': '.JText::_('COM_KA_NEW')), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_GENRES_EDIT_TITLE'), isset($this->items->name) ? $this->items->name : JText::_('COM_KA_EDIT')), 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_GENRES_TITLE').': '.$this->items->name), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			if (!empty($this->items->id)) {
-				JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_GENRES_TITLE'), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_GENRES_TITLE')), 'smiley-2');
 
 			if ($user->authorise('core.create.genre', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
@@ -114,7 +112,7 @@ class KinoarhivViewGenres extends JViewLegacy {
 				JToolbarHelper::custom('updateStat', 'chart', 'chart', JText::_('COM_KA_GENRES_STATS_UPDATE'), true);
 			}
 
-			JToolbarHelper::custom('relations', 'tools', 'tools', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE'), false);
+			JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
 			if ($user->authorise('core.create.genre', 'com_kinoarhiv') && $user->authorise('core.edit.genre', 'com_kinoarhiv') && $user->authorise('core.edit.state.genre', 'com_kinoarhiv')) {

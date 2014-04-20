@@ -116,7 +116,7 @@ endif; ?>
 						}
 					]
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=releases_edit&model=movies&view=movies&format=raw');
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=releases_edit&model=movie&view=movies&format=raw');
 			} else if ($(this).hasClass('e')) {
 				// Load 'Edit item' layout
 				var items = $('#list_releases .cbox').filter(':checked');
@@ -186,7 +186,7 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=releases_edit&model=movies&view=movies&format=raw&release_id='+ids[3]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=releases_edit&model=movies&view=movie&format=raw&release_id='+ids[3]+'#edit');
 				} else {
 					showMsg('.releases-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}

@@ -19,19 +19,19 @@ class KinoarhivViewRelations extends JViewLegacy {
 
 		switch ($this->task) {
 			case 'countries':
-				JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+				JToolbarHelper::custom('menu', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 				$this->countries($tpl);
 				break;
 			case 'genres':
-				JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+				JToolbarHelper::custom('menu', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 				$this->genres($tpl);
 				break;
 			case 'awards':
-				JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+				JToolbarHelper::custom('menu', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 				$this->awards($tpl);
 				break;
 			case 'careers':
-				JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+				JToolbarHelper::custom('menu', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 				$this->careers($tpl);
 				break;
 			case 'add':
@@ -39,8 +39,8 @@ class KinoarhivViewRelations extends JViewLegacy {
 				$this->edit($tpl);
 				break;
 			default:
-				JToolbarHelper::title(JText::_('COM_KINOARHIV_CP').': '.JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), 'cpanel.png');
-				JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+				JToolbarHelper::title(JText::_('COM_KINOARHIV_CP').': '.JText::_('COM_KA_TABLES_RELATIONS'), 'link');
+				JToolbarHelper::custom('menu', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 
 				parent::display($tpl);
 				break;
@@ -52,9 +52,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_RELATIONS_TITLE').': ID '.$id, 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_RELATIONS_TITLE').': ID '.$id, 'link');
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_RELATIONS_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_RELATIONS_TITLE'), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -62,7 +62,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('relations_remove', 'delete', 'delete', JText::_('JTOOLBAR_REMOVE'), false);
 		JToolbarHelper::divider();
-		JToolbarHelper::custom('countries', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_TITLE'), false);
+		JToolbarHelper::custom('countries', 'location', 'location', JText::_('COM_KA_COUNTRIES_TITLE'), false);
 
 		parent::display($tpl);
 	}
@@ -72,9 +72,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE').': ID '.$id, 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf('COM_KA_GENRES_EDIT_TITLE', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE')).': ID '.$id, 'link');
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf('COM_KA_GENRES_EDIT_TITLE', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE')), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -82,7 +82,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('relations_remove', 'delete', 'delete', JText::_('JTOOLBAR_REMOVE'), false);
 		JToolbarHelper::divider();
-		JToolbarHelper::custom('genres', 'tools', 'tools', JText::_('COM_KA_GENRES_TITLE'), false);
+		JToolbarHelper::custom('genres', 'smiley-2', 'smiley-2', JText::_('COM_KA_GENRES_TITLE'), false);
 
 		parent::display($tpl);
 	}
@@ -101,9 +101,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		}
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_AW_TABLES_RELATIONS_TITLE').$award_type_title.': ID '.$id, 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_AW_TABLES_RELATIONS_TITLE').$award_type_title.': ID '.$id, 'link');
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_AW_TABLES_RELATIONS_TITLE').$award_type_title, 'cpanel.png');
+			JToolbarHelper::title(JText::sprintf('COM_KA_AW_EDIT_TITLE', JText::_('COM_KA_TABLES_RELATIONS')).$award_type_title, 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -111,7 +111,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('relations_remove', 'delete', 'delete', JText::_('JTOOLBAR_REMOVE'), false);
 		JToolbarHelper::divider();
-		JToolbarHelper::custom('awards', 'tools', 'tools', JText::_('COM_KA_AW_TITLE'), false);
+		JToolbarHelper::custom('awards', 'asterisk', 'asterisk', JText::_('COM_KA_AW_TITLE'), false);
 
 		$this->award_type = $award_type;
 
@@ -123,9 +123,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE').': ID '.$id, 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE').': ID '.$id, 'link');
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE'), 'cpanel.png');
+			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE'), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -133,7 +133,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('relations_remove', 'delete', 'delete', JText::_('JTOOLBAR_REMOVE'), false);
 		JToolbarHelper::divider();
-		JToolbarHelper::custom('careers', 'tools', 'tools', JText::_('COM_KA_CAREER_TITLE'), false);
+		JToolbarHelper::custom('careers', 'address', 'address', JText::_('COM_KA_CAREER_TITLE'), false);
 
 		parent::display($tpl);
 	}
@@ -142,7 +142,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$param = $app->input->get('param', '', 'cmd');
 
-		JToolbarHelper::title(JText::_('COM_KA_'.strtoupper($param).'_RELATIONS_TITLE').': '.JText::_('COM_KA_EDIT'), 'cpanel.png');
+		JToolbarHelper::title(JText::_('COM_KA_'.strtoupper($param).'_RELATIONS_TITLE').': '.JText::_('COM_KA_EDIT'), 'link');
 		JToolbarHelper::apply('apply');
 		JToolbarHelper::save('save');
 		JToolbarHelper::save2new('save2new');

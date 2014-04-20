@@ -5,8 +5,8 @@
 			var _task = '<?php echo $this->task; ?>';
 			if (task == 'menu') {
 				$('.rel-menu').css({
-					left: $('#toolbar-tools').offset().left+'px',
-					top: ($('#toolbar-tools').offset().top+$('#toolbar-tools').height()+5)+'px'
+					left: $('#toolbar-link').offset().left+'px',
+					top: ($('#toolbar-link').offset().top+$('#toolbar-link').height()+5)+'px'
 				});
 				$('.rel-menu').toggle();
 				return;

@@ -20,9 +20,11 @@ class KinoarhivViewVendors extends JViewLegacy {
 	protected function _display($tpl) {
 		$user = JFactory::getUser();
 
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -35,10 +37,6 @@ class KinoarhivViewVendors extends JViewLegacy {
 
 		$this->canEdit = $user->authorise('core.edit.vendor', 'com_kinoarhiv');
 		$this->canEditState = $user->authorise('core.edit.state.vendor', 'com_kinoarhiv');
-
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
 
 		parent::display($tpl);
 	}
@@ -71,21 +69,21 @@ class KinoarhivViewVendors extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_VENDORS_ADD_TITLE'), 'basket');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE').': '.JText::_('COM_KA_NEW')), 'basket');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_VENDORS_EDIT_TITLE'), $this->items->company_name), 'basket');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE').': '.$this->items->company_name), 'basket');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_VENDORS_TITLE'), 'basket');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE')), 'basket');
 
 			if ($user->authorise('core.create.vendor', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

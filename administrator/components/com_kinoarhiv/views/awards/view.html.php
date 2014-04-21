@@ -20,9 +20,11 @@ class KinoarhivViewAwards extends JViewLegacy {
 	protected function _display($tpl) {
 		$user = JFactory::getUser();
 
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -35,10 +37,6 @@ class KinoarhivViewAwards extends JViewLegacy {
 
 		$this->canEdit = $user->authorise('core.edit.country', 'com_kinoarhiv');
 		$this->canEditState = $user->authorise('core.edit.state.country', 'com_kinoarhiv');
-
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
 
 		parent::display($tpl);
 	}
@@ -71,14 +69,14 @@ class KinoarhivViewAwards extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_AW_ADD_TITLE'), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AW_TITLE').': '.JText::_('COM_KA_NEW')), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_AW_EDIT_TITLE'), $this->items->title), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AW_TITLE').': '.$this->items->title), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -88,7 +86,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_AW_TITLE'), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AW_TITLE')), 'asterisk');
 
 			if ($user->authorise('core.create.award', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
@@ -126,7 +124,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 	protected function getSortFields() {
 		return array(
 			'a.state' => JText::_('JSTATUS'),
-			'a.title' => JText::_('JGLOBAL_TITLE'),
+			'a.title' => JText::_('COM_KA_FIELD_AW_LABEL'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
 			'a.id' => JText::_('JGRID_HEADING_ID')
 		);

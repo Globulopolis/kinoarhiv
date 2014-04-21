@@ -30,7 +30,7 @@ class KinoarhivModelAwards extends JModelList {
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
-		// force a language
+		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
 		if (!empty($forcedLanguage))
 		{
@@ -57,9 +57,15 @@ class KinoarhivModelAwards extends JModelList {
 		$query = $db->getQuery(true);
 		$task = $app->input->get('task', '', 'cmd');
 
-		$query->select('`a`.`id`, `a`.`title`, `a`.`desc`, `a`.`language`, `a`.`state`');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`a`.`id`, `a`.`title`, `a`.`desc`, `a`.`language`, `a`.`state`'
+			)
+		);
 		$query->from($db->quoteName('#__ka_awards').' AS `a`');
 
+		// Join over the language
 		$query->select(' `l`.`title` AS `language_title`')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
 
@@ -77,7 +83,7 @@ class KinoarhivModelAwards extends JModelList {
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = ' . (int) substr($search, 3));
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.title LIKE ' . $search . ')');
 			}
 		}
@@ -91,7 +97,7 @@ class KinoarhivModelAwards extends JModelList {
 		$orderCol = $this->state->get('list.ordering', 'a.title');
 		$orderDirn = $this->state->get('list.direction', 'asc');
 
-		//sqlsrv change
+		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}

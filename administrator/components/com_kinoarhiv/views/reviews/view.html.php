@@ -19,9 +19,11 @@ class KinoarhivViewReviews extends JViewLegacy {
 	protected function _display($tpl) {
 		$user = JFactory::getUser();
 
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -34,10 +36,6 @@ class KinoarhivViewReviews extends JViewLegacy {
 
 		$this->canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
 		$this->canEditState = $user->authorise('core.edit.state', 'com_kinoarhiv');
-
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
 
 		parent::display($tpl);
 	}
@@ -59,21 +57,31 @@ class KinoarhivViewReviews extends JViewLegacy {
 	}
 
 	protected function addToolbar($task='') {
-		$app = JFactory::getApplication();
+		$user = JFactory::getUser();
 
 		if ($task == 'edit') {
-			JToolbarHelper::title(JText::_('COM_KA_REVIEWS_EDIT_TITLE'), 'comments-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_FIELD_REVIEW').': '.JText::_('COM_KA_EDIT')), 'comments-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_REVIEWS_TITLE'), 'comments-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_TITLE')), 'comments-2');
 			JToolbarHelper::editList('edit');
 			JToolbarHelper::divider();
 			JToolbarHelper::publishList();
 			JToolbarHelper::unpublishList();
 			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+			JToolbarHelper::divider();
+
+			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 

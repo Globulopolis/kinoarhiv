@@ -3,7 +3,7 @@
 class KinoarhivControllerReviews extends JControllerLegacy {
 	public function edit() {
 		$view = $this->getView('reviews', 'html');
-		$model = $this->getModel('reviews');
+		$model = $this->getModel('review');
 		$view->setModel($model, true);
 
 		$view->display('edit');
@@ -25,7 +25,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('reviews');
+		$model = $this->getModel('review');
 		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
 		$id = $this->input->post->get('id', 0, 'int');
@@ -122,6 +122,43 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		// Clean the session data.
 		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.reviews.global.data', null);
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews');
+	}
+
+	public function batch() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$user = JFactory::getUser();
+
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv') && !$user->authorise('core.edit.state', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return false;
+		}
+
+		$app = JFactory::getApplication();
+		$ids = $app->input->post->get('id', array(), 'array');
+
+		if (count($ids) != 0) {
+			$model = $this->getModel('reviews');
+			$result = $model->batch();
+
+			if ($result === false) {
+				$errors = $model->getErrors();
+
+				for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+					if ($errors[$i] instanceof Exception) {
+						$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+					} else {
+						$app->enqueueMessage($errors[$i], 'warning');
+					}
+				}
+
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews');
+
+				return false;
+			}
+		}
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews');
 	}

@@ -99,7 +99,7 @@ class KinoarhivModelGenres extends JModelList {
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = ' . (int) substr(trim($search), 3));
 			} elseif (stripos($search, 'alias:') === 0) {
-				$search = $db->quote('%' . $db->escape(trim(substr($search, 5)), true) . '%');
+				$search = $db->quote('%' . $db->escape(trim(substr($search, 6)), true) . '%');
 				$query->where('(a.alias LIKE ' . $search . ')');
 			} elseif (stripos($search, 'stat:') === 0) {
 				$query->where('a.stats = ' . (int) substr(trim($search), 5));

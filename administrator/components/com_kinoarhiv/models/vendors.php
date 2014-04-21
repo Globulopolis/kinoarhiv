@@ -31,7 +31,7 @@ class KinoarhivModelVendors extends JModelList {
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
-		// force a language
+		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
 		if (!empty($forcedLanguage))
 		{
@@ -58,9 +58,15 @@ class KinoarhivModelVendors extends JModelList {
 		$query = $db->getQuery(true);
 		$task = $app->input->get('task', '', 'cmd');
 
-		$query->select('`v`.`id`, `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`, `v`.`language`, `v`.`state`');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`v`.`id`, `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`, `v`.`language`, `v`.`state`'
+			)
+		);
 		$query->from('#__ka_vendors AS `v`');
 
+		// Join over the language
 		$query->select(' `l`.`title` AS `language_title`')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `v`.`language`');
 
@@ -77,9 +83,12 @@ class KinoarhivModelVendors extends JModelList {
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
 				$query->where('v.id = ' . (int) substr($search, 3));
+			} elseif (stripos($search, 'alias:') === 0) {
+				$search = $db->quote('%' . $db->escape(trim(substr($search, 6)), true) . '%');
+				$query->where('(v.company_name_alias LIKE ' . $search . ')');
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('(v.company_name LIKE ' . $search . ' AND v.company_name_intl LIKE ' . $search . ')');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(v.company_name LIKE ' . $search . ' OR v.company_name_intl LIKE ' . $search . ')');
 			}
 		}
 
@@ -92,7 +101,7 @@ class KinoarhivModelVendors extends JModelList {
 		$orderCol = $this->state->get('list.ordering', 'v.company_name');
 		$orderDirn = $this->state->get('list.direction', 'asc');
 
-		//sqlsrv change
+		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}

@@ -1,6 +1,4 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('bootstrap.tooltip');
-
 $user		= JFactory::getUser();
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
@@ -36,6 +34,7 @@ $sortFields = $this->getSortFields();
 
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
+		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="filter-search btn-group pull-left">
 				<label for="filter_search" class="element-invisible"><?php echo JText::_('COM_FILTER_SEARCH_DESC'); ?></label>
@@ -75,28 +74,28 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
 					<th width="1%" style="min-width:55px" class="nowrap center">
-						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th width="1%" style="min-width:55px" class="nowrap center">
-						<?php echo JHtml::_('grid.sort', 'COM_KA_REVIEWS_FIELD_TYPE', 'a.type', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_TYPE', 'a.type', $listDirn, $listOrder); ?>
 					</th>
 					<th>
 						<?php echo JText::_('COM_KA_REVIEWS_FIELD_REVIEW'); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'JGLOBAL_SHOW_PUBLISH_DATE_LABEL', 'a.created', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_SHOW_PUBLISH_DATE_LABEL', 'a.created', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'COM_KA_REVIEWS_FIELD_USER', 'u.username', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_USER', 'u.username', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'COM_KA_REVIEWS_FIELD_USER_IP', 'a.ip', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_USER_IP', 'a.ip', $listDirn, $listOrder); ?>
 					</th>
 					<th width="5%" class="nowrap center hidden-phone">
-						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
 			</thead>
@@ -154,12 +153,11 @@ $sortFields = $this->getSortFields();
 			</tbody>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
+		<?php echo $this->loadTemplate('batch'); ?>
 
 		<input type="hidden" name="controller" value="reviews" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

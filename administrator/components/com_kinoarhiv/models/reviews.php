@@ -1,8 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivModelReviews extends JModelList {
-	protected $_forms = array();
-
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
@@ -16,71 +14,6 @@ class KinoarhivModelReviews extends JModelList {
 		}
 
 		parent::__construct($config);
-	}
-
-	protected function loadForm($name, $source = null, $options = array(), $clear = false, $xpath = false) {
-		// Handle the optional arguments.
-		$options['control'] = JArrayHelper::getValue($options, 'control', false);
-
-		// Create a signature hash.
-		$hash = md5($source . serialize($options));
-
-		// Check if we can use a previously loaded form.
-		if (isset($this->_forms[$hash]) && !$clear) {
-			return $this->_forms[$hash];
-		}
-
-		// Get the form.
-		JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
-		JForm::addFieldPath(JPATH_COMPONENT . '/models/fields');
-
-		try {
-			$form = JForm::getInstance($name, $source, $options, false, $xpath);
-
-			if (isset($options['load_data']) && $options['load_data']) {
-				// Get the data for the form.
-				$data = $this->loadFormData();
-			} else {
-				$data = array();
-			}
-
-			// Allow for additional modification of the form, and events to be triggered.
-			// We pass the data because plugins may require it.
-			$this->preprocessForm($form, $data);
-
-			// Load the data into the form after the plugins have operated.
-			$form->bind($data);
-
-		} catch (Exception $e) {
-			$this->setError($e->getMessage());
-			return false;
-		}
-
-		// Store the form for later.
-		$this->_forms[$hash] = $form;
-
-		return $form;
-	}
-
-	protected function preprocessForm(JForm $form, $data, $group = 'content') {
-		// Import the appropriate plugin group.
-		JPluginHelper::importPlugin($group);
-
-		// Get the dispatcher.
-		$dispatcher = JEventDispatcher::getInstance();
-
-		// Trigger the form preparation event.
-		$results = $dispatcher->trigger('onContentPrepareForm', array($form, $data));
-
-		// Check for errors encountered while preparing the form.
-		if (count($results) && in_array(false, $results, true)) {
-			// Get the last error.
-			$error = $dispatcher->getError();
-
-			if (!($error instanceof Exception)) {
-				throw new Exception($error);
-			}
-		}
 	}
 
 	protected function populateState($ordering = null, $direction = null) {
@@ -107,20 +40,6 @@ class KinoarhivModelReviews extends JModelList {
 		$id .= ':' . $this->getState('filter.published');
 
 		return parent::getStoreId($id);
-	}
-
-	public function getForm($data = array(), $loadData = true) {
-		$form = $this->loadForm('com_kinoarhiv.review', 'review', array('control' => 'form', 'load_data' => $loadData));
-
-		if (empty($form)) {
-			return false;
-		}
-
-		return $form;
-	}
-
-	protected function loadFormData() {
-		return $this->getItem();
 	}
 
 	protected function getListQuery() {
@@ -246,37 +165,29 @@ class KinoarhivModelReviews extends JModelList {
 		}
 	}
 
-	public function getItem() {
+	public function batch() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$task = $app->input->get('task', '', 'cmd');
-		$id = $app->input->get('id', array(), 'array');
+		$ids = $app->input->post->get('id', array(), 'array');
+		$batch_data = $app->input->post->get('batch', array(), 'array');
 
-		$db->setQuery("SELECT `id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`"
-			. "\n FROM ".$db->quoteName('#__ka_reviews')
-			. "\n WHERE `id` = ".(int)$id[0]);
-		$result = $db->loadObject();
+		/*if (!empty($batch_data['language_id'])) {
+			$query = $db->getQuery(true);
 
-		return $result;
-	}
+			$query->update($db->quoteName('#__ka_awards'))
+				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
+				->where('`id` IN ('.implode(',', $ids).')');
 
-	public function save($data) {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$id = $app->input->post->get('id', null, 'int');
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')
-			. "\n SET `uid` = '".(int)$data['uid']."', `movie_id` = '".(int)$data['movie_id']."', `review` = '".$db->escape($data['review'])."', `created` = '".$data['created']."', `type` = '".(int)$data['type']."', `ip` = '".(string)$data['ip']."', `state` = '".(int)$data['state']."'"
-			. "\n WHERE `id` = ".(int)$id);
+				return false;
+			}
+		}*/
 
-		try {
-			$db->execute();
-
-			return true;
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
+		return true;
 	}
 }

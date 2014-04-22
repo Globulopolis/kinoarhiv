@@ -10,7 +10,7 @@ class KinoarhivModelReviews extends JModelList {
 				'state', 'a.state',
 				'type', 'a.type',
 				'ip', 'a.ip',
-				'created', 'a.created',);
+				'created', 'a.created');
 		}
 
 		parent::__construct($config);
@@ -27,6 +27,12 @@ class KinoarhivModelReviews extends JModelList {
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
+		$author_id = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id', '');
+		$this->setState('filter.author_id', $author_id);
+
+		$type = $this->getUserStateFromRequest($this->context . '.filter.type', 'filter_type', '');
+		$this->setState('filter.type', $type);
+
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
@@ -37,6 +43,8 @@ class KinoarhivModelReviews extends JModelList {
 	protected function getStoreId($id = '') {
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.author_id');
+		$id .= ':' . $this->getState('filter.type');
 		$id .= ':' . $this->getState('filter.published');
 
 		return parent::getStoreId($id);
@@ -50,14 +58,33 @@ class KinoarhivModelReviews extends JModelList {
 		$uid = $app->input->get('uid', 0, 'int');
 		$mid = $app->input->get('mid', 0, 'int');
 
-		$query->select('`a`.`id`, `a`.`uid`, `a`.`movie_id`, `a`.`review`, `a`.`created`, `a`.`type`, `a`.`ip`, `a`.`state`');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`a`.`id`, `a`.`uid`, `a`.`movie_id`, `a`.`review`, `a`.`created`, `a`.`type`, `a`.`ip`, `a`.`state`'
+			)
+		);
 		$query->from('#__ka_reviews AS `a`');
 
-		$query->select(' `u`.`username` AS `username`')
+		$query->select(' `u`.`name` AS `username`')
 			->join('LEFT', $db->quoteName('#__users') . ' AS `u` ON `u`.`id` = `a`.`uid`');
 
 		$query->select(' `m`.`title` AS `movie`')
 			->join('LEFT', $db->quoteName('#__ka_movies') . ' AS `m` ON `m`.`id` = `a`.`movie_id`');
+
+		// Filter by author ID
+		$author_id = $this->getState('filter.author_id');
+		if (is_numeric($author_id)) {
+			$query->where('a.uid = ' . (int) $author_id);
+		}
+
+		// Filter by type
+		$type = $this->getState('filter.type');
+		if (is_numeric($type)) {
+			$query->where('a.type = ' . (int) $type);
+		} elseif ($type === '') {
+			$query->where('(a.type = 0 OR a.type = 1 OR a.type = 2 OR a.type = 3)');
+		}
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
@@ -171,11 +198,11 @@ class KinoarhivModelReviews extends JModelList {
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 
-		/*if (!empty($batch_data['language_id'])) {
+		if ($batch_data['type'] != '') {
 			$query = $db->getQuery(true);
 
-			$query->update($db->quoteName('#__ka_awards'))
-				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
+			$query->update($db->quoteName('#__ka_reviews'))
+				->set("`type` = '".(int)$batch_data['batch-type']."'")
 				->where('`id` IN ('.implode(',', $ids).')');
 
 			$db->setQuery($query);
@@ -186,7 +213,24 @@ class KinoarhivModelReviews extends JModelList {
 
 				return false;
 			}
-		}*/
+		}
+
+		if ($batch_data['user_id'] != '') {
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_reviews'))
+				->set("`uid` = '".(int)$batch_data['user_id']."'")
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
 
 		return true;
 	}

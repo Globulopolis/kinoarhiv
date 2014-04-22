@@ -20,8 +20,8 @@
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[letters][]" value="" class="letters span12" />
-							<button type="button" class="btn btn-default cmd-ab-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-default cmd-ab-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>
@@ -42,8 +42,8 @@
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[letters][]" value="<?php echo implode(',', $letters->letters); ?>" class="letters span12" />
-							<button type="button" class="btn btn-default cmd-ab-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-default cmd-ab-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>

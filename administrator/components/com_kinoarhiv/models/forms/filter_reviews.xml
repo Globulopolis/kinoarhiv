@@ -2,20 +2,35 @@
 <form>
 	<fields name="filter">
 		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
-		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE" description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
-			<option value="">JOPTION_SELECT_LANGUAGE</option>
-			<option value="*">JALL</option>
+		<field name="published" type="status" label="COM_CONTENT_FILTER_PUBLISHED" description="COM_CONTENT_FILTER_PUBLISHED_DESC" onchange="this.form.submit();">
+			<option value="">JOPTION_SELECT_PUBLISHED</option>
+		</field>
+		<field name="author_id" type="creator" table="ka_reviews" field="uid" label="COM_CONTENT_FILTER_AUTHOR" description="COM_CONTENT_FILTER_AUTHOR_DESC" onchange="this.form.submit();">
+			<option value="">JOPTION_SELECT_AUTHOR</option>
+		</field>
+		<field name="type" type="list" label="JOPTION_FILTER_LANGUAGE" description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
+			<option value="">COM_KA_REVIEWS_TYPE_SELECT</option>
+			<option value="0">COM_KA_REVIEWS_TYPE_0</option>
+			<option value="1">COM_KA_REVIEWS_TYPE_1</option>
+			<option value="2">COM_KA_REVIEWS_TYPE_2</option>
+			<option value="3">COM_KA_REVIEWS_TYPE_3</option>
 		</field>
 	</fields>
 	<fields name="list">
-		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.title ASC">
+		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.created DESC">
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="a.state ASC">JSTATUS_ASC</option>
 			<option value="a.state DESC">JSTATUS_DESC</option>
-			<option value="a.title ASC">COM_KA_AW_TITLE_SORT_ASC</option>
-			<option value="a.title DESC">COM_KA_AW_TITLE_SORT_DESC</option>
-			<option value="language ASC">JGRID_HEADING_LANGUAGE_ASC</option>
-			<option value="language DESC">JGRID_HEADING_LANGUAGE_DESC</option>
+			<option value="a.type ASC">COM_KA_REVIEWS_FIELD_TYPE_SORT_ASC</option>
+			<option value="a.type DESC">COM_KA_REVIEWS_FIELD_TYPE_SORT_DESC</option>
+			<option value="a.created ASC">COM_KA_REVIEWS_FIELD_DATE_SORT_ASC</option>
+			<option value="a.created DESC">COM_KA_REVIEWS_FIELD_DATE_SORT_DESC</option>
+			<option value="u.username ASC">COM_KA_REVIEWS_FIELD_USER_SORT_ASC</option>
+			<option value="u.username DESC">COM_KA_REVIEWS_FIELD_USER_SORT_DESC</option>
+			<option value="a.ip ASC">COM_KA_REVIEWS_FIELD_IP_SORT_ASC</option>
+			<option value="a.ip DESC">COM_KA_REVIEWS_FIELD_IP_SORT_DESC</option>
+			<option value="m.title ASC">COM_KA_REVIEWS_FIELD_MOVIE_SORT_ASC</option>
+			<option value="m.title DESC">COM_KA_REVIEWS_FIELD_MOVIE_SORT_DESC</option>
 			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>

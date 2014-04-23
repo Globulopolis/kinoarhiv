@@ -19,41 +19,63 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.create', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('review');
-		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
+		$form = $model->getForm($data, false);
 		$id = $this->input->post->get('id', 0, 'int');
-		$return = $model->save($data);
 
-		// Check the return value.
-		if ($return === false) {
-			// Save the data in the session.
+		if (!$form) {
+			$app->enqueueMessage($model->getError(), 'error');
+			return false;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false) {
 			$app->setUserState('com_kinoarhiv.reviews.global.data', $data);
+			$errors = $model->getErrors();
 
-			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews', $message, 'error');
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.(int)$id);
+
+			return false;
+		}
+		$result = $model->save($validData);
+
+		if (!$result) {
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+			$this->setMessage($this->getError(), 'error');
+
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews');
+
 			return false;
 		}
 
 		// Set the success message.
-		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+		$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
 
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.(int)$id, $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.(int)$id);
 				break;
 
 			case 'save':
 			default:
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews', $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews');
 				break;
 		}
 

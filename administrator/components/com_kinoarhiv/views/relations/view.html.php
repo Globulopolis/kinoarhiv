@@ -52,9 +52,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_RELATIONS_TITLE').': ID '.$id, 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_COUNTRIES_TITLE').': ID '.$id), 'link');
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_COUNTRIES_RELATIONS_TITLE'), 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_COUNTRIES_TITLE')), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -72,9 +72,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::sprintf('COM_KA_GENRES_EDIT_TITLE', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE')).': ID '.$id, 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_GENRES_TITLE').': ID '.$id), 'link');
 		} else {
-			JToolbarHelper::title(JText::sprintf('COM_KA_GENRES_EDIT_TITLE', JText::_('COM_KA_GENRES_TABLES_RELATIONS_TITLE')), 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_GENRES_TITLE')), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -101,9 +101,9 @@ class KinoarhivViewRelations extends JViewLegacy {
 		}
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_AW_TABLES_RELATIONS_TITLE').$award_type_title.': ID '.$id, 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE').': '.JText::_('COM_KA_TABLES_RELATIONS').$award_type_title.': ID '.$id), 'link');
 		} else {
-			JToolbarHelper::title(JText::sprintf('COM_KA_AW_EDIT_TITLE', JText::_('COM_KA_TABLES_RELATIONS')).$award_type_title, 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE').': '.JText::_('COM_KA_TABLES_RELATIONS').$award_type_title), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -111,7 +111,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('relations_remove', 'delete', 'delete', JText::_('JTOOLBAR_REMOVE'), false);
 		JToolbarHelper::divider();
-		JToolbarHelper::custom('awards', 'asterisk', 'asterisk', JText::_('COM_KA_AW_TITLE'), false);
+		JToolbarHelper::custom('awards', 'asterisk', 'asterisk', JText::_('COM_KA_AWARDS_TITLE'), false);
 
 		$this->award_type = $award_type;
 
@@ -125,7 +125,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		if (!empty($id)) {
 			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE').': ID '.$id, 'link');
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE'), 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_CAREERS_TITLE')), 'link');
 		}
 
 		JToolbarHelper::addNew('relations_add');
@@ -133,7 +133,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('relations_remove', 'delete', 'delete', JText::_('JTOOLBAR_REMOVE'), false);
 		JToolbarHelper::divider();
-		JToolbarHelper::custom('careers', 'address', 'address', JText::_('COM_KA_CAREER_TITLE'), false);
+		JToolbarHelper::custom('careers', 'address', 'address', JText::_('COM_KA_CAREERS_TITLE'), false);
 
 		parent::display($tpl);
 	}
@@ -142,7 +142,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$param = $app->input->get('param', '', 'cmd');
 
-		JToolbarHelper::title(JText::_('COM_KA_'.strtoupper($param).'_RELATIONS_TITLE').': '.JText::_('COM_KA_EDIT'), 'link');
+		JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_'.strtoupper($param).'_TITLE').': '.JText::_('COM_KA_EDIT')), 'link');
 		JToolbarHelper::apply('apply');
 		JToolbarHelper::save('save');
 		JToolbarHelper::save2new('save2new');

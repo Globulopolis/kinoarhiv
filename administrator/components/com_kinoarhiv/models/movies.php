@@ -83,7 +83,7 @@ class KinoarhivModelMovies extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.title, a.year, a.alias, a.state, a.access, a.created, a.ordering, a.language'
+				'a.id, a.title, a.year, a.alias, a.state, a.access, a.created, a.created_by, a.ordering, a.language'
 			)
 		);
 		$query->from('#__ka_movies AS a');
@@ -91,6 +91,10 @@ class KinoarhivModelMovies extends JModelList {
 		// Join over the language
 		$query->select(' l.title AS language_title')
 			->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = a.language');
+
+		// Join over the users for the author.
+		$query->select('ua.name AS author_name')
+			->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
 		// Join over the asset groups.
 		$query->select(' ag.title AS access_level')

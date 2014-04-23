@@ -69,14 +69,14 @@ class KinoarhivViewAwards extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AW_TITLE').': '.JText::_('COM_KA_NEW')), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE').': '.JText::_('COM_KA_NEW')), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AW_TITLE').': '.$this->items->title), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE').': '.$this->items->title), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -86,7 +86,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AW_TITLE')), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE')), 'asterisk');
 
 			if ($user->authorise('core.create.award', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

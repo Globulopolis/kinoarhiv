@@ -89,7 +89,7 @@ $sortFields = $this->getSortFields();
 						<?php endif;?>
 					</td>
 					<td class="center hidden-phone">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=awards&id='.$item->id); ?>" class="hasTooltip" title="<?php echo JText::sprintf('COM_KA_COUNTRIES_RELATIONS_BUTTON_TEXT', $this->escape($item->title)); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=awards&id='.$item->id); ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS').': '.$this->escape($item->title); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>

@@ -60,9 +60,9 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 		if ($task == 'add' || $task == 'edit') {
 			if ($task == 'edit') {
-				JToolbarHelper::title(JText::_('COM_KA_PREMIERES_EDIT_TITLE'), 'calendar');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE').': '.JText::_('COM_KA_EDIT')), 'calendar');
 			} else {
-				JToolbarHelper::title(JText::_('COM_KA_PREMIERES_ADD_TITLE'), 'calendar');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE').': '.JText::_('COM_KA_NEW')), 'calendar');
 			}
 
 			JToolbarHelper::apply('apply');
@@ -71,7 +71,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_PREMIERES_TITLE'), 'calendar');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE')), 'calendar');
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
 			}

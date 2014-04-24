@@ -17,6 +17,7 @@ class KinoarhivModelMovies extends JModelList {
 				'language', 'a.language',
 				'published', 'a.published',
 				'author_id',
+				'level',
 				'tag');
 		}
 
@@ -43,6 +44,8 @@ class KinoarhivModelMovies extends JModelList {
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
+		$level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level');
+		$this->setState('filter.level', $level);
 
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
@@ -119,6 +122,14 @@ class KinoarhivModelMovies extends JModelList {
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
+		// Filter on the level
+		$level = $this->getState('filter.level');
+		if (is_numeric($level)) {
+			$query->where('a.parent_id = ' . (int) $level);
+		} elseif ($level === '') {
+			$query->where('(a.parent_id = 0 OR a.parent_id = 1)');
+		}
+
 		// Filter by author
 		$authorId = $this->getState('filter.author_id');
 		if (is_numeric($authorId)) {
@@ -149,7 +160,7 @@ class KinoarhivModelMovies extends JModelList {
 					$query->where('ag.title LIKE ' . $search);
 				}
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
 			}
 		}
@@ -161,15 +172,15 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		// Filter by a single tag.
-		/*$tagId = $this->getState('filter.tag');
+		$tagId = $this->getState('filter.tag');
 		if (is_numeric($tagId)) {
-			$query->where($db->quoteName('tagmap.tag_id') . ' = ' . (int) $tagId)
+			/*$query->where($db->quoteName('tagmap.tag_id') . ' = ' . (int) $tagId)
 				->join(
 					'LEFT', $db->quoteName('#__contentitem_tag_map', 'tagmap')
 					. ' ON ' . $db->quoteName('tagmap.content_item_id') . ' = ' . $db->quoteName('a.id')
 					. ' AND ' . $db->quoteName('tagmap.type_alias') . ' = ' . $db->quote('com_content.article')
-				);
-		}*/
+				);*/
+		}
 
 		// Add the list ordering clause.
 		$orderCol = $this->state->get('list.ordering', 'a.title');

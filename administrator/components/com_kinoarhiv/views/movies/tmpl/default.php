@@ -88,8 +88,7 @@ $sortFields = $this->getSortFields();
 					<th>
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'a.title', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
-					</th>
+					<th width="7%" style="min-width:55px" class="nowrap center"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
@@ -110,7 +109,7 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="7" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="10" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item) :

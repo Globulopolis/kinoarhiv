@@ -125,7 +125,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		$task = $app->input->get('task', '', 'cmd');
 		$type = $app->input->get('type', '', 'cmd');
 
-		JToolbarHelper::title(JText::_('COM_KA_MEDIAMANAGER'), 'images');
+		JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER')), 'images');
 
 		if ($task == 'edit') {
 			if ($type == 'trailers') {

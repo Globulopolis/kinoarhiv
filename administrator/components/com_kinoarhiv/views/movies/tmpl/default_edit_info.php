@@ -365,7 +365,7 @@
 				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>
@@ -399,7 +399,7 @@
 				<div class="control-label"><?php echo $this->form->getLabel('countries', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('countries', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>

@@ -8,6 +8,6 @@ class KinoarhivViewControlPanel extends JViewLegacy {
 	}
 
 	protected function addToolbar() {
-		JToolbarHelper::title(JText::_('COM_KINOARHIV_CP'), 'cpanel.png');
+		JToolbarHelper::title(JText::_('COM_KINOARHIV_CP'), 'play');
 	}
 }

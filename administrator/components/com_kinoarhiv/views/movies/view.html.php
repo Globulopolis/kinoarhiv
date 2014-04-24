@@ -79,7 +79,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_MOVIES_ADD_TITLE'), 'play');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -87,9 +87,9 @@ class KinoarhivViewMovies extends JViewLegacy {
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
 			if (!empty($this->items->id)) {
-				JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_MOVIES_EDIT_TITLE'), $this->items->title), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE').': '.JText::_('COM_KA_EDIT').': '.$this->items->title), 'play');
 			} else {
-				JToolbarHelper::title(JText::_('COM_KA_MOVIES_ADD_TITLE'), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
 			}
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
@@ -104,7 +104,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 				JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 			}
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_MOVIES_TITLE'), 'play');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE')), 'play');
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
 			}

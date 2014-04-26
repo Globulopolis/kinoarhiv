@@ -72,11 +72,11 @@
 
 	<div class="rel-menu">
 		<ul id="relations_menu">
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_CP_COUNTRIES').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_CP_GENRES').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=1"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_CP_NAMES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=careers"><?php echo JText::_('COM_KA_CP_CAREERS').' &harr; '.JText::_('COM_KA_CP_NAMES'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_COUNTRIES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_GENRES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=1"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_NAMES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=careers"><?php echo JText::_('COM_KA_CAREERS_TITLE').' &harr; '.JText::_('COM_KA_NAMES_TITLE'); ?></a></li>
 		</ul>
 	</div>
 </div>

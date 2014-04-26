@@ -151,8 +151,8 @@ $sortFields = $this->getSortFields();
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=sounds&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/music.png" border="0" /></a>
 						<a href="javascript:void(0);" class="hasTooltip dd-relations" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all">
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CP_COUNTRIES'); ?></a></li>
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CP_GENRES'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a></li>
 						</ul>
 					</td>
@@ -191,9 +191,9 @@ $sortFields = $this->getSortFields();
 
 	<div class="rel-menu">
 		<ul id="relations_menu">
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_CP_COUNTRIES').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_CP_GENRES').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_COUNTRIES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_GENRES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
 		</ul>
 	</div>
 </div>

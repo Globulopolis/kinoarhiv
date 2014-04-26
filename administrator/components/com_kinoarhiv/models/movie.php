@@ -365,6 +365,8 @@ class KinoarhivModelMovie extends JModelForm {
 				$insertid = $db->insertid();
 				$app->input->set('id', array($insertid)); // Need to proper redirect to edited item
 
+				$this->updateTagMapping($data['tags'], $data['tags_orig'], $insertid);
+
 				// Create access rules
 				$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
 				$parent_id = $db->loadResult();
@@ -385,6 +387,8 @@ class KinoarhivModelMovie extends JModelForm {
 			} else {
 				$app->input->set('id', array($id));
 
+				$this->updateTagMapping($data['tags'], $data['tags_orig'], $id);
+
 				// Alias was changed? Move all linked items into new filesystem location.
 				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
 					$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
@@ -395,6 +399,43 @@ class KinoarhivModelMovie extends JModelForm {
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Method to update tags mapping.
+	 *
+	 * @param   mixed   $newIDs     New tags IDs. Array of IDs or string with IDs separated by commas.
+	 * @param   mixed   $oldIDs     Old tags IDs. Array of IDs or string with IDs separated by commas.
+	 * @param   int     $movie_id   Movie ID
+	 *
+	 * @return  boolean   True on success
+	 *
+	*/
+	protected function updateTagMapping($newIDs, $oldIDs, $movie_id) {
+		$db = $this->getDBO();
+		$query = $db->getQuery(true);
+
+		if ($blabla) {
+			$query->delete($db->quoteName('#__contentitem_tag_map'))->where('`id` IN (abc)');
+		} else {
+			$query->insert($db->quoteName('#__contentitem_tag_map'))
+				->columns(array($db->quoteName('type_alias'), $db->quoteName('core_content_id'), $db->quoteName('content_item_id'), $db->quoteName('tag_id'), $db->quoteName('tag_date'),  $db->quoteName('type_id')));
+
+			foreach ($tags as $tag) {
+				$query->values("'".$db->quote('com_kinoarhiv.movie')."', '0', '".(int)$movie_id."', '".$db->quote($tag)."', '".$query->currentTimestamp()."', '0'");
+			}
+		}
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
 			return false;
 		}
 

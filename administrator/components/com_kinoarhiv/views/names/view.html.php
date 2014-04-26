@@ -103,7 +103,7 @@ class KinoarhivViewNames extends JViewLegacy {
 			JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
 			JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_NAMES_TITLE'), 'users');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE')), 'users');
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
 			}
@@ -123,7 +123,7 @@ class KinoarhivViewNames extends JViewLegacy {
 			}
 
 			JToolbarHelper::divider();
-			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'), false);
+			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
 			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
@@ -140,7 +140,7 @@ class KinoarhivViewNames extends JViewLegacy {
 	protected function getSortFields() {
 		return array(
 			'a.state' => JText::_('JSTATUS'),
-			'a.title' => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
+			'a.title' => JText::_('COM_KA_FIELD_NAME'),
 			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
 			'a.id' => JText::_('JGRID_HEADING_ID')

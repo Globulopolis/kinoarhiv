@@ -116,7 +116,7 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>
-						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'a.title', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_NAME', 'a.title', $listDirn, $listOrder); ?>
 					</th>
 					<th width="1%" style="min-width:55px" class="nowrap center">
 					</th>
@@ -174,8 +174,8 @@ $sortFields = $this->getSortFields();
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
 						<a href="javascript:void(0);" class="hasTooltip dd-relations" title="<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all">
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CP_COUNTRIES'); ?></a></li>
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CP_GENRES'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AW_FIELD_TITLE'); ?></a></li>
 						</ul>
 					</td>
@@ -210,9 +210,9 @@ $sortFields = $this->getSortFields();
 
 	<div class="rel-menu">
 		<ul id="relations_menu">
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_CP_COUNTRIES').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_CP_GENRES').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AW_FIELD_TITLE').' &harr; '.JText::_('COM_KA_CP_MOVIES'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_COUNTRIES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_GENRES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AW_FIELD_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
 		</ul>
 	</div>
 </div>

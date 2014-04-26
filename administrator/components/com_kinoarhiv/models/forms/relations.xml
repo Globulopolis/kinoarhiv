@@ -16,8 +16,8 @@
 		<field name="desc" type="editor" class="span6" label="COM_KA_FIELD_AW_DESC" filter="JComponentHelper::filterText" rows="5" cols="7" buttons="false" />
 		<field name="year" type="text" class="span6" label="COM_KA_FIELD_AW_YEAR" filter="intval" maxlength="4" />
 		<field name="type" type="list" label="COM_KA_FIELD_AW_TYPE" class="span6" filter="intval" size="1">
-			<option value="0">COM_KA_CP_MOVIES</option>
-			<option value="1">COM_KA_CP_NAMES</option>
+			<option value="0">COM_KA_MOVIES_TITLE</option>
+			<option value="1">COM_KA_NAMES_TITLE</option>
 		</field>
 		<field name="id" type="hidden" default="" />
 	</fieldset>

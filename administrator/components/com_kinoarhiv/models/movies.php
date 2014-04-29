@@ -347,6 +347,17 @@ class KinoarhivModelMovies extends JModelList {
 			return false;
 		}
 
+		// Remove tags mapping
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__contentitem_tag_map')." WHERE `content_item_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
 		// Remove media items
 		$db->setQuery("SELECT `id`, SUBSTRING(`alias`, 1, 1) AS `alias` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
 		$items = $db->loadObjectList();

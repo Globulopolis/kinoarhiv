@@ -10,6 +10,49 @@
 			}
 		}).trigger('blur');
 
+		$('#form_movie_parent_id').select2({
+			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
+			quietMillis: 200,
+			allowClear: true,
+			minimumInputLength: 1,
+			maximumSelectionSize: 1,
+			ajax: {
+				cache: true,
+				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json',
+				data: function(term, page){
+					return {
+						term: term,
+						showAll: 0
+					}
+				},
+				results: function(data, page){
+					return {results: data};
+				}
+			},
+			initSelection: function(element, callback){
+				var id = $(element).val();
+
+				if (id !== '0') {
+					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json', {
+						data: {
+							id: id
+						}
+					}).done(function(data){
+						callback(data);
+					});
+				}
+			},
+			formatResult: function(data){
+				if (data.year == '0000') return data.title;
+				return data.title+' ('+data.year+')';
+			},
+			formatSelection: function(data){
+				if (data.year == '0000') return data.title;
+				return data.title+' ('+data.year+')';
+			},
+			escapeMarkup: function(m) { return m; }
+		});
+
 		$('#form_movie_countries').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
@@ -339,6 +382,16 @@
 		});
 	});
 </script>
+<div class="row-fluid">
+	<div class="span10">
+		<fieldset class="form-horizontal">
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('parent_id', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('parent_id', $this->form_edit_group); ?></div>
+			</div>
+		</fieldset>
+	</div>
+</div>
 <div class="row-fluid">
 	<div class="span6">
 		<fieldset class="form-horizontal">

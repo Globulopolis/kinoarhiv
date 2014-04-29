@@ -340,10 +340,10 @@ class KinoarhivModelMovie extends JModelForm {
 		if (empty($id)) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
 				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `urls`, `attribs`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
-				. "\n VALUES ('', '0', '0', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$data['year']."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$db->escape($data['urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
+				. "\n VALUES ('', '0', '".(int)$data['parent_id']."', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$data['year']."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$db->escape($data['urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
-				. "\n SET `parent_id` = '0', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."',"
+				. "\n SET `parent_id` = '".(int)$data['parent_id']."', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."',"
 				. " `introtext` = '".$db->escape($introtext)."', `plot` = '".$db->escape($data['plot'])."', `desc` = '".$db->escape($data['desc'])."',"
 				. " `known` = '".$db->escape($data['known'])."', `year` = '".$data['year']."', `slogan` = '".$db->escape($data['slogan'])."',"
 				. " `budget` = '".$data['budget']."', `age_restrict` = '".$data['age_restrict']."', `ua_rate` = '".$data['ua_rate']."',"
@@ -417,26 +417,57 @@ class KinoarhivModelMovie extends JModelForm {
 	*/
 	protected function updateTagMapping($newIDs, $oldIDs, $movie_id) {
 		$db = $this->getDBO();
-		$query = $db->getQuery(true);
 
-		if ($blabla) {
-			$query->delete($db->quoteName('#__contentitem_tag_map'))->where('`id` IN (abc)');
+		if (!empty($oldIDs) && !empty($newIDs)) {
+			$newIDs = (!is_array($newIDs)) ? explode(',', $newIDs) : $newIDs;
+			$oldIDs = (!is_array($oldIDs)) ? explode(',', $oldIDs) : $oldIDs;
+
+			if (count(array_diff($oldIDs, $newIDs)) > 0) {
+				$query = $db->getQuery(true);
+				$query->delete($db->quoteName('#__contentitem_tag_map'))->where('`content_item_id` = '.(int)$movie_id.' AND `tag_id` IN ('.implode(',', $oldIDs).')');
+				$db->setQuery($query);
+
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					$this->setError($e->getMessage());
+					return false;
+				}
+
+				$query = $db->getQuery(true);
+				$query->insert($db->quoteName('#__contentitem_tag_map'))
+					->columns(array($db->quoteName('type_alias'), $db->quoteName('core_content_id'), $db->quoteName('content_item_id'), $db->quoteName('tag_id'), $db->quoteName('tag_date'),  $db->quoteName('type_id')));
+
+				foreach ($newIDs as $tag) {
+					$query->values($db->quote('com_kinoarhiv.movie').', '.$db->quote(0).', '.$db->quote((int)$movie_id).', '.$db->quote($tag).', '.$query->currentTimestamp().', '.$db->quote(0));
+				}
+
+				$db->setQuery($query);
+
+				try {
+					$db->execute();
+				} catch (Exception $e) {
+					$this->setError($e->getMessage());
+					return false;
+				}
+			}
 		} else {
+			$query = $db->getQuery(true);
 			$query->insert($db->quoteName('#__contentitem_tag_map'))
 				->columns(array($db->quoteName('type_alias'), $db->quoteName('core_content_id'), $db->quoteName('content_item_id'), $db->quoteName('tag_id'), $db->quoteName('tag_date'),  $db->quoteName('type_id')));
 
-			foreach ($tags as $tag) {
-				$query->values("'".$db->quote('com_kinoarhiv.movie')."', '0', '".(int)$movie_id."', '".$db->quote($tag)."', '".$query->currentTimestamp()."', '0'");
+			foreach (explode(',', $newIDs) as $tag) {
+				$query->values($db->quote('com_kinoarhiv.movie').', '.$db->quote(0).', '.$db->quote((int)$movie_id).', '.$db->quote($tag).', '.$query->currentTimestamp().', '.$db->quote(0));
 			}
-		}
 
-		$db->setQuery($query);
+			$db->setQuery($query);
 
-		try {
-			$db->execute();
-		} catch (Exception $e) {
-			$this->setError($e->getMessage());
-			return false;
+			try {
+				$db->execute();
+			} catch (RuntimeException $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
 		}
 
 		return true;

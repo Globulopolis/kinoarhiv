@@ -29,7 +29,7 @@ class JFormFieldAwards extends JFormField {
 		if (isset($this->value['ids']) && is_array($this->value['ids'])) {
 			$value = implode(',', $this->value['ids']);
 		} else {
-			$value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
+			$value = '';
 		}
 
 		// Initialize JavaScript field attributes.

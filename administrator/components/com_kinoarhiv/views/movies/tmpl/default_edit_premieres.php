@@ -26,7 +26,7 @@ endif; ?>
 			height: p_grid_cfg.grid_height,
 			width: p_grid_cfg.grid_width,
 			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?>', '<?php echo JText::_('COM_KA_FIELD_PREMIERE_DATE'); ?>', '<?php echo JText::_('COM_KA_FIELD_PREMIERE_COUNTRY'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
+			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?>', '<?php echo JText::_('COM_KA_FIELD_PREMIERE_DATE'); ?>', '<?php echo JText::_('COM_KA_FIELD_COUNTRY_LABEL'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
 			colModel:[
 				{name:'id', index:'id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
 				{name:'vendor', index:'vendor', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},

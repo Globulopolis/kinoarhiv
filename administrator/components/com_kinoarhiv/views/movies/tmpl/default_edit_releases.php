@@ -92,7 +92,7 @@ endif; ?>
 										'form[r_vendor_id]':	$('#form_r_vendor_id').select2('val'),
 										'form[r_country_id]':	$('#form_r_country_id').select2('val'),
 										'form[r_release_date]': $('#form_r_release_date').val(),
-										'form[r_media_type]':	$('#form_r_media_type').val(),
+										'form[r_media_type]':	$('#form_r_media_type').select2('val'),
 										'form[r_ordering]':		$('#form_r_ordering').val(),
 										'new': 1
 									}
@@ -162,7 +162,7 @@ endif; ?>
 											'form[r_vendor_id]':	$('#form_r_vendor_id').select2('val'),
 											'form[r_country_id]':	$('#form_r_country_id').select2('val'),
 											'form[r_release_date]': $('#form_r_release_date').val(),
-											'form[r_media_type]':	$('#form_r_media_type').val(),
+											'form[r_media_type]':	$('#form_r_media_type').select2('val'),
 											'form[r_ordering]':		$('#form_r_ordering').val(),
 											'new': 0
 										}
@@ -186,7 +186,7 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=releases_edit&model=movies&view=movie&format=raw&release_id='+ids[3]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=releases_edit&model=movie&view=movies&format=raw&release_id='+ids[3]+'#edit');
 				} else {
 					showMsg('.releases-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}

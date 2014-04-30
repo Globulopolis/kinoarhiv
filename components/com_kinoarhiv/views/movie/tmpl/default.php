@@ -144,7 +144,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			e.stopImmediatePropagation(); // Prevent to trigger 'activate' event on accordion header
 			$.colorbox({ html: $(this).closest('h3').next('div').html(), height: '95%', width: '95%' });
 		});
-		$('#desc').accordion({
+		$('.desc').accordion({
 			active: false,
 			collapsible: true,
 			heightStyle: 'content'
@@ -525,7 +525,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		<?php endif; ?>
 
 		<?php if (!empty($this->item->desc)): ?>
-		<div class="desc" id="desc">
+		<div class="ui-widget desc" id="desc">
 			<h3><?php echo JText::_('COM_KA_TECH'); ?> <a href="#" id="open-desc"><span class="ui-icon ui-icon-newwin"></span></a></h3>
 			<div><p><?php echo $this->item->desc; ?></p></div>
 		</div>

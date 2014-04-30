@@ -30,6 +30,9 @@ class KinoarhivModelPremieres extends JModelList {
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
+		$country = $this->getUserStateFromRequest($this->context . '.filter.country', 'filter_country', '');
+		$this->setState('filter.country', $country);
+
 		// List state information.
 		parent::populateState('p.premiere_date', 'desc');
 	}
@@ -37,6 +40,7 @@ class KinoarhivModelPremieres extends JModelList {
 	protected function getStoreId($id = '') {
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.country');
 
 		return parent::getStoreId($id);
 	}
@@ -46,14 +50,25 @@ class KinoarhivModelPremieres extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->select('`p`.`id`, `p`.`movie_id`, `p`.`vendor_id`, `p`.`premiere_date`, `p`.`country_id`, `p`.`info`, `p`.`ordering`')
-			->from($db->quoteName('#__ka_premieres').' AS `p`')
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`p`.`id`, `p`.`movie_id`, `p`.`vendor_id`, `p`.`premiere_date`, `p`.`country_id`, `p`.`info`, `p`.`ordering`'
+			)
+		);
+		$query->from($db->quoteName('#__ka_premieres').' AS `p`')
 		->select('`m`.`title`, `m`.`year`')
 			->leftjoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `p`.`movie_id`')
 		->select('`v`.`company_name`, `v`.`company_name_intl`')
 			->leftjoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `p`.`vendor_id`')
 		->select('`c`.`name`')
 			->leftjoin($db->quoteName('#__ka_countries').' AS `c` ON `c`.`id` = `p`.`country_id`');
+
+		// Filter by country
+		$country = $this->getState('filter.country');
+		if (is_numeric($country)) {
+			$query->where('`p`.`country_id` = ' . (int) $country);
+		}
 
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {

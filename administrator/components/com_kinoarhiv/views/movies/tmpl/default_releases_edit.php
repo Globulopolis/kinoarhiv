@@ -78,6 +78,8 @@
 			},
 			escapeMarkup: function(m) { return m; }
 		});
+
+		$('#form_r_media_type').select2();
 	});
 </script>
 <div class="row-fluid">

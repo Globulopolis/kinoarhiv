@@ -14,9 +14,9 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			return;
 		}
 
-		$items = $this->get('Items');
+		$items      = $this->get('Items');
 		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$state      = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -26,9 +26,11 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->addToolbar();
 		$this->canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
 
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
+		$this->items         = &$items;
+		$this->pagination    = &$pagination;
+		$this->state         = &$state;
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		parent::display($tpl);
 	}
@@ -91,7 +93,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		return array(
 			'p.premiere_date' => JText::_('COM_KA_FIELD_PREMIERE_DATE_LABEL'),
 			'm.title' => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
-			'c.name' => JText::_('COM_KA_FIELD_PREMIERE_COUNTRY_LABEL'),
+			'c.name' => JText::_('COM_KA_FIELD_COUNTRY_LABEL'),
 			'p.id' => JText::_('JGRID_HEADING_ID')
 		);
 	}

@@ -555,12 +555,7 @@ div.rating {
 	margin-right: .5em;
 }
 
-.known, .plot, .desc, .reviews, .movies-list {
-	margin-top: 1em;
-}
-
-.urls {
-	display: none;
+.known, .plot, .desc, .reviews, .movies-list, .urls {
 	margin-top: 1em;
 }
 
@@ -719,10 +714,6 @@ div.rating {
 #rate-imdb, #rate-kp {
 	display: inline-block;
 	margin-right: 1em;
-}
-
-.desc .content {
-	display: none;
 }
 
 .trailer {

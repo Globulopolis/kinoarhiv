@@ -29,8 +29,8 @@
 			<option value="u.username DESC">COM_KA_REVIEWS_FIELD_USER_SORT_DESC</option>
 			<option value="a.ip ASC">COM_KA_REVIEWS_FIELD_IP_SORT_ASC</option>
 			<option value="a.ip DESC">COM_KA_REVIEWS_FIELD_IP_SORT_DESC</option>
-			<option value="m.title ASC">COM_KA_REVIEWS_FIELD_MOVIE_SORT_ASC</option>
-			<option value="m.title DESC">COM_KA_REVIEWS_FIELD_MOVIE_SORT_DESC</option>
+			<option value="m.title ASC">COM_KA_MOVIES_FIELD_MOVIE_SORT_ASC</option>
+			<option value="m.title DESC">COM_KA_MOVIES_FIELD_MOVIE_SORT_DESC</option>
 			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>

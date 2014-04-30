@@ -220,16 +220,16 @@
 	</fieldset>
 	<fieldset name="premiere_edit">
 		<field name="p_vendor_id" type="text" default="" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
-		<field name="p_country_id" type="text" default="0" label="COM_KA_FIELD_PREMIERE_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="string" size="45" />
+		<field name="p_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="string" size="45" />
 		<field name="p_premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
 		<field name="p_info" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="JComponentHelper::filterText" cols="6" rows="5" />
 		<field name="p_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
 	</fieldset>
 	<fieldset name="release_edit">
 		<field name="r_vendor_id" type="text" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
-		<field name="r_country_id" type="text" default="0" label="COM_KA_FIELD_PREMIERE_COUNTRY_LABEL" required="true" class="span10 required" filter="string" size="45" />
+		<field name="r_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="span10 required" filter="string" size="45" />
 		<field name="r_release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox" datatype="date" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
-		<field name="r_media_type" type="groupedlist" class="span5" default="11" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
+		<field name="r_media_type" type="groupedlist" class="span8" default="11" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
 			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
 				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>
 				<option value="1">COM_KA_RELEASES_MEDIATYPE_1</option>

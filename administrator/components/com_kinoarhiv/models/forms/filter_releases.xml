@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="filter">
+		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
+		<field name="country" type="sql" query="SELECT r.country_id AS value, c.name AS country FROM #__ka_releases AS r LEFT JOIN #__ka_countries AS c ON c.id = r.country_id WHERE r.country_id != 0 GROUP BY r.country_id, c.name" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
+			<option value="">COM_KA_FIELD_SORT_BY_COUNTRY</option>
+			<option value="0">COM_KA_RELEASES_WORLD</option>
+		</field>
+		<field name="vendor" type="sql" query="SELECT r.vendor_id AS value, CONCAT_WS(' / ', v.company_name, v.company_name_intl) AS vendor FROM galb8_ka_releases AS r LEFT JOIN galb8_ka_vendors AS v ON v.id = r.vendor_id GROUP BY r.vendor_id" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
+			<option value="">COM_KA_FIELD_SORT_BY_VENDOR</option>
+		</field>
+		<field name="media_type" type="groupedlist" default="" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
+			<option value="">COM_KA_FIELD_SORT_BY_MEDIATYPE</option>
+			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
+				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>
+				<option value="1">COM_KA_RELEASES_MEDIATYPE_1</option>
+				<option value="2">COM_KA_RELEASES_MEDIATYPE_2</option>
+				<option value="3">COM_KA_RELEASES_MEDIATYPE_3</option>
+				<option value="4">COM_KA_RELEASES_MEDIATYPE_4</option>
+				<option value="5">COM_KA_RELEASES_MEDIATYPE_5</option>
+				<option value="6">COM_KA_RELEASES_MEDIATYPE_6</option>
+				<option value="7">COM_KA_RELEASES_MEDIATYPE_7</option>
+				<option value="8">COM_KA_RELEASES_MEDIATYPE_8</option>
+				<option value="9">COM_KA_RELEASES_MEDIATYPE_9</option>
+				<option value="12">COM_KA_RELEASES_MEDIATYPE_12</option>
+				<option value="13">COM_KA_RELEASES_MEDIATYPE_13</option>
+				<option value="18">COM_KA_RELEASES_MEDIATYPE_18</option>
+				<option value="17">COM_KA_RELEASES_MEDIATYPE_17</option>
+			</group>
+			<group label="COM_KA_RELEASES_MEDIATYPE_SRC">
+				<option value="10">COM_KA_RELEASES_MEDIATYPE_10</option>
+				<option value="11">COM_KA_RELEASES_MEDIATYPE_11</option>
+				<option value="14">COM_KA_RELEASES_MEDIATYPE_14</option>
+				<option value="15">COM_KA_RELEASES_MEDIATYPE_15</option>
+				<option value="16">COM_KA_RELEASES_MEDIATYPE_16</option>
+			</group>
+			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="r.premiere_date DESC">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="p.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
+			<option value="p.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
+			<option value="p.premiere_date ASC">COM_KA_PREMIERES_FIELD_DATE_SORT_ASC</option>
+			<option value="p.premiere_date DESC">COM_KA_PREMIERES_FIELD_DATE_SORT_DESC</option>
+			<option value="m.title ASC">COM_KA_MOVIES_FIELD_MOVIE_SORT_ASC</option>
+			<option value="m.title DESC">COM_KA_MOVIES_FIELD_MOVIE_SORT_DESC</option>
+			<option value="c.name ASC">COM_KA_PREMIERES_FIELD_COUNTRY_SORT_ASC</option>
+			<option value="c.name DESC">COM_KA_PREMIERES_FIELD_COUNTRY_SORT_DESC</option>
+			<option value="p.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="p.id DESC">JGRID_HEADING_ID_DESC</option>
+		</field>
+		<field name="limit" type="limitbox" class="inputbox input-mini" default="25" label="COM_CONTENT_LIST_LIMIT" description="COM_CONTENT_LIST_LIMIT_DESC" onchange="this.form.submit();" />
+	</fields>
+</form>

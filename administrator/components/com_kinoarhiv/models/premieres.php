@@ -80,8 +80,8 @@ class KinoarhivModelPremieres extends JModelList {
 				$query->where('m.title LIKE ' . $search);
 			} elseif (stripos($search, 'country:') === 0) {
 				$search = trim(substr($search, 8));
-				
-				if ($search == JText::_('COM_KA_PREMIERE_WORLD')) {
+
+				if (JString::strtolower($search) == JString::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
 					$query->where('p.country_id = 0');
 				} else {
 					$search = $db->quote('%' . $db->escape($search, true) . '%');
@@ -100,7 +100,7 @@ class KinoarhivModelPremieres extends JModelList {
 			$orderCol = 'p.ordering ' . $orderDirn . ', p.premiere_date';
 		}
 
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		$query->order($db->escape($orderCol . ' ' . $orderDirn . ', m.title ' . $orderDirn));
 
 		return $query;
 	}

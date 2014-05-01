@@ -14,9 +14,9 @@ class KinoarhivViewReleases extends JViewLegacy {
 			return;
 		}
 
-		$items = $this->get('Items');
+		$items      = $this->get('Items');
 		$pagination = $this->get('Pagination');
-		$state = $this->get('State');
+		$state      = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -26,9 +26,11 @@ class KinoarhivViewReleases extends JViewLegacy {
 		$this->addToolbar();
 		$this->canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
 
-		$this->items = &$items;
-		$this->pagination = &$pagination;
-		$this->state = &$state;
+		$this->items         = &$items;
+		$this->pagination    = &$pagination;
+		$this->state         = &$state;
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		parent::display($tpl);
 	}
@@ -60,9 +62,9 @@ class KinoarhivViewReleases extends JViewLegacy {
 
 		if ($task == 'add' || $task == 'edit') {
 			if ($task == 'edit') {
-				JToolbarHelper::title(JText::_('COM_KA_RELEASES_EDIT_TITLE'), 'calendar');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE').': '.JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')), 'calendar');
 			} else {
-				JToolbarHelper::title(JText::_('COM_KA_RELEASES_ADD_TITLE'), 'calendar');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE').': '.JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE')), 'calendar');
 			}
 
 			JToolbarHelper::apply('apply');
@@ -71,7 +73,7 @@ class KinoarhivViewReleases extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::_('COM_KA_RELEASES_TITLE'), 'calendar');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE')), 'calendar');
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
 			}

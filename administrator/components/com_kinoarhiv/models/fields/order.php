@@ -43,7 +43,7 @@ class JFormFieldOrder extends JFormField {
 		} elseif ($this->element['data'] == 'premieres') {
 			$input = JFactory::getApplication()->input;
 			// Get some field values from the form.
-			$premiere_id = $input->post->get('id', array(), 'array');
+			$premiere_id = $input->get('id', array(), 'array');
 			$movie_id = (int)$this->form->getValue('movie_id');
 
 			$query = "SELECT `ordering` AS `value`, CONCAT_WS(' | ', (DATE_FORMAT(`premiere_date`, '%Y-%m-%d')), (SELECT `name` FROM #__ka_countries WHERE `id` = `country_id`)) AS `text`"
@@ -55,7 +55,7 @@ class JFormFieldOrder extends JFormField {
 		} elseif ($this->element['data'] == 'releases') {
 			$input = JFactory::getApplication()->input;
 			// Get some field values from the form.
-			$release_id = $input->post->get('id', array(), 'array');
+			$release_id = $input->get('id', array(), 'array');
 			$movie_id = (int)$this->form->getValue('movie_id');
 
 			$query = "SELECT `ordering` AS `value`, CONCAT_WS(' | ', (DATE_FORMAT(`release_date`, '%Y-%m-%d')), (SELECT `name` FROM #__ka_countries WHERE `id` = `country_id`)) AS `text`"

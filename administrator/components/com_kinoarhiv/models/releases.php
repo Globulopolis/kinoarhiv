@@ -30,6 +30,9 @@ class KinoarhivModelReleases extends JModelList {
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
+		$country = $this->getUserStateFromRequest($this->context . '.filter.country', 'filter_country', '');
+		$this->setState('filter.country', $country);
+
 		// List state information.
 		parent::populateState('r.release_date', 'desc');
 	}
@@ -37,6 +40,7 @@ class KinoarhivModelReleases extends JModelList {
 	protected function getStoreId($id = '') {
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.country');
 
 		return parent::getStoreId($id);
 	}
@@ -46,14 +50,25 @@ class KinoarhivModelReleases extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->select('`r`.`id`, `r`.`media_type`, `r`.`release_date`, `r`.`ordering`')
-			->from($db->quoteName('#__ka_releases').' AS `r`')
+		$query->select(
+			$this->getState(
+				'list.select',
+				'`r`.`id`, `r`.`media_type`, `r`.`release_date`, `r`.`ordering`'
+			)
+		);
+		$query->from($db->quoteName('#__ka_releases').' AS `r`')
 		->select('`m`.`title`, `m`.`year`')
 			->leftjoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `r`.`movie_id`')
 		->select('`v`.`company_name`, `v`.`company_name_intl`')
 			->leftjoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id`')
 		->select('`c`.`name`')
 			->leftjoin($db->quoteName('#__ka_countries').' AS `c` ON `c`.`id` = `r`.`country_id`');
+
+		// Filter by country
+		$country = $this->getState('filter.country');
+		if (is_numeric($country)) {
+			$query->where('`p`.`country_id` = ' . (int) $country);
+		}
 
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -66,7 +81,7 @@ class KinoarhivModelReleases extends JModelList {
 			} elseif (stripos($search, 'country:') === 0) {
 				$search = trim(substr($search, 8));
 				
-				if ($search == JText::_('COM_KA_PREMIERE_WORLD')) {
+				if (JString::strtolower($search) == JString::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
 					$query->where('r.country_id = 0');
 				} else {
 					$search = $db->quote('%' . $db->escape($search, true) . '%');
@@ -85,7 +100,7 @@ class KinoarhivModelReleases extends JModelList {
 			$orderCol = 'r.ordering ' . $orderDirn . ', r.release_date';
 		}
 
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		$query->order($db->escape($orderCol . ' ' . $orderDirn . ', m.title ' . $orderDirn));
 
 		return $query;
 	}

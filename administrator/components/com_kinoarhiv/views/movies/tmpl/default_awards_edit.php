@@ -57,7 +57,8 @@ $award_id = $input->get('award_id', 0, 'int');
 			<?php if ($award_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "") {
+
+				if (!empty(id)) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json', {
 						data: {
 							id: id

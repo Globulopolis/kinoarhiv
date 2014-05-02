@@ -120,7 +120,12 @@ $sortFields = $this->getSortFields();
 						?>
 					</td>
 					<td class="nowrap hidden-phone">
-						<?php echo ($item->name != '') ? $item->name : JText::_('COM_KA_PREMIERE_WORLD'); ?>
+						<?php if ($item->name != ''): ?>
+							<img class="flag-dd" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $item->code; ?>.png" />
+						<?php echo $item->name;
+						else:
+							echo JText::_('COM_KA_PREMIERE_WORLD');
+						endif; ?>
 					</td>
 					<td class="center hidden-phone">
 						<?php echo (int)$item->id; ?>

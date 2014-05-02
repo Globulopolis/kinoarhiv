@@ -10,6 +10,7 @@ class KinoarhivModelReleases extends JModelList {
 				'title', 'm.title',
 				'release_date', 'r.release_date',
 				'name', 'c.name',
+				'media_type', 'r.media_type',
 				'vendor', 'v.company_name', 'v.company_name_intl',
 				'ordering', 'r.ordering');
 		}
@@ -33,6 +34,12 @@ class KinoarhivModelReleases extends JModelList {
 		$country = $this->getUserStateFromRequest($this->context . '.filter.country', 'filter_country', '');
 		$this->setState('filter.country', $country);
 
+		$vendor = $this->getUserStateFromRequest($this->context . '.filter.vendor', 'filter_vendor', '');
+		$this->setState('filter.vendor', $vendor);
+
+		$mediaType = $this->getUserStateFromRequest($this->context . '.filter.media_type', 'filter_media_type', '');
+		$this->setState('filter.media_type', $mediaType);
+
 		// List state information.
 		parent::populateState('r.release_date', 'desc');
 	}
@@ -41,6 +48,8 @@ class KinoarhivModelReleases extends JModelList {
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.country');
+		$id .= ':' . $this->getState('filter.vendor');
+		$id .= ':' . $this->getState('filter.mediatype');
 
 		return parent::getStoreId($id);
 	}
@@ -53,7 +62,7 @@ class KinoarhivModelReleases extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`r`.`id`, `r`.`media_type`, `r`.`release_date`, `r`.`ordering`'
+				'`r`.`id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`ordering`'
 			)
 		);
 		$query->from($db->quoteName('#__ka_releases').' AS `r`')
@@ -61,13 +70,25 @@ class KinoarhivModelReleases extends JModelList {
 			->leftjoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `r`.`movie_id`')
 		->select('`v`.`company_name`, `v`.`company_name_intl`')
 			->leftjoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id`')
-		->select('`c`.`name`')
+		->select('`c`.`name`, `c`.`code`')
 			->leftjoin($db->quoteName('#__ka_countries').' AS `c` ON `c`.`id` = `r`.`country_id`');
 
 		// Filter by country
 		$country = $this->getState('filter.country');
 		if (is_numeric($country)) {
-			$query->where('`p`.`country_id` = ' . (int) $country);
+			$query->where('`r`.`country_id` = ' . (int) $country);
+		}
+
+		// Filter by vendor
+		$vendor = $this->getState('filter.vendor');
+		if (is_numeric($vendor)) {
+			$query->where('`r`.`vendor_id` = ' . (int) $vendor);
+		}
+
+		// Filter by media type
+		$mediatype = $this->getState('filter.media_type');
+		if (is_numeric($mediatype)) {
+			$query->where('`r`.`media_type` = ' . (int) $mediatype);
 		}
 
 		$search = $this->getState('filter.search');

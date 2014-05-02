@@ -33,13 +33,10 @@ class KinoarhivModelNames extends JModelList {
 		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', 0, 'int');
 		$this->setState('filter.access', $access);
 
-		$level = $this->getUserStateFromRequest($this->context . '.filter.level', 'filter_level', 0, 'int');
-		$this->setState('filter.level', $level);
-
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
-		// force a language
+		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
 		if (!empty($forcedLanguage))
 		{
@@ -48,7 +45,7 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		// List state information.
-		parent::populateState('a.name', 'asc');
+		parent::populateState('a.id', 'DESC');
 	}
 
 	protected function getStoreId($id = '') {
@@ -132,19 +129,19 @@ class KinoarhivModelNames extends JModelList {
 		}*/
 
 		// Add the list ordering clause.
-		/*$orderCol = $this->state->get('list.ordering', 'a.title');
-		$orderDirn = $this->state->get('list.direction', 'asc');
+		$orderCol = $this->state->get('list.ordering', 'a.id');
+		$orderDirn = $this->state->get('list.direction', 'desc');
 		if ($orderCol == 'a.ordering') {
 			$orderCol = 'a.title ' . $orderDirn . ', a.ordering';
 		}
-		//sqlsrv change
+		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}
 		if ($orderCol == 'access_level') {
 			$orderCol = 'ag.title';
 		}
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));*/
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 
 		return $query;
 	}
@@ -166,5 +163,76 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		return $items;
+	}
+
+	public function saveOrder() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$data = $app->input->post->get('ord', array(), 'array');
+
+		if (count($data) < 2) {
+			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
+		}
+
+		$query = true;
+
+		$db->setDebug(true);
+		$db->lockTable('#__ka_names');
+		$db->transactionStart();
+
+		foreach ($data as $key=>$value) {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')." SET `ordering` = '".(int)$key."' WHERE `id` = ".(int)$value.";");
+			$result = $db->execute();
+
+			if ($result === false) {
+				$query = false;
+				break;
+			}
+		}
+
+		if ($query === false) {
+			$db->transactionRollback();
+		} else {
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		if ($query) {
+			$success = true;
+			$message = JText::_('COM_KA_SAVED');
+		} else {
+			$success = false;
+			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
+		}
+
+		return array('success'=>$success, 'message'=>$message);
+	}
+
+	public function batch() {
+		/*$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->post->get('id', array(), 'array');
+		$batch_data = $app->input->post->get('batch', array(), 'array');
+
+		if (!empty($batch_data['language_id'])) {
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_awards'))
+				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}*/
+
+		return true;
 	}
 }

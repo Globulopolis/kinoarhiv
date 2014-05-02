@@ -69,7 +69,7 @@ JHtml::_('behavior.keepalive');
 				initSelection: function(element, callback){
 					var id = $(element).val();
 
-					if (id !== "") {
+					if (!empty(id)) {
 						$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element='+datatype+'&format=json', {
 							data: {
 								id: id

@@ -21,7 +21,8 @@
 			multiple: false,
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "") {
+
+				if (!empty(id)) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=vendors&format=json', {
 						data: {
 							id: id
@@ -52,7 +53,8 @@
 			multiple: false,
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "" && id !== "0") {
+
+				if (!empty(id)) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json', {
 						data: {
 							id: id
@@ -71,10 +73,10 @@
 				}
 			},
 			formatResult: function(data){
-				return data.title;
+				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
 			formatSelection: function(data, container){
-				return data.title;
+				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
 			escapeMarkup: function(m) { return m; }
 		});

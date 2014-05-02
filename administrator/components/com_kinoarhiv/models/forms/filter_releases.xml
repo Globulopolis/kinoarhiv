@@ -9,7 +9,7 @@
 		<field name="vendor" type="sql" query="SELECT r.vendor_id AS value, CONCAT_WS(' / ', v.company_name, v.company_name_intl) AS vendor FROM galb8_ka_releases AS r LEFT JOIN galb8_ka_vendors AS v ON v.id = r.vendor_id GROUP BY r.vendor_id" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_VENDOR</option>
 		</field>
-		<field name="media_type" type="groupedlist" default="" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
+		<field name="media_type" type="groupedlist" default="" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_MEDIATYPE</option>
 			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
 				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>
@@ -38,18 +38,18 @@
 		</field>
 	</fields>
 	<fields name="list">
-		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="r.premiere_date DESC">
+		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="r.release_date DESC">
 			<option value="">JGLOBAL_SORT_BY</option>
-			<option value="p.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
-			<option value="p.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
-			<option value="p.premiere_date ASC">COM_KA_PREMIERES_FIELD_DATE_SORT_ASC</option>
-			<option value="p.premiere_date DESC">COM_KA_PREMIERES_FIELD_DATE_SORT_DESC</option>
+			<option value="r.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
+			<option value="r.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
+			<option value="r.release_date ASC">COM_KA_RELEASES_FIELD_DATE_SORT_ASC</option>
+			<option value="r.release_date DESC">COM_KA_RELEASES_FIELD_DATE_SORT_DESC</option>
 			<option value="m.title ASC">COM_KA_MOVIES_FIELD_MOVIE_SORT_ASC</option>
 			<option value="m.title DESC">COM_KA_MOVIES_FIELD_MOVIE_SORT_DESC</option>
 			<option value="c.name ASC">COM_KA_PREMIERES_FIELD_COUNTRY_SORT_ASC</option>
 			<option value="c.name DESC">COM_KA_PREMIERES_FIELD_COUNTRY_SORT_DESC</option>
-			<option value="p.id ASC">JGRID_HEADING_ID_ASC</option>
-			<option value="p.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="r.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="r.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>
 		<field name="limit" type="limitbox" class="inputbox input-mini" default="25" label="COM_CONTENT_LIST_LIMIT" description="COM_CONTENT_LIST_LIMIT_DESC" onchange="this.form.submit();" />
 	</fields>

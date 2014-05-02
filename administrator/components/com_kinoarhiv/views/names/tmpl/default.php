@@ -29,9 +29,8 @@ $sortFields = $this->getSortFields();
 	}
 
 	jQuery(document).ready(function($){
-		$('#search_help').click(function(e){
-			showMsg('#articleList', '<?php echo JText::_('COM_KA_MOVIES_SEARCH_HELP'); ?>');
-		});
+		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_MOVIES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
+
 		$('.rel-menu').css({
 			left: $('#toolbar-tools').offset().left+'px',
 			top: ($('#toolbar-tools').offset().top+$('#toolbar-tools').height()+5)+'px'
@@ -57,7 +56,7 @@ $sortFields = $this->getSortFields();
 			handle: '.sortable-handler',
 			cursor: 'move',
 			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=saveOrder&format=json', $('#articleList tbody .order input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=names&task=saveOrder&format=json', $('#articleList tbody .order input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
 						showMsg('#j-main-container', response.message);
 					}
@@ -70,37 +69,8 @@ $sortFields = $this->getSortFields();
 	});
 </script>
 <div id="j-main-container">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
-		<div id="filter-bar" class="btn-toolbar">
-			<div class="filter-search btn-group pull-left">
-				<label for="filter_search" class="element-invisible"><?php echo JText::_('COM_FILTER_SEARCH_DESC'); ?></label>
-				<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" style="width: 350px;" />
-			</div>
-			<div class="btn-group pull-left hidden-phone">
-				<button class="btn" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-				<button class="btn" type="button" onclick="document.id('filter_search').value='';this.form.submit();" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
-				<button class="btn" type="button" id="search_help" title="<?php echo JText::_('JTOOLBAR_HELP'); ?>"><i class="icon-help"></i></button>
-			</div>
-			<div class="btn-group pull-right hidden-phone">
-				<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
-				<?php echo $this->pagination->getLimitBox(); ?>
-			</div>
-			<div class="btn-group pull-right hidden-phone">
-				<label for="directionTable" class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
-				<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
-					<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
-					<option value="asc" <?php if ($listDirn == 'asc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
-					<option value="desc" <?php if ($listDirn == 'desc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING');  ?></option>
-				</select>
-			</div>
-			<div class="btn-group pull-right">
-				<label for="sortTable" class="element-invisible"><?php echo JText::_('JGLOBAL_SORT_BY'); ?></label>
-				<select name="sortTable" id="sortTable" class="input-xlarge" onchange="Joomla.orderTable()">
-					<option value=""><?php echo JText::_('JGLOBAL_SORT_BY');?></option>
-					<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
-				</select>
-			</div>
-		</div>
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
 
 		<table class="table table-striped" id="articleList">
@@ -118,8 +88,7 @@ $sortFields = $this->getSortFields();
 					<th>
 						<?php echo JHtml::_('grid.sort', 'COM_KA_FIELD_NAME', 'a.title', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
-					</th>
+					<th width="1%" style="min-width:55px" class="nowrap center"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
@@ -162,21 +131,34 @@ $sortFields = $this->getSortFields();
 								<?php $language = $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
 							<?php endif; ?>
 							<?php if ($canEdit): ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
-									<?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' ('.$item->year.')' : ''; ?></a>
+								<?php if (!empty($item->name)): ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->name); ?></a>
+								<?php endif; ?>
+								<?php if (!empty($item->name) && !empty($item->latin_name)): echo '/'; endif;?>
+								<?php if (!empty($item->latin_name)): ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->latin_name); ?></a>
+								<?php endif; ?>
 							<?php else: ?>
-								<span><?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' ('.$item->year.')' : ''; ?></span> 
+								<span>
+								<?php if (!empty($item->name)): ?>
+									<?php echo $this->escape($item->name); ?>
+								<?php endif; ?>
+								<?php if (!empty($item->name) && !empty($item->latin_name)): echo '/'; endif;?>
+								<?php if (!empty($item->latin_name)): ?>
+									<?php echo $this->escape($item->latin_name); ?>
+								<?php endif; ?>
+								</span> 
 							<?php endif; ?>
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>
 					</td>
 					<td class="small hidden-phone">
-						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
-						<a href="javascript:void(0);" class="hasTooltip dd-relations" title="<?php echo JText::_('COM_KA_COUNTRIES_RELATIONS_BUTTON_TITLE'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
+						<a href="javascript:void(0);" class="hasTooltip dd-relations" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all">
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a></li>
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AW_FIELD_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CAREERS_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=1&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a></li>
 						</ul>
 					</td>
 					<td class="small hidden-phone">
@@ -203,16 +185,14 @@ $sortFields = $this->getSortFields();
 		<input type="hidden" name="controller" value="names" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 
 	<div class="rel-menu">
 		<ul id="relations_menu">
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_COUNTRIES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_GENRES_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
-			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=0"><?php echo JText::_('COM_KA_AW_FIELD_TITLE').' &harr; '.JText::_('COM_KA_MOVIES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries"><?php echo JText::_('COM_KA_COUNTRIES_TITLE').' &harr; '.JText::_('COM_KA_NAMES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres"><?php echo JText::_('COM_KA_GENRES_TITLE').' &harr; '.JText::_('COM_KA_NAMES_TITLE'); ?></a></li>
+			<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=1"><?php echo JText::_('COM_KA_AWARDS_TITLE').' &harr; '.JText::_('COM_KA_NAMES_TITLE'); ?></a></li>
 		</ul>
 	</div>
 </div>

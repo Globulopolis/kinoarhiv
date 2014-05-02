@@ -31,6 +31,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->state         = &$state;
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
 
 		parent::display($tpl);
 	}

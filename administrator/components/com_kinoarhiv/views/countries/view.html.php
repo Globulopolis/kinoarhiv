@@ -25,6 +25,7 @@ class KinoarhivViewCountries extends JViewLegacy {
 		$this->state         = $this->get('State');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);

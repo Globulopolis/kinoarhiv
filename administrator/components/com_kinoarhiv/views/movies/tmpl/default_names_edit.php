@@ -88,7 +88,8 @@ $name_id = $input->get('name_id', 0, 'int');
 			<?php if ($movie_id != 0 && $name_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "") {
+
+				if (!empty(id)) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=career&format=json', {
 						data: {
 							id: id
@@ -135,7 +136,8 @@ $name_id = $input->get('name_id', 0, 'int');
 			<?php if ($movie_id != 0 && $name_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "") {
+
+				if (!empty(id)) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json', {
 						data: {
 							id: id
@@ -168,7 +170,8 @@ $name_id = $input->get('name_id', 0, 'int');
 			<?php if ($movie_id != 0 && $name_id != 0): ?>
 			initSelection: function(element, callback){
 				var id = $(element).val();
-				if (id !== "" && id != 0) {
+
+				if (!empty(id)) {
 					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json', {
 						data: {
 							id: id

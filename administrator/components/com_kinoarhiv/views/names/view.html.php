@@ -138,7 +138,8 @@ class KinoarhivViewNames extends JViewLegacy {
 	protected function getSortFields() {
 		return array(
 			'a.state' => JText::_('JSTATUS'),
-			'a.title' => JText::_('COM_KA_FIELD_NAME'),
+			'a.name' => JText::_('COM_KA_FIELD_NAME'),
+			'a.latin_name' => JText::_('COM_KA_FIELD_NAME_LATIN'),
 			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
 			'a.id' => JText::_('JGRID_HEADING_ID')

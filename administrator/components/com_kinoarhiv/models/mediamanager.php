@@ -19,7 +19,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	/**
 	 * Method to get the path to a file.
 	 *
-	 * @param   string   $section	Type of the item. Can be 'movie' or 'names'.
+	 * @param   string   $section	Type of the item. Can be 'movie' or 'name'.
 	 * @param   string   $type		Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
 	 * @param   string   $tab		Tab number from gallery.
 	 * @param   string   $id		The item ID (movie or name).
@@ -54,8 +54,21 @@ class KinoarhivModelMediamanager extends JModelList {
 				$path = $params->get('media_trailers_root');
 				$folder = '';
 			}
-		} elseif ($section == 'names') {
+		} elseif ($section == 'name') {
 			$table = '#__ka_names';
+
+			if ($type == 'gallery') {
+				if ($tab == 1) {
+					$path = $params->get('media_actor_wallpapers_root');
+					$folder = 'wallpapers';
+				} elseif ($tab == 2) {
+					$path = $params->get('media_actor_posters_root');
+					$folder = 'posters';
+				} elseif ($tab == 3) {
+					$path = $params->get('media_actor_photo_root');
+					$folder = 'photo';
+				}
+			}
 		}
 
 		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
@@ -79,6 +92,24 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
 		$alias = $db->loadResult();
+
+		if (empty($alias)) {
+			if ($section == 'movie') {
+				$db->setQuery("SELECT `title` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+				$result = $db->loadResult();
+			} elseif ($section == 'names') {
+				$db->setQuery("SELECT `name`, `latin_name` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+				$result = $db->loadObject();
+
+				if (!empty($result->latin_name)) {
+					$result = $result->latin_name;
+				} else {
+					$result = $result->name;
+				}
+			}
+
+			$alias = JFilterOutput::stringURLSafe($result);
+		}
 
 		return $alias;
 	}
@@ -171,6 +202,22 @@ class KinoarhivModelMediamanager extends JModelList {
 			} elseif ($type == 'sounds') {
 				$query = null;
 			}
+		} elseif ($section == 'name') {
+			if ($type == 'gallery') {
+				$query->select(
+					$this->getState(
+						'list.select',
+						'`g`.`id`, `g`.`filename`, `g`.`dimension`, `g`.`name_id`, `g`.`photo_frontpage`, `g`.`state`, `m`.`alias`'
+					)
+				);
+				$query->from($db->quoteName('#__ka_names_gallery').' AS `g`');
+				$query->leftJoin($db->quoteName('#__ka_names').' AS `m` ON `m`.`id` = `g`.`name_id`');
+				$query->where('`g`.`type` = '.$tab.' AND (`g`.`state` = 0 OR `g`.`state` = 1) AND `g`.`name_id` = '.(int)$id);
+
+				$orderCol = $this->state->get('list.ordering', 'g.id');
+				$orderDirn = $this->state->get('list.direction', 'desc');
+				$query->order($db->escape($orderCol . ' ' . strtoupper($orderDirn)));
+			}
 		} else {
 			$query = null;
 		}
@@ -183,27 +230,28 @@ class KinoarhivModelMediamanager extends JModelList {
 	 *
 	 * @param   binary   $image         Image source.
 	 * @param   string   $filename      System filename.
-	 * @param   array    $image_sizes   Array with the sizes.
-	 * @param   int      $type          Item type.
-	 * @param   int      $id            Movie ID.
-	 * @param   int      $trailer_id    Trailer ID.
+	 * @param   array    $image_sizes   Array with the sizes. array(width, height)
+	 * @param   int      $section       Section. (Movie, name, trailer, soundtrack)
+	 * @param   int      $item_type     Item type. (Poster or wallpaper or photo or screenshot)
+	 * @param   int      $item_id       Item ID.
 	 * @param   int      $frontpage     Item published on frontpage.
 	 *
-	 * @return   boolean  True on success.
+	 * @return   array
 	 */
-	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $type=null, $id, $trailer_id=0, $frontpage=0) {
+	public function saveImageInDB($image=null, $filename, $image_sizes=array(), $section, $item_type=null, $item_id, $frontpage=0) {
+		if (empty($section)) {
+			return array('success' => false, 'filename' => $filename, 'id' => 0);
+		}
+
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
+		$image_sizes = (count($image_sizes) == 0) ? array(0=>0, 1=>0) : $image_sizes;
+		$dimension = floor($image_sizes[0]).'x'.floor($image_sizes[1]);
 
-		if (!is_null($type)) {
-			if (count($image_sizes) == 0) {
-				$image_sizes = array(0=>0, 1=>0);
-			}
-			$dimension = floor($image_sizes[0]).'x'.floor($image_sizes[1]);
-
+		if ($section == 'movie') {
 			$query->insert($db->quoteName('#__ka_movies_gallery'), 'id')
 				->columns('`id`, `filename`, `dimension`, `movie_id`, `type`, `poster_frontpage`, `state`')
-				->values("'', '".$filename."', '".$dimension."', '".(int)$id."', '".(int)$type."', '".(int)$frontpage."', '1'");
+				->values("'', '".$filename."', '".$dimension."', '".(int)$item_id."', '".(int)$item_type."', '".(int)$frontpage."', '1'");
 			$db->setQuery($query);
 
 			try {
@@ -215,7 +263,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				if ($frontpage == 1) {
 					$query->update($db->quoteName('#__ka_movies_gallery'))
 						->set("`poster_frontpage` = '0'")
-						->where("`movie_id` = ".(int)$id." AND `type` = 2 AND `id` != ".$result['id']);
+						->where("`movie_id` = ".(int)$item_id." AND `type` = 2 AND `id` != ".$result['id']);
 					$db->setQuery($query);
 					$db->execute();
 				}
@@ -225,8 +273,33 @@ class KinoarhivModelMediamanager extends JModelList {
 				$result['id'] = 0;
 				return false;
 			}
-		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".$filename."' WHERE `id` = ".(int)$trailer_id);
+		} elseif ($section == 'name') {
+			$query->insert($db->quoteName('#__ka_names_gallery'), 'id')
+				->columns('`id`, `filename`, `dimension`, `name_id`, `type`, `photo_frontpage`, `state`')
+				->values("'', '".$filename."', '".$dimension."', '".(int)$item_id."', '".(int)$item_type."', '".(int)$frontpage."', '1'");
+			$db->setQuery($query);
+
+			try {
+				$result['success'] = $db->execute();
+				$result['filename'] = $filename;
+				$result['id'] = $db->insertid();
+
+				// Unpublish all items from frontpage for type of photo and name and not for a last inserted row.
+				if ($frontpage == 1) {
+					$query->update($db->quoteName('#__ka_names_gallery'))
+						->set("`photo_frontpage` = '0'")
+						->where("`name_id` = ".(int)$item_id." AND `type` = 3 AND `id` != ".$result['id']);
+					$db->setQuery($query);
+					$db->execute();
+				}
+			} catch (Exception $e) {
+				$result['success'] = false;
+				$result['filename'] = $filename;
+				$result['id'] = 0;
+				return false;
+			}
+		} elseif ($section == 'trailer') {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".$filename."' WHERE `id` = ".(int)$item_id);
 			$result['success'] = $db->execute();
 			$result['filename'] = $filename;
 		}
@@ -239,21 +312,38 @@ class KinoarhivModelMediamanager extends JModelList {
 	 *
 	 * @param   int     $action     0 - unpublish from frontpage, 1 - publish poster on frontpage.
 	 * @param   int     $type       Item type.
-	 * @param   int     $movie_id   Movie ID.
+	 * @param   int     $item_id    Item ID.
 	 * @param   array   $id         Array of IDs which must be published or unpublished.
+	 * @param   string  $section    Movie or name.
 	 *
 	 * @return   boolean  True on success.
 	 */
-	public function publishOnFrontpage($action, $type=null, $movie_id=0, $id=array()) {
+	public function publishOnFrontpage($action, $type=null, $item_id=0, $id=array(), $section=null) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$type = $app->input->get('type', $type, 'word');
-		$movie_id = $app->input->get('id', $movie_id, 'int');
+		$item_id = $app->input->get('id', $item_id, 'int');
 		$id = $app->input->get('_id', $id, 'array');
+		$section = $app->input->get('section', $section, 'word');
 
 		if ($type == 'gallery') {
+			if ($section == 'movie') {
+				$table = '#__ka_movies_gallery';
+				$pub_col = '`poster_frontpage`';
+				$item_col = '`movie_id`';
+				$type_num = 2;
+			} elseif ($section == 'name') {
+				$table = '#__ka_names_gallery';
+				$pub_col = '`photo_frontpage`';
+				$item_col = '`name_id`';
+				$type_num = 3;
+			} else {
+				$this->setError('Unknown gallery type');
+				return false;
+			}
+
 			// Reset all values to 0
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `poster_frontpage` = '0' WHERE `movie_id` = ".(int)$movie_id." AND `type` = 2");
+			$db->setQuery("UPDATE ".$db->quoteName($table)." SET ".$pub_col." = '0' WHERE ".$item_col." = ".(int)$item_id." AND `type` = ".$type_num);
 			
 			try {
 				$db->execute();
@@ -269,7 +359,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				return false;
 			}
 
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `poster_frontpage` = '".(int)$action."' WHERE `id` = ".(int)$id[0]);
+			$db->setQuery("UPDATE ".$db->quoteName($table)." SET ".$pub_col." = '".(int)$action."' WHERE `id` = ".(int)$id[0]);
 
 			try {
 				$db->execute();
@@ -287,10 +377,10 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			if ($is_movie == 0) {
 				// Reset all values to 0
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '0' WHERE `movie_id` = ".(int)$movie_id." AND `is_movie` = 0");
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '0' WHERE `movie_id` = ".(int)$item_id." AND `is_movie` = 0");
 			} else {
 				// Reset all values to 0
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '0' WHERE `movie_id` = ".(int)$movie_id." AND `is_movie` = 1");
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `frontpage` = '0' WHERE `movie_id` = ".(int)$item_id." AND `is_movie` = 1");
 			}
 
 			try {
@@ -327,9 +417,17 @@ class KinoarhivModelMediamanager extends JModelList {
 		$type = $app->input->get('type', '', 'word');
 		$movie_id = $app->input->get('id', 0, 'int');
 		$id = $app->input->get('_id', array(), 'array');
+		$section = $app->input->get('section', null, 'word');
 
 		if ($type == 'gallery') {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `state` = '".(int)$action."' WHERE `id` IN (".implode(',', $id).")");
+			if ($section == 'movie') {
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies_gallery')." SET `state` = '".(int)$action."' WHERE `id` IN (".implode(',', $id).")");
+			} elseif ($section == 'name') {
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_names_gallery')." SET `state` = '".(int)$action."' WHERE `id` IN (".implode(',', $id).")");
+			} else {
+				$this->setError('Unknown gallery type');
+				return false;
+			}
 		} elseif ($type == 'trailers') {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `state` = '".(int)$action."' WHERE `id` IN (".implode(',', $id).")");
 		}
@@ -389,7 +487,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$movie_id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('id', 0, 'int');
 		$ids = $app->input->get('_id', array(), 'array');
 		$section = $app->input->get('section', '', 'cmd');
 		$type = $app->input->get('type', '', 'cmd');
@@ -422,7 +520,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				$db->lockTable('#__ka_movies_gallery');
 				$db->transactionStart();
 
-				$path = $this->getPath('movie', 'gallery', $tab, $movie_id).'/';
+				$path = $this->getPath('movie', 'gallery', $tab, $item_id).'/';
 				foreach ($files_obj as $file) {
 					JFile::delete($path.$file->filename);
 					JFile::delete($path.'thumb_'.$file->filename);
@@ -466,7 +564,7 @@ class KinoarhivModelMediamanager extends JModelList {
 					return false;
 				}
 
-				$path = $this->getPath('movie', 'trailers', 0, $movie_id);
+				$path = $this->getPath('movie', 'trailers', 0, $item_id);
 				$db->setDebug(true);
 				$db->lockTable('#__ka_trailers');
 				$db->transactionStart();
@@ -514,8 +612,56 @@ class KinoarhivModelMediamanager extends JModelList {
 				$db->unlockTables();
 				$db->setDebug(false);
 			}
-		} elseif ($section == 'names') {
-			
+		} elseif ($section == 'name') {
+			if ($type == 'gallery') {
+				if (empty($ids[0])) {
+					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+					return false;
+				}
+
+				$db->setQuery("SELECT `id`, `filename`"
+					. "\n FROM ".$db->quoteName('#__ka_names_gallery')
+					. "\n WHERE `id` IN (".implode(',', $ids).")");
+				try {
+					$files_obj = $db->loadObjectList();
+
+					if (count($files_obj) == 0) {
+						echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+						return false;
+					}
+				} catch(Exception $e) {
+					$this->setError($e->getMessage());
+					return false;
+				}
+
+				$db->setDebug(true);
+				$db->lockTable('#__ka_names_gallery');
+				$db->transactionStart();
+
+				$path = $this->getPath('name', 'gallery', $tab, $item_id).'/';
+				foreach ($files_obj as $file) {
+					JFile::delete($path.$file->filename);
+					JFile::delete($path.'thumb_'.$file->filename);
+
+					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names_gallery')." WHERE `id` = ".(int)$file->id.";");
+					$result = $db->execute();
+
+					if ($result === false) {
+						$query = false;
+						break;
+					}
+				}
+
+				if ($query === false) {
+					$db->transactionRollback();
+					$this->setError('Commit failed!');
+				} else {
+					$db->transactionCommit();
+				}
+
+				$db->unlockTables();
+				$db->setDebug(false);
+			}
 		} else {
 			$this->setError(JText::_('COM_KA_ITEMS_DELETED_ERROR'));
 			return false;
@@ -1146,5 +1292,36 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Method to get item title.
+	 *
+	 * @param   string   $section   The section for searching. Can be 'movie', 'name', 'trailer', 'soundtrack'
+	 * @param   int      $id        Item ID.
+	 *
+	 * @return  mixed  Object with the data. False on error.
+	 *
+	 */
+	public function getItemTitle($section, $id) {
+		$db = $this->getDBO();
+		$app = JFactory::getApplication();
+		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
+		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
+
+		if ($section == 'movie') {
+			$table = '#__ka_movies';
+		} elseif ($section == 'name') {
+			$table = '#__ka_names';
+		} elseif ($section == 'trailer') {
+			$table = '';
+		} elseif ($section == 'soundtrack') {
+			$table = '';
+		} else {
+			$this->setError('Unknown section type!');
+			return false;
+		}
+
+		//return $data;
 	}
 }

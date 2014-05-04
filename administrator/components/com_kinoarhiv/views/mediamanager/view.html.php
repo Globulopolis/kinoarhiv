@@ -12,11 +12,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->params = &$params;
 
-		if (count($errors = $this->get('Errors'))) {
-			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
-		}
-
 		$type = $app->input->get('type', '', 'word');
 		$tab = $app->input->get('tab', 0, 'int');
 
@@ -25,6 +20,11 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				$items = $this->get('Items');
 				$pagination = $this->get('Pagination');
 				$state = $this->get('State');
+
+				if (count($errors = $this->get('Errors'))) {
+					throw new Exception(implode("\n", $this->get('Errors')), 500);
+					return false;
+				}
 
 				if ($tab == 1) {
 					$path = $params->get('media_wallpapers_root');
@@ -86,6 +86,11 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					$item = $this->get('Item');
 					$form = $this->get('Form');
 
+					if (count($errors = $this->get('Errors'))) {
+						throw new Exception(implode("\n", $this->get('Errors')), 500);
+						return false;
+					}
+
 					if (count($item) > 0) {
 						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
 							$item->screenshot_path_www = JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
@@ -109,12 +114,79 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					$pagination = $this->get('Pagination');
 					$state = $this->get('State');
 
+					if (count($errors = $this->get('Errors'))) {
+						throw new Exception(implode("\n", $this->get('Errors')), 500);
+						return false;
+					}
+
 					$this->items = &$items;
 					$this->pagination = &$pagination;
 					$this->state = &$state;
 
 					parent::display($tpl);
 				}
+			}
+		} elseif ($app->input->get('section', '', 'word') == 'name') {
+			if ($type == 'gallery') {
+				$items = $this->get('Items');
+				$pagination = $this->get('Pagination');
+				$state = $this->get('State');
+
+				if (count($errors = $this->get('Errors'))) {
+					throw new Exception(implode("\n", $this->get('Errors')), 500);
+					return false;
+				}
+
+				if ($tab == 1) {
+					$path = $params->get('media_actor_wallpapers_root');
+					$path_www = $params->get('media_actor_wallpapers_root_www');
+					$folder = 'wallpapers';
+				} elseif ($tab == 2) {
+					$path = $params->get('media_actor_posters_root');
+					$path_www = $params->get('media_actor_posters_root_www');
+					$folder = 'posters';
+				} elseif ($tab == 3) {
+					$path = $params->get('media_actor_photo_root');
+					$path_www = $params->get('media_actor_photo_root_www');
+					$folder = 'photo';
+				}
+
+				foreach ($items as $item) {
+					$file_path = $path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->name_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
+					$item->error = '';
+
+					if (!file_exists($file_path.$item->filename)) {
+						$item->filepath = 'javascript:void(0);';
+						$item->folderpath = '';
+						$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND');
+					} else {
+						$item->folderpath = $file_path;
+						if (JString::substr($path_www, 0, 1) == '/') {
+							$item->filepath = JURI::root().JString::substr($path_www, 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/'.$item->filename;
+						} else {
+							$item->filepath = $path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/'.$item->filename;
+						}
+					}
+
+					if (!file_exists($file_path.'thumb_'.$item->filename)) {
+						$item->th_filepath = '';
+						$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_THUMB_FILENOTFOUND');
+					} else {
+						if (JString::substr($path_www, 0, 1) == '/') {
+							$item->th_filepath = JURI::root().JString::substr($path_www, 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/thumb_'.$item->filename;
+						} else {
+							$item->th_filepath = $path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/thumb_'.$item->filename;
+						}
+					}
+				}
+
+				$this->items = &$items;
+				$this->pagination = &$pagination;
+				$this->state = &$state;
+
+				$this->addToolbar();
+
+				parent::display($tpl);
 			}
 		}
 	}

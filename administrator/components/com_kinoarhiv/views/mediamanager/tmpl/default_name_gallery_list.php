@@ -73,7 +73,7 @@ $sortFields = $this->getSortFields();
 			}
 		});
 
-		<?php if ($input->get('tab', 0, 'int') == 2): ?>
+		<?php if ($input->get('tab', 0, 'int') == 3): ?>
 		$('.cmd-fp_off, .cmd-fp_on').click(function(){
 			$(this).closest('tr').find(':checkbox').prop('checked', true);
 			$('input[name="boxchecked"]').val(parseInt($('input[name="boxchecked"]').val(), 10) + 1);
@@ -112,9 +112,9 @@ $sortFields = $this->getSortFields();
 <form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="filter-bar" class="btn-toolbar">
 		<div class="btn-group pull-left hidden-phone">
-			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 3) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?></a>
-			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=2&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 2) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?></a>
-			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=1&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 1) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?></a>
+			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=3&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 3) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_PHOTO'); ?></a>
+			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=2&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 2) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_POSTERS'); ?></a>
+			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=1&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 1) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_WALLPP'); ?></a>
 		</div>
 		<div class="btn-group pull-right hidden-phone">
 			<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
@@ -144,7 +144,7 @@ $sortFields = $this->getSortFields();
 				</th>
 				<th><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'); ?></th>
 				<th width="15%" class="nowrap center"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'); ?></th>
-				<?php if ($input->get('tab', 0, 'int') == 2): ?>
+				<?php if ($input->get('tab', 0, 'int') == 3): ?>
 					<th width="10%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'); ?></th>
 				<?php endif; ?>
 				<th width="1%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('JSTATUS'); ?></th>
@@ -158,8 +158,8 @@ $sortFields = $this->getSortFields();
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item):
-					$canEdit    = $user->authorise('core.edit',			'com_kinoarhiv.movie.'.$item->id);
-					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.movie.'.$item->id);
+					$canEdit    = $user->authorise('core.edit',			'com_kinoarhiv.name.'.$item->id);
+					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.name.'.$item->id);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center hidden-phone">
@@ -174,10 +174,10 @@ $sortFields = $this->getSortFields();
 					<td class="center hidden-phone">
 						<?php echo $item->dimension; ?>
 					</td>
-					<?php if ($input->get('tab', 0, 'int') == 2 && $canChange): ?>
+					<?php if ($input->get('tab', 0, 'int') == 3 && $canChange): ?>
 					<td class="center">
 						<div class="btn-group">
-							<?php if ($item->poster_frontpage == 0): ?>
+							<?php if ($item->photo_frontpage == 0): ?>
 								<a class="btn btn-micro active cmd-fp_off" href="javascript:void(0);"><i class="icon-unpublish"></i></a>
 							<?php else: ?>
 								<a class="btn btn-micro active cmd-fp_on" href="javascript:void(0);"><i class="icon-publish"></i></a>

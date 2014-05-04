@@ -112,7 +112,11 @@
 }
 .plupload_file_size, .plupload_file_status, .plupload_file_action {text-align: right;}
 
-.plupload_filelist .plupload_file_name {width: 205px}
+.plupload_filelist .plupload_file_name {
+	min-width: 200px;
+	max-width: 1000px;
+	width: auto;
+}
 
 .plupload_file_action {
 	float: right;

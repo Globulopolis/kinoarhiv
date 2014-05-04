@@ -1,7 +1,5 @@
 <?php defined('_JEXEC') or die;
 
-JLoader::register('DatabaseHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'database.php');
-
 class KinoarhivModelMovies extends JModelList {
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {

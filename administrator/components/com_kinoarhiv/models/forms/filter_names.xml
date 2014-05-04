@@ -22,6 +22,8 @@
 			<option value="a.state DESC">JSTATUS_DESC</option>
 			<option value="a.name ASC">COM_KA_NAMES_FIELD_NAME_SORT_ASC</option>
 			<option value="a.name DESC">COM_KA_NAMES_FIELD_NAME_SORT_DESC</option>
+			<option value="a.latin_name ASC">COM_KA_NAMES_FIELD_LATIN_NAME_SORT_ASC</option>
+			<option value="a.latin_name DESC">COM_KA_NAMES_FIELD_LATIN_NAME_SORT_DESC</option>
 			<option value="a.access ASC">JGRID_HEADING_ACCESS_ASC</option>
 			<option value="a.access DESC">JGRID_HEADING_ACCESS_DESC</option>
 			<option value="language ASC">JGRID_HEADING_LANGUAGE_ASC</option>

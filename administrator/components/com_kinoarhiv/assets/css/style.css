@@ -271,3 +271,7 @@ img.movie-poster-preview.y-poster {
 .rel-form_premiere {
 	margin-Left: 0 !important;
 }
+
+.layout_img_upload {
+	display: none;
+}

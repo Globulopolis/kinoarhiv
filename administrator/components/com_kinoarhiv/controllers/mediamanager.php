@@ -14,7 +14,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$filename = JFile::makeSafe($app->input->get('name', '', 'string'));
 		$id = 0;
 		$trailer_id = $app->input->get('item_id', 0, 'int');
-		$movie_id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('id', 0, 'int');
 		$frontpage = $app->input->get('frontpage', 0, 'int');
 
 		// Getting extensions from settings
@@ -185,10 +185,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					}
 
 					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
-					$result = $model->saveImageInDB($image, $filename, $orig_image, $tab, $movie_id, 0, $frontpage);
+					$result = $model->saveImageInDB($image, $filename, $orig_image, 'movie', $tab, $item_id, $frontpage);
 					$id = $result;
 				} elseif ($app->input->get('type') == 'trailers') {
-					$alias = $model->getAlias($section, $movie_id);
+					$alias = $model->getAlias($section, $item_id);
 
 					if ($app->input->get('upload') == 'video') {
 						JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
@@ -199,10 +199,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
 						$video_info = json_decode($media->getVideoInfo($rn_dest_dir.$filename));
 						$video_height = $video_info->streams[0]->height;
-						$rn_filename = $alias.'-'.$trailer_id.'-'.$movie_id.'.'.$video_height.'p.'.$ext;
+						$rn_filename = $alias.'-'.$trailer_id.'-'.$item_id.'.'.$video_height.'p.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
-						$result = $model->saveVideo($rn_filename, $trailer_id, $movie_id);
+						$result = $model->saveVideo($rn_filename, $trailer_id, $item_id);
 					} elseif ($app->input->get('upload') == 'subtitles') {
 						if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches)) {
 							$lang_code = strtolower($matches[1]);
@@ -214,7 +214,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_code.'.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
-						$result = $model->saveSubtitles(false, $rn_filename, $trailer_id, $movie_id);
+						$result = $model->saveSubtitles(false, $rn_filename, $trailer_id, $item_id);
 					} elseif ($app->input->get('upload') == 'chapters') {
 						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir.$filename;
@@ -222,7 +222,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						$rn_filename = $alias.'-'.$trailer_id.'.chapters.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
-						$result = $model->saveChapters($rn_filename, $trailer_id, $movie_id);
+						$result = $model->saveChapters($rn_filename, $trailer_id, $item_id);
 
 						if (is_int($result)) {
 							$id = $result;
@@ -246,9 +246,38 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						$th_w = (int)$params->get('player_width');
 						$th_h = ($height * $th_w) / $width;
 						$image->_createThumbs($dest_dir, $rn_filename, $th_w.'x'.$th_h, 1, $dest_dir, null);
-						$result = $model->saveImageInDB($image, $rn_filename, array(), null, $movie_id, $trailer_id);
+						$result = $model->saveImageInDB($image, $rn_filename, array(), 'trailer', null, $trailer_id);
 						$id = $result['filename'];
 					}
+				}
+			} elseif ($section == 'name') {
+				if ($app->input->get('type') == 'gallery') {
+					$tab = $app->input->get('tab', 0, 'int');
+					$orig_image = @getimagesize($file_path);
+
+					if ($tab == 1) {
+						$width = (int)$params->get('size_x_wallpp');
+						$height = ($width * $orig_image[1]) / $orig_image[0];
+					} elseif ($tab == 2) {
+						$width = (int)$params->get('size_x_posters');
+						$height = ($width * $orig_image[1]) / $orig_image[0];
+					} elseif ($tab == 3) {
+						$width = (int)$params->get('size_x_photo');
+						$height = ($width * $orig_image[1]) / $orig_image[0];
+					}
+
+					// Add watermark
+					if ($params->get('upload_gallery_watermark_image_on') == 1) {
+						$watermark_img = $params->get('upload_gallery_watermark_image');
+
+						if (!empty($watermark_img) && file_exists($watermark_img)) {
+							$image->addWatermark($dest_dir, $filename, $watermark_img);
+						}
+					}
+
+					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
+					$result = $model->saveImageInDB($image, $filename, $orig_image, 'name', $tab, $item_id, $frontpage);
+					$id = $result;
 				}
 			}
 		}
@@ -281,9 +310,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	}
 
 	/**
-	 * Method to publish or unpublish posters on movie info page(not on posters page)
+	 * Method to publish or unpublish posters(photo) on movie(person) info page(not on posters page)
 	 *
-	 * @param	int		 $action		  0 - unpublish from frontpage, 1 - publish poster on frontpage
+	 * @param   int   $action   0 - unpublish from frontpage, 1 - publish poster(photo) on frontpage
 	 *
 	 */
 	public function fpOn($action=0) {

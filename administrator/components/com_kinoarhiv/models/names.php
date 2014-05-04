@@ -1,7 +1,5 @@
 <?php defined('_JEXEC') or die;
 
-JLoader::register('DatabaseHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'database.php');
-
 class KinoarhivModelNames extends JModelList {
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
@@ -101,39 +99,29 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		// Filter by search in title.
-		/*$search = $this->getState('filter.search');
+		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = ' . (int) substr($search, 3));
-			} elseif (stripos($search, 'cdate:') === 0) {
-				$search = trim(substr($search, 6));
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('a.created LIKE ' . $search);
-			} elseif (stripos($search, 'mdate:') === 0) {
-				$search = trim(substr($search, 6));
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('a.modified LIKE ' . $search);
 			} elseif (stripos($search, 'access:') === 0) {
 				$search = trim(substr($search, 7));
 
 				if (is_numeric($search)) {
 					$query->where('a.access = '.(int)$search);
 				} else {
-					$search = $db->quote('%' . $db->escape($search, true) . '%');
+					$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 					$query->where('ag.title LIKE ' . $search);
 				}
 			} else {
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(a.name LIKE ' . $search . ' OR a.latin_name LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
 			}
-		}*/
+		}
 
 		// Add the list ordering clause.
 		$orderCol = $this->state->get('list.ordering', 'a.id');
 		$orderDirn = $this->state->get('list.direction', 'desc');
-		if ($orderCol == 'a.ordering') {
-			$orderCol = 'a.title ' . $orderDirn . ', a.ordering';
-		}
+
 		// SQL server change
 		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
@@ -163,6 +151,149 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		return $items;
+	}
+
+	public function publish($isUnpublish) {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->get('id', array(), 'array');
+		$state = $isUnpublish ? 0 : 1;
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+	}
+
+	public function remove() {
+		jimport('joomla.filesystem.folder');
+		jimport('joomla.filesystem.file');
+
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->get('id', array(), 'array');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		/*// Remove award relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `item_id` IN (".implode(',', $ids).") AND `type` = 0");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove country relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove genre relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove name relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove favorited and watched movies
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_marked_movies')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove user votes
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove media items
+		$db->setQuery("SELECT `id`, SUBSTRING(`alias`, 1, 1) AS `alias` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
+		$items = $db->loadObjectList();
+
+		foreach ($items as $item) {
+			// Delete root folders
+			if (file_exists($params->get('media_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+			if (file_exists($params->get('media_scr_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_scr_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+			if (file_exists($params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+
+			if (file_exists($params->get('media_trailers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_trailers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+
+			// Delete rating images
+			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
+				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			}
+			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
+				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			}
+			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
+				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			}
+		}
+
+		// Remove movie(s) from DB
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names')." WHERE `id` IN (".implode(',', $ids).")");
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names_gallery')." WHERE `name_id`IN (".implode(',', $ids).")");
+		$db->execute();*/
+
+		return true;
 	}
 
 	public function saveOrder() {
@@ -211,7 +342,7 @@ class KinoarhivModelNames extends JModelList {
 	}
 
 	public function batch() {
-		/*$app = JFactory::getApplication();
+		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
@@ -219,7 +350,7 @@ class KinoarhivModelNames extends JModelList {
 		if (!empty($batch_data['language_id'])) {
 			$query = $db->getQuery(true);
 
-			$query->update($db->quoteName('#__ka_awards'))
+			$query->update($db->quoteName('#__ka_names'))
 				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
 				->where('`id` IN ('.implode(',', $ids).')');
 
@@ -231,7 +362,22 @@ class KinoarhivModelNames extends JModelList {
 
 				return false;
 			}
-		}*/
+		}
+
+		if (!empty($batch_data['assetgroup_id'])) {
+			$query->update($db->quoteName('#__ka_names'))
+				->set("`access` = '".(int)$batch_data['assetgroup_id']."'")
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
 
 		return true;
 	}

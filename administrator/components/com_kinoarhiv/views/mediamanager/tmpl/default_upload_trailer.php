@@ -791,7 +791,7 @@ $type = $input->get('type', '', 'word');
 </div>
 
 <?php if (count($this->item) > 0): ?>
-	<div style="display: none;" class="layout_img_upload" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE'); ?>">
+	<div class="layout_img_upload" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE'); ?>">
 		<div id="image_uploader" class="tr-uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
 	</div>
 <?php endif; ?>

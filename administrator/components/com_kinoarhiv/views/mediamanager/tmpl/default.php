@@ -14,5 +14,9 @@ $type = $input->get('type', '', 'word');
 		<?php elseif ($type == 'trailers'): ?>
 			<?php echo $this->loadTemplate('movie_trailers_list'); ?>
 		<?php endif; ?>
+	<?php elseif ($section == 'name'): ?>
+		<?php if ($type == 'gallery'): ?>
+			<?php echo $this->loadTemplate('name_gallery_list'); ?>
+		<?php endif; ?>
 	<?php endif; ?>
 </div>

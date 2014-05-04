@@ -64,6 +64,9 @@
 		<field name="media_actor_photo_root" type="text" default="images/names" label="COM_KA_FIELD_PATHS_PHOTO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_actor_photo_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_PHOTO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 
+		<field name="media_actor_posters_root" type="text" default="images/names" label="COM_KA_FIELD_PATHS_POSTER_NAMES_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_actor_posters_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_POSTER_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_actor_wallpapers_root" type="text" default="images/names" label="COM_KA_FIELD_PATHS_WP_NAMES_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_actor_wallpapers_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_WP_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 

@@ -481,8 +481,8 @@
 	</div>
 </div>
 
-<div style="display: none;" class="layout_img_upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>">
+<div class="layout_img_upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>">
 	<!-- At this first hidden input we will remove autofocus -->
 	<input type="hidden" autofocus="autofocus" />
-	<div id="image_uploader" class="tr-uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
+	<div id="image_uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
 </div>

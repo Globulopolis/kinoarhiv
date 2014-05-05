@@ -274,4 +274,5 @@ img.movie-poster-preview.y-poster {
 
 .layout_img_upload {
 	display: none;
+	padding: 0.2em !important;
 }

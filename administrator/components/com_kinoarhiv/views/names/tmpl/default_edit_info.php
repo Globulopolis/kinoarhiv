@@ -1,58 +1,6 @@
 <?php defined('_JEXEC') or die; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('#form_movie_rate_sum_loc, #form_movie_rate_loc').blur(function(){
-			var vote = parseFloat($('#form_movie_rate_sum_loc').val() / $('#form_movie_rate_loc').val()).toFixed(<?php echo (int)$this->params->get('vote_summ_precision'); ?>);
-			if (isNaN(vote) || $('#form_movie_rate_loc').val() == '' || $('#form_movie_rate_loc').val() == '0') {
-				$('#vote').text('0');
-			} else {
-				$('#vote').text(vote);
-			}
-		}).trigger('blur');
-
-		$('#form_movie_parent_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 200,
-			allowClear: true,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json',
-				data: function(term, page){
-					return {
-						term: term,
-						showAll: 0
-					}
-				},
-				results: function(data, page){
-					return {results: data};
-				}
-			},
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data){
-						callback(data);
-					});
-				}
-			},
-			formatResult: function(data){
-				if (data.year == '0000') return data.title;
-				return data.title+' ('+data.year+')';
-			},
-			formatSelection: function(data){
-				if (data.year == '0000') return data.title;
-				return data.title+' ('+data.year+')';
-			},
-			escapeMarkup: function(m) { return m; }
-		});
-
 		$('#form_movie_countries').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
@@ -88,7 +36,7 @@
 			update: function() { $("#form_movie_countries").select2('onSortEnd'); }
 		});
 
-		$('#form_movie_genres').select2({
+		$('#form_name_genres').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
@@ -119,118 +67,9 @@
 			escapeMarkup: function(m) { return m; }
 		}).select2('container').find('ul.select2-choices').sortable({
 			containment: 'parent',
-			start: function() { $("#form_movie_genres").select2('onSortStart'); },
-			update: function() { $("#form_movie_genres").select2('onSortEnd'); }
+			start: function() { $("#form_name_genres").select2('onSortStart'); },
+			update: function() { $("#form_name_genres").select2('onSortEnd'); }
 		});
-
-		$('a.update-vote').click(function(e){
-			e.preventDefault();
-
-			var cmd = $(this).attr('id');
-
-			if (cmd == 'imdb_vote') {
-				// Below we use ID from Kinopoisk because they return a xml with IMDB and KP votes
-				if ($('#form_movie_kp_id').val() == '') { return; }
-
-				blockUI('show');
-				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val()
-				}).done(function(response){
-					if (response.success) {
-						$('#form_movie_imdb_votesum').val(response.votesum);
-						$('#form_movie_imdb_votes').val(response.votes);
-						requestUpdateStatImg(cmd, response);
-					} else {
-						showMsg('#j-main-container', response.message);
-						$(document).scrollTop(0);
-					}
-					blockUI('hide');
-				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
-					$(document).scrollTop(0);
-					blockUI('hide');
-				});
-			} else if (cmd == 'kp_vote') {
-				if ($('#form_movie_kp_id').val() == '') { return; }
-
-				blockUI('show');
-				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val()
-				}).done(function(response){
-					if (response.success) {
-						$('#form_movie_kp_votesum').val(response.votesum);
-						$('#form_movie_kp_votes').val(response.votes);
-						requestUpdateStatImg(cmd, response);
-					} else {
-						showMsg('#j-main-container', response.message);
-						$(document).scrollTop(0);
-					}
-					blockUI('hide');
-				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
-					$(document).scrollTop(0);
-					blockUI('hide');
-				});
-			} else if (cmd == 'rt_vote') {
-				if ($('#form_movie_rottentm_id').val() == '') { return; }
-
-				blockUI('show');
-				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_rottentm_id').val()
-				}).done(function(response){
-					if (response.success) {
-						$('#form_movie_rate_fc').val(response.votesum);
-						requestUpdateStatImg(cmd, response);
-					} else {
-						showMsg('#j-main-container', response.message);
-						$(document).scrollTop(0);
-					}
-					blockUI('hide');
-				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
-					$(document).scrollTop(0);
-					blockUI('hide');
-				});
-			}
-		});
-
-		function requestUpdateStatImg(elem, data) {
-			if (confirm('<?php echo JText::_('COM_KA_MOVIE_RATES_UPDATE_IMG'); ?>')) {
-				blockUI('show');
-
-				$.ajax({
-					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo (!empty($this->items->id)) ? $this->items->id : ''; ?>&elem=' + elem,
-					data: data
-				}).done(function(response){
-					var mktime = new Date().getTime();
-					if (response.success) {
-						if (elem == 'imdb_vote') {
-							folder = 'imdb';
-						} else if (elem == 'kp_vote') {
-							folder = 'kinopoisk';
-						} else if (elem == 'rt_vote') {
-							folder = 'rottentomatoes';
-						}
-
-						var dlg = '<div id="dialog-message" title="<?php echo JText::_('MESSAGE'); ?>"><p><img src="<?php echo JURI::root().$this->params->get('media_rating_image_root_www'); ?>/' + folder + '/' + $('#id').val() + '_big.png?' + mktime + '" border="0" /></p></div>';
-						$(dlg).appendTo('body');
-						$(dlg).dialog({
-							modal: true
-						});
-						blockUI('hide');
-					} else {
-						showMsg('#j-main-container', response.message);
-						$(document).scrollTop(0);
-						blockUI('hide');
-					}
-				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
-					$(document).scrollTop(0);
-					blockUI('hide');
-				});
-			}
-		}
 
 		<?php if (!empty($this->items->id)): ?>
 		$('.movie-poster-preview').parent().click(function(e){
@@ -327,7 +166,7 @@
 			});
 		});
 
-		$('#form_movie_alias').attr('readonly', true);
+		$('#form_name_alias').attr('readonly', true);
 		<?php endif; ?>
 
 		$('.cmd-alias').click(function(e){
@@ -346,7 +185,7 @@
 					}
 				});
 			} else {
-				if (!$('#form_movie_alias').is('[readonly]')) {
+				if (!$('#form_name_alias').is('[readonly]')) {
 					return;
 				}
 
@@ -363,9 +202,9 @@
 							text: '<?php echo JText::_('JMODIFY'); ?>',
 							id: 'alias-modify',
 							click: function(){
-								$('#form_movie_alias').removeAttr('readonly').trigger('focus');
+								$('#form_name_alias').removeAttr('readonly').trigger('focus');
 								dialog.remove();
-								$('#form_movie_alias').focus();
+								$('#form_name_alias').focus();
 							}
 						},
 						{
@@ -381,21 +220,15 @@
 	});
 </script>
 <div class="row-fluid">
-	<div class="span10">
-		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('parent_id', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('parent_id', $this->form_edit_group); ?></div>
-			</div>
-		</fieldset>
-	</div>
-</div>
-<div class="row-fluid">
 	<div class="span6">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('title', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('title', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('name', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('name', $this->form_edit_group); ?></div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('latin_name', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('latin_name', $this->form_edit_group); ?></div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_edit_group); ?></div>
@@ -409,14 +242,10 @@
 				<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('slogan', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('slogan', $this->form_edit_group); ?></div>
-			</div>
-			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&mid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>

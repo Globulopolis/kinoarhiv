@@ -1303,25 +1303,34 @@ class KinoarhivModelMediamanager extends JModelList {
 	 * @return  mixed  Object with the data. False on error.
 	 *
 	 */
-	public function getItemTitle($section, $id) {
+	public function getItemTitle($section=null, $id=null) {
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
 		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
 
 		if ($section == 'movie') {
-			$table = '#__ka_movies';
+			$db->setQuery("SELECT `title` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` = ".(int)$id);
+			$data = $db->loadResult();
 		} elseif ($section == 'name') {
-			$table = '#__ka_names';
-		} elseif ($section == 'trailer') {
-			$table = '';
-		} elseif ($section == 'soundtrack') {
-			$table = '';
+			$db->setQuery("SELECT `name`, `latin_name` FROM ".$db->quoteName('#__ka_names')." WHERE `id` = ".(int)$id);
+			$result = $db->loadObject();
+			$data = '';
+
+			if (!empty($result->name)) {
+				$data .= $result->name;
+			}
+			if (!empty($result->name) && !empty($result->latin_name)) {
+				$data .= ' / ';
+			}
+			if (!empty($result->latin_name)) {
+				$data .= $result->latin_name;
+			}
 		} else {
 			$this->setError('Unknown section type!');
 			return false;
 		}
 
-		//return $data;
+		return $data;
 	}
 }

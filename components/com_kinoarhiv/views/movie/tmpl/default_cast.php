@@ -102,7 +102,7 @@
 						<div class="cast-row-col-left fullwidth">
 							<div class="actor-photo">
 								<span class="number"><?php echo $key+1; ?>. </span>
-								<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>" /></span>
+								<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" width="64" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>" /></span>
 							</div>
 							<div class="actor-info">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / '.$name['latin_name'] : ''; ?></a><br />
@@ -126,7 +126,7 @@
 						<div class="cast-row-col-left">
 							<div class="actor-photo">
 								<span class="number"><?php echo $key+1; ?>. </span>
-								<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>" /></span>
+								<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" width="64" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>" /></span>
 							</div>
 							<div class="actor-info">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / '.$name['latin_name'] : ''; ?></a><br />
@@ -137,7 +137,7 @@
 						<div class="cast-row-col-right">
 							<?php if (!empty($name['dub_id'])): ?>
 							<div class="actor-dub-photo">
-								<span class="photo<?php echo $name['dub_y_poster']; ?>"><img src="<?php echo $name['dub_url_photo']; ?>" border="0" class="<?php echo $name['dub_gender'] ? 'm' : 'f'; ?>" /></span>
+								<span class="photo<?php echo $name['dub_y_poster']; ?>"><img src="<?php echo $name['dub_url_photo']; ?>" width="64" border="0" class="<?php echo $name['dub_gender'] ? 'm' : 'f'; ?>" /></span>
 							</div>
 							<div class="actor-dub-info">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['dub_id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['dub_name']; ?>"><?php echo $name['dub_name']; ?><?php echo !empty($name['dub_latin_name']) ? ' / '.$name['dub_latin_name'] : ''; ?></a>
@@ -162,7 +162,7 @@
 						<div class="cast-row-col-left fullwidth">
 							<div class="actor-photo">
 								<span class="number"><?php echo $key+1; ?>. </span>
-								<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>" /></span>
+								<span class="photo<?php echo $name['y_poster']; ?>"><img src="<?php echo $name['poster']; ?>" width="64" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>" /></span>
 							</div>
 							<div class="actor-info">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / '.$name['latin_name'] : ''; ?></a><br />

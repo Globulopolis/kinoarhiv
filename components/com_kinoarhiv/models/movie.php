@@ -294,12 +294,24 @@ class KinoarhivModelMovie extends JModelForm {
 			$careers[$career->id] = $career->title;
 		}
 
-		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`url_photo`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`url_photo` AS `dub_url_photo`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `ac`.`desc`"
+		/*$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`url_photo`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`url_photo` AS `dub_url_photo`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `ac`.`desc`"
 			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = ".(int)$id
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `d` ON `d`.`id` = `t`.`dub_id` AND `d`.`state` = 1 AND `d`.`access` IN (".$groups.") AND `d`.`language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').")"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`dub_id` = `n`.`id` AND `r`.`movie_id` = ".(int)$id
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `ac` ON `ac`.`name_id` = `n`.`id` AND `ac`.`movie_id` = ".(int)$id
+			. "\n WHERE `n`.`id` IN (SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$id.")"
+			. "\n AND `n`.`state` = 1 AND `n`.`access` IN (".$groups.") AND `n`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
+			. "\n GROUP BY `n`.`id`"
+			. "\n ORDER BY `t`.`ordering` ASC");*/
+		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `ac`.`desc`, `g`.`filename` AS `url_photo`, `dg`.`filename` AS `dub_url_photo`"
+			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = ".(int)$id
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `d` ON `d`.`id` = `t`.`dub_id` AND `d`.`state` = 1 AND `d`.`access` IN (".$groups.") AND `d`.`language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').")"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`dub_id` = `n`.`id` AND `r`.`movie_id` = ".(int)$id
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `ac` ON `ac`.`name_id` = `n`.`id` AND `ac`.`movie_id` = ".(int)$id
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `dg` ON `dg`.`name_id` = `d`.`id` AND `dg`.`type` = 3 AND `dg`.`photo_frontpage` = 1"
 			. "\n WHERE `n`.`id` IN (SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$id.")"
 			. "\n AND `n`.`state` = 1 AND `n`.`access` IN (".$groups.") AND `n`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
 			. "\n GROUP BY `n`.`id`"
@@ -320,10 +332,10 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
-							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
 						} else {
-							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
 						}
 						$value->y_poster = ' y-poster';
 					}
@@ -351,10 +363,10 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
-							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
 						} else {
-							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
 						}
 						$value->y_poster = ' y-poster';
 					}
@@ -364,10 +376,10 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->dub_url_photo = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->dub_y_poster = '';
 					} else {
-						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
-							$value->dub_url_photo = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/'.$value->dub_url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+							$value->dub_url_photo = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/photo/thumb_'.$value->dub_url_photo;
 						} else {
-							$value->dub_url_photo = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/'.$value->dub_url_photo;
+							$value->dub_url_photo = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/photo/thumb_'.$value->dub_url_photo;
 						}
 						$value->dub_y_poster = ' y-poster';
 					}
@@ -403,10 +415,10 @@ class KinoarhivModelMovie extends JModelForm {
 						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
 						$value->y_poster = '';
 					} else {
-						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1)) {
-							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
 						} else {
-							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/'.$value->url_photo;
+							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
 						}
 						$value->y_poster = ' y-poster';
 					}

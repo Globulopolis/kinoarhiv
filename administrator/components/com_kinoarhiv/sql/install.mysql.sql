@@ -161,7 +161,6 @@ CREATE TABLE `#__ka_names` (
   `name` varchar(128) NOT NULL DEFAULT '',
   `latin_name` varchar(128) NOT NULL DEFAULT '',
   `alias` varchar(255) NOT NULL DEFAULT '',
-  `url_photo` varchar(255) NOT NULL DEFAULT '',
   `date_of_birth` date NOT NULL DEFAULT '0000-00-00',
   `date_of_death` date NOT NULL DEFAULT '0000-00-00',
   `birthplace` varchar(255) NOT NULL DEFAULT '',

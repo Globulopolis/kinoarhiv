@@ -44,24 +44,36 @@ class KinoarhivViewNames extends JViewLegacy {
 		$items = $this->get('Item');
 		$form = $this->get('Form');
 
-		if (empty($items['movie']->filename)) {
-			$items['movie']->poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-			$items['movie']->th_poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-			$items['movie']->y_poster = '';
+		$title = '';
+		if (!empty($items['name']->name)) {
+			$title .= $items['name']->name;
+		}
+		if (!empty($items['name']->name) && !empty($items['name']->latin_name)) {
+			$title .= ' / ';
+		}
+		if (!empty($items['name']->latin_name)) {
+			$title .= $items['name']->latin_name;
+		}
+		$items['name']->title = &$title;
+
+		if (empty($items['name']->filename)) {
+			$items['name']->poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
+			$items['name']->th_poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
+			$items['name']->y_poster = '';
 		} else {
 			if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
-				$items['movie']->poster = JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($items['movie']->alias, 0, 1).'/'.$items['movie']->id.'/posters/'.$items['movie']->filename;
-				$items['movie']->th_poster = JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($items['movie']->alias, 0, 1).'/'.$items['movie']->id.'/posters/thumb_'.$items['movie']->filename;
+				$items['name']->poster = JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/'.$items['name']->filename;
+				$items['name']->th_poster = JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/thumb_'.$items['name']->filename;
 			} else {
-				$items['movie']->poster = $params->get('media_posters_root_www').'/'.JString::substr($items['movie']->alias, 0, 1).'/'.$items['movie']->id.'/posters/'.$items['movie']->filename;
-				$items['movie']->th_poster = $params->get('media_posters_root_www').'/'.JString::substr($items['movie']->alias, 0, 1).'/'.$items['movie']->id.'/posters/thumb_'.$items['movie']->filename;
+				$items['name']->poster = $params->get('media_posters_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/'.$items['name']->filename;
+				$items['name']->th_poster = $params->get('media_posters_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/thumb_'.$items['name']->filename;
 			}
-			$items['movie']->y_poster = 'y-poster';
+			$items['name']->y_poster = 'y-poster';
 		}
 
-		$this->items = &$items['movie'];
+		$this->items = &$items['name'];
 		$this->form = &$form;
-		$this->form_edit_group = 'movie';
+		$this->form_edit_group = 'name';
 		$this->form_attribs_group = 'attribs';
 		$this->params = &$params;
 		$this->lang = &$lang;
@@ -79,7 +91,7 @@ class KinoarhivViewNames extends JViewLegacy {
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::_('COM_KA_MOVIES_ADD_TITLE'), 'play');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -87,9 +99,9 @@ class KinoarhivViewNames extends JViewLegacy {
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
 			if (!empty($this->items->id)) {
-				JToolbarHelper::title(JText::sprintf(JText::_('COM_KA_MOVIES_EDIT_TITLE'), $this->items->title), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.$this->items->title), 'play');
 			} else {
-				JToolbarHelper::title(JText::_('COM_KA_MOVIES_ADD_TITLE'), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
 			}
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
@@ -98,7 +110,6 @@ class KinoarhivViewNames extends JViewLegacy {
 			JToolbarHelper::cancel();
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
-			JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
 			JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE')), 'users');

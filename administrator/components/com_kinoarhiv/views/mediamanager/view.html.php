@@ -14,17 +14,21 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 		$type = $app->input->get('type', '', 'word');
 		$tab = $app->input->get('tab', 0, 'int');
+		$section = $app->input->get('section', '', 'word');
 
-		if ($app->input->get('section', '', 'word') == 'movie') {
+		if ($section == 'movie') {
 			if ($type == 'gallery') {
 				$items = $this->get('Items');
 				$pagination = $this->get('Pagination');
 				$state = $this->get('State');
+				$page_title = $this->get('ItemTitle');
 
 				if (count($errors = $this->get('Errors'))) {
 					throw new Exception(implode("\n", $this->get('Errors')), 500);
 					return false;
 				}
+
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
 
 				if ($tab == 1) {
 					$path = $params->get('media_wallpapers_root');
@@ -85,11 +89,14 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 					$item = $this->get('Item');
 					$form = $this->get('Form');
+					$page_title = $this->get('ItemTitle');
 
 					if (count($errors = $this->get('Errors'))) {
 						throw new Exception(implode("\n", $this->get('Errors')), 500);
 						return false;
 					}
+
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
 
 					if (count($item) > 0) {
 						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
@@ -113,12 +120,14 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					$items = $this->get('Items');
 					$pagination = $this->get('Pagination');
 					$state = $this->get('State');
+					$page_title = $this->get('ItemTitle');
 
 					if (count($errors = $this->get('Errors'))) {
 						throw new Exception(implode("\n", $this->get('Errors')), 500);
 						return false;
 					}
 
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
 					$this->items = &$items;
 					$this->pagination = &$pagination;
 					$this->state = &$state;
@@ -126,16 +135,19 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					parent::display($tpl);
 				}
 			}
-		} elseif ($app->input->get('section', '', 'word') == 'name') {
+		} elseif ($section == 'name') {
 			if ($type == 'gallery') {
 				$items = $this->get('Items');
 				$pagination = $this->get('Pagination');
 				$state = $this->get('State');
+				$page_title = $this->get('ItemTitle');
 
 				if (count($errors = $this->get('Errors'))) {
 					throw new Exception(implode("\n", $this->get('Errors')), 500);
 					return false;
 				}
+
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
 
 				if ($tab == 1) {
 					$path = $params->get('media_actor_wallpapers_root');
@@ -196,8 +208,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
 		$type = $app->input->get('type', '', 'cmd');
-
-		JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER')), 'images');
 
 		if ($task == 'edit') {
 			if ($type == 'trailers') {

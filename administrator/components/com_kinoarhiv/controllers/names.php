@@ -239,4 +239,18 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names');
 	}
+
+	public function saveNameAccessRules() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv')) {
+			return array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$model = $this->getModel('name');
+		$result = $model->saveNameAccessRules();
+
+		echo json_encode($result);
+	}
 }

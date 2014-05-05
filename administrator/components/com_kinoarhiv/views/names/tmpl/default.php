@@ -132,11 +132,11 @@ $sortFields = $this->getSortFields();
 							<?php endif; ?>
 							<?php if ($canEdit): ?>
 								<?php if (!empty($item->name)): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->name); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->name); ?></a>
 								<?php endif; ?>
 								<?php if (!empty($item->name) && !empty($item->latin_name)): echo '/'; endif;?>
 								<?php if (!empty($item->latin_name)): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->latin_name); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->latin_name); ?></a>
 								<?php endif; ?>
 								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - '.$item->date_of_death : ''; ?>)
 							<?php else: ?>

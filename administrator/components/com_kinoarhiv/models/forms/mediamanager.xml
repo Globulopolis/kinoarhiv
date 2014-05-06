@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="tr_edit">
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="title" type="text" default="" label="JGLOBAL_TITLE" class="span12" filter="string" size="35" />
 		<field name="frontpage" type="list" label="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE" description="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE_DESC" class="span12" filter="intval" size="1" default="0">
 			<option value="1">JYES</option>

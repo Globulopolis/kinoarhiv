@@ -42,11 +42,7 @@ class KinoarhivViewReviews extends JViewLegacy {
 
 	protected function edit($tpl) {
 		$app = JFactory::getApplication();
-		$items = $this->get('Item');
-		$form = $this->get('Form');
-
-		$this->items = &$items;
-		$this->form = &$form;
+		$this->form = $this->get('Form');
 
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar($tpl);

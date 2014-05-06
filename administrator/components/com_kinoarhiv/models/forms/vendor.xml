@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="company_name" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE" class="span5" required="true" filter="string" size="45" />
 		<field name="company_name_intl" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE_INTL" class="span5" filter="string" size="45" />
 		<field name="company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string" />

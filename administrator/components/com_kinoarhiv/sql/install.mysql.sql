@@ -168,6 +168,7 @@ CREATE TABLE `#__ka_names` (
   `gender` tinyint(1) unsigned NOT NULL COMMENT '0-female, 1-male',
   `height` varchar(6) NOT NULL DEFAULT '',
   `desc` text NOT NULL,
+  `attribs` varchar(5120) NOT NULL,
   `ordering` int(11) NOT NULL DEFAULT '0',
   `state` tinyint(3) NOT NULL DEFAULT '0',
   `access` int(10) unsigned NOT NULL DEFAULT '0',

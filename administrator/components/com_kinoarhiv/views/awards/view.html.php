@@ -50,11 +50,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 			return false;
 		}
 
-		$items = $this->get('Items');
-		$form = $this->get('Form');
-
-		$this->items = &$items;
-		$this->form = &$form;
+		$this->form = $this->get('Form');
 
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar($tpl);
@@ -76,7 +72,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE').': '.$this->items->title), 'asterisk');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE').': '.$this->form->getValue('title')), 'asterisk');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');

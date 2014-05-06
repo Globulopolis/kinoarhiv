@@ -1,12 +1,12 @@
 <?php defined('_JEXEC') or die; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('#form_movie_countries').select2({
+		$('#form_name_birthcountry').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
-			maximumSelectionSize: 10,
-			multiple: true,
+			maximumSelectionSize: 1,
+			multiple: false,
 			ajax: {
 				cache: true,
 				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json',
@@ -17,9 +17,13 @@
 					return { results: data };
 				}
 			},
-			<?php if (isset($this->items->countries)): ?>
+			<?php if ($this->form->getValue('birthcountry', $this->form_edit_group) != 0): ?>
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->items->countries['data']); ?>;
+				var data = {
+					id: <?php echo (int)$this->form->getValue('birthcountry', $this->form_edit_group); ?>,
+					code: '<?php echo $this->items->country_code; ?>',
+					title: '<?php echo $this->items->country; ?>'
+				};
 				callback(data);
 			},
 			<?php endif; ?>
@@ -32,15 +36,14 @@
 			escapeMarkup: function(m) { return m; }
 		}).select2('container').find('ul.select2-choices').sortable({
 			containment: 'parent',
-			start: function() { $("#form_movie_countries").select2('onSortStart'); },
-			update: function() { $("#form_movie_countries").select2('onSortEnd'); }
+			start: function() { $("#form_name_birthcountry").select2('onSortStart'); },
+			update: function() { $("#form_name_birthcountry").select2('onSortEnd'); }
 		});
 
 		$('#form_name_genres').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
 			minimumInputLength: 1,
-			maximumSelectionSize: 5,
 			multiple: true,
 			ajax: {
 				cache: true,
@@ -71,7 +74,7 @@
 			update: function() { $("#form_name_genres").select2('onSortEnd'); }
 		});
 
-		<?php if (!empty($this->items->id)): ?>
+		<?php if (!empty($this->form->getValue('id', $this->form_edit_group))): ?>
 		$('.movie-poster-preview').parent().click(function(e){
 			e.preventDefault();
 
@@ -86,7 +89,7 @@
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&frontpage=1',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -117,12 +120,12 @@
 					var url = '<?php echo (JString::substr($this->params->get('media_posters_root_www'), 0, 1) == '/') ? JURI::root().JString::substr($this->params->get('media_posters_root_www'), 1).'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/' : $this->params->get('media_posters_root_www').'/'.JString::substr($this->items->alias, 0, 1).'/'.$this->items->id.'/posters/'; ?>';
 
 					blockUI('show');
-					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&format=raw',
+					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
 						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
 					).done(function(response){
 						$('img.movie-poster-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
 						$('img.movie-poster-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
-						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>&_id[]='+ file.id +'&format=raw');
+						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');
 						blockUI();
 						$('.layout_img_upload').dialog('close');
 					}).fail(function(xhr, status, error){
@@ -138,8 +141,7 @@
 
 			$('.layout_img_upload').dialog({
 				modal: true,
-				height: 330,
-				width: 600
+				width: 700
 			});
 		});
 
@@ -242,11 +244,8 @@
 				<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
-				<div class="controls">
-					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
-				</div>
+				<div class="control-label"><?php echo $this->form->getLabel('birthplace', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('birthplace', $this->form_edit_group); ?></div>
 			</div>
 		</fieldset>
 	</div>
@@ -254,12 +253,12 @@
 		<div class="span9">
 			<fieldset class="form-horizontal">
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('year', $this->form_edit_group); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('year', $this->form_edit_group); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('date_of_birth', $this->form_edit_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('date_of_birth', $this->form_edit_group); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('length', $this->form_edit_group); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('length', $this->form_edit_group); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('date_of_death', $this->form_edit_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('date_of_death', $this->form_edit_group); ?></div>
 				</div>
 				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('budget', $this->form_edit_group); ?></div>
@@ -268,18 +267,18 @@
 			</fieldset>
 		</div>
 		<div class="span3">
-			<?php if (!empty($this->items->id)): ?>
+			<?php if (!empty($this->form->getValue('id', $this->form_edit_group))): ?>
 			<a href="<?php echo $this->items->poster; ?>"><img src="<?php echo $this->items->th_poster; ?>" class="movie-poster-preview <?php echo $this->items->y_poster; ?>" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->items->id; ?>&_id[]=<?php echo $this->items->gid; ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&_id[]=<?php echo $this->items->gid; ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 			<?php endif; ?>
 		</div>
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('countries', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('birthcountry', $this->form_edit_group); ?></div>
 				<div class="controls">
-					<?php echo $this->form->getInput('countries', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php echo $this->form->getInput('birthcountry', $this->form_edit_group); ?>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>
@@ -289,8 +288,11 @@
 	<div class="span12">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('plot', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('plot', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
+				<div class="controls">
+					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+				</div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('known', $this->form_edit_group); ?></div>

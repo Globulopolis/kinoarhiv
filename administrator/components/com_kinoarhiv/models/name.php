@@ -16,7 +16,6 @@ class KinoarhivModelName extends JModelForm {
 		$user = JFactory::getUser();
 
 		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_kinoarhiv.name.' . (int) $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_kinoarhiv'))) {
-			$form->setFieldAttribute('ordering', 'disabled', 'true');
 			$form->setFieldAttribute('state', 'disabled', 'true');
 		}
 
@@ -79,30 +78,26 @@ class KinoarhivModelName extends JModelForm {
 				return $result;
 			}
 
-			$db->setQuery("SELECT `n`.`id`, `n`.`asset_id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`date_of_birth`, `n`.`date_of_death`, `n`.`birthplace`, `n`.`birthcountry`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`ordering`, `n`.`state`, `n`.`access`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `n`.`language`, `l`.`title` AS `language_title`, `g`.`id` AS `gid`, `g`.`filename`"
+			$db->setQuery("SELECT `n`.`id`, `n`.`asset_id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`date_of_birth`, `n`.`date_of_death`, `n`.`birthplace`, `n`.`birthcountry`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`ordering`, `n`.`state`, `n`.`access`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `n`.`language`, `l`.`title` AS `language_title`, `g`.`id` AS `gid`, `g`.`filename`, `c`.`name` AS `country`, `c`.`code` AS `country_code`"
 				. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
 				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `n`.`language`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 2 AND `g`.`photo_frontpage` = 1"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `n`.`birthcountry`"
 				. "\n WHERE `n`.`id` = ".(int)$id[0]);
 			$result['name'] = $db->loadObject();
 
 			$result['name']->genres = $this->getGenres();
 			$result['name']->genres_orig = implode(',', $result['name']->genres['ids']);
-			/*$result['name']->countries = $this->getCountries();
-			$result['name']->countries_orig = implode(',', $result['name']->countries['ids']);
-			$result['name']->tags = $this->getTags();
-			$result['name']->tags_orig = !empty($result['name']->tags['ids']) ? implode(',', $result['name']->tags['ids']) : '';*/
 
 			if (!empty($result['name']->attribs)) {
 				$result['attribs'] = json_decode($result['name']->attribs);
 			}
 		}
-//echo '<pre>';
-//print_r($result['name']->genres);
+
 		return $result;
 	}
 
-	protected function getGenres() {
+	public function getGenres() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');

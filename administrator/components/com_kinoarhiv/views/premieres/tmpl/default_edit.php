@@ -107,6 +107,6 @@ JHtml::_('behavior.keepalive');
 
 	<input type="hidden" name="controller" value="premieres" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id[]" value="<?php echo !empty($this->items->id) ? $this->items->id : ''; ?>" />
+	<input type="hidden" name="id[]" value="<?php echo !empty($this->form->getValue('id')) ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

@@ -299,8 +299,7 @@
 
 			$('.layout_img_upload').dialog({
 				modal: true,
-				height: 330,
-				width: 600
+				width: 700
 			});
 		});
 

@@ -27,7 +27,7 @@ JHtml::_('behavior.keepalive');
 			}
 		} else if (task == 'gallery' || task == 'sounds') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -191,6 +191,6 @@ JHtml::_('behavior.keepalive');
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="names" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items->id) ? $this->items->id : 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->form->getValue('id', $this->form_edit_group)) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

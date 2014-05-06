@@ -51,11 +51,7 @@ class KinoarhivViewCountries extends JViewLegacy {
 			return false;
 		}
 
-		$items = $this->get('Items');
-		$form = $this->get('Form');
-
-		$this->items = &$items;
-		$this->form = &$form;
+		$this->form = $this->get('Form');
 
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar($tpl);
@@ -77,7 +73,7 @@ class KinoarhivViewCountries extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_COUNTRIES_TITLE').': '.$this->items->name), 'location');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_COUNTRIES_TITLE').': '.$this->form->getValue('name')), 'location');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');

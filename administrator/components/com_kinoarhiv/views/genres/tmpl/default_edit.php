@@ -4,7 +4,7 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres<?php echo !empty($this->items->id) ? '&id='.$this->items->id : ''; ?>';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres<?php echo !empty($this->form->getValue('id')) ? '&id='.$this->form->getValue('id') : ''; ?>';
 			return;
 		}
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
@@ -22,7 +22,7 @@ JHtml::_('behavior.keepalive');
 			e.preventDefault();
 			var _this = $(this);
 
-			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&id[]=<?php echo !empty($this->items->id) ? $this->items->id : ''; ?>&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
+			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&id[]=<?php echo !empty($this->form->getValue('id')) ? $this->form->getValue('id') : ''; ?>&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {
 					_this.prev('input').val(response.total);
 					showMsg(_this, '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>', 'after');
@@ -48,6 +48,6 @@ JHtml::_('behavior.keepalive');
 
 	<input type="hidden" name="controller" value="genres" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" value="<?php echo !empty($this->items->id) ? $this->items->id : ''; ?>" />
+	<input type="hidden" name="id" value="<?php echo !empty($this->form->getValue('id')) ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

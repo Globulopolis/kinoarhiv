@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="movie_id" type="movies" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span5" filter="intval" required="true" size="11" data-ac-type="movies" />
 		<field name="country_id" type="countries" default="" label="COM_KA_FIELD_COUNTRY_LABEL" class="span5" filter="intval" required="true" size="11" data-ac-type="countries" />
 		<field name="vendor_id" type="vendors" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true" class="span5" filter="intval" size="11" data-ac-type="vendors" />

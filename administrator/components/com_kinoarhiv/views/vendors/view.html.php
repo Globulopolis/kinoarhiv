@@ -50,11 +50,7 @@ class KinoarhivViewVendors extends JViewLegacy {
 			return false;
 		}
 
-		$items = $this->get('Items');
-		$form = $this->get('Form');
-
-		$this->items = &$items;
-		$this->form = &$form;
+		$this->form = $this->get('Form');
 
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar($tpl);
@@ -76,7 +72,7 @@ class KinoarhivViewVendors extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE').': '.$this->items->company_name), 'basket');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE').': '.$this->form->getValue('company_name')), 'basket');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');

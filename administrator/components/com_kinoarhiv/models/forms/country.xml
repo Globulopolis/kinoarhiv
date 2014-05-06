@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="name" type="text" default="" label="COM_KA_FIELD_COUNTRY_LABEL" class="span12" required="true" filter="string" size="6" />
 		<field name="code" type="text" default="" label="COM_KA_FIELD_COUNTRY_CODE_LABEL" class="span5" description="COM_KA_FIELD_COUNTRY_CODE_LABEL_DESC" required="true" filter="string" size="6" />
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">

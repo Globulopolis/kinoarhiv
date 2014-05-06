@@ -41,9 +41,10 @@ class KinoarhivViewNames extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$lang = JFactory::getLanguage();
 
+		$this->form = $this->get('Form');
 		$items = $this->get('Item');
-		$form = $this->get('Form');
 
+		// Build title
 		$title = '';
 		if (!empty($items['name']->name)) {
 			$title .= $items['name']->name;
@@ -61,18 +62,17 @@ class KinoarhivViewNames extends JViewLegacy {
 			$items['name']->th_poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 			$items['name']->y_poster = '';
 		} else {
-			if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
-				$items['name']->poster = JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/'.$items['name']->filename;
-				$items['name']->th_poster = JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/thumb_'.$items['name']->filename;
+			if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+				$items['name']->poster = JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/'.$items['name']->filename;
+				$items['name']->th_poster = JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/thumb_'.$items['name']->filename;
 			} else {
-				$items['name']->poster = $params->get('media_posters_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/'.$items['name']->filename;
-				$items['name']->th_poster = $params->get('media_posters_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/posters/thumb_'.$items['name']->filename;
+				$items['name']->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/'.$items['name']->filename;
+				$items['name']->th_poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/thumb_'.$items['name']->filename;
 			}
 			$items['name']->y_poster = 'y-poster';
 		}
 
 		$this->items = &$items['name'];
-		$this->form = &$form;
 		$this->form_edit_group = 'name';
 		$this->form_attribs_group = 'attribs';
 		$this->params = &$params;

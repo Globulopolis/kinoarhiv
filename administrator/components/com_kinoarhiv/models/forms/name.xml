@@ -2,12 +2,16 @@
 <form>
 	<fields name="name">
 		<fieldset name="edit">
+			<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 			<field name="name" type="text" default="" label="COM_KA_FIELD_NAME" class="span12" required="true" filter="string" size="45" />
 			<field name="latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12" required="true" filter="string" size="45" />
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
 			<field name="alias_orig" type="hidden" />
-			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
-			<field name="countries" type="countries" default="" label="COM_KA_FIELD_MOVIE_COUNTRIES" description="COM_KA_FIELD_MOVIE_COUNTRIES_DESC" class="span11" filter="string" data-ac-type="countries" />
+			<field name="date_of_birth" type="datetime" default="NOW" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span10" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+			<field name="date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span10" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+			<field name="birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string" />
+			<field name="birthcountry" type="countries" default="" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11" filter="string" data-ac-type="countries" />
+			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_NAME_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">

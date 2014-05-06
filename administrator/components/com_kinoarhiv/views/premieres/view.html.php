@@ -46,12 +46,9 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$item = $this->get('Item');
-		$form = $this->get('Form');
+		$this->form = $this->get('Form');
 
-		$this->items = &$item;
 		$this->addToolbar($tpl);
-		$this->form = &$form;
 		$this->params = &$params;
 
 		parent::display('edit');

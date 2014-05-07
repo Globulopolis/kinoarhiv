@@ -7,18 +7,18 @@ $type = $input->get('type', '', 'word');
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 
-<?php if (count($this->item) > 0): ?>
+<?php if ($this->form->getValue('id') != 0): ?>
 	<!-- Uncomment line below to load Browser+ from YDN -->
 	<!-- <script src="http://bp.yahooapis.com/2.4.21/browserplus-min.js" type="text/javascript"></script> -->
 	<!-- Comment line below if load Browser+ from YDN -->
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js" type="text/javascript"></script>
 
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js" type="text/javascript"></script>
-	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/mediamanager/<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/mediamanager/<?php echo substr($this->lang->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js" type="text/javascript"></script>
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js" type="text/javascript"></script>
 	<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
-	<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+	<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 	<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <?php endif; ?>
 <script type="text/javascript">
@@ -29,7 +29,7 @@ $type = $input->get('type', '', 'word');
 		var bootstrapButton = $.fn.button.noConflict();
 		$.fn.bootstrapBtn = bootstrapButton;
 
-		<?php if (count($this->item) > 0): ?>
+		<?php if ($this->form->getValue('id') != 0): ?>
 		$('#accordion').accordion({
 			collapsible: true,
 			heightStyle: 'content',
@@ -38,7 +38,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#video_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=video&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=video&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -81,7 +81,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#subtl_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=subtitles&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=subtitles&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -121,7 +121,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#chap_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -161,7 +161,7 @@ $type = $input->get('type', '', 'word');
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $input->get('type', '', 'word'); ?>&upload=images&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=images&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
 			multi_selection: false,
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
@@ -320,7 +320,7 @@ $type = $input->get('type', '', 'word');
 							'language': $('#subtl_edit_form #jform_language_subtl option:selected').val(),
 							'desc': $('#subtl_edit_form #jform_desc').val(),
 							'default': $('#subtl_edit_form #jform_default option:selected').val(),
-							'movie_id': <?php echo $this->item->movie_id; ?>,
+							'movie_id': <?php echo $input->get('id', 0, 'int'); ?>,
 							'<?php echo JSession::getFormToken(); ?>': 1
 						}, function(response){
 							if (response) {
@@ -369,7 +369,7 @@ $type = $input->get('type', '', 'word');
 						html += '<li>'
 							+ '<input type="hidden" name="ord[]" value="'+ k +'" />'
 							+ '<div style="float: left;"><span class="ord_numbering">'+ k +'</span>. '+ object.src +'</div>'
-							+ '<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ object.src +'&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a></div>'
+							+ '<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ object.src +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a></div>'
 						+ '</li>';
 					});
 
@@ -390,8 +390,8 @@ $type = $input->get('type', '', 'word');
 
 						html += '<li>'
 							+ '<input type="hidden" name="cord[]" value="'+ i +'" />'
-							+ '<div style="float: left;"><span class="ord_numbering">'+ i +'</span>. '+ obj.file +' ('+ obj.lang_code +', '+ obj.lang +' <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $this->item->id; ?>&subtitle_id='+ i +'" class="lang-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a>)</div>'
-								+ '<div style="float: right;"><input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0px 4px 4px 0px;" autocomplete="off"'+ checked +' /> <a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitle&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.file +'&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove subtitle"><span class="icon-delete"></span></a></div>'
+							+ '<div style="float: left;"><span class="ord_numbering">'+ i +'</span>. '+ obj.file +' ('+ obj.lang_code +', '+ obj.lang +' <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&subtitle_id='+ i +'" class="lang-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a>)</div>'
+								+ '<div style="float: right;"><input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0px 4px 4px 0px;" autocomplete="off"'+ checked +' /> <a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitle&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.file +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove subtitle"><span class="icon-delete"></span></a></div>'
 						+ '</li>';
 					});
 
@@ -410,7 +410,7 @@ $type = $input->get('type', '', 'word');
 
 					var html = '<li>'
 						+ '<div style="float: left;">'+response.file+'</div>'
-						+ '<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+response.file+'&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a></div>'
+						+ '<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+response.file+'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a></div>'
 					+ '</li>';
 
 					$('#chap_sortable').append(html);
@@ -627,7 +627,7 @@ $type = $input->get('type', '', 'word');
 							</div>
 					</fieldset>
 
-					<?php if (count($this->item) > 0): ?>
+					<?php if ($this->form->getValue('id') != 0): ?>
 						<div class="small red"><?php echo JText::_('COM_KA_TRAILERS_EDIT_UPLOAD_ONLY_ONE'); ?></div>
 						<div class="small"><?php echo JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT', $this->params->get('upload_mime_video'), $this->params->get('upload_mime_subtitles'), $this->params->get('upload_mime_chapters')); ?></div>
 						<div id="accordion" class="uploader">
@@ -653,7 +653,7 @@ $type = $input->get('type', '', 'word');
 					<?php endif; ?>
 				</div>
 
-				<?php if (count($this->item) > 0): ?>
+				<?php if ($this->form->getValue('id') != 0): ?>
 					<div class="span6" id="filelist">
 						<h3 class="ui-widget ui-widget-content" style="margin-top: 0;"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO'); ?><span class="btn-small hasTooltip icon-help" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SORT_VIDEOFILES_DESC'); ?>"></span>
 							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=video&format=json" class="cmd-refresh-filelist t-video" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a>
@@ -665,7 +665,7 @@ $type = $input->get('type', '', 'word');
 									<li>
 										<input type="hidden" name="ord[]" value="<?php echo (int)$key; ?>" />
 										<div style="float: left;"><span class="ord_numbering"><?php echo (int)$key; ?></span>. <?php echo $item->src; ?></div>
-										<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $item->src; ?>&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a></div>
+										<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $item->src; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a></div>
 									</li>
 								<?php endforeach;
 							endif; ?>
@@ -680,8 +680,8 @@ $type = $input->get('type', '', 'word');
 							</div>
 							<div style="float: right;">
 								<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $this->item->movie_id; ?>&format=raw" class="file-create-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
-								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->item->screenshot; ?>&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
+								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw" class="file-create-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
+								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->item->screenshot; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
 							</div>
 						</div><br />
 
@@ -695,8 +695,8 @@ $type = $input->get('type', '', 'word');
 								foreach ($subtitles as $k=>$sub_data): ?>
 									<li>
 										<input type="hidden" name="cord[]" value="<?php echo (int)$k; ?>" />
-										<div style="float: left;"><span class="ord_numbering"><?php echo $k; ?></span>. <?php echo $sub_data->file; ?> (<?php echo $sub_data->lang_code; ?>, <?php echo $sub_data->lang; ?> <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $this->item->id; ?>&subtitle_id=<?php echo (int)$k; ?>" class="lang-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a>)</div>
-										<div style="float: right;"><input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0px 4px 4px 0px;" autocomplete="off"<?php echo $sub_data->default ? ' checked="checked"' : ''; ?> /> <a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitle&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $sub_data->file; ?>&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove subtitle"><span class="icon-delete"></span></a></div>
+										<div style="float: left;"><span class="ord_numbering"><?php echo $k; ?></span>. <?php echo $sub_data->file; ?> (<?php echo $sub_data->lang_code; ?>, <?php echo $sub_data->lang; ?> <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&subtitle_id=<?php echo (int)$k; ?>" class="lang-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a>)</div>
+										<div style="float: right;"><input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0px 4px 4px 0px;" autocomplete="off"<?php echo $sub_data->default ? ' checked="checked"' : ''; ?> /> <a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitle&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $sub_data->file; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove subtitle"><span class="icon-delete"></span></a></div>
 									</li>
 								<?php endforeach;
 							endif; ?>
@@ -711,7 +711,7 @@ $type = $input->get('type', '', 'word');
 								foreach ($chapters as $chapter): ?>
 									<li>
 										<div style="float: left;"><?php echo $chapter; ?></div>
-										<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $chapter; ?>&id=<?php echo $this->item->movie_id; ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a></div>
+										<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $chapter; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a></div>
 									</li>
 								<?php endforeach;
 							endif; ?>
@@ -729,8 +729,8 @@ $type = $input->get('type', '', 'word');
 	<input type="hidden" name="task" value="upload" />
 	<input type="hidden" name="section" value="movie" />
 	<input type="hidden" name="type" value="trailers" />
-	<input type="hidden" name="id" value="<?php echo $input->get('id', 0, 'int'); ?>" />
-	<input type="hidden" name="item_id" value="<?php echo !empty($this->item->id) ? $this->item->id : 0; ?>" />
+	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('movie_id') != 0) ? $this->form->getValue('movie_id') : 0; ?>" />
+	<input type="hidden" name="item_id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
@@ -790,8 +790,6 @@ $type = $input->get('type', '', 'word');
 	</form>
 </div>
 
-<?php if (count($this->item) > 0): ?>
-	<div class="layout_img_upload" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE'); ?>">
-		<div id="image_uploader" class="tr-uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
-	</div>
-<?php endif; ?>
+<div class="layout_img_upload" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE'); ?>">
+	<div id="image_uploader" class="trailer-image-upload"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
+</div>

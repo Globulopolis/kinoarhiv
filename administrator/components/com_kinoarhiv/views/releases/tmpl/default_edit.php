@@ -108,6 +108,6 @@ JHtml::_('behavior.keepalive');
 
 	<input type="hidden" name="controller" value="releases" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id[]" value="<?php echo !empty($this->form->getValue('id')) ? $this->form->getValue('id') : ''; ?>" />
+	<input type="hidden" name="id[]" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

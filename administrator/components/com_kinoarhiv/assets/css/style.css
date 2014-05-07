@@ -276,3 +276,11 @@ img.movie-poster-preview.y-poster {
 	display: none;
 	padding: 0.2em !important;
 }
+
+.trailer-image-upload .plupload_scroll .plupload_filelist {
+	height: 185px;
+}
+
+.trailer-image-upload li.plupload_droptext {
+	line-height: 165px;
+}

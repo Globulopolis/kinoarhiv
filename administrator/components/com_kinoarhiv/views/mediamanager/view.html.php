@@ -89,6 +89,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 					$item = $this->get('Item');
 					$form = $this->get('Form');
+					$lang = JFactory::getLanguage();
 					$page_title = $this->get('ItemTitle');
 
 					if (count($errors = $this->get('Errors'))) {
@@ -113,6 +114,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					$this->subtitles_lang_list = $_lang::listOfLanguages();
 					$this->item = &$item;
 					$this->form = &$form;
+					$this->lang = &$lang;
 
 					parent::display('upload_trailer');
 					$app->input->set('hidemainmenu', true);

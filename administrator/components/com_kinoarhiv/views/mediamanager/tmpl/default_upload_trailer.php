@@ -196,11 +196,11 @@ $type = $input->get('type', '', 'word');
 					var obj = $.parseJSON(info.response);
 
 					if ($('div.video_screenshot').find('#screenshot_file').length == 0) {
-						var a = '<a href="<?php echo $this->item->screenshot_folder_www; ?>' + obj.id + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.id +'</a>';
+						var a = '<a href="<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.id + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.id +'</a>';
 						$('div.video_screenshot div').eq(0).html('').append(a);
 					} else {
 						$('div.video_screenshot').find('#screenshot_file').text(obj.id);
-						$('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->screenshot_folder_www; ?>' + obj.id + '?_=' + new Date().getTime());
+						$('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.id + '?_=' + new Date().getTime());
 					}
 					$('#screenshot_file').show();
 					$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.id +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json');
@@ -455,11 +455,11 @@ $type = $input->get('type', '', 'word');
 
 							$('p', dlg).html(obj.output);
 							if (_this.closest('div.video_screenshot').find('#screenshot_file').length == 0) {
-								var a = '<a href="<?php echo $this->item->screenshot_folder_www; ?>' + obj.file + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.file +'</a>';
+								var a = '<a href="<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.file + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.file +'</a>';
 								_this.closest('div').prev('div').html('').append(a);
 							} else {
 								_this.closest('div.video_screenshot').find('#screenshot_file').text(obj.file);
-								_this.closest('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->screenshot_folder_www; ?>' + obj.file + '?_=' + new Date().getTime());
+								_this.closest('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.file + '?_=' + new Date().getTime());
 							}
 							$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.file +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json');
 							_this.closest('div.video_screenshot').find('#screenshot_file').show();
@@ -659,7 +659,7 @@ $type = $input->get('type', '', 'word');
 							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=video&format=json" class="cmd-refresh-filelist t-video" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a>
 						</h3>
 						<ul id="v_sortable">
-							<?php $files = json_decode($this->item->filename);
+							<?php $files = json_decode($this->form->getValue('filename'));
 							if (count($files) > 0):
 								foreach ($files as $key=>$item): ?>
 									<li>
@@ -672,8 +672,8 @@ $type = $input->get('type', '', 'word');
 						</ul>
 						<div class="video_screenshot">
 							<div style="float: left;">
-								<?php if (file_exists($this->item->screenshot_path)): ?>
-									<a href="<?php echo $this->item->screenshot_path_www; ?>?_=<?php echo time(); ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->item->screenshot; ?></a>
+								<?php if (file_exists($this->item->get('screenshot_path'))): ?>
+									<a href="<?php echo $this->item->get('screenshot_path_www'); ?>?_=<?php echo time(); ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->form->getValue('screenshot'); ?></a>
 								<?php else: ?>
 									&nbsp;
 								<?php endif; ?>
@@ -681,7 +681,7 @@ $type = $input->get('type', '', 'word');
 							<div style="float: right;">
 								<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
 								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw" class="file-create-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
-								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->item->screenshot; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
+								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->form->getValue('screenshot'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
 							</div>
 						</div><br />
 
@@ -690,7 +690,7 @@ $type = $input->get('type', '', 'word');
 							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=subtitles&format=json" class="cmd-refresh-filelist t-subtitles" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a>
 						</h3>
 						<ul id="sub_sortable">
-							<?php $subtitles = json_decode($this->item->_subtitles);
+							<?php $subtitles = json_decode($this->form->getValue('_subtitles'));
 							if (count($subtitles) > 0):
 								foreach ($subtitles as $k=>$sub_data): ?>
 									<li>
@@ -706,7 +706,7 @@ $type = $input->get('type', '', 'word');
 							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=chapters&format=json" class="cmd-refresh-filelist t-chapters" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a>
 						</h3>
 						<ul id="chap_sortable">
-							<?php $chapters = json_decode($this->item->_chapters);
+							<?php $chapters = json_decode($this->form->getValue('_chapters'));
 							if (count($chapters) > 0):
 								foreach ($chapters as $chapter): ?>
 									<li>
@@ -729,7 +729,7 @@ $type = $input->get('type', '', 'word');
 	<input type="hidden" name="task" value="upload" />
 	<input type="hidden" name="section" value="movie" />
 	<input type="hidden" name="type" value="trailers" />
-	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('movie_id') != 0) ? $this->form->getValue('movie_id') : 0; ?>" />
+	<input type="hidden" name="id" value="<?php echo $input->get('id', 0, 'int'); ?>" />
 	<input type="hidden" name="item_id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
@@ -768,7 +768,7 @@ $type = $input->get('type', '', 'word');
 		<input id="urls_url_subtitles" class="span6" type="text" size="35" value="" name="urls_url_subtitles" />
 		<label for="urls_url_subtitles_lang"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_SELECT'); ?></label>
 		<?php echo JHTML::_('select.genericlist',
-			$this->subtitles_lang_list,
+			$this->item->get('subtitles_lang_list'),
 			'urls_url_subtitles_lang',
 			array('class'=>'span3'),
 			'value',

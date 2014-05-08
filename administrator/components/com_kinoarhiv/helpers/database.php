@@ -4,9 +4,9 @@ class DatabaseHelper {
 	/**
 	 * Converts the operand of the query grid in operand for mySQL query
 	 *
-	 * @param   string  $field		Name of field to look for data.
-	 * @param   string	$operand	The operand from the request.
-	 * @param   string	$data		Data for search.
+	 * @param   string   $field     Name of field to look for data.
+	 * @param   string   $operand   The operand from the request.
+	 * @param   string   $data      Data for search.
 	 *
 	 * @return  string
 	 *

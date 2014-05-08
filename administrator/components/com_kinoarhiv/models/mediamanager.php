@@ -479,6 +479,8 @@ class KinoarhivModelMediamanager extends JModelList {
 				}
 			}
 		}
+
+		return true;
 	}
 
 	public function remove() {
@@ -772,15 +774,10 @@ class KinoarhivModelMediamanager extends JModelList {
 		$query = $db->getQuery(true);
 		$id = $app->input->get('item_id', 0, 'int');
 
-		$query->select(
-			$this->getState(
-				'list.select',
-				'`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`screenshot`, `g`.`urls`, `g`.`filename`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`'
-			)
-		);
+		$query->select('`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`screenshot`, `g`.`urls`, `g`.`filename`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`');
 		$query->from($db->quoteName('#__ka_trailers').' AS `g`');
 
-		$query->select(' `m`.`alias`')
+		$query->select(' `m`.`alias` AS `movie_alias`')
 			->leftJoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `g`.`movie_id`');
 
 		$query->select(' `l`.`title` AS `language_title`')

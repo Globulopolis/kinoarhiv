@@ -21,7 +21,7 @@
 		<fieldset class="form-horizontal">
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('imdb_votesum', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('imdb_votesum', $this->form_edit_group); ?> <a href="#" id="imdb_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+				<div class="controls"><?php echo $this->form->getInput('imdb_votesum', $this->form_edit_group); ?> <a href="#" id="imdb_vote" class="update-vote hasTip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('imdb_votes', $this->form_edit_group); ?></div>
@@ -33,7 +33,7 @@
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('kp_votesum', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('kp_votesum', $this->form_edit_group); ?> <a href="#" id="kp_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+				<div class="controls"><?php echo $this->form->getInput('kp_votesum', $this->form_edit_group); ?> <a href="#" id="kp_vote" class="update-vote hasTip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('kp_votes', $this->form_edit_group); ?></div>
@@ -45,7 +45,7 @@
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('rate_fc', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('rate_fc', $this->form_edit_group); ?> <a href="#" id="rt_vote" class="update-vote hasTip" title="::<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+				<div class="controls"><?php echo $this->form->getInput('rate_fc', $this->form_edit_group); ?> <a href="#" id="rt_vote" class="update-vote hasTip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('rottentm_id', $this->form_edit_group); ?></div>

@@ -40,7 +40,7 @@ class KinoarhivModelName extends JModelForm {
 		$id = $app->input->get('id', array(), 'array');
 
 		if ($tmpl == 'names_edit') {
-			$movie_id = $app->input->get('movie_id', 0, 'int');
+			/*$movie_id = $app->input->get('movie_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
 
 			$db->setQuery("SELECT `name_id`, `role`, `dub_id`, `is_actors`, `voice_artists`, `is_directors`, `ordering` AS `r_ordering`, `desc` AS `r_desc`"
@@ -50,28 +50,14 @@ class KinoarhivModelName extends JModelForm {
 			
 			if (!empty($result)) {
 				$result->type = $app->input->get('career_id', 0, 'int');
-			}
+			}*/
 		} elseif ($tmpl == 'awards_edit') {
-			$award_id = $app->input->get('award_id', 0, 'int');
+			/*$award_id = $app->input->get('award_id', 0, 'int');
 
 			$db->setQuery("SELECT `id` AS `rel_aw_id`, `item_id`, `award_id`, `desc` AS `aw_desc`, `year` AS `aw_year`"
 				. "\n FROM ".$db->quoteName('#__ka_rel_awards')
 				. "\n WHERE `id` = ".(int)$award_id);
-			$result = $db->loadObject();
-		} elseif ($tmpl == 'premieres_edit') {
-			$premiere_id = $app->input->get('premiere_id', 0, 'int');
-
-			$db->setQuery("SELECT `id` AS `premiere_id`, `vendor_id` AS `p_vendor_id`, `premiere_date` AS `p_premiere_date`, `country_id` AS `p_country_id`, `info` AS `p_info`, `ordering` AS `p_ordering`"
-				. "\n FROM ".$db->quoteName('#__ka_premieres')
-				. "\n WHERE `id` = ".(int)$premiere_id);
-			$result = $db->loadObject();
-		} elseif ($tmpl == 'releases_edit') {
-			$release_id = $app->input->get('release_id', 0, 'int');
-
-			$db->setQuery("SELECT `id` AS `release_id`, `vendor_id` AS `r_vendor_id`, `release_date` AS `r_release_date`, `country_id` AS `r_country_id`, `media_type` AS `r_media_type`, `ordering` AS `r_ordering`"
-				. "\n FROM ".$db->quoteName('#__ka_releases')
-				. "\n WHERE `id` = ".(int)$release_id);
-			$result = $db->loadObject();
+			$result = $db->loadObject();*/
 		} else {
 			$result = array('name'=>(object)array());
 			if (count($id) == 0 || empty($id) || empty($id[0])) {
@@ -97,7 +83,7 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
-	public function getGenres() {
+	protected function getGenres() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');

@@ -5,11 +5,13 @@
 		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
 		<field name="ordering" type="order" data="countries" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
+
 	<fieldset name="relations_genres">
 		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="genres" />
 		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
 		<field name="ordering" type="order" data="genres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
+
 	<fieldset name="relations_awards">
 		<field name="award_id" type="awards" label="COM_KA_FIELD_AW_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
 		<field name="item_id" type="awards" label="COM_KA_FIELD_AW_ITEM_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
@@ -21,6 +23,7 @@
 		</field>
 		<field name="id" type="hidden" default="" />
 	</fieldset>
+
 	<fieldset name="relations_careers">
 		<field name="career_id" type="careers" label="COM_KA_CAREER_FIELD_TITLE" required="true" class="span5" filter="intval" size="11" data-ac-type="careers" />
 		<field name="name_id" type="names" label="COM_KA_FIELD_NAME" required="true" class="span5" filter="intval" size="11" data-ac-type="names" />

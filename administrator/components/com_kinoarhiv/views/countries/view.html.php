@@ -77,7 +77,7 @@ class KinoarhivViewCountries extends JViewLegacy {
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
-			if (!empty($this->items->id)) {
+			if (!empty($this->form->getValue('id'))) {
 				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
 			JToolbarHelper::divider();

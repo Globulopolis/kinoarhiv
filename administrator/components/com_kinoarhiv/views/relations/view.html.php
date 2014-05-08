@@ -1,9 +1,6 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivViewRelations extends JViewLegacy {
-	protected $item;
-	protected $pagination;
-	protected $state;
 	protected $form;
 	protected $task = null;
 	protected $user;
@@ -151,11 +148,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$item = $this->get('Item');
-		$form = $this->get('Form');
-
-		$this->item = &$item;
-		$this->form = &$form;
+		$this->form = $this->get('Form');
 		$this->params = &$params;
 		$this->param = $param;
 

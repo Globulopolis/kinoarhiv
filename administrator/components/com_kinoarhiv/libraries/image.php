@@ -5,20 +5,18 @@ class KAImage extends JImage {
 	 * Method to create thumbnails from the current image and save them to disk. It allows creation by resizing
 	 * or croppping the original image.
 	 *
-	 * @param	string	 $directory		  path where to find file
-	 * @param	string	 $filename		  filename
-	 * @param   mixed    $thumbSizes      string or array of strings. Example: $thumbSizes = array('150x75','250x150');
-	 * @param   integer  $creationMethod  1-3 resize $scaleMethod | 4 create croppping
-	 * @param   string   $thumbsFolder    destination thumbs folder. null generates a thumbs folder in the image folder
-	 * @param	mixed	 $thumbsName	  true for default filename, false - for default filename in component
-	 * 									  (thumb_$filename), string - custom prefix for filename
+	 * @param   string    $directory        Path where to find a file.
+	 * @param   string    $filename         Filename.
+	 * @param   mixed     $thumbSizes       String or array of strings. Example: $thumbSizes = array('150x75','250x150')
+	 * @param   integer   $creationMethod   1-3 resize $scaleMethod | 4 create croppping
+	 * @param   string    $thumbsFolder     Destination thumbs folder. null generates a thumbs folder in the image folder
+	 * @param   mixed     $thumbsName       True for default filename, false - for default filename in component (thumb_$filename), string - custom prefix for filename
 	 *
 	 * @return array
 	 *
 	 * @throws  LogicException
 	 * @throws  InvalidArgumentException
 	 *
-	 * @since 12.2
 	 */
 	public function _createThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true) {
 		$image = new JImage($directory.DIRECTORY_SEPARATOR.$filename);

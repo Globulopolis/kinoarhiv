@@ -1,5 +1,4 @@
 <?php defined('_JEXEC') or die;
-define('DS', DIRECTORY_SEPARATOR);
 
 class ImageHelper {
 	private static function rgb2array($rgb) {
@@ -20,19 +19,19 @@ class ImageHelper {
 		$id = $app->input->get('id', 0, 'int');
 
 		if ($cmd == 'rt_vote') {
-			$file = JPATH_COMPONENT.DS.'assets'.DS.'images'.DS.'rating'.DS.'rottentomatoes_blank.png';
+			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'rottentomatoes_blank.png';
 		} elseif ($cmd == 'kp_vote') {
-			$file = JPATH_COMPONENT.DS.'assets'.DS.'images'.DS.'rating'.DS.'kinopoisk_blank.png';
+			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'kinopoisk_blank.png';
 		} elseif ($cmd == 'imdb_vote') {
-			$file = JPATH_COMPONENT.DS.'assets'.DS.'images'.DS.'rating'.DS.'imdb_blank.png';
+			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'imdb_blank.png';
 		}
 
-		$font = JPATH_COMPONENT.DS.'assets'.DS.'fonts'.DS.'OpenSans-Regular.ttf';
+		$font = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'fonts'.DIRECTORY_SEPARATOR.'OpenSans-Regular.ttf';
 
 		if (file_exists($file)) {
 			list($w, $h) = getimagesize($file);
 
-			$dst_im = imagecreatetruecolor($w, $h);
+			$DIRECTORY_SEPARATORt_im = imagecreatetruecolor($w, $h);
 			$src_im = imagecreatefrompng($file);
 			imagealphablending($src_im, true);
 			imagesavealpha($src_im, true);
@@ -60,17 +59,17 @@ class ImageHelper {
 				}
 			}
 
-			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $w, $h, $w, $h);
+			imagecopyresampled($DIRECTORY_SEPARATORt_im, $src_im, 0, 0, 0, 0, $w, $h, $w, $h);
 
 			$document->setMimeEncoding('image/png');
 			JResponse::allowCache(false);
 
 			if ($cmd == 'rt_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DS.'rottentomatoes'.DS.$id.'_big.png', 1);
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
 			} elseif ($cmd == 'kp_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DS.'kinopoisk'.DS.$id.'_big.png', 1);
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
 			} elseif ($cmd == 'imdb_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DS.'imdb'.DS.$id.'_big.png', 1);
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
 			}
 
 			imagedestroy($src_im);

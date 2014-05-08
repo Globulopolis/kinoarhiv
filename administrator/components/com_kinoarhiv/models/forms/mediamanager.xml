@@ -22,6 +22,11 @@
 	</fieldset>
 
 	<field name="urls" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS" class="span12" rows="5" cols="30" spellcheck="false" />
+	<field name="screenshot" type="hidden" class="readonly" size="10" default="" readonly="true" />
+	<field name="filename" type="hidden" class="readonly" size="10" default="" readonly="true" />
+	<field name="_subtitles" type="hidden" class="readonly" size="10" default="" readonly="true" />
+	<field name="_chapters" type="hidden" class="readonly" size="10" default="" readonly="true" />
 	<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 	<field name="movie_id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
+	<field name="movie_alias" type="hidden" class="readonly" size="10" default="" readonly="true" />
 </form>

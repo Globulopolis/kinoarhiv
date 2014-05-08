@@ -1,5 +1,7 @@
 <?php defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
+//echo '<pre>';
+//print_r($this->items);
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
@@ -27,7 +29,7 @@ JHtml::_('behavior.keepalive');
 			}
 		} else if (task == 'gallery' || task == 'sounds') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -61,6 +63,7 @@ JHtml::_('behavior.keepalive');
 			}
 		});
 
+		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 		$('.cmd-rules').click(function(e){
 			e.preventDefault();
 			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
@@ -106,6 +109,7 @@ JHtml::_('behavior.keepalive');
 			});
 			dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=rules_edit&model=name&view=names&format=raw');
 		});
+		<?php endif; ?>
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
@@ -171,7 +175,7 @@ JHtml::_('behavior.keepalive');
 									<div class="control-group">
 										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
 										<div class="controls">
-										<?php if (!empty($this->items->id)): ?>
+										<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php else: ?>
 											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
@@ -187,10 +191,9 @@ JHtml::_('behavior.keepalive');
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('countries_orig', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="names" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->form->getValue('id', $this->form_edit_group)) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

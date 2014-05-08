@@ -87,8 +87,8 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
 					$_lang = new KALanguage();
 
-					$item = $this->get('Item');
-					$form = $this->get('Form');
+					$this->form = $this->get('Form');
+					$item = new JRegistry;
 					$lang = JFactory::getLanguage();
 					$page_title = $this->get('ItemTitle');
 
@@ -99,21 +99,23 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
 
-					if (count($item) > 0) {
+					if (!empty($item)) {
+						$movie_id = $app->input->get('id', 0, 'int');
+						$screenshot = $this->form->getValue('screenshot');
+						$movie_alias = $this->form->getValue('movie_alias');
+
 						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-							$item->screenshot_path_www = JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
-							$item->screenshot_folder_www = JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/';
+							$item->set('screenshot_path_www', JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+							$item->set('screenshot_folder_www', JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
 						} else {
-							$item->screenshot_path_www = $params->get('media_trailers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
-							$item->screenshot_folder_www = $params->get('media_trailers_root_www').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/';
+							$item->set('screenshot_path_www', $params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+							$item->set('screenshot_folder_www', $params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
 						}
-						$item->screenshot_path = $params->get('media_trailers_root').'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$item->screenshot;
-						$item->subtitles_lang_list = $_lang::listOfLanguages();
+						$item->set('screenshot_path', $params->get('media_trailers_root').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+						$item->set('subtitles_lang_list', $_lang::listOfLanguages());
 					}
 
-					$this->subtitles_lang_list = $_lang::listOfLanguages();
 					$this->item = &$item;
-					$this->form = &$form;
 					$this->lang = &$lang;
 
 					parent::display('upload_trailer');

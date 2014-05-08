@@ -23,11 +23,11 @@ class GlobalHelper {
 	/**
 	 * Strip text to 'limit' of 'chars'
 	 *
-	 * @param   string  $text		Text for limit.
-	 * @param   integer	$limit		Number of chars.
-	 * @param   string	$end_chr	End symbol. Default ASCII char code
+	 * @param   string    $text      Text for limit.
+	 * @param   integer   $limit     Number of chars.
+	 * @param   string    $end_chr   End symbol. Default ASCII char code
 	 *
-	 * @return  string
+	 * @return   string
 	 *
 	*/
 	static function limitText($text, $limit=400, $end_chr='&#8230;') {

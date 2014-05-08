@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-if (empty($this->items->id)):
+if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
 	return;
 endif; ?>
@@ -21,7 +21,7 @@ endif; ?>
 		r_grid_cfg.grid_height = (r_grid_cfg.grid_height < 100) ? 200 : r_grid_cfg.grid_height;
 
 		$('#list_releases').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getReleases&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getReleases&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: r_grid_cfg.grid_height,
 			width: r_grid_cfg.grid_width,
@@ -202,7 +202,7 @@ endif; ?>
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteReleases&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteReleases&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
 					$('#list_releases').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);

@@ -27,7 +27,7 @@ JHtml::_('behavior.keepalive');
 			}
 		} else if (task == 'gallery' || task == 'trailers' || task == 'sounds') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -61,6 +61,7 @@ JHtml::_('behavior.keepalive');
 			}
 		});
 
+		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 		$('.cmd-rules').click(function(e){
 			e.preventDefault();
 			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
@@ -106,6 +107,7 @@ JHtml::_('behavior.keepalive');
 			});
 			dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=rules_edit&model=movie&view=movies&format=raw');
 		});
+		<?php endif; ?>
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
@@ -189,12 +191,8 @@ JHtml::_('behavior.keepalive');
 										<div class="controls"><?php echo $this->form->getInput('show_vote', $this->form_attribs_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('trailer_collapsed', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('trailer_collapsed', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('movie_collapsed', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('movie_collapsed', $this->form_attribs_group); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('allow_reviews', $this->form_attribs_group); ?></div>
 									</div>
 								</fieldset>
 							</div>
@@ -215,7 +213,7 @@ JHtml::_('behavior.keepalive');
 									<div class="control-group">
 										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
 										<div class="controls">
-										<?php if (!empty($this->items->id)): ?>
+										<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php else: ?>
 											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
@@ -246,6 +244,14 @@ JHtml::_('behavior.keepalive');
 										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_snd', $this->form_attribs_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('tab_movie_snd', $this->form_attribs_group); ?></div>
 									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('trailer_collapsed', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('trailer_collapsed', $this->form_attribs_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('movie_collapsed', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('movie_collapsed', $this->form_attribs_group); ?></div>
+									</div>
 								</fieldset>
 							</div>
 						</div>
@@ -260,6 +266,6 @@ JHtml::_('behavior.keepalive');
 	<?php echo $this->form->getInput('tags_orig', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo !empty($this->items->id) ? $this->items->id : 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group): 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

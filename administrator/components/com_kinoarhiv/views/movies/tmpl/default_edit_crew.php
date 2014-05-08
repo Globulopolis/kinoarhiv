@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-if (empty($this->items->id)):
+if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
 	return;
 endif; ?>
@@ -21,7 +21,7 @@ endif; ?>
 		c_grid_cfg.grid_height = (c_grid_cfg.grid_height < 100) ? 200 : c_grid_cfg.grid_height;
 
 		$('#list_actors').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: c_grid_cfg.grid_height,
 			width: c_grid_cfg.grid_width,
@@ -70,7 +70,7 @@ endif; ?>
 					'<?php echo JSession::getFormToken(); ?>': 1,
 					'ids': $('#list_actors').jqGrid('getDataIDs').join(','),
 					'id': ui.item.attr('id'),
-					'item_id': <?php echo (!empty($this->items->id)) ? $this->items->id : 0; ?>
+					'item_id': <?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>
 				}, function(response){
 					if (response.success) {
 						$('#list_actors').trigger('reloadGrid');
@@ -242,7 +242,7 @@ endif; ?>
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo (!empty($this->items->id)) ? '&id='.$this->items->id : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.actors-container', response.message);
 					$('#list_actors').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

@@ -41,38 +41,61 @@ class KinoarhivViewNames extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$lang = JFactory::getLanguage();
 
-		$this->form = $this->get('Form');
-		$items = $this->get('Item');
+		$form = $this->get('Form');
+		$items = new JRegistry;
 
 		// Build title
 		$title = '';
-		if (!empty($items['name']->name)) {
-			$title .= $items['name']->name;
+		if ($form->getValue('name', 'name') != '') {
+			$title .= $form->getValue('name', 'name');
 		}
-		if (!empty($items['name']->name) && !empty($items['name']->latin_name)) {
+		if ($form->getValue('name', 'name') != '' && $form->getValue('latin_name', 'name') != '') {
 			$title .= ' / ';
 		}
-		if (!empty($items['name']->latin_name)) {
-			$title .= $items['name']->latin_name;
+		if ($form->getValue('latin_name', 'name') != '') {
+			$title .= $form->getValue('latin_name', 'name');
 		}
-		$items['name']->title = &$title;
+		$items->set('title', $title);
 
-		if (empty($items['name']->filename)) {
-			$items['name']->poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-			$items['name']->th_poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
-			$items['name']->y_poster = '';
+		if ($form->getValue('filename', 'name') == '') {
+			$items->set(
+				'poster',
+				JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png'
+			);
+			$items->set(
+				'th_poster',
+				JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png'
+			);
+			$items->set('y_poster', '');
 		} else {
+			$alias = JString::substr($form->getValue('alias', 'name'), 0, 1);
+			$item_id = $form->getValue('id', 'name');
+			$poster = $form->getValue('filename', 'name');
+
 			if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
-				$items['name']->poster = JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/'.$items['name']->filename;
-				$items['name']->th_poster = JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/thumb_'.$items['name']->filename;
+				$items->set(
+					'poster',
+					JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/'.$poster
+				);
+				$items->set(
+					'th_poster',
+					JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/thumb_'.$poster
+				);
 			} else {
-				$items['name']->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/'.$items['name']->filename;
-				$items['name']->th_poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($items['name']->alias, 0, 1).'/'.$items['name']->id.'/photo/thumb_'.$items['name']->filename;
+				$items->set(
+					'poster',
+					$params->get('media_actor_photo_root_www').'/'.$alias.'/'.$item_id.'/photo/'.$poster
+				);
+				$items->set(
+					'th_poster',
+					$params->get('media_actor_photo_root_www').'/'.$alias.'/'.$item_id.'/photo/thumb_'.$poster
+				);
 			}
-			$items['name']->y_poster = 'y-poster';
+			$items->set('y_poster', 'y-poster');
 		}
 
-		$this->items = &$items['name'];
+		$this->items = &$items;
+		$this->form = &$form;
 		$this->form_edit_group = 'name';
 		$this->form_attribs_group = 'attribs';
 		$this->params = &$params;
@@ -98,8 +121,8 @@ class KinoarhivViewNames extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			if (!empty($this->items->id)) {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.$this->items->title), 'play');
+			if ($this->form->getValue('id', $this->form_edit_group) != 0) {
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.$this->items->get('title')), 'play');
 			} else {
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
 			}

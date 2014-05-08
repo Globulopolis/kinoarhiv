@@ -30,7 +30,10 @@
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
-			<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules" component="com_kinoarhiv" section="movie" validate="rules" />
+			<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules" component="com_kinoarhiv" section="name" validate="rules" />
+
+			<field name="gid" type="hidden" class="readonly" default="0" readonly="true" />
+			<field name="filename" type="hidden" class="readonly" default="" readonly="true" />
 		</fieldset>
 	</fields>
 

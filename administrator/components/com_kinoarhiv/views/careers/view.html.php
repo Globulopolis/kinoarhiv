@@ -75,7 +75,7 @@ class KinoarhivViewCareers extends JViewLegacy {
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
-			if (!empty($this->form->getValue('id'))) {
+			if ($this->form->getValue('id') != 0) {
 				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
 			JToolbarHelper::divider();

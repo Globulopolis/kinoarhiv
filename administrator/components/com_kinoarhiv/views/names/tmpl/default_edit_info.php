@@ -74,7 +74,7 @@
 			update: function() { $("#form_name_genres").select2('onSortEnd'); }
 		});
 
-		<?php if (!empty($this->form->getValue('id', $this->form_edit_group))): ?>
+		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 		$('.movie-poster-preview').parent().click(function(e){
 			e.preventDefault();
 
@@ -89,7 +89,7 @@
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
+			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
 			multipart_params: {
 				'<?php echo JSession::getFormToken(); ?>': 1
 			},
@@ -120,12 +120,12 @@
 					var url = '<?php echo (JString::substr($this->params->get('media_posters_root_www'), 0, 1) == '/') ? JURI::root().JString::substr($this->params->get('media_posters_root_www'), 1).'/'.JString::substr($this->form->getValue('alias', $this->form_edit_group), 0, 1).'/'.$this->form->getValue('id', $this->form_edit_group).'/posters/' : $this->params->get('media_posters_root_www').'/'.JString::substr($this->form->getValue('alias', $this->form_edit_group), 0, 1).'/'.$this->form->getValue('id', $this->form_edit_group).'/posters/'; ?>';
 
 					blockUI('show');
-					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
+					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
 						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
 					).done(function(response){
 						$('img.movie-poster-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
 						$('img.movie-poster-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
-						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');
+						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');
 						blockUI();
 						$('.layout_img_upload').dialog('close');
 					}).fail(function(xhr, status, error){
@@ -267,7 +267,7 @@
 			</fieldset>
 		</div>
 		<div class="span3">
-			<?php if (!empty($this->form->getValue('id', $this->form_edit_group))): ?>
+			<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 			<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="movie-poster-preview <?php echo $this->items->get('y_poster'); ?>" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
 			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
@@ -278,7 +278,7 @@
 				<div class="control-label"><?php echo $this->form->getLabel('birthcountry', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('birthcountry', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>
@@ -291,7 +291,7 @@
 				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo (!empty($this->form->getValue('id', $this->form_edit_group))) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 			<div class="control-group">

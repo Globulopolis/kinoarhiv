@@ -401,7 +401,7 @@
 				<div class="controls">
 					<div class="input-append">
 						<?php echo $this->form->getInput('alias', $this->form_edit_group); ?>
-						<?php if (!empty($this->form->getValue('id', $this->form_edit_group))): ?><button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i></button><?php endif; ?>
+						<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?><button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i></button><?php endif; ?>
 						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>

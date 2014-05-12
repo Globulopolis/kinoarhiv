@@ -284,3 +284,7 @@ img.movie-poster-preview.y-poster {
 .trailer-image-upload li.plupload_droptext {
 	line-height: 165px;
 }
+
+#list_awards a {
+	text-decoration: underline;
+}

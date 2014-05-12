@@ -19,11 +19,7 @@
 			},
 			<?php if ($this->form->getValue('birthcountry', $this->form_edit_group) != 0): ?>
 			initSelection: function(element, callback){
-				var data = {
-					id: <?php echo (int)$this->form->getValue('birthcountry', $this->form_edit_group); ?>,
-					code: '<?php echo $this->items->country_code; ?>',
-					title: '<?php echo $this->items->country; ?>'
-				};
+				var data = <?php echo json_encode($this->form->getValue('birthcountry', $this->form_edit_group)); ?>;
 				callback(data);
 			},
 			<?php endif; ?>
@@ -55,9 +51,9 @@
 					return { results: data };
 				}
 			},
-			<?php if (isset($this->items->genres)): ?>
+			<?php if ($this->form->getValue('genres', $this->form_edit_group) != ''): ?>
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->items->genres['data']); ?>;
+				var data = <?php echo json_encode($this->form->getValue('genres', $this->form_edit_group)['data']); ?>;
 				callback(data);
 			},
 			<?php endif; ?>
@@ -72,6 +68,36 @@
 			containment: 'parent',
 			start: function() { $("#form_name_genres").select2('onSortStart'); },
 			update: function() { $("#form_name_genres").select2('onSortEnd'); }
+		});
+
+		$('#form_name_careers').select2({
+			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
+			quietMillis: 100,
+			minimumInputLength: 1,
+			multiple: true,
+			ajax: {
+				cache: true,
+				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=careers&format=json',
+				data: function(term, page){
+					return { term: term, showAll: 0 }
+				},
+				results: function(data, page){
+					return { results: data };
+				}
+			},
+			<?php if ($this->form->getValue('careers', $this->form_edit_group) != ''): ?>
+			initSelection: function(element, callback){
+				var data = <?php echo json_encode($this->form->getValue('careers', $this->form_edit_group)['data']); ?>;
+				callback(data);
+			},
+			<?php endif; ?>
+			formatResult: function(data){
+				return data.title;
+			},
+			formatSelection: function(data, container){
+				return data.title;
+			},
+			escapeMarkup: function(m) { return m; }
 		});
 
 		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
@@ -244,6 +270,13 @@
 				<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
 			</div>
 			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('careers', $this->form_edit_group); ?></div>
+				<div class="controls">
+					<?php echo $this->form->getInput('careers', $this->form_edit_group); ?>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+				</div>
+			</div>
+			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('birthplace', $this->form_edit_group); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('birthplace', $this->form_edit_group); ?></div>
 			</div>
@@ -261,8 +294,12 @@
 					<div class="controls"><?php echo $this->form->getInput('date_of_death', $this->form_edit_group); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('budget', $this->form_edit_group); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('budget', $this->form_edit_group); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('gender', $this->form_edit_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('gender', $this->form_edit_group); ?></div>
+				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('height', $this->form_edit_group); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('height', $this->form_edit_group); ?></div>
 				</div>
 			</fieldset>
 		</div>
@@ -276,10 +313,7 @@
 		<fieldset class="form-horizontal">
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('birthcountry', $this->form_edit_group); ?></div>
-				<div class="controls">
-					<?php echo $this->form->getInput('birthcountry', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&mid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
-				</div>
+				<div class="controls"><?php echo $this->form->getInput('birthcountry', $this->form_edit_group); ?></div>
 			</div>
 		</fieldset>
 	</div>
@@ -295,16 +329,8 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('known', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('known', $this->form_edit_group); ?></div>
-			</div>
-			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('desc', $this->form_edit_group); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('desc', $this->form_edit_group); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('urls', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('urls', $this->form_edit_group); ?></div>
 			</div>
 		</fieldset>
 	</div>

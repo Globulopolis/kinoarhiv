@@ -156,8 +156,7 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="allow_reviews" type="list" label="COM_KA_FIELD_AP_MOVIE_ALLOW_REVIEWS_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
+		<field name="allow_reviews" type="list" default="1" label="COM_KA_FIELD_AP_MOVIE_ALLOW_REVIEWS_LABEL">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

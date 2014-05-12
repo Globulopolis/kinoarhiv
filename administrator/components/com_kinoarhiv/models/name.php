@@ -52,12 +52,12 @@ class KinoarhivModelName extends JModelForm {
 				$result->type = $app->input->get('career_id', 0, 'int');
 			}*/
 		} elseif ($tmpl == 'awards_edit') {
-			/*$award_id = $app->input->get('award_id', 0, 'int');
+			$award_id = $app->input->get('award_id', 0, 'int');
 
 			$db->setQuery("SELECT `id` AS `rel_aw_id`, `item_id`, `award_id`, `desc` AS `aw_desc`, `year` AS `aw_year`"
 				. "\n FROM ".$db->quoteName('#__ka_rel_awards')
 				. "\n WHERE `id` = ".(int)$award_id);
-			$result = $db->loadObject();*/
+			$result = $db->loadObject();
 		} else {
 			$result = array('name'=>(object)array());
 			if (count($id) == 0 || empty($id) || empty($id[0])) {
@@ -74,6 +74,13 @@ class KinoarhivModelName extends JModelForm {
 
 			$result['name']->genres = $this->getGenres();
 			$result['name']->genres_orig = implode(',', $result['name']->genres['ids']);
+			$result['name']->careers = $this->getCareers();
+
+			$result['name']->birthcountry = array(
+				'id' => $result['name']->birthcountry,
+				'code' => $result['name']->country_code,
+				'title' => $result['name']->country
+			);
 
 			if (!empty($result['name']->attribs)) {
 				$result['attribs'] = json_decode($result['name']->attribs);
@@ -92,6 +99,24 @@ class KinoarhivModelName extends JModelForm {
 		$db->setQuery("SELECT `g`.`id`, `g`.`name` AS `title`"
 			. "\n FROM ".$db->quoteName('#__ka_genres')." AS `g`"
 			. "\n WHERE `id` IN (SELECT `genre_id` FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` = ".(int)$id[0].")");
+		$result['data'] = $db->loadObjectList();
+
+		foreach ($result['data'] as $value) {
+			$result['ids'][] = $value->id;
+		}
+
+		return $result;
+	}
+
+	protected function getCareers() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$id = $app->input->get('id', array(), 'array');
+		$result = array('data'=>array(), 'ids'=>array());
+
+		$db->setQuery("SELECT `c`.`id`, `c`.`title`"
+			. "\n FROM ".$db->quoteName('#__ka_names_career')." AS `c`"
+			. "\n WHERE `id` IN (SELECT `career_id` FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `name_id` = ".(int)$id[0].")");
 		$result['data'] = $db->loadObjectList();
 
 		foreach ($result['data'] as $value) {
@@ -205,6 +230,103 @@ class KinoarhivModelName extends JModelForm {
 		} else {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
 		}
+	}
+
+	public function getAwards() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$id = $app->input->get('id', null, 'int');
+		$orderby = $app->input->get('sidx', '1', 'string');
+		$order = $app->input->get('sord', 'asc', 'word');
+		$limit = $app->input->get('rows', 50, 'int');
+		$page = $app->input->get('page', 0, 'int');
+		$search_field = $app->input->get('searchField', '', 'string');
+		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
+		$search_string = $app->input->get('searchString', '', 'string');
+		$limitstart = $limit * $page - $limit;
+		$result = (object)array('rows'=>array());
+		$where = "";
+
+		if (!empty($search_string)) {
+			$where .= " AND ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+		}
+
+		$db->setQuery("SELECT COUNT(`rel`.`id`)"
+			. "\n FROM ".$db->quoteName('#__ka_rel_awards')." AS `rel`"
+			. "\n WHERE `rel`.`item_id` = ".(int)$id." AND `type` = 1".$where);
+		$total = $db->loadResult();
+
+		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $total_pages) ? $total_pages : $page;
+
+		$db->setQuery("SELECT `rel`.`id`, `rel`.`item_id`, `rel`.`award_id`, `rel`.`desc`, `rel`.`year`, `rel`.`type`, `aw`.`title`"
+			. "\n FROM ".$db->quoteName('#__ka_rel_awards')." AS `rel`"
+			. "\n LEFT JOIN ".$db->quoteName('#__ka_awards')." AS `aw` ON `aw`.`id` = `rel`.`award_id`"
+			. "\n WHERE `rel`.`item_id` = ".(int)$id." AND `type` = 1".$where
+			. "\n ORDER BY ".$db->quoteName($orderby).' '.strtoupper($order), $limitstart, $limit);
+		$rows = $db->loadObjectList();
+
+		$k = 0;
+		foreach ($rows as $elem) {
+			$result->rows[$k]['id'] = $elem->id.'_'.$elem->item_id.'_'.$elem->award_id;
+			$result->rows[$k]['cell'] = array(
+				'id'		=> $elem->id,
+				'award_id'	=> $elem->award_id,
+				'title'		=> $elem->title,
+				'year'		=> $elem->year,
+				'desc'		=> $elem->desc
+			);
+
+			$k++;
+		}
+
+		$result->page = $page;
+		$result->total = $total_pages;
+		$result->records = $total;
+
+		return $result;
+	}
+
+	public function deleteRelAwards() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$data = $app->input->post->get('data', array(), 'array');
+		$query = true;
+
+		if (count($data) <= 0) {
+			return array('success'=>false, 'message'=>JText::_('JERROR_NO_ITEMS_SELECTED'));
+		}
+
+		$db->setDebug(true);
+		$db->lockTable('#__ka_rel_awards');
+		$db->transactionStart();
+
+		foreach ($data as $key=>$value) {
+			$ids = explode('_', substr($value['name'], 16));
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `id` = ".(int)$ids[0].";");
+			$result = $db->execute();
+
+			if ($result === false) {
+				$query = false;
+				break;
+			}
+		}
+
+		if ($query === false) {
+			$db->transactionRollback();
+			$success = false;
+			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
+		} else {
+			$db->transactionCommit();
+			$success = true;
+			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		return array('success'=>$success, 'message'=>$message);
 	}
 
 	/**

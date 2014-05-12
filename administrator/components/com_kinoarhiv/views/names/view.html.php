@@ -44,6 +44,11 @@ class KinoarhivViewNames extends JViewLegacy {
 		$form = $this->get('Form');
 		$items = new JRegistry;
 
+		if (count($errors = $this->get('Errors'))) {
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+			return false;
+		}
+
 		// Build title
 		$title = '';
 		if ($form->getValue('name', 'name') != '') {
@@ -133,7 +138,6 @@ class KinoarhivViewNames extends JViewLegacy {
 			JToolbarHelper::cancel();
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
-			JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE')), 'users');
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {

@@ -731,12 +731,13 @@ class KinoarhivModelRelations extends JModelForm {
 			'form'=>array(
 				'id' =>			'int',
 				'award_id'=>	'array',
-				'desc'=>		'string',
+				'desc'=>		'raw',
 				'year'=>		'int'
 			)
 		), $_POST);
 		$isNew = $app->input->post->get('new', 1, 'int');
-		$movie_id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('id', 0, 'int');
+		$type = $app->input->get('type', 0, 'int');
 		$message = '';
 
 		if (empty($data['form']['award_id']) || count($data['form']['award_id']) == 0) {
@@ -745,7 +746,7 @@ class KinoarhivModelRelations extends JModelForm {
 
 		if ($isNew == 1) {
 			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_awards')." (`id`, `item_id`, `award_id`, `desc`, `year`, `type`)"
-				. "\n VALUES ('', '".(int)$movie_id."', '".(int)$data['form']['award_id'][0]."', '".$db->escape($data['form']['desc'])."', '".$data['form']['year']."', '0')");
+				. "\n VALUES ('', '".(int)$item_id."', '".(int)$data['form']['award_id'][0]."', '".$db->escape($data['form']['desc'])."', '".$data['form']['year']."', '".(int)$type."')");
 			$query = $db->execute();
 
 			if ($query !== true) {

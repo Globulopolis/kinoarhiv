@@ -9,6 +9,7 @@ if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_revie
 		$custom_review_comp = true;
 	}
 }
+
 if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/') {
 	$rating_image_www = JURI::base().JString::substr($this->params->get('media_rating_image_root_www'), 1);
 } else {

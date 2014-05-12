@@ -21,6 +21,7 @@ class JFormFieldCountries extends JFormField {
 		$maxLength = $this->element['maxlength'] ? ' maxlength="' . (int) $this->element['maxlength'] . '"' : '';
 		$class .= $this->element['class'] ? (string)$this->element['class'] : '';
 		$readonly = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
+		$multiple = ((string) $this->element['multiple'] == 'true') ? true : false;
 		$disabled = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$required = $this->required ? ' required aria-required="true"' : '';
 		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="'.$this->element['data-ac-type'].'"' : '';
@@ -29,7 +30,11 @@ class JFormFieldCountries extends JFormField {
 		if (isset($this->value['ids']) && is_array($this->value['ids'])) {
 			$value = implode(',', $this->value['ids']);
 		} else {
-			$value = $this->value;
+			if ($multiple) {
+				$value = $this->value;
+			} else {
+				$value = (int)$this->value;
+			}
 		}
 
 		// Initialize JavaScript field attributes.

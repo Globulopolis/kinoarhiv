@@ -21,7 +21,7 @@ endif; ?>
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
 
 		$('#list_awards').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=names&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
 			width: aw_grid_cfg.grid_width,
@@ -85,7 +85,7 @@ endif; ?>
 
 								$.ajax({
 									type: 'POST',
-									url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelAwards&format=json&id=' + $('#id').val(),
+									url: 'index.php?option=com_kinoarhiv&controller=names&task=saveRelAwards&format=json&type=1&id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
 										'form[award_id]':	$('#form_award_id').select2('val'),
@@ -113,7 +113,7 @@ endif; ?>
 						}
 					]
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=movie&view=movies&format=raw');
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=name&view=names&format=raw');
 			} else if ($(this).hasClass('e')) {
 				// Load 'Edit item' layout
 				var items = $('#list_awards .cbox').filter(':checked');
@@ -153,7 +153,7 @@ endif; ?>
 
 									$.ajax({
 										type: 'POST',
-										url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelAwards&format=json&id=' + $('#id').val(),
+										url: 'index.php?option=com_kinoarhiv&controller=names&task=saveRelAwards&format=json&type=1&id=' + $('#id').val(),
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
 											'form[id]':			$('#form_rel_aw_id').val(),
@@ -182,7 +182,7 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=movie&view=movies&format=raw&award_id='+ids[0]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=name&view=names&format=raw&award_id='+ids[0]+'#edit');
 				} else {
 					showMsg('.awards-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}
@@ -198,7 +198,7 @@ endif; ?>
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=names&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.awards-container', response.message);
 					$('#list_awards').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

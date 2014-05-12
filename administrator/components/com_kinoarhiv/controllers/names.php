@@ -253,4 +253,42 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 		echo json_encode($result);
 	}
+
+	public function getAwards() {
+		$document = JFactory::getDocument();
+		$document->setName('response');
+
+		$model = $this->getModel('name');
+		$result = $model->getAwards();
+
+		echo json_encode($result);
+	}
+
+	public function saveRelAwards() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv')) {
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		$document = JFactory::getDocument();
+		$document->setName('response');
+
+		$model = $this->getModel('relations');
+		$result = $model->saveRelAwards();
+
+		echo json_encode($result);
+	}
+
+	public function deleteRelAwards() {
+		$document = JFactory::getDocument();
+		$document->setName('response');
+
+		$model = $this->getModel('name');
+		$result = $model->deleteRelAwards();
+
+		echo json_encode($result);
+	}
 }

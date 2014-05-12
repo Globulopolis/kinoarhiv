@@ -1,7 +1,5 @@
 <?php defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
-//echo '<pre>';
-//print_r($this->items);
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
@@ -27,7 +25,7 @@ JHtml::_('behavior.keepalive');
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
-		} else if (task == 'gallery' || task == 'sounds') {
+		} else if (task == 'gallery') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
 			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
 			var handler = window.open(url);
@@ -127,7 +125,7 @@ JHtml::_('behavior.keepalive');
 						<?php echo $this->loadTemplate('edit_info'); ?>
 					</div>
 					<div id="page-awards">
-						<?php //echo $this->loadTemplate('edit_awards'); ?>
+						<?php echo $this->loadTemplate('edit_awards'); ?>
 					</div>
 					<div id="page-meta">
 						<?php echo $this->loadTemplate('edit_meta'); ?>

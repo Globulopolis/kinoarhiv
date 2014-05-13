@@ -308,6 +308,10 @@ $name_id = $input->get('name_id', 0, 'int');
 				<div class="controls"><?php echo $this->form->getInput('n_date_of_birth'); ?></div>
 			</div>
 			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('n_gender'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('n_gender'); ?></div>
+			</div>
+			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('n_language'); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('n_language'); ?></div>
 			</div>

@@ -126,6 +126,190 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
+	public function apply($data) {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		$id = $app->input->get('id', 0, 'int');
+		$data = $data['name'];
+		$metadata = array('robots' => $data['robots']);
+		$attribs = json_encode($app->input->post->get('form', array(), 'array')['attribs']);
+
+		// Proccess genres IDs and store in relation table
+		if (!empty($data['genres'])) {
+			/*$genres_new_arr = explode(',', $data['genres']);
+			$query = true;
+			$db->lockTable('#__ka_rel_names_genres');
+			$db->transactionStart();
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` = ".(int)$id);
+			$db->execute();
+
+			foreach ($genres_new_arr as $genre_id) {
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_genres')." (`genre_id`, `name_id`,) VALUES ('".(int)$genre_id."', '".(int)$id."');");
+				$result = $db->execute();
+
+				if ($result === false) {
+					$query = false;
+					break;
+				}
+			}
+
+			if ($query === false) {
+				$db->transactionRollback();
+				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_names_genres" failed!');
+				$db->unlockTables();
+				return false;
+			} else {
+				$db->transactionCommit();
+				$db->unlockTables();
+			}*/
+		}
+
+		if (empty($data['alias'])) {
+			if (!empty($data['latin_name'])) {
+				$alias = JFilterOutput::stringURLSafe($data['latin_name']);
+			} else {
+				$alias = JFilterOutput::stringURLSafe($data['name']);
+			}
+		} else {
+			$alias = JFilterOutput::stringURLSafe($data['alias']);
+		}
+
+		if (empty($id)) {
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names')
+				. " (`id`, `asset_id`, `name`, `latin_name`, `alias`, `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `attribs`, `ordering`, `state`, `access`, `metakey`, `metadesc`, `metadata`, `language`)"
+				. "\n VALUES ('', '0', '".$db->escape($data['name'])."', '".$db->escape($data['latin_name'])."', '".$alias."', '".$data['date_of_birth']."', '".$data['date_of_death']."', '".$db->escape($data['birthplace'])."', '".(int)$data['birthcountry']."', '".(int)$data['gender']."', '".$db->escape($data['height'])."', '".$db->escape($data['desc'])."', '".$attribs."', '".(int)$data['ordering']."', '".$data['state']."', '".(int)$data['access']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".json_encode($metadata)."', '".$data['language']."'");
+		} else {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')
+				. "\n SET `name` = '".$db->escape($data['name'])."', `latin_name` = '".$db->escape($data['latin_name'])."', `alias` = '".$alias."', `date_of_birth` = '".$data['date_of_birth']."', `date_of_death` = '".$data['date_of_death']."', `birthplace` = '".$db->escape($data['birthplace'])."', `birthcountry` = '".(int)$data['birthcountry']."', `gender` = '".(int)$data['gender']."', `height` = '".$db->escape($data['height'])."', `desc` = '".$db->escape($data['desc'])."', `attribs` = '".$attribs."', `ordering` = '".(int)$data['ordering']."', `state` = '".$data['state']."', `access` = '".(int)$data['access']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
+				. "\n WHERE `id` = ".(int)$id);
+		}
+
+		try {
+			$db->execute();
+
+			if (empty($id)) {
+				$insertid = $db->insertid();
+				$app->input->set('id', array($insertid)); // Need to proper redirect to edited item
+
+				// Create access rules
+				$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+				$parent_id = $db->loadResult();
+
+				$db->setQuery("SELECT MAX(`lft`)+2 AS `lft`, MAX(`rgt`)+2 AS `rgt` FROM ".$db->quoteName('#__assets'));
+				$lft_rgt = $db->loadObject();
+
+				$asset_title = !empty($data['latin_name']) ? $data['latin_name'] : $data['name'];
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
+					. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
+					. "\n VALUES ('', '".$parent_id."', '".$lft_rgt->lft."', '".$lft_rgt->rgt."', '2', 'com_kinoarhiv.name.".$insertid."', '".$db->escape($asset_title)."', '{}')");
+				$db->execute();
+				$asset_id = $db->insertid();
+
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')
+					. "\n SET `asset_id` = '".(int)$asset_id."'"
+					. "\n WHERE `id` = ".(int)$insertid);
+				$db->execute();
+			} else {
+				$app->input->set('id', array($id));
+
+				// Alias was changed? Move all linked items into new filesystem location.
+				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
+					//$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
+				}
+			}
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Method to move all media items which is linked to the name into a new location, if name alias was changed.
+	 *
+	 * @param   int      $id          Name ID.
+	 * @param   string   $old_alias   Old name alias.
+	 * @param   string   $new_alias   New name alias.
+	 * @param   object   $params      Component parameters.
+	 *
+	 * @return  boolean   True on success
+	 *
+	*/
+	protected function moveMediaItems($id, $old_alias, $new_alias, &$params) {
+		if (empty($id) || empty($old_alias) || empty($new_alias)) {
+			$this->setError('Name ID or alias cannot be empty!');
+
+			return false;
+		} else {
+			jimport('joomla.filesystem.folder');
+			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
+			$fs_helper = new KAFilesystemHelper;
+
+			$error = false;
+			$old_alias = JString::substr($old_alias, 0, 1);
+			$new_alias = JString::substr($new_alias, 0, 1);
+
+			// Move gallery items
+			$path_poster = $params->get('media_posters_root');
+			$path_wallpp = $params->get('media_wallpapers_root');
+			$path_screen = $params->get('media_scr_root');
+			$old_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
+			$old_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
+			$old_folder_screen = $path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'screenshots';
+			$new_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
+			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
+			$new_folder_screen = $path_screen.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'screenshots';
+
+			if (!KAFilesystemHelper::move(
+				array($old_folder_poster, $old_folder_wallpp, $old_folder_screen),
+				array($new_folder_poster, $new_folder_wallpp, $new_folder_screen))
+				) {
+				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
+			}
+
+			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
+			if ($fs_helper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+			if ($fs_helper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+			if ($fs_helper::getFolderSize($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+
+			// Move trailers and their content
+			$path_trailers = $params->get('media_trailers_root');
+			$old_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id;
+			$new_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id;
+
+			if (KAFilesystemHelper::move($old_folder_trailers, $new_folder_trailers, true)) {
+				if ($fs_helper::getFolderSize($old_folder_trailers) === 0) {
+					if (file_exists($old_folder_trailers)) {
+						JFolder::delete($old_folder_trailers);
+					}
+				}
+			} else {
+				$this->setError('Error while moving the files from trailer folders into new location! See log for more information.');
+			}
+		}
+
+		return true;
+	}
+
 	public function quickSave() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -134,12 +318,13 @@ class KinoarhivModelName extends JModelForm {
 		$name = 'n_name';
 		$latin_name = 'n_latin_name';
 		$date_of_birth = 'n_date_of_birth';
+		$gender = 'n_gender';
 		$ordering = 'n_ordering';
 		$language = 'n_language';
 
 		$data = $app->input->getArray(array(
 			'form'=>array(
-				$name=>'string', $latin_name=>'string', $date_of_birth=>'string', $ordering=>'int', $language=>'string'
+				$name=>'string', $latin_name=>'string', $date_of_birth=>'string', $gender=>'int', $ordering=>'int', $language=>'string'
 			)
 		));
 		$name = $data['form']['n_name'];
@@ -158,7 +343,7 @@ class KinoarhivModelName extends JModelForm {
 			. "\n `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `ordering`, `state`, "
 			. "\n `access`, `metakey`, `metadesc`, `metadata`, `language`)"
 			. "\n VALUES ('', '0', '".$db->escape($name)."', '".$db->escape($latin_name)."', '".JFilterOutput::stringURLSafe($alias)."', '', "
-			. "\n '".$date_of_birth."', '', '', '', '', '', '', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
+			. "\n '".$date_of_birth."', '', '', '', '".$gender."', '', '', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
 		$query = $db->execute();
 
 		if ($query !== true) {

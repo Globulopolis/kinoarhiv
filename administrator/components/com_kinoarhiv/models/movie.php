@@ -230,7 +230,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 			if ($query === false) {
 				$db->transactionRollback();
-				$this->setError('Commit for "#__ka_rel_countries" failed!');
+				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_countries" failed!');
 				$db->unlockTables();
 				return false;
 			} else {
@@ -272,7 +272,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 			if ($query === false) {
 				$db->transactionRollback();
-				$this->setError('Commit for "#__ka_rel_genres" failed!');
+				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_genres" failed!');
 				$db->unlockTables();
 				return false;
 			} else {

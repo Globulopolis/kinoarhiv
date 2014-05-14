@@ -190,6 +190,7 @@ JHtml::_('behavior.keepalive');
 	</div>
 
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
+	<?php echo $this->form->getInput('careers_orig', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="names" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" />

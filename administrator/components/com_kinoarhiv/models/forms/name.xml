@@ -8,8 +8,8 @@
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
 			<field name="alias_orig" type="hidden" />
 
-			<field name="date_of_birth" type="datetime" default="NOW" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span10" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
-			<field name="date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span10" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+			<field name="date_of_birth" type="datetime" default="NOW" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+			<field name="date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
 			<field name="height" type="text" label="COM_KA_FIELD_NAME_HEIGHT" class="span9" size="45" />
 			<field name="gender" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_NAME_GENDER_LABEL" filter="integer">
 				<option value="1">COM_KA_FIELD_NAME_GENDER_M</option>
@@ -17,10 +17,11 @@
 			</field>
 			<field name="desc" type="editor" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
 			<field name="birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string" />
-			<field name="birthcountry" type="countries" default="" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11" filter="string" data-ac-type="countries" multiple="false" />
+			<field name="birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11" filter="intval" data-ac-type="countries" multiple="false" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_NAME_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
 			<field name="genres_orig" type="hidden" />
 			<field name="careers" type="careers" default="" label="COM_KA_FIELD_NAME_CAREER" description="COM_KA_FIELD_NAME_CAREER_DESC" class="span11" filter="string" data-ac-type="careers" />
+			<field name="careers_orig" type="hidden" />
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">

@@ -75,12 +75,7 @@ class KinoarhivModelName extends JModelForm {
 			$result['name']->genres = $this->getGenres();
 			$result['name']->genres_orig = implode(',', $result['name']->genres['ids']);
 			$result['name']->careers = $this->getCareers();
-
-			$result['name']->birthcountry = array(
-				'id' => $result['name']->birthcountry,
-				'code' => $result['name']->country_code,
-				'title' => $result['name']->country
-			);
+			$result['name']->careers_orig = implode(',', $result['name']->careers['ids']);;
 
 			if (!empty($result['name']->attribs)) {
 				$result['attribs'] = json_decode($result['name']->attribs);
@@ -137,8 +132,9 @@ class KinoarhivModelName extends JModelForm {
 		$attribs = json_encode($app->input->post->get('form', array(), 'array')['attribs']);
 
 		// Proccess genres IDs and store in relation table
-		if (!empty($data['genres'])) {
-			/*$genres_new_arr = explode(',', $data['genres']);
+		if (!empty($data['genres']) && ($data['genres_orig'] != $data['genres'])) {
+			$genres_arr = explode(',', $data['genres']);
+
 			$query = true;
 			$db->lockTable('#__ka_rel_names_genres');
 			$db->transactionStart();
@@ -146,8 +142,8 @@ class KinoarhivModelName extends JModelForm {
 			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` = ".(int)$id);
 			$db->execute();
 
-			foreach ($genres_new_arr as $genre_id) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_genres')." (`genre_id`, `name_id`,) VALUES ('".(int)$genre_id."', '".(int)$id."');");
+			foreach ($genres_arr as $genre_id) {
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_names_genres')." (`genre_id`, `name_id`) VALUES ('".(int)$genre_id."', '".(int)$id."');");
 				$result = $db->execute();
 
 				if ($result === false) {
@@ -164,7 +160,39 @@ class KinoarhivModelName extends JModelForm {
 			} else {
 				$db->transactionCommit();
 				$db->unlockTables();
-			}*/
+			}
+		}
+
+		// Proccess careers IDs and store in relation table
+		if (!empty($data['careers']) && ($data['careers_orig'] != $data['careers'])) {
+			$careers_arr = explode(',', $data['careers']);
+
+			$query = true;
+			$db->lockTable('#__ka_rel_names_career');
+			$db->transactionStart();
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `name_id` = ".(int)$id);
+			$db->execute();
+
+			foreach ($careers_arr as $career_id) {
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_names_career')." (`career_id`, `name_id`) VALUES ('".(int)$career_id."', '".(int)$id."');");
+				$result = $db->execute();
+
+				if ($result === false) {
+					$query = false;
+					break;
+				}
+			}
+
+			if ($query === false) {
+				$db->transactionRollback();
+				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_names_career" failed!');
+				$db->unlockTables();
+				return false;
+			} else {
+				$db->transactionCommit();
+				$db->unlockTables();
+			}
 		}
 
 		if (empty($data['alias'])) {
@@ -182,6 +210,7 @@ class KinoarhivModelName extends JModelForm {
 				. " (`id`, `asset_id`, `name`, `latin_name`, `alias`, `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `attribs`, `ordering`, `state`, `access`, `metakey`, `metadesc`, `metadata`, `language`)"
 				. "\n VALUES ('', '0', '".$db->escape($data['name'])."', '".$db->escape($data['latin_name'])."', '".$alias."', '".$data['date_of_birth']."', '".$data['date_of_death']."', '".$db->escape($data['birthplace'])."', '".(int)$data['birthcountry']."', '".(int)$data['gender']."', '".$db->escape($data['height'])."', '".$db->escape($data['desc'])."', '".$attribs."', '".(int)$data['ordering']."', '".$data['state']."', '".(int)$data['access']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".json_encode($metadata)."', '".$data['language']."'");
 		} else {
+		echo $data['birthcountry'];
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')
 				. "\n SET `name` = '".$db->escape($data['name'])."', `latin_name` = '".$db->escape($data['latin_name'])."', `alias` = '".$alias."', `date_of_birth` = '".$data['date_of_birth']."', `date_of_death` = '".$data['date_of_death']."', `birthplace` = '".$db->escape($data['birthplace'])."', `birthcountry` = '".(int)$data['birthcountry']."', `gender` = '".(int)$data['gender']."', `height` = '".$db->escape($data['height'])."', `desc` = '".$db->escape($data['desc'])."', `attribs` = '".$attribs."', `ordering` = '".(int)$data['ordering']."', `state` = '".$data['state']."', `access` = '".(int)$data['access']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
 				. "\n WHERE `id` = ".(int)$id);

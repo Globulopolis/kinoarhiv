@@ -17,12 +17,19 @@
 					return { results: data };
 				}
 			},
-			<?php if ($this->form->getValue('birthcountry', $this->form_edit_group) != 0): ?>
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->form->getValue('birthcountry', $this->form_edit_group)); ?>;
-				callback(data);
+				var id = $(element).val();
+
+				if (!empty(id)) {
+					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json', {
+						data: {
+							id: id
+						}
+					}).done(function(data){
+						callback(data);
+					});
+				}
 			},
-			<?php endif; ?>
 			formatResult: function(data){
 				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
@@ -273,7 +280,9 @@
 				<div class="control-label"><?php echo $this->form->getLabel('careers', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('careers', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php endif; ?>
 				</div>
 			</div>
 			<div class="control-group">
@@ -325,7 +334,9 @@
 				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<?php endif; ?>
 				</div>
 			</div>
 			<div class="control-group">

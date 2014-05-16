@@ -147,7 +147,7 @@ class KinoarhivModelName extends JModelList {
 
 		$result = $this->getNameData();
 
-		$db->setQuery("SELECT `a`.`desc`, `a`.`year`, `aw`.`title` AS `aw_title`, `aw`.`desc` AS `aw_desc`"
+		$db->setQuery("SELECT `a`.`desc`, `a`.`year`, `aw`.`id`, `aw`.`title` AS `aw_title`, `aw`.`desc` AS `aw_desc`"
 			. "\n FROM ".$db->quoteName('#__ka_rel_awards')." AS `a`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_awards')." AS `aw` ON `aw`.`id` = `a`.`award_id`"
 			. "\n WHERE `type` = 1 AND `item_id` = ".(int)$id

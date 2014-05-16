@@ -4,7 +4,7 @@ class GlobalHelper {
 	static function setHeadTags() {
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($document->getType() != 'html') {
 			return;
@@ -75,8 +75,7 @@ class GlobalHelper {
 	 *
 	*/
 	static function cleanHTML($text, $tags='', $extra=array()) {
-		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$cache_path = JPATH_CACHE.DIRECTORY_SEPARATOR.'kinoarhiv'.DIRECTORY_SEPARATOR.'DefinitionCache'.DIRECTORY_SEPARATOR.'Serializer';
 		
 		require_once(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'htmlpurifier'.DIRECTORY_SEPARATOR.'HTMLPurifier.standalone.php');
@@ -208,8 +207,7 @@ class GlobalHelper {
 	 * @param   mixed    $silent    Throw exception error or not. True - throw, false - not, 'ui' - show message.
 	*/
 	static function eventLog($message, $silent = true) {
-		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$uri = JURI::getInstance();
 
 		$message = $message."\t".$uri->current().'?'.$uri->getQuery();

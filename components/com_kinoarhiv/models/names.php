@@ -47,7 +47,7 @@ class KinoarhivModelNames extends JModelList {
 		$where = '`n`.`state` = 1 AND `n`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `n`.`access` IN ('.$groups.')';
 
 		$query->where($where);
-		$query->group('`id`');
+		$query->group($db->quoteName('n.id'));
 
 		$orderCol = $this->state->get('list.ordering', '`ordering`');
 		$orderDirn = $this->state->get('list.direction', 'DESC');

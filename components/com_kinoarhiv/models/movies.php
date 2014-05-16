@@ -57,8 +57,10 @@ class KinoarhivModelMovies extends JModelList {
 
 		$query->where($where);
 
-		$orderCol = $this->state->get('list.ordering', 'm.ordering');
-		$orderDirn = $this->state->get('list.direction', 'desc');
+		$query->group($db->quoteName('m.id')); // Prevent duplicate records if accidentally have a more than one poster for frontpage.
+
+		$orderCol = $this->state->get('list.ordering', $db->quoteName('m.ordering'));
+		$orderDirn = $this->state->get('list.direction', 'DESC');
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 
 		return $query;

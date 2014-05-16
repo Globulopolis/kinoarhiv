@@ -1,6 +1,6 @@
 <?php defined('_JEXEC') or die; ?>
 <div class="alphabet-nav">
-	<?php foreach ($this->params->get('alphabet') as $alphabet): ?>
+	<?php foreach ($this->params->get('movie_alphabet') as $alphabet): ?>
 	<div>
 		<?php if (!empty($alphabet->lang)): ?><span class="ab_lang"><?php echo $alphabet->lang; ?><span><?php endif; ?>
 		<span class="ab_letters btn-toolbar">

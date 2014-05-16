@@ -164,5 +164,13 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		} else {
 			$this->document->setGenerator($this->params->get('generator'));
 		}
+
+		if ($this->params->get('show_feed_link', 1)) {
+			$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->itemid.'&limitstart=';
+			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
+			$this->document->addHeadLink(JRoute::_($link.'&type=rss'), 'alternate', 'rel', $attribs);
+			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');
+			$this->document->addHeadLink(JRoute::_($link.'&type=atom'), 'alternate', 'rel', $attribs);
+		}
 	}
 }

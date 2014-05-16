@@ -76,7 +76,7 @@ class KinoarhivModelPremieres extends JModelList {
 		}
 
 		$query->where($where);
-		$query->group('`m`.`id`');
+		$query->group($db->quoteName('m.id'));
 
 		$orderCol = $this->state->get('list.ordering', 'm.ordering');
 		$orderDirn = $this->state->get('list.direction', 'desc');

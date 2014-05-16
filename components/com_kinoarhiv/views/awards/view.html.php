@@ -1,28 +1,62 @@
 <?php defined('_JEXEC') or die;
 
-class KinoarhivViewGenres extends JViewLegacy {
+class KinoarhivViewAwards extends JViewLegacy {
 	protected $items = null;
 	protected $pagination = null;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
+		$id = $app->input->get('id', null, 'int');
+
+		if (!empty($id)) {
+			$this->award();
+		} else {
+			$this->awards();
+		}
+	}
+
+	protected function awards() {
+		$app = JFactory::getApplication();
 
 		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		$this->params = &$params;
 		$this->items = &$items;
+		$this->pagination = &$pagination;
 
 		$this->_prepareDocument();
 
-		parent::display($tpl);
+		parent::display();
+	}
+
+	protected function award() {
+		$app = JFactory::getApplication();
+
+		$item = $this->get('Item');
+
+		if (count($errors = $this->get('Errors'))) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
+
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid = $app->input->get('Itemid', 0, 'int');
+
+		$this->params = &$params;
+		$this->item = &$item;
+
+		$this->_prepareDocument();
+
+		parent::display('award');
 	}
 
 	/**
@@ -31,16 +65,19 @@ class KinoarhivViewGenres extends JViewLegacy {
 	protected function _prepareDocument() {
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();
-		$title = null;
+		$title = '';
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$view = $app->input->get('view', 'movies', 'CMD');
 
-		if ($menu) {
-			$this->document->setTitle($menu->title);
-		} else {
-			$this->document->setTitle($this->params->get('page_title').' - '.JText::_('COM_KA_GENRES'));
-		}
+		$title = JText::_('COM_KA_AWARDS_TITLE');
+		// Create a new pathway object
+		$path = (object)array(
+			'name' => $title,
+			'link' => 'index.php?option=com_kinoarhiv&view=awards&Itemid='.$this->itemid
+		);
+
+		$pathway->setPathway(array($path));
+		$this->document->setTitle($title);
 
 		if ($menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));

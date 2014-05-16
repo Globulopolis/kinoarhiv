@@ -77,7 +77,8 @@ class KinoarhivModelAward extends JModelForm {
 				. "\n VALUES ('', '".$data['title']."', '".$db->escape($data['desc'])."', '".$data['state']."', '".$data['language']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_awards')
-				. "\n SET `title` = '".$data['title']."', `desc` = '".$db->escape($data['desc'])."', `state` = '".$data['state']."', `language` = '".$data['language']."'");
+				. "\n SET `title` = '".$data['title']."', `desc` = '".$db->escape($data['desc'])."', `state` = '".$data['state']."', `language` = '".$data['language']."'"
+				. "\n WHERE `id` = ".(int)$id);
 		}
 
 		try {

@@ -15,7 +15,7 @@
 				<option value="1">COM_KA_FIELD_NAME_GENDER_M</option>
 				<option value="0">COM_KA_FIELD_NAME_GENDER_F</option>
 			</field>
-			<field name="desc" type="editor" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="desc" type="editor" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="raw" cols="6" rows="5" buttons="false" />
 			<field name="birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string" />
 			<field name="birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11" filter="intval" data-ac-type="countries" multiple="false" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_NAME_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
@@ -74,6 +74,18 @@
 		<field name="rel_aw_id" type="text" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="award_id" type="hidden" label="COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE" class="span10 required" required="true" default="" />
 		<field name="aw_year" type="datetime" label="COM_KA_FIELD_AW_YEAR" class="required" required="true" default="" filter="integer" datatype="date" size="22" dateformat="yy" />
-		<field name="aw_desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="JComponentHelper::filterText" cols="6" rows="5" />
+		<field name="aw_desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="raw" cols="6" rows="5" />
+	</fieldset>
+
+	<fieldset name="award_quick_add">
+		<field name="a_title" type="text" default="" label="COM_KA_FIELD_AW_LABEL" required="true" class="span10 required" filter="string" size="45" />
+		<field name="a_desc" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="raw" cols="6" rows="5" />
+		<field name="a_state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field>
+		<field name="a_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
 	</fieldset>
 </form>

@@ -11,7 +11,8 @@ class KinoarhivModelNames extends JModelList {
 				'state', 'a.state',
 				'access', 'a.access', 'access_level',
 				'ordering', 'a.ordering',
-				'language', 'a.language');
+				'language', 'a.language',
+				'published');
 		}
 
 		parent::__construct($config);
@@ -181,20 +182,8 @@ class KinoarhivModelNames extends JModelList {
 		$ids = $app->input->get('id', array(), 'array');
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		/*// Remove award relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `item_id` IN (".implode(',', $ids).") AND `type` = 0");
-
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove country relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
+		// Remove award relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `item_id` IN (".implode(',', $ids).") AND `type` = 1");
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -204,19 +193,7 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		// Remove genre relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove name relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` IN (".implode(',', $ids).")");
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -226,8 +203,7 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		// Remove favorited and watched movies
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_marked_movies')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_marked_names')." WHERE `name_id` IN (".implode(',', $ids).")");
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -236,9 +212,8 @@ class KinoarhivModelNames extends JModelList {
 			return false;
 		}
 
-		// Remove user votes
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
+		// Remove career relations
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `name_id` IN (".implode(',', $ids).")");
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -248,40 +223,24 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		// Remove media items
-		$db->setQuery("SELECT `id`, SUBSTRING(`alias`, 1, 1) AS `alias` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
+		$db->setQuery("SELECT `id`, SUBSTRING(`alias`, 1, 1) AS `alias` FROM ".$db->quoteName('#__ka_names')." WHERE `id` IN (".implode(',', $ids).")");
 		$items = $db->loadObjectList();
 
 		foreach ($items as $item) {
 			// Delete root folders
-			if (file_exists($params->get('media_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			if (file_exists($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
 			}
-			if (file_exists($params->get('media_scr_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_scr_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			if (file_exists($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
 			}
-			if (file_exists($params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
-			}
-
-			if (file_exists($params->get('media_trailers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_trailers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
-			}
-
-			// Delete rating images
-			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
-				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
-			}
-			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
-				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
-			}
-			if (file_exists($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$item->id.'_big.png')) {
-				JFile::delete($params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$item->id.'_big.png');
+			if (file_exists($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
 			}
 		}
 
 		// Remove movie(s) from DB
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names')." WHERE `id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -290,8 +249,21 @@ class KinoarhivModelNames extends JModelList {
 			return false;
 		}
 
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names_gallery')." WHERE `name_id`IN (".implode(',', $ids).")");
-		$db->execute();*/
+		// Remove gallery items
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names_gallery')." WHERE `name_id` IN (".implode(',', $ids).")");
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove access rules
+		foreach ($ids as $id) {
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv.name.".(int)$id."' AND `level` = 2");
+			$db->execute();
+		}
 
 		return true;
 	}
@@ -365,6 +337,8 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		if (!empty($batch_data['assetgroup_id'])) {
+			$query = $db->getQuery(true);
+
 			$query->update($db->quoteName('#__ka_names'))
 				->set("`access` = '".(int)$batch_data['assetgroup_id']."'")
 				->where('`id` IN ('.implode(',', $ids).')');

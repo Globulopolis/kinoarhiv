@@ -141,7 +141,6 @@
 							</div>
 							<div class="actor-dub-info">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['dub_id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['dub_name']; ?>"><?php echo $name['dub_name']; ?><?php echo !empty($name['dub_latin_name']) ? ' / '.$name['dub_latin_name'] : ''; ?></a>
-								<div class="actor-desc"><?php echo $name['desc']; ?></div>
 							</div>
 							
 							<?php endif; ?>

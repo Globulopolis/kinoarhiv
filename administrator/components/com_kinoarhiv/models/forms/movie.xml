@@ -9,10 +9,10 @@
 			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6" datatype="time" timeformat="HH:mm:ss" />
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
 			<field name="alias_orig" type="hidden" />
-			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
-			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
-			<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="15" />
-			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="raw" cols="6" rows="5" buttons="false" />
+			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="raw" cols="6" rows="5" buttons="false" />
+			<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="raw" cols="6" rows="15" />
+			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="raw" cols="6" rows="5" buttons="false" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
@@ -51,7 +51,7 @@
 			<field name="rottentm_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT_ID" class="span12" filter="string" size="45" />
 			<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="intval" size="45" />
 			<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM" class="span6" filter="intval" size="45" />
-			<field name="rate_custom" type="editor" default="" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" buttons="false" />
+			<field name="rate_custom" type="editor" default="" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" class="span12" filter="raw" cols="6" rows="5" buttons="false" />
 
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
@@ -180,7 +180,7 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
-		<field name="r_desc" type="textarea" default="" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" class="span12" filter="JComponentHelper::filterText" cols="6" rows="5" />
+		<field name="r_desc" type="textarea" default="" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" class="span12" filter="raw" cols="6" rows="5" />
 	</fieldset>
 
 	<fieldset name="career_quick_add">
@@ -217,12 +217,12 @@
 		<field name="rel_aw_id" type="text" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="award_id" type="hidden" label="COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE" class="span10 required" required="true" default="" />
 		<field name="aw_year" type="datetime" label="COM_KA_FIELD_AW_YEAR" class="required" required="true" default="" filter="integer" datatype="date" size="22" dateformat="yy" />
-		<field name="aw_desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="JComponentHelper::filterText" cols="6" rows="5" />
+		<field name="aw_desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="raw" cols="6" rows="5" />
 	</fieldset>
 
 	<fieldset name="award_quick_add">
 		<field name="a_title" type="text" default="" label="COM_KA_FIELD_AW_LABEL" required="true" class="span10 required" filter="string" size="45" />
-		<field name="a_desc" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="JComponentHelper::filterText" cols="6" rows="5" />
+		<field name="a_desc" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="raw" cols="6" rows="5" />
 		<field name="a_state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
@@ -235,7 +235,7 @@
 		<field name="p_vendor_id" type="text" default="" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
 		<field name="p_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="string" size="45" />
 		<field name="p_premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
-		<field name="p_info" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="JComponentHelper::filterText" cols="6" rows="5" />
+		<field name="p_info" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="raw" cols="6" rows="5" />
 		<field name="p_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
 	</fieldset>
 	<fieldset name="release_edit">

@@ -53,6 +53,10 @@
 //]]>
 </script>
 <div class="uk-article ka-content">
+	<?php if ($this->params->get('use_alphabet') == 1):
+		echo $this->loadTemplate('alphabet');
+	endif; ?>
+
 	<?php if (count($this->items['names']) > 0):
 	if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">

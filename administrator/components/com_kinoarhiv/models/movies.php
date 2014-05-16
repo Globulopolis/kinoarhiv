@@ -248,7 +248,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove award relations
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `item_id` IN (".implode(',', $ids).") AND `type` = 0");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -259,7 +258,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove country relations
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -270,7 +268,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove genre relations
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -281,7 +278,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove name relations
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -292,7 +288,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove releases
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_releases')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -303,7 +298,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove reviews
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -314,7 +308,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove favorited and watched movies
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_marked_movies')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -325,7 +318,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove user votes
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -336,7 +328,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove premieres
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `movie_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -347,7 +338,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove tags mapping
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__contentitem_tag_map')." WHERE `content_item_id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -390,7 +380,6 @@ class KinoarhivModelMovies extends JModelList {
 
 		// Remove movie(s) from DB
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies')." WHERE `id` IN (".implode(',', $ids).")");
-
 		try {
 			$db->execute();
 		} catch(Exception $e) {
@@ -399,12 +388,30 @@ class KinoarhivModelMovies extends JModelList {
 			return false;
 		}
 
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `movie_id`IN (".implode(',', $ids).")");
-		$db->execute();
+		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `movie_id` IN (".implode(',', $ids).")");
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 
 		// Remove trailers
 		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_trailers')." WHERE `movie_id` IN (".implode(',', $ids).")");
-		$db->execute();
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove access rules
+		foreach ($ids as $id) {
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv.movie.".(int)$id."' AND `level` = 2");
+			$db->execute();
+		}
 
 		return true;
 	}

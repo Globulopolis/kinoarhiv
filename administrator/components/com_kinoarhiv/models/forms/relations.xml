@@ -15,7 +15,7 @@
 	<fieldset name="relations_awards">
 		<field name="award_id" type="awards" label="COM_KA_FIELD_AW_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
 		<field name="item_id" type="awards" label="COM_KA_FIELD_AW_ITEM_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
-		<field name="desc" type="editor" class="span6" label="COM_KA_FIELD_AW_DESC" filter="JComponentHelper::filterText" rows="5" cols="7" buttons="false" />
+		<field name="desc" type="editor" class="span6" label="COM_KA_FIELD_AW_DESC" filter="raw" rows="5" cols="7" buttons="false" />
 		<field name="year" type="text" class="span6" label="COM_KA_FIELD_AW_YEAR" filter="intval" maxlength="4" />
 		<field name="type" type="list" label="COM_KA_FIELD_AW_TYPE" class="span6" filter="intval" size="1">
 			<option value="0">COM_KA_MOVIES_TITLE</option>

@@ -673,7 +673,7 @@ div.rating {
 }
 
 .cast-row .number {
-	min-width: 3%;
+	min-width: 20px;
 }
 
 .cast-row .photo {

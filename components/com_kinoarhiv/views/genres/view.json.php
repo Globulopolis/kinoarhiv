@@ -7,7 +7,7 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$items = array(
 			'items'=>$this->get('Items'),
 			'Itemid'=>$app->input->get('Itemid', 0, 'int'),

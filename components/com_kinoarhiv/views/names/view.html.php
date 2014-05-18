@@ -16,11 +16,13 @@ class KinoarhivViewNames extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		// Prepare the data
 		foreach ($items as $key => $item) {
+			$item->attribs = json_decode($item->attribs);
+
 			// Compose a date string
 			$date_range = '';
 			if ($item->date_of_birth != '0000') {

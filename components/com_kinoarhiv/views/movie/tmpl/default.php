@@ -38,6 +38,11 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
+
+<?php if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.bxslider.min.js" type="text/javascript"></script>
+<?php endif; ?>
+
 <script type="text/javascript">
 //<![CDATA[
 	function showMsg(selector, text) {
@@ -179,6 +184,18 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				}
 			}
 		});
+		<?php endif; ?>
+
+		<?php if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
+		$('.bxslider').bxSlider({
+			pager: false,
+			minSlides: <?php echo (int)$this->params->get('slider_min_item'); ?>,
+			maxSlides: <?php echo count($this->item->slides); ?>,
+			slideWidth: <?php echo (int)$this->params->get('size_x_scr'); ?>,
+			slideMargin: 5
+		});
+
+		$('.screenshot-slider li a').colorbox({ returnFocus: false, maxHeight: '90%', maxWidth: '90%' });
 		<?php endif; ?>
 	});
 //]]>
@@ -456,32 +473,6 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				</div>
 			</div>
 		</div>
-		<?php
-			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$this->params->get('player_type');
-			if ($total_trailers > 0 || $total_movies > 0) {
-				// Needed to avoid a bugs. Flowplayer redirecting when SEF is turned on. JWplayer show an error(but playing w/o errors).
-				if ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') {
-				?>
-					<div class="clear"></div>
-					<div class="watch-buttons">
-						<?php if ($total_trailers > 0): ?>
-							<a href="#" class="btn btn-info watch-trailer"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
-						<?php endif; ?>
-						<?php if ($total_movies > 0): ?>
-							<a href="#" class="btn btn-info watch-movie"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
-						<?php endif; ?>
-					</div>
-				<?php
-				} else {
-					if (file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$this->params->get('player_type'))) {
-						echo $this->loadTemplate($player_layout);
-					} else {
-						GlobalHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
-						echo $this->loadTemplate('trailer');
-					}
-				}
-			}
-		?>
 
 		<?php if ($this->item->attribs->show_vote == 1): ?>
 			<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>
@@ -509,6 +500,42 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			<?php endif; ?>
 			<div class="clear"></div>
 		<?php endif; ?>
+
+		<?php if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
+			<div class="screenshot-slider">
+				<ul class="bxslider">
+					<?php foreach ($this->item->slides as $slide): ?>
+					<li><a href="<?php echo $slide->image; ?>" target="_blank"><img src="<?php echo $slide->th_image; ?>" width="<?php echo $slide->th_image_width; ?>" height="<?php echo $slide->th_image_height; ?>" /></a></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php endif; ?>
+
+		<?php $player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$this->params->get('player_type');
+			if ($total_trailers > 0 || $total_movies > 0) {
+				// Needed to avoid a bugs. Flowplayer redirecting when SEF is turned on. JWplayer show an error(but playing w/o errors).
+				if ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') {
+				?>
+					<div class="clear"></div>
+					<div class="watch-buttons">
+						<?php if ($total_trailers > 0): ?>
+							<a href="#" class="btn btn-info watch-trailer"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
+						<?php endif; ?>
+						<?php if ($total_movies > 0): ?>
+							<a href="#" class="btn btn-info watch-movie"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
+						<?php endif; ?>
+					</div>
+				<?php
+				} else {
+					if (file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$this->params->get('player_type'))) {
+						echo $this->loadTemplate($player_layout);
+					} else {
+						GlobalHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+						echo $this->loadTemplate('trailer');
+					}
+				}
+			}
+		?>
 
 		<?php if (!empty($this->item->plot)): ?>
 		<div class="plot">

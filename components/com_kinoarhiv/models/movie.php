@@ -68,7 +68,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true);
@@ -224,6 +224,17 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
 
+		// Get Slider
+		if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1) {
+			$db->setQuery("SELECT `id`, `filename`, `dimension` FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `movie_id` = ".(int)$id." AND `state` = 1 AND `type` = 3 LIMIT ".(int)$params->get('slider_max_item'));
+			try {
+				$result->slides = $db->loadObjectList();
+			} catch (Exception $e) {
+				GlobalHelper::eventLog($e->getMessage());
+				$result->slides = (object)array();
+			}
+		}
+
 		return $result;
 	}
 
@@ -281,7 +292,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 
 		$result = $this->getMovieData();
@@ -453,7 +464,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
 		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
 		$result = $this->getMovieData();
@@ -608,7 +619,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
 		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
 

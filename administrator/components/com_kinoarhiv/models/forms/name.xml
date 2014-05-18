@@ -68,6 +68,11 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="tab_name_awards" type="list" label="COM_KA_FIELD_AP_TAB_NAME_AWARDS_LABEL">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fields>
 
 	<fieldset name="rel_award_edit">

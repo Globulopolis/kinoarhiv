@@ -42,7 +42,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$config = JFactory::getConfig();
 
 		// Prepare the data
@@ -76,6 +76,40 @@ class KinoarhivViewMovie extends JViewLegacy {
 		} else {
 			$item->rate_loc = 0;
 			$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
+		}
+
+		// Process slides
+		if (($item->attribs->slider == '' && $params->get('slider') == 1) || $item->attribs->slider == 1) {
+			if (!empty($item->slides)) {
+				$_alias = JString::substr($item->alias, 0, 1);
+				$file_path = $params->get('media_scr_root').DIRECTORY_SEPARATOR.$_alias.DIRECTORY_SEPARATOR.$item->id.DIRECTORY_SEPARATOR.'screenshots'.DIRECTORY_SEPARATOR;
+
+				// Strip first slash
+				if (strpos($params->get('media_posters_root'), '/', 0) === false) {
+					$file_path = substr($file_path, 1);
+				}
+
+				foreach ($item->slides as $key => $slide) {
+					if (file_exists($file_path.$slide->filename)) {
+						// Original image
+						if (JString::substr($params->get('media_scr_root_www'), 0, 1) == '/') {
+							$item->slides[$key]->image = JUri::base().JString::substr($params->get('media_scr_root_www'), 1).'/'.$_alias.'/'.$item->id.'/screenshots/'.$slide->filename;
+						} else {
+							$item->slides[$key]->image = $params->get('media_scr_root_www').'/'.$_alias.'/'.$item->id.'/screenshots/'.$slide->filename;
+						}
+
+						// Thumbnail
+						if (JString::substr($params->get('media_scr_root_www'), 0, 1) == '/') {
+							$item->slides[$key]->th_image = JUri::base().JString::substr($params->get('media_scr_root_www'), 1).'/'.$_alias.'/'.$item->id.'/screenshots/thumb_'.$slide->filename;
+						} else {
+							$item->slides[$key]->th_image = $params->get('media_scr_root_www').'/'.$_alias.'/'.$item->id.'/screenshots/thumb_'.$slide->filename;
+						}
+						$item->slides[$key]->th_image_width = (int)$params->get('size_x_scr');
+						$orig_scr_size = explode('x', $slide->dimension);
+						$item->slides[$key]->th_image_height = floor(($item->slides[$key]->th_image_width * $orig_scr_size[1]) / $orig_scr_size[0]);
+					}
+				}
+			}
 		}
 
 		$item->event = new stdClass;
@@ -124,7 +158,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
 
@@ -142,14 +176,14 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	protected function wallpp() {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('MovieData');
 
-		if (!$params->get('tab_movie_wallpp')) {
+		/*if (($item->attribs->tab_movie_wallpp == '' && !$params->get('tab_movie_wallpp')) || !$item->attribs->tab_movie_wallpp) {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
+		}*/
 
-		$item = $this->get('MovieData');
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -231,14 +265,14 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	protected function posters() {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('MovieData');
 
-		if (!$params->get('tab_movie_posters')) {
+		/*if (($item->attribs->tab_movie_posters == '' && !$params->get('tab_movie_posters')) || !$item->attribs->tab_movie_posters) {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
+		}*/
 
-		$item = $this->get('MovieData');
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -319,14 +353,14 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	protected function screenshots() {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('MovieData');
 
-		if (!$params->get('tab_movie_scr')) {
+		/*if (($item->attribs->tab_movie_scr == '' && !$params->get('tab_movie_scr')) || !$item->attribs->tab_movie_scr) {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
+		}*/
 
-		$item = $this->get('MovieData');
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -407,14 +441,13 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	protected function awards() {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('Awards');
 
-		if (!$params->get('tab_movie_awards')) {
+		/*if (($item->attribs->tab_movie_awards == '' && !$params->get('tab_movie_awards')) || !$item->attribs->tab_movie_awards) {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$item = $this->get('Awards');
+		}*/
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
@@ -459,12 +492,13 @@ class KinoarhivViewMovie extends JViewLegacy {
 	 */
 	protected function trailers() {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('Trailers');
 
-		if (!$params->get('tab_movie_tr')) {
+		/*if (($item->attribs->tab_movie_tr == '' && !$params->get('tab_movie_tr')) || !$item->attribs->tab_movie_tr) {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
+		}*/
 
 		// Check if player folder exists.
 		if (!file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$params->get('player_type'))) {
@@ -475,8 +509,6 @@ class KinoarhivViewMovie extends JViewLegacy {
 		}
 
 		$user = JFactory::getUser();
-
-		$item = $this->get('Trailers');
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
@@ -518,14 +550,13 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	protected function sound() {
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('Soundtracks');
 
-		if (!$params->get('tab_movie_snd')) {
+		/*if (($item->attribs->tab_movie_snd == '' && !$params->get('tab_movie_snd')) || !$item->attribs->tab_movie_snd) {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$item = $this->get('Soundtracks');
+		}*/
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');

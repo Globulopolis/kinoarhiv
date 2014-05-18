@@ -17,7 +17,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->ka_theme = $params->get('ka_theme');
 

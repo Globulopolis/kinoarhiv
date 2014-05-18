@@ -19,7 +19,7 @@ class KinoarhivModelReviews extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
 		$strip_tag = GlobalHelper::cleanHTML($data['review'], null);
 
@@ -82,7 +82,7 @@ class KinoarhivModelReviews extends JModelForm {
 		$user = JFactory::getUser();
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($params->get('reviews_send_email') == 1) {
 			$_recipients = $params->get('reviews_emails');

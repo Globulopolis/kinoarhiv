@@ -160,6 +160,11 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="slider" type="list" default="" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_LABEL" filter="integer">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fields>
 
 	<fieldset name="rel_name_edit">

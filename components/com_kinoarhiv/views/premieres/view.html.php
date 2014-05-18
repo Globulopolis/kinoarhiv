@@ -18,7 +18,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->ka_theme = $params->get('ka_theme');
 		$this->sel_country = $app->input->get('country', '', 'word');  // It's a string because country_id == 0 it'a world premiere

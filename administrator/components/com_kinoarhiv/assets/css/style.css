@@ -263,7 +263,12 @@ img.movie-poster-preview.y-poster {
 	border: 1px solid #CCCCCC;
 }
 
-#jform_person_list_limit, #jform_premieres_list_limit, #jform_releases_list_limit, #jform_introtext_actors_list_limit {
+#jform_person_list_limit,
+#jform_premieres_list_limit,
+#jform_releases_list_limit,
+#jform_introtext_actors_list_limit,
+#jform_slider_min_item,
+#jform_slider_max_item {
 	border: 0;
 	margin: 0;
 }

@@ -20,13 +20,14 @@ class KinoarhivModelName extends JModelList {
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true);
 
-		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, `n`.`date_of_birth` AS `date_of_birth_raw`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`date_of_death` AS `date_of_death_raw`, `n`.`birthplace`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `cn`.`name` AS `country`, `cn`.`code`, `g`.`filename`");
-		$query->from($db->quoteName('#__ka_names').' AS `n`');
+		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, `n`.`date_of_birth` AS `date_of_birth_raw`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`date_of_death` AS `date_of_death_raw`, `n`.`birthplace`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `cn`.`name` AS `country`, `cn`.`code`, `g`.`filename`")
+			->from($db->quoteName('#__ka_names').' AS `n`');
+
 		$query->leftJoin($db->quoteName('#__ka_names_gallery').' AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1 AND `g`.`state` = 1');
 		$query->leftJoin($db->quoteName('#__ka_countries').' AS `cn` ON `cn`.`id` = `n`.`birthcountry` AND `cn`.`state` = 1');
 
@@ -50,6 +51,10 @@ class KinoarhivModelName extends JModelList {
 		} catch(Exception $e) {
 			$result = (object)array();
 			$this->setError($e->getMessage());
+		}
+
+		if (isset($result->attribs)) {
+			$result->attribs = json_decode($result->attribs);
 		}
 
 		// Select career
@@ -123,7 +128,7 @@ class KinoarhivModelName extends JModelList {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$id = $app->input->get('id', 0, 'int');
 
-		$db->setQuery("SELECT `id`, `name`, `latin_name`, `alias`, `metakey`, `metadesc`, `metadata`"
+		$db->setQuery("SELECT `id`, `name`, `latin_name`, `alias`, `attribs`, `metakey`, `metadesc`, `metadata`"
 			. "\n FROM ".$db->quoteName('#__ka_names')
 			. "\n WHERE `id` = ".(int)$id." AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 		try {
@@ -135,7 +140,10 @@ class KinoarhivModelName extends JModelList {
 			}
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
+			GlobalHelper::eventLog($e->getMessage());
 		}
+
+		$result->attribs = json_decode($result->attribs);
 
 		return $result;
 	}

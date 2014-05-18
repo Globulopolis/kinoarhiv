@@ -11,9 +11,8 @@ class KinoarhivViewMovie extends JViewLegacy {
 
 	protected function watch($type) {
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($params->get('allow_guest_watch') == 0 && $user->get('guest') && $type == 'movie') {
 			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">'.GlobalHelper::showMsg(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'), array('icon'=>'alert', 'type'=>'error')).'</div>';

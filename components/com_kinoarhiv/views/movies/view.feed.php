@@ -17,7 +17,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 		}
 
 		$document = JFactory::getDocument();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$feedEmail = $app->getCfg('feed_email', 'author');
 		$siteEmail = $app->getCfg('mailfrom');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');

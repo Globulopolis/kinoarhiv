@@ -194,6 +194,10 @@ JHtml::_('behavior.keepalive');
 										<div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('allow_reviews', $this->form_attribs_group); ?></div>
 									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('slider', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('slider', $this->form_attribs_group); ?></div>
+									</div>
 								</fieldset>
 							</div>
 							<div class="span6">

@@ -33,7 +33,7 @@ class KinoarhivViewName extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Prepare the data
 		// Build title string
@@ -110,8 +110,14 @@ class KinoarhivViewName extends JViewLegacy {
 
 	protected function wallpp() {
 		$app = JFactory::getApplication();
-
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('NameData');
+
+		/*if (($item->attribs->tab_name_wallpp == '' && !$params->get('tab_name_wallpp')) || $item->attribs->tab_name_wallpp == 0) {
+			$id = $app->input->get('id', null, 'int');
+			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
+		}*/
+
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -119,8 +125,6 @@ class KinoarhivViewName extends JViewLegacy {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
-
-		$params = $app->getParams('com_kinoarhiv');
 
 		// Build title string
 		$item->title = '';
@@ -183,8 +187,14 @@ class KinoarhivViewName extends JViewLegacy {
 
 	protected function photo() {
 		$app = JFactory::getApplication();
-
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('NameData');
+
+		/*if (($item->attribs->tab_name_photos == '' && !$params->get('tab_name_photos')) || !$item->attribs->tab_name_photos) {
+			$id = $app->input->get('id', null, 'int');
+			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
+		}*/
+
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -192,8 +202,6 @@ class KinoarhivViewName extends JViewLegacy {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
-
-		$params = $app->getParams('com_kinoarhiv');
 
 		// Build title string
 		$item->title = '';
@@ -263,15 +271,18 @@ class KinoarhivViewName extends JViewLegacy {
 
 	protected function awards() {
 		$app = JFactory::getApplication();
-
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$items = $this->get('Awards');
+
+		/*if (($item->attribs->tab_name_awards == '' && !$params->get('tab_name_awards')) || !$item->attribs->tab_name_awards) {
+			$id = $app->input->get('id', null, 'int');
+			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
+		}*/
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
-
-		$params = $app->getParams('com_kinoarhiv');
 
 		// Prepare the data
 		// Build title string

@@ -73,6 +73,9 @@
 		<field name="media_trailers_root" type="text" default="downloads/trailers" label="COM_KA_FIELD_PATHS_TR_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_trailers_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_TR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 
+		<field name="media_soundtracks_root" type="text" default="downloads/soundtracks" label="COM_KA_FIELD_PATHS_SND_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_soundtracks_root_www" type="text" default="" label="COM_KA_FIELD_PATHS_SND_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_rating_image_root" type="text" default="images/rating" label="COM_KA_FIELD_PATHS_RT_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_rating_image_root_www" type="text" default="images/rating" label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 	</fieldset>
@@ -127,6 +130,13 @@
 		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" required="true" filter="integer" size="6" />
 		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" required="true" filter="integer" size="6" />
 		<field name="size_x_photo" type="text" default="128" label="COM_KA_FIELD_AP_PHOTO_WIDTH_LABEL" required="true" filter="integer" size="6" />
+
+		<field name="slider" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="slider_min_item" type="text" default="3" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MIN_LABEL" required="true" filter="integer" size="6" />
+		<field name="slider_max_item" type="text" default="10" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MAX_LABEL" required="true" filter="integer" size="6" />
 	</fieldset>
 	<fieldset name="ap_item_player" label="COM_KA_SETTINGS_AP_ITEM_PLAYER">
 		<field name="trailer_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
@@ -211,6 +221,10 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="tab_name_photos" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_NAME_PHOTO_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="tab_name_awards" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_NAME_AWARDS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

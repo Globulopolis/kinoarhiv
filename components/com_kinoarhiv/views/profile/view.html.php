@@ -44,7 +44,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($this->page == '' || $this->page == 'movies') {
 			foreach ($items as &$item) {
@@ -107,7 +107,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		foreach ($items as &$item) {
 			$item->year_str = ($item->year != '0000') ? '&nbsp;('.$item->year.')' : '';
@@ -136,7 +136,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 			return false;
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		foreach ($items as &$item) {
 			$item->year_str = ($item->year != '0000') ? '&nbsp;('.$item->year.')' : '';
@@ -177,7 +177,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 			$item->ip = !empty($item->ip) ? $item->ip : JText::_('COM_KA_REVIEWS_IP_NULL');
 		}
 
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$this->params = &$params;
 		$this->items = &$items;

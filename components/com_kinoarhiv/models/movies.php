@@ -12,8 +12,7 @@ class KinoarhivModelMovies extends JModelList {
 	}
 
 	protected function populateState($ordering = null, $direction = null) {
-		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		parent::populateState($params->get('sort_movielist_field'), strtoupper($params->get('sort_movielist_ord')));
 	}
@@ -23,7 +22,7 @@ class KinoarhivModelMovies extends JModelList {
 		$user = JFactory::getUser();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
-		$params = $app->getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$query = $db->getQuery(true);
 

@@ -956,18 +956,11 @@ class KinoarhivModelMovie extends JModelForm {
 			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 3');
 		} else {
 			// Select reviews
-			$review_id = $app->input->get('review', null, 'int');
-
 			$query->select('`rev`.`id`, `rev`.`uid`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `rev`.`state`, `u`.`name`, `u`.`username`');
 			$query->from($db->quoteName('#__ka_reviews').' AS `rev`');
 			$query->leftJoin($db->quoteName('#__users').' AS `u` ON `u`.`id` = `rev`.`uid`');
 			$query->where('`movie_id` = '.(int)$id.' AND `rev`.`state` = 1 AND `u`.`id` != 0');
 			$query->order('`rev`.`id` DESC');
-
-			if (!empty($review_id) && $review_id > 0) {
-				//echo ($review_id - 1) * 20;
-				//$this->setState('list.start', $review_id); // Contain an error
-			}
 		}
 
 		return $query;

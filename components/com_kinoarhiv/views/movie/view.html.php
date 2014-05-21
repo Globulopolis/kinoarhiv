@@ -179,10 +179,10 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
 
-		/*if (($item->attribs->tab_movie_wallpp == '' && !$params->get('tab_movie_wallpp')) || !$item->attribs->tab_movie_wallpp) {
+		if (($items->attribs->tab_movie_wallpp === '' && $params->get('tab_movie_wallpp') === '0') || $items->attribs->tab_movie_wallpp === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}*/
+		}
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -268,10 +268,10 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
 
-		/*if (($item->attribs->tab_movie_posters == '' && !$params->get('tab_movie_posters')) || !$item->attribs->tab_movie_posters) {
+		if (($items->attribs->tab_movie_posters === '' && $params->get('tab_movie_posters') === '0') || $items->attribs->tab_movie_posters === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}*/
+		}
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -356,10 +356,10 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
 
-		/*if (($item->attribs->tab_movie_scr == '' && !$params->get('tab_movie_scr')) || !$item->attribs->tab_movie_scr) {
+		if (($items->attribs->tab_movie_scr === '' && $params->get('tab_movie_scr') === '0') || $items->attribs->tab_movie_scr === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}*/
+		}
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -444,10 +444,10 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Awards');
 
-		/*if (($item->attribs->tab_movie_awards == '' && !$params->get('tab_movie_awards')) || !$item->attribs->tab_movie_awards) {
+		if (($items->attribs->tab_movie_awards === '' && $params->get('tab_movie_awards') === '0') || $items->attribs->tab_movie_awards === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}*/
+		}
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
@@ -495,10 +495,10 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Trailers');
 
-		/*if (($item->attribs->tab_movie_tr == '' && !$params->get('tab_movie_tr')) || !$item->attribs->tab_movie_tr) {
+		if (($items->attribs->tab_movie_tr === '' && $params->get('tab_movie_tr') === '0') || $items->attribs->tab_movie_tr === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}*/
+		}
 
 		// Check if player folder exists.
 		if (!file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$params->get('player_type'))) {
@@ -553,10 +553,10 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Soundtracks');
 
-		/*if (($item->attribs->tab_movie_snd == '' && !$params->get('tab_movie_snd')) || !$item->attribs->tab_movie_snd) {
+		if (($items->attribs->tab_movie_snd === '' && $params->get('tab_movie_snd') === '0') || $items->attribs->tab_movie_snd === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}*/
+		}
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');

@@ -16,11 +16,11 @@
 			<file driver="mysql" charset="utf8">sql/install.mysql.sql</file>
 		</sql>
 	</install>
-	<!--<uninstall>
+	<uninstall>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/uninstall.mysql.sql</file>
 		</sql>
-	</uninstall>-->
+	</uninstall>
 
 	<files folder="site">
 		<filename>controller.php</filename>
@@ -33,8 +33,8 @@
 		<folder>models</folder>
 		<folder>views</folder>
 	</files>
-	<languages folder="site">
-		<language tag="ru-RU">language/ru-RU.com_kinoarhiv.ini</language>
+	<languages folder="site/language">
+		<language tag="ru-RU">ru-RU.com_kinoarhiv.ini</language>
 	</languages>
 	<administration>
 		<files folder="admin">
@@ -50,9 +50,9 @@
 			<folder>models</folder>
 			<folder>views</folder>
 		</files>
-		<languages folder="admin">
-			<language tag="ru-RU">language/ru-RU.com_kinoarhiv.ini</language>
-			<language tag="ru-RU">language/ru-RU.com_kinoarhiv.sys.ini</language>
+		<languages folder="admin/language">
+			<language tag="ru-RU">ru-RU.com_kinoarhiv.ini</language>
+			<language tag="ru-RU">ru-RU.com_kinoarhiv.sys.ini</language>
 		</languages>
 		<menu link="option=com_kinoarhiv">COM_KINOARHIV</menu>
 		<submenu>
@@ -69,10 +69,7 @@
 			<menu view="settings">COM_KA_MENU_SETTINGS</menu>
 		</submenu>
 	</administration>
-	<dependencies>
-		<dependency type="platform" name="joomla" operator="=" version="3.0" />
-	</dependencies>
 	<updateservers>
-		<server type="extension" priority="1" name="Kinoarhiv Updates"><![CDATA[http://localhost/updates/index.php]]></server>
+		<server type="extension" priority="1" name="Kinoarhiv Updates"><![CDATA[http://киноархив.com/version/]]></server>
 	</updateservers>
 </extension>

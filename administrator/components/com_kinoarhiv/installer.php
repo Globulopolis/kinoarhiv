@@ -4,6 +4,7 @@
 
 class com_kinoarhivInstallerScript {
 	public function postflight($type, $parent) {
-		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv&task=settings');
+		// Need to add default parameters for the component after install
+		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv&view=settings');
 	}
 }

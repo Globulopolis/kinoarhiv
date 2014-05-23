@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.0" method="upgrade">
+<extension type="component" version="3.1" method="upgrade">
 	<name>Kinoarhiv</name>
 	<author>Viper</author>
 	<creationDate>April 2006</creationDate>
@@ -39,6 +39,7 @@
 	<administration>
 		<files folder="admin">
 			<filename>access.xml</filename>
+			<filename>config.xml</filename>
 			<filename>controller.php</filename>
 			<filename>index.html</filename>
 			<filename>kinoarhiv.php</filename>

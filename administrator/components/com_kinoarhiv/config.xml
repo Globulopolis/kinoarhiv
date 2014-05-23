@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<config>
 	<fieldset name="global" label="COM_KA_SETTINGS_TAB">
 		<field name="offline" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
@@ -289,4 +289,4 @@
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="component" validate="rules" />
 	</fieldset>
-</form>
+</config>

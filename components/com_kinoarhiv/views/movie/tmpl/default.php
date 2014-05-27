@@ -160,12 +160,12 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 
 			$.colorbox({ html: '<div class="overlay">'+_this.next('div').html()+'</div>' });
 		});
-		$('#trailer').accordion({
+		$('#trailer_accordion').accordion({
 			<?php echo $tr_collapsed; ?>
 			collapsible: true,
 			heightStyle: 'content'
 		});
-		$('#movie').accordion({
+		$('#movie_accordion').accordion({
 			<?php echo $mov_collapsed; ?>
 			collapsible: true,
 			heightStyle: 'content'

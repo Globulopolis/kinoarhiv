@@ -9,7 +9,7 @@ $sfw = $this->params->get('player_swf');
 	<title><?php echo $this->escape($this->item->title); ?></title>
 	<link href="components/com_kinoarhiv/assets/themes/ui/<?php echo $this->params->get('ui_theme'); ?>/jquery-ui.css" rel="stylesheet" type="text/css" />
 	<link href="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/css/style.css" rel="stylesheet" type="text/css" />
-	<?php GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type')); ?>
+	<?php GlobalHelper::loadPlayerAssets($this->params->get('player_type')); ?>
 </head>
 <body style="margin: 0; padding: 0; background-color: #333333;">
 <?php if (isset($this->item) && count($this->item) > 0):

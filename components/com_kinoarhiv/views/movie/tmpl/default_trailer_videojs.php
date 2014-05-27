@@ -1,10 +1,10 @@
 <?php defined('_JEXEC') or die;
-GlobalHelper::loadPlayerAssets($this->params->get('ka_theme'), $this->params->get('player_type'));
+GlobalHelper::loadPlayerAssets($this->params->get('player_type'));
 
 if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 $item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>
-	<div class="ui-widget trailer" id="trailer">
+	<div class="ui-widget trailer" id="trailer_accordion">
 		<h3><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></h3>
 		<div>
 		<?php if ($item_trailer->embed_code != ''):
@@ -20,7 +20,7 @@ $item_trailer = $this->item->trailer; ?>
 						<track kind="subtitles" src="<?php echo $item_trailer->path.$subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 					<?php endforeach;
 				endif; ?>
-				<?php /*if (count($item_trailer->files['chapters']) > 0): Chapters is broken in VJS 4+ ?>
+				<?php /*if (count($item_trailer->files['chapters']) > 0): // Chapters is broken in VJS 4+ ?>
 					<track kind="chapters" src="<?php echo $item_trailer->path.$item_trailer->files['chapters']['file']; ?>" srclang="en" default />
 				<?php endif;*/ ?>
 			</video>
@@ -43,7 +43,7 @@ $item_trailer = $this->item->trailer; ?>
 if ((isset($this->item->movie) && count($this->item->movie) > 0) && ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')):
 $item_movie = $this->item->movie; ?>
 	<div class="clear"></div>
-	<div class="ui-widget trailer" id="movie">
+	<div class="ui-widget trailer" id="movie_accordion">
 		<h3><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></h3>
 		<div>
 		<?php if ($item_movie->embed_code != ''):
@@ -59,7 +59,7 @@ $item_movie = $this->item->movie; ?>
 						<track kind="subtitles" src="<?php echo $item_movie->path.$subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 					<?php endforeach;
 				endif; ?>
-				<?php /*if (count($item_movie->files['chapters']) > 0): Chapters is broken in VJS 4+ ?>
+				<?php /*if (count($item_movie->files['chapters']) > 0): // Chapters is broken in VJS 4+ ?>
 					<track kind="chapters" src="<?php echo $item_movie->path.$item_movie->files['chapters']['file']; ?>" srclang="en" default />
 				<?php endif;*/ ?>
 			</video>

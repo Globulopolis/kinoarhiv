@@ -179,7 +179,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
 
-		if (($items->attribs->tab_movie_wallpp === '' && $params->get('tab_movie_wallpp') === '0') || $items->attribs->tab_movie_wallpp === '0') {
+		if (($item->attribs->tab_movie_wallpp === '' && $params->get('tab_movie_wallpp') === '0') || $item->attribs->tab_movie_wallpp === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}
@@ -268,7 +268,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
 
-		if (($items->attribs->tab_movie_posters === '' && $params->get('tab_movie_posters') === '0') || $items->attribs->tab_movie_posters === '0') {
+		if (($item->attribs->tab_movie_posters === '' && $params->get('tab_movie_posters') === '0') || $item->attribs->tab_movie_posters === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}
@@ -356,7 +356,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
 
-		if (($items->attribs->tab_movie_scr === '' && $params->get('tab_movie_scr') === '0') || $items->attribs->tab_movie_scr === '0') {
+		if (($item->attribs->tab_movie_scr === '' && $params->get('tab_movie_scr') === '0') || $item->attribs->tab_movie_scr === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}
@@ -444,7 +444,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Awards');
 
-		if (($items->attribs->tab_movie_awards === '' && $params->get('tab_movie_awards') === '0') || $items->attribs->tab_movie_awards === '0') {
+		if (($item->attribs->tab_movie_awards === '' && $params->get('tab_movie_awards') === '0') || $item->attribs->tab_movie_awards === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}
@@ -495,7 +495,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Trailers');
 
-		if (($items->attribs->tab_movie_tr === '' && $params->get('tab_movie_tr') === '0') || $items->attribs->tab_movie_tr === '0') {
+		if (($item->attribs->tab_movie_tr === '' && $params->get('tab_movie_tr') === '0') || $item->attribs->tab_movie_tr === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}
@@ -553,7 +553,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Soundtracks');
 
-		if (($items->attribs->tab_movie_snd === '' && $params->get('tab_movie_snd') === '0') || $items->attribs->tab_movie_snd === '0') {
+		if (($item->attribs->tab_movie_snd === '' && $params->get('tab_movie_snd') === '0') || $item->attribs->tab_movie_snd === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
 		}

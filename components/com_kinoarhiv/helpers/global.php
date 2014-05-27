@@ -106,10 +106,10 @@ class GlobalHelper {
 	}
 
 	/**
-	 * Load all necessary CSS and Javascript for HTML5/Flash player
+	 * Load CSS and Javascript for HTML5/Flash player
 	 *
 	*/
-	static function loadPlayerAssets($theme='default', $player, $key='') {
+	static function loadPlayerAssets($player, $key='') {
 		$document = JFactory::getDocument();
 
 		$paths = array(
@@ -189,7 +189,7 @@ class GlobalHelper {
 	}
 
 	/**
-	 * Load all necessary CSS and Javascript for HTML5 editor
+	 * Load CSS and Javascript for HTML5 editor
 	 *
 	*/
 	static function loadEditorAssets() {

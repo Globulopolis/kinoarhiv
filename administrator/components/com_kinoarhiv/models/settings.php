@@ -10,11 +10,9 @@ class KinoarhivModelSettings extends JModelForm {
 	 * @return  mixed  A JForm object on success, false on failure
 	 */
 	public function getForm($data = array(), $loadData = true) {
-		$form = $this->loadForm(
-				'com_kinoarhiv.settings',
-				'settings',
-				array('control' => 'jform', 'load_data' => $loadData)
-			);
+		// Load config.xml from root component folder.
+		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
+		$form = $this->loadForm('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => $loadData), false, '/config');
 
 		if (empty($form)) {
 			return false;

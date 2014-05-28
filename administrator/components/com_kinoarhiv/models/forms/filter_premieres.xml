@@ -6,7 +6,7 @@
 			<option value="">COM_KA_FIELD_SORT_BY_COUNTRY</option>
 			<option value="0">COM_KA_PREMIERE_WORLD</option>
 		</field>
-		<field name="vendor" type="sql" query="SELECT p.vendor_id AS value, CONCAT_WS(' / ', v.company_name, v.company_name_intl) AS vendor FROM galb8_ka_premieres AS p LEFT JOIN galb8_ka_vendors AS v ON v.id = p.vendor_id GROUP BY p.vendor_id" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
+		<field name="vendor" type="sql" query="SELECT p.vendor_id AS value, CONCAT_WS(' / ', v.company_name, v.company_name_intl) AS vendor FROM #__ka_premieres AS p LEFT JOIN #__ka_vendors AS v ON v.id = p.vendor_id GROUP BY p.vendor_id" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_VENDOR</option>
 		</field>
 	</fields>

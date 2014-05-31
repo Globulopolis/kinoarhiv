@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="search_movies">
+		<field type="text" name="q" label="COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL" requred="true" class="span8 required" filter="string" />
+		<field type="text" name="year" label="COM_KA_SEARCH_ADV_MOVIES_YEAR_LABEL" class="span3" filter="string" />
+		<field type="countries" name="country" label="COM_KA_SEARCH_ADV_MOVIES_COUNTRY_LABEL" class="span8" filter="integer" />
+	</fieldset>
+
+	<fieldset name="search_names">
+		
+	</fieldset>
+</form>

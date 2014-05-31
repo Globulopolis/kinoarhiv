@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<layout title="COM_KINOARHIV_VIEW_PROFILE_TITLE" option="COM_CONTENT_CATEGORY_VIEW_FEATURED_OPTION">
+	<layout title="COM_KINOARHIV_VIEW_PROFILE_TITLE" option="">
 		<message>
 			<![CDATA[COM_KINOARHIV_VIEW_PROFILE_DESC]]>
 		</message>

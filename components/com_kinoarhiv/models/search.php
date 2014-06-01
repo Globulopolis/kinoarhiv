@@ -1,76 +1,101 @@
 <?php defined('_JEXEC') or die;
 
-class KinoarhivModelSearch extends JModelForm {
-	public function getForm($data = array(), $loadData = true) {
-		$form = $this->loadForm('com_kinoarhiv.search', 'search', array('control' => 'form', 'load_data' => $loadData));
-
-		if (empty($form)) {
-			return false;
-		}
-
-		return $form;
-	}
-
-	/**
-	 * Method to get the data that should be injected in the form.
-	 *
-	 * @return  mixed  The data for the form.
-	 * @since   1.6
-	 */
-	protected function loadFormData() {
-		$app = JFactory::getApplication();
+class KinoarhivModelSearch extends JModelLegacy {
+	public function getItems() {
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$id = $app->input->get('id', 0, 'int');
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$data = $app->getUserState('com_kinoarhiv.search.'.$id.'.user.'.$user->get('id'));
-
-		if (empty($data)) {
-			$data = $this->getFormData();
-		} else {
-			$data['Itemid'] = $itemid;
-			$data['id'] = $id;
-		}
-
-		return $data;
-	}
-
-	protected function getFormData() {
-		$app = JFactory::getApplication();
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$id = $app->input->get('id', 0, 'int');
-
-		return array('Itemid'=>$itemid, 'id'=>$id);
-	}
-
-	protected function getListQuery() {
-		$db = $this->getDBO();
-		$user = JFactory::getUser();
+		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
+		$default_value = array(array('value' => '', 'text' => '-'));
+		$items = (object)array(
+			'movies' => (object)array()
+		);
 
-		$query = $db->getQuery(true);
+		// Get years for movies
+		$db->setQuery("SELECT SUBSTRING(`year`, 1, 4) AS `value`, SUBSTRING(`year`, 1, 4) AS `text` FROM ".$db->quoteName('#__ka_movies')." GROUP BY `year` ORDER BY `year` DESC");
+		$from_year = $db->loadObjectList();
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`attribs`, `m`.`state`, `g`.`filename`, `g`.`dimension`");
-		$query->from($db->quoteName('#__ka_movies').' AS `m`');
-		$query->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
+		$items->movies->from_year = array_merge($default_value, $from_year);
+		$items->movies->to_year = &$items->movies->from_year;
 
-		if (!$user->get('guest')) {
-			$query->select(' `u`.`favorite`');
-			$query->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
+		// Get the list of countries
+		$db->setQuery("SELECT `id` AS `value`, `name` AS `text` FROM ".$db->quoteName('#__ka_countries')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `name` ASC");
+		$countries = $db->loadObjectList();
+
+		$items->movies->countries = array_merge($default_value, $countries);
+
+		// Get the list of vendors
+		$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*')");
+		$_vendors = $db->loadObjectList();
+
+		foreach ($_vendors as $vendor) {
+			$text = '';
+
+			if ($vendor->company_name != '') {
+				$text .= $vendor->company_name;
+			}
+
+			if ($vendor->company_name != '' && $vendor->company_name_intl != '') {
+				$text .= ' / ';
+			}
+
+			if ($vendor->company_name_intl != '') {
+				$text .= $vendor->company_name_intl;
+			}
+
+			$vendors[] = array('value' => $vendor->id, 'text' => $text);
 		}
 
-		$query->select(' `user`.`name` AS `username`, `user`.`email` AS `author_email`');
-		$query->leftJoin($db->quoteName('#__users').' AS `user` ON `user`.`id` = `m`.`created_by`');
+		$items->movies->vendors = array_merge($default_value, $vendors);
 
-		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
-		$query->where($where);
+		// Get the list of genres
+		$db->setQuery("SELECT `id` AS `value`, `name` AS `text` FROM ".$db->quoteName('#__ka_genres')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") ORDER BY `name` ASC");
+		$genres = $db->loadObjectList();
 
-		$query->group($db->quoteName('m.id'));
+		$items->movies->genres = array_merge(
+			array(array('value' => '', 'text' => '')), // The default values must be an empty for proper displaying in the chosen multiselect
+			$genres
+		);
 
-		$orderCol = $this->state->get('list.ordering', $db->quoteName('m.ordering'));
-		$orderDirn = $this->state->get('list.direction', 'DESC');
-		$query->order($db->escape($orderCol.' '.$orderDirn));
+		// MPAA
+		$items->movies->mpaa = array(
+			array('value'=>'', 'text'=>'-'),
+			array('value'=>'g', 'text'=>'G'),
+			array('value'=>'gp', 'text'=>'GP'),
+			array('value'=>'pg', 'text'=>'PG'),
+			array('value'=>'pg-13', 'text'=>'PG-13'),
+			array('value'=>'r', 'text'=>'R'),
+			array('value'=>'nc-17', 'text'=>'NC-17')
+		);
 
-		return $query;
+		// Russian age restict
+		$items->movies->age_restrict = array(
+			array('value'=>'', 'text'=>'-'),
+			array('value'=>'0', 'text'=>'0+'),
+			array('value'=>'6', 'text'=>'6+'),
+			array('value'=>'12', 'text'=>'12+'),
+			array('value'=>'16', 'text'=>'16+'),
+			array('value'=>'18', 'text'=>'18+')
+		);
+
+		// Ukrainian age restict
+		$items->movies->ua_rate = array(
+			array('value'=>'', 'text'=>'-'),
+			array('value'=>'0', 'text'=>JText::_('COM_KA_SEARCH_ADV_MOVIES_UA_RATE_0')),
+			array('value'=>'1', 'text'=>JText::_('COM_KA_SEARCH_ADV_MOVIES_UA_RATE_1')),
+			array('value'=>'2', 'text'=>JText::_('COM_KA_SEARCH_ADV_MOVIES_UA_RATE_2'))
+		);
+
+		// Budgets
+		$db->setQuery("SELECT `budget` AS `value`, `budget` AS `text` FROM ".$db->quoteName('#__ka_movies')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") GROUP BY `budget` ORDER BY `budget` ASC");
+		$budgets = $db->loadObjectList();
+
+		$items->movies->from_budget = array_merge(
+			array(array('value' => '', 'text' => '-')),
+			$budgets
+		);
+		$items->movies->to_budget = &$items->movies->from_budget;
+
+		return $items;
 	}
 }

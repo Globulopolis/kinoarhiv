@@ -116,11 +116,10 @@ class KinoarhivViewMovies extends JViewLegacy {
 	protected function _prepareDocument() {
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();
-		$title = '';
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
 
-		$title = JText::_('COM_KA_MOVIES');
+		$title = $menu && $menu->title ? $menu->title : JText::_('COM_KA_MOVIES');
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,
@@ -130,19 +129,19 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu->params->get('menu-meta_description') != '') {
+		if ($menu && $menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));
 		} else {
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu->params->get('menu-meta_keywords') != '') {
+		if ($menu && $menu->params->get('menu-meta_keywords') != '') {
 			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
 		} else {
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu->params->get('robots') != '') {
+		if ($menu && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
 			$this->document->setMetadata('robots', $this->params->get('robots'));

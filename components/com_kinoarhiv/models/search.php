@@ -1,6 +1,12 @@
 <?php defined('_JEXEC') or die;
 
 class KinoarhivModelSearch extends JModelLegacy {
+	/**
+	 * Get initial data for lists in search form
+	 *
+	 * @return   object
+	 *
+	*/
 	public function getItems() {
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
@@ -110,5 +116,50 @@ class KinoarhivModelSearch extends JModelLegacy {
 		);
 
 		return $items;
+	}
+
+	
+	/**
+	 * Get the homepage Itemid for movies and names lists
+	 *
+	 * @return   array
+	 *
+	*/
+	public function getHomeItemid() {
+		$db = $this->getDbo();
+		$user = JFactory::getUser();
+		$lang = JFactory::getLanguage();
+		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$itemid = array('movies'=>0, 'names'=>0);
+
+		$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')
+			. "\n WHERE `link` = 'index.php?option=com_kinoarhiv&view=movies'"
+				. " AND `type` = 'component'"
+				. " AND `published` = 1"
+				. " AND `access` IN (".$groups.")"
+				. " AND `language` IN (".$db->quote($lang->getTag()).",'*')"
+			. "\n LIMIT 1");
+		$itemid['movies'] = $db->loadResult();
+
+		$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')
+			. "\n WHERE `link` = 'index.php?option=com_kinoarhiv&view=names'"
+				. " AND `type` = 'component'"
+				. " AND `published` = 1"
+				. " AND `access` IN (".$groups.")"
+				. " AND `language` IN (".$db->quote($lang->getTag()).",'*')"
+			. "\n LIMIT 1");
+		$itemid['names'] = $db->loadResult();
+
+		return $itemid;
+	}
+
+	/**
+	 * Get the 'selected' values for inputs
+	 *
+	 * @return   object
+	 *
+	*/
+	public function getActiveFilters() {
+		return array();
 	}
 }

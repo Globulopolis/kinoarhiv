@@ -128,7 +128,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (!empty($id)) {
-			JToolbarHelper::title(JText::_('COM_KA_CAREER_RELATIONS_TITLE').': ID '.$id, 'link');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_CAREERS_TITLE')).': ID '.$id, 'link');
 		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_CAREERS_TITLE')), 'link');
 		}

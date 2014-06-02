@@ -7,6 +7,8 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$app = JFactory::getApplication();
 
 		$items = $this->get('Items');
+		$activeFilters = $this->get('ActiveFilters');
+		$this->home_itemid = $this->get('HomeItemid');
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
@@ -20,7 +22,6 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$this->params = &$params;
 
 		$this->_prepareDocument();
-		$this->document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/select.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 
 		parent::display($tpl);
 	}
@@ -72,7 +73,7 @@ class KinoarhivViewSearch extends JViewLegacy {
 
 		// Add feed links
 		if ($this->params->get('show_feed_link', 1)) {
-			$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->itemid.'&limitstart=';
+			$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->home_itemid['movies'].'&limitstart=';
 			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
 			$this->document->addHeadLink(JRoute::_($link.'&type=rss'), 'alternate', 'rel', $attribs);
 			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');

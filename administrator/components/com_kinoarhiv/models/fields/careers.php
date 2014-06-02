@@ -5,8 +5,10 @@ class JFormFieldCareers extends JFormField {
 
 	public function __construct() {
 		$lang = JFactory::getLanguage()->getTag();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		JHtml::_('jquery.framework');
+		JHtml::_('stylesheet', JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/select.css');
 		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/select2.min.js');
 		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr($lang, 0, 2).'.js');
 

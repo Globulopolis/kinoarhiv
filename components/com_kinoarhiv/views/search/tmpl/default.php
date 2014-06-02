@@ -1,11 +1,15 @@
 <?php defined('_JEXEC') or die;
-JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/select2.min.js');
+JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr(JFactory::getLanguage()->getTag(), 0, 2).'.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('.cmd-reset').click(function(){
-			$(this).closest('form').find('select').val('').trigger('liszt:updated');
+			$(this).closest('form').find('#form_movies_country, #form_movies_vendor, #form_names_birthcountry, #form_movies_genre').select2('val', '');
 		});
+
+		$('#form_movies_country, #form_movies_vendor, #form_names_birthcountry').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>', allowClear: true});
+		$('#form_movies_genre').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_SOME_OPTIONS'); ?>'});
 
 		$('#form_movies_rate').slider({
 			range: true,
@@ -54,7 +58,7 @@ JHtml::_('formbehavior.chosen', 'select');
 </script>
 <div class="uk-article ka-content">
 	<div class="advsearch-movies well uk-panel uk-panel-box">
-		<form action="<?php echo JRoute::_('index.php');?>" id="form_movies" method="post" autocomplete="off">
+		<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies'); ?>" id="form_movies" method="post">
 			<fieldset class="form-horizontal uk-form">
 				<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE'); ?></legend>
 
@@ -119,13 +123,13 @@ JHtml::_('formbehavior.chosen', 'select');
 					<div class="span6 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('form_movies_mpaa', 'COM_KA_MPAA'); ?></div>
-							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->mpaa, 'form[movies][mpaa]', array('class'=>'span6 uk-width-1-6'), 'value', 'text', '', 'form_movies_mpaa'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->mpaa, 'form[movies][mpaa]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', '', 'form_movies_mpaa'); ?></div>
 						</div>
 					</div>
 					<div class="span6 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('form_movies_age_restrict', 'COM_KA_SEARCH_ADV_MOVIES_RU_AGE_RESTICT_LABEL'); ?></div>
-							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->age_restrict, 'form[movies][age_restrict]', array('class'=>'span6 uk-width-1-6'), 'value', 'text', '', 'form_movies_age_restrict'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->age_restrict, 'form[movies][age_restrict]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', '', 'form_movies_age_restrict'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -134,7 +138,7 @@ JHtml::_('formbehavior.chosen', 'select');
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('form_movies_ua_rate', 'COM_KA_UA_RATE'); ?></div>
-							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->ua_rate, 'form[movies][ua_rate]', array('class'=>'span6 uk-width-1-2'), 'value', 'text', '', 'form_movies_ua_rate'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->ua_rate, 'form[movies][ua_rate]', array('class'=>'span4 uk-width-1-3'), 'value', 'text', '', 'form_movies_ua_rate'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -211,6 +215,7 @@ JHtml::_('formbehavior.chosen', 'select');
 			<input type="hidden" name="option" value="com_kinoarhiv" />
 			<input type="hidden" name="view" value="movies" />
 			<input type="hidden" name="task" value="search" />
+			<input type="hidden" name="Itemid" value="102" />
 			<?php echo JHtml::_('form.token'); ?>
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 			<input type="reset" class="btn btn-default uk-button cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
@@ -218,7 +223,7 @@ JHtml::_('formbehavior.chosen', 'select');
 	</div>
 
 	<div class="advsearch-names well uk-panel uk-panel-box">
-		<form action="<?php echo JRoute::_('index.php');?>" id="form_names" method="post" autocomplete="off">
+		<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names'); ?>" id="form_names" method="post">
 			<fieldset class="form-horizontal uk-form">
 				<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE'); ?></legend>
 
@@ -230,11 +235,64 @@ JHtml::_('formbehavior.chosen', 'select');
 						</div>
 					</div>
 				</div>
+
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-4"><?php echo $this->setLabel('form_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH'); ?></div>
+							<div class="controls uk-width-1-1">
+								<input name="form[names][birthday]" type="text" id="form_names_birthday" class="span4 uk-width-1-1" value="" />&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'form[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', '', 'form_names_gender'); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('form_names_mtitle', 'COM_KA_SEARCH_ADV_NAMES_MOVIETITLE_LABEL'); ?></div>
+							<div class="controls uk-width-1-4"><input name="form[names][mtitle]" type="text" id="form_names_mtitle" class="span10 uk-width-1-1" value="" /></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-4"><?php echo $this->setLabel('form_names_birthplace', 'COM_KA_NAMES_BIRTHPLACE_1'); ?></div>
+							<div class="controls uk-width-1-1">
+								<input name="form[names][birthplace]" type="text" id="form_names_birthplace" class="span10 uk-width-1-1" value="" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-4"></div>
+							<div class="controls uk-width-1-1">
+								<?php echo $this->setLabel('form_names_birthcountry', 'COM_KA_COUNTRY', 'span2'); ?>
+								<?php echo JHTML::_('select.genericlist', $this->items->names->birthcountry, 'form[names][birthcountry]', array('class'=>'span8 uk-width-1-4'), 'value', 'text', '', 'form_names_birthcountry'); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('form_names_amplua', 'COM_KA_SEARCH_ADV_NAMES_AMPLUA_LABEL'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->names->amplua, 'form[names][amplua]', array('class'=>'span10 uk-width-1-2'), 'value', 'text', '', 'form_names_amplua'); ?></div>
+						</div>
+					</div>
+				</div>
 			</fieldset>
 
 			<input type="hidden" name="option" value="com_kinoarhiv" />
 			<input type="hidden" name="view" value="names" />
 			<input type="hidden" name="task" value="search" />
+			<input type="hidden" name="Itemid" value="106" />
 			<?php echo JHtml::_('form.token'); ?>
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 			<input type="reset" class="btn btn-default uk-button cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />

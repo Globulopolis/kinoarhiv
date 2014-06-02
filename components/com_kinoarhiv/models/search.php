@@ -8,7 +8,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$default_value = array(array('value' => '', 'text' => '-'));
 		$items = (object)array(
-			'movies' => (object)array()
+			'movies' => (object)array(),
+			'names'  => (object)array(),
 		);
 
 		// Get years for movies
@@ -22,7 +23,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$db->setQuery("SELECT `id` AS `value`, `name` AS `text` FROM ".$db->quoteName('#__ka_countries')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `name` ASC");
 		$countries = $db->loadObjectList();
 
-		$items->movies->countries = array_merge($default_value, $countries);
+		$items->movies->countries = array_merge(array(array('value' => '', 'text' => '')), $countries);
 
 		// Get the list of vendors
 		$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*')");
@@ -46,16 +47,11 @@ class KinoarhivModelSearch extends JModelLegacy {
 			$vendors[] = array('value' => $vendor->id, 'text' => $text);
 		}
 
-		$items->movies->vendors = array_merge($default_value, $vendors);
+		$items->movies->vendors = array_merge(array(array('value' => '', 'text' => '')), $vendors);
 
 		// Get the list of genres
 		$db->setQuery("SELECT `id` AS `value`, `name` AS `text` FROM ".$db->quoteName('#__ka_genres')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") ORDER BY `name` ASC");
-		$genres = $db->loadObjectList();
-
-		$items->movies->genres = array_merge(
-			array(array('value' => '', 'text' => '')), // The default values must be an empty for proper displaying in the chosen multiselect
-			$genres
-		);
+		$items->movies->genres = $db->loadObjectList();
 
 		// MPAA
 		$items->movies->mpaa = array(
@@ -87,7 +83,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 		);
 
 		// Budgets
-		$db->setQuery("SELECT `budget` AS `value`, `budget` AS `text` FROM ".$db->quoteName('#__ka_movies')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") GROUP BY `budget` ORDER BY `budget` ASC");
+		$db->setQuery("SELECT `budget` AS `value`, `budget` AS `text` FROM ".$db->quoteName('#__ka_movies')." WHERE `budget` != '' AND `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") GROUP BY `budget` ORDER BY `budget` ASC");
 		$budgets = $db->loadObjectList();
 
 		$items->movies->from_budget = array_merge(
@@ -95,6 +91,23 @@ class KinoarhivModelSearch extends JModelLegacy {
 			$budgets
 		);
 		$items->movies->to_budget = &$items->movies->from_budget;
+
+		$items->names->gender = array(
+			array('value'=>'', 'text'=>'-'),
+			array('value'=>'1', 'text'=>JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_M')),
+			array('value'=>'0', 'text'=>JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_F'))
+		);
+
+		$items->names->birthcountry = &$items->movies->countries;
+
+		// Amplua
+		$db->setQuery("SELECT `id` AS `value`, `title` AS `text` FROM ".$db->quoteName('#__ka_names_career')." WHERE (`is_mainpage` = 1 OR `is_amplua` = 1) AND `language` IN (".$db->quote($lang->getTag()).",'*') GROUP BY `title` ORDER BY `ordering` DESC, `title` ASC");
+		$amplua = $db->loadObjectList();
+
+		$items->names->amplua = array_merge(
+			array(array('value' => '', 'text' => '-')),
+			$amplua
+		);
 
 		return $items;
 	}

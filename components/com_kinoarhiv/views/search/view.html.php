@@ -20,8 +20,9 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$this->params = &$params;
 
 		$this->_prepareDocument();
+		$this->document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/select.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 
-		parent::display('form');
+		parent::display($tpl);
 	}
 
 	/**
@@ -32,7 +33,7 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = $menu->title;
+		$title = $menu ? $menu->title : JText::_('COM_KA_SEARCH_ADV');
 
 		// Create a new pathway object
 		$path = (object)array(
@@ -43,19 +44,19 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu->params->get('menu-meta_description') != '') {
+		if ($menu && $menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));
 		} else {
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu->params->get('menu-meta_keywords') != '') {
+		if ($menu && $menu->params->get('menu-meta_keywords') != '') {
 			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
 		} else {
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu->params->get('robots') != '') {
+		if ($menu && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
 			$this->document->setMetadata('robots', $this->params->get('robots'));

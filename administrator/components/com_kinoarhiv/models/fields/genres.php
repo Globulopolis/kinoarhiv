@@ -7,8 +7,8 @@ class JFormFieldGenres extends JFormField {
 		$lang = JFactory::getLanguage()->getTag();
 
 		JHtml::_('jquery.framework');
-		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/select2.min.js');
-		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr($lang, 0, 2).'.js');
+		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/select2.min.js');
+		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr($lang, 0, 2).'.js');
 
 		parent::__construct();
 	}

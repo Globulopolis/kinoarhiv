@@ -265,4 +265,17 @@ class GlobalHelper {
 
 		return false;
 	}
+
+	/**
+	 * Create a custom label html tag
+	 *
+	 * @param   string   $for      Input ID
+	 * @param   mixed    $title    Label text.
+	 * @param   mixed    $class    CSS classname(s).
+	 *
+	 * @return   string
+	*/
+	static function setLabel($for, $title, $class='') {
+		return '<label id="'.$for.'-lbl" class="'.$class.'" for="'.$for.'">'.JText::_($title).'</label>';
+	}
 }

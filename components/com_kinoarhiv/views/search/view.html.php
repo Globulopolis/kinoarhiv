@@ -81,8 +81,4 @@ class KinoarhivViewSearch extends JViewLegacy {
 			$this->document->addHeadLink(JRoute::_($link.'&type=atom'), 'alternate', 'rel', $attribs);
 		}
 	}
-
-	public function setLabel($for, $title, $class='') {
-		return '<label id="'.$for.'-lbl" class="'.$class.'" for="'.$for.'">'.JText::_($title).'</label>';
-	}
 }

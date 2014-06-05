@@ -77,7 +77,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
-
+<?php echo JLayoutHelper::render('views.search.tmpl.default', array('view' => $this, 'dada' => $this), JPATH_COMPONENT, array('params' => $this->params)); ?>
 	<?php if (count($this->items['movies']) > 0): ?>
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">

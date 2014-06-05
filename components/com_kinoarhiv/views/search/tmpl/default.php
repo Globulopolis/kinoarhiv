@@ -1,7 +1,24 @@
 <?php defined('_JEXEC') or die;
-$this->document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->params->get('ka_theme').'/css/select.css', 'stylesheet', 'rel', array('type'=>'text/css'));
-JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/select2.min.js');
-JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr(JFactory::getLanguage()->getTag(), 0, 2).'.js');
+// Need to support JLayout
+if (!isset($this->params)) {
+	$this->params = $this->options;
+}
+echo '<pre>';
+print_r($this);
+echo '</pre>';
+$css = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->params->get('ka_theme').'/css/select.css';
+$script = JURI::base().'components/com_kinoarhiv/assets/js/select2.min.js';
+$script_lang = JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr(JFactory::getLanguage()->getTag(), 0, 2).'.js';
+
+if (JFactory::getDocument()->getType() == 'html') {
+	JFactory::getDocument()->addHeadLink($css, 'stylesheet', 'rel', array('type'=>'text/css'));
+	JHtml::_('script', $script);
+	JHtml::_('script', $script_lang);
+} else {
+	echo '<style type="text/css">@import url("'.$css.'");</style>';
+	echo '<script src="'.$script.'" type="text/javascript"></script>';
+	echo '<script src="'.$script_lang.'" type="text/javascript"></script>';
+}
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -9,19 +26,51 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 			$(this).closest('form').find('#filters_movies_country, #filters_movies_vendor, #filters_names_birthcountry, #filters_movies_genre').select2('val', '');
 		});
 
-		$('#filters_movies_country, #filters_movies_vendor, #filters_names_birthcountry').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>', allowClear: true});
+		$('#filters_movies_country, #filters_names_birthcountry').select2({
+			placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>',
+			allowClear: true,
+			formatSelection: function(data){
+				return "<img class='flag-dd' src='<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + $(data.element).data('code') + ".png'/> " + data.text;
+			},
+			escapeMarkup: function(m) { return m; }
+		});
+		$('#filters_movies_vendor').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>', allowClear: true});
 		$('#filters_movies_genre').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_SOME_OPTIONS'); ?>'});
 
 		$('#filters_movies_rate').slider({
 			range: true,
 			min: 0,
-			max: 10,
-			values: [0, 10],
+			max: <?php echo $this->params->get('vote_summ_num'); ?>,
+			values: [0, <?php echo $this->params->get('vote_summ_num'); ?>],
 			slide: function(event, ui){
-				$('#rate_val').text(ui.values[0] + ' - ' + ui.values[1]);
+				$('#filters_movies_rate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_rate_max').val(ui.values[1]);
 			}
 		});
-		$('#rate_val').text($('#filters_movies_rate').slider('values', 0) + ' - ' + $('#filters_movies_rate').slider('values', 1));
+		$('#filters_movies_rate_min').val($('#filters_movies_rate').slider('values', 0)).spinner({
+			spin: function(event, ui){
+				if (ui.value > <?php echo $this->params->get('vote_summ_num'); ?>) {
+					$(this).spinner('value', <?php echo $this->params->get('vote_summ_num'); ?>);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_rate').slider('values', 0, ui.value);
+			}
+		});
+		$('#filters_movies_rate_max').val($('#filters_movies_rate').slider('values', 1)).spinner({
+			spin: function(event, ui){
+				if (ui.value > <?php echo $this->params->get('vote_summ_num'); ?>) {
+					$(this).spinner('value', <?php echo $this->params->get('vote_summ_num'); ?>);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_rate').slider('values', 1, ui.value);
+			}
+		});
 
 		$('#filters_movies_imdbrate').slider({
 			range: true,
@@ -29,10 +78,34 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 			max: 10,
 			values: [6, 10],
 			slide: function(event, ui){
-				$('#imdbrate_val').text(ui.values[0] + ' - ' + ui.values[1]);
+				$('#filters_movies_imdbrate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_imdbrate_max').val(ui.values[1]);
 			}
 		});
-		$('#imdbrate_val').text($('#filters_movies_imdbrate').slider('values', 0) + ' - ' + $('#filters_movies_imdbrate').slider('values', 1));
+		$('#filters_movies_imdbrate_min').val($('#filters_movies_imdbrate').slider('values', 0)).spinner({
+			spin: function(event, ui){
+				if (ui.value > 10) {
+					$(this).spinner('value', 10);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_imdbrate').slider('values', 0, ui.value);
+			}
+		});
+		$('#filters_movies_imdbrate_max').val($('#filters_movies_imdbrate').slider('values', 1)).spinner({
+			spin: function(event, ui){
+				if (ui.value > 10) {
+					$(this).spinner('value', 10);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_imdbrate').slider('values', 1, ui.value);
+			}
+		});
 
 		$('#filters_movies_kprate').slider({
 			range: true,
@@ -40,10 +113,34 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 			max: 10,
 			values: [6, 10],
 			slide: function(event, ui){
-				$('#kprate_val').text(ui.values[0] + ' - ' + ui.values[1]);
+				$('#filters_movies_kprate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_kprate_max').val(ui.values[1]);
 			}
 		});
-		$('#kprate_val').text($('#filters_movies_kprate').slider('values', 0) + ' - ' + $('#filters_movies_kprate').slider('values', 1));
+		$('#filters_movies_kprate_min').val($('#filters_movies_kprate').slider('values', 0)).spinner({
+			spin: function(event, ui){
+				if (ui.value > 10) {
+					$(this).spinner('value', 10);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_kprate').slider('values', 0, ui.value);
+			}
+		});
+		$('#filters_movies_kprate_max').val($('#filters_movies_kprate').slider('values', 1)).spinner({
+			spin: function(event, ui){
+				if (ui.value > 10) {
+					$(this).spinner('value', 10);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_kprate').slider('values', 1, ui.value);
+			}
+		});
 
 		$('#filters_movies_rtrate').slider({
 			range: true,
@@ -51,10 +148,34 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 			max: 100,
 			values: [0, 100],
 			slide: function(event, ui){
-				$('#rtrate_val').text(ui.values[0] + ' - ' + ui.values[1]);
+				$('#filters_movies_rtrate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_rtrate_max').val(ui.values[1]);
 			}
 		});
-		$('#rtrate_val').text($('#filters_movies_rtrate').slider('values', 0) + ' - ' + $('#filters_movies_rtrate').slider('values', 1));
+		$('#filters_movies_rtrate_min').val($('#filters_movies_rtrate').slider('values', 0)).spinner({
+			spin: function(event, ui){
+				if (ui.value > 100) {
+					$(this).spinner('value', 100);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_rtrate').slider('values', 0, ui.value);
+			}
+		});
+		$('#filters_movies_rtrate_max').val($('#filters_movies_rtrate').slider('values', 1)).spinner({
+			spin: function(event, ui){
+				if (ui.value > 100) {
+					$(this).spinner('value', 100);
+					return false;
+				} else if (ui.value < 0) {
+					$(this).spinner('value', 0);
+					return false;
+				}
+				$('#filters_movies_rtrate').slider('values', 1, ui.value);
+			}
+		});
 	});
 </script>
 <div class="uk-article ka-content">
@@ -67,7 +188,7 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('filters_movies_title', 'COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL'); ?></div>
-							<div class="controls uk-width-1-2"><input name="filters[movies][title]" type="text" id="filters_movies_title" class="span10 uk-width-1-1" value="" required /></div>
+							<div class="controls uk-width-1-2"><input name="filters[movies][title]" type="text" id="filters_movies_title" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->get('movies.title'); ?>" required /></div>
 						</div>
 					</div>
 				</div>
@@ -97,7 +218,13 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('filters_movies_country', 'COM_KA_SEARCH_ADV_MOVIES_COUNTRY_LABEL'); ?></div>
-							<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->countries, 'filters[movies][country]', array('class'=>'span10 uk-width-1-2'), 'value', 'text', '', 'filters_movies_country'); ?></div>
+							<div class="controls uk-width-1-2">
+								<select name="filters[movies][country]" id="filters_movies_country" class="span10 uk-width-1-2">
+									<?php foreach ($this->items->movies->countries as $country): ?>
+									<option value="<?php echo $country->id; ?>" data-code="<?php echo $country->code; ?>"><?php echo $country->name; ?></option>
+									<?php endforeach; ?>
+								</select>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -149,10 +276,12 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('filters_movies_rate', 'COM_KA_RATE'); ?></div>
 							<div class="controls uk-width-1-2" style="padding-top: 4px;">
+								<div class="span3">
+									<input type="text" name="filters[movies][rate][min]" value="0" id="filters_movies_rate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][rate][max]" value="<?php echo $this->params->get('vote_summ_num'); ?>" id="filters_movies_rate_max" maxlength="2" size="3" />
+								</div>
 								<div class="span6">
 									<div id="filters_movies_rate" style="margin-top: 4px;"></div>
 								</div>
-								<span id="rate_val" style="color: #f6931f; font-weight: bold; padding-left: 1em;"></span>
 							</div>
 						</div>
 					</div>
@@ -163,10 +292,12 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('filters_movies_imdbrate', 'COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE'); ?></div>
 							<div class="controls uk-width-1-2" style="padding-top: 4px;">
+								<div class="span3">
+									<input type="text" name="filters[movies][imdbrate][min]" value="6" id="filters_movies_imdbrate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][imdbrate][max]" value="10" id="filters_movies_imdbrate_max" maxlength="2" size="3" />
+								</div>
 								<div class="span6">
 									<div id="filters_movies_imdbrate" style="margin-top: 4px;"></div>
 								</div>
-								<span id="imdbrate_val" style="color: #f6931f; font-weight: bold; padding-left: 1em;"></span>
 							</div>
 						</div>
 					</div>
@@ -177,10 +308,12 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('filters_movies_kprate', 'COM_KA_SEARCH_ADV_MOVIES_KP_RATE'); ?></div>
 							<div class="controls uk-width-1-2" style="padding-top: 4px;">
+								<div class="span3">
+									<input type="text" name="filters[movies][kprate][min]" value="6" id="filters_movies_kprate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][kprate][max]" value="10" id="filters_movies_kprate_max" maxlength="2" size="3" />
+								</div>
 								<div class="span6">
 									<div id="filters_movies_kprate" style="margin-top: 4px;"></div>
 								</div>
-								<span id="kprate_val" style="color: #f6931f; font-weight: bold; padding-left: 1em;"></span>
 							</div>
 						</div>
 					</div>
@@ -191,10 +324,12 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->setLabel('filters_movies_rtrate', 'COM_KA_SEARCH_ADV_MOVIES_RT_RATE'); ?></div>
 							<div class="controls uk-width-1-2" style="padding-top: 4px;">
+								<div class="span3">
+									<input type="text" name="filters[movies][rtrate][min]" value="0" id="filters_movies_rtrate_min" maxlength="3" size="3" /> - <input type="text" name="filters[movies][rtrate][max]" value="100" id="filters_movies_rtrate_max" maxlength="3" size="3" />
+								</div>
 								<div class="span6">
 									<div id="filters_movies_rtrate" style="margin-top: 4px;"></div>
 								</div>
-								<span id="rtrate_val" style="color: #f6931f; font-weight: bold; padding-left: 1em;"></span>
 							</div>
 						</div>
 					</div>
@@ -272,7 +407,13 @@ JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-4"><?php echo $this->setLabel('filters_names_birthcountry', 'COM_KA_COUNTRY'); ?></div>
-							<div class="controls uk-width-1-1"><?php echo JHTML::_('select.genericlist', $this->items->names->birthcountry, 'filters[names][birthcountry]', array('class'=>'span10 uk-width-1-4'), 'value', 'text', '', 'filters_names_birthcountry'); ?>	</div>
+							<div class="controls uk-width-1-1">
+								<select name="filters[names][birthcountry]" id="filters_names_birthcountry" class="span10 uk-width-1-4">
+									<?php foreach ($this->items->names->birthcountry as $country): ?>
+									<option value="<?php echo $country->id; ?>" data-code="<?php echo $country->code; ?>"><?php echo $country->name; ?></option>
+									<?php endforeach; ?>
+								</select>
+							</div>
 						</div>
 					</div>
 				</div>

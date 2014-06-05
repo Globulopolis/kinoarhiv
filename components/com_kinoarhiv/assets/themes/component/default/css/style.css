@@ -1039,3 +1039,13 @@ div.rating {
 .screenshot-slider {
 	padding: 0 5px;
 }
+
+#filters_movies_rate_min, #filters_movies_rate_max,
+#filters_movies_imdbrate_min, #filters_movies_imdbrate_max,
+#filters_movies_kprate_min, #filters_movies_kprate_max,
+#filters_movies_rtrate_min, #filters_movies_rtrate_max {
+	border: none;
+	height: 18px;
+	margin: 0;
+	width: 100%;
+}

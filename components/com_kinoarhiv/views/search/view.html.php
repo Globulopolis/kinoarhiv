@@ -19,6 +19,7 @@ class KinoarhivViewSearch extends JViewLegacy {
 
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->items = &$items;
+		$this->activeFilters = &$activeFilters;
 		$this->params = &$params;
 
 		$this->_prepareDocument();

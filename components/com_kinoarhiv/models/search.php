@@ -26,10 +26,10 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items->movies->to_year = &$items->movies->from_year;
 
 		// Get the list of countries
-		$db->setQuery("SELECT `id` AS `value`, `name` AS `text` FROM ".$db->quoteName('#__ka_countries')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `name` ASC");
+		$db->setQuery("SELECT `id`, `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `name` ASC");
 		$countries = $db->loadObjectList();
 
-		$items->movies->countries = array_merge(array(array('value' => '', 'text' => '')), $countries);
+		$items->movies->countries = array_merge(array((object)array('id' => '', 'name' => '', 'code' => '')), $countries);
 
 		// Get the list of vendors
 		$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*')");
@@ -154,12 +154,57 @@ class KinoarhivModelSearch extends JModelLegacy {
 	}
 
 	/**
-	 * Get the 'selected' values for inputs
+	 * Get the values for inputs
 	 *
 	 * @return   object
 	 *
 	*/
 	public function getActiveFilters() {
-		return array();
+		$input = JFactory::getApplication()->input;
+		$_items = (object)array(
+			'movies' => (object)array(
+				'title' => $input->post->get('title', '', 'string'),
+				'year' => $input->post->get('year', '', 'string'),
+				'from_year' => $input->post->get('from_year', null, 'int'),
+				'to_year' => $input->post->get('to_year', null, 'int'),
+				'country' => $input->post->get('country', null, 'int'),
+				'vendor' => $input->post->get('vendor', null, 'int'),
+				'genre' => $input->post->get('genre', array(), 'array'),
+				'mpaa' => $input->post->get('mpaa', '', 'word'),
+				'age_restrict' => $input->post->get('age_restrict', null, 'int'),
+				'ua_rate' => $input->post->get('age_restrict', null, 'int'),
+				'rate' => (object)array(
+					'min' => $input->post->get('min', 0, 'int'), 'max' => $input->post->get('max', 10, 'int')
+				),
+				'imdbrate' => (object)array(
+					'min' => 6, 'max' => 10
+				),
+				'kprate' => (object)array(
+					'min' => 6, 'max' => 10
+				),
+				'rtrate' => (object)array(
+					'min' => 0, 'max' => 100
+				),
+				'from_budget' => '',
+				'to_budget' => ''
+			),
+			'names'  => (object)array(
+				'title' => '',
+				'gender' => '',
+				'mtitle' => '',
+				'birthplace' => '',
+				'birthcountry' => '',
+				'amplua' => ''
+			)
+		);
+
+		$items = new JRegistry;
+		$items->loadObject($_items);
+		$filters = $input->post->get('filters', $items, 'array');
+echo '<pre>';
+print_r($filters);
+echo '</pre>';
+
+		return $filters;
 	}
 }

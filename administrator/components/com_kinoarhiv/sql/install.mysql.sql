@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies` (
   `metadata` text NOT NULL,
   `language` char(7) NOT NULL,
   PRIMARY KEY (`id`),
+  KEY `idx_createdby` (`idx_createdby`),
   KEY `idx_access` (`access`),
   KEY `idx_state` (`state`),
   KEY `idx_language` (`language`)

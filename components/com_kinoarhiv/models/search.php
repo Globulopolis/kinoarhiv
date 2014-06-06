@@ -161,9 +161,91 @@ class KinoarhivModelSearch extends JModelLegacy {
 	*/
 	public function getActiveFilters() {
 		$input = JFactory::getApplication()->input;
-		$_items = (object)array(
+		$items = new JRegistry;
+
+		if (array_key_exists('movies', $input->post->get('filters', array(), 'array'))) {
+			$_items = $input->getArray(array(
+				'filters' => array(
+					'movies' => array(
+						'title'=>'string',
+						'year'=>'string',
+						'from_year'=>'int',
+						'to_year'=>'int',
+						'country'=>'int',
+						'vendor'=>'int',
+						'genre'=>'array',
+						'mpaa'=>'word',
+						'age_restrict'=>'int',
+						'ua_rate'=>'int',
+						'rate'=>array('min'=>'int', 'max'=>'int'),
+						'imdbrate'=>array('min'=>'int', 'max'=>'int'),
+						'kprate'=>array('min'=>'int', 'max'=>'int'),
+						'rtrate'=>array('min'=>'int', 'max'=>'int'),
+						'from_budget'=>'string',
+						'to_budget'=>'string'
+					)
+				)
+			));
+
+			$items->loadArray($_items);
+		}
+
+		if (array_key_exists('names', $input->post->get('filters', array(), 'array'))) {
+			$_items = $input->getArray(array(
+				'filters' => array(
+					'names' => array(
+						'title'=>'string',
+						'gender'=>'alnum',
+						'mtitle'=>'int',
+						'birthday'=>'string',
+						'birthplace'=>'string',
+						'birthcountry'=>'int',
+						'amplua'=>'int'
+					)
+				)
+			));
+
+			$items->loadArray($_items);
+		}
+
+		/* $_items = $input->getArray(
+			array('filters' => array(
+				'movies' => array(
+					'title'=>'string',
+					'year'=>'string',
+					'from_year'=>'int',
+					'to_year'=>'int',
+					'country'=>'int',
+					'vendor'=>'int',
+					'genre'=>'array',
+					'mpaa'=>'word',
+					'age_restrict'=>'int',
+					'ua_rate'=>'int',
+					'rate'=>array('min'=>'int', 'max'=>'int'),
+					'imdbrate'=>array('min'=>'int', 'max'=>'int'),
+					'kprate'=>array('min'=>'int', 'max'=>'int'),
+					'rtrate'=>array('min'=>'int', 'max'=>'int'),
+					'from_budget'=>'string',
+					'to_budget'=>'string'
+				),
+				'names' => array(
+					'title'=>'string',
+					'gender'=>'int',
+					'mtitle'=>'int',
+					'birthplace'=>'string',
+					'birthcountry'=>'int',
+					'amplua'=>'int'
+				)
+			)
+		), $_POST); */
+
+		/*$_items = $input->getArray(array(
+			'filters' => 
+		));*/
+
+		/*$_items = (object)array(
 			'movies' => (object)array(
-				'title' => $input->post->get('title', '', 'string'),
+				'title' => $_input->post->_get('title', '123', 'string'),
 				'year' => $input->post->get('year', '', 'string'),
 				'from_year' => $input->post->get('from_year', null, 'int'),
 				'to_year' => $input->post->get('to_year', null, 'int'),
@@ -174,7 +256,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 				'age_restrict' => $input->post->get('age_restrict', null, 'int'),
 				'ua_rate' => $input->post->get('age_restrict', null, 'int'),
 				'rate' => (object)array(
-					'min' => $input->post->get('min', 0, 'int'), 'max' => $input->post->get('max', 10, 'int')
+					'min' => $_input->post->_get('filters.movies.rate.min', 0, 'int'), 'max' => $_input->post->_get('filters.movies.rate.', 10, 'int')
 				),
 				'imdbrate' => (object)array(
 					'min' => 6, 'max' => 10
@@ -185,26 +267,23 @@ class KinoarhivModelSearch extends JModelLegacy {
 				'rtrate' => (object)array(
 					'min' => 0, 'max' => 100
 				),
-				'from_budget' => '',
-				'to_budget' => ''
+				'from_budget' => $input->post->get('from_budget', '', 'string'),
+				'to_budget' => $input->post->get('to_budget', '', 'string')
 			),
 			'names'  => (object)array(
-				'title' => '',
-				'gender' => '',
-				'mtitle' => '',
-				'birthplace' => '',
-				'birthcountry' => '',
-				'amplua' => ''
+				'title' => $input->post->get('title', '', 'string'),
+				'gender' => $input->post->get('mtitle', null, 'int'),
+				'mtitle' => $input->post->get('mtitle', null, 'int'),
+				'birthplace' => $input->post->get('birthplace', '', 'string'),
+				'birthcountry' => $input->post->get('birthcountry', null, 'int'),
+				'amplua' => $input->post->get('amplua', null, 'int')
 			)
-		);
+		);*/
 
-		$items = new JRegistry;
-		$items->loadObject($_items);
-		$filters = $input->post->get('filters', $items, 'array');
 echo '<pre>';
-print_r($filters);
+print_r($items);
 echo '</pre>';
 
-		return $filters;
+		return $items;
 	}
 }

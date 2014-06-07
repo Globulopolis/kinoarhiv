@@ -23,6 +23,7 @@ class KinoarhivModelMovies extends JModelList {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$title = $app->input->get('term', null, 'string');
 
 		$query = $db->getQuery(true);
 
@@ -52,6 +53,11 @@ class KinoarhivModelMovies extends JModelList {
 					$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
 				}
 			}
+		}
+
+		// Filter by title
+		if (!is_null($title)) {
+			$where .= " AND `m`.`title` LIKE '".$title."%'";
 		}
 
 		$query->where($where);

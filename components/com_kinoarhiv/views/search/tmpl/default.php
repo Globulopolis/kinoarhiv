@@ -35,6 +35,47 @@ if (JFactory::getDocument()->getType() == 'html') {
 		});
 		$('#filters_movies_vendor').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>', allowClear: true});
 		$('#filters_movies_genre').select2({placeholder: '<?php echo JText::_('JGLOBAL_SELECT_SOME_OPTIONS'); ?>'});
+		$('#filters_names_mtitle').select2({
+			placeholder: '<?php echo JText::_('JGLOBAL_KEEP_TYPING'); ?>',
+			allowClear: true,
+			minimumInputLength: 1,
+			maximumSelectionSize: 1,
+			ajax: {
+				cache: true,
+				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&Itemid='.$this->home_itemid['movies'], false); ?>',
+				data: function(term, page){
+					return {
+						term: term,
+						showAll: 0
+					}
+				},
+				results: function(data, page){
+					return {results: data};
+				}
+			},
+			initSelection: function(element, callback){
+				var id = parseInt($(element).val(), 10);
+
+				if (id !== 0) {
+					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&Itemid='.$this->home_itemid['movies'], false); ?>', {
+						data: {
+							id: id
+						}
+					}).done(function(data){
+						callback(data);
+					});
+				}
+			},
+			formatResult: function(data){
+				if (data.year == '0000') return data.title;
+				return data.title+' ('+data.year+')';
+			},
+			formatSelection: function(data){
+				if (data.year == '0000') return data.title;
+				return data.title+' ('+data.year+')';
+			},
+			escapeMarkup: function(m) { return m; }
+		});
 
 		$('#filters_movies_rate').slider({
 			range: true,
@@ -389,7 +430,7 @@ if (JFactory::getDocument()->getType() == 'html') {
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_mtitle', 'COM_KA_SEARCH_ADV_NAMES_MOVIETITLE_LABEL'); ?></div>
-							<div class="controls uk-width-1-4"><input name="filters[names][mtitle]" type="text" id="filters_names_mtitle" class="span10 uk-width-1-1" value="" /></div>
+							<div class="controls uk-width-1-4"><input name="filters[names][mtitle]" type="hidden" id="filters_names_mtitle" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.mtitle', 0); ?>" /></div>
 						</div>
 					</div>
 				</div>

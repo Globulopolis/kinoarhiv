@@ -70,6 +70,10 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			});
 		});
 		<?php endif; ?>
+
+		<?php if ($this->activeFilters->exists('filters.movies.title')): ?>
+		$('.adv-search').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&format=raw', false); ?>', <?php echo json_encode($this->activeFilters); ?>);
+		<?php endif; ?>
 	});
 //]]>
 </script>
@@ -78,7 +82,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
 
-	<?php echo JLayoutHelper::render('views.search.tmpl.default', array('params'=>$this->params), JPATH_COMPONENT); ?>
+	<div class="adv-search"></div>
 
 	<?php if (count($this->items['movies']) > 0): ?>
 	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>

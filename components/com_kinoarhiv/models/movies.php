@@ -17,13 +17,20 @@ class KinoarhivModelMovies extends JModelList {
 		parent::populateState($params->get('sort_movielist_field'), strtoupper($params->get('sort_movielist_ord')));
 	}
 
+	protected function getStoreId($id = '') {
+		// Compile the store id.
+		$id .= ':' . $this->getState('filter.title');
+
+		return parent::getStoreId($id);
+	}
+
 	protected function getListQuery() {
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$title = $app->input->get('term', null, 'string');
+		$searches = $this->getActiveFilters();
 
 		$query = $db->getQuery(true);
 
@@ -56,9 +63,23 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		// Filter by title
-		if (!is_null($title)) {
-			$where .= " AND `m`.`title` LIKE '".$title."%'";
+		$title = $searches->get('filters.movies.title');
+		if (!empty($title)) {
+			$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
 		}
+
+		// Filter by year
+		$year = $searches->get('filters.movies.year');
+		if (!empty($year)) {
+			$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
+		}
+
+		// Filter by years range
+		$from_year = $searches->get('filters.movies.from_year');
+		$to_year = $searches->get('filters.movies.to_year');
+		/*if (!empty($year)) {
+			$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
+		}*/
 
 		$query->where($where);
 
@@ -69,6 +90,46 @@ class KinoarhivModelMovies extends JModelList {
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 
 		return $query;
+	}
+
+	/**
+	 * Get the values from search inputs
+	 *
+	 * @return   object
+	 *
+	*/
+	public function getActiveFilters() {
+		$input = JFactory::getApplication()->input;
+		$items = new JRegistry;
+
+		if (array_key_exists('movies', $input->post->get('filters', array(), 'array'))) {
+			$_items = $input->getArray(array(
+				'filters' => array(
+					'movies' => array(
+						'title'=>'string',
+						'year'=>'string',
+						'from_year'=>'int',
+						'to_year'=>'int',
+						'country'=>'int',
+						'vendor'=>'int',
+						'genre'=>'array',
+						'mpaa'=>'word',
+						'age_restrict'=>'int',
+						'ua_rate'=>'int',
+						'rate'=>array('min'=>'int', 'max'=>'int'),
+						'imdbrate'=>array('min'=>'int', 'max'=>'int'),
+						'kprate'=>array('min'=>'int', 'max'=>'int'),
+						'rtrate'=>array('min'=>'int', 'max'=>'int'),
+						'from_budget'=>'string',
+						'to_budget'=>'string'
+					)
+				)
+			));
+
+			$items->loadArray($_items);
+		}
+
+		return $items;
 	}
 
 	public function favorite() {

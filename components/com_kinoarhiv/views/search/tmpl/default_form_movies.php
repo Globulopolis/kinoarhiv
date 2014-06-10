@@ -1,4 +1,5 @@
-<div class="advsearch-movies well uk-panel uk-panel-box">
+<?php defined('_JEXEC') or die; ?>
+<div class="advsearch-movies<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'movies') ? ' well uk-panel uk-panel-box' : ''; ?>">
 	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies'); ?>" id="filters_movies" method="post" autocomplete="off">
 		<fieldset class="form-horizontal uk-form">
 			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE'); ?></legend>
@@ -77,7 +78,7 @@
 				<div class="span6 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_age_restrict', 'COM_KA_SEARCH_ADV_MOVIES_RU_AGE_RESTICT_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->age_restrict, 'filters[movies][age_restrict]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.age_restrict', ''), 'filters_movies_age_restrict'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->age_restrict, 'filters[movies][age_restrict]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.age_restrict', '-1'), 'filters_movies_age_restrict'); ?></div>
 					</div>
 				</div>
 			</div>

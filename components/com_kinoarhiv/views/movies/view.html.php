@@ -8,6 +8,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
+		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -105,6 +106,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$this->items['movies'] = &$items;
 		$this->pagination = &$pagination;
 		$this->user = &$user;
+		$this->lang = &$lang;
 
 		$this->_prepareDocument();
 

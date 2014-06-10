@@ -1,4 +1,5 @@
-<div class="advsearch-names well uk-panel uk-panel-box">
+<?php defined('_JEXEC') or die; ?>
+<div class="advsearch-names<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'names') ? ' well uk-panel uk-panel-box' : ''; ?>">
 	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names'); ?>" id="filters_names" method="post">
 		<fieldset class="form-horizontal uk-form">
 			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE'); ?></legend>

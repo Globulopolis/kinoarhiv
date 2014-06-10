@@ -1,7 +1,5 @@
 <?php defined('_JEXEC') or die;
-echo '<pre>';
-print_r($this->activeFilters);
-echo '</pre>';
+
 $css = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->params->get('ka_theme').'/css/select.css';
 $script = JURI::base().'components/com_kinoarhiv/assets/js/select2.min.js';
 $script_lang = JURI::base().'components/com_kinoarhiv/assets/js/i18n/select/select2_locale_'.substr(JFactory::getLanguage()->getTag(), 0, 2).'.js';
@@ -216,7 +214,12 @@ if (JFactory::getDocument()->getType() == 'html') {
 	});
 </script>
 <div class="uk-article ka-content">
-	<?php //echo $this->loadTemplate('form_movies'); ?>
-
-	<?php //echo $this->loadTemplate('form_names'); ?>
+	<?php if (JFactory::getApplication()->input->get('task', '', 'cmd') == 'movies'):
+		echo $this->loadTemplate('form_movies');
+	elseif (JFactory::getApplication()->input->get('task', '', 'cmd') == 'names'):
+		echo $this->loadTemplate('form_names');
+	else:
+		echo $this->loadTemplate('form_movies');
+		echo $this->loadTemplate('form_names');
+	endif; ?>
 </div>

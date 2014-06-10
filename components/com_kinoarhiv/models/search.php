@@ -72,7 +72,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 
 		// Russian age restict
 		$items->movies->age_restrict = array(
-			array('value'=>'', 'text'=>'-'),
+			array('value'=>'-1', 'text'=>'-'),
 			array('value'=>'0', 'text'=>'0+'),
 			array('value'=>'6', 'text'=>'6+'),
 			array('value'=>'12', 'text'=>'12+'),
@@ -175,7 +175,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 						'vendor'=>'int',
 						'genre'=>'array',
 						'mpaa'=>'word',
-						'age_restrict'=>'int',
+						'age_restrict'=>'string',
 						'ua_rate'=>'int',
 						'rate'=>array('min'=>'int', 'max'=>'int'),
 						'imdbrate'=>array('min'=>'int', 'max'=>'int'),

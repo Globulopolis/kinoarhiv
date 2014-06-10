@@ -71,8 +71,15 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		});
 		<?php endif; ?>
 
-		<?php if ($this->activeFilters->exists('filters.movies.title')): ?>
-		$('.adv-search').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&format=raw', false); ?>', <?php echo json_encode($this->activeFilters); ?>);
+		<?php if ($this->activeFilters->exists('filters.movies')): ?>
+		$('.adv-search #search_form').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movies&format=raw', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function(response, status, xhr){
+			if (status == 'error') {
+				showMsg('Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText);
+				return false;
+			}
+
+			$('.adv-search').accordion({ active: false, collapsible: true, heightStyle: 'content' });
+		});
 		<?php endif; ?>
 	});
 //]]>
@@ -82,14 +89,24 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
 
-	<div class="adv-search"></div>
+	<?php if ($this->activeFilters->exists('filters.movies')): ?>
+	<div class="adv-search">
+		<h3><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></h3>
+		<div id="search_form"></div>
+	</div>
+	<?php endif; ?>
 
-	<?php if (count($this->items['movies']) > 0): ?>
-	<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+	<?php if (count($this->items['movies']) > 0):
+		if ($this->activeFilters->exists('filters.movies')):
+			$plural = $this->lang->getPluralSuffixes(count($this->items['movies']));
+			echo '<br />'.JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_'.$plural[0], count($this->items['movies']));
+		endif; ?>
+
+		<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
 		<div class="pagination top">
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
-	<?php endif;
+		<?php endif;
 
 		foreach ($this->items['movies'] as $item): ?>
 		<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
@@ -240,6 +257,6 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			</div>
 		<?php endif;
 	else: ?>
-		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<br /><div><?php echo ($this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

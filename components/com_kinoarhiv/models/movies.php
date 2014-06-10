@@ -66,20 +66,20 @@ class KinoarhivModelMovies extends JModelList {
 		$title = $searches->get('filters.movies.title');
 		if (!empty($title)) {
 			$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
-		}
 
-		// Filter by year
-		$year = $searches->get('filters.movies.year');
-		if (!empty($year)) {
-			$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
+			// Filter by year
+			$year = $searches->get('filters.movies.year');
+			if (!empty($year)) {
+				$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
+			} else {
+				// Filter by years range
+				$from_year = $searches->get('filters.movies.from_year');
+				$to_year = $searches->get('filters.movies.to_year');
+				if (!empty($from_year) || !empty($to_year)) {
+					//$where .= " AND `m`.`year` LIKE '".$db->escape($from_year)."%'";
+				}
+			}
 		}
-
-		// Filter by years range
-		$from_year = $searches->get('filters.movies.from_year');
-		$to_year = $searches->get('filters.movies.to_year');
-		/*if (!empty($year)) {
-			$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
-		}*/
 
 		$query->where($where);
 
@@ -114,7 +114,7 @@ class KinoarhivModelMovies extends JModelList {
 						'vendor'=>'int',
 						'genre'=>'array',
 						'mpaa'=>'word',
-						'age_restrict'=>'int',
+						'age_restrict'=>'string',
 						'ua_rate'=>'int',
 						'rate'=>array('min'=>'int', 'max'=>'int'),
 						'imdbrate'=>array('min'=>'int', 'max'=>'int'),

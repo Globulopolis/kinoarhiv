@@ -1049,3 +1049,11 @@ div.rating {
 	margin: 0;
 	width: 100%;
 }
+
+#search_form {
+	padding: 1em;
+}
+
+#search_form .advsearch-movies {
+	margin: 0;
+}

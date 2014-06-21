@@ -30,7 +30,7 @@ class KinoarhivModelMovies extends JModelList {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$searches = $this->getActiveFilters();
+		$filters = $this->buildFilters();
 
 		$query = $db->getQuery(true);
 
@@ -62,26 +62,7 @@ class KinoarhivModelMovies extends JModelList {
 			}
 		}
 
-		// Filter by title
-		$title = $searches->get('filters.movies.title');
-		if (!empty($title)) {
-			$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
-
-			// Filter by year
-			$year = $searches->get('filters.movies.year');
-			if (!empty($year)) {
-				$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
-			} else {
-				// Filter by years range
-				$from_year = $searches->get('filters.movies.from_year');
-				$to_year = $searches->get('filters.movies.to_year');
-				if (!empty($from_year) || !empty($to_year)) {
-					//$where .= " AND `m`.`year` LIKE '".$db->escape($from_year)."%'";
-				}
-			}
-		}
-
-		$query->where($where);
+		$query->where($where.$filters);
 
 		$query->group($db->quoteName('m.id')); // Prevent duplicate records if accidentally have a more than one poster for frontpage.
 
@@ -90,6 +71,94 @@ class KinoarhivModelMovies extends JModelList {
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 
 		return $query;
+	}
+
+	/**
+	 * Build WHERE from values from the search inputs
+	 *
+	 * @return   string
+	 *
+	*/
+	protected function buildFilters() {
+		$db = $this->getDBO();
+		$where = "";
+		$where_id = array();
+		$searches = $this->getActiveFilters();
+
+		// Filter by title
+		$title = $searches->get('filters.movies.title');
+		if (!empty($title)) {
+			$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
+		}
+
+		// Filter by year
+		$year = $searches->get('filters.movies.year');
+		if (!empty($year)) {
+			$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
+		} else {
+			// Filter by years range
+			$from_year = $searches->get('filters.movies.from_year');
+			$to_year = $searches->get('filters.movies.to_year');
+			if (!empty($from_year) || !empty($to_year)) {
+				//$where .= " AND `m`.`year` LIKE '".$db->escape($from_year)."%'";
+			}
+		}
+
+		// Filter by country
+		$country = $searches->get('filters.movies.country');
+		if (!empty($country)) {
+			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `country_id` = ".(int)$country);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $movie_ids);
+		}
+
+		// Filter by vendor
+		$vendor = $searches->get('filters.movies.vendor');
+		if (!empty($vendor)) {
+			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_releases')." WHERE `vendor_id` = ".(int)$vendor." GROUP BY `movie_id`");
+			$movie_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $movie_ids);
+		}
+
+		// Filter by genres
+		$genres = $searches->get('filters.movies.genre');
+		if (!empty($genres)) {
+			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `genre_id` IN (".implode(',', $genres).") GROUP BY `movie_id`");
+			$movie_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $movie_ids);
+		}
+
+		// Filter by MPAA
+		$mpaa = $searches->get('filters.movies.mpaa');
+		if (!empty($mpaa)) {
+			$where .= " AND `m`.`mpaa` = '".$db->escape($mpaa)."'";
+		}
+
+		// Filter by age
+		$age_restrict = $searches->get('filters.movies.age_restrict');
+		if (!empty($age_restrict) && $age_restrict != '-1') {
+			$where .= " AND `m`.`age_restrict` = '".$db->escape($age_restrict)."'";
+		}
+
+		// Filter by UA rating
+		$ua_rate = $searches->get('filters.movies.ua_rate');
+		if (!empty($ua_rate) && $ua_rate != '-1') {
+			$where .= " AND `m`.`ua_rate` = '".$db->escape($ua_rate)."'";
+		}
+
+		// Filter by site rating
+		$rate_min = $searches->def('filters.movies.rate.min', 0);
+		$rate_max = $searches->def('filters.movies.rate.max', 10);
+		$where .= " AND `m`.`rate_sum_loc` BETWEEN 0 AND 10";
+
+		if (!empty($country) || !empty($vendor) || !empty($genres)) {
+			$where .= " AND `m`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
+		}
+
+		return $where;
 	}
 
 	/**
@@ -113,7 +182,7 @@ class KinoarhivModelMovies extends JModelList {
 						'country'=>'int',
 						'vendor'=>'int',
 						'genre'=>'array',
-						'mpaa'=>'word',
+						'mpaa'=>'string',
 						'age_restrict'=>'string',
 						'ua_rate'=>'int',
 						'rate'=>array('min'=>'int', 'max'=>'int'),

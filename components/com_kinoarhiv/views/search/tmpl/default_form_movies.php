@@ -8,7 +8,7 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_title', 'COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><input name="filters[movies][title]" type="text" id="filters_movies_title" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.movies.title', ''); ?>" required /></div>
+						<div class="controls uk-width-1-2"><input name="filters[movies][title]" type="text" id="filters_movies_title" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.movies.title', ''); ?>" /></div>
 					</div>
 				</div>
 			</div>
@@ -39,7 +39,7 @@
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_country', 'COM_KA_SEARCH_ADV_MOVIES_COUNTRY_LABEL'); ?></div>
 						<div class="controls uk-width-1-2">
-							<select name="filters[movies][country]" id="filters_movies_country" class="span10 uk-width-1-2">
+							<select name="filters[movies][country]" id="filters_movies_country" class="span10 uk-width-1-1">
 								<?php foreach ($this->items->movies->countries as $country):
 									$selected = ($country->id == $this->activeFilters->def('filters.movies.country', '')) ? ' selected' : ''; ?>
 								<option value="<?php echo $country->id; ?>" data-code="<?php echo $country->code; ?>"<?php echo $selected; ?>><?php echo $country->name; ?></option>
@@ -54,7 +54,7 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_vendor', 'COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->vendors, 'filters[movies][vendor]', array('class'=>'span10 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.movies.vendor', ''), 'filters_movies_vendor'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->vendors, 'filters[movies][vendor]', array('class'=>'span10 uk-width-1-1'), 'value', 'text', $this->activeFilters->def('filters.movies.vendor', ''), 'filters_movies_vendor'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -63,7 +63,7 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_genre', 'COM_KA_GENRE'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->genres, 'filters[movies][genre][]', array('class'=>'span10 uk-width-1-2', 'multiple'=>true), 'value', 'text', $this->activeFilters->def('filters.movies.genre', ''), 'filters_movies_genre'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->genres, 'filters[movies][genre][]', array('class'=>'span10 uk-width-1-1', 'multiple'=>true), 'value', 'text', $this->activeFilters->def('filters.movies.genre', ''), 'filters_movies_genre'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -86,8 +86,8 @@
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_ua_rate', 'COM_KA_UA_RATE'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->ua_rate, 'filters[movies][ua_rate]', array('class'=>'span4 uk-width-1-3'), 'value', 'text', $this->activeFilters->def('filters.movies.ua_rate', ''), 'filters_movies_ua_rate'); ?></div>
+						<div class="control-label uk-width-1-3"><?php echo GlobalHelper::setLabel('filters_movies_ua_rate', 'COM_KA_UA_RATE'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->ua_rate, 'filters[movies][ua_rate]', array('class'=>'span4 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.movies.ua_rate', ''), 'filters_movies_ua_rate'); ?></div>
 					</div>
 				</div>
 			</div>

@@ -174,7 +174,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 						'country'=>'int',
 						'vendor'=>'int',
 						'genre'=>'array',
-						'mpaa'=>'word',
+						'mpaa'=>'string',
 						'age_restrict'=>'string',
 						'ua_rate'=>'int',
 						'rate'=>array('min'=>'int', 'max'=>'int'),

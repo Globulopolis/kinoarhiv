@@ -8,7 +8,7 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_title', 'COM_KA_SEARCH_ADV_NAMES_TITLE_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><input name="filters[names][title]" type="text" id="filters_names_title" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.title', ''); ?>" required /></div>
+						<div class="controls uk-width-1-2"><input name="filters[names][title]" type="text" id="filters_names_title" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.title', ''); ?>" /></div>
 					</div>
 				</div>
 			</div>
@@ -18,7 +18,7 @@
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-4"><?php echo GlobalHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH'); ?></div>
 						<div class="controls uk-width-1-1">
-							<input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" />&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?>
+							<input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-5" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" />&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?>
 						</div>
 					</div>
 				</div>
@@ -28,7 +28,7 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_mtitle', 'COM_KA_SEARCH_ADV_NAMES_MOVIETITLE_LABEL'); ?></div>
-						<div class="controls uk-width-1-4"><input name="filters[names][mtitle]" type="hidden" id="filters_names_mtitle" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.mtitle', 0); ?>" /></div>
+						<div class="controls uk-width-1-2"><input name="filters[names][mtitle]" type="hidden" id="filters_names_mtitle" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.mtitle', 0); ?>" /></div>
 					</div>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-4"><?php echo GlobalHelper::setLabel('filters_names_birthplace', 'COM_KA_NAMES_BIRTHPLACE_1'); ?></div>
-						<div class="controls uk-width-1-1">
+						<div class="controls uk-width-1-2">
 							<input name="filters[names][birthplace]" type="text" id="filters_names_birthplace" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.birthplace', ''); ?>" />
 						</div>
 					</div>
@@ -48,8 +48,8 @@
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-4"><?php echo GlobalHelper::setLabel('filters_names_birthcountry', 'COM_KA_COUNTRY'); ?></div>
-						<div class="controls uk-width-1-1">
-							<select name="filters[names][birthcountry]" id="filters_names_birthcountry" class="span10 uk-width-1-4">
+						<div class="controls uk-width-1-2">
+							<select name="filters[names][birthcountry]" id="filters_names_birthcountry" class="span10 uk-width-1-1">
 								<?php foreach ($this->items->names->birthcountry as $country):
 									$selected = ($country->id == $this->activeFilters->def('filters.names.birthcountry', '')) ? ' selected' : ''; ?>
 								<option value="<?php echo $country->id; ?>" data-code="<?php echo $country->code; ?>"<?php echo $selected; ?>><?php echo $country->name; ?></option>

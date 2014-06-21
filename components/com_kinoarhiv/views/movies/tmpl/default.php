@@ -78,7 +78,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				return false;
 			}
 
-			$('.adv-search').accordion({ active: false, collapsible: true, heightStyle: 'content' });
+			$('.adv-search').accordion({ active: false, collapsible: true, heightStyle: 'content', animate: false });
 		});
 		<?php endif; ?>
 	});
@@ -98,8 +98,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 
 	<?php if (count($this->items['movies']) > 0):
 		if ($this->activeFilters->exists('filters.movies')):
-			$plural = $this->lang->getPluralSuffixes(count($this->items['movies']));
-			echo '<br />'.JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_'.$plural[0], count($this->items['movies']));
+			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
+			echo '<br />'.JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_'.$plural[0], $this->pagination->total);
 		endif; ?>
 
 		<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>

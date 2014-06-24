@@ -80,8 +80,13 @@ class KinoarhivModelMovies extends JModelList {
 	 *
 	*/
 	protected function buildFilters() {
-		$db = $this->getDBO();
 		$where = "";
+
+		if (!JSession::checkToken()) {
+			return $where;
+		}
+
+		$db = $this->getDBO();
 		$where_id = array();
 		$searches = $this->getActiveFilters();
 
@@ -99,8 +104,10 @@ class KinoarhivModelMovies extends JModelList {
 			// Filter by years range
 			$from_year = $searches->get('filters.movies.from_year');
 			$to_year = $searches->get('filters.movies.to_year');
-			if (!empty($from_year) || !empty($to_year)) {
-				//$where .= " AND `m`.`year` LIKE '".$db->escape($from_year)."%'";
+			if (!empty($from_year) && !empty($to_year)) {
+				//$where .= " AND `m`.`year` BETWEEN '".$db->escape($from_year)."' AND '".$db->escape($to_year)."'";
+			} else {
+				
 			}
 		}
 
@@ -150,9 +157,22 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		// Filter by site rating
-		$rate_min = $searches->def('filters.movies.rate.min', 0);
+		/*$rate_min = $searches->def('filters.movies.rate.min', 0);
 		$rate_max = $searches->def('filters.movies.rate.max', 10);
-		$where .= " AND `m`.`rate_sum_loc` BETWEEN 0 AND 10";
+		$where .= " AND `m`.`rate_sum_loc` BETWEEN 0 AND 10";*/
+
+		// Filter by budget
+		$from_budget = $searches->get('filters.movies.from_budget');
+		$to_budget = $searches->get('filters.movies.to_budget');
+		if (!empty($from_budget) && !empty($to_budget)) {
+			$where .= " AND `budget` BETWEEN '".$db->escape($from_budget)."' AND '".$db->escape($to_budget)."'";
+		} else {
+			if (!empty($from_budget)) {
+				$where .= " AND `budget` = '".$db->escape($from_budget)."'";
+			} elseif (!empty($to_budget)) {
+				$where .= " AND `budget` = '".$db->escape($to_budget)."'";
+			}
+		}
 
 		if (!empty($country) || !empty($vendor) || !empty($genres)) {
 			$where .= " AND `m`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
@@ -170,6 +190,10 @@ class KinoarhivModelMovies extends JModelList {
 	public function getActiveFilters() {
 		$input = JFactory::getApplication()->input;
 		$items = new JRegistry;
+
+		if (!JSession::checkToken()) {
+			return $items;
+		}
 
 		if (array_key_exists('movies', $input->post->get('filters', array(), 'array'))) {
 			$_items = $input->getArray(array(

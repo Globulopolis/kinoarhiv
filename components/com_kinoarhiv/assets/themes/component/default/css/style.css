@@ -1054,6 +1054,11 @@ div.rating {
 	padding: 1em;
 }
 
+/* Need to search form "did not jump" on the main page */
+.adv-search #search_form {
+	display: none;
+}
+
 #search_form .advsearch-movies {
 	margin: 0;
 }

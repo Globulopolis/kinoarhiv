@@ -315,7 +315,7 @@ class KinoarhivModelName extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 
-		// We need set alias for quick save on movie page
+		// We need to set alias for quick save on movie page
 		$name = 'n_name';
 		$latin_name = 'n_latin_name';
 		$date_of_birth = 'n_date_of_birth';
@@ -328,23 +328,21 @@ class KinoarhivModelName extends JModelForm {
 				$name=>'string', $latin_name=>'string', $date_of_birth=>'string', $gender=>'int', $ordering=>'int', $language=>'string'
 			)
 		));
-		$name = $data['form']['n_name'];
-		$latin_name = $data['form']['n_latin_name'];
+		$name = $data['form'][$name];
+		$latin_name = $data['form'][$latin_name];
 		$alias = $name != '' ? $name : $latin_name;
-		$date_of_birth = (empty($data['form']['n_date_of_birth']) && $data['form']['n_date_of_birth'] == '0000-00-00') ? date('Y-m-d') : $data['form']['n_date_of_birth'];
-		$ordering = empty($data['form']['n_ordering']) ? 0 : $data['form']['n_ordering'];
+		$date_of_birth = (empty($data['form'][$date_of_birth]) && $data['form'][$date_of_birth] == '0000-00-00') ? date('Y-m-d') : $data['form'][$date_of_birth];
+		$gender = $data['form'][$gender];
+		$ordering = empty($data['form'][$ordering]) ? 0 : $data['form'][$ordering];
 		$metadata = json_encode(array('tags'=>array(), 'robots'=>''));
-		$language = empty($data['form']['n_language']) ? '*' : $data['form']['n_language'];
+		$language = empty($data['form'][$language]) ? '*' : $data['form'][$language];
 
 		if (empty($name) && empty($latin_name)) {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_REQUIRED'));
 		}
 
-		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names')." (`id`, `asset_id`, `name`, `latin_name`, `alias`, `url_photo`, "
-			. "\n `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `ordering`, `state`, "
-			. "\n `access`, `metakey`, `metadesc`, `metadata`, `language`)"
-			. "\n VALUES ('', '0', '".$db->escape($name)."', '".$db->escape($latin_name)."', '".JFilterOutput::stringURLSafe($alias)."', '', "
-			. "\n '".$date_of_birth."', '', '', '', '".$gender."', '', '', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
+		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names')." (`id`, `asset_id`, `name`, `latin_name`, `alias`, `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `attribs`, `ordering`, `state`, `access`, `metakey`, `metadesc`, `metadata`, `language`)"
+			. "\n VALUES ('', '0', '".$db->escape($name)."', '".$db->escape($latin_name)."', '".JFilterOutput::stringURLSafe($alias)."', '".$date_of_birth."', '', '', '', '".$gender."', '', '', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
 		$query = $db->execute();
 
 		if ($query !== true) {

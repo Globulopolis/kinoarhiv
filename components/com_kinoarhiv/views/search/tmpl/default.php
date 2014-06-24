@@ -16,10 +16,6 @@ if (JFactory::getDocument()->getType() == 'html') {
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('.cmd-reset').click(function(){
-			$(this).closest('form').find('#filters_movies_country, #filters_movies_vendor, #filters_names_birthcountry, #filters_movies_genre').select2('val', '');
-		});
-
 		$('#filters_movies_country, #filters_names_birthcountry').select2({
 			placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>',
 			allowClear: true,

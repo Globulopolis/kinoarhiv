@@ -19,10 +19,24 @@ class KinoarhivModelSearch extends JModelLegacy {
 		);
 
 		// Get years for movies
-		$db->setQuery("SELECT SUBSTRING(`year`, 1, 4) AS `value`, SUBSTRING(`year`, 1, 4) AS `text` FROM ".$db->quoteName('#__ka_movies')." GROUP BY `year` ORDER BY `year` DESC");
-		$from_year = $db->loadObjectList();
+		$db->setQuery("SELECT `year` FROM ".$db->quoteName('#__ka_movies')." GROUP BY `year`");
+		$_from_year = $db->loadObjectList();
+		$new_years_arr = array();
 
-		$items->movies->from_year = array_merge($default_value, $from_year);
+		foreach ($_from_year as $key=>$years) {
+			$y = explode('-', str_replace(' ', '', $years->year));
+
+			$new_years_arr[$key]['value'] = $y[0];
+			$new_years_arr[$key]['text'] = $y[0];
+			if (isset($y[1]) && !empty($y[1])) {
+				$new_years_arr[$key]['value'] = $y[1];
+				$new_years_arr[$key]['text'] = $y[1];
+			}
+		}
+
+		rsort($new_years_arr);
+		$new_years_arr = JArrayHelper::arrayUnique($new_years_arr);
+		$items->movies->from_year = array_merge($default_value, $new_years_arr);
 		$items->movies->to_year = &$items->movies->from_year;
 
 		// Get the list of countries
@@ -82,7 +96,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 
 		// Ukrainian age restict
 		$items->movies->ua_rate = array(
-			array('value'=>'', 'text'=>'-'),
+			array('value'=>'-1', 'text'=>'-'),
 			array('value'=>'0', 'text'=>JText::_('COM_KA_SEARCH_ADV_MOVIES_UA_RATE_0')),
 			array('value'=>'1', 'text'=>JText::_('COM_KA_SEARCH_ADV_MOVIES_UA_RATE_1')),
 			array('value'=>'2', 'text'=>JText::_('COM_KA_SEARCH_ADV_MOVIES_UA_RATE_2'))

@@ -45,6 +45,9 @@ $name_id = $input->get('name_id', 0, 'int');
 							_this.closest('fieldset').parent().slideToggle();
 							$('.rel-form_name .group').slideToggle();
 							$('#rel-add-apply').button('enable');
+
+							$('#form_c_title').val('');
+							$('#form_c_ordering').val('0');
 						} else {
 							showMsg('.form_career .control-group:last', response.message);
 						}
@@ -69,6 +72,9 @@ $name_id = $input->get('name_id', 0, 'int');
 							_this.closest('fieldset').parent().slideToggle().removeClass('name dub');
 							$('.rel-form_name .group').slideToggle();
 							$('#rel-add-apply').button('enable');
+
+							$('#form_n_name, #form_n_latin_name, #form_n_date_of_birth').val('');
+							$('#form_n_ordering').val('0');
 						} else {
 							showMsg('.form_name .control-group:last', response.message);
 						}

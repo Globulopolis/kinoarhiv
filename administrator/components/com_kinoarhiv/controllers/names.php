@@ -103,6 +103,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 	public function quickSave() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
 		$document = JFactory::getDocument();
 		$user = JFactory::getUser();
 

@@ -336,13 +336,24 @@ class KinoarhivModelName extends JModelForm {
 		$ordering = empty($data['form'][$ordering]) ? 0 : $data['form'][$ordering];
 		$metadata = json_encode(array('tags'=>array(), 'robots'=>''));
 		$language = empty($data['form'][$language]) ? '*' : $data['form'][$language];
+		$attribs = array();
 
 		if (empty($name) && empty($latin_name)) {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_REQUIRED'));
 		}
 
+		$form = JForm::getInstance('com_kinoarhiv.name', __DIR__.'\forms\name.xml', array('control' => '', 'load_data' => false), false, "fields[@name = 'attribs']");
+
+		foreach ($form->getXml()->xpath('//field') as $field) {
+			$attribs[(string)$field->attributes()->name] = '';
+		}
+
+		if (empty($form)) {
+			return false;
+		}
+
 		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names')." (`id`, `asset_id`, `name`, `latin_name`, `alias`, `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `attribs`, `ordering`, `state`, `access`, `metakey`, `metadesc`, `metadata`, `language`)"
-			. "\n VALUES ('', '0', '".$db->escape($name)."', '".$db->escape($latin_name)."', '".JFilterOutput::stringURLSafe($alias)."', '".$date_of_birth."', '', '', '', '".$gender."', '', '', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
+			. "\n VALUES ('', '0', '".$db->escape($name)."', '".$db->escape($latin_name)."', '".JFilterOutput::stringURLSafe($alias)."', '".$date_of_birth."', '', '', '', '".$gender."', '', '', '".json_encode($attribs)."', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
 		$query = $db->execute();
 
 		if ($query !== true) {

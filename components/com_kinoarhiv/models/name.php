@@ -79,6 +79,14 @@ class KinoarhivModelName extends JModelList {
 			. "\n ORDER BY `year` ASC");
 		$result->movies = $db->loadObjectList();
 
+		// Get proper Itemid for movies list
+		if (count($result->movies) > 0) {
+			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')." WHERE `link` = 'index.php?option=com_kinoarhiv&view=movies' AND `type` = 'component' AND `parent_id` = 1 AND `language` = ".$db->quote($lang->getTag())."");
+			$result->itemid = $db->loadResult();
+		} else {
+			$result->itemid = $app->input->get('Itemid', 0, 'int');
+		}
+
 		return $result;
 	}
 

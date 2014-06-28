@@ -82,7 +82,7 @@ class KinoarhivModelMovies extends JModelList {
 	protected function buildFilters() {
 		$where = "";
 
-		if (!JSession::checkToken()) {
+		if (!JSession::checkToken('post') && !JSession::checkToken('get')) {
 			return $where;
 		}
 
@@ -188,38 +188,52 @@ class KinoarhivModelMovies extends JModelList {
 	 *
 	*/
 	public function getActiveFilters() {
+		$filter = JFilterInput::getInstance();
 		$input = JFactory::getApplication()->input;
 		$items = new JRegistry;
 
-		if (!JSession::checkToken()) {
+		if (!JSession::checkToken() && !JSession::checkToken('get')) {
 			return $items;
 		}
 
-		if (array_key_exists('movies', $input->post->get('filters', array(), 'array'))) {
-			$_items = $input->getArray(array(
+		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
+			$filters = $input->get('filters', array(), 'array')['movies'];
+			$vars = array(
 				'filters' => array(
 					'movies' => array(
-						'title'=>'string',
-						'year'=>'string',
-						'from_year'=>'int',
-						'to_year'=>'int',
-						'country'=>'int',
-						'vendor'=>'int',
-						'genre'=>'array',
-						'mpaa'=>'string',
-						'age_restrict'=>'string',
-						'ua_rate'=>'int',
-						'rate'=>array('min'=>'int', 'max'=>'int'),
-						'imdbrate'=>array('min'=>'int', 'max'=>'int'),
-						'kprate'=>array('min'=>'int', 'max'=>'int'),
-						'rtrate'=>array('min'=>'int', 'max'=>'int'),
-						'from_budget'=>'string',
-						'to_budget'=>'string'
+						'title'			=> isset($filters['title']) ? $filter->clean($filters['title'], 'string') : '',
+						'year'			=> isset($filters['year']) ? $filter->clean($filters['year'], 'string') : '',
+						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
+						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
+						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : '',
+						'vendor'		=> isset($filters['vendor']) ? $filter->clean($filters['vendor'], 'int') : '',
+						'genre'			=> isset($filters['genre']) ? $filter->clean($filters['genre'], 'array') : '',
+						'mpaa' 			=> isset($filters['mpaa']) ? $filter->clean($filters['mpaa'], 'string') : '',
+						'age_restrict'	=> isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '',
+						'ua_rate'		=> isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '',
+						'rate'			=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+						),
+						'imdbrate'		=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+						),
+						'kprate'		=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+						),
+						'rtrate'		=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 100
+						),
+						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
+						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : ''
 					)
 				)
-			));
+			);
 
-			$items->loadArray($_items);
+			$items->loadArray($vars);
 		}
 
 		return $items;

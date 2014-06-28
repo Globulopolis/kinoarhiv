@@ -9,7 +9,7 @@ class KinoarhivViewName extends JViewLegacy {
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
 		$this->page = $app->input->get('page', '', 'cmd');
-		$this->itemid = $app->input->get('Itemid');
+		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		switch ($this->page) {
 			case 'wallpapers': $this->wallpp(); break;

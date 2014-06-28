@@ -1,33 +1,35 @@
 <?php defined('_JEXEC') or die;
-if ($this->params->get('player_type') == 'mediaelement'): ?>
-<script type="text/javascript">
-	jQuery(document).ready(function($){
-		$('video').mediaelementplayer({
-			pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
-			flashName: 'flashmediaelement.swf',
-			silverlightName: 'silverlightmediaelement.xap'
+if (isset($this->item->trailers) && count($this->item->trailers) > 0):
+	if ($this->params->get('player_type') == 'mediaelement'): ?>
+	<script type="text/javascript">
+		jQuery(document).ready(function($){
+			$('video').mediaelementplayer({
+				pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
+				flashName: 'flashmediaelement.swf',
+				silverlightName: 'silverlightmediaelement.xap'
+			});
 		});
-	});
-</script>
-<?php elseif ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer'): ?>
-<script type="text/javascript">
-	jQuery(document).ready(function($){
-		$('a.play').click(function(e){
-			e.preventDefault();
+	</script>
+	<?php elseif ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer'): ?>
+	<script type="text/javascript">
+		jQuery(document).ready(function($){
+			$('a.play').click(function(e){
+				e.preventDefault();
 
-			if ($(this).hasClass('watch-trailer')) {
-				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
-					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+				if ($(this).hasClass('watch-trailer')) {
+					if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
+						showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+					}
+				} else if ($(this).hasClass('watch-movie')) {
+					if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
+						showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+					}
 				}
-			} else if ($(this).hasClass('watch-movie')) {
-				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
-					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
-				}
-			}
+			});
 		});
-	});
-</script>
-<?php endif; ?>
+	</script>
+	<?php endif;
+endif; ?>
 
 <div class="content movie trailers">
 	<?php if ($this->params->get('use_alphabet') == 1):

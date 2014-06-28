@@ -148,7 +148,7 @@
 				<div class="item">
 					<div class="number"><?php echo $mi; ?>.</div>
 					<div class="data">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$movie->id.'&Itemid='.$this->itemid); ?>" target="_blank"><?php echo $movie->title; ?><?php echo ($movie->year != '0000') ? '&nbsp;('.$movie->year.')' : ''; ?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$movie->id.'&Itemid='.$this->item->itemid); ?>" target="_blank"><?php echo $movie->title; ?><?php echo ($movie->year != '0000') ? '&nbsp;('.$movie->year.')' : ''; ?></a>
 						<div class="role"><?php echo $movie->role; ?></div>
 					</div>
 					<div class="clear"></div>

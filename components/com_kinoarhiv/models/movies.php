@@ -105,9 +105,13 @@ class KinoarhivModelMovies extends JModelList {
 			$from_year = $searches->get('filters.movies.from_year');
 			$to_year = $searches->get('filters.movies.to_year');
 			if (!empty($from_year) && !empty($to_year)) {
-				//$where .= " AND `m`.`year` BETWEEN '".$db->escape($from_year)."' AND '".$db->escape($to_year)."'";
+				$where .= " AND `m`.`year` BETWEEN '".$db->escape($from_year)."' AND '".$db->escape($to_year)."'";
 			} else {
-				
+				if (!empty($from_year)) {
+					$where .= " AND `m`.`year` REGEXP '^".$db->escape($from_year)."'";
+				} elseif (!empty($to_year)) {
+					$where .= " AND `m`.`year` REGEXP '".$db->escape($to_year)."$'";
+				}
 			}
 		}
 
@@ -165,12 +169,12 @@ class KinoarhivModelMovies extends JModelList {
 		$from_budget = $searches->get('filters.movies.from_budget');
 		$to_budget = $searches->get('filters.movies.to_budget');
 		if (!empty($from_budget) && !empty($to_budget)) {
-			$where .= " AND `budget` BETWEEN '".$db->escape($from_budget)."' AND '".$db->escape($to_budget)."'";
+			$where .= " AND `m`.`budget` BETWEEN '".$db->escape($from_budget)."' AND '".$db->escape($to_budget)."'";
 		} else {
 			if (!empty($from_budget)) {
-				$where .= " AND `budget` = '".$db->escape($from_budget)."'";
+				$where .= " AND `m`.`budget` = '".$db->escape($from_budget)."'";
 			} elseif (!empty($to_budget)) {
-				$where .= " AND `budget` = '".$db->escape($to_budget)."'";
+				$where .= " AND `m`.`budget` = '".$db->escape($to_budget)."'";
 			}
 		}
 
@@ -198,13 +202,19 @@ class KinoarhivModelMovies extends JModelList {
 
 		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
 			$filters = $input->get('filters', array(), 'array')['movies'];
+
+			if (count($filters) < 1) {
+				return $items;
+			}
+
+			// Using input->getArray cause an error when subarrays with no data
 			$vars = array(
 				'filters' => array(
 					'movies' => array(
 						'title'			=> isset($filters['title']) ? $filter->clean($filters['title'], 'string') : '',
 						'year'			=> isset($filters['year']) ? $filter->clean($filters['year'], 'string') : '',
 						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
-						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
+						'to_year'		=> isset($filters['to_year']) ? $filter->clean($filters['to_year'], 'int') : '',
 						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : '',
 						'vendor'		=> isset($filters['vendor']) ? $filter->clean($filters['vendor'], 'int') : '',
 						'genre'			=> isset($filters['genre']) ? $filter->clean($filters['genre'], 'array') : '',

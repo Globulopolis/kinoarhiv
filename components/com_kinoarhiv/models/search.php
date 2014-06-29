@@ -35,7 +35,6 @@ class KinoarhivModelSearch extends JModelLegacy {
 		}
 
 		rsort($new_years_arr);
-		$new_years_arr = JArrayHelper::arrayUnique($new_years_arr);
 		$items->movies->from_year = array_merge($default_value, $new_years_arr);
 		$items->movies->to_year = &$items->movies->from_year;
 
@@ -174,52 +173,72 @@ class KinoarhivModelSearch extends JModelLegacy {
 	 *
 	*/
 	public function getActiveFilters() {
+		$filter = JFilterInput::getInstance();
 		$input = JFactory::getApplication()->input;
 		$items = new JRegistry;
 
-		if (array_key_exists('movies', $input->post->get('filters', array(), 'array'))) {
-			$_items = $input->getArray(array(
-				'filters' => array(
-					'movies' => array(
-						'title'=>'string',
-						'year'=>'string',
-						'from_year'=>'int',
-						'to_year'=>'int',
-						'country'=>'int',
-						'vendor'=>'int',
-						'genre'=>'array',
-						'mpaa'=>'string',
-						'age_restrict'=>'string',
-						'ua_rate'=>'int',
-						'rate'=>array('min'=>'int', 'max'=>'int'),
-						'imdbrate'=>array('min'=>'int', 'max'=>'int'),
-						'kprate'=>array('min'=>'int', 'max'=>'int'),
-						'rtrate'=>array('min'=>'int', 'max'=>'int'),
-						'from_budget'=>'string',
-						'to_budget'=>'string'
-					)
-				)
-			));
-
-			$items->loadArray($_items);
+		if (!JSession::checkToken() && !JSession::checkToken('get')) {
+			return $items;
 		}
 
-		if (array_key_exists('names', $input->post->get('filters', array(), 'array'))) {
-			$_items = $input->getArray(array(
+		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
+			$filters = $input->get('filters', array(), 'array')['movies'];
+			// Using input->getArray cause an error when subarrays with no data
+			$vars = array(
 				'filters' => array(
-					'names' => array(
-						'title'=>'string',
-						'gender'=>'alnum',
-						'mtitle'=>'int',
-						'birthday'=>'string',
-						'birthplace'=>'string',
-						'birthcountry'=>'int',
-						'amplua'=>'int'
+					'movies' => array(
+						'title'			=> isset($filters['title']) ? $filter->clean($filters['title'], 'string') : '',
+						'year'			=> isset($filters['year']) ? $filter->clean($filters['year'], 'string') : '',
+						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
+						'to_year'		=> isset($filters['to_year']) ? $filter->clean($filters['to_year'], 'int') : '',
+						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : '',
+						'vendor'		=> isset($filters['vendor']) ? $filter->clean($filters['vendor'], 'int') : '',
+						'genre'			=> isset($filters['genre']) ? $filter->clean($filters['genre'], 'array') : '',
+						'mpaa' 			=> isset($filters['mpaa']) ? $filter->clean($filters['mpaa'], 'string') : '',
+						'age_restrict'	=> isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '',
+						'ua_rate'		=> isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '',
+						'rate'			=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+						),
+						'imdbrate'		=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+						),
+						'kprate'		=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+						),
+						'rtrate'		=> array(
+							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
+							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 100
+						),
+						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
+						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : ''
 					)
 				)
-			));
+			);
 
-			$items->loadArray($_items);
+			$items->loadArray($vars);
+		}
+
+		if (array_key_exists('names', $input->get('filters', array(), 'array'))) {
+			$filters = $input->get('filters', array(), 'array')['names'];
+			$vars = array(
+				'filters' => array(
+					'names' => array(
+						'title'			=> isset($filters['title']) ? $filter->clean($filters['title'], 'string') : '',
+						'gender'		=> isset($filters['gender']) ? $filter->clean($filters['gender'], 'alnum') : '',
+						'mtitle'		=> isset($filters['mtitle']) ? $filter->clean($filters['mtitle'], 'int') : '',
+						'birthday'		=> isset($filters['birthday']) ? $filter->clean($filters['birthday'], 'string') : '',
+						'birthplace'	=> isset($filters['birthplace']) ? $filter->clean($filters['birthplace'], 'string') : '',
+						'birthcountry'	=> isset($filters['birthcountry']) ? $filter->clean($filters['birthcountry'], 'int') : '',
+						'amplua'		=> isset($filters['amplua']) ? $filter->clean($filters['amplua'], 'int') : ''
+					)
+				)
+			);
+
+			$items->loadArray($vars);
 		}
 
 		return $items;

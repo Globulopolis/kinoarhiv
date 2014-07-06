@@ -7,18 +7,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
+		$lang = JFactory::getLanguage();
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$model = $this->getModel('mediamanager');
 		$dest_dir = $model->getPath();
-		$filename = JFile::makeSafe($app->input->get('name', '', 'string'));
+		$filename = $lang->transliterate($app->input->get('name', '', 'string'));
 		$id = 0;
 		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$item_id = $app->input->get('id', 0, 'int');
 		$frontpage = $app->input->get('frontpage', 0, 'int');
 
-		// Getting extensions from settings
-		$original_extension = pathinfo($dest_dir.$filename, PATHINFO_EXTENSION);
+		// Get extensions from settings
+		$original_extension = JFile::getExt($filename);
 
 		if ($app->input->get('type') == 'gallery') {
 			$allowed_ext = explode(',', str_replace(' ', '', $params->get('upload_mime_images')));
@@ -196,7 +197,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir.$filename;
-						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$ext = JFile::getExt($old_filename);
 						$video_info = json_decode($media->getVideoInfo($rn_dest_dir.$filename));
 						$video_height = $video_info->streams[0]->height;
 						$rn_filename = $alias.'-'.$trailer_id.'-'.$item_id.'.'.$video_height.'p.'.$ext;
@@ -210,7 +211,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir.$filename;
-						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$ext = JFile::getExt($old_filename);
 						$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_code.'.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
@@ -218,7 +219,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					} elseif ($app->input->get('upload') == 'chapters') {
 						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir.$filename;
-						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$ext = JFile::getExt($old_filename);
 						$rn_filename = $alias.'-'.$trailer_id.'.chapters.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
@@ -230,7 +231,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 					} elseif ($app->input->get('upload') == 'images') {
 						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir.$filename;
-						$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+						$ext = JFile::getExt($old_filename);
 						$rn_filename = $alias.'-'.$trailer_id.'.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 

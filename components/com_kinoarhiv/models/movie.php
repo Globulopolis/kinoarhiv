@@ -831,6 +831,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
 		$value = $app->input->get('value', -1, 'int');
 
@@ -839,11 +840,18 @@ class KinoarhivModelMovie extends JModelForm {
 			$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
 		} elseif ($value == 0) {
 			// Remove vote and update rating
-			$db->setQuery("SELECT `vote` FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
-			$vote_result = $db->loadResult();
+			$db->setQuery("SELECT `v`.`vote`, `r`.`rate_loc`, `r`.`rate_sum_loc`"
+				. "\n FROM ".$db->quoteName('#__ka_user_votes')." AS `v`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `r` ON `r`.`id` = `v`.`movie_id`"
+				. "\n WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
+			$vote_result = $db->loadObject();
 
-			if (!empty($vote_result)) {
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = `rate_loc`-1, `rate_sum_loc` = `rate_sum_loc`-".(int)$vote_result." WHERE `id` = ".(int)$movie_id);
+			if (!empty($vote_result->vote)) {
+				$rate_loc = $vote_result->rate_loc - 1;
+				$rate_sum_loc = $vote_result->rate_sum_loc - $vote_result->vote;
+				$rate_loc_rounded = round($vote_result->rate_sum_loc / $vote_result->rate_loc, 0);
+
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = '".(int)$rate_loc."', `rate_sum_loc` = '".(int)$rate_sum_loc."', `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
 				$query = $db->execute();
 
 				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
@@ -854,10 +862,10 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 		} else {
 			// Update rating and insert or update user vote in #__ka_user_votes
-			// Check if value in range from 1 to 10
-			if ($value >= 1 || $value <= 10) {
+			// Check if value in range from 1 to 'vote_summ_num'
+			if ($value >= 1 || $value <= $params->get('vote_summ_num')) {
 				// At first we check if user allready voted and when just update the rating and vote
-				$db->setQuery("SELECT `v`.`vote`, `r`.`rate_sum_loc`"
+				$db->setQuery("SELECT `v`.`vote`, `r`.`rate_loc`, `r`.`rate_sum_loc`"
 					. "\n FROM ".$db->quoteName('#__ka_user_votes')." AS `v`"
 					. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `r` ON `r`.`id` = `v`.`movie_id`"
 					. "\n WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
@@ -865,7 +873,9 @@ class KinoarhivModelMovie extends JModelForm {
 
 				if (!empty($vote_result->vote)) { // User allready voted
 					$rate_sum_loc = ($vote_result->rate_sum_loc - $vote_result->vote) + $value;
-					$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_sum_loc` = ".(int)$rate_sum_loc." WHERE `id` = ".(int)$movie_id);
+					$rate_loc_rounded = round($rate_sum_loc / $vote_result->rate_loc, 0);
+
+					$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_sum_loc` = ".(int)$rate_sum_loc.", `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
 					$query = $db->execute();
 
 					if ($query) {
@@ -877,7 +887,11 @@ class KinoarhivModelMovie extends JModelForm {
 						$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
 					}
 				} else {
-					$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = `rate_loc`+1, `rate_sum_loc` = `rate_sum_loc`+".(int)$value." WHERE `id` = ".(int)$movie_id);
+					$rate_loc = (int)$vote_result->rate_loc + 1;
+					$rate_sum_loc = (int)$vote_result->rate_sum_loc + (int)$value;
+					$rate_loc_rounded = round($rate_sum_loc / $rate_loc, 0);
+
+					$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = '".(int)$rate_loc."', `rate_sum_loc` = '".(int)$rate_sum_loc."', `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
 					$query = $db->execute();
 
 					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_user_votes')." (`uid`, `movie_id`, `vote`, `_datetime`) VALUES ('".$user->get('id')."', '".$movie_id."', '".$value."', NOW())");

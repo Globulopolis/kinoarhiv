@@ -19,6 +19,7 @@ class KAImage extends JImage {
 	 *
 	 */
 	public function _createThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true) {
+		jimport('joomla.filesystem.file');
 		$image = new JImage($directory.DIRECTORY_SEPARATOR.$filename);
 
 		// Make sure the resource handle is valid.
@@ -50,7 +51,7 @@ class KAImage extends JImage {
 
 				// Generate thumb name
 				$filename 		= pathinfo($image->getPath(), PATHINFO_FILENAME);
-				$fileExtension 	= pathinfo($image->getPath(), PATHINFO_EXTENSION);
+				$fileExtension 	= JFile::getExt($image->getPath());
 
 				if ($thumbsName === true) {
 					$thumbFileName 	= $filename . '_' . $thumbWidth . 'x' . $thumbHeight . '.' . $fileExtension;

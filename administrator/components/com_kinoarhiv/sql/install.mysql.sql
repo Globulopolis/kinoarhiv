@@ -76,6 +76,9 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies` (
   `rate_fc` tinyint(2) NOT NULL DEFAULT '0',
   `rottentm_id` varchar(128) NOT NULL DEFAULT '',
   `rate_custom` text NOT NULL,
+  `rate_loc_rounded` tinyint(1) NOT NULL DEFAULT '0',
+  `rate_imdb_rounded` tinyint(1) NOT NULL DEFAULT '0',
+  `rate_kp_rounded` tinyint(1) NOT NULL DEFAULT '0',
   `urls` text NOT NULL,
   `attribs` varchar(5120) NOT NULL,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -92,7 +95,10 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies` (
   KEY `idx_createdby` (`idx_createdby`),
   KEY `idx_access` (`access`),
   KEY `idx_state` (`state`),
-  KEY `idx_language` (`language`)
+  KEY `idx_language` (`language`),
+  KEY `idx_rate_loc` (`rate_loc_rounded`),
+  KEY `idx_rate_imdb` (`rate_imdb_rounded`),
+  KEY `idx_rate_kp` (`rate_kp_rounded`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_movies_gallery` (

@@ -2,7 +2,6 @@
 
 class KinoarhivModelNames extends JModelList {
 	protected $context = null;
-	protected $list_limit;
 
 	public function __construct($config = array()) {
 		parent::__construct($config);
@@ -23,6 +22,7 @@ class KinoarhivModelNames extends JModelList {
 		$user = JFactory::getUser();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$filters = $this->buildFilters($params);
 
 		$query = $db->getQuery(true);
 
@@ -44,7 +44,7 @@ class KinoarhivModelNames extends JModelList {
 
 		$where = '`n`.`state` = 1 AND `n`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `n`.`access` IN ('.$groups.')';
 
-		$query->where($where);
+		$query->where($where.$filters);
 		$query->group($db->quoteName('n.id'));
 
 		$orderCol = $this->state->get('list.ordering', '`ordering`');
@@ -52,6 +52,127 @@ class KinoarhivModelNames extends JModelList {
 		$query->order($db->escape('`n`.'.$orderCol.' '.$orderDirn));
 
 		return $query;
+	}
+
+	/**
+	 * Build WHERE from values from the search inputs
+	 *
+	 * @param   object   $params     Component parameters.
+	 *
+	 * @return   string
+	 *
+	*/
+	protected function buildFilters(&$params) {
+		$where = "";
+
+		if (!JSession::checkToken('post') && !JSession::checkToken('get')) {
+			return $where;
+		}
+
+		$db = $this->getDBO();
+		$where_id = array();
+		$searches = $this->getFiltersData();
+
+		// Filter by name
+		$name = $searches->get('filters.names.name');
+		if (!empty($name)) {
+			$where .= " AND (`n`.`name` LIKE '%".$db->escape($name)."%' OR `n`.`latin_name` LIKE '%".$db->escape($name)."%')";
+		}
+
+		// Filter by birthday
+		$birthday = $searches->get('filters.names.birthday');
+		if (!empty($birthday)) {
+			$where .= " AND `n`.`date_of_birth` LIKE '%".$db->escape($birthday)."%'";
+		}
+
+		// Filter by gender
+		$gender = $searches->get('filters.names.gender');
+		if ($gender === 0 || $gender === 1) {
+			$where .= " AND `n`.`gender` = ".(int)$gender;
+		}
+
+		// Filter by movie title
+		$mtitle = $searches->get('filters.names.mtitle');
+		if (!empty($mtitle)) {
+			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$mtitle." GROUP BY `name_id`");
+			$name_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $name_ids);
+		}
+
+		// Filter by birthplace
+		$birthplace = trim($searches->get('filters.names.birthplace'));
+		if (!empty($birthplace)) {
+			$where .= " AND `n`.`birthplace` LIKE '%".$db->escape($birthplace)."%'";
+		}
+
+		// Filter by country
+		$country = (int)$searches->get('filters.names.birthcountry');
+		if (!empty($country)) {
+			$where .= " AND `n`.`birthcountry` = ".(int)$country;
+		}
+
+		// Filter by amplua
+		$amplua = $searches->get('filters.names.amplua');
+		if (!empty($amplua)) {
+			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `type` = ".(int)$amplua." GROUP BY `name_id`");
+			$name_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $name_ids);
+		}
+
+		if ((!empty($mtitle) || !empty($amplua)) && !empty($where_id)) {
+			$where .= " AND `n`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
+		}
+
+		return $where;
+	}
+
+	/**
+	 * Get the values from search inputs
+	 *
+	 * @return   object
+	 *
+	*/
+	public function getFiltersData() {
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$filter = JFilterInput::getInstance();
+		$input = JFactory::getApplication()->input;
+		$items = new JRegistry;
+
+		if ($params->get('search_names_enable') != 1) {
+			return $items;
+		}
+
+		if (!JSession::checkToken() && !JSession::checkToken('get')) {
+			return $items;
+		}
+
+		if (array_key_exists('names', $input->get('filters', array(), 'array'))) {
+			$filters = $input->get('filters', array(), 'array')['names'];
+
+			if (count($filters) < 1) {
+				return $items;
+			}
+
+			$vars = array(
+				'filters' => array(
+					'names' => array(
+						'name'			=> isset($filters['name']) ? $filter->clean($filters['name'], 'string') : '',
+						'gender'		=> isset($filters['gender']) ? $filter->clean($filters['gender'], 'alnum') : '',
+						'mtitle'		=> isset($filters['mtitle']) ? $filter->clean($filters['mtitle'], 'int') : '',
+						'birthday'		=> isset($filters['birthday']) ? $filter->clean($filters['birthday'], 'string') : '',
+						'birthplace'	=> isset($filters['birthplace']) ? $filter->clean($filters['birthplace'], 'string') : '',
+						'birthcountry'	=> isset($filters['birthcountry']) ? $filter->clean($filters['birthcountry'], 'int') : '',
+						'amplua'		=> isset($filters['amplua']) ? $filter->clean($filters['amplua'], 'int') : ''
+					)
+				)
+			);
+
+			$items->loadArray($vars);
+		}
+
+		return $items;
 	}
 
 	public function favorite() {

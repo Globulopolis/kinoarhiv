@@ -71,8 +71,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		});
 		<?php endif; ?>
 
-		<?php if ($this->activeFilters->exists('filters.movies')): ?>
-		$('.adv-search #search_form').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movies&format=raw', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function(response, status, xhr){
+		<?php if ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')): ?>
+		$('.adv-search #search_form').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movies&format=raw&'.JSession::getFormToken().'=1', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function(response, status, xhr){
 			if (status == 'error') {
 				showMsg('Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText);
 				return false;
@@ -89,7 +89,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
 
-	<?php if ($this->activeFilters->exists('filters.movies')): ?>
+	<?php if ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')): ?>
 	<div class="adv-search">
 		<h3><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></h3>
 		<div id="search_form"></div>
@@ -97,15 +97,15 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 	<?php endif; ?>
 
 	<?php if (count($this->items['movies']) > 0):
-		if ($this->activeFilters->exists('filters.movies')):
+		if ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')):
 			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			echo '<br />'.JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_'.$plural[0], $this->pagination->total);
 		endif; ?>
 
 		<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
-		<div class="pagination top">
-			<?php echo $this->pagination->getPagesLinks(); ?>
-		</div>
+			<div class="pagination top">
+				<?php echo $this->pagination->getPagesLinks(); ?>
+			</div>
 		<?php endif;
 
 		foreach ($this->items['movies'] as $item): ?>
@@ -257,6 +257,6 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			</div>
 		<?php endif;
 	else: ?>
-		<br /><div><?php echo ($this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<br /><div><?php echo ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

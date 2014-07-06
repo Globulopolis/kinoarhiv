@@ -950,6 +950,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	}
 
 	public function saveSubtitles($edit=false, $file='', $trailer_id, $movie_id=0, $subtitle_id=null) {
+		jimport('joomla.filesystem.file');
 		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
 		$language = new KALanguage();
 		$lang_list = $language::listOfLanguages();
@@ -983,7 +984,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				$alias = $this->getAlias('movie', $movie_id);
 				$rn_dest_dir = $this->getPath('movie', 'trailers', 0, $movie_id);
 				$old_filename = $rn_dest_dir.$subtl_obj->$subtitle_id->file;
-				$ext = pathinfo($old_filename, PATHINFO_EXTENSION);
+				$ext = JFile::getExt($old_filename);
 				$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_data->lang_code.'.'.$ext;
 				$subtl_obj->$subtitle_id->file = $rn_filename;
 
@@ -1032,6 +1033,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	}
 
 	public function create_screenshot() {
+		jimport('joomla.filesystem.file');
 		JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
 		$media = KAMedia::getInstance();
 		$app = JFactory::getApplication();
@@ -1056,7 +1058,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		if ($time != '00:00:00.000') {
 			if (preg_match('#^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])\.[0-1][0-9][0-9]?$#', $time)) {
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".pathinfo($files[0]['src'], PATHINFO_FILENAME).".png' WHERE `id` = ".(int)$trailer_id);
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".JFile::getExt($files[0]['src']).".png' WHERE `id` = ".(int)$trailer_id);
 				$query = $db->execute();
 
 				$output = $media->createScreenshot($data);

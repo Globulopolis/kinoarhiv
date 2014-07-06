@@ -7,9 +7,11 @@ class KinoarhivViewNames extends JViewLegacy {
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
+		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
+		$activeFilters = $this->get('FiltersData');
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
@@ -74,6 +76,8 @@ class KinoarhivViewNames extends JViewLegacy {
 		$this->items['names'] = &$items;
 		$this->pagination = &$pagination;
 		$this->user = &$user;
+		$this->lang = &$lang;
+		$this->activeFilters = &$activeFilters;
 
 		$this->_prepareDocument();
 

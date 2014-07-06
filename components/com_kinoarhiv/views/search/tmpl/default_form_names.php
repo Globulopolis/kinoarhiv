@@ -1,29 +1,94 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+if ($this->params->get('search_names_enable') == 0) {
+	return;
+}
+?>
+<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$('#filters_names_birthcountry').select2({
+			placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>',
+			allowClear: true,
+			formatSelection: function(data){
+				return "<img class='flag-dd' src='<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + $(data.element).data('code') + ".png'/> " + data.text;
+			},
+			escapeMarkup: function(m) { return m; }
+		});
+
+		$('#filters_names_mtitle').select2({
+			placeholder: '<?php echo JText::_('JGLOBAL_KEEP_TYPING'); ?>',
+			allowClear: true,
+			minimumInputLength: 1,
+			maximumSelectionSize: 1,
+			ajax: {
+				cache: true,
+				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&Itemid='.$this->home_itemid['movies'], false); ?>',
+				data: function(term, page){
+					return {
+						term: term,
+						showAll: 0
+					}
+				},
+				results: function(data, page){
+					return {results: data};
+				}
+			},
+			initSelection: function(element, callback){
+				var id = parseInt($(element).val(), 10);
+
+				if (id !== 0) {
+					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&Itemid='.$this->home_itemid['movies'], false); ?>', {
+						data: {
+							id: id
+						}
+					}).done(function(data){
+						callback(data);
+					});
+				}
+			},
+			formatResult: function(data){
+				if (data.year == '0000') return data.title;
+				return data.title+' ('+data.year+')';
+			},
+			formatSelection: function(data){
+				if (data.year == '0000') return data.title;
+				return data.title+' ('+data.year+')';
+			},
+			escapeMarkup: function(m) { return m; }
+		});
+
+		$('#filters_names_birthday').datepicker({ dateFormat: 'yy-mm-dd' });
+	});
+</script>
 <div class="advsearch-names<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'names') ? ' well uk-panel uk-panel-box' : ''; ?>">
 	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names'); ?>" id="filters_names" method="post">
 		<fieldset class="form-horizontal uk-form">
 			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE'); ?></legend>
 
+			<?php if ($this->params->get('search_names_name') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_title', 'COM_KA_SEARCH_ADV_NAMES_TITLE_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><input name="filters[names][title]" type="text" id="filters_names_title" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.title', ''); ?>" /></div>
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_name', 'COM_KA_SEARCH_ADV_NAMES_NAME_LABEL'); ?></div>
+						<div class="controls uk-width-1-2"><input name="filters[names][name]" type="text" id="filters_names_name" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.name', ''); ?>" /></div>
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_names_birthday') == 1 || $this->params->get('search_names_gender') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo GlobalHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH'); ?></div>
+						<div class="control-label uk-width-1-4"><?php if ($this->params->get('search_names_birthday') == 1): ?><?php echo GlobalHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH'); ?><?php endif; ?></div>
 						<div class="controls uk-width-1-1">
-							<input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-5" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" />&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?>
+							<?php if ($this->params->get('search_names_birthday') == 1): ?><input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-5" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" /><?php endif; ?><?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?><?php endif; ?>
 						</div>
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_names_mtitle') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -32,7 +97,9 @@
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_names_birthplace') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -43,7 +110,9 @@
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_names_birthcountry') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -59,7 +128,9 @@
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_names_amplua') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -68,6 +139,7 @@
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 		</fieldset>
 
 		<input type="hidden" name="option" value="com_kinoarhiv" />

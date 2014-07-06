@@ -12,7 +12,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
-		$activeFilters = $this->get('ActiveFilters');
+		$activeFilters = $this->get('FiltersData');
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');

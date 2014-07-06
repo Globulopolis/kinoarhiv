@@ -286,6 +286,107 @@
 		</field>
 		<field name="reviews_emails" type="textarea" default="" label="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL_DESC" filter="string" cols="60" rows="5" class="span11" />
 	</fieldset>
+	<fieldset name="search_movies" label="COM_KA_SEARCH_SETTINGS_MOVIES">
+		<field name="search_movies_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_MOVIES_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_title" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_year" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_year_range" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_RANGE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_country" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_COUNTRY_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_cast" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_CAST_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_vendor" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_VENDOR_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_genre" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_GENRE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_mpaa" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_MPAA_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_age_restrict" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_AGE_RESTRICT_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_ua_rate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_UARATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_rate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_RATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_imdbrate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_IMDBRATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_kprate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_KPRATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_rtrate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_RTRATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_movies_budget" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BUDGET_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+	</fieldset>
+	<fieldset name="search_names" label="COM_KA_SEARCH_SETTINGS_NAMES">
+		<field name="search_names_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_name" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_NAME_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_gender" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_GENDER_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_mtitle" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_MOVIETITLE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_birthday" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHDAY_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_birthplace" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHPLACE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_birthcountry" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHCOUNTRY_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_amplua" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_names_amplua_disabled" type="careers" default="" label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string" />
+	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="component" validate="rules" />
 	</fieldset>

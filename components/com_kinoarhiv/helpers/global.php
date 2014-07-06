@@ -269,13 +269,23 @@ class GlobalHelper {
 	/**
 	 * Create a custom label html tag
 	 *
-	 * @param   string   $for      Input ID
-	 * @param   mixed    $title    Label text.
-	 * @param   mixed    $class    CSS classname(s).
+	 * @param   string    $for      Input ID
+	 * @param   string    $text     Label text.
+	 * @param   string    $title    Label title.
+	 * @param   string    $class    CSS classname(s).
+	 * @param   array     $attribs  Additional HTML attributes
 	 *
 	 * @return   string
 	*/
-	static function setLabel($for, $title, $class='') {
-		return '<label id="'.$for.'-lbl" class="'.$class.'" for="'.$for.'">'.JText::_($title).'</label>';
+	static function setLabel($for, $text, $title='', $class='', $attribs=array()) {
+		$title = !empty($title) ? ' title="'.JText::_($title).'"' : '';
+		$class = !empty($class) ? ' class="'.$class.'"' : '';
+
+		$attrs = '';
+		if (is_array($attribs) && func_num_args() == 5) {
+			$attrs = JArrayHelper::toString($attribs);
+		}
+
+		return '<label id="'.$for.'-lbl"'.$class.' for="'.$for.'"'.$title.$attrs.'>'.JText::_($text).'</label>';
 	}
 }

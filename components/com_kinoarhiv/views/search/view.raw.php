@@ -24,8 +24,4 @@ class KinoarhivViewSearch extends JViewLegacy {
 
 		parent::display($tpl);
 	}
-
-	public function setLabel($for, $title, $class='') {
-		return '<label id="'.$for.'-lbl" class="'.$class.'" for="'.$for.'">'.JText::_($title).'</label>';
-	}
 }

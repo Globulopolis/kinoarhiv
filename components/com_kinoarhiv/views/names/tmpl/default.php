@@ -49,6 +49,17 @@
 			});
 		});
 		<?php endif; ?>
+
+		<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
+		$('.adv-search #search_form').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=names&format=raw&'.JSession::getFormToken().'=1', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function(response, status, xhr){
+			if (status == 'error') {
+				showMsg('Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText);
+				return false;
+			}
+
+			$('.adv-search').accordion({ active: false, collapsible: true, heightStyle: 'content', animate: false });
+		});
+		<?php endif; ?>
 	});
 //]]>
 </script>
@@ -57,12 +68,24 @@
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
 
+	<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
+	<div class="adv-search">
+		<h3><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></h3>
+		<div id="search_form"></div>
+	</div>
+	<?php endif; ?>
+
 	<?php if (count($this->items['names']) > 0):
-	if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
-		<div class="pagination top">
-			<?php echo $this->pagination->getPagesLinks(); ?>
-		</div>
-	<?php endif;
+		if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')):
+			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
+			echo '<br />'.JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_'.$plural[0], $this->pagination->total);
+		endif; ?>
+
+		<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+			<div class="pagination top">
+				<?php echo $this->pagination->getPagesLinks(); ?>
+			</div>
+		<?php endif;
 
 		foreach ($this->items['names'] as $item): ?>
 		<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$item->id.'&Itemid='.$this->itemid); ?>">
@@ -137,6 +160,6 @@
 			</div>
 		<?php endif;
 	else: ?>
-		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<br /><div><?php echo ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

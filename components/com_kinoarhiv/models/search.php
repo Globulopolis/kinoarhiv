@@ -44,6 +44,12 @@ class KinoarhivModelSearch extends JModelLegacy {
 
 		$items->movies->countries = array_merge(array((object)array('id' => '', 'name' => '', 'code' => '')), $countries);
 
+		// Get the list of names
+		$db->setQuery("SELECT `id`, `name`, `latin_name` FROM ".$db->quoteName('#__ka_names')." WHERE `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `id` ASC");
+		$cast = $db->loadObjectList();
+
+		$items->movies->cast = array_merge(array((object)array('id' => '', 'name' => '')), $cast);
+
 		// Get the list of vendors
 		$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*')");
 		$_vendors = $db->loadObjectList();
@@ -191,27 +197,32 @@ class KinoarhivModelSearch extends JModelLegacy {
 						'year'			=> isset($filters['year']) ? $filter->clean($filters['year'], 'string') : '',
 						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
 						'to_year'		=> isset($filters['to_year']) ? $filter->clean($filters['to_year'], 'int') : '',
-						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : '',
+						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : 0,
+						'cast'			=> isset($filters['cast']) ? $filter->clean($filters['cast'], 'int') : 0,
 						'vendor'		=> isset($filters['vendor']) ? $filter->clean($filters['vendor'], 'int') : '',
 						'genre'			=> isset($filters['genre']) ? $filter->clean($filters['genre'], 'array') : '',
 						'mpaa' 			=> isset($filters['mpaa']) ? $filter->clean($filters['mpaa'], 'string') : '',
-						'age_restrict'	=> isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '',
-						'ua_rate'		=> isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '',
+						'age_restrict'	=> isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '-1',
+						'ua_rate'		=> isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '-1',
 						'rate'			=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+							'enable'=> isset($filters['rate']['enable']) ? $filter->clean($filters['rate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['rate']['min']) ? $filter->clean($filters['rate']['min'], 'int') : 0,
+							'max'	=> isset($filters['rate']['max']) ? $filter->clean($filters['rate']['max'], 'int') : 10
 						),
 						'imdbrate'		=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+							'enable'=> isset($filters['imdbrate']['enable']) ? $filter->clean($filters['imdbrate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['imdbrate']['min']) ? $filter->clean($filters['imdbrate']['min'], 'int') : 6,
+							'max'	=> isset($filters['imdbrate']['max']) ? $filter->clean($filters['imdbrate']['max'], 'int') : 10
 						),
 						'kprate'		=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+							'enable'=> isset($filters['kprate']['enable']) ? $filter->clean($filters['kprate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['kprate']['min']) ? $filter->clean($filters['kprate']['min'], 'int') : 6,
+							'max'	=> isset($filters['kprate']['max']) ? $filter->clean($filters['kprate']['max'], 'int') : 10
 						),
 						'rtrate'		=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 100
+							'enable'=> isset($filters['rtrate']['enable']) ? $filter->clean($filters['rtrate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['rtrate']['min']) ? $filter->clean($filters['rtrate']['min'], 'int') : 0,
+							'max'	=> isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
 						),
 						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
 						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : ''
@@ -227,7 +238,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 			$vars = array(
 				'filters' => array(
 					'names' => array(
-						'title'			=> isset($filters['title']) ? $filter->clean($filters['title'], 'string') : '',
+						'name'			=> isset($filters['name']) ? $filter->clean($filters['name'], 'string') : '',
 						'gender'		=> isset($filters['gender']) ? $filter->clean($filters['gender'], 'alnum') : '',
 						'mtitle'		=> isset($filters['mtitle']) ? $filter->clean($filters['mtitle'], 'int') : '',
 						'birthday'		=> isset($filters['birthday']) ? $filter->clean($filters['birthday'], 'string') : '',

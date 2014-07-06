@@ -145,6 +145,7 @@
 					<li><a href="#page-global"><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></a></li>
 					<li><a href="#page-appearance"><?php echo JText::_('COM_KA_APPEARANCE_TAB'); ?></a></li>
 					<li><a href="#page-reviews"><?php echo JText::_('COM_KA_REVIEWS_TAB'); ?></a></li>
+					<li><a href="#page-search"><?php echo JText::_('COM_KA_SEARCH_TAB'); ?></a></li>
 					<?php if ($this->userIsSuperAdmin): ?>
 					<li><a href="#page-access"><?php echo JText::_('COM_KA_PERMISSIONS_LABEL'); ?></a></li>
 					<?php endif; ?>
@@ -195,6 +196,17 @@
 						</div>
 						<div class="span6">
 							<?php echo $this->loadTemplate('reviews_save'); ?>
+						</div>
+					</div>
+				</div>
+
+				<div id="page-search">
+					<div class="row-fluid">
+						<div class="span6">
+							<?php echo $this->loadTemplate('search_movies'); ?>
+						</div>
+						<div class="span6">
+							<?php echo $this->loadTemplate('search_names'); ?>
 						</div>
 					</div>
 				</div>

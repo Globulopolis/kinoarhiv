@@ -30,7 +30,7 @@ class KinoarhivModelMovies extends JModelList {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$filters = $this->buildFilters();
+		$filters = $this->buildFilters($params);
 
 		$query = $db->getQuery(true);
 
@@ -76,10 +76,12 @@ class KinoarhivModelMovies extends JModelList {
 	/**
 	 * Build WHERE from values from the search inputs
 	 *
+	 * @param   object   $params     Component parameters.
+	 *
 	 * @return   string
 	 *
 	*/
-	protected function buildFilters() {
+	protected function buildFilters(&$params) {
 		$where = "";
 
 		if (!JSession::checkToken('post') && !JSession::checkToken('get')) {
@@ -88,7 +90,7 @@ class KinoarhivModelMovies extends JModelList {
 
 		$db = $this->getDBO();
 		$where_id = array();
-		$searches = $this->getActiveFilters();
+		$searches = $this->getFiltersData();
 
 		// Filter by title
 		$title = $searches->get('filters.movies.title');
@@ -119,6 +121,15 @@ class KinoarhivModelMovies extends JModelList {
 		$country = $searches->get('filters.movies.country');
 		if (!empty($country)) {
 			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `country_id` = ".(int)$country);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $movie_ids);
+		}
+
+		// Filter by person name
+		$cast = $searches->get('filters.movies.cast');
+		if (!empty($cast)) {
+			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `name_id` = ".(int)$cast);
 			$movie_ids = $db->loadColumn();
 
 			$where_id = array_merge($where_id, $movie_ids);
@@ -161,9 +172,36 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		// Filter by site rating
-		/*$rate_min = $searches->def('filters.movies.rate.min', 0);
-		$rate_max = $searches->def('filters.movies.rate.max', 10);
-		$where .= " AND `m`.`rate_sum_loc` BETWEEN 0 AND 10";*/
+		$rate = $searches->def('filters.movies.rate.enable', 0);
+		if ($rate === 1) {
+			$rate_min = $searches->def('filters.movies.rate.min', 0);
+			$rate_max = $searches->def('filters.movies.rate.max', 10);
+			$where .= " AND `m`.`rate_loc_rounded` BETWEEN ".(int)$rate_min." AND ".(int)$rate_max;
+		}
+
+		// Filter by imdb rating
+		$imdbrate = $searches->def('filters.movies.imdbrate.enable', 0);
+		if ($imdbrate === 1) {
+			$imdbrate_min = $searches->def('filters.movies.imdbrate.min', 6);
+			$imdbrate_max = $searches->def('filters.movies.imdbrate.max', 10);
+			$where .= " AND `m`.`rate_imdb_rounded` BETWEEN ".(int)$imdbrate_min." AND ".(int)$imdbrate_max;
+		}
+
+		// Filter by kinopoisk rating
+		$kprate = $searches->def('filters.movies.kprate.enable', 0);
+		if ($kprate === 1) {
+			$kprate_min = $searches->def('filters.movies.kprate.min', 6);
+			$kprate_max = $searches->def('filters.movies.kprate.max', 10);
+			$where .= " AND `m`.`rate_kp_rounded` BETWEEN ".(int)$kprate_min." AND ".(int)$kprate_max;
+		}
+
+		// Filter by rotten tomatoes rating
+		$rtrate = $searches->def('filters.movies.rtrate.enable', 0);
+		if ($rtrate === 1) {
+			$rtrate_min = $searches->def('filters.movies.rtrate.min', 0);
+			$rtrate_max = $searches->def('filters.movies.rtrate.max', 100);
+			$where .= " AND `m`.`rate_fc` BETWEEN ".(int)$rtrate_min." AND ".(int)$rtrate_max;
+		}
 
 		// Filter by budget
 		$from_budget = $searches->get('filters.movies.from_budget');
@@ -178,7 +216,7 @@ class KinoarhivModelMovies extends JModelList {
 			}
 		}
 
-		if (!empty($country) || !empty($vendor) || !empty($genres)) {
+		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres)) {
 			$where .= " AND `m`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
 		}
 
@@ -191,10 +229,15 @@ class KinoarhivModelMovies extends JModelList {
 	 * @return   object
 	 *
 	*/
-	public function getActiveFilters() {
+	public function getFiltersData() {
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$filter = JFilterInput::getInstance();
 		$input = JFactory::getApplication()->input;
 		$items = new JRegistry;
+
+		if ($params->get('search_movies_enable') != 1) {
+			return $items;
+		}
 
 		if (!JSession::checkToken() && !JSession::checkToken('get')) {
 			return $items;
@@ -215,27 +258,32 @@ class KinoarhivModelMovies extends JModelList {
 						'year'			=> isset($filters['year']) ? $filter->clean($filters['year'], 'string') : '',
 						'from_year'		=> isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
 						'to_year'		=> isset($filters['to_year']) ? $filter->clean($filters['to_year'], 'int') : '',
-						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : '',
+						'country'		=> isset($filters['country']) ? $filter->clean($filters['country'], 'int') : 0,
+						'cast'			=> isset($filters['cast']) ? $filter->clean($filters['cast'], 'int') : 0,
 						'vendor'		=> isset($filters['vendor']) ? $filter->clean($filters['vendor'], 'int') : '',
 						'genre'			=> isset($filters['genre']) ? $filter->clean($filters['genre'], 'array') : '',
 						'mpaa' 			=> isset($filters['mpaa']) ? $filter->clean($filters['mpaa'], 'string') : '',
-						'age_restrict'	=> isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '',
-						'ua_rate'		=> isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '',
+						'age_restrict'	=> isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '-1',
+						'ua_rate'		=> isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '-1',
 						'rate'			=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+							'enable'=> isset($filters['rate']['enable']) ? $filter->clean($filters['rate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['rate']['min']) ? $filter->clean($filters['rate']['min'], 'int') : 0,
+							'max'	=> isset($filters['rate']['max']) ? $filter->clean($filters['rate']['max'], 'int') : 10
 						),
 						'imdbrate'		=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+							'enable'=> isset($filters['imdbrate']['enable']) ? $filter->clean($filters['imdbrate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['imdbrate']['min']) ? $filter->clean($filters['imdbrate']['min'], 'int') : 6,
+							'max'	=> isset($filters['imdbrate']['max']) ? $filter->clean($filters['imdbrate']['max'], 'int') : 10
 						),
 						'kprate'		=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 6,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 10
+							'enable'=> isset($filters['kprate']['enable']) ? $filter->clean($filters['kprate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['kprate']['min']) ? $filter->clean($filters['kprate']['min'], 'int') : 6,
+							'max'	=> isset($filters['kprate']['max']) ? $filter->clean($filters['kprate']['max'], 'int') : 10
 						),
 						'rtrate'		=> array(
-							'min' => isset($filters['min']) ? $filter->clean($filters['min'], 'int') : 0,
-							'max' => isset($filters['max']) ? $filter->clean($filters['max'], 'int') : 100
+							'enable'=> isset($filters['rtrate']['enable']) ? $filter->clean($filters['rtrate']['enable'], 'int') : 0,
+							'min'	=> isset($filters['rtrate']['min']) ? $filter->clean($filters['rtrate']['min'], 'int') : 0,
+							'max'	=> isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
 						),
 						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
 						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : ''

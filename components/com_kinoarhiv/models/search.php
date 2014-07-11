@@ -11,6 +11,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$default_value = array(array('value' => '', 'text' => '-'));
 		$items = (object)array(
@@ -126,7 +127,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items->names->birthcountry = &$items->movies->countries;
 
 		// Amplua
-		$db->setQuery("SELECT `id` AS `value`, `title` AS `text` FROM ".$db->quoteName('#__ka_names_career')." WHERE (`is_mainpage` = 1 OR `is_amplua` = 1) AND `language` IN (".$db->quote($lang->getTag()).",'*') GROUP BY `title` ORDER BY `ordering` DESC, `title` ASC");
+		$amplua_disabled = !empty($params->get('search_names_amplua_disabled')) ? "AND `id` NOT IN (".$params->get('search_names_amplua_disabled').")" : "";
+		$db->setQuery("SELECT `id` AS `value`, `title` AS `text` FROM ".$db->quoteName('#__ka_names_career')." WHERE (`is_mainpage` = 1 OR `is_amplua` = 1) ".$amplua_disabled." AND `language` IN (".$db->quote($lang->getTag()).",'*') GROUP BY `title` ORDER BY `ordering` ASC, `title` ASC");
 		$amplua = $db->loadObjectList();
 
 		$items->names->amplua = array_merge(

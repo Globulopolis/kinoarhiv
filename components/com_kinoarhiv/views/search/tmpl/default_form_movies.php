@@ -279,10 +279,11 @@ if ($this->params->get('search_movies_enable') == 0) {
 	});
 </script>
 <div class="advsearch-movies<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'movies') ? ' well uk-panel uk-panel-box' : ''; ?>">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies'); ?>" id="filters_movies" method="post" autocomplete="off">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies', false); ?>" id="filters_movies" method="post" autocomplete="off">
 		<fieldset class="form-horizontal uk-form">
 			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE'); ?></legend>
 
+			<?php if ($this->params->get('search_movies_title') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -291,7 +292,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_year') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -300,7 +303,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_year_range') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-3">
 					<div class="control-group uk-width-1-1">
@@ -312,7 +317,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_country') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -328,7 +335,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_cast') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -337,7 +346,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_vendor') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -346,7 +357,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_genre') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -355,22 +368,30 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_mpaa') == 1 || $this->params->get('search_movies_age_restrict') == 1): ?>
 			<div class="row-fluid uk-form-row">
+				<?php if ($this->params->get('search_movies_mpaa') == 1): ?>
 				<div class="span5 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_mpaa', 'COM_KA_MPAA'); ?></div>
 						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->mpaa, 'filters[movies][mpaa]', array('class'=>'span11 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.mpaa', ''), 'filters_movies_mpaa'); ?></div>
 					</div>
 				</div>
+				<?php endif; ?>
+				<?php if ($this->params->get('search_movies_age_restrict') == 1): ?>
 				<div class="span7 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_age_restrict', 'COM_KA_SEARCH_ADV_MOVIES_RU_AGE_RESTICT_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_age_restrict', 'COM_KA_RU_RATE'); ?></div>
 						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->age_restrict, 'filters[movies][age_restrict]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.age_restrict', '-1'), 'filters_movies_age_restrict'); ?></div>
 					</div>
 				</div>
+				<?php endif; ?>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_ua_rate') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -379,7 +400,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_rate') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
@@ -405,7 +428,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_imdbrate') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
@@ -431,7 +456,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_kprate') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
@@ -457,7 +484,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_rtrate') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
@@ -483,7 +512,9 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
+			<?php if ($this->params->get('search_movies_budget') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
@@ -495,6 +526,7 @@ if ($this->params->get('search_movies_enable') == 0) {
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 		</fieldset>
 
 		<input type="hidden" name="option" value="com_kinoarhiv" />

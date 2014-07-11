@@ -75,25 +75,25 @@ class KinoarhivModelNames extends JModelList {
 
 		// Filter by name
 		$name = $searches->get('filters.names.name');
-		if (!empty($name)) {
+		if ($params->get('search_names_name') == 1 && !empty($name)) {
 			$where .= " AND (`n`.`name` LIKE '%".$db->escape($name)."%' OR `n`.`latin_name` LIKE '%".$db->escape($name)."%')";
 		}
 
 		// Filter by birthday
 		$birthday = $searches->get('filters.names.birthday');
-		if (!empty($birthday)) {
+		if ($params->get('search_names_birthday') == 1 && !empty($birthday)) {
 			$where .= " AND `n`.`date_of_birth` LIKE '%".$db->escape($birthday)."%'";
 		}
 
 		// Filter by gender
 		$gender = $searches->get('filters.names.gender');
-		if ($gender === 0 || $gender === 1) {
+		if ($params->get('search_names_gender') == 1 && ($gender === 0 || $gender === 1)) {
 			$where .= " AND `n`.`gender` = ".(int)$gender;
 		}
 
 		// Filter by movie title
 		$mtitle = $searches->get('filters.names.mtitle');
-		if (!empty($mtitle)) {
+		if ($params->get('search_names_mtitle') == 1 && !empty($mtitle)) {
 			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$mtitle." GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
@@ -102,20 +102,20 @@ class KinoarhivModelNames extends JModelList {
 
 		// Filter by birthplace
 		$birthplace = trim($searches->get('filters.names.birthplace'));
-		if (!empty($birthplace)) {
+		if ($params->get('search_names_birthplace') == 1 && !empty($birthplace)) {
 			$where .= " AND `n`.`birthplace` LIKE '%".$db->escape($birthplace)."%'";
 		}
 
 		// Filter by country
-		$country = (int)$searches->get('filters.names.birthcountry');
-		if (!empty($country)) {
+		$country = $searches->get('filters.names.birthcountry');
+		if ($params->get('search_names_birthcountry') == 1 && !empty($country)) {
 			$where .= " AND `n`.`birthcountry` = ".(int)$country;
 		}
 
 		// Filter by amplua
 		$amplua = $searches->get('filters.names.amplua');
-		if (!empty($amplua)) {
-			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `type` = ".(int)$amplua." GROUP BY `name_id`");
+		if ($params->get('search_names_amplua') == 1 && !empty($amplua)) {
+			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `type` LIKE '%".(int)$amplua."%' GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
 			$where_id = array_merge($where_id, $name_ids);

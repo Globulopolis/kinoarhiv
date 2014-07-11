@@ -134,6 +134,43 @@
 			}
 		});
 		// End
+
+		$('#jform_search_names_amplua_disabled').select2({
+			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
+			quietMillis: 100,
+			minimumInputLength: 1,
+			multiple: true,
+			ajax: {
+				cache: true,
+				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=careers&format=json',
+				data: function(term, page){
+					return { term: term, showAll: 0 }
+				},
+				results: function(data, page){
+					return { results: data };
+				}
+			},
+			initSelection: function(element, callback){
+				var id = $(element).val();
+
+				if (!empty(id)) {
+					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=careers&format=json', {
+						data: {
+							id: id
+						}
+					}).done(function(data){
+						callback(data);
+					});
+				}
+			},
+			formatResult: function(data){
+				return data.title;
+			},
+			formatSelection: function(data, container){
+				return data.title;
+			},
+			escapeMarkup: function(m) { return m; }
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="application-form" method="post" name="adminForm" autocomplete="off">

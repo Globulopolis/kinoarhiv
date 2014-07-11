@@ -60,7 +60,7 @@ if ($this->params->get('search_names_enable') == 0) {
 	});
 </script>
 <div class="advsearch-names<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'names') ? ' well uk-panel uk-panel-box' : ''; ?>">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names'); ?>" id="filters_names" method="post">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names', false); ?>" id="filters_names" method="post">
 		<fieldset class="form-horizontal uk-form">
 			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE'); ?></legend>
 
@@ -79,7 +79,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php if ($this->params->get('search_names_birthday') == 1): ?><?php echo GlobalHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH'); ?><?php endif; ?></div>
+						<div class="control-label uk-width-1-4"><?php echo ($this->params->get('search_names_birthday') == 1) ? GlobalHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH') : ''; ?></div>
 						<div class="controls uk-width-1-1">
 							<?php if ($this->params->get('search_names_birthday') == 1): ?><input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-5" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" /><?php endif; ?><?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?><?php endif; ?>
 						</div>

@@ -291,6 +291,8 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="search_movies_length_min" type="text" default="3" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3" maxlength="2" class="span2" />
+		<field name="search_movies_length_max" type="text" default="64" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3" maxlength="2" class="span2" />
 		<field name="search_movies_title" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
@@ -357,6 +359,8 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="search_names_length_min" type="text" default="3" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3" maxlength="2" class="span2" />
+		<field name="search_names_length_max" type="text" default="64" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3" maxlength="2" class="span2" />
 		<field name="search_names_name" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_NAME_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

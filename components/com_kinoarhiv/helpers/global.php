@@ -41,22 +41,28 @@ class GlobalHelper {
 	/**
 	 * Return html structure for message. jQueryUI stylesheets required.
 	 *
-	 * @param   string  $text	Text for display.
-	 * @param   array	$extra  Array of optional elements. $extra['icon'] - the icon type; $extra['type'] - the type of message.
-	 * Can be 'highlight', 'error', 'disabled'.
+	 * @param   string    $text   Text for display.
+	 * @param   array	  $extra  Array of optional elements. $extra['icon'] - the icon type; $extra['type'] - the type of message.
+		Can be 'highlight', 'error', 'disabled'.
+	 * @param   boolean   $close   Show close link.
 	 *
 	 * @return  string
 	 *
 	*/
-	static function showMsg($text, $extra=array()) {
+	static function showMsg($text, $extra=array(), $close=false) {
 		$icon = !isset($extra['icon']) ? 'info' : $extra['icon'];
 		$type = !isset($extra['type']) ? 'highlight' : $extra['type'];
+		if ($close) {
+			$close_str = ' <a href="" class="ui-icon ui-icon-close" style="display: inline-block;" onclick="jQuery(this).closest(\'.ui-message\').remove(); return false;"></a>';
+		} else {
+			$close_str = '';
+		}
 
 		$html = '<div class="ui-message"><div class="ui-widget">
 			<div class="ui-corner-all ui-state-'.$type.'" style="padding: 0pt 0.5em;">
 				<div style="margin: 5px ! important;">
 					<span class="ui-icon ui-icon-'.$icon.'" style="float: left; margin-right: 0.3em;"></span>
-					<span style="overflow: hidden; display: block;">'.$text.'</span>
+					<span style="overflow: hidden; display: block;">'.$text.$close_str.'</span>
 				</div>
 			</div>
 		</div></div>';

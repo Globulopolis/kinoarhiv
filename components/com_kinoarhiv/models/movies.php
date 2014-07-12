@@ -95,7 +95,11 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by title
 		$title = $searches->get('filters.movies.title');
 		if ($params->get('search_movies_title') == 1 && !empty($title)) {
-			$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
+			if (JString::strlen($title) < $params->get('search_movies_length_min') || JString::strlen($title) > $params->get('search_movies_length_max')) {
+				echo GlobalHelper::showMsg(JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')), array('icon'=>'alert'), true);
+			} else {
+				$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
+			}
 		}
 
 		// Filter by year

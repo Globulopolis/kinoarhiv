@@ -127,7 +127,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items->names->birthcountry = &$items->movies->countries;
 
 		// Amplua
-		$amplua_disabled = !empty($params->get('search_names_amplua_disabled')) ? "AND `id` NOT IN (".$params->get('search_names_amplua_disabled').")" : "";
+		$amplua_disabled = $params->get('search_names_amplua_disabled');
+		$amplua_disabled = !empty($amplua_disabled) ? "AND `id` NOT IN (".$params->get('search_names_amplua_disabled').")" : "";
 		$db->setQuery("SELECT `id` AS `value`, `title` AS `text` FROM ".$db->quoteName('#__ka_names_career')." WHERE (`is_mainpage` = 1 OR `is_amplua` = 1) ".$amplua_disabled." AND `language` IN (".$db->quote($lang->getTag()).",'*') GROUP BY `title` ORDER BY `ordering` ASC, `title` ASC");
 		$amplua = $db->loadObjectList();
 

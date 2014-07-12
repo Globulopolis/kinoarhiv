@@ -92,13 +92,13 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies` (
   `metadata` text NOT NULL,
   `language` char(7) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_createdby` (`idx_createdby`),
+  KEY `idx_createdby` (`created_by`),
   KEY `idx_access` (`access`),
   KEY `idx_state` (`state`),
   KEY `idx_language` (`language`),
   KEY `idx_rate_loc` (`rate_loc_rounded`),
   KEY `idx_rate_imdb` (`rate_imdb_rounded`),
-  KEY `idx_rate_kp` (`rate_kp_rounded`),
+  KEY `idx_rate_kp` (`rate_kp_rounded`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_movies_gallery` (

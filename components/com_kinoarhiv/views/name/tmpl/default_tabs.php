@@ -11,7 +11,7 @@
 	<?php endif; ?>
 
 	<?php if (($this->item->attribs->tab_name_awards == '' && $this->params->get('tab_name_awards') == 1) || $this->item->attribs->tab_name_awards == 1): ?>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=awards&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="tab-awards<?php echo ($this->tpageab == 'awards') ? ' current uk-active' : '';?>"><?php echo JText::_('COM_KA_NAMES_TAB_AWARDS'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=awards&id='.$this->item->id.'&Itemid='.$this->itemid); ?>" class="tab-awards<?php echo ($this->page == 'awards') ? ' current uk-active' : '';?>"><?php echo JText::_('COM_KA_NAMES_TAB_AWARDS'); ?></a>
 	<?php endif; ?>
 </div>
 <div class="clear"></div>

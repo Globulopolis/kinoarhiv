@@ -113,7 +113,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('NameData');
 
-		if (($items->attribs->tab_name_wallpp === '' && $params->get('tab_name_wallpp') === '0') || $items->attribs->tab_name_wallpp === '0') {
+		if (($item->attribs->tab_name_wallpp === '' && $params->get('tab_name_wallpp') === '0') || $item->attribs->tab_name_wallpp === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
 		}
@@ -190,7 +190,7 @@ class KinoarhivViewName extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('NameData');
 
-		if (($items->attribs->tab_name_photos === '' && $params->get('tab_name_photos') === '0') || $items->attribs->tab_name_photos === '0') {
+		if (($item->attribs->tab_name_photos === '' && $params->get('tab_name_photos') === '0') || $item->attribs->tab_name_photos === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
 		}

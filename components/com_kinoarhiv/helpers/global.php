@@ -12,6 +12,9 @@ class GlobalHelper {
 
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+		if ($params->get('vegas_enable') == 1) {
+			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.vegas.min.js');
+		}
 
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/ui/'.$params->get('ui_theme').'/jquery-ui.css', 'stylesheet', 'rel', array('type'=>'text/css'));
 		$document->addHeadLink(JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/css/plugin.css', 'stylesheet', 'rel', array('type'=>'text/css'));

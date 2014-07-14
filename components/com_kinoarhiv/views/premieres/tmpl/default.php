@@ -31,6 +31,27 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			});
 		}
 
+		<?php if ($this->params->get('vegas_enable') == 1):
+		$src = explode(',', $this->params->get('vegas_bg'));
+			if (count($src) > 0): ?>
+			$.vegas('slideshow', {
+				delay: <?php echo (int)$this->params->get('vegas_slideshow_delay'); ?>,
+				backgrounds: [
+					<?php foreach ($src as $image): ?>
+					{src: '<?php echo trim($image); ?>', fade: 500},
+					<?php endforeach; ?>
+				]
+			<?php else: ?>
+			$.vegas({
+				src: '<?php echo trim($image); ?>'
+			<?php endif; ?>
+			})<?php if ($this->params->get('vegas_overlay') != '-1'): ?>('overlay', {
+				src: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
+				opacity: <?php echo $this->params->get('vegas_overlay_opacity'); ?>
+			})<?php endif; ?>;
+			<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');<?php endif; ?>
+		<?php endif; ?>
+
 		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		$('img.lazy').lazyload({ threshold: 200 });
 

@@ -27,4 +27,5 @@
 	else: ?>
 		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
+	</div>
 </div>

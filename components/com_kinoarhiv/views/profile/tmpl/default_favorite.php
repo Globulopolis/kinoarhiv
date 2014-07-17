@@ -38,6 +38,14 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			});
 		});
 
+		$('#checkall-toggle').click(function(){
+			if ($(this).is(':checked')) {
+				$('.fav-list .title-small :checkbox').prop('checked', true);
+			} else {
+				$('.fav-list .title-small :checkbox').prop('checked', false);
+			}
+		});
+
 		$('#adminForm').submit(function(e){
 			var items = $('input', this).filter(':checked');
 
@@ -60,11 +68,11 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 		<div class="fav-list">
 			<?php foreach ($this->items as $i=>$item): ?>
 			<div class="title-small">
-				<span><?php echo JHtml::_('grid.id', $i, $item->id, false, 'ids'); ?> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view='.$view.'&id='.$item->id.'&Itemid='.$this->itemid); ?>"><?php echo $item->title.$item->year_str; ?></a></span>
+				<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view='.$view.'&id='.$item->id.'&Itemid='.$this->itemid); ?>"><?php echo $item->title.$item->year_str; ?></a></span>
 				<span style="float: right;"><a class="cmd-fav-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view='.$this->page.'&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
 			</div>
 			<?php endforeach; ?>
-			<input class="hasTooltip" type="checkbox" onclick="Joomla.checkAll(this)" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
+			<input class="hasTooltip" type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
 		</div><br />
 		<input type="hidden" name="boxchecked" value="0" />
 		<input type="hidden" name="option" value="com_kinoarhiv" />

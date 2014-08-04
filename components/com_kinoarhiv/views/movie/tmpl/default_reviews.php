@@ -11,6 +11,7 @@
 	elseif ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') == 'default'):
 		$review_number = $this->pagination->limitstart + 1;
 
+		$cmd_insert_username = '';
 		if ($this->params->get('allow_reviews') == 1 && !$this->user->guest && $this->item->attribs->allow_reviews == 1):
 			// Default review system
 			$cmd_insert_username = ' cmd-insert-username';

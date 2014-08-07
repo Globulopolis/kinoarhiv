@@ -20,9 +20,9 @@ $item_trailer = $this->item->trailer; ?>
 						<track kind="subtitles" src="<?php echo $item_trailer->path.$subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 					<?php endforeach;
 				endif; ?>
-				<?php /*if (count($item_trailer->files['chapters']) > 0): // Chapters is broken in VJS 4+ ?>
+				<?php if (count($item_trailer->files['chapters']) > 0): ?>
 					<track kind="chapters" src="<?php echo $item_trailer->path.$item_trailer->files['chapters']['file']; ?>" srclang="en" default />
-				<?php endif;*/ ?>
+				<?php endif; ?>
 			</video>
 			<?php else: ?>
 			<div style="height: <?php echo $item_trailer->player_height; ?>px;"><img src="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" /></div>
@@ -59,9 +59,9 @@ $item_movie = $this->item->movie; ?>
 						<track kind="subtitles" src="<?php echo $item_movie->path.$subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 					<?php endforeach;
 				endif; ?>
-				<?php /*if (count($item_movie->files['chapters']) > 0): // Chapters is broken in VJS 4+ ?>
+				<?php if (count($item_movie->files['chapters']) > 0): ?>
 					<track kind="chapters" src="<?php echo $item_movie->path.$item_movie->files['chapters']['file']; ?>" srclang="en" default />
-				<?php endif;*/ ?>
+				<?php endif; ?>
 			</video>
 			<?php else: ?>
 			<div style="height: <?php echo $item_movie->player_height; ?>px;"><img src="<?php echo $item_movie->path.$item_movie->screenshot; ?>" /></div>

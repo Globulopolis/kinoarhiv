@@ -366,6 +366,10 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="search_movies_tags" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_TAGS_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fieldset>
 	<fieldset name="search_names" label="COM_KA_SEARCH_SETTINGS_NAMES">
 		<field name="search_names_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE" filter="integer">

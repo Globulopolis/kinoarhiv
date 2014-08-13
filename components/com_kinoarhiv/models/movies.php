@@ -84,10 +84,6 @@ class KinoarhivModelMovies extends JModelList {
 	protected function buildFilters(&$params) {
 		$where = "";
 
-		if (!JSession::checkToken('post') && !JSession::checkToken('get')) {
-			return $where;
-		}
-
 		$db = $this->getDBO();
 		$where_id = array();
 		$searches = $this->getFiltersData();
@@ -224,7 +220,17 @@ class KinoarhivModelMovies extends JModelList {
 			}
 		}
 
-		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres)) {
+		// Filter by tags
+		$tags = $searches->get('filters.movies.tags');
+		if ($params->get('search_movies_tags') == 1 && !empty($tags)) {
+			$db->setQuery("SELECT `content_item_id` FROM ".$db->quoteName('#__contentitem_tag_map')
+				. "\n WHERE `type_alias` = 'com_kinoarhiv.movie' AND `tag_id` IN (".$tags.")");
+			$movie_ids = $db->loadColumn();
+
+			$where_id = array_merge($where_id, $movie_ids);
+		}
+
+		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres) || !empty($tags) && !empty($where_id)) {
 			$where .= " AND `m`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
 		}
 
@@ -244,10 +250,6 @@ class KinoarhivModelMovies extends JModelList {
 		$items = new JRegistry;
 
 		if ($params->get('search_movies_enable') != 1) {
-			return $items;
-		}
-
-		if (!JSession::checkToken() && !JSession::checkToken('get')) {
 			return $items;
 		}
 
@@ -294,7 +296,8 @@ class KinoarhivModelMovies extends JModelList {
 							'max'	=> isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
 						),
 						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
-						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : ''
+						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : '',
+						'tags'			=> isset($filters['tags']) ? $filter->clean($filters['tags'], 'string') : ''
 					)
 				)
 			);

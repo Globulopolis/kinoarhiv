@@ -118,6 +118,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 		);
 		$items->movies->to_budget = &$items->movies->from_budget;
 
+		$items->movies->tags = (object)array();
+
 		$items->names->gender = array(
 			array('value'=>'', 'text'=>'-'),
 			array('value'=>'1', 'text'=>JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_M')),
@@ -186,10 +188,6 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$input = JFactory::getApplication()->input;
 		$items = new JRegistry;
 
-		if (!JSession::checkToken() && !JSession::checkToken('get')) {
-			return $items;
-		}
-
 		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
 			$filters = $input->get('filters', array(), 'array')['movies'];
 			// Using input->getArray cause an error when subarrays with no data
@@ -228,7 +226,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 							'max'	=> isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
 						),
 						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
-						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : ''
+						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : '',
+						'tags'			=> isset($filters['tags']) ? $filter->clean($filters['tags'], 'string') : ''
 					)
 				)
 			);

@@ -68,6 +68,40 @@ if ($this->params->get('search_movies_enable') == 0) {
 			escapeMarkup: function(m) { return m; }
 		});
 
+		$('#filters_movies_tags').select2({
+			placeholder: '<?php echo JText::_('JGLOBAL_KEEP_TYPING'); ?>',
+			allowClear: true,
+			minimumInputLength: 2,
+			maximumSelectionSize: 5,
+			multiple: true,
+			ajax: {
+				cache: true,
+				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid='.$this->home_itemid['movies'], false); ?>',
+				data: function(term, page){
+					return { term: term, showAll: 0 }
+				},
+				results: function(data, page){
+					return { results: data };
+				}
+			},
+			initSelection: function(element, callback){
+				var id = $(element).val();
+
+				if (id !== 0 || id !== "") {
+					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid='.$this->home_itemid['movies'], false); ?>', {
+						data: {
+							term: id
+						}
+					}).done(function(data){
+						callback(data);
+					});
+				}
+			},
+			formatResult: function(data){ return data.title; },
+			formatSelection: function(data){ return data.title; },
+			escapeMarkup: function(m) { return m; }
+		});
+
 		$('#filters_movies_rate').slider({
 			range: true,
 			min: 0,
@@ -523,6 +557,17 @@ if ($this->params->get('search_movies_enable') == 0) {
 							<?php echo JText::_('COM_KA_SEARCH_ADV_RANGE_FROM_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->movies->from_budget, 'filters[movies][from_budget]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.movies.from_budget', ''), 'filters_movies_from_budget'); ?>&nbsp;&nbsp;&nbsp;
 							<?php echo JText::_('COM_KA_SEARCH_ADV_RANGE_TO_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->movies->to_budget, 'filters[movies][to_budget]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.movies.to_budget', ''), 'filters_movies_to_budget'); ?>
 						</div>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_movies_tags') == 1): ?>
+			<div class="row-fluid uk-form-row">
+				<div class="span12 uk-width-1-1">
+					<div class="control-group uk-width-1-1">
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_tags', 'JTAG'); ?></div>
+						<div class="controls uk-width-1-2"><input type="hidden" name="filters[movies][tags]" id="filters_movies_tags" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.movies.tags', ''); ?>" /></div>
 					</div>
 				</div>
 			</div>

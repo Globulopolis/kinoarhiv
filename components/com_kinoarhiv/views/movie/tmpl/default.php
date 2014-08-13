@@ -339,7 +339,7 @@ endif; ?>
 				<div class="movie-info">
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][year]='.$this->item->year.'&'.JSession::getFormToken().'=1&Itemid='.$this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
+						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][year]='.$this->item->year.'&Itemid='.$this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 					<div>
@@ -347,7 +347,7 @@ endif; ?>
 						<span class="s-col">
 							<?php for ($i=0, $n=count($this->item->countries); $i<$n; $i++):
 							$country = $this->item->countries[$i]; ?>
-							<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>" /> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]='.$country->id.'&'.JSession::getFormToken().'=1&Itemid='.$this->itemid); ?>" title="<?php echo $country->name; ?>"><?php echo $country->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
+							<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>" /> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]='.$country->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $country->name; ?>"><?php echo $country->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 					</div>
@@ -398,7 +398,7 @@ endif; ?>
 						<span class="s-col">
 							<?php for ($i=0,$n=count($this->item->genres); $i<$n; $i++):
 							$genre = $this->item->genres[$i]; ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]='.$genre->id.'&'.JSession::getFormToken().'=1&Itemid='.$this->itemid); ?>" title="<?php echo $genre->name; ?>"><?php echo $genre->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]='.$genre->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $genre->name; ?>"><?php echo $genre->name; ?></a><?php echo ($i+1 == $n) ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 					</div>
@@ -406,7 +406,7 @@ endif; ?>
 					<?php if (!empty($this->item->budget)): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_BUDGET'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][from_budget]='.$this->item->budget.'&'.JSession::getFormToken().'=1&Itemid='.$this->itemid); ?>"><?php echo $this->item->budget; ?></a></span>
+						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][from_budget]='.$this->item->budget.'&Itemid='.$this->itemid); ?>"><?php echo $this->item->budget; ?></a></span>
 					</div>
 					<?php endif; ?>
 					<?php if (count($this->item->premieres) > 0):
@@ -468,7 +468,7 @@ endif; ?>
 							<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 							<span class="s-col">
 								<?php foreach ($this->item->tags as $tag): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movie&filter_by[]=tag&tag_id[]='.$tag->tag_id.'&Itemid='.$this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->tag_title; ?>"><?php echo $tag->tag_title; ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=movie&filters[movies][tags]='.$tag->tag_id.'&Itemid='.$this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->tag_title; ?>"><?php echo $tag->tag_title; ?></a>
 								<?php endforeach; ?>
 							</span>
 						</div>

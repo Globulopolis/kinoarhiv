@@ -65,10 +65,6 @@ class KinoarhivModelNames extends JModelList {
 	protected function buildFilters(&$params) {
 		$where = "";
 
-		if (!JSession::checkToken('post') && !JSession::checkToken('get')) {
-			return $where;
-		}
-
 		$db = $this->getDBO();
 		$where_id = array();
 		$searches = $this->getFiltersData();
@@ -141,10 +137,6 @@ class KinoarhivModelNames extends JModelList {
 		$items = new JRegistry;
 
 		if ($params->get('search_names_enable') != 1) {
-			return $items;
-		}
-
-		if (!JSession::checkToken() && !JSession::checkToken('get')) {
 			return $items;
 		}
 

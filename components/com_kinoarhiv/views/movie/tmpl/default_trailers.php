@@ -123,9 +123,11 @@ endif; ?>
 								<?php endif; ?>
 							</video>
 
-							<?php elseif ($this->params->get('player_type') == 'videojs'): ?>
+							<?php elseif ($this->params->get('player_type') == 'videojs'):
+								$tposter = $item_trailer->screenshot != '' ? 'poster="'.$item_trailer->path.$item_trailer->screenshot.'"' : '';
+							?>
 
-							<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" poster="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" data-setup='{"techOrder": ["html5", "flash"]}'>
+							<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $tposter; ?> width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" data-setup='{"techOrder": ["html5", "flash"]}'>
 								<?php foreach ($item_trailer->files['video'] as $item): ?>
 									<source type="<?php echo $item['type']; ?>" src="<?php echo $item_trailer->path.$item['src']; ?>" />
 								<?php endforeach; ?>

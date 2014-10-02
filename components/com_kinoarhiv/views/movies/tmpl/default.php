@@ -123,7 +123,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			echo '<br />'.JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_'.$plural[0], $this->pagination->total);
 		endif; ?>
 
-		<?php if ($this->params->get('pagevan_top') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+		<?php if ($this->params->get('pagevan_top') == 1): ?>
 			<div class="pagination top">
 				<?php echo $this->pagination->getPagesLinks(); ?>
 			</div>
@@ -268,7 +268,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		</article>
 		<?php echo $item->event->afterDisplayContent; ?>
 		<?php endforeach; ?>
-		<?php if ($this->params->get('pagevan_bottom') == 1 && $this->pagination->total >= $this->pagination->limit): ?>
+		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 			<div class="pagination bottom">
 				<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 				<?php echo $this->pagination->getPagesLinks(); ?><br />

@@ -482,14 +482,19 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		foreach ($result->trailers as $key=>$value) {
-			if (!empty($value->urls)) {
+			if (!empty($value->urls)) { // Get the data from urls
 				$urls_arr = explode("\n", $value->urls);
+				$value->path = '';
+
 				if (count($urls_arr) > 0) {
-					$value->path = '';
-					if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-						$value->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+					if (file_exists($params->get('media_trailers_root').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot)) {
+						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+							$value->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+						} else {
+							$value->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+						}
 					} else {
-						$value->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+						$value->screenshot = '';
 					}
 					$value->files['video'] = array();
 					$value->files['subtitles'] = array();
@@ -647,12 +652,17 @@ class KinoarhivModelMovie extends JModelForm {
 
 		if (!empty($result->urls)) {
 			$urls_arr = explode("\n", $result->urls);
+			$result->path = ''; // Just empty element
+
 			if (count($urls_arr) > 0) {
-				$result->path = '';
-				if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-					$result->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+				if (file_exists($params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot)) {
+					if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+						$result->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+					} else {
+						$result->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+					}
 				} else {
-					$result->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+					$result->screenshot = '';
 				}
 				$result->files['video'] = array();
 				$result->files['subtitles'] = array();

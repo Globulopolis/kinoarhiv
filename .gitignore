@@ -1,4 +1,5 @@
 /.svn/
+/static
 /administrator/cache
 /administrator/components/index.html
 /administrator/components/index.php

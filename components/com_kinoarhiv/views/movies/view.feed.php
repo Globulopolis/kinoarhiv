@@ -84,7 +84,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 				$row->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($row->alias, 0, 1).'/'.$row->id.'/posters/thumb_'.$row->filename;
 			}
 
-			$row->plot = '<div class="feed-plot">'.GlobalHelper::limitText($row->plot, $params->get('limit_text')).'</div>';
+			$row->plot = '<div class="feed-plot">'.JHtml::_('string.truncate', $row->plot, $params->get('limit_text')).'</div>';
 			$item->description = '<div class="feed-description">
 				<div class="poster"><img src="'.$row->poster.'" border="0" /></div>
 				<div class="introtext">'.$row->text.$row->plot.'</div>

@@ -92,7 +92,7 @@ $sortFields = $this->getSortFields();
 						<?php endif; ?>
 					</td>
 					<td>
-						<span><?php echo GlobalHelper::limitText($this->escape($item->review)); ?></span><br />
+						<span><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
 						<?php if ($this->canEdit) : ?>
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
 						<?php endif; ?>

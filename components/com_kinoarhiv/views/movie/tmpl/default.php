@@ -38,6 +38,9 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.plugin.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.countdown.min.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/countdown/jquery.countdown-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 
 <?php if (isset($this->item->slides) && !empty($this->item->slides)):
 	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
@@ -201,6 +204,24 @@ endif; ?>
 			$('.screenshot-slider li a').colorbox({ returnFocus: false, maxHeight: '90%', maxWidth: '90%' });
 			<?php endif;
 		endif; ?>
+
+		$('.countdown-premiere').each(function(){
+			var el = $(this);
+			var el_datetime = el.data('premiere-datetime');
+
+			if (typeof el_datetime === 'string') {
+				var time = el_datetime.split(/[- :]/);
+				var datetime = new Date(time[0], time[1] - 1, time[2], time[3] || 0, time[4] || 0, time[5] || 0);
+
+				el.countdown({
+					until: datetime,
+					format: 'yodHM',
+					layout: '{y<}{yn} {yl}{y>} {o<}{on} {ol}{o>} {d<}{dn} {dl}{d>} {hn} {hl} {mn} {ml}',
+					alwaysExpire: true,
+					onExpiry: function(){ el.countdown('destroy'); }
+				});
+			}
+		});
 	});
 //]]>
 </script>
@@ -417,6 +438,7 @@ endif; ?>
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&id='.$premiere->id.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if ($premiere->company_name != '' || $premiere->company_name_intl != ''): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$premiere->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo ($premiere->company_name_intl != '') ? $premiere->company_name.' / '.$premiere->company_name_intl : $premiere->company_name; ?></a>
 									<?php if ($premiere->info != ''): ?><a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a><div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?>
 								<?php endif; ?>
+								<div class="countdown-premiere" data-premiere-datetime="<?php echo $premiere->premiere_date; ?>"></div>
 							</span>
 						</div>
 						<?php endforeach;
@@ -519,7 +541,7 @@ endif; ?>
 
 		<?php $player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_'.$this->params->get('player_type');
 			if ($total_trailers > 0 || $total_movies > 0) {
-				// Needed to avoid a bugs. Flowplayer redirecting when SEF is turned on. JWplayer show an error(but playing w/o errors).
+				// Needed to avoid a bugs. Flowplayer redirect when SEF is turned on. JWplayer show an error(but play w/o errors).
 				if ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') {
 				?>
 					<div class="clear"></div>

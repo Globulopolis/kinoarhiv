@@ -77,7 +77,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 				$item->y_poster = ' y-poster';
 			}
 
-			$item->plot = GlobalHelper::limitText($item->plot, $params->get('limit_text'));
+			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
 
 			if ($params->get('ratings_show_frontpage') == 1) {
 				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc)) {

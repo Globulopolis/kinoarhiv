@@ -12,6 +12,10 @@
 	font-size: 0.9em !important;
 }
 
+.ui-message span {
+	margin-top: 0.25em !important;
+}
+
 .pagination ul > li > a, .pagination ul > li > span {
 	padding: 8px 12px 4px 12px !important;
 }
@@ -1039,6 +1043,10 @@ div.rating {
 
 .alphabet-nav {
 	text-align: center;
+}
+
+.alphabet-nav .btn-group, .alphabet-nav .uk-button-group {
+	white-space: normal;
 }
 
 .screenshot-slider {

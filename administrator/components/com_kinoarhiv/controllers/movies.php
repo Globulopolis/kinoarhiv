@@ -85,7 +85,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.(int)$app->input->get('id', array(0), 'array')[0]);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$id[0]);
 				break;
 
 			case 'save2new':
@@ -277,13 +277,13 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 			$response = GlobalHelper::getRemoteData('http://www.rottentomatoes.com/m/'.$id.'/', $headers, 30, array('curl', 'socket'));
 
 			// Finding the div with rating
-			if (preg_match('#<div class="meter_box right_door" comp="HoverTip">(.*)<div class="clearfix">#isU', $response->body, $matches)) {
+			if (preg_match('#<div class="tomato-left">(.*)<div class="(.*)tomato-info"[^>]+>#isU', $response->body, $matches)) {
 				$result = '<div>'.$matches[1].'</div>';
 
-				preg_match('#<span itemprop="ratingValue"[^>]+>(.*)<\/span>#isU', $matches[1], $_votesum);
+				preg_match('#<span class="meter-value" itemprop="ratingValue">(.*)<\/span>#isU', $matches[1], $_votesum);
 				preg_match('#<span itemprop="reviewCount">(.*)<\/span>#isU', $matches[1], $_votes);
-				
-				if (!isset($_votesum[1]) || !is_numeric($_votesum[1])) {
+
+				if (!isset($_votesum[1])) {
 					$message = JText::_('ERROR').': '.JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
 					$success = false;
 				} else {
@@ -291,7 +291,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 					$votes = (int)$_votes[1];
 				}
 			} else {
-				$message = JText::_('ERROR');
+				$message = JText::_('ERROR').'! Someting wrong with a parser!';
 				$success = false;
 			}
 		}

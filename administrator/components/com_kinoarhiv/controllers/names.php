@@ -85,7 +85,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.(int)$app->input->get('id', array(0), 'array')[0]);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$id[0]);
 				break;
 
 			case 'save2new':

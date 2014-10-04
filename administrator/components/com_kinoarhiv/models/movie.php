@@ -190,7 +190,8 @@ class KinoarhivModelMovie extends JModelForm {
 			'tags' => json_decode('['.$data['tags'].']', true),
 			'robots' => $data['robots']
 		);
-		$attribs = json_encode($app->input->post->get('form', array(), 'array')['attribs']);
+		$form_data = $app->input->post->get('form', array(), 'array');
+		$attribs = json_encode($form_data['attribs']);
 		$introtext = '';
 		$intro_countries = '';
 		$intro_genres = '';

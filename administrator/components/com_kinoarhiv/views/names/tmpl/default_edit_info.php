@@ -58,9 +58,10 @@
 					return { results: data };
 				}
 			},
-			<?php if ($this->form->getValue('genres', $this->form_edit_group) != ''): ?>
+			<?php if ($this->form->getValue('genres', $this->form_edit_group) != ''):
+				$genres = $this->form->getValue('genres', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->form->getValue('genres', $this->form_edit_group)['data']); ?>;
+				var data = <?php echo json_encode($genres['data']); ?>;
 				callback(data);
 			},
 			<?php endif; ?>
@@ -92,9 +93,10 @@
 					return { results: data };
 				}
 			},
-			<?php if ($this->form->getValue('careers', $this->form_edit_group) != ''): ?>
+			<?php if ($this->form->getValue('careers', $this->form_edit_group) != ''):
+				$careers = $this->form->getValue('careers', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->form->getValue('careers', $this->form_edit_group)['data']); ?>;
+				var data = <?php echo json_encode($careers['data']); ?>;
 				callback(data);
 			},
 			<?php endif; ?>

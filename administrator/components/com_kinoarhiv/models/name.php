@@ -117,7 +117,8 @@ class KinoarhivModelName extends JModelForm {
 		$id = $app->input->get('id', 0, 'int');
 		$data = $data['name'];
 		$metadata = array('robots' => $data['robots']);
-		$attribs = json_encode($app->input->post->get('form', array(), 'array')['attribs']);
+		$form_data = $app->input->post->get('form', array(), 'array');
+		$attribs = json_encode($form_data['attribs']);
 
 		// Proccess genres IDs and store in relation table
 		if (!empty($data['genres']) && ($data['genres_orig'] != $data['genres'])) {

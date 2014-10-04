@@ -17,9 +17,10 @@
 					return { results: data };
 				}
 			},
-			<?php if ($this->form->getValue('tags', $this->form_edit_group) != ''): ?>
+			<?php if ($this->form->getValue('tags', $this->form_edit_group) != ''):
+				$tags = $this->form->getValue('tags', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
-				var data = <?php echo json_encode($this->form->getValue('tags', $this->form_edit_group)['data']); ?>;
+				var data = <?php echo json_encode($tags['data']); ?>;
 				callback(data);
 			},
 			<?php endif; ?>

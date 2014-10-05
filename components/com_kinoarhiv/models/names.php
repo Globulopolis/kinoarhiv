@@ -141,7 +141,8 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		if (array_key_exists('names', $input->get('filters', array(), 'array'))) {
-			$filters = $input->get('filters', array(), 'array')['names'];
+			$filters_arr = $input->get('filters', array(), 'array');
+			$filters = $filters_arr['names'];
 
 			if (count($filters) < 1) {
 				return $items;

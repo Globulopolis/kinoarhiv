@@ -189,7 +189,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items = new JRegistry;
 
 		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
-			$filters = $input->get('filters', array(), 'array')['movies'];
+			$filters_arr = $input->get('filters', array(), 'array');
+			$filters = $filters_arr['movies'];
 			// Using input->getArray cause an error when subarrays with no data
 			$vars = array(
 				'filters' => array(
@@ -236,7 +237,8 @@ class KinoarhivModelSearch extends JModelLegacy {
 		}
 
 		if (array_key_exists('names', $input->get('filters', array(), 'array'))) {
-			$filters = $input->get('filters', array(), 'array')['names'];
+			$filters_arr = $input->get('filters', array(), 'array');
+			$filters = $filters_arr['names'];
 			$vars = array(
 				'filters' => array(
 					'names' => array(

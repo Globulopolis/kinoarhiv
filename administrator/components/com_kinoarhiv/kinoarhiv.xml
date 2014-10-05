@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>web@libra.ms</authorEmail>
 	<authorUrl>http://киноархив.com</authorUrl>
-	<version>3.0.1</version>
+	<version>3.0.2</version>
 	<description>COM_KA_XML_DESCRIPTION</description>
 
 	<scriptfile>installer.php</scriptfile>
@@ -74,6 +74,6 @@
 		</submenu>
 	</administration>
 	<updateservers>
-		<server type="extension" priority="1" name="Kinoarhiv Updates"><![CDATA[http://xn--80aeqbhthr9b.com/version/index.xml]]></server>
+		<server type="extension" priority="1" name="Kinoarhiv Updates"><![CDATA[https://xn--80aeqbhthr9b.com/updates/index.xml]]></server>
 	</updateservers>
 </extension>

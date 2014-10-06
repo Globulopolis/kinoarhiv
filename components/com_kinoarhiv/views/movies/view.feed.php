@@ -2,8 +2,6 @@
 
 class KinoarhivViewMovies extends JViewLegacy {
 	protected $items = null;
-	protected $ka_theme;
-	protected $itemid;
 
 	public function display($tpl = null) {
 		$user = JFactory::getUser();
@@ -21,7 +19,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$feedEmail = $app->getCfg('feed_email', 'author');
 		$siteEmail = $app->getCfg('mailfrom');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$this->ka_theme = $params->get('ka_theme');
+		$ka_theme = $params->get('ka_theme');
+		$itemid = $this->itemid;
 
 		$document->setTitle(JText::_('COM_KA_MOVIES'));
 		$document->setDescription($params->get('meta_description'));
@@ -42,11 +41,12 @@ class KinoarhivViewMovies extends JViewLegacy {
 			$title = $this->escape($row->title.$year_str);
 			$title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
 			$link = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$row->id.'&Itemid='.$this->itemid);
+			$attribs = json_decode($row->attribs);
 
 			$item = new JFeedItem;
 			$item->title = $title;
 			$item->link = $link;
-			$item->author = ($row->attribs->show_author === '' && !empty($row->username)) ? $row->username : '';
+			$item->author = ($attribs->show_author === '' && !empty($row->username)) ? $row->username : '';
 
 			if ($feedEmail == 'site') {
 				$item->authorEmail = $siteEmail;
@@ -55,10 +55,10 @@ class KinoarhivViewMovies extends JViewLegacy {
 			}
 
 			// Replace country BB-code
-			$row->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
+			$row->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme) {
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html.$cn;
 			}, $row->text);
@@ -70,10 +70,10 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 
 			// Replace person BB-code
-			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
+			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid) {
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_(JUri::base().'index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$this->itemid).'" title="$2">$2</a>', $matches[2]);
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_(JUri::base().'index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$itemid).'" title="$2">$2</a>', $matches[2]);
 
 				return $html.$name;
 			}, $row->text);

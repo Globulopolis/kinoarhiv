@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die; ?>
-<div class="content movie awards">
+<div class="content name awards">
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo $this->loadTemplate('alphabet');
 	endif; ?>

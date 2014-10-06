@@ -24,6 +24,8 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->sel_country = $app->input->get('country', '', 'word');  // It's a string because country_id == 0 it'a world premiere
 		$this->sel_year = $app->input->get('year', 0, 'int');
 		$this->sel_month = $app->input->get('month', '', 'string');
+		$ka_theme = $params->get('ka_theme');
+		$itemid = $this->itemid;
 
 		// Prepare the data
 		foreach ($items as &$item) {
@@ -36,10 +38,10 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			$item->vendor .= $item->company_name_intl;
 
 			// Replace country BB-code
-			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) {
+			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme) {
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$this->ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="'.JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$ka_theme.'/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html.$cn;
 			}, $item->text);
@@ -50,10 +52,10 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			}, $item->text);
 
 			// Replace person BB-code
-			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) {
+			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid) {
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$this->itemid, false).'" title="$2">$2</a>', $matches[2]);
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="'.JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid='.$itemid, false).'" title="$2">$2</a>', $matches[2]);
 
 				return $html.$name;
 			}, $item->text);

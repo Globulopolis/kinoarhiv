@@ -139,6 +139,7 @@ endif; ?>
 								<?php if (count($item_trailer->files['chapters']) > 0): ?>
 									<track kind="chapters" src="<?php echo $item_trailer->path.$item_trailer->files['chapters']['file']; ?>" srclang="en" default />
 								<?php endif; ?>
+								<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
 							</video>
 
 							<?php elseif ($this->params->get('player_type') == 'mediaelement'): ?>

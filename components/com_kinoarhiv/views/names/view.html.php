@@ -115,7 +115,7 @@ class KinoarhivViewNames extends JViewLegacy {
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu->params->get('robots') != '') {
+		if (isset($menu->params) && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
 			$this->document->setMetadata('robots', $this->params->get('robots'));

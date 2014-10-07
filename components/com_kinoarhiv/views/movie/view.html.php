@@ -634,16 +634,20 @@ class KinoarhivViewMovie extends JViewLegacy {
 		if ($this->item->metadesc != '') {
 			$this->document->setDescription($this->item->metadesc);
 		} else {
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			if (isset($menu->params)) {
+				$this->document->setDescription($menu->params->get('menu-meta_description'));
+			}
 		}
 
 		if ($this->item->metakey != '') {
 			$this->document->setMetadata('keywords', $this->item->metakey);
 		} else {
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			if (isset($menu->params)) {
+				$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			}
 		}
 
-		if ($menu->params->get('robots') != '') {
+		if (isset($menu->params) && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
 			$this->document->setMetadata('robots', $this->metadata->robots);

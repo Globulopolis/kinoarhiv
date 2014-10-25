@@ -897,6 +897,11 @@ class KinoarhivModelMovie extends JModelForm {
 						$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
 					}
 				} else {
+					$db->setQuery("SELECT `rate_loc`, `rate_sum_loc`"
+						. "\n FROM ".$db->quoteName('#__ka_movies')
+						. "\n WHERE `id` = ".(int)$movie_id);
+					$vote_result = $db->loadObject();
+
 					$rate_loc = (int)$vote_result->rate_loc + 1;
 					$rate_sum_loc = (int)$vote_result->rate_sum_loc + (int)$value;
 					$rate_loc_rounded = round($rate_sum_loc / $rate_loc, 0);

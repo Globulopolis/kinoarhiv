@@ -68,7 +68,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		$user = JFactory::getUser();
 		$id = $this->input->get('id', null, 'int');
 		$return = $this->input->get('return', null, 'word');
-		$redir_url = ($return == 'movie') ? JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false) : JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=reviews', false);
+		$redir_url = ($return == 'movie') ? JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false) : JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=reviews', false);
 
 		if (!$user->authorise('core.delete.reviews', 'com_kinoarhiv')) {
 			$this->setRedirect($redir_url);

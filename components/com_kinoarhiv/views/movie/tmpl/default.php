@@ -76,7 +76,7 @@ endif; ?>
 
 				if (value != 0) {
 					if ($('.rate .my_vote').is(':hidden')) { $('.rate .my_vote').show(); }
-					$('.rate .my_vote span').text(value);
+					$('.rate .my_vote span.small').text('<?php echo JText::_('COM_KA_RATE_MY_CURRENT'); ?>' + value);
 				} else {
 					$('.rate .my_vote span').text('').parent().hide();
 				}

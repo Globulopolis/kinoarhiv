@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-if ($this->page == 'names') {
+if ($this->tab == 'names') {
 	$view = 'name';
 } else {
 	$view = 'movie';
@@ -59,26 +59,26 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 <div class="uk-article ka-content user-profile favorite">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<div class="subtabs breadcrumb">
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&page=movies&Itemid='.$this->itemid); ?>" class="subtab-movie<?php echo ($this->page == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&tab=favorite&page=names&Itemid='.$this->itemid); ?>" class="subtab-name<?php echo ($this->page == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid='.$this->itemid); ?>" class="subtab-movie<?php echo ($this->tab == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid='.$this->itemid); ?>" class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
 	</div>
 	<?php if (count($this->items) > 0): ?>
 	<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
-		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE').$this->pagination->total.JText::_('COM_KA_PROFILE_TOTAL_'.strtoupper($this->page).'_'.$plural[0]); ?></div>
+		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE').$this->pagination->total.JText::_('COM_KA_PROFILE_TOTAL_'.strtoupper($this->tab).'_'.$plural[0]); ?></div>
 		<div class="fav-list">
 			<?php foreach ($this->items as $i=>$item): ?>
 			<div class="title-small">
 				<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view='.$view.'&id='.$item->id.'&Itemid='.$this->itemid); ?>"><?php echo $item->title.$item->year_str; ?></a></span>
-				<span style="float: right;"><a class="cmd-fav-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view='.$this->page.'&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
+				<span style="float: right;"><a class="cmd-fav-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view='.$this->tab.'&task=favorite&action=delete&Itemid='.$this->itemid.'&id='.$item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
 			</div>
 			<?php endforeach; ?>
 			<input class="hasTooltip" type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
 		</div><br />
 		<input type="hidden" name="boxchecked" value="0" />
 		<input type="hidden" name="option" value="com_kinoarhiv" />
-		<input type="hidden" name="view" value="<?php echo $this->page; ?>" />
+		<input type="hidden" name="view" value="<?php echo $this->tab; ?>" />
 		<input type="hidden" name="task" value="favorite" />
-		<input type="hidden" name="tab" value="favorite" />
+		<input type="hidden" name="page" value="favorite" />
 		<input type="hidden" name="action" value="delete" />
 		<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 		<input type="hidden" name="return" value="profile" />

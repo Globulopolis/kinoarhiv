@@ -125,7 +125,7 @@ class GlobalHelper {
 			),
 			'videojs'=>array(
 				'css'=>array(
-					'components/com_kinoarhiv/assets/players/videojs/video-js.min.css'
+					'components/com_kinoarhiv/assets/players/videojs/video-js.css'
 				),
 				'js'=>array(
 					'components/com_kinoarhiv/assets/players/videojs/video.js'

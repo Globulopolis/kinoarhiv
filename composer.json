@@ -2,12 +2,12 @@
     "name": "com_kinoarhiv",
     "description": "",
     "keywords": ["php", "kinoarhiv"],
-    "homepage": "",
+    "homepage": "http://xn--80aeqbhthr9b.com",
     "license": "GPL-2.0+",
     "authors": [
         {
             "name": "Viper",
-            "homepage": ""
+            "homepage": "http://xn--80aeqbhthr9b.com"
         }
     ],
     "require": {

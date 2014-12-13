@@ -59,6 +59,19 @@ function empty(mixed_var) {
 	return false;
 }
 
+/**
+ * Toggles the check state of a group of boxes
+*/
+function checkall(object, selector) {
+	jQuery(document).ready(function($){
+		if ($(object).is(':checked')) {
+			$(':checkbox', selector).prop('checked', true);
+		} else {
+			$(':checkbox', selector).prop('checked', false);
+		}
+	});
+}
+
 jQuery(document).ready(function($){
 	$('.hasTip, .hasTooltip, td[title]').tooltip({
 		show: null,

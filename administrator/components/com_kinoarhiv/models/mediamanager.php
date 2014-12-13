@@ -1,4 +1,12 @@
 <?php defined('_JEXEC') or die;
+/**
+ * @package     Kinoarhiv.Administrator
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url			http://киноархив.com/
+ */
 
 class KinoarhivModelMediamanager extends JModelList {
 	public function __construct($config = array()) {
@@ -183,7 +191,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				// Join over the asset groups.
 				$query->select(' ag.title AS access_level')
-					->leftJoin('#__viewlevels AS ag ON ag.id = g.access');
+					->leftJoin($db->quoteName('#__viewlevels').' AS ag ON ag.id = g.access');
 
 				$query->where('(`g`.`state` = 0 OR `g`.`state` = 1) AND `g`.`movie_id` = '.(int)$id);
 
@@ -199,8 +207,6 @@ class KinoarhivModelMediamanager extends JModelList {
 					$orderCol = 'ag.title';
 				}
 				$query->order($db->escape($orderCol . ' ' . $orderDirn));
-			} elseif ($type == 'sounds') {
-				$query = null;
 			}
 		} elseif ($section == 'name') {
 			if ($type == 'gallery') {
@@ -223,6 +229,48 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 
 		return $query;
+	}
+
+	public function getSoundtracks() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$query = $db->getQuery(true);
+		$id = $app->input->get('id', 0, 'int');
+
+		$query->select($this->getState(
+				'list.select',
+				'`album`.`id`, `album`.`title`, `album`.`alias`, `album`.`year`, `album`.`access`, `album`.`language`, `album`.`state`'
+			)
+		);
+		$query->from($db->quoteName('#__ka_music_albums').' AS `album`');
+
+		// Join over the language
+		$query->select(' `l`.`title` AS `language_title`')
+			->leftJoin($db->quoteName('#__languages').' AS `l` ON `l`.`lang_code` = `album`.`language`');
+
+		// Join over the asset groups.
+		$query->select(' `ag`.`title` AS `access_level`')
+			->leftJoin($db->quoteName('#__viewlevels').' AS `ag` ON `ag`.`id` = `album`.`access`');
+
+		$query->where('`album`.`id` IN (SELECT `album_id` FROM '.$db->quoteName('#__ka_music_rel_movies').' WHERE `movie_id` = '.(int)$id.') AND (`album`.`state` = 0 OR `album`.`state` = 1)');
+		$db->setQuery($query);
+		$result = $db->loadAssocList();
+
+		foreach ($result as $i => $album) {
+			$query = $db->getQuery(true);
+			$query->select('`t`.*');
+			$query->from($db->quoteName('#__ka_music').' AS `t`');
+			// Join over the asset groups.
+			$query->select(' `ag`.`title` AS `access_level`')
+				->leftJoin($db->quoteName('#__viewlevels').' AS `ag` ON `ag`.`id` = `access`');
+			$query->where('`t`.`id` IN (SELECT `track_id` FROM '.$db->quoteName('#__ka_music_rel_albums').' WHERE `album_id` = '.(int)$album['id'].')');
+			$db->setQuery($query);
+			$result[$i]['tracks'] = $db->loadObjectList();
+			$result[$i]['tracks'] = (object)$result[$i]['tracks'];
+			$result[$i] = (object)$result[$i];
+		}
+
+		return $result;
 	}
 
 	/**

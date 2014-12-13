@@ -37,10 +37,10 @@ $sortFields = $this->getSortFields();
 		<table class="table table-striped" id="articleList">
 			<thead>
 				<tr>
-					<th width="1%" class="hidden-phone">
+					<th width="1%">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
+					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'v.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>
@@ -52,7 +52,7 @@ $sortFields = $this->getSortFields();
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'language', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap center hidden-phone">
+					<th width="5%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'v.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
@@ -60,18 +60,16 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="6" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item): ?>
 				<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->id; ?>">
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
-					<td class="center">
-						<div class="btn-group">
-							<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $this->canEditState, 'cb'); ?>
-						</div>
+					<td class="center hidden-phone">
+						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $this->canEditState, 'cb'); ?>
 					</td>
 					<td class="nowrap has-context">
 						<div class="pull-left">
@@ -84,7 +82,7 @@ $sortFields = $this->getSortFields();
 							<?php endif; ?>
 						</div>
 					</td>
-					<td class="small hidden-phone">
+					<td class="small">
 						<?php echo $item->company_name_intl; ?>
 					</td>
 					<td class="small hidden-phone">
@@ -94,7 +92,7 @@ $sortFields = $this->getSortFields();
 							<?php echo $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
 						<?php endif;?>
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
 				</tr>

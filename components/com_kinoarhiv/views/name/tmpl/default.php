@@ -81,21 +81,21 @@
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_BIRTH'); ?></span>
 						<span class="s-col">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=name&filter_by[]=year&year[start]='.$this->item->date_of_birth_raw.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>, <img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0" /> <?php echo JText::_('COM_KA_NAMES_ZODIAC_'.JString::strtoupper($this->item->zodiac)); ?>, <?php echo $this->item->date_of_birth_interval_str; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]='.$this->item->date_of_birth_raw.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>, <img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0" /> <?php echo JText::_('COM_KA_NAMES_ZODIAC_'.JString::strtoupper($this->item->zodiac)); ?>, <?php echo $this->item->date_of_birth_interval_str; ?>
 						</span>
 					</div>
 					<?php endif; ?>
 					<?php if ($this->item->date_of_death_raw != '0000-00-00'): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_DEATH'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=name&filter_by[]=year&year[end]='.$this->item->date_of_death_raw.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $this->item->date_of_death_raw, JText::_('DATE_FORMAT_LC3')); ?></a></span>
+						<span class="s-col"><?php echo JHtml::_('date', $this->item->date_of_death_raw, JText::_('DATE_FORMAT_LC3')); ?></span>
 					</div>
 					<?php endif; ?>
 					<?php if (!empty($this->item->birthplace) || !empty($this->item->country)): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_BIRTHPLACE_1'); ?></span>
 						<span class="s-col">
-							<?php echo !empty($this->item->birthplace) ? $this->item->birthplace : ''; ?><?php if (!empty($this->item->birthplace) && !empty($this->item->country)): ?>, <?php endif; ?><?php if (!empty($this->item->country)): ?><img class="ui-icon-country" border="0" alt="<?php echo $this->item->country; ?>" src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $this->item->code; ?>.png"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=name&filter_by[]=country&country_id='.$this->item->code.'&Itemid='.$this->itemid); ?>"><?php echo $this->item->country; ?></a><?php endif; ?>
+							<?php echo !empty($this->item->birthplace) ? $this->item->birthplace : ''; ?><?php if (!empty($this->item->birthplace) && !empty($this->item->country)): ?>, <?php endif; ?><?php if (!empty($this->item->country)): ?><img class="ui-icon-country" border="0" alt="<?php echo $this->item->country; ?>" src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $this->item->code; ?>.png"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthcountry]='.$this->item->birthcountry.'&Itemid='.$this->itemid); ?>"><?php echo $this->item->country; ?></a><?php endif; ?>
 						</span>
 					</div>
 					<?php endif; ?>
@@ -111,7 +111,7 @@
 						<span class="s-col">
 							<?php for ($i=0, $n=count($this->item->career); $i<$n; $i++):
 								$career = $this->item->career[$i]; ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=name&filter_by[]=career&career_id[]='.$career->id); ?>"><?php echo JString::strtolower($career->title); ?></a><?php echo $i+1==$n ? '' : ', '; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][amplua]='.$career->id); ?>"><?php echo JString::strtolower($career->title); ?></a><?php echo $i+1==$n ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 					</div>
@@ -122,7 +122,7 @@
 						<span class="s-col">
 							<?php for ($i=0, $n=count($this->item->genres); $i<$n; $i++):
 								$genre = $this->item->genres[$i]; ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=name&filter_by[]=genre&genre_id[]='.$genre->id); ?>"><?php echo JString::strtolower($genre->name); ?></a><?php echo $i+1==$n ? '' : ', '; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][genre]='.$genre->id); ?>"><?php echo JString::strtolower($genre->name); ?></a><?php echo $i+1==$n ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 					</div>

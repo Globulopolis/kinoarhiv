@@ -13,6 +13,8 @@ $type = $input->get('type', '', 'word');
 			<?php echo $this->loadTemplate('movie_gallery_list'); ?>
 		<?php elseif ($type == 'trailers'): ?>
 			<?php echo $this->loadTemplate('movie_trailers_list'); ?>
+		<?php elseif ($type == 'sounds'): ?>
+			<?php echo $this->loadTemplate('movie_soundtracks_list'); ?>
 		<?php endif; ?>
 	<?php elseif ($section == 'name'): ?>
 		<?php if ($type == 'gallery'): ?>

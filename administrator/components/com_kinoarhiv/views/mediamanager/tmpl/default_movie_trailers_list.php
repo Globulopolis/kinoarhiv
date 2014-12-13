@@ -58,11 +58,11 @@ $sortFields = $this->getSortFields();
 </script>
 <form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="filter-bar" class="btn-toolbar">
-		<div class="btn-group pull-right hidden-phone">
+		<div class="btn-group pull-right">
 			<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
 			<?php echo $this->pagination->getLimitBox(); ?>
 		</div>
-		<div class="btn-group pull-right hidden-phone">
+		<div class="btn-group pull-right">
 			<label for="directionTable" class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
 			<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
 				<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
@@ -77,25 +77,25 @@ $sortFields = $this->getSortFields();
 				<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
 			</select>
 		</div>
-	</div>
+	</div><br />
 	<table class="table table-striped gallery-list" id="articleList">
 		<thead>
 			<tr>
-				<th width="1%" class="center hidden-phone">
+				<th width="1%" class="center">
 					<?php echo JHtml::_('grid.checkall'); ?>
 				</th>
 				<th><?php echo JText::_('JGLOBAL_TITLE'); ?></th>
 				<th width="1%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'); ?></th>
-				<th width="15%" class="nowrap center"><?php echo JText::_('JGRID_HEADING_ACCESS'); ?></th>
-				<th width="15%" class="nowrap center"><?php echo JText::_('JGRID_HEADING_LANGUAGE'); ?></th>
+				<th width="15%" class="nowrap center hidden-phone"><?php echo JText::_('JGRID_HEADING_ACCESS'); ?></th>
+				<th width="15%" class="nowrap center hidden-phone"><?php echo JText::_('JGRID_HEADING_LANGUAGE'); ?></th>
 				<th width="1%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('JSTATUS'); ?></th>
-				<th width="5%" class="nowrap center hidden-phone"><?php echo JText::_('JGRID_HEADING_ID'); ?></th>
+				<th width="5%" class="nowrap center"><?php echo JText::_('JGRID_HEADING_ID'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="6" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item):
@@ -103,10 +103,10 @@ $sortFields = $this->getSortFields();
 					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.movie.'.$item->id);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, '_id'); ?>
 					</td>
-					<td class="hidden-phone">
+					<td>
 						<?php if ($item->embed_code != ''): ?>
 							<span class="icon icon-play-2 hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_ISCODE'); ?>"></span>
 						<?php elseif ($item->filename != ''): ?>
@@ -118,13 +118,11 @@ $sortFields = $this->getSortFields();
 						<?php if ($item->filename != ''): ?> <span class="small">(<?php echo $item->duration; ?>)</span><?php endif; ?>
 					</td>
 					<td class="center">
-						<div class="btn-group">
-							<?php if ($item->frontpage == 0): ?>
-								<a class="btn btn-micro active cmd-fp_off" href="javascript:void(0);"><i class="icon-unpublish"></i></a>
-							<?php else: ?>
-								<a class="btn btn-micro active cmd-fp_on" href="javascript:void(0);"><i class="icon-publish"></i></a>
-							<?php endif; ?>
-						</div>
+						<?php if ($item->frontpage == 0): ?>
+							<a class="btn btn-micro active cmd-fp_off" href="javascript:void(0);"><i class="icon-unpublish"></i></a>
+						<?php else: ?>
+							<a class="btn btn-micro active cmd-fp_on" href="javascript:void(0);"><i class="icon-publish"></i></a>
+						<?php endif; ?>
 					</td>
 					<td class="center hidden-phone">
 						<?php echo $this->escape($item->access_level); ?>
@@ -136,12 +134,10 @@ $sortFields = $this->getSortFields();
 							<?php echo $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
 						<?php endif;?>
 					</td>
-					<td class="center hidden-phone">
-						<div class="btn-group">
-							<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
-						</div>
+					<td class="center">
+						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
 				</tr>

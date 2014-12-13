@@ -110,16 +110,16 @@ $sortFields = $this->getSortFields();
 </script>
 <form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="filter-bar" class="btn-toolbar">
-		<div class="btn-group pull-left hidden-phone">
+		<div class="btn-group pull-left">
 			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 3) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?></a>
 			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=2&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 2) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?></a>
 			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=1&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 1) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?></a>
 		</div>
-		<div class="btn-group pull-right hidden-phone">
+		<div class="btn-group pull-right">
 			<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
 			<?php echo $this->pagination->getLimitBox(); ?>
 		</div>
-		<div class="btn-group pull-right hidden-phone">
+		<div class="btn-group pull-right">
 			<label for="directionTable" class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
 			<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
 				<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
@@ -134,26 +134,26 @@ $sortFields = $this->getSortFields();
 				<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
 			</select>
 		</div>
-	</div>
+	</div><br />
 	<table class="table table-striped gallery-list" id="articleList">
 		<thead>
 			<tr>
-				<th width="1%" class="center hidden-phone">
+				<th width="1%" class="center">
 					<?php echo JHtml::_('grid.checkall'); ?>
 				</th>
 				<th><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'); ?></th>
-				<th width="15%" class="nowrap center"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'); ?></th>
+				<th width="15%" class="nowrap center hidden-phone"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'); ?></th>
 				<?php if ($input->get('tab', 0, 'int') == 2): ?>
 					<th width="10%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'); ?></th>
 				<?php endif; ?>
-				<th width="1%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('JSTATUS'); ?></th>
-				<th width="5%" class="nowrap center hidden-phone"><?php echo JText::_('JGRID_HEADING_ID'); ?></th>
+				<th width="1%" style="min-width: 55px" class="nowrap center hidden-phone"><?php echo JText::_('JSTATUS'); ?></th>
+				<th width="5%" class="nowrap center"><?php echo JText::_('JGRID_HEADING_ID'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="6" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item):
@@ -161,10 +161,10 @@ $sortFields = $this->getSortFields();
 					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.movie.'.$item->id);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, '_id'); ?>
 					</td>
-					<td class="hidden-phone">
+					<td>
 						<?php if (!empty($item->error)): ?><a href="#" class="hasTooltip error_image" title="<?php echo $item->error; ?>"></a><?php endif; ?>
 						<a href="<?php echo $item->filepath; ?>" class="tooltip-img" rel="group_<?php echo $input->get('tab', 0, 'int'); ?>"><?php echo $item->filename; ?></a>
 						<?php if ($item->th_filepath != ''): ?><img src="<?php echo $item->th_filepath; ?>" class="tooltip-img-content" /><?php endif; ?>
@@ -184,12 +184,10 @@ $sortFields = $this->getSortFields();
 						</div>
 					</td>
 					<?php endif; ?>
-					<td class="center">
-						<div class="btn-group">
-							<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
-						</div>
-					</td>
 					<td class="center hidden-phone">
+						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
+					</td>
+					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
 				</tr>

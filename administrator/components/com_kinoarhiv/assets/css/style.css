@@ -183,8 +183,29 @@ table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 	outline: none !important;
 }
 
-.table.gallery-list th, .table.gallery-list td {
+.table.gallery-list th, .table.gallery-list td,
+.table.album-list th, .table.album-list td {
 	padding: 4px 8px;
+}
+
+.table.tracklist thead {
+	border-top: none;
+}
+
+.table.tracklist th:first-child, .table.tracklist td:first-child {
+	border-left: none;
+}
+
+.table.tracklist th:last-child, .table.tracklist td:last-child {
+	border-right: none;
+}
+
+.table.tracklist tr:last-child td {
+	border-bottom: none;
+}
+
+.table.tracklist {
+	margin: 0 !important;
 }
 
 .gallery_tabs .ui-tabs-panel {
@@ -292,4 +313,9 @@ img.movie-poster-preview.y-poster {
 
 #list_awards a {
 	text-decoration: underline;
+}
+
+.separator label {
+	font-weight: bold;
+	font-size: 1.1em;
 }

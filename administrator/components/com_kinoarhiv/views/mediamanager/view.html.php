@@ -1,4 +1,12 @@
 <?php defined('_JEXEC') or die;
+/**
+ * @package     Kinoarhiv.Administrator
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url			http://киноархив.com/
+ */
 
 class KinoarhivViewMediamanager extends JViewLegacy {
 	protected $item;
@@ -28,7 +36,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					return false;
 				}
 
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_GALLERY')), 'images');
 
 				if ($tab == 1) {
 					$path = $params->get('media_wallpapers_root');
@@ -97,7 +105,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 						return false;
 					}
 
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_TRAILERS')), 'images');
 
 					if (!empty($item)) {
 						$movie_id = $app->input->get('id', 0, 'int');
@@ -131,10 +139,66 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 						return false;
 					}
 
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_TRAILERS')), 'images');
 					$this->items = &$items;
 					$this->pagination = &$pagination;
 					$this->state = &$state;
+
+					parent::display($tpl);
+				}
+			} elseif ($type == 'sounds') {
+				$this->addToolbar();
+
+				if ($app->input->get('task', '', 'cmd') == 'edit') {
+					/*JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
+					$_lang = new KALanguage();
+
+					$this->form = $this->get('Form');
+					$item = new JRegistry;
+					$lang = JFactory::getLanguage();
+					$page_title = $this->get('ItemTitle');
+
+					if (count($errors = $this->get('Errors'))) {
+						throw new Exception(implode("\n", $this->get('Errors')), 500);
+						return false;
+					}
+
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
+
+					if (!empty($item)) {
+						$movie_id = $app->input->get('id', 0, 'int');
+						$screenshot = $this->form->getValue('screenshot');
+						$movie_alias = $this->form->getValue('movie_alias');
+
+						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
+							$item->set('screenshot_path_www', JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+							$item->set('screenshot_folder_www', JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
+						} else {
+							$item->set('screenshot_path_www', $params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+							$item->set('screenshot_folder_www', $params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
+						}
+						$item->set('screenshot_path', $params->get('media_trailers_root').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+						$item->set('subtitles_lang_list', $_lang::listOfLanguages());
+					}
+
+					$this->item = &$item;
+					$this->lang = &$lang;
+
+					parent::display('upload_trailer');
+					$app->input->set('hidemainmenu', true);*/
+				} else {
+					$items = $this->get('Soundtracks');
+					//$state = $this->get('State');
+					$page_title = $this->get('ItemTitle');
+
+					if (count($errors = $this->get('Errors'))) {
+						throw new Exception(implode("\n", $this->get('Errors')), 500);
+						return false;
+					}
+
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_SOUNDS')), 'music');
+					$this->items = &$items;
+					//$this->state = &$state;
 
 					parent::display($tpl);
 				}
@@ -253,6 +317,22 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				if ($user->authorise('core.delete', 'com_kinoarhiv')) {
 					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 				}
+			} elseif ($type == 'sounds') {
+				if ($user->authorise('core.create', 'com_kinoarhiv')) {
+					JToolbarHelper::custom('add', 'new', 'new', JText::_('JTOOLBAR_NEW'), false);
+					JToolbarHelper::editList('edit');
+					JToolbarHelper::divider();
+				}
+
+				if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
+					JToolbarHelper::publishList();
+					JToolbarHelper::unpublishList();
+					JToolbarHelper::divider();
+				}
+
+				if ($user->authorise('core.delete', 'com_kinoarhiv')) {
+					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				}
 			}
 		}
 	}
@@ -276,6 +356,15 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				'g.frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
 				'g.state' => JText::_('JSTATUS'),
 				'g.id' => JText::_('JGRID_HEADING_ID')
+			);
+		} elseif ($input->get('type') == 'sounds') {
+			return array(
+				/*'g.filename' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
+				'g.access' => JText::_('JGRID_HEADING_ACCESS'),
+				'language' => JText::_('JGRID_HEADING_LANGUAGE'),
+				'g.frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
+				'g.state' => JText::_('JSTATUS'),
+				'g.id' => JText::_('JGRID_HEADING_ID')*/
 			);
 		}
 	}

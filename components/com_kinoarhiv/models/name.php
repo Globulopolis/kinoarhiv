@@ -1,4 +1,12 @@
 <?php defined('_JEXEC') or die;
+/**
+ * @package     Kinoarhiv.Site
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url			http://киноархив.com/
+ */
 
 class KinoarhivModelName extends JModelList {
 	protected $context = null;
@@ -25,7 +33,7 @@ class KinoarhivModelName extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, `n`.`date_of_birth` AS `date_of_birth_raw`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`date_of_death` AS `date_of_death_raw`, `n`.`birthplace`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `cn`.`name` AS `country`, `cn`.`code`, `g`.`filename`")
+		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, `n`.`date_of_birth` AS `date_of_birth_raw`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`date_of_death` AS `date_of_death_raw`, `n`.`birthplace`, `n`.`birthcountry`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `cn`.`name` AS `country`, `cn`.`code`, `g`.`filename`")
 			->from($db->quoteName('#__ka_names').' AS `n`');
 
 		$query->leftJoin($db->quoteName('#__ka_names_gallery').' AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1 AND `g`.`state` = 1');

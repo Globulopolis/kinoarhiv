@@ -1,4 +1,12 @@
 <?php defined('_JEXEC') or die;
+/**
+ * @package     Kinoarhiv.Site
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url			http://киноархив.com/
+ */
 
 class KinoarhivViewNames extends JViewLegacy {
 	protected $items = null;
@@ -103,13 +111,13 @@ class KinoarhivViewNames extends JViewLegacy {
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu->params->get('menu-meta_description') != '') {
+		if (isset($menu->params) && $menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));
 		} else {
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu->params->get('menu-meta_keywords') != '') {
+		if (isset($menu->params) && $menu->params->get('menu-meta_keywords') != '') {
 			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
 		} else {
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));

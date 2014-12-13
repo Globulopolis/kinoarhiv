@@ -67,10 +67,10 @@ $sortFields = $this->getSortFields();
 					<th width="3%" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', '', 'p.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
 					</th>
-					<th width="1%" class="center hidden-phone">
+					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="11%" class="center hidden-phone">
+					<th width="11%" class="center">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_PREMIERE_DATE_LABEL', 'p.premiere_date', $listDirn, $listOrder); ?>
 					</th>
 					<th width="30%" style="min-width:55px">
@@ -82,7 +82,7 @@ $sortFields = $this->getSortFields();
 					<th width="15%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_COUNTRY_LABEL', 'c.name', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap center hidden-phone">
+					<th width="5%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'p.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
@@ -90,7 +90,7 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="7" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="7" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item) :
@@ -103,13 +103,13 @@ $sortFields = $this->getSortFields();
 						<input type="hidden" name="ord[]" class="ord" value="<?php echo $item->id; ?>" />
 						<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<a href="index.php?option=com_kinoarhiv&view=premieres&controller=premieres&task=edit&id[]=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->premiere_date; ?></a>
 					</td>
-					<td class="nowrap hidden-phone">
+					<td>
 						<?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' ('.$item->year.')' : ''; ?>
 					</td>
 					<td class="nowrap hidden-phone">
@@ -127,7 +127,7 @@ $sortFields = $this->getSortFields();
 							echo JText::_('COM_KA_PREMIERE_WORLD');
 						endif; ?>
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
 				</tr>

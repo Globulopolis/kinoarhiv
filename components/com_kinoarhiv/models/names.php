@@ -1,4 +1,12 @@
 <?php defined('_JEXEC') or die;
+/**
+ * @package     Kinoarhiv.Site
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url			http://киноархив.com/
+ */
 
 class KinoarhivModelNames extends JModelList {
 	protected $context = null;
@@ -111,13 +119,23 @@ class KinoarhivModelNames extends JModelList {
 		// Filter by amplua
 		$amplua = $searches->get('filters.names.amplua');
 		if ($params->get('search_names_amplua') == 1 && !empty($amplua)) {
-			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `type` LIKE '%".(int)$amplua."%' GROUP BY `name_id`");
+			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `career_id` = ".(int)$amplua." GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $name_ids);
+			if (count($name_ids) > 0) {
+				$where_id = array_merge($where_id, $name_ids);
+			} else {
+				$where_id = array(0);
+			}
 		}
 
 		if ((!empty($mtitle) || !empty($amplua)) && !empty($where_id)) {
+			// Remove 0 in array
+			$ids_keys = array_keys($where_id, 0);
+			foreach ($ids_keys as $k) {
+				unset($where_id[$k]);
+			}
+
 			$where .= " AND `n`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
 		}
 

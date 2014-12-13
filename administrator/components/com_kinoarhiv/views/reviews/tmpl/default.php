@@ -38,13 +38,13 @@ $sortFields = $this->getSortFields();
 		<table class="table table-striped" id="articleList">
 			<thead>
 				<tr>
-					<th width="1%" class="center hidden-phone">
+					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
+					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
+					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_TYPE', 'a.type', $listDirn, $listOrder); ?>
 					</th>
 					<th>
@@ -62,7 +62,7 @@ $sortFields = $this->getSortFields();
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_USER_IP', 'a.ip', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap center hidden-phone">
+					<th width="5%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
@@ -70,18 +70,16 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="9" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="9" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item): ?>
 				<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->id; ?>">
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
-					<td class="center">
-						<div class="btn-group">
-							<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $this->canEditState, 'cb'); ?>
-						</div>
+					<td class="center hidden-phone">
+						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $this->canEditState, 'cb'); ?>
 					</td>
 					<td class="center hidden-phone">
 						<?php if ($item->type == 2): ?>
@@ -100,7 +98,7 @@ $sortFields = $this->getSortFields();
 					<td class="small center hidden-phone">
 						<?php echo $item->created; ?>
 					</td>
-					<td class="small hidden-phone">
+					<td class="small">
 						<?php echo $item->movie; ?><br />
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&mid='.$item->movie_id); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
 					</td>
@@ -112,7 +110,7 @@ $sortFields = $this->getSortFields();
 					<td class="small hidden-phone">
 						<?php echo $item->ip; ?>
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
 				</tr>

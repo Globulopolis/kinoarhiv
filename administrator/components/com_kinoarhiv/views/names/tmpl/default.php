@@ -79,23 +79,23 @@ $sortFields = $this->getSortFields();
 					<th width="1%" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', '', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
 					</th>
-					<th width="1%" class="center hidden-phone">
+					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center">
+					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_NAME', 'a.name', $listDirn, $listOrder); ?> / <?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_NAME_LATIN', 'a.latin_name', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center"></th>
+					<th width="1%" style="min-width:35px" class="nowrap center"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'language', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap center hidden-phone">
+					<th width="5%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
@@ -103,7 +103,7 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="7" class="center hidden-phone"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="7" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item) :
@@ -115,15 +115,15 @@ $sortFields = $this->getSortFields();
 						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv.name.'.$item->id)) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
 						<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
-					<td class="center">
+					<td class="center hidden-phone">
 						<div class="btn-group">
 							<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
 						</div>
 					</td>
-					<td class="nowrap has-context">
+					<td class="has-context">
 						<div class="pull-left">
 							<?php if ($item->language == '*'): ?>
 								<?php $language = JText::alt('JALL', 'language'); ?>
@@ -154,10 +154,10 @@ $sortFields = $this->getSortFields();
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>
 					</td>
-					<td class="small hidden-phone">
+					<td class="small">
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
-						<a href="javascript:void(0);" class="hasTooltip dd-relations" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
-						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all">
+						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all hidden-phone">
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CAREERS_TITLE'); ?></a></li>
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&award_type=1&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a></li>
@@ -173,7 +173,7 @@ $sortFields = $this->getSortFields();
 							<?php echo $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
 						<?php endif;?>
 					</td>
-					<td class="center hidden-phone">
+					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
 				</tr>

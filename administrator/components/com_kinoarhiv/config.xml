@@ -76,27 +76,39 @@
 		<field name="media_soundtracks_root" type="text" default="" label="COM_KA_FIELD_PATHS_SND_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_soundtracks_root_www" type="text" default="/downloads/soundtracks" label="COM_KA_FIELD_PATHS_SND_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 
+		<field name="media_soundtracks_demo_root" type="text" default="" label="COM_KA_FIELD_PATHS_SND_DEMO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_soundtracks_demo_root_www" type="text" default="/downloads/soundtracks_demo" label="COM_KA_FIELD_PATHS_SND_DEMO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+
 		<field name="media_rating_image_root" type="text" default="" label="COM_KA_FIELD_PATHS_RT_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 		<field name="media_rating_image_root_www" type="text" default="/images/rating" label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
 	</fieldset>
 	<fieldset name="gallery" label="COM_KA_SETTINGS_GALLERY_LABEL">
 		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
-		<field name="upload_mime_video" type="text" default="h264,mp4,mp4v,mpg4,mpeg,mpg,ogv,qt,mov,wmv,avi,mpd,mkv" label="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL" required="true" filter="string" size="64" class="span6" />
-		<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64" class="span6" />
-		<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_CHAPTERS_LABEL" required="true" filter="string" size="64" class="span6" />
-		<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif" label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" class="span6" />
-
 		<field name="upload_chunk" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_UPLOAD_CHUNK_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
 
-		<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="upload_gallery_watermark_image" type="text" default="/components/com_kinoarhiv/assets/themes/component/default/images/powered_by.png" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
+		<field type="spacer" name="sp_video" class="separator" label="COM_KA_FIELD_UPLOAD_VIDEO_SPACER" />
+			<field name="upload_mime_video" type="text" default="mp4,mp4v,mpg4,mpeg,mpg,ogv,qt,mov,wmv,avi,mpd,mkv" label="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL" description="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL_DESC" required="true" filter="string" size="64" class="span6" />
+			<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64" class="span6" />
+			<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_CHAPTERS_LABEL" required="true" filter="string" size="64" class="span6" />
+
+		<field type="spacer" name="sp_audio" class="separator" label="COM_KA_FIELD_UPLOAD_AUDIO_SPACER" />
+			<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg" label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span6" />
+			<field name="upload_audio_preview" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL" description="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL_DESC" filter="integer">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+
+		<field type="spacer" name="sp_image" class="separator" label="COM_KA_FIELD_UPLOAD_IMAGE_SPACER" />
+			<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif" label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" class="span6" />
+			<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="upload_gallery_watermark_image" type="text" default="/components/com_kinoarhiv/assets/themes/component/default/images/powered_by.png" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
 		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" />

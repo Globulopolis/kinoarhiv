@@ -41,9 +41,9 @@
 }
 
 .plupload_container {
-	padding: 8px;
+	padding: 1px;
 	background: url('../images/icons/mediamanager/transp50.png');
-	/*-moz-border-radius: 5px;*/
+	-moz-border-radius: 5px;
 }
 
 .plupload_container input {

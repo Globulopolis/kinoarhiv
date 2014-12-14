@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music` (
   `performer` varchar(255) NOT NULL DEFAULT '',
   `label` varchar(128) NOT NULL DEFAULT '',
   `isrc` char(12) NOT NULL,
-  `length` char(6) NOT NULL DEFAULT '0',
+  `length` char(12) NOT NULL DEFAULT '0',
   `cd_number` char(12) NOT NULL DEFAULT '0',
   `track_number` smallint(3) NOT NULL DEFAULT '1',
   `filename` varchar(64) NOT NULL,
@@ -139,18 +139,18 @@ CREATE TABLE IF NOT EXISTS `#__ka_music` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
-  `a_id` int(11) NOT NULL AUTO_INCREMENT,
-  `a_title` varchar(255) NOT NULL,
-  `a_alias` varchar(255) NOT NULL,
-  `a_year` year(4) NOT NULL,
-  `a_desc` text NOT NULL,
-  `a_covers_path` varchar(255) NOT NULL,
-  `a_tracks_path` text NOT NULL,
-  `a_tracks_preview_path` varchar(255) NOT NULL,
-  `a_access` int(11) NOT NULL,
-  `a_language` char(7) NOT NULL,
-  `a_state` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`a_id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `alias` varchar(255) NOT NULL,
+  `year` year(4) NOT NULL,
+  `desc` text NOT NULL,
+  `covers_path` varchar(255) NOT NULL,
+  `tracks_path` text NOT NULL,
+  `tracks_preview_path` varchar(255) NOT NULL,
+  `access` int(11) NOT NULL,
+  `language` char(7) NOT NULL,
+  `state` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_music_genres` (

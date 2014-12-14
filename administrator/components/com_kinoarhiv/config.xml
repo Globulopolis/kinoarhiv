@@ -36,8 +36,8 @@
 		</field>
 	</fieldset>
 	<fieldset name="metadata" label="COM_KA_SETTINGS_META_LABEL">
-		<field name="meta_description" type="textarea" default="" label="COM_KA_FIELD_META_LABEL" description="COM_KA_FIELD_META_LABEL_DESC" filter="string" cols="60" rows="3" class="span11" />
-		<field name="meta_keywords" type="textarea" default="" label="COM_KA_FIELD_METAKEY_LABEL" description="COM_KA_FIELD_METAKEY_LABEL_DESC" filter="string" cols="60" rows="3" class="span11" />
+		<field name="meta_description" type="textarea" default="" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" filter="string" cols="60" rows="3" class="span11" />
+		<field name="meta_keywords" type="textarea" default="" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" filter="string" cols="60" rows="3" class="span11" />
 		<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" class="inputbox" default="">
 			<option value="">JGLOBAL_INDEX_FOLLOW</option>
 			<option value="noindex, follow">JGLOBAL_NOINDEX_FOLLOW</option>

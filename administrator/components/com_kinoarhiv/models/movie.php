@@ -200,6 +200,217 @@ class KinoarhivModelMovie extends JModelForm {
 		);
 		$form_data = $app->input->post->get('form', array(), 'array');
 		$attribs = json_encode($form_data['attribs']);
+		/*$introtext = '';
+		$intro_countries = '';
+		$intro_genres = '';
+		$intro_directors = '';
+		$intro_cast = '';*/
+
+		// Proccess intro text for country IDs and store in relation table
+		/*if (!empty($data['countries'])) {
+			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
+			$countries = $db->loadObjectList();
+
+			$ln_str = count($countries) > 1 ? 'COM_KA_COUNTRIES' : 'COM_KA_COUNTRY';
+
+			foreach ($countries as $cn) {
+				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
+			}
+
+			$intro_countries = '[country ln='.$ln_str.']: '.JString::substr($intro_countries, 0, -2).'[/country]<br />';
+
+			$countries_new_arr = explode(',', $data['countries']);
+			$query = true;
+			$db->lockTable('#__ka_rel_countries');
+			$db->transactionStart();
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` = ".(int)$id);
+			$db->execute();
+
+			foreach ($countries_new_arr as $ordering=>$country_id) {
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_countries')." (`country_id`,`movie_id`,`ordering`) VALUES ('".(int)$country_id."', '".(int)$id."', '".(int)$ordering."');");
+				$result = $db->execute();
+
+				if ($result === false) {
+					$query = false;
+					break;
+				}
+			}
+
+			if ($query === false) {
+				$db->transactionRollback();
+				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_countries" failed!');
+				$db->unlockTables();
+				return false;
+			} else {
+				$db->transactionCommit();
+				$db->unlockTables();
+			}
+		}*/
+
+		// Proccess intro text for genres IDs and store in relation table
+		/*if (!empty($data['genres'])) {
+			$db->setQuery("SELECT `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".$data['genres'].") AND `language` = '".$data['language']."'");
+			$genres = $db->loadObjectList();
+
+			$ln_str = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
+
+			foreach ($genres as $genre) {
+				$intro_genres .= $genre->name.', ';
+			}
+
+			$intro_genres = '[genres ln='.$ln_str.']: '.JString::substr($intro_genres, 0, -2).'[/genres]<br />';
+
+			$genres_new_arr = explode(',', $data['genres']);
+			$query = true;
+			$db->lockTable('#__ka_rel_genres');
+			$db->transactionStart();
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` = ".(int)$id);
+			$db->execute();
+
+			foreach ($genres_new_arr as $ordering=>$genre_id) {
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_genres')." (`genre_id`,`movie_id`,`ordering`) VALUES ('".(int)$genre_id."', '".(int)$id."', '".(int)$ordering."');");
+				$result = $db->execute();
+
+				if ($result === false) {
+					$query = false;
+					break;
+				}
+			}
+
+			if ($query === false) {
+				$db->transactionRollback();
+				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_genres" failed!');
+				$db->unlockTables();
+				return false;
+			} else {
+				$db->transactionCommit();
+				$db->unlockTables();
+			}
+		}
+
+		// Update statistics on genres
+		$this->updateGenresStat($data['genres_orig'], $data['genres']);*/
+
+		/*if (!empty($id)) {
+			// Start processing intro text for director(s) IDs
+			$names_d_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
+			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
+				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
+				. "\n WHERE `rel`.`movie_id` = ".$id." AND `rel`.`is_directors` = 1"
+				. "\n ORDER BY `rel`.`ordering`"
+				. $names_d_limit);
+			$names_d = $db->loadObjectList();
+
+			if (count($names_d) > 0) {
+				$intro_directors .= count($names_d == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
+				foreach ($names_d as $director) {
+					$n = !empty($director->name) ? $director->name : '';
+					if (!empty($director->name) && !empty($director->latin_name)) {
+						$n .= ' / ';
+					}
+					$n .= !empty($director->latin_name) ? $director->latin_name : '';
+					$intro_directors .= '[name='.$director->name_id.']'.$n.'[/name], ';
+				}
+				$intro_directors = JString::substr($intro_directors, 0, -2).'[/names]<br />';
+			}
+			// End
+
+			// Start processing intro text for cast IDs
+			$names_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
+			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
+				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
+				. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
+				. "\n WHERE `rel`.`movie_id` = ".$id." AND `rel`.`is_actors` = 1 AND `rel`.`voice_artists` = 0"
+				. "\n ORDER BY `rel`.`ordering`"
+				. $names_limit);
+			$names = $db->loadObjectList();
+
+			if (count($names) > 0) {
+				$intro_cast .= '[names ln=COM_KA_CAST]: ';
+				foreach ($names as $name) {
+					$n = !empty($name->name) ? $name->name : '';
+					if (!empty($name->name) && !empty($name->latin_name)) {
+						$n .= ' / ';
+					}
+					$n .= !empty($name->latin_name) ? $name->latin_name : '';
+					$intro_cast .= '[name='.$name->name_id.']'.$n.'[/name], ';
+				}
+				$intro_cast = JString::substr($intro_cast, 0, -2).'[/names]';
+			}
+			// End
+		}*/
+
+		//$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
+		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
+		$year = str_replace(' ', '', $data['year']);
+		$rate_loc_rounded = ((int)$data['rate_loc'] > 0 && (int)$data['rate_sum_loc'] > 0) ? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
+		$rate_imdb_rounded = $data['imdb_votesum'] > 0 ? round($data['imdb_votesum'], 0) : 0;
+		$rate_kp_rounded = $data['kp_votesum'] > 0 ? round($data['kp_votesum'], 0) : 0;
+
+		if (empty($id)) {
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
+				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `rate_loc_rounded`, `rate_imdb_rounded`, `rate_kp_rounded`, `urls`, `attribs`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
+				. "\n VALUES ('', '0', '".(int)$data['parent_id']."', '".$db->escape($data['title'])."', '".$alias."', '', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$db->escape($year)."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$rate_loc_rounded."', '".$rate_imdb_rounded."', '".$rate_kp_rounded."', '".$db->escape($data['urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
+		} else {
+			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
+				. "\n SET `parent_id` = '".(int)$data['parent_id']."', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."', `plot` = '".$db->escape($data['plot'])."', `desc` = '".$db->escape($data['desc'])."', `known` = '".$db->escape($data['known'])."', `year` = '".$db->escape($year)."', `slogan` = '".$db->escape($data['slogan'])."', `budget` = '".$data['budget']."', `age_restrict` = '".$data['age_restrict']."', `ua_rate` = '".$data['ua_rate']."', `mpaa` = '".$data['mpaa']."', `length` = '".$data['length']."', `rate_loc` = '".(int)$data['rate_loc']."', `rate_sum_loc` = '".(int)$data['rate_sum_loc']."', `imdb_votesum` = '".$data['imdb_votesum']."', `imdb_votes` = '".(int)$data['imdb_votes']."', `imdb_id` = '".(int)$data['imdb_id']."', `kp_votesum` = '".$data['kp_votesum']."', `kp_votes` = '".(int)$data['kp_votes']."', `kp_id` = '".(int)$data['kp_id']."', `rate_fc` = '".(int)$data['rate_fc']."', `rottentm_id` = '".$data['rottentm_id']."', `rate_custom` = '".$db->escape($data['rate_custom'])."', `rate_loc_rounded` = '".$rate_loc_rounded."', `rate_imdb_rounded` = '".$rate_imdb_rounded."', `rate_kp_rounded` = '".$rate_kp_rounded."', `urls` = '".$db->escape($data['urls'])."', `attribs` = '".$attribs."', `created` = '".$data['created']."', `created_by` = '".$created_by."', `modified` = '".$data['modified']."', `state` = '".$data['state']."', `ordering` = '".(int)$data['ordering']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."', `access` = '".(int)$data['access']."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
+				. "\n WHERE `id` = ".(int)$id);
+		}
+
+		try {
+			$db->execute();
+
+			if (empty($id)) {
+				$insertid = $db->insertid();
+				$app->input->set('id', array($insertid)); // Need to proper redirect to an edited item
+
+				$this->updateTagMapping($data['tags'], $data['tags_orig'], $insertid);
+				$this->createIntroText($data, $params, $insertid);
+
+				// Create access rules
+				$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+				$parent_id = $db->loadResult();
+
+				$db->setQuery("SELECT MAX(`lft`)+2 AS `lft`, MAX(`rgt`)+2 AS `rgt` FROM ".$db->quoteName('#__assets'));
+				$lft_rgt = $db->loadObject();
+
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
+					. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
+					. "\n VALUES ('', '".$parent_id."', '".$lft_rgt->lft."', '".$lft_rgt->rgt."', '2', 'com_kinoarhiv.movie.".$insertid."', '".$db->escape($data['title'])."', '{}')");
+				$db->execute();
+				$asset_id = $db->insertid();
+
+				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
+					. "\n SET `asset_id` = '".(int)$asset_id."'"
+					. "\n WHERE `id` = ".(int)$insertid);
+				$db->execute();
+			} else {
+				$app->input->set('id', array($id));
+
+				$this->updateTagMapping($data['tags'], $data['tags_orig'], $id);
+				$this->createIntroText($data, $params, $id);
+
+				// Alias was changed? Move all linked items into new filesystem location.
+				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
+					$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
+				}
+			}
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		return true;
+	}
+
+	protected function createIntroText(&$data, &$params, $id) {
+		$db = $this->getDBO();
 		$introtext = '';
 		$intro_countries = '';
 		$intro_genres = '';
@@ -343,68 +554,12 @@ class KinoarhivModelMovie extends JModelForm {
 			// End
 		}
 
-		$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
-		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
-		$year = str_replace(' ', '', $data['year']);
-		$rate_loc_rounded = ((int)$data['rate_loc'] > 0 && (int)$data['rate_sum_loc'] > 0) ? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
-		$rate_imdb_rounded = $data['imdb_votesum'] > 0 ? round($data['imdb_votesum'], 0) : 0;
-		$rate_kp_rounded = $data['kp_votesum'] > 0 ? round($data['kp_votesum'], 0) : 0;
+		$introtext = $db->escape($intro_countries.$intro_genres.$intro_directors.$intro_cast);
 
-		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_movies')
-				. " (`id`, `asset_id`, `parent_id`, `title`, `alias`, `introtext`, `plot`, `desc`, `known`, `year`, `slogan`, `budget`, `age_restrict`, `ua_rate`, `mpaa`, `length`, `rate_loc`, `rate_sum_loc`, `imdb_votesum`, `imdb_votes`, `imdb_id`, `kp_votesum`, `kp_votes`, `kp_id`, `rate_fc`, `rottentm_id`, `rate_custom`, `rate_loc_rounded`, `rate_imdb_rounded`, `rate_kp_rounded`, `urls`, `attribs`, `created`, `created_by`, `modified`, `state`, `ordering`, `metakey`, `metadesc`, `access`, `metadata`, `language`)"
-				. "\n VALUES ('', '0', '".(int)$data['parent_id']."', '".$db->escape($data['title'])."', '".$alias."', '".$db->escape($introtext)."', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$db->escape($year)."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".$db->escape($data['rate_custom'])."', '".$rate_loc_rounded."', '".$rate_imdb_rounded."', '".$rate_kp_rounded."', '".$db->escape($data['urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."')");
-		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
-				. "\n SET `parent_id` = '".(int)$data['parent_id']."', `title` = '".$db->escape($data['title'])."', `alias` = '".$alias."', `introtext` = '".$db->escape($introtext)."', `plot` = '".$db->escape($data['plot'])."', `desc` = '".$db->escape($data['desc'])."', `known` = '".$db->escape($data['known'])."', `year` = '".$db->escape($year)."', `slogan` = '".$db->escape($data['slogan'])."', `budget` = '".$data['budget']."', `age_restrict` = '".$data['age_restrict']."', `ua_rate` = '".$data['ua_rate']."', `mpaa` = '".$data['mpaa']."', `length` = '".$data['length']."', `rate_loc` = '".(int)$data['rate_loc']."', `rate_sum_loc` = '".(int)$data['rate_sum_loc']."', `imdb_votesum` = '".$data['imdb_votesum']."', `imdb_votes` = '".(int)$data['imdb_votes']."', `imdb_id` = '".(int)$data['imdb_id']."', `kp_votesum` = '".$data['kp_votesum']."', `kp_votes` = '".(int)$data['kp_votes']."', `kp_id` = '".(int)$data['kp_id']."', `rate_fc` = '".(int)$data['rate_fc']."', `rottentm_id` = '".$data['rottentm_id']."', `rate_custom` = '".$db->escape($data['rate_custom'])."', `rate_loc_rounded` = '".$rate_loc_rounded."', `rate_imdb_rounded` = '".$rate_imdb_rounded."', `rate_kp_rounded` = '".$rate_kp_rounded."', `urls` = '".$db->escape($data['urls'])."', `attribs` = '".$attribs."', `created` = '".$data['created']."', `created_by` = '".$created_by."', `modified` = '".$data['modified']."', `state` = '".$data['state']."', `ordering` = '".(int)$data['ordering']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."', `access` = '".(int)$data['access']."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
-				. "\n WHERE `id` = ".(int)$id);
-		}
-
-		try {
-			$db->execute();
-
-			if (empty($id)) {
-				$insertid = $db->insertid();
-				$app->input->set('id', array($insertid)); // Need to proper redirect to edited item
-
-				$this->updateTagMapping($data['tags'], $data['tags_orig'], $insertid);
-
-				// Create access rules
-				$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
-				$parent_id = $db->loadResult();
-
-				$db->setQuery("SELECT MAX(`lft`)+2 AS `lft`, MAX(`rgt`)+2 AS `rgt` FROM ".$db->quoteName('#__assets'));
-				$lft_rgt = $db->loadObject();
-
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
-					. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
-					. "\n VALUES ('', '".$parent_id."', '".$lft_rgt->lft."', '".$lft_rgt->rgt."', '2', 'com_kinoarhiv.movie.".$insertid."', '".$db->escape($data['title'])."', '{}')");
-				$db->execute();
-				$asset_id = $db->insertid();
-
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
-					. "\n SET `asset_id` = '".(int)$asset_id."'"
-					. "\n WHERE `id` = ".(int)$insertid);
-				$db->execute();
-			} else {
-				$app->input->set('id', array($id));
-
-				$this->updateTagMapping($data['tags'], $data['tags_orig'], $id);
-
-				// Alias was changed? Move all linked items into new filesystem location.
-				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
-					$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
-				}
-			}
-
-			return true;
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		return true;
+		$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')
+			. "\n SET `introtext` = '".$introtext."'"
+			. "\n WHERE `id` = ".(int)$id);
+		$db->execute();
 	}
 
 	/**

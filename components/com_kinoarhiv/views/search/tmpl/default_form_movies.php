@@ -332,7 +332,7 @@ if ($this->params->get('search_movies_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_year', 'COM_KA_SEARCH_ADV_MOVIES_YEAR_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_year', 'COM_KA_YEAR'); ?></div>
 						<div class="controls uk-width-1-2"><input name="filters[movies][year]" type="text" id="filters_movies_year" class="span3 uk-width-1-4" value="<?php echo $this->activeFilters->def('filters.movies.year', ''); ?>" maxlength="9" /></div>
 					</div>
 				</div>
@@ -357,7 +357,7 @@ if ($this->params->get('search_movies_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_country', 'COM_KA_SEARCH_ADV_MOVIES_COUNTRY_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_country', 'COM_KA_COUNTRY'); ?></div>
 						<div class="controls uk-width-1-2">
 							<select name="filters[movies][country]" id="filters_movies_country" class="span10 uk-width-1-1">
 								<?php foreach ($this->items->movies->countries as $country):

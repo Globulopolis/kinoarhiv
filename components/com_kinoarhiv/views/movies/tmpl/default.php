@@ -252,7 +252,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 								<?php endif; ?>
 							<?php endif; ?>
 							<div class="local-rt<?php echo $item->rate_loc_label_class; ?>">
-								<div class="rateit" data-rateit-value="<?php echo $item->rate_loc; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $item->rate_loc_label; ?>
+								<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $item->rate_loc_label; ?>
 							</div>
 						</div>
 						<?php endif; ?>

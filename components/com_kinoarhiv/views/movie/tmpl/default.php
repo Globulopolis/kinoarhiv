@@ -35,12 +35,12 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 }
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.plugin.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.countdown.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/countdown/jquery.countdown-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/countdown/jquery.countdown-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
 
 <?php if (isset($this->item->slides) && !empty($this->item->slides)):
 	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
@@ -377,7 +377,7 @@ endif; ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_SLOGAN'); ?></span>
 						<span class="s-col">
-							<span lang="<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"><q><?php echo $this->item->slogan; ?></q></span>
+							<span lang="<?php echo substr($this->lang->getTag(), 0, 2); ?>"><q><?php echo $this->item->slogan; ?></q></span>
 						</span>
 					</div>
 					<?php endif; ?>
@@ -512,7 +512,7 @@ endif; ?>
 					</select>
 					<div class="rateit" data-rateit-value="<?php echo round($this->item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field"></div>&nbsp;<span><?php echo $this->item->rate_loc_label; ?></span>
 					<div class="my_votes" style="<?php echo ($this->item->my_vote == 0) ? 'display: none;' : ''; ?>">
-						<div class="my_vote"><?php echo JText::_('COM_KA_RATE_MY'); ?><span><?php echo $this->item->my_vote; ?></span> <?php echo JText::_('COM_KA_FROM'); ?> <?php echo (int)$this->params->get('vote_summ_num'); ?> <span class="small">(<?php echo JHtml::_('date', $this->item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span></div>
+						<div class="my_vote"><?php echo JText::sprintf('COM_KA_RATE_MY', $this->item->my_vote, (int)$this->params->get('vote_summ_num')); ?>&nbsp;<span class="small">(<?php echo JHtml::_('date', $this->item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span></div>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid='.$this->itemid); ?>" class="small"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
 					</div>
 				</div>
@@ -520,7 +520,7 @@ endif; ?>
 				<div class="clear"></div>
 				<div class="rate">
 					<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br />
-					<div class="rateit" data-rateit-value="<?php echo $this->item->rate_loc; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $this->item->rate_loc_label; ?>
+					<div class="rateit" data-rateit-value="<?php echo $this->item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $this->item->rate_loc_label; ?>
 					<div><?php echo GlobalHelper::showMsg(JText::sprintf(JText::_('COM_KA_VOTES_AUTHREQUIRED'), '<a href="'.JRoute::_('index.php?option=com_users&view=registration').'">'.JText::_('COM_KA_REGISTER').'</a>', '<a href="'.JRoute::_('index.php?option=com_users&view=login').'">'.JText::_('COM_KA_LOGIN').'</a>')); ?></div>
 				</div>
 			<?php endif; ?>

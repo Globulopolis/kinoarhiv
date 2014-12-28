@@ -79,7 +79,7 @@
 		<?php echo $this->loadTemplate('tabs'); ?>
 		<div class="info">
 			<div>
-				<?php if (count($this->item->careers['crew']) > 0):
+				<?php if (isset($this->item->careers['crew']) && count($this->item->careers['crew']) > 0):
 					for ($i=0, $n=count($this->item->careers['crew']); $i<$n; $i++):
 						$career = $this->item->careers['crew'][$i];?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id).'#'.JFilterOutput::stringURLSafe($career); ?>"><?php echo $career; ?></a><?php if ($i+1 == $n) {

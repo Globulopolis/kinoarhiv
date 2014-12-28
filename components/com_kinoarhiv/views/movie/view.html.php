@@ -39,6 +39,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 	protected function info($tpl) {
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
+		$lang = JFactory::getLanguage();
 
 		$item = $this->get('Data');
 		$items = $this->get('Items');
@@ -79,8 +80,9 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$item->_hr_length = $hours * 60 + $minutes;
 
 		if (!empty($item->rate_sum_loc) && !empty($item->rate_loc)) {
-			$item->rate_loc = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
-			$item->rate_loc_label = $item->rate_loc.' '.JText::_('COM_KA_FROM').' '.(int)$params->get('vote_summ_num');
+			$plural = $lang->getPluralSuffixes($item->rate_loc);
+			$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
+			$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_'.$plural[0], $item->rate_loc_c, (int)$params->get('vote_summ_num'), $item->rate_loc);
 		} else {
 			$item->rate_loc = 0;
 			$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
@@ -145,6 +147,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->pagination = &$pagination;
 		$this->metadata = json_decode($item->metadata);
 		$this->form = &$form;
+		$this->lang = &$lang;
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -154,7 +157,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 	}
 
 	/**
-	 * Method to get and show full cast crew.
+	 * Method to get and show full cast and crew.
 	 */
 	protected function cast() {
 		$app = JFactory::getApplication();

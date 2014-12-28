@@ -133,6 +133,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 
 	protected function votes() {
 		$app = JFactory::getApplication();
+		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
@@ -148,8 +149,9 @@ class KinoarhivViewProfile extends JViewLegacy {
 			$item->year_str = ($item->year != '0000') ? '&nbsp;('.$item->year.')' : '';
 
 			if (!empty($item->rate_sum_loc) && !empty($item->rate_loc)) {
-				$item->rate_loc = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
-				$item->rate_loc_label = $item->rate_loc.' '.JText::_('COM_KA_FROM').' '.(int)$params->get('vote_summ_num');
+				$plural = $lang->getPluralSuffixes($item->rate_loc);
+				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
+				$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_'.$plural[0], $item->rate_loc_c, (int)$params->get('vote_summ_num'), $item->rate_loc);
 			} else {
 				$item->rate_loc = 0;
 				$item->rate_loc_label = JText::_('COM_KA_RATE_NO');

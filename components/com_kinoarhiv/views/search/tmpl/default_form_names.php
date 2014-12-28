@@ -92,7 +92,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_mtitle', 'COM_KA_SEARCH_ADV_NAMES_MOVIETITLE_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_mtitle', 'COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL'); ?></div>
 						<div class="controls uk-width-1-2"><input name="filters[names][mtitle]" type="hidden" id="filters_names_mtitle" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.mtitle', 0); ?>" /></div>
 					</div>
 				</div>

@@ -39,9 +39,10 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 
 	public function apply() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.create.movie', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.movie', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.create.movie', 'com_kinoarhiv') && !$user->authorise('core.edit.movie', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
@@ -50,7 +51,6 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$model = $this->getModel('movie');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
-		$id = $app->input->get('id', array(0), 'array');
 
 		if (!$form) {
 			$app->enqueueMessage($model->getError(), 'error');
@@ -58,9 +58,9 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		}
 
 		$validData = $model->validate($form, $data, 'movie');
+		$app->setUserState('com_kinoarhiv.movies.global.data.'.$user->id, $data);
 
 		if ($validData === false) {
-			$app->setUserState('com_kinoarhiv.movies.global.data', $data);
 			$errors = $model->getErrors();
 
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
@@ -71,7 +71,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				}
 			}
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$id[0]);
+			$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$app->getUserState('com_kinoarhiv.movies.data.'.$user->id.'.id'));
 
 			return false;
 		}
@@ -93,7 +93,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$id[0]);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]='.$app->getUserState('com_kinoarhiv.movies.data.'.$user->id.'.id'));
 				break;
 
 			case 'save2new':

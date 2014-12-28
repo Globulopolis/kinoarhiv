@@ -1,2 +1,14 @@
 # Disable LF normalization for all files
 * -text
+
+*.php text eol=lf
+*.js text eol=lf
+*.xml text eol=lf
+
+*.exe binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.ttf binary
+*.eot binary
+*.woff binary

@@ -200,150 +200,6 @@ class KinoarhivModelMovie extends JModelForm {
 		);
 		$form_data = $app->input->post->get('form', array(), 'array');
 		$attribs = json_encode($form_data['attribs']);
-		/*$introtext = '';
-		$intro_countries = '';
-		$intro_genres = '';
-		$intro_directors = '';
-		$intro_cast = '';*/
-
-		// Proccess intro text for country IDs and store in relation table
-		/*if (!empty($data['countries'])) {
-			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
-			$countries = $db->loadObjectList();
-
-			$ln_str = count($countries) > 1 ? 'COM_KA_COUNTRIES' : 'COM_KA_COUNTRY';
-
-			foreach ($countries as $cn) {
-				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
-			}
-
-			$intro_countries = '[country ln='.$ln_str.']: '.JString::substr($intro_countries, 0, -2).'[/country]<br />';
-
-			$countries_new_arr = explode(',', $data['countries']);
-			$query = true;
-			$db->lockTable('#__ka_rel_countries');
-			$db->transactionStart();
-
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` = ".(int)$id);
-			$db->execute();
-
-			foreach ($countries_new_arr as $ordering=>$country_id) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_countries')." (`country_id`,`movie_id`,`ordering`) VALUES ('".(int)$country_id."', '".(int)$id."', '".(int)$ordering."');");
-				$result = $db->execute();
-
-				if ($result === false) {
-					$query = false;
-					break;
-				}
-			}
-
-			if ($query === false) {
-				$db->transactionRollback();
-				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_countries" failed!');
-				$db->unlockTables();
-				return false;
-			} else {
-				$db->transactionCommit();
-				$db->unlockTables();
-			}
-		}*/
-
-		// Proccess intro text for genres IDs and store in relation table
-		/*if (!empty($data['genres'])) {
-			$db->setQuery("SELECT `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".$data['genres'].") AND `language` = '".$data['language']."'");
-			$genres = $db->loadObjectList();
-
-			$ln_str = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
-
-			foreach ($genres as $genre) {
-				$intro_genres .= $genre->name.', ';
-			}
-
-			$intro_genres = '[genres ln='.$ln_str.']: '.JString::substr($intro_genres, 0, -2).'[/genres]<br />';
-
-			$genres_new_arr = explode(',', $data['genres']);
-			$query = true;
-			$db->lockTable('#__ka_rel_genres');
-			$db->transactionStart();
-
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` = ".(int)$id);
-			$db->execute();
-
-			foreach ($genres_new_arr as $ordering=>$genre_id) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_genres')." (`genre_id`,`movie_id`,`ordering`) VALUES ('".(int)$genre_id."', '".(int)$id."', '".(int)$ordering."');");
-				$result = $db->execute();
-
-				if ($result === false) {
-					$query = false;
-					break;
-				}
-			}
-
-			if ($query === false) {
-				$db->transactionRollback();
-				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_genres" failed!');
-				$db->unlockTables();
-				return false;
-			} else {
-				$db->transactionCommit();
-				$db->unlockTables();
-			}
-		}
-
-		// Update statistics on genres
-		$this->updateGenresStat($data['genres_orig'], $data['genres']);*/
-
-		/*if (!empty($id)) {
-			// Start processing intro text for director(s) IDs
-			$names_d_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
-			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
-				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
-				. "\n WHERE `rel`.`movie_id` = ".$id." AND `rel`.`is_directors` = 1"
-				. "\n ORDER BY `rel`.`ordering`"
-				. $names_d_limit);
-			$names_d = $db->loadObjectList();
-
-			if (count($names_d) > 0) {
-				$intro_directors .= count($names_d == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
-				foreach ($names_d as $director) {
-					$n = !empty($director->name) ? $director->name : '';
-					if (!empty($director->name) && !empty($director->latin_name)) {
-						$n .= ' / ';
-					}
-					$n .= !empty($director->latin_name) ? $director->latin_name : '';
-					$intro_directors .= '[name='.$director->name_id.']'.$n.'[/name], ';
-				}
-				$intro_directors = JString::substr($intro_directors, 0, -2).'[/names]<br />';
-			}
-			// End
-
-			// Start processing intro text for cast IDs
-			$names_limit = ($params->get('introtext_actors_list_limit') == 0) ? "" : "\n LIMIT ".$params->get('introtext_actors_list_limit');
-			$db->setQuery("SELECT `rel`.`name_id`, `n`.`name`, `n`.`latin_name`"
-				. "\n FROM ".$db->quoteName('#__ka_rel_names')." AS `rel`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`"
-				. "\n WHERE `rel`.`movie_id` = ".$id." AND `rel`.`is_actors` = 1 AND `rel`.`voice_artists` = 0"
-				. "\n ORDER BY `rel`.`ordering`"
-				. $names_limit);
-			$names = $db->loadObjectList();
-
-			if (count($names) > 0) {
-				$intro_cast .= '[names ln=COM_KA_CAST]: ';
-				foreach ($names as $name) {
-					$n = !empty($name->name) ? $name->name : '';
-					if (!empty($name->name) && !empty($name->latin_name)) {
-						$n .= ' / ';
-					}
-					$n .= !empty($name->latin_name) ? $name->latin_name : '';
-					$intro_cast .= '[name='.$name->name_id.']'.$n.'[/name], ';
-				}
-				$intro_cast = JString::substr($intro_cast, 0, -2).'[/names]';
-			}
-			// End
-		}*/
-
-		//$introtext = $intro_countries.$intro_genres.$intro_directors.$intro_cast;
 		$alias = empty($data['alias']) ? JFilterOutput::stringURLSafe($data['title']) : JFilterOutput::stringURLSafe($data['alias']);
 		$year = str_replace(' ', '', $data['year']);
 		$rate_loc_rounded = ((int)$data['rate_loc'] > 0 && (int)$data['rate_sum_loc'] > 0) ? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
@@ -365,7 +221,9 @@ class KinoarhivModelMovie extends JModelForm {
 
 			if (empty($id)) {
 				$insertid = $db->insertid();
-				$app->input->set('id', array($insertid)); // Need to proper redirect to an edited item
+
+				// This need to proper redirect to an edited item
+				$app->setUserState('com_kinoarhiv.movies.data.'.$user->id.'.id', $insertid);
 
 				$this->updateTagMapping($data['tags'], $data['tags_orig'], $insertid);
 				$this->createIntroText($data, $params, $insertid);
@@ -388,7 +246,7 @@ class KinoarhivModelMovie extends JModelForm {
 					. "\n WHERE `id` = ".(int)$insertid);
 				$db->execute();
 			} else {
-				$app->input->set('id', array($id));
+				$app->setUserState('com_kinoarhiv.movies.data.'.$user->id.'.id', $id);
 
 				$this->updateTagMapping($data['tags'], $data['tags_orig'], $id);
 				$this->createIntroText($data, $params, $id);
@@ -419,7 +277,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		// Proccess intro text for country IDs and store in relation table
 		if (!empty($data['countries'])) {
-			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].") AND `language` = '".$data['language']."'");
+			$db->setQuery("SELECT `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` IN (".$data['countries'].")");
 			$countries = $db->loadObjectList();
 
 			$ln_str = count($countries) > 1 ? 'COM_KA_COUNTRIES' : 'COM_KA_COUNTRY';
@@ -461,7 +319,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		// Proccess intro text for genres IDs and store in relation table
 		if (!empty($data['genres'])) {
-			$db->setQuery("SELECT `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".$data['genres'].") AND `language` = '".$data['language']."'");
+			$db->setQuery("SELECT `name` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` IN (".$data['genres'].")");
 			$genres = $db->loadObjectList();
 
 			$ln_str = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';

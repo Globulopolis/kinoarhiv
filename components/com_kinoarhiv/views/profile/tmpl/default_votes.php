@@ -56,7 +56,13 @@
 							<option value="<?php echo $i; ?>"<?php echo ($i == round($item->rate_loc_label)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
 							<?php endfor; ?>
 						</select><?php echo JText::_('COM_KA_RATE_MY_VOTE'); ?>
-						<div class="rateit" data-rateit-value="<?php echo round($item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field_<?php echo $item->id; ?>" data-rateit-item="<?php echo $item->id; ?>"></div>&nbsp;<span class="rate_loc_my"><?php echo $item->my_vote; ?> <?php echo JText::_('COM_KA_FROM'); ?> <?php echo (int)$this->params->get('vote_summ_num'); ?></span> <span class="small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span>
+						<div class="rateit" data-rateit-value="<?php echo round($item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field_<?php echo $item->id; ?>" data-rateit-item="<?php echo $item->id; ?>"></div>
+						<?php if ($item->my_vote != 0): ?>
+							&nbsp;<span class="rate_loc_my"><?php echo JText::sprintf('COM_KA_RATE_MY', $item->my_vote, (int)$this->params->get('vote_summ_num')); ?></span>&nbsp;
+						<?php else: ?>
+							&nbsp;<span class="rate_loc_my"><?php echo JText::_('COM_KA_RATE_NO'); ?></span>&nbsp;
+						<?php endif; ?>
+						<?php if ($item->_datetime != '0000-00-00 00:00:00'): ?><span class="small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span><?php endif; ?>
 						<div class="rate_loc_total"><?php echo JText::_('COM_KA_RATE_VOTES_TOTAL').$item->total_voted; ?></div>
 						<div class="rate_loc_movie"><?php echo JText::_('COM_KA_RATE_MY_MOVIE').$item->rate_loc_label; ?></div>
 					</div>

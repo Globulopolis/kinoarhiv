@@ -233,7 +233,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
 
 		// Get Slider
-/*		if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1) {
+		if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1) {
 			$db->setQuery("SELECT `id`, `filename`, `dimension` FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `movie_id` = ".(int)$id." AND `state` = 1 AND `type` = 3 LIMIT ".(int)$params->get('slider_max_item'));
 			try {
 				$result->slides = $db->loadObjectList();
@@ -241,7 +241,7 @@ class KinoarhivModelMovie extends JModelForm {
 				GlobalHelper::eventLog($e->getMessage());
 				$result->slides = (object)array();
 			}
-		}*/
+		}
 
 		return $result;
 	}

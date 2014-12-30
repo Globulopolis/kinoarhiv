@@ -37,6 +37,7 @@
 	</files>
 	<languages folder="site/language">
 		<language tag="ru-RU">ru-RU.com_kinoarhiv.ini</language>
+		<language tag="en-GB">en-GB.com_kinoarhiv.ini</language>
 	</languages>
 	<administration>
 		<files folder="admin">
@@ -57,6 +58,8 @@
 		<languages folder="admin/language">
 			<language tag="ru-RU">ru-RU.com_kinoarhiv.ini</language>
 			<language tag="ru-RU">ru-RU.com_kinoarhiv.sys.ini</language>
+			<language tag="en-GB">en-GB.com_kinoarhiv.ini</language>
+			<language tag="en-GB">en-GB.com_kinoarhiv.sys.ini</language>
 		</languages>
 		<menu link="option=com_kinoarhiv">COM_KINOARHIV</menu>
 		<submenu>

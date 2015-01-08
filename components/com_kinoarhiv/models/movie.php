@@ -329,6 +329,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$_result = array('crew'=>array(), 'cast'=>array(), 'dub'=>array());
 		$_careers_crew = array();
+
 		foreach ($crew as $key=>$value) {
 			foreach (explode(',', $value->type) as $k=>$type) {
 				// Crew

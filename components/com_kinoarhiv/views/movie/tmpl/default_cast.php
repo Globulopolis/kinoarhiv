@@ -119,7 +119,7 @@
 
 			<?php if (count($this->item->cast) > 0):
 				foreach ($this->item->cast as $row): ?>
-				<div class="ui-corner-all ui-widget-header header-small"><a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?><span class="dub"><?php echo JText::_('COM_KA_CAST_DUB'); ?></span></div>
+				<div class="ui-corner-all ui-widget-header header-small"><a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?><?php if (!empty($this->item->dub)): ?><span class="dub"><?php echo JText::_('COM_KA_CAST_DUB'); ?></span><?php endif; ?></div>
 				<div class="content">
 					<?php foreach ($row['items'] as $key=>$name): ?>
 					<div class="cast-row<?php echo ($name['y_poster'] != '' || $name['dub_y_poster'] != '') ? ' hasPoster' : ''; ?>">

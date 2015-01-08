@@ -29,7 +29,7 @@ $sortFields = $this->getSortFields();
 	}
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_NAMES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
+		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_NAMES_SEARCH_HELP', true); ?>\');"><span class="icon-help"></span></button></div>');
 
 		$('.rel-menu').css({
 			left: $('#toolbar-tools').offset().left+'px',

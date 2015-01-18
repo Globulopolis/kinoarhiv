@@ -101,6 +101,51 @@ $sortFields = $this->getSortFields();
 				});
 
 				return false;
+			} else if (task == 'copyfrom') {
+				var dialog = $('<div id="dialog-copy" title="<?php echo JText::_('JTOOLBAR_COPYFROM'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+
+				$(dialog).dialog({
+					dialogClass: 'copy-dlg',
+					modal: true,
+					width: 800,
+					height: 520,
+					close: function(event, ui){
+						dialog.remove();
+					},
+					buttons: [
+						{
+							text: '<?php echo JText::_('JTOOLBAR_COPY'); ?>',
+							id: 'copy-apply',
+							click: function(){
+								blockUI('show');
+								$.ajax({
+									type: 'POST',
+									url: $('#rulesForm', this).attr('action') + '&id=' + $('#id').val(),
+									data: $('#rulesForm', this).serialize()
+								}).done(function(response){
+									blockUI();
+									if (response.success) {
+										dialog.remove();
+									} else {
+										showMsg('.copy-dlg #rulesForm', response.message);
+									}
+								}).fail(function(xhr, status, error){
+									showMsg('.copy-dlg #rulesForm', error);
+									blockUI();
+								});
+							}
+						},
+						{
+							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
+							click: function(){
+								dialog.remove();
+							}
+						}
+					]
+				});
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw');
+
+				return false;
 			}
 
 			Joomla.submitform(task);

@@ -23,7 +23,7 @@ class JFormFieldMovies extends JFormField {
 		parent::__construct();
 	}
 
-	protected function getInput() {
+	public function getInput() {
 		$class = 'hasAutocomplete ';
 
 		// Initialize some field attributes.

@@ -289,6 +289,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 			if ($type == 'gallery') {
 				if ($user->authorise('core.create', 'com_kinoarhiv')) {
 					JToolbarHelper::custom('upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
+					JToolbarHelper::custom('copyfrom', 'copy', 'copy', JText::_('JTOOLBAR_COPYFROM'), false);
 					JToolbarHelper::divider();
 				}
 

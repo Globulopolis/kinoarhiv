@@ -558,4 +558,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		echo $result;
 	}
+
+	public function copyfrom() {
+		echo 'Ok';
+	}
 }

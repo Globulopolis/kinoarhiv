@@ -17,6 +17,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 		$term = $app->input->get('term', '', 'string');
 		$id = $app->input->get('id', 0, 'int');
 		$lang = $app->input->get('lang', '', 'string');
+		$ignore = $app->input->get('ignore', array(), 'array');
 
 		if ($element == 'countries') {
 			// Do not remove `code` field from the query. It's necessary for flagging row in select
@@ -56,20 +57,26 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'movies') {
+			if (!empty($ignore)) {
+				$ignored = " AND `id` NOT IN (".implode(',', $ignore).")";
+			} else {
+				$ignored = "";
+			}
+
 			if (empty($all)) {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang.$ignored);
 					$result = $db->loadObjectList();
 				} else {
-					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` = ".(int)$id.$where_lang);
+					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` = ".(int)$id.$where_lang.$ignored);
 					$result = $db->loadObject();
 				}
 			} else {
 				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
 
-				$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies').$where_lang);
+				$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies').$where_lang.$ignored);
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'awards') {

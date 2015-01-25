@@ -10,6 +10,7 @@
 
 class KALanguage extends JLanguage {
 	/**
+	 * Method return list of languages for subtitles for video files.
 	 * List of languages according to http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 	 *
 	 * @return	array
@@ -66,5 +67,32 @@ class KALanguage extends JLanguage {
 		);
 
 		return $list;
+	}
+
+	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend) {
+		$lang = JFactory::getLanguage()->getTag();
+		$filename = $file.$lang.'.js';
+
+		if ($frontend) {
+			$basepath = JPATH_ROOT.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_kinoarhiv'.DIRECTORY_SEPARATOR;
+			$url = JURI::root();
+		} else {
+			$basepath = JPATH_COMPONENT.DIRECTORY_SEPARATOR;
+			$url = JURI::base();
+		}
+
+		if (file_exists($basepath.'assets'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'i18n'.DIRECTORY_SEPARATOR.$script_type.DIRECTORY_SEPARATOR.$filename)) {
+			if ($jhtml) {
+				JHtml::_('script', $url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$filename);
+			} else {
+				echo '<script src="'.$url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$filename.'" type="text/javascript"></script>';
+			}
+		} elseif (file_exists($basepath.'assets'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'i18n'.DIRECTORY_SEPARATOR.$script_type.DIRECTORY_SEPARATOR.$file.substr($lang, 0, 2).'.js')) {
+			if ($jhtml) {
+				JHtml::_('script', $url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$file.substr($lang, 0, 2).'.js');
+			} else {
+				echo '<script src="'.$url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$file.substr($lang, 0, 2).'.js" type="text/javascript"></script>';
+			}
+		}
 	}
 }

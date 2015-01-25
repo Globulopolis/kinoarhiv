@@ -6,7 +6,7 @@ $section = $input->get('section', '', 'word');
 $type = $input->get('type', '', 'word');
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
-<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/i18n/colorbox/jquery.colorbox-<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<?php GlobalHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
 <div id="j-main-container">
 	<?php if ($section == 'movie'): ?>
 		<?php if ($type == 'gallery'): ?>

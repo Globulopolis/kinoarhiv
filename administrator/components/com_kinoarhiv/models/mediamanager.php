@@ -1342,7 +1342,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	}
 
 	/**
-	 * Method to get item title.
+	 * Method to get an item title.
 	 *
 	 * @param   string   $section   The section for searching. Can be 'movie', 'name', 'trailer', 'soundtrack'
 	 * @param   int      $id        Item ID.
@@ -1379,5 +1379,12 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 
 		return $data;
+	}
+
+	public function copyfrom() {
+		$db = $this->getDBO();
+		$app = JFactory::getApplication();
+
+		return true;
 	}
 }

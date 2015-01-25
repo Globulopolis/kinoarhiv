@@ -13,6 +13,7 @@ class GlobalHelper {
 		$document = JFactory::getDocument();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
+		// Return nothing because JHtml::script doesn't work for JDocumentRaw
 		if ($document->getType() != 'html') {
 			return;
 		}
@@ -28,12 +29,22 @@ class GlobalHelper {
 		JText::script('COM_KA_CLOSE', true);
 	}
 
-	static public function getRemoteData($url, $headers=null, $timeout=30, $transport='curl') {
+	public static function getRemoteData($url, $headers=null, $timeout=30, $transport='curl') {
 		$options = new JRegistry;
 
 		$http = JHttpFactory::getHttp($options, $transport);
 		$response = $http->get($url, $headers, $timeout);
 
 		return $response;
+	}
+
+	/**
+	 * Just proxy for KALanguage::getScriptLanguage()
+	 */
+	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend) {
+		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
+		$language = new KALanguage();
+
+		return $language::getScriptLanguage($file, $jhtml, $script_type, $frontend);
 	}
 }

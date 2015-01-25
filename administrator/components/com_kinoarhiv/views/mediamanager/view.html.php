@@ -97,7 +97,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 					$this->form = $this->get('Form');
 					$item = new JRegistry;
-					$lang = JFactory::getLanguage();
 					$page_title = $this->get('ItemTitle');
 
 					if (count($errors = $this->get('Errors'))) {
@@ -124,7 +123,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					}
 
 					$this->item = &$item;
-					$this->lang = &$lang;
 
 					parent::display('upload_trailer');
 					$app->input->set('hidemainmenu', true);
@@ -155,7 +153,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 					$this->form = $this->get('Form');
 					$item = new JRegistry;
-					$lang = JFactory::getLanguage();
 					$page_title = $this->get('ItemTitle');
 
 					if (count($errors = $this->get('Errors'))) {
@@ -182,7 +179,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					}
 
 					$this->item = &$item;
-					$this->lang = &$lang;
 
 					parent::display('upload_trailer');
 					$app->input->set('hidemainmenu', true);*/

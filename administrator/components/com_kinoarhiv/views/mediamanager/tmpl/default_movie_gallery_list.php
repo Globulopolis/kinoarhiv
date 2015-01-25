@@ -13,7 +13,7 @@ $sortFields = $this->getSortFields();
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js" type="text/javascript"></script>
 
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/mediamanager/<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<?php GlobalHelper::getScriptLanguage('', false, 'mediamanager', false); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js" type="text/javascript"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
@@ -107,8 +107,8 @@ $sortFields = $this->getSortFields();
 				$(dialog).dialog({
 					dialogClass: 'copy-dlg',
 					modal: true,
-					width: 800,
-					height: 520,
+					width: 600,
+					height: 300,
 					close: function(event, ui){
 						dialog.remove();
 					},
@@ -118,19 +118,23 @@ $sortFields = $this->getSortFields();
 							id: 'copy-apply',
 							click: function(){
 								blockUI('show');
+								$('#copy-apply').button('disable');
+
 								$.ajax({
 									type: 'POST',
-									url: $('#rulesForm', this).attr('action') + '&id=' + $('#id').val(),
-									data: $('#rulesForm', this).serialize()
+									url: $('#form_copyfrom', this).attr('action'),
+									data: '&id=' + $('#id', this).val() + '&copy_item=' + $('#copy_item', this).select2('val') + '&copy_from_type=' + $('#copy_from_type', this).select2('val') + '&<?php echo JSession::getFormToken(); ?>=1'
 								}).done(function(response){
 									blockUI();
 									if (response.success) {
 										dialog.remove();
 									} else {
-										showMsg('.copy-dlg #rulesForm', response.message);
+										showMsg('.copy-dlg #id', response.message);
 									}
+									$('#copy-apply').button('enable');
 								}).fail(function(xhr, status, error){
-									showMsg('.copy-dlg #rulesForm', error);
+									showMsg('.copy-dlg #id', error);
+									$('#copy-apply').button('enable');
 									blockUI();
 								});
 							}
@@ -143,7 +147,7 @@ $sortFields = $this->getSortFields();
 						}
 					]
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw');
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw&id=<?php echo $input->get('id', 0, 'int'); ?>');
 
 				return false;
 			}

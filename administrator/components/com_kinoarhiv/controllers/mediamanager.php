@@ -560,6 +560,24 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 	}
 
 	public function copyfrom() {
-		echo 'Ok';
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$document = JFactory::getDocument();
+		$model = $this->getModel('mediamanager');
+		$moved = false;
+
+		// Move an items to new location
+		// ...
+		// Update database
+		$updated = $model->copyfrom();
+
+		if ($moved && $updated) {
+			$result = array('success'=>true);
+		} else {
+			$result = array('success'=>false, 'message'=>'false');
+		}
+
+		$document->setName('response');
+		echo json_encode($result);
 	}
 }

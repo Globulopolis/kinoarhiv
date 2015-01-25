@@ -18,7 +18,7 @@
 			maximumSelectionSize: 1,
 			ajax: {
 				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json',
+				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&ignore[]=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>',
 				data: function(term, page){
 					return {
 						term: term,

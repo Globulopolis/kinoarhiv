@@ -14,12 +14,11 @@ class JFormFieldDatetime extends JFormField {
 	protected $script = null;
 
 	public function __construct() {
-		$lang = JFactory::getLanguage()->getTag();
-
 		JHtml::_('jquery.framework');
 		JHtml::_('script', JURI::root().'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+		GlobalHelper::getScriptLanguage('datepicker-', true, 'ui', true);
 		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js');
-		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/i18n/timepicker/jquery-ui-timepicker-'.substr($lang, 0, 2).'.js');
+		GlobalHelper::getScriptLanguage('jquery-ui-timepicker-', true, 'timepicker', false);
 		JHtml::_('script', JURI::base().'components/com_kinoarhiv/assets/js/utils.js');
 
 		parent::__construct();

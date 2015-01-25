@@ -47,7 +47,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 	protected function edit($tpl) {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$lang = JFactory::getLanguage();
 
 		$items = new JRegistry;
 		$form = $this->get('Form');
@@ -95,7 +94,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$this->form_edit_group = 'movie';
 		$this->form_attribs_group = 'attribs';
 		$this->params = &$params;
-		$this->lang = &$lang;
 
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar($tpl);

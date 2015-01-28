@@ -289,4 +289,32 @@ class GlobalHelper {
 
 		return '<label id="'.$for.'-lbl"'.$class.' for="'.$for.'"'.$title.$attrs.'>'.JText::_($text).'</label>';
 	}
+
+	/**
+	 * Load language files for JS scripts
+	 *
+	 * @param   string    $file           Part of the filename w/o language tag and extention
+	 * @param   string    $jhtml          Use JHTML::script() to load
+	 * @param   string    $script_type    Type of the script(folder name in assets/js/i8n/)
+	*/
+	public static function getScriptLanguage($file, $jhtml, $script_type) {
+		$lang = JFactory::getLanguage()->getTag();
+		$filename = $file.$lang.'.js';
+		$basepath = JPATH_COMPONENT.DIRECTORY_SEPARATOR;
+		$url = JURI::base();
+
+		if (file_exists($basepath.'assets'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'i18n'.DIRECTORY_SEPARATOR.$script_type.DIRECTORY_SEPARATOR.$filename)) {
+			if ($jhtml) {
+				JHtml::_('script', $url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$filename);
+			} else {
+				echo '<script src="'.$url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$filename.'" type="text/javascript"></script>';
+			}
+		} elseif (file_exists($basepath.'assets'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'i18n'.DIRECTORY_SEPARATOR.$script_type.DIRECTORY_SEPARATOR.$file.substr($lang, 0, 2).'.js')) {
+			if ($jhtml) {
+				JHtml::_('script', $url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$file.substr($lang, 0, 2).'.js');
+			} else {
+				echo '<script src="'.$url.'components/com_kinoarhiv/assets/js/i18n/'.$script_type.'/'.$file.substr($lang, 0, 2).'.js" type="text/javascript"></script>';
+			}
+		}
+	}
 }

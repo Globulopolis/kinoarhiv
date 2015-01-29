@@ -97,7 +97,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 					$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_'.$plural[0], $item->rate_loc_c, (int)$params->get('vote_summ_num'), $item->rate_loc);
 					$item->rate_loc_label_class = ' has-rating';
 				} else {
-					$item->rate_loc = 0;
+					$item->rate_loc_c = 0;
 					$item->rate_loc_label = '<br />'.JText::_('COM_KA_RATE_NO');
 					$item->rate_loc_label_class = ' no-rating';
 				}

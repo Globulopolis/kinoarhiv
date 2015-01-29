@@ -177,6 +177,12 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_rel_genres` (
   PRIMARY KEY (`genre_id`,`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `#__ka_music_rel_movies` (
+  `movie_id` int(11) NOT NULL,
+  `album_id` int(11) NOT NULL,
+  PRIMARY KEY (`movie_id`,`album_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `#__ka_names` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0',

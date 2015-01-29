@@ -153,7 +153,7 @@ class KinoarhivViewProfile extends JViewLegacy {
 				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
 				$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_'.$plural[0], $item->rate_loc_c, (int)$params->get('vote_summ_num'), $item->rate_loc);
 			} else {
-				$item->rate_loc = 0;
+				$item->rate_loc_c = 0;
 				$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
 			}
 		}

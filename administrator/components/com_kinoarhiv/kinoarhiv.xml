@@ -26,7 +26,6 @@
 
 	<files folder="site">
 		<filename>controller.php</filename>
-		<filename>index.html</filename>
 		<filename>kinoarhiv.php</filename>
 		<folder>assets</folder>
 		<folder>controllers</folder>
@@ -44,7 +43,6 @@
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
 			<filename>controller.php</filename>
-			<filename>index.html</filename>
 			<filename>kinoarhiv.php</filename>
 			<filename>kinoarhiv.xml</filename>
 			<folder>assets</folder>

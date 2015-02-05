@@ -40,7 +40,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.plugin.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.countdown.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/i18n/countdown/jquery.countdown-<?php echo substr($this->lang->getTag(), 0, 2); ?>.js" type="text/javascript"></script>
+<?php GlobalHelper::getScriptLanguage('jquery.countdown-', false, 'countdown'); ?>
 
 <?php if (isset($this->item->slides) && !empty($this->item->slides)):
 	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>

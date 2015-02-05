@@ -9,6 +9,12 @@
  */
 
 class GlobalHelper {
+	/**
+	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
+	 *
+	 * @return  void
+	 *
+	*/
 	static function setHeadTags() {
 		$document = JFactory::getDocument();
 		$params = JComponentHelper::getParams('com_kinoarhiv');

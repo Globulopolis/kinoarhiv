@@ -9,6 +9,12 @@
  */
 
 class GlobalHelper {
+	/**
+	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
+	 *
+	 * @return  void
+	 *
+	*/
 	static function setHeadTags() {
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
@@ -257,6 +263,15 @@ class GlobalHelper {
 		}
 	}
 
+	/**
+	 * Wrapper for JApplicationWeb::redirect() to use in the views
+	 *
+	 * @param   string    $url            The URL to redirect to. Can only be http/https URL
+	 * @param   string    $message        The message to enqueue.
+	 * @param   string    $messageType    The message type. Default is message.
+	 *
+	 * @return  mixed     False if url is empty, void otherwise
+	*/
 	static function doRedirect($url=null, $message=null, $messageType='message') {
 		if (!is_null($url)) {
 			$app = JFactory::getApplication();

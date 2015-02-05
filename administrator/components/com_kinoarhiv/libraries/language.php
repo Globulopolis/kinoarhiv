@@ -69,6 +69,14 @@ class KALanguage extends JLanguage {
 		return $list;
 	}
 
+	/**
+	 * Load language files for JS scripts
+	 *
+	 * @param   string    $file           Part of the filename w/o language tag and extention
+	 * @param   string    $jhtml          Use JHTML::script() to load
+	 * @param   string    $script_type    Type of the script(folder name in assets/js/i8n/)
+	 * @param   bool      $frontend       Load language file from the frontend if set to true
+	*/
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend) {
 		$lang = JFactory::getLanguage()->getTag();
 		$filename = $file.$lang.'.js';

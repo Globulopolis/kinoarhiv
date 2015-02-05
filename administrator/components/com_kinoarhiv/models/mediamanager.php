@@ -25,7 +25,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	}
 
 	/**
-	 * Method to get the path to a file.
+	 * Method to get the filesystem path to a file.
 	 *
 	 * @param   string   $section	Type of the item. Can be 'movie' or 'name'.
 	 * @param   string   $type		Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
@@ -87,6 +87,15 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $result;
 	}
 
+	/**
+	 * Method to get the item alias
+	 *
+	 * @param   string   $section	Type of the item. Can be 'movie' or 'name'.
+	 * @param   string   $id		The item ID (movie or name).
+	 *
+	 * @return  string   URL safe alias
+	 *
+	 */
 	public function getAlias($section, $id) {
 		$db = $this->getDBO();
 		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;

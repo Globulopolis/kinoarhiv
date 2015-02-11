@@ -310,7 +310,7 @@ $type = $input->get('type', '', 'word');
 		$('#sub_sortable').on('click', '.lang-edit', function(e){
 			e.preventDefault();
 			var _this = $(this);
-			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT'); ?>"><p class="ajax-loading"></p></div>').appendTo('body');
+			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT'); ?>"><p class="ajax-loading"></p></div>');
 
 			dlg.dialog({
 				buttons: {
@@ -431,7 +431,7 @@ $type = $input->get('type', '', 'word');
 		$('a.file-create-scr').click(function(e){
 			e.preventDefault();
 			var _this = $(this);
-			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><p><label for="time"><?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_DESC'); ?></label><br /><input type="text" name="time" id="time" value="00:02:00.000" required="required" size="16" maxlength="12" placeholder="00:00:00.000" /><br /><span class="err_msg red"></span></p></div>').appendTo('body');
+			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><p><label for="time"><?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_DESC'); ?></label><br /><input type="text" name="time" id="time" value="00:02:00.000" required="required" size="16" maxlength="12" placeholder="00:00:00.000" /><br /><span class="err_msg red"></span></p></div>');
 
 			dlg.dialog({
 				buttons: {
@@ -500,7 +500,7 @@ $type = $input->get('type', '', 'word');
 			e.preventDefault();
 			var _this = $(this),
 				url_regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/, // from angular.js
-				dlg = $('<div style="display: none;" class="dialog" title=""><p></p></div>').appendTo('body');
+				dlg = $('<div style="display: none;" class="dialog" title=""><p></p></div>');
 
 			if ($(this).hasClass('video')) {
 				$('p', dlg).html($('#urls_layout_video'));

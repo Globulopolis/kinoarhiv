@@ -53,7 +53,7 @@ endif; ?>
 			e.preventDefault();
 			if ($(this).hasClass('a')) {
 				// Load 'Add item' layout
-				var dialog = $('<div id="dialog-premiere-add" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+				var dialog = $('<div id="dialog-premiere-add" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 				$(dialog).dialog({
 					dialogClass: 'premieres-dlg',
@@ -119,7 +119,7 @@ endif; ?>
 					showMsg('.premieres-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
 					var ids = items.attr('id').substr(19).split('_');
-					var dialog = $('<div id="dialog-premiere-edit" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+					var dialog = $('<div id="dialog-premiere-edit" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 					$(dialog).dialog({
 						dialogClass: 'premieres-dlg',

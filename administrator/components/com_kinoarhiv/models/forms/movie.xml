@@ -49,6 +49,8 @@
 			<field name="kp_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_KP_ID" class="span12" filter="intval" size="45" />
 			<field name="rate_fc" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT" class="span6" filter="string" size="45" />
 			<field name="rottentm_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT_ID" class="span12" filter="string" size="45" />
+			<field name="metacritics" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_MC" class="span6" filter="string" size="45" />
+			<field name="metacritics_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_MC_ID" class="span12" filter="string" size="45" />
 			<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="intval" size="45" />
 			<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM" class="span6" filter="intval" size="45" />
 			<field name="rate_custom" type="editor" default="" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" class="span12" filter="raw" cols="6" rows="5" buttons="false" />

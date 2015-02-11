@@ -727,7 +727,7 @@ div.rating {
 	font-size: 1em;
 }
 
-#rate-imdb, #rate-kp {
+#rate-imdb, #rate-kp, #rate-rt, #rate-mc {
 	display: inline-block;
 	margin-right: 1em;
 }

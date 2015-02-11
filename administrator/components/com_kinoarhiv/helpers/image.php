@@ -28,6 +28,8 @@ class ImageHelper {
 
 		if ($cmd == 'rt_vote') {
 			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'rottentomatoes_blank.png';
+		} elseif ($cmd == 'mc_vote') {
+			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'metacritic_blank.png';
 		} elseif ($cmd == 'kp_vote') {
 			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'kinopoisk_blank.png';
 		} elseif ($cmd == 'imdb_vote') {
@@ -39,7 +41,7 @@ class ImageHelper {
 		if (file_exists($file)) {
 			list($w, $h) = getimagesize($file);
 
-			$DIRECTORY_SEPARATORt_im = imagecreatetruecolor($w, $h);
+			$dst_im = imagecreatetruecolor($w, $h);
 			$src_im = imagecreatefrompng($file);
 			imagealphablending($src_im, true);
 			imagesavealpha($src_im, true);
@@ -58,6 +60,9 @@ class ImageHelper {
 					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
 					$offset_left = count(count_chars($data[0]['text'], 1))*10+7;
 					imagettftext($src_im, $data[1]['fontsize'], 0, $offset_left, 31, $color2, $font, $data[1]['text']);
+				} elseif ($cmd == 'mc_vote') {
+					imagettftext($src_im, $data[0]['fontsize'], 0, 45, 18, $color1, $font, $data[0]['text']);
+					imagettftext($src_im, $data[1]['fontsize'], 0, 45, 30, $color2, $font, $data[1]['text']);
 				} elseif ($cmd == 'kp_vote') {
 					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
 					imagettftext($src_im, $data[1]['fontsize'], 0, 40, 31, $color2, $font, $data[1]['text']);
@@ -67,13 +72,15 @@ class ImageHelper {
 				}
 			}
 
-			imagecopyresampled($DIRECTORY_SEPARATORt_im, $src_im, 0, 0, 0, 0, $w, $h, $w, $h);
+			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $w, $h, $w, $h);
 
 			$document->setMimeEncoding('image/png');
 			JResponse::allowCache(false);
 
 			if ($cmd == 'rt_vote') {
 				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
+			} elseif ($cmd == 'mc_vote') {
+				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'metacritic'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
 			} elseif ($cmd == 'kp_vote') {
 				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
 			} elseif ($cmd == 'imdb_vote') {

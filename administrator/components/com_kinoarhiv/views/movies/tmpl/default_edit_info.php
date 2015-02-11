@@ -193,6 +193,26 @@
 					$(document).scrollTop(0);
 					blockUI('hide');
 				});
+			} else if (cmd == 'mc_vote') {
+				if ($('#form_movie_metacritics_id').val() == '') { return; }
+
+				blockUI('show');
+				$.ajax({
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_metacritics_id').val()
+				}).done(function(response){
+					if (response.success) {
+						$('#form_movie_metacritics').val(response.votesum);
+						requestUpdateStatImg(cmd, response);
+					} else {
+						showMsg('#j-main-container', response.message);
+						$(document).scrollTop(0);
+					}
+					blockUI('hide');
+				}).fail(function(xhr, status, error){
+					showMsg('#j-main-container', error);
+					$(document).scrollTop(0);
+					blockUI('hide');
+				});
 			}
 		});
 
@@ -213,10 +233,11 @@
 							folder = 'kinopoisk';
 						} else if (elem == 'rt_vote') {
 							folder = 'rottentomatoes';
+						} else if (elem == 'mc_vote') {
+							folder = 'metacritic';
 						}
 
 						var dlg = '<div id="dialog-message" title="<?php echo JText::_('MESSAGE'); ?>"><p><img src="<?php echo JURI::root().$this->params->get('media_rating_image_root_www'); ?>/' + folder + '/' + $('#id').val() + '_big.png?' + mktime + '" border="0" /></p></div>';
-						$(dlg).appendTo('body');
 						$(dlg).dialog({
 							modal: true
 						});
@@ -334,7 +355,7 @@
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC', true); ?></p></div>').appendTo('body');
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC', true); ?></p></div>');
 
 			if ($(this).hasClass('info')) {
 				$(dialog).dialog({

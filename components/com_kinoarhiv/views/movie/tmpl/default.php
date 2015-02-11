@@ -59,7 +59,7 @@ endif; ?>
 	}
 
 	jQuery(document).ready(function($){
-		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
+		$('.hasTooltip, .hasTooltip').attr('data-uk-tooltip', '');
 		<?php if (!$this->user->guest): ?>
 		<?php if ($this->params->get('allow_votes') == 1): ?>
 		$('.rateit').bind('over', function(e, v){ $(this).attr('title', v); });
@@ -317,6 +317,11 @@ endif; ?>
 									<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
 									<?php }
 								} ?>
+								<?php if (!empty($this->item->metacritics_id)) {
+									if (file_exists($this->params->get('media_rating_image_root').'/metacritic/'.$this->item->id.'_big.png')) { ?>
+									<a href="http://www.metacritic.com/movie/<?php echo $this->item->metacritics_id; ?>" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/metacritic/<?php echo $this->item->id; ?>_big.png" border="0" /></a>
+									<?php }
+								} ?>
 							</div>
 						<?php else: ?>
 							<?php if (!empty($this->item->imdb_votesum) && !empty($this->item->imdb_votes)): ?>
@@ -328,6 +333,16 @@ endif; ?>
 								<br /><br /><div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <span class="b"><a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->kp_votesum; ?> (<?php echo $this->item->kp_votes; ?>)</a></span></div>
 							<?php else: ?>
 								<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+							<?php endif; ?>
+							<?php if (!empty($this->item->rate_fc)): ?>
+								<br /><br /><div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <span class="b"><a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->rate_fc; ?>%</a></span></div>
+							<?php else: ?>
+								<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+							<?php endif; ?>
+							<?php if (!empty($this->item->metacritics)): ?>
+								<br /><br /><div id="rate-mc"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <span class="b"><a href="http://www.metacritic.com/movie/<?php echo $this->item->metacritics_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->metacritics; ?>%</a></span></div>
+							<?php else: ?>
+								<div id="rate-mc"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
 							<?php endif; ?>
 						<?php endif; ?>
 					<?php endif; ?>
@@ -388,7 +403,7 @@ endif; ?>
 							<span class="s-col">
 								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
 								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a><?php endif; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
 								endif; ?>
@@ -404,7 +419,7 @@ endif; ?>
 							<span class="s-col">
 								<?php for ($i=0, $n=count($person['items']); $i<$n; $i++):
 								$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a><?php endif; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$name['id'].'&Itemid='.$this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i+1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
 								endif; ?>
@@ -448,7 +463,7 @@ endif; ?>
 						<div>
 							<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JText::_('COM_KA_RELEASES_MEDIATYPE_'.$release->media_type)); ?></span>
 							<span class="s-col">
-								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTip ui-icon-next"></a>
+								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name.' / '.$release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', '.$release->country : ''; ?>,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&id='.$release->id.'&Itemid='.$this->itemid); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
 							</span>
 						</div>
 						<?php endforeach;
@@ -460,19 +475,19 @@ endif; ?>
 						<span class="s-col">
 							<?php if ($this->item->mpaa > -1): ?>
 							<div class="rating">
-								<div id="mpaa" class="mpaa-icon hasTip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_MPAA')); ?>"><strong><?php echo strtoupper($this->item->mpaa); ?></strong></div>
+								<div id="mpaa" class="mpaa-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_MPAA')); ?>"><strong><?php echo strtoupper($this->item->mpaa); ?></strong></div>
 								<div class="mpaa-desc"><?php echo JText::_('COM_KA_MPAA_DESC'); ?></div>
 							</div>
 							<?php endif; ?>
 							<?php if ($this->item->age_restrict > -1): ?>
 							<div class="rating">
-								<div id="rrate" class="rrate-icon hasTip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>"><strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
+								<div id="rrate" class="rrate-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>"><strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
 								<div class="rrate-desc"><?php echo JText::_('COM_KA_RU_RATE_DESC'); ?></div>
 							</div>
 							<?php endif; ?>
 							<?php if ($this->item->ua_rate > -1): ?>
 							<div class="rating">
-								<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int)$this->item->ua_rate; ?> hasTip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
+								<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int)$this->item->ua_rate; ?> hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
 								<div class="uarate-desc"><?php echo JText::_('COM_KA_UA_RATE_DESC'); ?></div>
 							</div>
 							<?php endif; ?>

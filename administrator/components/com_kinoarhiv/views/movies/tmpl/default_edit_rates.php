@@ -52,6 +52,14 @@
 				<div class="controls"><?php echo $this->form->getInput('rottentm_id', $this->form_edit_group); ?></div>
 			</div>
 			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('metacritics', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('metacritics', $this->form_edit_group); ?> <a href="#" id="mc_vote" class="update-vote hasTip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('metacritics_id', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('metacritics_id', $this->form_edit_group); ?></div>
+			</div>
+			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('rate_sum_loc', $this->form_edit_group); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('rate_sum_loc', $this->form_edit_group); ?></div>
 			</div>

@@ -64,7 +64,7 @@ JHtml::_('behavior.keepalive');
 		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 		$('.cmd-rules').click(function(e){
 			e.preventDefault();
-			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 			$(dialog).dialog({
 				dialogClass: 'rules-dlg',

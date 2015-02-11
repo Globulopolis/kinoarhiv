@@ -260,10 +260,10 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 
 		if ($param == 'imdb_vote' || $param == 'kp_vote') {
 			$headers = array(
-				'Cookie'=>'last_visit=2013-07-12+20%3A45%3A22; user_country=ua; __utma=168025531.226434608.1325858771.1327766390.1328304295.8; my_perpages=a%3A1%3A%7Bi%3A1%3Bi%3A25%3B%7D; vplayer_user_id=970BD93E2A604E949D285DADE5C8A3DE; tns_was_initialized=true; tns_was_migrated=true; autoFit=1; disable_alert_feature=34432; uid=163145; hideBlocks=33554432; mobile=no; noflash=false; PHPSESSID=98da87e5b4ec4415e72ea6af3b1f6912',
+				'Cookie'=>'PHPSESSID=2fe68b9818bf8339f46d4fb5eb4cd613; user_country=ru; noflash=false; mobile=no; mobile=no',
 				'Host'=>'www.kinopoisk.ru',
 				'Referer'=>'http://www.kinopoisk.ru/',
-				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0'
+				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
 			);
 			$response = GlobalHelper::getRemoteData('http://www.kinopoisk.ru/rating/'.(int)$id.'.xml', $headers, 30, array('curl', 'socket'));
 
@@ -280,16 +280,14 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				'Cookie'=>'ServerID=1323; instart=8; JSESSIONID=F44F3F597B674EB4E179EA4A4E5F7E51.localhost',
 				'Host'=>'www.rottentomatoes.com',
 				'Referer'=>'http://www.rottentomatoes.com/',
-				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0'
+				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
 			);
 			$response = GlobalHelper::getRemoteData('http://www.rottentomatoes.com/m/'.$id.'/', $headers, 30, array('curl', 'socket'));
 
-			// Finding the div with rating
-			if (preg_match('#<div class="tomato-left">(.*)<div class="(.*)tomato-info"[^>]+>#isU', $response->body, $matches)) {
-				$result = '<div>'.$matches[1].'</div>';
-
-				preg_match('#<span class="meter-value" itemprop="ratingValue">(.*)<\/span>#isU', $matches[1], $_votesum);
-				preg_match('#<span itemprop="reviewCount">(.*)<\/span>#isU', $matches[1], $_votes);
+			// Find div with the rating
+			if (preg_match('/<div class="col-xs-12">(.*?)<div class="col-xs-12/si', $response->body, $matches)) {
+				preg_match('#<span itemprop="ratingValue">(.*?)<\/span>#si', $matches[1], $_votesum);
+				preg_match('#<span itemprop="reviewCount ratingCount">(.*)<\/span>#si', $matches[1], $_votes);
 
 				if (!isset($_votesum[1])) {
 					$message = JText::_('ERROR').': '.JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
@@ -297,6 +295,31 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 				} else {
 					$votesum = (int)$_votesum[1];
 					$votes = (int)$_votes[1];
+				}
+			} else {
+				$message = JText::_('ERROR').'! Someting wrong with a parser!';
+				$success = false;
+			}
+		} elseif ($param == 'mc_vote') {
+			$headers = array(
+				'Cookie'=>'ctk=NTRkODU4NzljMzAzZjQwNWM2OGIyNzMzYTE4Mg%3D%3D; utag_main=v_id:014b6d19a0b10014d4feeb376aff0a048001a00d0086e$_sn:3$_ss:1$_st:1423471721686$_pn:1%3Bexp-session$ses_id:1423469921686%3Bexp-session; AMCV_10D31225525FF5790A490D4D%40AdobeOrg=-2017484664%7CMCMID%7C07680162007879004744428376133574352754%7CMCAID%7CNONE; s_vnum=1426056571361%26vn%3D3; s_getNewRepeat=1423469921834-Repeat; s_lv_undefined=1423469921834; prevPageType=product_overview; LDCLGFbrowser=a81db543-6173-4ca1-a45d-63880ff005ce; tmpid=1423469920701985',
+				'Host'=>'www.metacritic.com',
+				'Referer'=>'http://www.metacritic.com/',
+				'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
+			);
+			$response = GlobalHelper::getRemoteData('http://www.metacritic.com/movie/'.$id, $headers, 30, array('curl', 'socket'));
+
+			// Finding the div with rating
+			if (preg_match('/<div class="details main_details">(.*?)<div class="details side_details">/si', $response->body, $matches)) {
+				preg_match('%<span itemprop="ratingValue">(.*?)<\/span>%si', $matches[1], $_votesum);
+				preg_match('%<span itemprop="reviewCount">(.*?)<\/span>%si', $matches[1], $_votes);
+
+				if (!isset($_votesum[1])) {
+					$message = JText::_('ERROR').': '.JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
+					$success = false;
+				} else {
+					$votesum = (int)$_votesum[1];
+					$votes = (int)str_replace(' ', '', $_votes[1]);
 				}
 			} else {
 				$message = JText::_('ERROR').'! Someting wrong with a parser!';
@@ -324,10 +347,15 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$success = true;
 		$message = '';
 
-		if ($cmd == 'rt_vote') {
+		if ($cmd == 'rt_vote') { // Rotten Tomatoes
 			$text = array(
 				0=>array('fontsize'=>10, 'text'=>$votesum.'%', 'color'=>'#333333'),
 				1=>array('fontsize'=>7, 'text'=>'( '.$votes.' )', 'color'=>'#555555'),
+			);
+		} elseif ($cmd == 'mc_vote') { // Metacritic
+			$text = array(
+				0=>array('fontsize'=>10, 'text'=>$votesum, 'color'=>'#333333'),
+				1=>array('fontsize'=>7, 'text'=>$votes.' Critics', 'color'=>'#555555'),
 			);
 		} else {
 			$text = array(

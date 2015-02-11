@@ -102,7 +102,7 @@ $sortFields = $this->getSortFields();
 
 				return false;
 			} else if (task == 'copyfrom') {
-				var dialog = $('<div id="dialog-copy" title="<?php echo JText::_('JTOOLBAR_COPYFROM'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+				var dialog = $('<div id="dialog-copy" title="<?php echo JText::_('JTOOLBAR_COPYFROM'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 				$(dialog).dialog({
 					dialogClass: 'copy-dlg',

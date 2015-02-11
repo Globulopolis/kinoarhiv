@@ -88,7 +88,7 @@ endif; ?>
 			e.preventDefault();
 			if ($(this).hasClass('a')) {
 				// Load 'Add item' layout
-				var dialog = $('<div id="dialog-name-add" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+				var dialog = $('<div id="dialog-name-add" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 				$(dialog).dialog({
 					dialogClass: 'rel-names-dlg',
@@ -161,7 +161,7 @@ endif; ?>
 					showMsg('.actors-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
 					var ids = items.attr('id').substr(16).split('_');
-					var dialog = $('<div id="dialog-name-edit" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>').appendTo('body');
+					var dialog = $('<div id="dialog-name-edit" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 					$(dialog).dialog({
 						dialogClass: 'rel-names-dlg',

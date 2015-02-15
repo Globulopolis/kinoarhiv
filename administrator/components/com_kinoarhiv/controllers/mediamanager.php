@@ -563,18 +563,25 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$document = JFactory::getDocument();
+		$app = JFactory::getApplication();
+		$item_id = $app->input->get('item_id', 0, 'int');
+		$item_type = $app->input->get('item_type', '', 'word');
+		$item_subtype = $app->input->get('item_subtype', 0, 'int');
 		$model = $this->getModel('mediamanager');
-		$moved = false;
+		$message = '';
 
-		// Move an items to new location
-		// ...
-		// Update database
-		$updated = $model->copyfrom();
+		$updated = $model->copyfrom($item_id, $item_type, $item_subtype);
 
-		if ($moved && $updated) {
+		if ($updated) {
 			$result = array('success'=>true);
 		} else {
-			$result = array('success'=>false, 'message'=>'false');
+			$errors = $app->getMessageQueue();
+
+			foreach ($errors as $i=>$e) {
+				$message .= $e['message'].'<br />';
+			}
+
+			$result = array('success'=>false, 'message'=>$message);
 		}
 
 		$document->setName('response');

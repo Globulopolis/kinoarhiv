@@ -15,7 +15,7 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 	jQuery(document).ready(function($){
 		$('#copy-apply').button('disable');
 
-		$('#copy_item').select2({
+		$('#item_id').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 200,
 			allowClear: true,
@@ -45,15 +45,15 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 			escapeMarkup: function(m) { return m; }
 		}).change(function(val, added, removed){
 			if (parseInt(val.val) != parseInt($('#id').val())) {
-				$('.item_type').toggle();
+				$('.item_subtype').toggle();
 			} else {
 				$('#copy-apply').button('disable');
 				showMsg('.copy-dlg #id', '<?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMTYPE_ERROR', true); ?>');
 			}
 		});
 
-		$('#copy_from_type').select2().change(function(val, added, removed){
-			if (typeof val.val != 'undefined') {
+		$('#item_subtype').select2().change(function(val, added, removed){
+			if (typeof val.val !== 'undefined' || !isNaN(parseInt(val.val))) {
 				$('#copy-apply').button('enable');
 			}
 		}).trigger('change');
@@ -66,18 +66,18 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 			<fieldset class="form-horizontal copy">
 				<div class="control-group">
 					<div class="control-label">
-						<?php echo $movies_field->getLabel('copy_item', 'COM_KA_MOVIES_GALLERY_COPYFROM_LABEL', 'COM_KA_MOVIES_GALLERY_COPYFROM_DESC', 'required'); ?>
+						<?php echo $movies_field->getLabel('item_id', 'COM_KA_MOVIES_GALLERY_COPYFROM_LABEL', 'COM_KA_MOVIES_GALLERY_COPYFROM_DESC', 'required'); ?>
 					</div>
 					<div class="controls copy-from">
-						<?php echo $movies_field->getInput('copy_item', 100, '', 0, 'span12 required'); ?>
+						<?php echo $movies_field->getInput('item_id', 100, '', 0, 'span12 required'); ?>
 					</div>
 				</div>
-				<div class="control-group item_type" style="display: none;">
+				<div class="control-group item_subtype" style="display: none;">
 					<div class="control-label">
-						<label class="required" for="copy_from_type"><?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMTYPE_LABEL'); ?></label>
+						<label class="required" for="item_subtype"><?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMTYPE_LABEL'); ?></label>
 					</div>
 					<div class="controls copy-from">
-						<select name="copy_from_type" id="copy_from_type" class="span7 required">
+						<select name="item_subtype" id="item_subtype" class="span7 required">
 							<option value="" selected>---</option>
 							<option value="1"><?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?></option>
 							<option value="2"><?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?></option>
@@ -86,7 +86,9 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 					</div>
 				</div>
 			</fieldset>
-			<input type="hidden" name="id" id="id" value="<?php echo $input->get('id', 0, 'int'); ?>" />
+			<input type="hidden" name="item_type" id="item_type" value="<?php echo $input->get('item_type', '', 'word'); ?>" />
+			<input type="hidden" name="section" id="section" value="<?php echo $input->get('section', '', 'word'); ?>" />
+			<input type="hidden" name="id" id="id" value="<?php echo $input->get('id', 0, 'int'); ?>" /><!-- Parent movie ID -->
 		</form>
 	</div>
 </div>

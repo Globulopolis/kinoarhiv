@@ -1390,9 +1390,21 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $data;
 	}
 
-	public function copyfrom() {
+	/**
+	 * Method for copy items from gallery from one movie to another.
+	 *
+	 * @param   int       $item_id        Item ID. Can be 'movie' or 'name' ID.
+	 * @param   string    $item_type      Item type. Can be 'gallery', 'trailer', 'soundtrack'
+	 * @param   int       $item_subtype   Item subtype. 1 - wallpapers, 2 - posters, 3 - screenshots(photo for names). Only available if we copy from gallery.
+	 *
+	 * @return  mixed  Object with the data. False on error.
+	 *
+	 */
+	public function copyfrom($item_id, $item_type, $item_subtype) {
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
+
+		$app->enqueueMessage('1');
 
 		return true;
 	}

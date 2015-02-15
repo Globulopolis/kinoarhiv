@@ -123,7 +123,7 @@ $sortFields = $this->getSortFields();
 								$.ajax({
 									type: 'POST',
 									url: $('#form_copyfrom', this).attr('action'),
-									data: '&id=' + $('#id', this).val() + '&copy_item=' + $('#copy_item', this).select2('val') + '&copy_from_type=' + $('#copy_from_type', this).select2('val') + '&<?php echo JSession::getFormToken(); ?>=1'
+									data: '&id=' + $('#id', this).val() + '&item_id=' + $('#item_id', this).select2('val') + '&item_subtype=' + $('#item_subtype', this).select2('val') + '&item_type=' + $('#item_type', this).val() + '&section=' + $('#section', this).val() + '&<?php echo JSession::getFormToken(); ?>=1'
 								}).done(function(response){
 									blockUI();
 									if (response.success) {
@@ -147,7 +147,7 @@ $sortFields = $this->getSortFields();
 						}
 					]
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw&id=<?php echo $input->get('id', 0, 'int'); ?>');
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw&id=<?php echo $input->get('id', 0, 'int'); ?>&item_type=<?php echo $input->get('type', '', 'word'); ?>&section=<?php echo $input->get('section', '', 'word'); ?>');
 
 				return false;
 			}

@@ -213,10 +213,14 @@
 						<div class="span6">
 							<?php echo $this->loadTemplate('ap_global'); ?>
 							<?php echo $this->loadTemplate('ap_nav'); ?>
-							<?php echo $this->loadTemplate('ap_rate'); ?>
 						</div>
 						<div class="span6">
 							<?php echo $this->loadTemplate('ap_item'); ?>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span12">
+							<?php echo $this->loadTemplate('ap_rate'); ?>
 						</div>
 					</div>
 					<div class="row-fluid">

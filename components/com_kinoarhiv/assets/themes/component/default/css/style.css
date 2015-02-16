@@ -975,6 +975,7 @@ div.rating {
 }
 
 .local-rt.has-rating {
+	padding-top: 5px;
 	vertical-align: middle !important;
 }
 
@@ -1024,6 +1025,11 @@ div.rating {
 
 .introtext.hasPremiere {
 	width: 58%;
+}
+
+/* Rule below fixes the problem of translation ellipsis on a new line at the end of the text block. */
+.introtext .plot p, .introtext .plot div {
+	display: inline;
 }
 
 .premiere-date {

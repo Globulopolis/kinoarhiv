@@ -207,9 +207,10 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 						</div><?php endif; ?>
 					</div>
 					<div class="introtext">
-						<?php echo $item->text; ?>
+						<div class="text"><?php echo $item->text; ?></div>
 						<div class="separator"></div>
-						<?php echo $item->plot; ?>
+						<div class="plot"><?php echo $item->plot; ?></div>
+
 						<?php if ($this->params->get('ratings_show_frontpage') == 1): ?>
 						<div class="separator"></div>
 						<div class="ratings-frontpage">
@@ -218,12 +219,12 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							<?php else: ?>
 								<?php if ($this->params->get('ratings_show_img') == 1): ?>
 									<div style="text-align: center; display: inline-block;">
-										<?php if (!empty($item->imdb_id)) {
+										<?php if ($this->params->get('ratings_img_imdb') != 0 && !empty($item->imdb_id)) {
 											if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$item->id.'_big.png')) { ?>
 											<a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0" /></a>
 											<?php }
 										} ?>
-										<?php if (!empty($item->kp_id)): ?>
+										<?php if ($this->params->get('ratings_img_kp') != 0 && !empty($item->kp_id)): ?>
 											<a href="http://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank">
 											<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
 												<img src="<?php echo $rating_image_www; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" border="0" />
@@ -232,9 +233,14 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 											<?php endif; ?>
 											</a>
 										<?php endif; ?>
-										<?php if (!empty($item->rottentm_id)): ?>
+										<?php if ($this->params->get('ratings_img_rotten') != 0 && !empty($item->rottentm_id)): ?>
 											<?php if (file_exists($this->params->get('media_rating_image_root').'/rottentomatoes/'.$item->id.'_big.png')): ?>
 											<a href="http://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0" /></a>
+											<?php endif; ?>
+										<?php endif; ?>
+										<?php if ($this->params->get('ratings_img_metacritic') != 0 && !empty($item->metacritics_id)): ?>
+											<?php if (file_exists($this->params->get('media_rating_image_root').'/metacritic/'.$item->id.'_big.png')): ?>
+											<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/metacritic/<?php echo $item->id; ?>_big.png" border="0" /></a>
 											<?php endif; ?>
 										<?php endif; ?>
 									</div>
@@ -248,6 +254,16 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 										<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <span class="b"><a href="http://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->kp_votesum; ?> (<?php echo $item->kp_votes; ?>)</a></span></div>
 									<?php else: ?>
 										<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+									<?php endif; ?>
+									<?php if (!empty($item->rate_fc)): ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <span class="b"><a href="http://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->rate_fc; ?>%</a></span></div>
+									<?php else: ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+									<?php endif; ?>
+									<?php if (!empty($item->metacritics)): ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <span class="b"><a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->metacritics; ?>%</a></span></div>
+									<?php else: ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
 									<?php endif; ?>
 								<?php endif; ?>
 							<?php endif; ?>

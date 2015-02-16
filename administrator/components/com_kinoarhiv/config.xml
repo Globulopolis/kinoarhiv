@@ -112,7 +112,7 @@
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
 		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" />
-		<field name="ui_theme" type="folderlist" default="ui-lightness" directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL" description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" />
+		<field name="ui_theme" type="folderlist" default="ui-lightness" directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL" description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" hide_default="true" />
 		<field name="vegas_enable" default="0" type="radio" class="btn-group" label="COM_KA_FIELD_AP_VEGAS_LABEL" description="COM_KA_FIELD_AP_VEGAS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
@@ -194,6 +194,25 @@
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
+	<fieldset name="ap_rate_img" label="COM_KA_SETTINGS_AP_RATE_IMG_LABEL">
+		<field name="ratings_img_imdb" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_IMDB_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_img_kp" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_KP_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_img_rotten" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_RT_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_img_metacritic" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_MT_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+	</fieldset>
+
 	<field name="use_alphabet" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_AP_AB_USE_LABEL" filter="integer">
 		<option value="1">JYES</option>
 		<option value="0">JNO</option>

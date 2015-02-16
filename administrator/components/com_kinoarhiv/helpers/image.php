@@ -20,6 +20,8 @@ class ImageHelper {
 	}
 
 	public static function createRateImage($data) {
+		jimport('joomla.filesystem.folder');
+
 		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -78,15 +80,20 @@ class ImageHelper {
 			JResponse::allowCache(false);
 
 			if ($cmd == 'rt_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
+				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR;
 			} elseif ($cmd == 'mc_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'metacritic'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
+				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'metacritic'.DIRECTORY_SEPARATOR;
 			} elseif ($cmd == 'kp_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
+				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR;
 			} elseif ($cmd == 'imdb_vote') {
-				$result = imagepng($src_im, $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR.$id.'_big.png', 1);
+				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR;
 			}
 
+			if (!file_exists($dst_dir)) {
+				JFolder::create($dst_dir);
+			}
+
+			$result = imagepng($src_im, $dst_dir.$id.'_big.png', 1);
 			imagedestroy($src_im);
 
 			return $result;

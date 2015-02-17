@@ -386,14 +386,14 @@
 							id: 'alias-modify',
 							click: function(){
 								$('#form_movie_alias').removeAttr('readonly').trigger('focus');
-								dialog.remove();
+								$(this).dialog('close');
 								$('#form_movie_alias').focus();
 							}
 						},
 						{
 							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 							click: function(){
-								dialog.remove();
+								$(this).dialog('close');
 							}
 						}
 					]

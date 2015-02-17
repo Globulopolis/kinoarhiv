@@ -96,6 +96,7 @@ endif; ?>
 					width: 800,
 					height: 520,
 					close: function(event, ui){
+						$('#form_dub_id, #form_name_id, #form_type').select2('destroy');
 						dialog.remove();
 					},
 					buttons: [
@@ -135,7 +136,7 @@ endif; ?>
 									}
 								}).done(function(response){
 									if (response.success) {
-										dialog.remove();
+										$(this).dialog('close');
 										$('#list_actors').trigger('reloadGrid');
 									} else {
 										showMsg('.rel-names-dlg .placeholder', response.message);
@@ -148,7 +149,7 @@ endif; ?>
 						{
 							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 							click: function(){
-								dialog.remove();
+								$(this).dialog('close');
 							}
 						}
 					]
@@ -169,6 +170,7 @@ endif; ?>
 						width: 800,
 						height: 520,
 						close: function(event, ui){
+							$('#form_dub_id, #form_name_id, #form_type').select2('destroy');
 							dialog.remove();
 						},
 						buttons: [
@@ -208,7 +210,7 @@ endif; ?>
 										}
 									}).done(function(response){
 										if (response.success) {
-											dialog.remove();
+											$(this).dialog('close');
 											$('#list_actors').trigger('reloadGrid');
 										} else {
 											showMsg('.rel-names-dlg .placeholder', response.message);
@@ -221,7 +223,7 @@ endif; ?>
 							{
 								text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 								click: function(){
-									dialog.remove();
+									$(this).dialog('close');
 								}
 							}
 						]

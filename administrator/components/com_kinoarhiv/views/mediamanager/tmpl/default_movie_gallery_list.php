@@ -104,12 +104,13 @@ $sortFields = $this->getSortFields();
 			} else if (task == 'copyfrom') {
 				var dialog = $('<div id="dialog-copy" title="<?php echo JText::_('JTOOLBAR_COPYFROM'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
-				$(dialog).dialog({
+				dialog.dialog({
 					dialogClass: 'copy-dlg',
 					modal: true,
 					width: 600,
 					height: 300,
 					close: function(event, ui){
+						$('#item_id').select2('destroy');
 						dialog.remove();
 					},
 					buttons: [
@@ -131,7 +132,7 @@ $sortFields = $this->getSortFields();
 								}).done(function(response){
 									blockUI();
 									if (response.success) {
-										dialog.remove();
+										$(this).dialog('close');
 									} else {
 										showMsg('.copy-dlg #id', response.message);
 									}
@@ -146,7 +147,7 @@ $sortFields = $this->getSortFields();
 						{
 							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 							click: function(){
-								dialog.remove();
+								$(this).dialog('close');
 							}
 						}
 					]

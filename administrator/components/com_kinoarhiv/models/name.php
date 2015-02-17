@@ -292,7 +292,7 @@ class KinoarhivModelName extends JModelForm {
 			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
 			$new_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
 
-			if (!KAFilesystemHelper::move(
+			if (!$fs_helper::move(
 				array($old_folder_poster, $old_folder_wallpp, $old_folder_photo),
 				array($new_folder_poster, $new_folder_wallpp, $new_folder_photo))
 				) {

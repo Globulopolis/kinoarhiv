@@ -240,14 +240,14 @@
 							id: 'alias-modify',
 							click: function(){
 								$('#form_name_alias').removeAttr('readonly').trigger('focus');
-								dialog.remove();
+								$(this).dialog('close');
 								$('#form_name_alias').focus();
 							}
 						},
 						{
 							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 							click: function(){
-								dialog.remove();
+								$(this).dialog('close');
 							}
 						}
 					]

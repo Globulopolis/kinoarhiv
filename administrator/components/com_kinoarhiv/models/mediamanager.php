@@ -36,9 +36,6 @@ class KinoarhivModelMediamanager extends JModelList {
 	 *
 	 */
 	public function getPath($section='', $type='', $tab=0, $id=0) {
-		JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
-		$fs_helper = new KAFilesystemHelper;
-
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -85,7 +82,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
 		$alias = $db->loadResult();
 
-		$result = $fs_helper::normalizePath($path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder);
+		$result = JPath::clean($path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder);
 
 		return $result;
 	}

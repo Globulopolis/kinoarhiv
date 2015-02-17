@@ -62,6 +62,7 @@ endif; ?>
 					width: 800,
 					height: 520,
 					close: function(event, ui){
+						$('#form_r_vendor_id, #form_r_country_id').select2('destroy');
 						dialog.remove();
 					},
 					buttons: [
@@ -98,7 +99,7 @@ endif; ?>
 									}
 								}).done(function(response){
 									if (response.success) {
-										dialog.remove();
+										$(this).dialog('close');
 										$('#list_releases').trigger('reloadGrid');
 									} else {
 										showMsg('.releases-dlg .placeholder', response.message);
@@ -111,7 +112,7 @@ endif; ?>
 						{
 							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 							click: function(){
-								dialog.remove();
+								$(this).dialog('close');
 							}
 						}
 					]
@@ -132,6 +133,7 @@ endif; ?>
 						width: 800,
 						height: 520,
 						close: function(event, ui){
+							$('#form_r_vendor_id, #form_r_country_id').select2('destroy');
 							dialog.remove();
 						},
 						buttons: [
@@ -168,7 +170,7 @@ endif; ?>
 										}
 									}).done(function(response){
 										if (response.success) {
-											dialog.remove();
+											$(this).dialog('close');
 											$('#list_releases').trigger('reloadGrid');
 										} else {
 											showMsg('.releases-dlg .placeholder', response.message);
@@ -181,7 +183,7 @@ endif; ?>
 							{
 								text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 								click: function(){
-									dialog.remove();
+									$(this).dialog('close');
 								}
 							}
 						]

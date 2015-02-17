@@ -108,15 +108,4 @@ class KAFilesystemHelper {
 
 		return true;
 	}
-
-	/**
-	 * Convert double backslashes into one forward.
-	 *
-	 * @param   string   $path   Path to the folder.
-	 *
-	 * @return  string
-	 */
-	public static function normalizePath($path) {
-		return str_replace('\\', '/', $path);
-	}
 }

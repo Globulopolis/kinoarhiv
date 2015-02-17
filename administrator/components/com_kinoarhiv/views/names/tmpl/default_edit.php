@@ -87,7 +87,7 @@ JHtml::_('behavior.keepalive');
 							}).done(function(response){
 								blockUI();
 								if (response.success) {
-									dialog.remove();
+									$(this).dialog('close');
 								} else {
 									showMsg('.rules-dlg #rulesForm', response.message);
 								}
@@ -100,7 +100,7 @@ JHtml::_('behavior.keepalive');
 					{
 						text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 						click: function(){
-							dialog.remove();
+							$(this).dialog('close');
 						}
 					}
 				]

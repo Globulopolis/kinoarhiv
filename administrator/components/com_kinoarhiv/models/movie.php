@@ -524,7 +524,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
 			$new_folder_screen = $path_screen.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'screenshots';
 
-			if (!KAFilesystemHelper::move(
+			if (!$fs_helper::move(
 				array($old_folder_poster, $old_folder_wallpp, $old_folder_screen),
 				array($new_folder_poster, $new_folder_wallpp, $new_folder_screen))
 				) {
@@ -553,7 +553,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$old_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id;
 			$new_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id;
 
-			if (KAFilesystemHelper::move($old_folder_trailers, $new_folder_trailers, true)) {
+			if ($fs_helper::move($old_folder_trailers, $new_folder_trailers, true)) {
 				if ($fs_helper::getFolderSize($old_folder_trailers) === 0) {
 					if (file_exists($old_folder_trailers)) {
 						JFolder::delete($old_folder_trailers);

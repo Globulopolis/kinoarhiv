@@ -13,8 +13,6 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 <script type="text/javascript">
 //<![CDATA[
 	jQuery(document).ready(function($){
-		$('#copy-apply').button('disable');
-
 		$('#item_id').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 200,
@@ -43,20 +41,7 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 				return data.title+' ('+data.year+')';
 			},
 			escapeMarkup: function(m) { return m; }
-		}).change(function(val, added, removed){
-			if (parseInt(val.val) != parseInt($('#id').val())) {
-				$('.item_subtype').toggle();
-			} else {
-				$('#copy-apply').button('disable');
-				showMsg('.copy-dlg #id', '<?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMTYPE_ERROR', true); ?>');
-			}
 		});
-
-		$('#item_subtype').select2().change(function(val, added, removed){
-			if (typeof val.val !== 'undefined' || !isNaN(parseInt(val.val))) {
-				$('#copy-apply').button('enable');
-			}
-		}).trigger('change');
 	});
 //]]>
 </script>
@@ -72,16 +57,26 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 						<?php echo $movies_field->getInput('item_id', 100, '', 0, 'span12 required'); ?>
 					</div>
 				</div>
-				<div class="control-group item_subtype" style="display: none;">
+				<div class="control-group">
 					<div class="control-label">
 						<label class="required" for="item_subtype"><?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMTYPE_LABEL'); ?></label>
 					</div>
 					<div class="controls copy-from">
 						<select name="item_subtype" id="item_subtype" class="span7 required">
-							<option value="" selected>---</option>
 							<option value="1"><?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?></option>
 							<option value="2"><?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?></option>
 							<option value="3"><?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?></option>
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="control-label">
+						<label class="required hasTip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMREPLACE_DESC'); ?>" for="item_replace"><?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMREPLACE_LABEL'); ?></label>
+					</div>
+					<div class="controls">
+						<select name="item_replace" id="item_replace" class="span7 required">
+							<option value="0" selected><?php echo JText::_('JNO'); ?></option>
+							<option value="1"><?php echo JText::_('JYES'); ?></option>
 						</select>
 					</div>
 				</div>

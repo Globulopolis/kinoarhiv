@@ -36,6 +36,9 @@ class KinoarhivModelMediamanager extends JModelList {
 	 *
 	 */
 	public function getPath($section='', $type='', $tab=0, $id=0) {
+		JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
+		$fs_helper = new KAFilesystemHelper;
+
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -82,7 +85,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
 		$alias = $db->loadResult();
 
-		$result = str_replace('\\', '/', $path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder);
+		$result = $fs_helper::normalizePath($path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder);
 
 		return $result;
 	}
@@ -1393,19 +1396,51 @@ class KinoarhivModelMediamanager extends JModelList {
 	/**
 	 * Method for copy items from gallery from one movie to another.
 	 *
-	 * @param   int       $item_id        Item ID. Can be 'movie' or 'name' ID.
-	 * @param   string    $item_type      Item type. Can be 'gallery', 'trailer', 'soundtrack'
-	 * @param   int       $item_subtype   Item subtype. 1 - wallpapers, 2 - posters, 3 - screenshots(photo for names). Only available if we copy from gallery.
-	 *
 	 * @return  mixed  Object with the data. False on error.
 	 *
 	 */
-	public function copyfrom($item_id, $item_type, $item_subtype) {
+	public function copyfrom() {
+		JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
+		$fs_helper = new KAFilesystemHelper;
+
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$app->enqueueMessage('1');
+		// Current item ID.
+		$id = $app->input->get('id', 0, 'int');
+		// Item ID. Can be 'movie' or 'name' ID.
+		$item_id = $app->input->get('item_id', 0, 'int');
+		// Item type. Can be 'gallery', 'trailers', 'soundtracks'
+		$item_type = $app->input->get('item_type', '', 'word');
+		// Item subtype. 1 - wallpapers, 2 - posters, 3 - screenshots(photo for names). Only available if we copy from gallery.
+		$item_subtype = $app->input->get('item_subtype', 0, 'int');
 
-		return true;
+		$section = $app->input->get('section', '', 'word');
+		$replace = $app->input->get('replace', 0, 'int');
+		$src_path = $this->getPath($section, $item_type, $item_subtype, $item_id);
+		$dst_path = $this->getPath($section, $item_type, $item_subtype, $id);
+
+		// Copy selected folders
+		if ($fs_helper::move($src_path, $dst_path, true) === false) {
+			$app->enqueueMessage('Something went wrong! See Joomla logs for details.');
+			return false;
+		}
+
+		// Update DB
+		/*if ($item_type == 'gallery') {
+			if ($section == 'movie') {
+				if ($item_subtype == 1) {
+					$path = $this->getPath();
+				} elseif ($item_subtype == 2) {
+				} elseif ($item_subtype == 3) {
+				}
+			} elseif ($section == 'name') {
+			}
+		} elseif ($item_type == 'trailer') {
+		} elseif ($item_type == 'soundtrack') {
+		}*/
+
+		return false;
 	}
 }

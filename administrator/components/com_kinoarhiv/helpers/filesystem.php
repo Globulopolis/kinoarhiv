@@ -47,7 +47,7 @@ class KAFilesystemHelper {
 	 *
 	 * @param   mixed    $src    The path to the source folder or an array of paths. If $src is array when the folder content move into $dest.
 	 * @param   mixed    $dest   The path to the destination folder or an array of paths.
-	 * @param   string   $copy   An optional base path to prefix to the file names.
+	 * @param   string   $copy   If false when just copy content, copy and remove otherwise.
 	 *
 	 * @return  boolean  True on success.
 	 */
@@ -70,9 +70,9 @@ class KAFilesystemHelper {
 	/**
 	 * Moves a folder and files.
 	 *
-	 * @param   string   $src          The path to the source folder.
-	 * @param   string   $dest         The path to the destination folder.
-	 * @param   string   $copy         If false when just copy content, copy and remove otherwise.
+	 * @param   string   $src    The path to the source folder.
+	 * @param   string   $dest   The path to the destination folder.
+	 * @param   string   $copy   If true when just copy content, copy and remove otherwise.
 	 *
 	 * @return  boolean  True on success.
 	 */
@@ -107,5 +107,16 @@ class KAFilesystemHelper {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Convert double backslashes into one forward.
+	 *
+	 * @param   string   $path   Path to the folder.
+	 *
+	 * @return  string
+	 */
+	public static function normalizePath($path) {
+		return str_replace('\\', '/', $path);
 	}
 }

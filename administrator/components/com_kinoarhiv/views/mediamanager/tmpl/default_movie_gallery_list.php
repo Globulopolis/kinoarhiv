@@ -117,13 +117,17 @@ $sortFields = $this->getSortFields();
 							text: '<?php echo JText::_('JTOOLBAR_COPY'); ?>',
 							id: 'copy-apply',
 							click: function(){
+								if ($('#item_id', this).select2('val') == 0 || $('#item_id', this).select2('val') == '') {
+									return false;
+								}
+
 								blockUI('show');
 								$('#copy-apply').button('disable');
 
 								$.ajax({
 									type: 'POST',
 									url: $('#form_copyfrom', this).attr('action'),
-									data: '&id=' + $('#id', this).val() + '&item_id=' + $('#item_id', this).select2('val') + '&item_subtype=' + $('#item_subtype', this).select2('val') + '&item_type=' + $('#item_type', this).val() + '&section=' + $('#section', this).val() + '&<?php echo JSession::getFormToken(); ?>=1'
+									data: '&id=' + $('#id', this).val() + '&item_id=' + $('#item_id', this).select2('val') + '&item_subtype=' + $('#item_subtype', this).val() + '&item_type=' + $('#item_type', this).val() + '&section=' + $('#section', this).val() + '&replace=' + $('#item_replace', this).val() + '&<?php echo JSession::getFormToken(); ?>=1'
 								}).done(function(response){
 									blockUI();
 									if (response.success) {

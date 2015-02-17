@@ -564,13 +564,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
-		$item_id = $app->input->get('item_id', 0, 'int');
-		$item_type = $app->input->get('item_type', '', 'word');
-		$item_subtype = $app->input->get('item_subtype', 0, 'int');
 		$model = $this->getModel('mediamanager');
 		$message = '';
 
-		$updated = $model->copyfrom($item_id, $item_type, $item_subtype);
+		$updated = $model->copyfrom();
 
 		if ($updated) {
 			$result = array('success'=>true);

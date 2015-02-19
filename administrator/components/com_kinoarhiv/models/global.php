@@ -169,7 +169,13 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				}
 
 				$db->setQuery("SELECT ".$col." FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$id);
-				$result = json_decode($db->loadResult());
+				$result = $db->loadResult();
+
+				if (!empty($result)) {
+					$result = json_decode($result);
+				} else {
+					$result = JText::_('COM_KA_NO_ITEMS');
+				}
 			}
 		} elseif ($element == 'vendors') {
 			if (empty($all)) {

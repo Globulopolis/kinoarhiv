@@ -298,7 +298,7 @@ $type = $input->get('type', '', 'word');
 
 					showMsg(_this.closest('ul'), '<?php echo JText::_('COM_KA_FILE_DELETED_SUCCESS'); ?>');
 				} else {
-					showMsg(_this.closest('ul'), response.message);
+					showMsg(_this.closest('h3').next(), response.message);
 				}
 				blockUI();
 			}).fail(function(xhr, status, error){

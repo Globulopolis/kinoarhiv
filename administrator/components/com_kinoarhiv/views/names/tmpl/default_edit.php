@@ -80,6 +80,7 @@ JHtml::_('behavior.keepalive');
 						id: 'rules-apply',
 						click: function(){
 							blockUI('show');
+							var $this = $(this);
 							$.ajax({
 								type: 'POST',
 								url: $('#rulesForm', this).attr('action') + '&id=' + $('#id').val(),
@@ -87,7 +88,7 @@ JHtml::_('behavior.keepalive');
 							}).done(function(response){
 								blockUI();
 								if (response.success) {
-									$(this).dialog('close');
+									$this.dialog('close');
 								} else {
 									showMsg('.rules-dlg #rulesForm', response.message);
 								}

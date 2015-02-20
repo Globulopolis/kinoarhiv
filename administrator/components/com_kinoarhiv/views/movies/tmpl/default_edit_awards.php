@@ -69,7 +69,7 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true;
+								var valid = true, $this = $(this);
 
 								if ($('#form_award_id').select2('val') == '') {
 									$('#form_award_id-lbl').addClass('red-label');
@@ -96,7 +96,7 @@ endif; ?>
 									}
 								}).done(function(response){
 									if (response.success) {
-										$(this).dialog('close');
+										$this.dialog('close');
 										$('#list_awards').trigger('reloadGrid');
 									} else {
 										showMsg('.rel-awards-dlg .placeholder', response.message);
@@ -138,7 +138,7 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true;
+									var valid = true, $this = $(this);
 
 									if ($('#form_award_id').select2('val') == '') {
 										$('#form_award_id-lbl').addClass('red-label');
@@ -166,7 +166,7 @@ endif; ?>
 										}
 									}).done(function(response){
 										if (response.success) {
-											$(this).dialog('close');
+											$this.dialog('close');
 											$('#list_awards').trigger('reloadGrid');
 										} else {
 											showMsg('.rel-awards-dlg .placeholder', response.message);

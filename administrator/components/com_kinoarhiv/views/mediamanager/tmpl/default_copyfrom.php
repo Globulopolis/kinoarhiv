@@ -69,17 +69,6 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 						</select>
 					</div>
 				</div>
-				<div class="control-group">
-					<div class="control-label">
-						<label class="required hasTip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMREPLACE_DESC'); ?>" for="item_replace"><?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ITEMREPLACE_LABEL'); ?></label>
-					</div>
-					<div class="controls">
-						<select name="item_replace" id="item_replace" class="span7 required">
-							<option value="0" selected><?php echo JText::_('JNO'); ?></option>
-							<option value="1"><?php echo JText::_('JYES'); ?></option>
-						</select>
-					</div>
-				</div>
 			</fieldset>
 			<input type="hidden" name="item_type" id="item_type" value="<?php echo $input->get('item_type', '', 'word'); ?>" />
 			<input type="hidden" name="section" id="section" value="<?php echo $input->get('section', '', 'word'); ?>" />

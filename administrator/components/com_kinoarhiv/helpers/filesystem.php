@@ -45,9 +45,9 @@ class KAFilesystemHelper {
 	/**
 	 * Moves a folder and files.
 	 *
-	 * @param   mixed    $src    The path to the source folder or an array of paths. If $src is array when the folder content move into $dest.
-	 * @param   mixed    $dest   The path to the destination folder or an array of paths.
-	 * @param   string   $copy   If false when just copy content, copy and remove otherwise.
+	 * @param   mixed    $src       The path to the source folder or an array of paths. If $src is array when the folder content move into $dest.
+	 * @param   mixed    $dest      The path to the destination folder or an array of paths.
+	 * @param   bool     $copy      If false when just copy content, copy and remove otherwise.
 	 *
 	 * @return  boolean  True on success.
 	 */
@@ -70,13 +70,13 @@ class KAFilesystemHelper {
 	/**
 	 * Moves a folder and files.
 	 *
-	 * @param   string   $src    The path to the source folder.
-	 * @param   string   $dest   The path to the destination folder.
-	 * @param   string   $copy   If true when just copy content, copy and remove otherwise.
+	 * @param   mixed    $src       The path to the source folder or an array of paths. If $src is array when the folder content move into $dest.
+	 * @param   mixed    $dest      The path to the destination folder or an array of paths.
+	 * @param   bool     $copy      If false when just copy content, copy and remove otherwise.
 	 *
 	 * @return  boolean  True on success.
 	 */
-	protected static function _moveItem($src, $dest, $copy=false) {
+	protected static function _moveItem($src, $dest, $copy) {
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
 
@@ -86,6 +86,7 @@ class KAFilesystemHelper {
 
 		foreach (glob($src.DIRECTORY_SEPARATOR.'*.*', GLOB_NOSORT) as $filename) {
 			if (JFile::copy($filename, $dest.DIRECTORY_SEPARATOR.basename($filename))) {
+				// Delete source file
 				if (!$copy) {
 					if (!JFile::delete($filename)) {
 						JLog::add(__METHOD__ . ': ' . JText::sprintf('JLIB_FILESYSTEM_DELETE_FAILED', $filename), JLog::WARNING, 'jerror');

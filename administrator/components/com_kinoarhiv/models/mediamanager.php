@@ -1393,7 +1393,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	/**
 	 * Method for copy items from gallery from one movie to another.
 	 *
-	 * @return  mixed  Object with the data. False on error.
+	 * @return    mixed    Object with the data. False on error.
 	 *
 	 */
 	public function copyfrom() {
@@ -1414,7 +1414,6 @@ class KinoarhivModelMediamanager extends JModelList {
 		$item_subtype = $app->input->get('item_subtype', 0, 'int');
 
 		$section = $app->input->get('section', '', 'word');
-		$replace = $app->input->get('replace', 0, 'int');
 		$src_path = $this->getPath($section, $item_type, $item_subtype, $item_id);
 		$dst_path = $this->getPath($section, $item_type, $item_subtype, $id);
 
@@ -1428,7 +1427,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		/*if ($item_type == 'gallery') {
 			if ($section == 'movie') {
 				if ($item_subtype == 1) {
-					$path = $this->getPath();
+					
 				} elseif ($item_subtype == 2) {
 				} elseif ($item_subtype == 3) {
 				}
@@ -1438,6 +1437,6 @@ class KinoarhivModelMediamanager extends JModelList {
 		} elseif ($item_type == 'soundtrack') {
 		}*/
 
-		return false;
+		return true;
 	}
 }

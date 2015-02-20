@@ -69,7 +69,7 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true;
+								var valid = true, $this = $(this);
 
 								if ($('#form_p_vendor_id').select2('val') == '') {
 									$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
@@ -94,7 +94,7 @@ endif; ?>
 									}
 								}).done(function(response){
 									if (response.success) {
-										$(this).dialog('close');
+										$this.dialog('close');
 										$('#list_premieres').trigger('reloadGrid');
 									} else {
 										showMsg('.premieres-dlg .placeholder', response.message);
@@ -136,7 +136,7 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true;
+									var valid = true, $this = $(this);
 
 									if ($('#form_p_vendor_id').select2('val') == '') {
 										$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
@@ -161,7 +161,7 @@ endif; ?>
 										}
 									}).done(function(response){
 										if (response.success) {
-											$(this).dialog('close');
+											$this.dialog('close');
 											$('#list_premieres').trigger('reloadGrid');
 										} else {
 											showMsg('.premieres-dlg .placeholder', response.message);

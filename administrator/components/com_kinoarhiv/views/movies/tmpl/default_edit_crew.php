@@ -104,7 +104,7 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true;
+								var valid = true, $this = $(this);
 								if ($('#form_type').select2('val') == '' || $('#form_type').select2('val') == 0) {
 									$('#form_type-lbl').addClass('red-label');
 									valid = false;
@@ -136,7 +136,7 @@ endif; ?>
 									}
 								}).done(function(response){
 									if (response.success) {
-										$(this).dialog('close');
+										$this.dialog('close');
 										$('#list_actors').trigger('reloadGrid');
 									} else {
 										showMsg('.rel-names-dlg .placeholder', response.message);
@@ -178,7 +178,7 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true;
+									var valid = true, $this = $(this);
 									if ($('#form_type').select2('val') == '' || $('#form_type').select2('val') == 0) {
 										$('#form_type-lbl').addClass('red-label');
 										valid = false;
@@ -210,7 +210,7 @@ endif; ?>
 										}
 									}).done(function(response){
 										if (response.success) {
-											$(this).dialog('close');
+											$this.dialog('close');
 											$('#list_actors').trigger('reloadGrid');
 										} else {
 											showMsg('.rel-names-dlg .placeholder', response.message);

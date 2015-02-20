@@ -79,6 +79,7 @@ JHtml::_('behavior.keepalive');
 						text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 						id: 'rules-apply',
 						click: function(){
+							var $this = $(this);
 							blockUI('show');
 							$.ajax({
 								type: 'POST',
@@ -87,7 +88,7 @@ JHtml::_('behavior.keepalive');
 							}).done(function(response){
 								blockUI();
 								if (response.success) {
-									$(this).dialog('close');
+									$this.dialog('close');
 								} else {
 									showMsg('.rules-dlg #rulesForm', response.message);
 								}

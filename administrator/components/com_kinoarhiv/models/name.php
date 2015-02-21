@@ -275,7 +275,6 @@ class KinoarhivModelName extends JModelForm {
 		} else {
 			jimport('joomla.filesystem.folder');
 			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
-			$fs_helper = new KAFilesystemHelper;
 
 			$error = false;
 			$old_alias = JString::substr($old_alias, 0, 1);
@@ -292,7 +291,7 @@ class KinoarhivModelName extends JModelForm {
 			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
 			$new_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
 
-			if (!$fs_helper::move(
+			if (!KAFilesystemHelper::move(
 				array($old_folder_poster, $old_folder_wallpp, $old_folder_photo),
 				array($new_folder_poster, $new_folder_wallpp, $new_folder_photo))
 				) {
@@ -300,17 +299,17 @@ class KinoarhivModelName extends JModelForm {
 			}
 
 			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
-			if ($fs_helper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+			if (KAFilesystemHelper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
 				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
 					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
 				}
 			}
-			if ($fs_helper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+			if (KAFilesystemHelper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
 				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
 					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
 				}
 			}
-			if ($fs_helper::getFolderSize($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+			if (KAFilesystemHelper::getFolderSize($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
 				if (file_exists($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
 					JFolder::delete($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
 				}

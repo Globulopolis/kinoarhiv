@@ -1398,7 +1398,6 @@ class KinoarhivModelMediamanager extends JModelList {
 	 */
 	public function copyfrom() {
 		JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
-		$fs_helper = new KAFilesystemHelper;
 
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
@@ -1416,26 +1415,77 @@ class KinoarhivModelMediamanager extends JModelList {
 		$section = $app->input->get('section', '', 'word');
 		$src_path = $this->getPath($section, $item_type, $item_subtype, $item_id);
 		$dst_path = $this->getPath($section, $item_type, $item_subtype, $id);
+		$query = true;
 
 		// Copy selected folders
-		if ($fs_helper::move($src_path, $dst_path, true) === false) {
+		if (KAFilesystemHelper::move($src_path, $dst_path, true) === false) {
 			$app->enqueueMessage('Something went wrong! See Joomla logs for details.');
 			return false;
 		}
 
 		// Update DB
-		/*if ($item_type == 'gallery') {
+		if ($item_type == 'gallery') {
 			if ($section == 'movie') {
-				if ($item_subtype == 1) {
-					
-				} elseif ($item_subtype == 2) {
-				} elseif ($item_subtype == 3) {
-				}
+				$table = '#__ka_movies_gallery';
+				$col = 'movie_id';
 			} elseif ($section == 'name') {
+				$table = '#__ka_names_gallery';
+				$col = 'name_id';
 			}
+
+			$cols_obj = $db->getTableColumns($table);
+			$_keys = $db->quoteName(array_keys($cols_obj));
+			$cols = implode(', ', $_keys);
+			$cols_count = count($_keys);
+
+			$db->setQuery("SELECT ".$cols." FROM ".$db->quoteName($table)." WHERE ".$db->quoteName($col)." = ".(int)$item_id." AND `type` = ".(int)$item_subtype);
+			$data = $db->loadObjectList();
+
+			$db->setDebug(true);
+			$db->lockTable($table);
+			$db->transactionStart();
+
+			foreach ($data as $values) {
+				$value = "";
+				$i = 0;
+
+				foreach ($values as $key=>$val) {
+					if ($key == 'id') {
+						$value .= "''";
+					} else {
+						if ($key == $col) {
+							$value .= "'".(int)$id."'";
+						} else {
+							$value .= "'".$db->escape($val)."'";
+						}
+					}
+
+					if ($i+1 != $cols_count) {
+						$value .= ', ';
+					}
+					$i++;
+				}
+
+				$db->setQuery("INSERT INTO ".$db->quoteName($table)." (".$cols.") VALUES (".$value.");");
+				$result = $db->execute();
+
+				if ($result === false) {
+					$query = false;
+					break;
+				}
+			}
+
+			if ($query === false) {
+				$db->transactionRollback();
+			} else {
+				$db->transactionCommit();
+			}
+
+			$db->unlockTables();
+			$db->setDebug(false);
 		} elseif ($item_type == 'trailer') {
 		} elseif ($item_type == 'soundtrack') {
-		}*/
+		}
 
 		return true;
 	}

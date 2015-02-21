@@ -507,7 +507,6 @@ class KinoarhivModelMovie extends JModelForm {
 		} else {
 			jimport('joomla.filesystem.folder');
 			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
-			$fs_helper = new KAFilesystemHelper;
 
 			$error = false;
 			$old_alias = JString::substr($old_alias, 0, 1);
@@ -524,7 +523,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
 			$new_folder_screen = $path_screen.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'screenshots';
 
-			if (!$fs_helper::move(
+			if (!KAFilesystemHelper::move(
 				array($old_folder_poster, $old_folder_wallpp, $old_folder_screen),
 				array($new_folder_poster, $new_folder_wallpp, $new_folder_screen))
 				) {
@@ -532,17 +531,17 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 
 			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
-			if ($fs_helper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+			if (KAFilesystemHelper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
 				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
 					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
 				}
 			}
-			if ($fs_helper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+			if (KAFilesystemHelper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
 				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
 					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
 				}
 			}
-			if ($fs_helper::getFolderSize($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+			if (KAFilesystemHelper::getFolderSize($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
 				if (file_exists($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
 					JFolder::delete($path_screen.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
 				}
@@ -553,8 +552,8 @@ class KinoarhivModelMovie extends JModelForm {
 			$old_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id;
 			$new_folder_trailers = $path_trailers.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id;
 
-			if ($fs_helper::move($old_folder_trailers, $new_folder_trailers, true)) {
-				if ($fs_helper::getFolderSize($old_folder_trailers) === 0) {
+			if (KAFilesystemHelper::move($old_folder_trailers, $new_folder_trailers, true)) {
+				if (KAFilesystemHelper::getFolderSize($old_folder_trailers) === 0) {
 					if (file_exists($old_folder_trailers)) {
 						JFolder::delete($old_folder_trailers);
 					}

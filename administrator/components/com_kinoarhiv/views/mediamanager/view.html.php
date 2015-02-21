@@ -53,7 +53,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				}
 
 				foreach ($items as $item) {
-					$file_path = $path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
+					$file_path = JPath::clean($path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR);
 					$item->error = '';
 
 					if (!file_exists($file_path.$item->filename)) {
@@ -228,7 +228,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				}
 
 				foreach ($items as $item) {
-					$file_path = $path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->name_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
+					$file_path = JPath::clean($path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->name_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR);
 					$item->error = '';
 
 					if (!file_exists($file_path.$item->filename)) {

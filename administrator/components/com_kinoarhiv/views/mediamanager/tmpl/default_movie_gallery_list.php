@@ -134,6 +134,7 @@ $sortFields = $this->getSortFields();
 									blockUI();
 									if (response.success) {
 										$this.dialog('close');
+										document.location.reload(true);
 									} else {
 										showMsg('.copy-dlg #id', response.message);
 									}

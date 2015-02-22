@@ -1483,8 +1483,9 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			$db->unlockTables();
 			$db->setDebug(false);
-		} elseif ($item_type == 'trailer') {
-		} elseif ($item_type == 'soundtrack') {
+		} else {
+			$app->enqueueMessage('Wrong item type');
+			return false;
 		}
 
 		return true;

@@ -101,6 +101,62 @@ $sortFields = $this->getSortFields();
 				});
 
 				return false;
+			} else if (task == 'copyfrom') {
+				var dialog = $('<div id="dialog-copy" title="<?php echo JText::_('JTOOLBAR_COPYFROM'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
+
+				dialog.dialog({
+					dialogClass: 'copy-dlg',
+					modal: true,
+					width: 600,
+					height: 300,
+					close: function(event, ui){
+						$('#item_id').select2('destroy');
+						dialog.remove();
+					},
+					buttons: [
+						{
+							text: '<?php echo JText::_('JTOOLBAR_COPY'); ?>',
+							id: 'copy-apply',
+							click: function(){
+								if ($('#item_id', this).select2('val') == 0 || $('#item_id', this).select2('val') == '') {
+									return false;
+								}
+
+								blockUI('show');
+								$('#copy-apply').button('disable');
+								var $this = $(this);
+
+								$.ajax({
+									type: 'POST',
+									url: $('#form_copyfrom', this).attr('action'),
+									data: '&id=' + $('#id', this).val() + '&item_id=' + $('#item_id', this).select2('val') + '&item_subtype=' + $('#item_subtype', this).val() + '&item_type=' + $('#item_type', this).val() + '&section=' + $('#section', this).val() + '&<?php echo JSession::getFormToken(); ?>=1'
+								}).done(function(response){
+									blockUI();
+									if (response.success) {
+										$this.dialog('close');
+										document.location.reload(true);
+									} else {
+										showMsg('.copy-dlg #id', response.message);
+									}
+									$('#copy-apply').button('enable');
+								}).fail(function(xhr, status, error){
+									showMsg('.copy-dlg #id', error);
+									$('#copy-apply').button('enable');
+									blockUI();
+								});
+							}
+						},
+						{
+							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
+							click: function(){
+								$(this).dialog('close');
+							}
+						}
+					]
+				});
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw&id=<?php echo $input->get('id', 0, 'int'); ?>&item_type=<?php echo $input->get('type', '', 'word'); ?>&section=<?php echo $input->get('section', '', 'word'); ?>');
+
+				return false;
 			}
 
 			Joomla.submitform(task);

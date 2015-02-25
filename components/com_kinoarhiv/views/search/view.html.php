@@ -43,7 +43,7 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = $menu ? $menu->title : JText::_('COM_KA_SEARCH_ADV');
+		$title = ($menu && $menu->link != 'index.php?option=com_kinoarhiv&view=search') ? JText::_('COM_KA_SEARCH_ADV') : $menu->title;
 
 		// Create a new pathway object
 		$path = (object)array(

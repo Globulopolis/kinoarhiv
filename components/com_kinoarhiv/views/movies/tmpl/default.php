@@ -218,7 +218,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							<div><?php echo $item->rate_custom; ?></div>
 							<?php else: ?>
 								<?php if ($this->params->get('ratings_show_img') == 1): ?>
-									<div style="text-align: center; display: inline-block;">
+									<div style="display: inline-block;">
 										<?php if ($this->params->get('ratings_img_imdb') != 0 && !empty($item->imdb_id)) {
 											if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$item->id.'_big.png')) { ?>
 											<a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0" /></a>

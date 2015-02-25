@@ -100,7 +100,7 @@ class KinoarhivViewNames extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = $menu->title;
+		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PERSONS');
 
 		// Create a new pathway object
 		$path = (object)array(

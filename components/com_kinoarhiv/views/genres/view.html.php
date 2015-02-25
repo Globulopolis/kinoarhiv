@@ -39,16 +39,11 @@ class KinoarhivViewGenres extends JViewLegacy {
 	protected function _prepareDocument() {
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();
-		$title = null;
 		$menu = $menus->getActive();
-		$pathway = $app->getPathway();
+		$title = ($menu && $menu->link == 'index.php?option=com_kinoarhiv&view=genres') ? JText::_('COM_KA_GENRES') : $menu->title;
 		$view = $app->input->get('view', 'movies', 'CMD');
 
-		if ($menu) {
-			$this->document->setTitle($menu->title);
-		} else {
-			$this->document->setTitle($this->params->get('page_title').' - '.JText::_('COM_KA_GENRES'));
-		}
+		$this->document->setTitle($title);
 
 		if ($menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));

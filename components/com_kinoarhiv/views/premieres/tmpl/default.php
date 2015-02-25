@@ -104,7 +104,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				<input type="hidden" name="view" value="premieres" />
 				<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox'), 'code', 'name', $this->sel_country); ?>
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class'=>'inputbox span2'), 'value', 'name', $this->sel_year); ?>
-				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?>
+				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?><br />
+				<?php echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['vendors'], 'vendor', array('class'=>'inputbox'), 'value', 'name', $this->sel_vendor); ?>
 				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 				<div class="btn-group uk-button-group">
 					<button type="submit" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-search"></span></button>
@@ -199,9 +200,10 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 						</div><?php endif; ?>
 					</div>
 					<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
-						<?php echo $item->text; ?>
+						<div class="text"><?php echo $item->text; ?></div>
 						<div class="separator"></div>
-						<?php echo $item->plot; ?>
+						<div class="plot"><?php echo $item->plot; ?></div>
+
 						<?php if ($this->params->get('ratings_show_frontpage') == 1): ?>
 						<div class="separator"></div>
 						<div class="ratings-frontpage">
@@ -209,7 +211,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							<div><?php echo $item->rate_custom; ?></div>
 							<?php else: ?>
 								<?php if ($this->params->get('ratings_show_img') == 1): ?>
-									<div style="text-align: center; display: inline-block;">
+									<div style="display: inline-block;">
 										<?php if (!empty($item->imdb_id)) {
 											if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$item->id.'_big.png')) { ?>
 											<a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0" /></a>
@@ -229,6 +231,11 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 											<a href="http://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0" /></a>
 											<?php endif; ?>
 										<?php endif; ?>
+										<?php if ($this->params->get('ratings_img_metacritic') != 0 && !empty($item->metacritics_id)): ?>
+											<?php if (file_exists($this->params->get('media_rating_image_root').'/metacritic/'.$item->id.'_big.png')): ?>
+											<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/metacritic/<?php echo $item->id; ?>_big.png" border="0" /></a>
+											<?php endif; ?>
+										<?php endif; ?>
 									</div>
 								<?php else: ?>
 									<?php if (!empty($item->imdb_votesum) && !empty($item->imdb_votes)): ?>
@@ -240,6 +247,16 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 										<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <span class="b"><a href="http://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->kp_votesum; ?> (<?php echo $item->kp_votes; ?>)</a></span></div>
 									<?php else: ?>
 										<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+									<?php endif; ?>
+									<?php if (!empty($item->rate_fc)): ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <span class="b"><a href="http://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->rate_fc; ?>%</a></span></div>
+									<?php else: ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+									<?php endif; ?>
+									<?php if (!empty($item->metacritics)): ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <span class="b"><a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->metacritics; ?>%</a></span></div>
+									<?php else: ?>
+										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
 									<?php endif; ?>
 								<?php endif; ?>
 							<?php endif; ?>

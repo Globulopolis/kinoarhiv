@@ -33,6 +33,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->sel_country = $app->input->get('country', '', 'word');  // It's a string because country_id == 0 it'a world premiere
 		$this->sel_year = $app->input->get('year', 0, 'int');
 		$this->sel_month = $app->input->get('month', '', 'string');
+		$this->sel_vendor = $app->input->get('vendor', 0, 'int');
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 
@@ -140,7 +141,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = $menu->title;
+		$title = ($menu && $menu->link != 'index.php?option=com_kinoarhiv&view=premieres') ? JText::_('COM_KA_PREMIERES') : $menu->title;
 
 		// Create a new pathway object
 		$path = (object)array(

@@ -28,11 +28,12 @@ class KinoarhivModelPremieres extends JModelList {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 - world premiere
 		$year = $app->input->get('year', 0, 'int');
+		$vendor = $app->input->get('vendor', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`attribs`, `m`.`state`, `g`.`filename`, `g`.`dimension`")
+		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`metacritics`, `m`.`metacritics_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`attribs`, `m`.`state`, `g`.`filename`, `g`.`dimension`")
 			->from($db->quoteName('#__ka_movies').' AS `m`')
 			->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
 
@@ -83,6 +84,10 @@ class KinoarhivModelPremieres extends JModelList {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$month.'%")';
 		}
 
+		if (!empty($vendor)) {
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `vendor_id` = "'.(int)$vendor.'")';
+		}
+
 		$where .= " AND `p`.`premiere_date` != '".$db->nullDate()."'";
 
 		$query->where($where);
@@ -102,6 +107,7 @@ class KinoarhivModelPremieres extends JModelList {
 		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 it'a world premiere
 		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
+		$vendor = $app->input->get('vendor', 0, 'int');
 		$result = array(
 			'countries' => array(
 				array('name'=>JText::_('JALL'), 'code'=>'')
@@ -110,6 +116,9 @@ class KinoarhivModelPremieres extends JModelList {
 				array('value'=>0, 'name'=>JText::_('JALL'))
 			),
 			'months' => array(
+				array('value'=>'', 'name'=>JText::_('JALL'))
+			),
+			'vendors' => array(
 				array('value'=>'', 'name'=>JText::_('JALL'))
 			)
 		);
@@ -178,6 +187,20 @@ class KinoarhivModelPremieres extends JModelList {
 				}
 
 				$result['months'] = array_merge($result['months'], $months);
+			}
+		} catch (Exception $e) {
+			GlobalHelper::eventLog($e->getMessage());
+		}
+
+		// Distributors list
+		$db->setQuery("SELECT `id` AS `value`, `company_name` AS `name`, `company_name_intl`"
+			. "\n FROM ".$db->quoteName('#__ka_vendors')
+			. "\n WHERE `id` IN (SELECT `vendor_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `vendor_id` != 0 AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")) AND `state` = 1");
+		try {
+			$vendors = $db->loadAssocList();
+
+			if (count($vendors) > 0) {
+				$result['vendors'] = array_merge($result['vendors'], $vendors);
 			}
 		} catch (Exception $e) {
 			GlobalHelper::eventLog($e->getMessage());

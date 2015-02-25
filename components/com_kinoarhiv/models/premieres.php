@@ -83,11 +83,13 @@ class KinoarhivModelPremieres extends JModelList {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$month.'%")';
 		}
 
+		$where .= " AND `p`.`premiere_date` != '".$db->nullDate()."'";
+
 		$query->where($where);
 		$query->group($db->quoteName('m.id'));
 
-		$orderCol = $this->state->get('list.ordering', 'm.ordering');
-		$orderDirn = $this->state->get('list.direction', 'desc');
+		$orderCol = $this->state->get('list.ordering', $db->quoteName('p.premiere_date'));
+		$orderDirn = $this->state->get('list.direction', 'DESC');
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 
 		return $query;

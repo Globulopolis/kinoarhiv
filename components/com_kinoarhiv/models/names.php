@@ -284,4 +284,21 @@ class KinoarhivModelNames extends JModelList {
 
 		return array('success'=>$success, 'message'=>$message, 'url'=>$url, 'text'=>$text);
 	}
+
+	public function getPagination() {
+		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+
+		$store = $this->getStoreId('getPagination');
+
+		if (isset($this->cache[$store])) {
+			return $this->cache[$store];
+		}
+
+		$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
+		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
+
+		$this->cache[$store] = $page;
+
+		return $this->cache[$store];
+	}
 }

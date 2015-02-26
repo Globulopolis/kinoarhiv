@@ -1,5 +1,7 @@
 <?php defined('_JEXEC') or die;
-$uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->task); ?>
+$input = JFactory::getApplication()->input;
+$uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->task);
+?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jqGrid.min.js" type="text/javascript"></script>
 <?php GlobalHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
@@ -10,8 +12,13 @@ $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->tas
 	jQuery(document).ready(function($){
 		var col_sort = '';
 		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
+		<?php if ($input->get('element', 'movies', 'word') == 'movies'): ?>
 			$.cookie('<?php echo $uid_hash; ?>', 'movie.3.asc', { expires: 365 });
 			col_sort = 'movie.3.asc'.split('.');
+		<?php elseif ($input->get('element', 'movies', 'word') == 'names'): ?>
+			$.cookie('<?php echo $uid_hash; ?>', 'name.3.asc', { expires: 365 });
+			col_sort = 'name.3.asc'.split('.');
+		<?php endif; ?>
 		} else {
 			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
 		}
@@ -23,6 +30,7 @@ $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->tas
 			height: Math.round($(window).height() - ($('.container-main').offset().top * 1.8)),
 			shrinkToFit: true,
 			width: $('#j-main-container').innerWidth(),
+			<?php if ($input->get('element', 'movies', 'word') == 'movies'): ?>
 			colNames: ['<?php echo JText::_('COM_KA_FIELD_GENRE_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_GENRE_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_MOVIE_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_MOVIE_ID'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
 			colModel:[
 				{name:'genre', index:'genre', width:300, sorttype:"text", searchoptions: {sopt: ['eq','bw','ew','cn']}},
@@ -31,6 +39,9 @@ $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->tas
 				{name:'movie_id', index:'movie_id', width:70, sorttype:"int", searchoptions: {sopt: ['eq','le','ge']}},
 				{name:'ordering', index:'ordering', width:70, align:"right", sortable: false, search: false}
 			],
+			<?php elseif ($input->get('element', 'movies', 'word') == 'names'): ?>
+			
+			<?php endif; ?>
 			multiselect: true,
 			caption: '',
 			rowNum: 25,

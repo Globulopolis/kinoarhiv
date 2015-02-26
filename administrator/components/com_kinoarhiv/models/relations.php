@@ -133,15 +133,21 @@ class KinoarhivModelRelations extends JModelForm {
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `cn` ON `cn`.`id` = `rel`.`country_id`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `rel`.`movie_id`";
 		} elseif ($task == 'genres') {
-			$query['total'] = "SELECT COUNT(`rel`.`genre_id`)"
-				. "\n FROM ".$db->quoteName('#__ka_rel_genres')." AS `rel`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `rel`.`movie_id`";
+			$element = $app->input->get('element', 'movies', 'word');
 
-			$query['rows'] = "SELECT `rel`.`genre_id`, `rel`.`movie_id`, `rel`.`ordering`, `g`.`name` AS `genre`, `g`.`id` AS `g_id`, `m`.`title` AS `movie`, `m`.`year`"
-				. "\n FROM ".$db->quoteName('#__ka_rel_genres')." AS `rel`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `rel`.`movie_id`";
+			if ($element == 'movies') {
+				$query['total'] = "SELECT COUNT(`rel`.`genre_id`)"
+					. "\n FROM ".$db->quoteName('#__ka_rel_genres')." AS `rel`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `rel`.`movie_id`";
+
+				$query['rows'] = "SELECT `rel`.`genre_id`, `rel`.`movie_id`, `rel`.`ordering`, `g`.`name` AS `genre`, `g`.`id` AS `g_id`, `m`.`title` AS `movie`, `m`.`year`"
+					. "\n FROM ".$db->quoteName('#__ka_rel_genres')." AS `rel`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `rel`.`movie_id`";
+			} else {
+				
+			}
 		} elseif ($task == 'awards') {
 			$award_type = $app->input->get('award_type', 0, 'int');
 
@@ -319,7 +325,11 @@ class KinoarhivModelRelations extends JModelForm {
 
 		if ($task == 'countries') {
 			foreach ($rows as $i=>$row) {
-				$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
+				if (!empty($row->movie)) {
+					$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
+				} else {
+					$row->movie = JText::_('ERROR');
+				}
 
 				$result->rows[$i]['id'] = $row->country_id.'_'.$row->movie_id;
 				$result->rows[$i]['cell'] = array(
@@ -332,7 +342,11 @@ class KinoarhivModelRelations extends JModelForm {
 			}
 		} elseif ($task == 'genres') {
 			foreach ($rows as $i=>$row) {
-				$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
+				if (!empty($row->movie)) {
+					$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
+				} else {
+					$row->movie = JText::_('ERROR');
+				}
 
 				$result->rows[$i]['id'] = $row->genre_id.'_'.$row->movie_id;
 				$result->rows[$i]['cell'] = array(
@@ -348,6 +362,11 @@ class KinoarhivModelRelations extends JModelForm {
 
 			foreach ($rows as $i=>$row) {
 				if ($award_type == 0) {
+					if (!empty($row->movie)) {
+						$title = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
+					} else {
+						$title = JText::_('ERROR');
+					}
 					$title = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
 				} elseif ($award_type == 1) {
 					$title = !empty($row->name) ? $row->name : '';

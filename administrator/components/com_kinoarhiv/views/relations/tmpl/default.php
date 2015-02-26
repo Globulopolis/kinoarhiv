@@ -1,4 +1,7 @@
 <?php defined('_JEXEC') or die; ?>
+<style type="text/css">
+	.container-main { padding-left: 5px; padding-right: 10px; }
+</style>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task){
 		jQuery(document).ready(function($){

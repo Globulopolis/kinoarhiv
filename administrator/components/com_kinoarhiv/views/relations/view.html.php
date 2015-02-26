@@ -84,7 +84,13 @@ class KinoarhivViewRelations extends JViewLegacy {
 			} elseif ($app->input->get('nid', 0, 'int') != 0) {
 				$title = ' - '.JText::_('COM_KA_NAMES_TITLE');
 			} else {
-				$title = '';
+				if ($app->input->get('element', 'movies', 'word') == 'movies') {
+					$title = ' - '.JText::_('COM_KA_MOVIES_TITLE');
+				} elseif ($app->input->get('element', 'movies', 'word') == 'names') {
+					$title = ' - '.JText::_('COM_KA_NAMES_TITLE');
+				} else {
+					$title = '';
+				}
 			}
 
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS').': '.JText::_('COM_KA_GENRES_TITLE').$title), 'link');

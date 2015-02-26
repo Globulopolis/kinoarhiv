@@ -41,7 +41,7 @@ class KinoarhivModelMovies extends JModelList {
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', 0, 'int');
+		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
 		$this->setState('filter.access', $access);
 
 		$authorId = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');

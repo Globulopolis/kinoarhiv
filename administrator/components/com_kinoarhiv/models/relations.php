@@ -328,7 +328,7 @@ class KinoarhivModelRelations extends JModelForm {
 				if (!empty($row->movie)) {
 					$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
 				} else {
-					$row->movie = JText::_('ERROR');
+					$row->movie = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->movie_id);
 				}
 
 				$result->rows[$i]['id'] = $row->country_id.'_'.$row->movie_id;
@@ -345,7 +345,7 @@ class KinoarhivModelRelations extends JModelForm {
 				if (!empty($row->movie)) {
 					$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
 				} else {
-					$row->movie = JText::_('ERROR');
+					$row->movie = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->movie_id);
 				}
 
 				$result->rows[$i]['id'] = $row->genre_id.'_'.$row->movie_id;
@@ -365,9 +365,8 @@ class KinoarhivModelRelations extends JModelForm {
 					if (!empty($row->movie)) {
 						$title = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
 					} else {
-						$title = JText::_('ERROR');
+						$title = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->item_id);
 					}
-					$title = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
 				} elseif ($award_type == 1) {
 					$title = !empty($row->name) ? $row->name : '';
 					$title .= (!empty($row->name) && !empty($row->latin_name)) ? ' / ': '';

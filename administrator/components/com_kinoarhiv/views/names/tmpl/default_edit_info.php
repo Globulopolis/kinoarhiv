@@ -283,7 +283,7 @@
 				<div class="controls">
 					<?php echo $this->form->getInput('careers', $this->form_edit_group); ?>
 					<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
-						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -337,7 +337,7 @@
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
 					<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
-						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 					<?php endif; ?>
 				</div>
 			</div>

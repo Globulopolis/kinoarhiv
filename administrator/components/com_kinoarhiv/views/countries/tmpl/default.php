@@ -23,7 +23,7 @@ $sortFields = $this->getSortFields();
 			return;
 		}
 		if (pressbutton == 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=countries';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies';
 			return;
 		}
 		Joomla.submitform(pressbutton);
@@ -94,7 +94,7 @@ $sortFields = $this->getSortFields();
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=countries&id='.$item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS').': '.$this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&id='.$item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS').': '.$this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>

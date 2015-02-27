@@ -4,7 +4,7 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=awards<?php echo ($this->form->getValue('id') != 0) ? '&id='.$this->form->getValue('id') : ''; ?>';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=awards&element=movies<?php echo ($this->form->getValue('id') != 0) ? '&id='.$this->form->getValue('id') : ''; ?>';
 			return;
 		}
 		if (task == 'apply' || task == 'save' || task == 'save2new') {

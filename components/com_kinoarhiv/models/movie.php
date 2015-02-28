@@ -581,8 +581,10 @@ class KinoarhivModelMovie extends JModelForm {
 			} else {
 				if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
 					$value->path = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
+					$path = JPATH_ROOT.DIRECTORY_SEPARATOR.JString::substr($params->get('media_trailers_root_www'), 1).DIRECTORY_SEPARATOR.JString::substr($value->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
 				} else {
 					$value->path = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
+					$path = JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get('media_trailers_root_www').DIRECTORY_SEPARATOR.JString::substr($value->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
 				}
 				$value->files['video'] = json_decode($value->filename, true);
 				$value->files['video_links'] = array();
@@ -611,8 +613,29 @@ class KinoarhivModelMovie extends JModelForm {
 				$tr_height = $tr_resolution[1];
 				$value->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
 
-				$value->files['subtitles'] = json_decode($value->_subtitles, true);
-				$value->files['chapters'] = json_decode($value->_chapters, true);
+				// Check if subtitle file exists
+				$_subtitles = json_decode($value->_subtitles, true);
+				if (!empty($_subtitles)) {
+					foreach ($_subtitles as $i=>$subtitle) {
+						if (!file_exists(JPath::clean($path.$subtitle['file']))) {
+							unset($_subtitles[$i]);
+						}
+					}
+				}
+
+				$value->files['subtitles'] = $_subtitles;
+
+				// Check if chapter file exists
+				$_chapters = json_decode($value->_chapters, true);
+				if (!empty($_chapters)) {
+					foreach ($_chapters as $i=>$chapter) {
+						if (!file_exists(JPath::clean($path.$chapter))) {
+							unset($_chapters[$i]);
+						}
+					}
+				}
+
+				$value->files['chapters'] = $_chapters;
 			}
 		}
 
@@ -658,10 +681,10 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$result->player_width = $params->get('player_width');
+		$result->path = ''; // Just empty element
 
 		if (!empty($result->urls)) {
 			$urls_arr = explode("\n", $result->urls);
-			$result->path = ''; // Just empty element
 
 			if (count($urls_arr) > 0) {
 				if (file_exists($params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot)) {
@@ -749,8 +772,10 @@ class KinoarhivModelMovie extends JModelForm {
 		} else {
 			if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
 				$result->path = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+				$path = JPATH_ROOT.DIRECTORY_SEPARATOR.JString::substr($params->get('media_trailers_root_www'), 1).DIRECTORY_SEPARATOR.JString::substr($result->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
 			} else {
 				$result->path = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
+				$path = JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get('media_trailers_root_www').DIRECTORY_SEPARATOR.JString::substr($result->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
 			}
 			$result->files['video'] = json_decode($result->filename, true);
 			$result->files['video_links'] = array();
@@ -779,8 +804,29 @@ class KinoarhivModelMovie extends JModelForm {
 			$tr_height = $tr_resolution[1];
 			$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
 
-			$result->files['subtitles'] = json_decode($result->_subtitles, true);
-			$result->files['chapters'] = json_decode($result->_chapters, true);
+			// Check if subtitle file exists
+			$_subtitles = json_decode($result->_subtitles, true);
+			if (!empty($_subtitles)) {
+				foreach ($_subtitles as $i=>$subtitle) {
+					if (!file_exists(JPath::clean($path.$subtitle['file']))) {
+						unset($_subtitles[$i]);
+					}
+				}
+			}
+
+			$result->files['subtitles'] = $_subtitles;
+
+			// Check if chapter file exists
+			$_chapters = json_decode($result->_chapters, true);
+			if (!empty($_chapters)) {
+				foreach ($_chapters as $i=>$chapter) {
+					if (!file_exists(JPath::clean($path.$chapter))) {
+						unset($_chapters[$i]);
+					}
+				}
+			}
+
+			$result->files['chapters'] = $_chapters;
 		}
 
 		return $result;

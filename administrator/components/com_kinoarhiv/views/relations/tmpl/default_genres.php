@@ -1,6 +1,38 @@
 <?php defined('_JEXEC') or die;
-$input = JFactory::getApplication()->input;
-$uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->task);
+$uid_hash = md5(crc32($this->user->get('id')).md5($this->task.$this->element)).crc32($this->task);
+
+if ($this->element == 'movies') {
+	$cookie = 'movie.3.asc';
+	$cols = array(
+		'colnames' => array(JText::_('COM_KA_FIELD_GENRE_LABEL'), JText::_('COM_KA_FIELD_GENRE_ID'), JText::_('COM_KA_FIELD_MOVIE_LABEL'), JText::_('COM_KA_FIELD_MOVIE_ID'), JText::_('JFIELD_ORDERING_LABEL')),
+		'colmodel' => array(
+			(object)array('name'=>'genre', 'index'=>'genre', 'width'=>300, 'sorttype'=>'text',
+				'searchoptions'=>(object)array('sopt'=>array('eq','bw','ew','cn'))),
+			(object)array('name'=>'genre_id', 'index'=>'genre_id', 'width'=>70, 'sorttype'=>'int',
+				'searchoptions'=>(object)array('sopt'=>array('eq','le','ge'))),
+			(object)array('name'=>'movie', 'index'=>'movie', 'width'=>350, 'sorttype'=>'text',
+				'searchoptions'=>(object)array('sopt'=>array('eq','bw','ew','cn'))),
+			(object)array('name'=>'movie_id', 'index'=>'movie_id', 'width'=>70, 'sorttype'=>'int',
+				'searchoptions'=>(object)array('sopt'=>array('eq','le','ge'))),
+			(object)array('name'=>'ordering', 'index'=>'ordering', 'width'=>70, 'align'=>'right', 'sortable'=>false, 'search'=>false)
+		)
+	);
+} elseif ($this->element == 'names') {
+	$cookie = 'name.3.asc';
+	$cols = array(
+		'colnames' => array(JText::_('COM_KA_FIELD_GENRE_LABEL'), JText::_('COM_KA_FIELD_GENRE_ID'), JText::_('COM_KA_FIELD_NAME'), JText::_('COM_KA_FIELD_NAME_ID')),
+		'colmodel' => array(
+			(object)array('name'=>'genre', 'index'=>'genre', 'width'=>300, 'sorttype'=>'text',
+				'searchoptions'=>(object)array('sopt'=>array('eq','bw','ew','cn'))),
+			(object)array('name'=>'genre_id', 'index'=>'genre_id', 'width'=>70, 'sorttype'=>'int',
+				'searchoptions'=>(object)array('sopt'=>array('eq','le','ge'))),
+			(object)array('name'=>'name', 'index'=>'name', 'width'=>350, 'sorttype'=>'text',
+				'searchoptions'=>(object)array('sopt'=>array('eq','bw','ew','cn'))),
+			(object)array('name'=>'name_id', 'index'=>'name_id', 'width'=>70, 'sorttype'=>'int',
+				'searchoptions'=>(object)array('sopt'=>array('eq','le','ge')))
+		)
+	);
+}
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jqGrid.min.js" type="text/javascript"></script>
@@ -12,36 +44,25 @@ $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->tas
 	jQuery(document).ready(function($){
 		var col_sort = '';
 		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
-		<?php if ($input->get('element', 'movies', 'word') == 'movies'): ?>
-			$.cookie('<?php echo $uid_hash; ?>', 'movie.3.asc', { expires: 365 });
-			col_sort = 'movie.3.asc'.split('.');
-		<?php elseif ($input->get('element', 'movies', 'word') == 'names'): ?>
-			$.cookie('<?php echo $uid_hash; ?>', 'name.3.asc', { expires: 365 });
-			col_sort = 'name.3.asc'.split('.');
-		<?php endif; ?>
+			$.cookie('<?php echo $uid_hash; ?>', '<?php echo $cookie; ?>', { expires: 365 });
+			col_sort = '<?php echo $cookie; ?>'.split('.');
 		} else {
 			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
 		}
 
 		$('#list').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?><?php echo ($this->movie_id != 0) ? '&mid='.$this->movie_id : ''; ?>',
+			<?php if ($this->element == 'movies'): ?>
+			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&element=movies&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?><?php echo ($this->movie_id != 0) ? '&mid='.$this->movie_id : ''; ?>',
+			<?php elseif ($this->element == 'names'): ?>
+			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&element=names&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?><?php echo ($this->name_id != 0) ? '&nid='.$this->name_id : ''; ?>',
+			<?php endif; ?>
 			datatype: 'json',
 			loadui: 'block',
 			height: Math.round($(window).height() - ($('.container-main').offset().top * 1.8)),
 			shrinkToFit: true,
 			width: $('#j-main-container').innerWidth(),
-			<?php if ($input->get('element', 'movies', 'word') == 'movies'): ?>
-			colNames: ['<?php echo JText::_('COM_KA_FIELD_GENRE_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_GENRE_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_MOVIE_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_MOVIE_ID'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
-			colModel:[
-				{name:'genre', index:'genre', width:300, sorttype:"text", searchoptions: {sopt: ['eq','bw','ew','cn']}},
-				{name:'genre_id', index:'genre_id', width:70, sorttype:"int", searchoptions: {sopt: ['eq','le','ge']}},
-				{name:'movie', index:'movie', width:350, sorttype:"text", searchoptions: {sopt: ['eq','bw','ew','cn']}},
-				{name:'movie_id', index:'movie_id', width:70, sorttype:"int", searchoptions: {sopt: ['eq','le','ge']}},
-				{name:'ordering', index:'ordering', width:70, align:"right", sortable: false, search: false}
-			],
-			<?php elseif ($input->get('element', 'movies', 'word') == 'names'): ?>
-			
-			<?php endif; ?>
+			colNames: <?php echo json_encode($cols['colnames']); ?>,
+			colModel: <?php echo json_encode($cols['colmodel']); ?>,
 			multiselect: true,
 			caption: '',
 			rowNum: 25,
@@ -62,6 +83,7 @@ $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->tas
 			searchOnEnter: true,
 			closeOnEscape: true
 		});
+		<?php if ($this->element == 'movies'): ?>
 		$('#list').jqGrid('sortableRows', {
 			connectWith: '#list',
 			update: function(e, ui){
@@ -80,6 +102,7 @@ $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->tas
 				});
 			}
 		});
+		<?php endif; ?>
 		$('#list').jqGrid('gridResize', {});
 	});
 </script>

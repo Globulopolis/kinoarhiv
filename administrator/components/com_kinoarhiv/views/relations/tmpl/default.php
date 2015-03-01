@@ -1,6 +1,6 @@
 <?php defined('_JEXEC') or die; ?>
 <style type="text/css">
-	.container-main { padding-left: 5px; padding-right: 10px; }
+	.container-main { padding-left: 5px; padding-right: 15px; }
 </style>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task){
@@ -14,23 +14,27 @@
 				$('.rel-menu').toggle();
 				return;
 			}<?php if (!empty($this->task)): ?> else if (task == 'relations_add') {
-				document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=add&param=<?php echo $this->task; ?>';
+				document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=add&element=<?php echo $this->element; ?>&param=<?php echo $this->task; ?>';
 				return;
 			} else if (task == 'relations_edit') {
 				var items = $('#list .cbox').filter(':checked');
 				if (items.length > 1) {
 					showMsg('#j-main-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
-					var id = items.attr('id').substr(9).split('_');
+					var id = items.attr('id').split('_'); // Split 'id' attribute value of the checkbox by '_' separator
 
 					if (_task == 'countries') {
-						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param='+_task+'&country_id='+id[0]+'&movie_id='+id[1];
+						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&element=<?php echo $this->element; ?>&param='+_task+'&country_id='+id[2]+'&movie_id='+id[3];
 					} else if (_task == 'genres') {
-						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param='+_task+'&genre_id='+id[0]+'&movie_id='+id[1];
+						<?php if ($this->element == 'movies'): ?>
+						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&element=<?php echo $this->element; ?>&param='+_task+'&genre_id='+id[2]+'&movie_id='+id[3];
+						<?php elseif ($this->element == 'names'): ?>
+						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&element=<?php echo $this->element; ?>&param='+_task+'&genre_id='+id[2]+'&name_id='+id[3];
+						<?php endif; ?>
 					} else if (_task == 'awards') {
-						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param='+_task+'&award_id='+id[0]+'&item_id='+id[1]+'&award_type=<?php echo isset($this->award_type) ? (int)$this->award_type : ''; ?>';
+						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&element=<?php echo $this->element; ?>&param='+_task+'&award_id='+id[2]+'&item_id='+id[3]+'&award_type=<?php echo isset($this->award_type) ? (int)$this->award_type : ''; ?>';
 					} else if (_task == 'careers') {
-						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param='+_task+'&career_id='+id[0]+'&name_id='+id[1];
+						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&element=<?php echo $this->element; ?>&param='+_task+'&career_id='+id[2]+'&name_id='+id[3];
 					}
 				}
 				return;
@@ -46,7 +50,7 @@
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=relations&task=delete&param=<?php echo $this->task; ?><?php echo isset($this->award_type) ? '&award_type='.$this->award_type : ''; ?>&format=json', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=relations&task=delete&element=<?php echo $this->element; ?>&param=<?php echo $this->task; ?><?php echo isset($this->award_type) ? '&award_type='.$this->award_type : ''; ?>&format=json', {'data': items.serializeArray()}, function(response){
 					showMsg('#j-main-container', response.message);
 					$('#list').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

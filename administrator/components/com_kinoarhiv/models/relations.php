@@ -45,8 +45,16 @@ class KinoarhivModelRelations extends JModelForm {
 		} elseif ($task == 'genres') {
 			$genre_id = $app->input->get('genre_id', 0, 'int');
 			$movie_id = $app->input->get('movie_id', 0, 'int');
+			$name_id = $app->input->get('name_id', 0, 'int');
+			$element = $app->input->get('element', '', 'word'); // Default value is empty because if it's not set via POST request, something went wrong.
 
-			if (empty($genre_id) || empty($movie_id)) {
+			if (!empty($element)) {
+				if ($element == 'movies' && (empty($genre_id) || empty($movie_id))) {
+					return array();
+				} elseif ($element == 'names' && (empty($genre_id) || empty($name_id))) {
+					return array();
+				}
+			} else {
 				return array();
 			}
 
@@ -145,8 +153,16 @@ class KinoarhivModelRelations extends JModelForm {
 					. "\n FROM ".$db->quoteName('#__ka_rel_genres')." AS `rel`"
 					. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
 					. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `rel`.`movie_id`";
-			} else {
-				
+			} elseif ($element == 'names') {
+				$query['total'] = "SELECT COUNT(`rel`.`genre_id`)"
+					. "\n FROM ".$db->quoteName('#__ka_rel_names_genres')." AS `rel`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`";
+
+				$query['rows'] = "SELECT `rel`.`genre_id`, `rel`.`name_id`, `g`.`name` AS `genre`, `g`.`id` AS `g_id`, `n`.`name`, `n`.`latin_name`, `n`.`date_of_birth`"
+					. "\n FROM ".$db->quoteName('#__ka_rel_names_genres')." AS `rel`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_genres')." AS `g` ON `g`.`id` = `rel`.`genre_id`"
+					. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `n` ON `n`.`id` = `rel`.`name_id`";
 			}
 		} elseif ($task == 'awards') {
 			$award_type = $app->input->get('award_type', 0, 'int');
@@ -203,6 +219,7 @@ class KinoarhivModelRelations extends JModelForm {
 		$search_field = $app->input->get('searchField', '', 'word');
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = $app->input->get('searchString', '', 'string');
+		$element = $app->input->get('element', 'movies', 'word');
 		$where = "";
 
 		if ($task == 'countries') {
@@ -234,12 +251,18 @@ class KinoarhivModelRelations extends JModelForm {
 			// Process alias for some columns
 			if ($search_field == 'genre') {
 				$search_field = 'name';
-			} else if ($search_field == 'movie') {
+			} elseif ($search_field == 'movie') {
 				$search_field = 'title';
+			} elseif ($search_field == 'name') {
+				$search_field = array('n.name', 'n.latin_name');
 			}
 
 			if (!empty($search_string)) {
-				$where .= "\n WHERE ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+				if ($element == 'movies') {
+					$where .= "\n WHERE ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+				} elseif ($element == 'names') {
+					$where .= "\n WHERE (".DatabaseHelper::transformOperands($db->quoteName($search_field[0]), $search_operand, $db->escape($search_string))." OR ".DatabaseHelper::transformOperands($db->quoteName($search_field[1]), $search_operand, $db->escape($search_string)).")";
+				}
 			}
 
 			if (!empty($id) && !empty($where)) {
@@ -248,11 +271,21 @@ class KinoarhivModelRelations extends JModelForm {
 				$where .= "\n WHERE `rel`.`genre_id` = ".(int)$id;
 			}
 
-			if (!empty($movie_id)) {
-				if (!empty($where)) {
-					$where .= " AND `rel`.`movie_id` = ".(int)$movie_id;
-				} else {
-					$where .= "\n WHERE `rel`.`movie_id` = ".(int)$movie_id;
+			if ($element == 'movies') {
+				if (!empty($movie_id)) {
+					if (!empty($where)) {
+						$where .= " AND `rel`.`movie_id` = ".(int)$movie_id;
+					} else {
+						$where .= "\n WHERE `rel`.`movie_id` = ".(int)$movie_id;
+					}
+				}
+			} elseif ($element == 'names') {
+				if (!empty($name_id)) {
+					if (!empty($where)) {
+						$where .= " AND `rel`.`name_id` = ".(int)$name_id;
+					} else {
+						$where .= "\n WHERE `rel`.`name_id` = ".(int)$name_id;
+					}
 				}
 			}
 		} elseif ($task == 'awards') {
@@ -342,20 +375,39 @@ class KinoarhivModelRelations extends JModelForm {
 			}
 		} elseif ($task == 'genres') {
 			foreach ($rows as $i=>$row) {
-				if (!empty($row->movie)) {
-					$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
-				} else {
-					$row->movie = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->movie_id);
-				}
+				if ($app->input->get('element', 'movies', 'word') == 'movies') {
+					if (!empty($row->movie)) {
+						$row->movie = ($row->year != '0000') ? $row->movie.' ('.$row->year.')' : $row->movie;
+					} else {
+						$row->movie = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->movie_id);
+					}
 
-				$result->rows[$i]['id'] = $row->genre_id.'_'.$row->movie_id;
-				$result->rows[$i]['cell'] = array(
-					$row->genre,
-					$row->genre_id,
-					$row->movie,
-					$row->movie_id,
-					$row->ordering
-				);
+					$result->rows[$i]['id'] = $row->genre_id.'_'.$row->movie_id;
+					$result->rows[$i]['cell'] = array(
+						$row->genre,
+						$row->genre_id,
+						$row->movie,
+						$row->movie_id,
+						$row->ordering
+					);
+				} elseif ($app->input->get('element', 'movies', 'word') == 'names') {
+					if (!empty($row->name) || !empty($row->latin_name)) {
+						$title = !empty($row->name) ? $row->name : '';
+						$title .= (!empty($row->name) && !empty($row->latin_name)) ? ' / ': '';
+						$title .= !empty($row->latin_name) ? $row->latin_name : '';
+						$title .= ($row->date_of_birth != '0000-00-00') ? ' ('.$row->date_of_birth.')' : '';
+					} else {
+						$title = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->name_id);
+					}
+
+					$result->rows[$i]['id'] = $row->genre_id.'_'.$row->name_id;
+					$result->rows[$i]['cell'] = array(
+						$row->genre,
+						$row->genre_id,
+						$title,
+						$row->name_id
+					);
+				}
 			}
 		} elseif ($task == 'awards') {
 			$award_type = $app->input->get('award_type', 0, 'int');
@@ -368,10 +420,14 @@ class KinoarhivModelRelations extends JModelForm {
 						$title = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->item_id);
 					}
 				} elseif ($award_type == 1) {
-					$title = !empty($row->name) ? $row->name : '';
-					$title .= (!empty($row->name) && !empty($row->latin_name)) ? ' / ': '';
-					$title .= !empty($row->latin_name) ? $row->latin_name : '';
-					$title .= ($row->date_of_birth != '0000-00-00') ? ' ('.$row->date_of_birth.')' : '';
+					if (!empty($row->name) || !empty($row->latin_name)) {
+						$title = !empty($row->name) ? $row->name : '';
+						$title .= (!empty($row->name) && !empty($row->latin_name)) ? ' / ': '';
+						$title .= !empty($row->latin_name) ? $row->latin_name : '';
+						$title .= ($row->date_of_birth != '0000-00-00') ? ' ('.$row->date_of_birth.')' : '';
+					} else {
+						$title = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->name_id);
+					}
 				}
 
 				$result->rows[$i]['id'] = $row->award_id.'_'.$row->item_id;
@@ -385,10 +441,14 @@ class KinoarhivModelRelations extends JModelForm {
 			}
 		} elseif ($task == 'careers') {
 			foreach ($rows as $i=>$row) {
-				$title = !empty($row->name) ? $row->name : '';
-				$title .= (!empty($row->name) && !empty($row->latin_name)) ? ' / ': '';
-				$title .= !empty($row->latin_name) ? $row->latin_name : '';
-				$title .= ($row->date_of_birth != '0000-00-00') ? ' ('.$row->date_of_birth.')' : '';
+				if (!empty($row->name) || !empty($row->latin_name)) {
+					$title = !empty($row->name) ? $row->name : '';
+					$title .= (!empty($row->name) && !empty($row->latin_name)) ? ' / ': '';
+					$title .= !empty($row->latin_name) ? $row->latin_name : '';
+					$title .= ($row->date_of_birth != '0000-00-00') ? ' ('.$row->date_of_birth.')' : '';
+				} else {
+					$title = JText::sprintf('COM_KA_TABLES_RELATIONS_NOT_FOUND', $row->name_id);
+				}
 
 				$result->rows[$i]['id'] = $row->career_id.'_'.$row->name_id;
 				$result->rows[$i]['cell'] = array(

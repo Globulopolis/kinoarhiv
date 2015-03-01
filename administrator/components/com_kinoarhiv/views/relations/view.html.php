@@ -20,6 +20,7 @@ class KinoarhivViewRelations extends JViewLegacy {
 		$this->id = $app->input->get('id', 0, 'int');
 		$this->movie_id = $app->input->get('mid', 0, 'int');
 		$this->name_id = $app->input->get('nid', 0, 'int');
+		$this->element = $app->input->get('element', 'movies', 'word');
 		$this->user = &$user;
 
 		switch ($this->task) {

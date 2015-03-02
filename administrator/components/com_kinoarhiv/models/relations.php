@@ -58,9 +58,16 @@ class KinoarhivModelRelations extends JModelForm {
 				return array();
 			}
 
-			$db->setQuery("SELECT `genre_id`, `movie_id`, `ordering`"
-				. "\n FROM ".$db->quoteName('#__ka_rel_genres')
-				. "\n WHERE `genre_id` = ".(int)$genre_id." AND `movie_id` = ".(int)$movie_id);
+			if ($element == 'movies') {
+				$db->setQuery("SELECT `genre_id`, `movie_id`, `ordering`"
+					. "\n FROM ".$db->quoteName('#__ka_rel_genres')
+					. "\n WHERE `genre_id` = ".(int)$genre_id." AND `movie_id` = ".(int)$movie_id);
+			} elseif ($element == 'names') {
+				$db->setQuery("SELECT `genre_id`, `name_id`"
+					. "\n FROM ".$db->quoteName('#__ka_rel_names_genres')
+					. "\n WHERE `genre_id` = ".(int)$genre_id." AND `name_id` = ".(int)$name_id);
+			}
+
 			$result = $db->loadObject();
 		} elseif ($task == 'awards') {
 			$award_id = $app->input->get('award_id', 0, 'int');

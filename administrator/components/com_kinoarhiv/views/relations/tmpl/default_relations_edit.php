@@ -133,16 +133,20 @@ JHtml::_('behavior.keepalive');
 	<input type="hidden" name="param" value="<?php echo $this->param; ?>" />
 	<input type="hidden" name="new" value="<?php echo ($this->task == 'add') ? 1 : 0; ?>" />
 	<?php // Control IDs. 'Cause we need to know old id for update query. The decision on which id is responsible for what we receive in the model. These IDs don't make sense when we simply creating a new item.
-	if ($this->param == 'countries'):
+	if ($this->param == 'countries') {
 		$value1 = $this->form->getValue('country_id');
 		$value2 = $this->form->getValue('movie_id');
-	elseif ($this->param == 'genres'):
-		$value1 = $this->form->getValue('country_id');
-		$value2 = ($this->element == 'movies') ? $this->form->getValue('movie_id') : $this->form->getValue('name_id');
-	elseif ($this->param == 'careers'):
+	} elseif ($this->param == 'genres') {
+		$value1 = $this->form->getValue('genre_id');
+		if ($this->element == 'movies') {
+			$value2 = $this->form->getValue('movie_id');
+		} elseif ($this->element == 'names') {
+			$value2 = $this->form->getValue('name_id');
+		}
+	} elseif ($this->param == 'careers') {
 		$value1 = $this->form->getValue('career_id');
 		$value2 = $this->form->getValue('name_id');
-	endif; ?>
+	} ?>
 	<input type="hidden" name="control_id[0]" value="<?php echo $value1; ?>" />
 	<input type="hidden" name="control_id[1]" value="<?php echo $value2; ?>" />
 	<?php // end control IDs ?>

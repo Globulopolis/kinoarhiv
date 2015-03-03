@@ -42,7 +42,6 @@ class KinoarhivControllerCountries extends JControllerLegacy {
 			return;
 		}
 
-		$app = JFactory::getApplication();
 		$model = $this->getModel('country');
 		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
@@ -51,9 +50,6 @@ class KinoarhivControllerCountries extends JControllerLegacy {
 
 		// Check the return value.
 		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_kinoarhiv.countries.global.data', $data);
-
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', $message, 'error');

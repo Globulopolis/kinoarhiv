@@ -39,14 +39,14 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 
 	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.create.award', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.award', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.create.award', 'com_kinoarhiv') && !$user->authorise('core.edit.award', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
-		$app = JFactory::getApplication();
 		$model = $this->getModel('award');
 		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
@@ -55,9 +55,6 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 
 		// Check the return value.
 		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_kinoarhiv.awards.global.data', $data);
-
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', $message, 'error');
@@ -73,7 +70,7 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=add', $message);
 				break;
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]='.(int)$id, $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]='.$app->getUserState('com_kinoarhiv.awards.data.'.$user->id.'.id'), $message);
 				break;
 
 			case 'save':

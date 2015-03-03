@@ -22,7 +22,7 @@ class JFormFieldGenres extends JFormField {
 		parent::__construct();
 	}
 
-	protected function getInput() {
+	public function getInput() {
 		$class = 'hasAutocomplete ';
 
 		// Initialize some field attributes.
@@ -32,8 +32,8 @@ class JFormFieldGenres extends JFormField {
 		$readonly = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
 		$disabled = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$required = $this->required ? ' required aria-required="true"' : '';
-		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="'.$this->element['data-ac-type'].'"' : '';
-		$data_allow_clear = $this->element['data-allow-clear'] ? ' data-allow-clear="1"' : '';
+		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="'.(string)$this->element['data-ac-type'].'"' : '';
+		$data_allow_clear = $this->element['data-allow-clear'] ? ' data-allow-clear="true"' : '';
 
 		if (isset($this->value['ids']) && is_array($this->value['ids'])) {
 			$value = implode(',', $this->value['ids']);

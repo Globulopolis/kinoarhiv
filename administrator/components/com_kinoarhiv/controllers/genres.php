@@ -46,7 +46,6 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 			return;
 		}
 
-		$app = JFactory::getApplication();
 		$model = $this->getModel('genre');
 		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
@@ -55,9 +54,6 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 
 		// Check the return value.
 		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_kinoarhiv.genres.global.data', $data);
-
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', $message, 'error');

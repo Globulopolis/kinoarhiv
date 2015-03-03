@@ -163,17 +163,17 @@ class JFormFieldMovies extends JFormField {
 		}
 
 		if (isset($this->element['data-ac-type'])) {
-			$data_type = ' data-ac-type="'.$this->element['data-ac-type'].'"';
+			$data_type = ' data-ac-type="'.(string)$this->element['data-ac-type'].'"';
 		} elseif (!empty($data_type)) {
-			$data_type = ' data-ac-type="'.$data_type.'"';
+			$data_type = ' data-ac-type="'.(string)$data_type.'"';
 		} else {
 			$data_type = '';
 		}
 
 		if (isset($this->element['data-allow-clear'])) {
-			$data_allow_clear = ' data-allow-clear="1"';
+			$data_allow_clear = ' data-allow-clear="true"';
 		} elseif (!empty($data_allow_clear)) {
-			$data_allow_clear = ' data-allow-clear="1"';
+			$data_allow_clear = ' data-allow-clear="true"';
 		} else {
 			$data_allow_clear = '';
 		}

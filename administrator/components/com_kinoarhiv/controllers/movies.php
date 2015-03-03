@@ -58,7 +58,6 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		}
 
 		$validData = $model->validate($form, $data, 'movie');
-		$app->setUserState('com_kinoarhiv.movies.global.data.'.$user->id, $data);
 
 		if ($validData === false) {
 			$errors = $model->getErrors();

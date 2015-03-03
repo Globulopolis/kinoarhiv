@@ -60,7 +60,6 @@ class KinoarhivControllerNames extends JControllerLegacy {
 		$validData = $model->validate($form, $data, 'name');
 
 		if ($validData === false) {
-			$app->setUserState('com_kinoarhiv.names.global.data', $data);
 			$errors = $model->getErrors();
 
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {

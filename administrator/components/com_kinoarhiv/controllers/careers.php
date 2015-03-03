@@ -54,16 +54,13 @@ class KinoarhivControllerCareers extends JControllerLegacy {
 			}
 		}
 
-		$app = JFactory::getApplication();
 		$model = $this->getModel('career');
 		$alias = $this->input->get('quick', 0, 'int');
 		$result = $model->save($alias);
 		$id = $this->input->post->get('id', 0, 'int');
 
 		if ($document->getType() == 'html') {
-
 			if ($result['success'] === false) {
-				$app->setUserState('com_kinoarhiv.careers.global.data', $data);
 				$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError() ? $model->getError() : $result['message']);
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', $message, 'error');
 				return false;

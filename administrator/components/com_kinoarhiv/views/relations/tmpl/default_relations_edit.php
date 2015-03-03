@@ -122,12 +122,12 @@ JHtml::_('behavior.keepalive');
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<fieldset class="form-horizontal">
-			<?php foreach ($this->form->getFieldset('relations_'.$this->param) as $field): ?>
+		<?php foreach ($this->form->getFieldset('relations_'.$this->param.'_'.$this->element) as $field): ?>
 			<div class="control-group">
 				<div class="control-label"><?php echo $field->label; ?></div>
 				<div class="controls"><?php echo $field->input; ?></div>
 			</div>
-			<?php endforeach; ?>
+		<?php endforeach; ?>
 		</fieldset>
 	</div>
 	<input type="hidden" name="param" value="<?php echo $this->param; ?>" />

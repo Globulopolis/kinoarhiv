@@ -475,6 +475,7 @@ class KinoarhivModelRelations extends JModelForm {
 		$app = JFactory::getApplication();
 		$task = $app->input->get('param', '', 'cmd'); // It's really task
 		$param = $app->input->get('task', '', 'cmd');
+		$element = $app->input->get('element', 'movies', 'word');
 		$data = $app->input->post->get('data', array(), 'array');
 		$award_type = $app->input->get('award_type', 0, 'int');
 		$award_type_sql = "";
@@ -486,9 +487,15 @@ class KinoarhivModelRelations extends JModelForm {
 			$left_col = '`country_id`';
 			$right_col = '`movie_id`';
 		} elseif ($task == 'genres') {
-			$table = '#__ka_rel_genres';
-			$left_col = '`genre_id`';
-			$right_col = '`movie_id`';
+			if ($element == 'movies') {
+				$table = '#__ka_rel_genres';
+				$left_col = '`genre_id`';
+				$right_col = '`movie_id`';
+			} elseif ($element == 'names') {
+				$table = '#__ka_rel_names_genres';
+				$left_col = '`genre_id`';
+				$right_col = '`name_id`';
+			}
 		} elseif ($task == 'awards') {
 			$table = '#__ka_rel_awards';
 			$left_col = '`award_id`';
@@ -542,6 +549,7 @@ class KinoarhivModelRelations extends JModelForm {
 		$data = $app->input->post->get('form_r', array(), 'array');
 		$task = $app->input->post->get('param', '', 'cmd');
 		$new = $app->input->get('new', '', 'int');
+		$element = $app->input->get('element', 'movies', 'word');
 		$control_id = $app->input->post->get('control_id', array(), 'array');
 		$control = array(); // Array holding a new control ids
 
@@ -551,8 +559,13 @@ class KinoarhivModelRelations extends JModelForm {
 				$table = '#__ka_rel_countries';
 				$control = array(0=>$data['country_id'], 1=>$data['movie_id']);
 			} elseif ($task == 'genres') {
-				$table = '#__ka_rel_genres';
-				$control = array(0=>$data['genre_id'], 1=>$data['movie_id']);
+				if ($element == 'movies') {
+					$table = '#__ka_rel_genres';
+					$control = array(0=>$data['genre_id'], 1=>$data['movie_id']);
+				} elseif ($element == 'names') {
+					$table = '#__ka_rel_names_genres';
+					$control = array(0=>$data['genre_id'], 1=>$data['name_id']);
+				}
 			} elseif ($task == 'awards') {
 				$table = '#__ka_rel_awards';
 				$control = array(0=>$data['award_id'], 1=>$data['item_id']);
@@ -561,7 +574,7 @@ class KinoarhivModelRelations extends JModelForm {
 				$control = array(0=>$data['career_id'], 1=>$data['name_id']);
 			}
 
-			// Getting the columns for field list
+			// Get the columns for field list
 			$cols_obj = $db->getTableColumns($table);
 			$cols = "";
 			$values = "";
@@ -596,12 +609,21 @@ class KinoarhivModelRelations extends JModelForm {
 
 				$control = array(0=>$data['country_id'], 1=>$data['movie_id']);
 			} elseif ($task == 'genres') {
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_rel_genres')
-					. "\n SET `genre_id` = '".(int)$data['genre_id']."', `movie_id` = '".(int)$data['movie_id']."', `ordering` = '".(int)$data['ordering']."'"
-					. "\n WHERE `genre_id` = ".(int)$control_id[0]." AND `movie_id` = ".(int)$control_id[1]);
-				$query = $db->execute();
+				if ($element == 'movies') {
+					$db->setQuery("UPDATE ".$db->quoteName('#__ka_rel_genres')
+						. "\n SET `genre_id` = '".(int)$data['genre_id']."', `movie_id` = '".(int)$data['movie_id']."', `ordering` = '".(int)$data['ordering']."'"
+						. "\n WHERE `genre_id` = ".(int)$control_id[0]." AND `movie_id` = ".(int)$control_id[1]);
+					$query = $db->execute();
 
-				$control = array(0=>$data['genre_id'], 1=>$data['movie_id']);
+					$control = array(0=>$data['genre_id'], 1=>$data['movie_id']);
+				} elseif ($element == 'names') {
+					$db->setQuery("UPDATE ".$db->quoteName('#__ka_rel_names_genres')
+						. "\n SET `genre_id` = '".(int)$data['genre_id']."', `name_id` = '".(int)$data['name_id']."'"
+						. "\n WHERE `genre_id` = ".(int)$control_id[0]." AND `name_id` = ".(int)$control_id[1]);
+					$query = $db->execute();
+
+					$control = array(0=>$data['genre_id'], 1=>$data['name_id']);
+				}
 			} elseif ($task == 'awards') {
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_rel_awards')
 					. "\n SET `award_id` = '".(int)$data['award_id']."', `item_id` = '".(int)$data['item_id']."', `desc` = '".$db->escape($data['desc'])."', `year` = '".(int)$data['year']."', `type` = '".(int)$data['type']."'"

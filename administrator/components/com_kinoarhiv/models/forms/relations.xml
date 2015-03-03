@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="relations_countries">
+<!--
+    Fieldset name: formname_param_element - where: formname - the name of this form; param - 'param' value from GET/POST request; element - 'element' value from GET/POST request.
+-->
+	<fieldset name="relations_countries_movies">
 		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="countries" />
 		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
 		<field name="ordering" type="order" data="countries" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
 
-	<fieldset name="relations_genres">
-		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="genres" />
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" />
-		<field name="name_id" type="names" label="COM_KA_FIELD_NAME" required="true" class="span5" filter="intval" size="11" data-ac-type="names" />
+	<fieldset name="relations_genres_movies">
+		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="genres" data-allow-clear="true" />
+		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="movies" data-allow-clear="true" />
 		<field name="ordering" type="order" data="genres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 	</fieldset>
 
-	<fieldset name="relations_awards">
+	<fieldset name="relations_genres_names">
+		<field name="genre_id" type="genres" label="COM_KA_FIELD_GENRE_LABEL" required="true" class="span5" filter="intval" size="11" data-ac-type="genres" data-allow-clear="true" />
+		<field name="name_id" type="names" label="COM_KA_FIELD_NAME" required="true" class="span5" filter="intval" size="11" data-ac-type="names" data-allow-clear="true" />
+	</fieldset>
+
+	<fieldset name="relations_awards_movies">
 		<field name="award_id" type="awards" label="COM_KA_FIELD_AW_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
 		<field name="item_id" type="awards" label="COM_KA_FIELD_AW_ITEM_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="awards" />
 		<field name="desc" type="editor" class="span6" label="COM_KA_FIELD_AW_DESC" filter="raw" rows="5" cols="7" buttons="false" />
@@ -25,7 +32,7 @@
 		<field name="id" type="hidden" default="" />
 	</fieldset>
 
-	<fieldset name="relations_careers">
+	<fieldset name="relations_careers_names">
 		<field name="career_id" type="careers" label="COM_KA_CAREER_FIELD_TITLE" required="true" class="span5" filter="intval" size="11" data-ac-type="careers" />
 		<field name="name_id" type="names" label="COM_KA_FIELD_NAME" required="true" class="span5" filter="intval" size="11" data-ac-type="names" />
 	</fieldset>

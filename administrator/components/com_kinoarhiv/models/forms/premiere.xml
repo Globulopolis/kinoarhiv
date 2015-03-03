@@ -3,7 +3,7 @@
 	<fieldset name="edit">
 		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="movie_id" type="movies" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span5" filter="intval" required="true" size="11" data-ac-type="movies" />
-		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span5" filter="intval" size="11" data-ac-type="countries" data-allow-clear="1" />
+		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span5" filter="intval" size="11" data-ac-type="countries" data-allow-clear="true" />
 		<field name="vendor_id" type="vendors" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="span5" filter="intval" size="11" data-ac-type="vendors" />
 		<field name="premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="datetime" filter="user_utc" required="true" />
 		<field name="ordering" type="order" data="premieres" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />

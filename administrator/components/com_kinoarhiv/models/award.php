@@ -78,10 +78,11 @@ class KinoarhivModelAward extends JModelForm {
 	public function save($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
+		$user = JFactory::getUser();
 		$id = $app->input->post->get('id', null, 'int');
 
 		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_awards')." (`id`, `title`, `desc`, `state` `language`)"
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_awards')." (`id`, `title`, `desc`, `state`, `language`)"
 				. "\n VALUES ('', '".$data['title']."', '".$db->escape($data['desc'])."', '".$data['state']."', '".$data['language']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_awards')
@@ -91,6 +92,13 @@ class KinoarhivModelAward extends JModelForm {
 
 		try {
 			$db->execute();
+
+			if (empty($id)) {
+				$insertid = $db->insertid();
+				$app->setUserState('com_kinoarhiv.awards.data.'.$user->id.'.id', $insertid);
+			} else {
+				$app->setUserState('com_kinoarhiv.awards.data.'.$user->id.'.id', $id);
+			}
 
 			return true;
 		} catch(Exception $e) {

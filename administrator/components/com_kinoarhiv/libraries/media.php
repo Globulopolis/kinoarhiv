@@ -29,8 +29,12 @@ class KAMedia {
 			@unlink($data['folder'].$data['screenshot']);
 		}
 
-		$ffmpeg_path = $this->params->get('ffmpeg_path', '', 'string');
-		if ($ffmpeg_path  != '') {
+		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path', '', 'string'));
+		if ($ffmpeg_path != '') {
+			if (!function_exists('shell_exec')) {
+				die('Function is not exists or safe mode is on!');
+			}
+
 			$result_filename = pathinfo($data['filename'], PATHINFO_FILENAME).'.png';
 			$video_info = $this->getVideoInfo($data['folder'].$data['filename']);
 			$video_info = json_decode($video_info);
@@ -69,6 +73,10 @@ class KAMedia {
 	}
 
 	public function getVideoInfo($path, $stream='v:0', $format='json') {
+		if (!function_exists('shell_exec')) {
+			die('Function is not exists or safe mode is on!');
+		}
+
 		if (IS_WIN) {
 			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -v quiet -print_format '.(string)$format.' -show_streams -select_streams '.$stream.' '.escapeshellcmd($path).' 2>&1');
 		} else {
@@ -79,6 +87,10 @@ class KAMedia {
 	}
 
 	public function getVideoDuration($path, $format=false) {
+		if (!function_exists('shell_exec')) {
+			die('Function is not exists or safe mode is on!');
+		}
+
 		if (IS_WIN) {
 			$output = shell_exec(escapeshellcmd($this->params->get('ffprobe_path')).' -loglevel error -show_format -show_streams '.escapeshellcmd($path).' -print_format json 2>&1');
 		} else {

@@ -29,12 +29,13 @@ class KinoarhivModelRelations extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$task = $app->input->get('param', '', 'cmd');
+		$element = $app->input->get('element', '', 'word'); // Default value is empty because if it's not set via POST request, something went wrong.
 
 		if ($task == 'countries') {
 			$country_id = $app->input->get('country_id', 0, 'int');
 			$movie_id = $app->input->get('movie_id', 0, 'int');
 
-			if (empty($country_id) || empty($movie_id)) {
+			if (empty($element)) {
 				return array();
 			}
 
@@ -46,15 +47,8 @@ class KinoarhivModelRelations extends JModelForm {
 			$genre_id = $app->input->get('genre_id', 0, 'int');
 			$movie_id = $app->input->get('movie_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
-			$element = $app->input->get('element', '', 'word'); // Default value is empty because if it's not set via POST request, something went wrong.
 
-			if (!empty($element)) {
-				if ($element == 'movies' && (empty($genre_id) || empty($movie_id))) {
-					return array();
-				} elseif ($element == 'names' && (empty($genre_id) || empty($name_id))) {
-					return array();
-				}
-			} else {
+			if (empty($element)) {
 				return array();
 			}
 
@@ -74,7 +68,7 @@ class KinoarhivModelRelations extends JModelForm {
 			$award_type = $app->input->get('award_type', 0, 'int');
 			$item_id = $app->input->get('item_id', 0, 'int');
 
-			if (empty($award_id) || empty($item_id)) {
+			if (empty($element)) {
 				return array();
 			}
 
@@ -86,7 +80,7 @@ class KinoarhivModelRelations extends JModelForm {
 			$career_id = $app->input->get('career_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
 
-			if (empty($career_id) || empty($name_id)) {
+			if (empty($element)) {
 				return array();
 			}
 

@@ -689,7 +689,6 @@
 /templates/
 /tmp/
 index.php
-*.md
 *.dist
 .htaccess
 configuration.php
@@ -699,5 +698,5 @@ robots.txt
 README.txt
 README.md
 README.md
-*.md
+CONTRIBUTING.md
 *jcomments*

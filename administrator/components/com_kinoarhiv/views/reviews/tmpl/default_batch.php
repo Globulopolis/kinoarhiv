@@ -31,7 +31,7 @@ $batch_types = array(
 		<button class="btn btn-primary" type="submit" onclick="Joomla.submitbutton('batch');">
 			<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>
 		</button>
-		<button class="btn" type="button" onclick="document.id('batch-type').value='';document.id('batch-user-id').value='';" data-dismiss="modal">
+		<button class="btn" type="button" onclick="document.getElementById('batch-type').value='';document.getElementById('batch-user-id').value='';" data-dismiss="modal">
 			<?php echo JText::_('JCANCEL'); ?>
 		</button>
 	</div>

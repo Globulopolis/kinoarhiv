@@ -73,17 +73,23 @@ $sortFields = $this->getSortFields();
 					</td>
 					<td class="nowrap has-context">
 						<div class="pull-left">
-							<?php if ($this->canEdit) : ?>
+							<?php if ($this->canEdit): ?>
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=vendors&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->company_name); ?></a>
-								<br /><span class="small" title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->company_name_alias)); ?>">(<?php echo JText::_('JFIELD_ALIAS_LABEL').': '.$this->escape($item->company_name_alias); ?>)</span>
+								<?php if (!empty($item->company_name)): ?><br /><span class="small" title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->company_name_alias)); ?>">(<?php echo JText::_('JFIELD_ALIAS_LABEL').': '.$this->escape($item->company_name_alias); ?>)</span><?php endif; ?>
 							<?php else : ?>
-								<span><?php echo $this->escape($item->company_name); ?></span> 
+								<span><?php echo $this->escape($item->company_name); ?></span>
 							<?php endif; ?>
 						</div>
 					</td>
-					<td class="small">
-						<?php echo $item->company_name_intl; ?>
+					<td class="nowrap has-context">
+						<?php if ($this->canEdit): ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=vendors&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+									<?php echo $this->escape($item->company_name_intl); ?></a>
+								<?php if (!empty($item->company_name_intl)): ?><br /><span class="small" title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->company_name_alias)); ?>">(<?php echo JText::_('JFIELD_ALIAS_LABEL').': '.$this->escape($item->company_name_alias); ?>)</span><?php endif; ?>
+							<?php else : ?>
+								<span><?php echo $this->escape($item->company_name_intl); ?></span>
+							<?php endif; ?>
 					</td>
 					<td class="small hidden-phone">
 						<?php if ($item->language == '*'):?>

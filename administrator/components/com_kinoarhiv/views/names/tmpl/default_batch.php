@@ -22,7 +22,7 @@
 		<button class="btn btn-primary" type="submit" onclick="Joomla.submitbutton('batch');">
 			<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>
 		</button>
-		<button class="btn" type="button" onclick="document.id('batch-access').value='';document.id('batch-language-id').value='';" data-dismiss="modal">
+		<button class="btn" type="button" onclick="document.getElementById('batch-access').value='';document.getElementById('batch-language-id').value='';" data-dismiss="modal">
 			<?php echo JText::_('JCANCEL'); ?>
 		</button>
 	</div>

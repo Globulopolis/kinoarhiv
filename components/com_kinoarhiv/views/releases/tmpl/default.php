@@ -199,9 +199,9 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 						</div><?php endif; ?>
 					</div>
 					<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
-						<?php echo $item->text; ?>
+						<div class="text"><?php echo $item->text; ?></div>
 						<div class="separator"></div>
-						<?php echo $item->plot; ?>
+						<div class="plot"><?php echo $item->plot; ?></div>
 						<?php if ($this->params->get('ratings_show_frontpage') == 1): ?>
 						<div class="separator"></div>
 						<div class="ratings-frontpage">

@@ -50,18 +50,18 @@ class KinoarhivControllerReleases extends JControllerLegacy {
 
 	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.create', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv')) {
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv')) {
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
-		$app = JFactory::getApplication();
 		$model = $this->getModel('release');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
-		$id = $app->input->get('id', array(0), 'array');
 
 		if (!$form) {
 			$app->enqueueMessage($model->getError(), 'error');
@@ -81,12 +81,12 @@ class KinoarhivControllerReleases extends JControllerLegacy {
 				}
 			}
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$id[0]);
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
 
 			return false;
 		}
 
-		$result = $model->savePremiere($validData);
+		$result = $model->saveRelease($validData);
 
 		if (!$result) {
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
@@ -103,7 +103,7 @@ class KinoarhivControllerReleases extends JControllerLegacy {
 		// Set the redirect based on the task.
 		switch ($this->getTask()) {
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$id[0]);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$app->getUserState('com_kinoarhiv.releases.data.'.$user->id.'.id'));
 				break;
 			case 'save2new':
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]=0');

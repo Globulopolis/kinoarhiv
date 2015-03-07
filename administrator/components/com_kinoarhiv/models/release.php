@@ -73,6 +73,7 @@ class KinoarhivModelRelease extends JModelForm {
 	public function saveRelease($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
+		$user = JFactory::getUser();
 		$id = $app->input->get('id', array(0), 'array');
 
 		if (empty($id[0])) {
@@ -87,7 +88,7 @@ class KinoarhivModelRelease extends JModelForm {
 		try {
 			$db->execute();
 			if (empty($id[0])) {
-				$app->input->set('id', array($db->insertid()));
+				$app->setUserState('com_kinoarhiv.releases.data.'.$user->id.'.id', $db->insertid());
 			}
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());

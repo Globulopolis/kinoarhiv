@@ -26,7 +26,7 @@ class KinoarhivModelReleases extends JModelList {
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 - world premiere
+		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 - all countries
 		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
 

@@ -37,19 +37,6 @@ if ($params->get('offline') == 1) {
 
 GlobalHelper::setHeadTags();
 
-require_once(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'controller.php');
-$input = JFactory::getApplication()->input;
-
-if($controller = $input->get('controller', null, 'word')) {
-	$path = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.$controller.'.php';
-	if (file_exists($path)) {
-		require_once $path;
-	} else {
-		$controller = '';
-	}
-}
-
-$classname = 'KinoarhivController'.$controller;
-$controller = new $classname();
-$controller->execute($input->get('task', 'display', 'cmd'));
+$controller = JControllerLegacy::getInstance('Kinoarhiv');
+$controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();

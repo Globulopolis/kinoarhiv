@@ -31,7 +31,7 @@
 			$ui_class = ($item->state == 0) ? 'ui-state-disabled' : ''; ?>
 			<div class="title-small <?php echo $ui_class; ?>">
 				<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="review_ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->movie_id.'&Itemid='.$this->itemid.'&review='.$item->id); ?>#review-<?php echo $item->id; ?>"><strong><?php echo $this->escape($item->title).$item->year_str; ?></strong></a></span>
-				<span style="float: right;"><a class="cmd-r-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=delete&Itemid='.$this->itemid.'&review_id='.$item->id); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
+				<span style="float: right;"><a class="cmd-r-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.delete&Itemid='.$this->itemid.'&review_id='.$item->id); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0" /></a></span>
 				<div class="small timestamp"><?php echo JText::sprintf('COM_KA_REVIEWS_DATETIME', $item->created, $item->ip); ?></div>
 				<div class="review"><?php echo $item->review; ?></div>
 			</div>
@@ -41,8 +41,7 @@
 
 		<input type="hidden" name="boxchecked" value="0" />
 		<input type="hidden" name="option" value="com_kinoarhiv" />
-		<input type="hidden" name="controller" value="reviews" />
-		<input type="hidden" name="task" value="delete" />
+		<input type="hidden" name="task" value="reviews.delete" />
 		<input type="hidden" name="return" value="profile" />
 		<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 		<?php echo JHtml::_('form.token'); ?>

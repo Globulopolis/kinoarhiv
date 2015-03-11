@@ -89,7 +89,7 @@
 							<div class="ui-widget ui-widget-content ui-corner-bottom footer">
 								<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
 								<?php if ($this->user->authorise('core.delete.reviews', 'com_kinoarhiv') && $review->uid == $this->user->get('id')): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=delete&return=movie&review_id='.$review->id.'&id='.$review->movie_id); ?>" class="cmd-delete-quote" rel="nofollow"><?php echo JText::_('JACTION_DELETE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.delete&return=movie&review_id='.$review->id.'&id='.$review->movie_id); ?>" class="cmd-delete-quote" rel="nofollow"><?php echo JText::_('JACTION_DELETE'); ?></a>
 								<?php endif; ?>
 							</div>
 						<?php else: ?>
@@ -190,8 +190,7 @@
 						echo $this->form->getInput('captcha');
 					endif; ?>
 					<br />
-					<input type="hidden" name="controller" id="controller" value="reviews" />
-					<input type="hidden" name="task" id="task" value="save" />
+					<input type="hidden" name="task" id="task" value="reviews.save" />
 					<input type="hidden" name="movie_name" value="<?php echo $this->escape($this->item->title.$this->item->year_str); ?>" />
 					<input type="hidden" name="id" value="<?php echo $this->item->id; ?>" />
 					<?php echo JHtml::_('form.token'); ?>

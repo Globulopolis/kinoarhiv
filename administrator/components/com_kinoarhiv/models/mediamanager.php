@@ -1228,7 +1228,7 @@ class KinoarhivModelMediamanager extends JModelList {
 				return json_encode(array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 			}
 
-			// Removing file
+			// Remove file
 			if (file_exists($this->getPath('movie', 'trailers', 0, $id).$filename) && @unlink($this->getPath('movie', 'trailers', 0, $id).$filename) !== true) {
 				$success = false;
 				$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');

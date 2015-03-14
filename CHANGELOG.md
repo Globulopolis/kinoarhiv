@@ -1,4 +1,7 @@
 ## HEAD (Unreleased)
+* Fixed https://github.com/Globulopolis/kinoarhiv/issues/25
+* Fixed double slash for poster image on feed page
+* Update mediaelementjs to 2.16.4. Remove unnecessary files.
 * Add changelog file.
 * Add license file.
 * Fixed JS error when Cancel batch dialog.

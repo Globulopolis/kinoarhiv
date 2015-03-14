@@ -43,8 +43,8 @@ class KinoarhivViewSearch extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = ($menu && $menu->link != 'index.php?option=com_kinoarhiv&view=search') ? JText::_('COM_KA_SEARCH_ADV') : $menu->title;
 
+		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_SEARCH_ADV');
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,
@@ -78,15 +78,6 @@ class KinoarhivViewSearch extends JViewLegacy {
 			$this->document->setGenerator($this->document->getGenerator());
 		} else {
 			$this->document->setGenerator($this->params->get('generator'));
-		}
-
-		// Add feed links
-		if ($this->params->get('show_feed_link', 1)) {
-			$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->home_itemid['movies'].'&limitstart=';
-			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
-			$this->document->addHeadLink(JRoute::_($link.'&type=rss'), 'alternate', 'rel', $attribs);
-			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');
-			$this->document->addHeadLink(JRoute::_($link.'&type=atom'), 'alternate', 'rel', $attribs);
 		}
 	}
 }

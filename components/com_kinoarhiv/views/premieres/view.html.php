@@ -141,8 +141,8 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = ($menu && $menu->link != 'index.php?option=com_kinoarhiv&view=premieres') ? JText::_('COM_KA_PREMIERES') : $menu->title;
 
+		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PREMIERES');
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,
@@ -152,19 +152,19 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu->params->get('menu-meta_description') != '') {
+		if ($menu && $menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));
 		} else {
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu->params->get('menu-meta_keywords') != '') {
+		if ($menu && $menu->params->get('menu-meta_keywords') != '') {
 			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
 		} else {
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu->params->get('robots') != '') {
+		if ($menu && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
 			$this->document->setMetadata('robots', $this->params->get('robots'));
@@ -176,14 +176,6 @@ class KinoarhivViewPremieres extends JViewLegacy {
 			$this->document->setGenerator($this->document->getGenerator());
 		} else {
 			$this->document->setGenerator($this->params->get('generator'));
-		}
-
-		if ($this->params->get('show_feed_link', 1)) {
-			$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->itemid.'&limitstart=';
-			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
-			$this->document->addHeadLink(JRoute::_($link.'&type=rss'), 'alternate', 'rel', $attribs);
-			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');
-			$this->document->addHeadLink(JRoute::_($link.'&type=atom'), 'alternate', 'rel', $attribs);
 		}
 	}
 }

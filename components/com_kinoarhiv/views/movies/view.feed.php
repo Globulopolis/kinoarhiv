@@ -32,7 +32,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		$document->setTitle(JText::_('COM_KA_MOVIES'));
 		$document->setDescription($params->get('meta_description'));
-		$document->link = JRoute::_('index.php?option=com_kinoarhiv&view=movies&Itemid='.$this->itemid);
+		$document->link = JRoute::_('index.php?option=com_kinoarhiv&view=movies');
+
 		if ($params->get('generator') == 'none') {
 			$document->setGenerator('');
 		} elseif ($params->get('generator') == 'site') {
@@ -44,7 +45,7 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$app->input->set('limit', $app->getCfg('feed_limit'));
 
 		// Prepare the data
-		foreach ($items as &$row) {
+		foreach ($items as $row) {
 			$year_str = ($row->year != '0000') ? ' ('.$row->year.')' : '';
 			$title = $this->escape($row->title.$year_str);
 			$title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
@@ -89,7 +90,11 @@ class KinoarhivViewMovies extends JViewLegacy {
 			if (empty($row->filename)) {
 				$row->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png';
 			} else {
-				$row->poster = JURI::base().$params->get('media_posters_root_www').'/'.JString::substr($row->alias, 0, 1).'/'.$row->id.'/posters/thumb_'.$row->filename;
+				if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
+					$row->poster = JURI::base().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($row->alias, 0, 1).'/'.$row->id.'/posters/thumb_'.$row->filename;
+				} else {
+					$row->poster = $params->get('media_posters_root_www').'/'.JString::substr($row->alias, 0, 1).'/'.$row->id.'/posters/thumb_'.$row->filename;
+				}
 			}
 
 			$row->plot = '<div class="feed-plot">'.JHtml::_('string.truncate', $row->plot, $params->get('limit_text')).'</div>';

@@ -343,35 +343,32 @@ class KinoarhivViewName extends JViewLegacy {
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
 
+		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PERSONS');
 		// Create a new pathway object
 		$path = (object)array(
-			'name' => JText::_('COM_KA_PERSONS'),
+			'name' => $title,
 			'link' => 'index.php?option=com_kinoarhiv&view=names&Itemid='.$this->itemid
 		);
 
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($this->item->title);
 
-		if ($this->item->metadesc != '') {
-			$this->document->setDescription($this->item->metadesc);
+		if ($menu && $menu->params->get('menu-meta_description') != '') {
+			$this->document->setDescription($menu->params->get('menu-meta_description'));
 		} else {
-			if (isset($menu->params)) {
-				$this->document->setDescription($menu->params->get('menu-meta_description'));
-			}
+			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($this->item->metakey != '') {
-			$this->document->setMetadata('keywords', $this->item->metakey);
+		if ($menu && $menu->params->get('menu-meta_keywords') != '') {
+			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
 		} else {
-			if (isset($menu->params)) {
-				$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
-			}
+			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if (isset($menu->params) && $menu->params->get('robots') != '') {
+		if ($menu && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
 		} else {
-			$this->document->setMetadata('robots', $this->item->metadata);
+			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}
 
 		if ($this->params->get('generator') == 'none') {

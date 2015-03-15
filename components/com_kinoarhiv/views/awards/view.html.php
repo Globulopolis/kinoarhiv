@@ -13,8 +13,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 	protected $pagination = null;
 
 	public function display($tpl = null) {
-		$app = JFactory::getApplication();
-		$id = $app->input->get('id', null, 'int');
+		$id = JFactory::getApplication()->input->get('id', null, 'int');
 
 		if (!empty($id)) {
 			$this->award();
@@ -24,18 +23,16 @@ class KinoarhivViewAwards extends JViewLegacy {
 	}
 
 	protected function awards() {
-		$app = JFactory::getApplication();
-
 		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
+		$pagination = $this->get('Pagination');
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
 
 		$this->params = &$params;
 		$this->items = &$items;
@@ -47,17 +44,15 @@ class KinoarhivViewAwards extends JViewLegacy {
 	}
 
 	protected function award() {
-		$app = JFactory::getApplication();
-
 		$item = $this->get('Item');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
 
 		$this->params = &$params;
 		$this->item = &$item;

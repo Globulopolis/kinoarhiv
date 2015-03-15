@@ -46,7 +46,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$form = $this->get('Form');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
@@ -160,11 +160,9 @@ class KinoarhivViewMovie extends JViewLegacy {
 	 * Method to get and show full cast and crew.
 	 */
 	protected function cast() {
-		$app = JFactory::getApplication();
-
 		$item = $this->get('Cast');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
@@ -178,7 +176,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$this->metadata = json_decode($item->metadata);
 
 		$this->_prepareDocument();
-		$pathway = $app->getPathway();
+		$pathway = JFactory::getApplication()->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$this->item->id.'&Itemid='.$this->itemid));
 		$pathway->addItem(JText::_('COM_KA_MOVIE_CREATORS'), JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id='.$this->item->id.'&Itemid='.$this->itemid));
 
@@ -189,18 +187,17 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
+		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
+
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
 
 		if (($item->attribs->tab_movie_wallpp === '' && $params->get('tab_movie_wallpp') === '0') || $item->attribs->tab_movie_wallpp === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
@@ -278,18 +275,17 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
+		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
+
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
 
 		if (($item->attribs->tab_movie_posters === '' && $params->get('tab_movie_posters') === '0') || $item->attribs->tab_movie_posters === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
@@ -366,18 +362,17 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('MovieData');
+		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
+
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
 
 		if (($item->attribs->tab_movie_scr === '' && $params->get('tab_movie_scr') === '0') || $item->attribs->tab_movie_scr === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
@@ -455,14 +450,14 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Awards');
 
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
+
 		if (($item->attribs->tab_movie_awards === '' && $params->get('tab_movie_awards') === '0') || $item->attribs->tab_movie_awards === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		// Prepare the data
@@ -506,6 +501,11 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Trailers');
 
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
+
 		if (($item->attribs->tab_movie_tr === '' && $params->get('tab_movie_tr') === '0') || $item->attribs->tab_movie_tr === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
@@ -520,12 +520,6 @@ class KinoarhivViewMovie extends JViewLegacy {
 		}
 
 		$user = JFactory::getUser();
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
-		}
-
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
 		$item->text = '';
 
@@ -564,14 +558,14 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Soundtracks');
 
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
+
 		if (($item->attribs->tab_movie_snd === '' && $params->get('tab_movie_snd') === '0') || $item->attribs->tab_movie_snd === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';

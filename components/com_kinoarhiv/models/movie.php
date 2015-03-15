@@ -270,7 +270,7 @@ class KinoarhivModelMovie extends JModelForm {
 			GlobalHelper::eventLog($e->getMessage());
 		}
 
-		$result->attribs = json_decode($result->attribs);
+		$result->attribs = isset($result->attribs) ? json_decode($result->attribs) : "{}";
 
 		return $result;
 	}

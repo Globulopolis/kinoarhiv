@@ -10,20 +10,17 @@
 
 class KinoarhivViewGenres extends JViewLegacy {
 	protected $items = null;
-	protected $pagination = null;
 
 	public function display($tpl = null) {
-		$app = JFactory::getApplication();
-
 		$items = $this->get('Items');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
 
 		$this->params = &$params;
 		$this->items = &$items;

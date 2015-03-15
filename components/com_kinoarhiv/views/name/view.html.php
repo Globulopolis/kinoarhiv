@@ -36,7 +36,7 @@ class KinoarhivViewName extends JViewLegacy {
 
 		$item = $this->get('Data');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
 			return false;
 		}
@@ -120,18 +120,17 @@ class KinoarhivViewName extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('NameData');
+		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
+
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
 
 		if (($item->attribs->tab_name_wallpp === '' && $params->get('tab_name_wallpp') === '0') || $item->attribs->tab_name_wallpp === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		// Build title string
@@ -197,18 +196,17 @@ class KinoarhivViewName extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('NameData');
+		$items = $this->get('Items');
+		$pagination = $this->get('Pagination');
+
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
 
 		if (($item->attribs->tab_name_photos === '' && $params->get('tab_name_photos') === '0') || $item->attribs->tab_name_photos === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		// Build title string
@@ -282,14 +280,14 @@ class KinoarhivViewName extends JViewLegacy {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$items = $this->get('Awards');
 
+		if (count($errors = $this->get('Errors')) || is_null($items)) {
+			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			return false;
+		}
+
 		if (($items->attribs->tab_name_awards === '' && $params->get('tab_name_awards') === '0') || $items->attribs->tab_name_awards === '0') {
 			$id = $app->input->get('id', null, 'int');
 			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id='.$id.'&Itemid='.$this->itemid, false));
-		}
-
-		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
-			return false;
 		}
 
 		// Prepare the data

@@ -111,6 +111,13 @@ div.clear {
 	clear: both;
 }
 
+.feed-link {
+	background: url("../images/icons/feed_24.png") no-repeat left center;
+	height: 24px;
+	padding-top: 8px;
+	padding-left: 24px;
+}
+
 .title {
 	font-size: 1.6em;
 }

@@ -1,13 +1,4 @@
 <?php defined('_JEXEC') or die;
-$custom_review_comp = false;
-if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') !== 'default') {
-	// JComments
-	if ($this->params->get('custom_review_component') == 'jc' && file_exists(JPATH_ROOT.'/components/com_jcomments/jcomments.php')) {
-		include_once(JPATH_ROOT.'/components/com_jcomments/jcomments.php');
-		$jc = new JComments;
-		$custom_review_comp = true;
-	}
-}
 if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/') {
 	$rating_image_www = JURI::base().JString::substr($this->params->get('media_rating_image_root_www'), 1);
 } else {
@@ -261,9 +252,6 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				</div>
 				<div class="links">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
-					<?php if ($custom_review_comp && $this->params->get('custom_review_component') == 'jc'): ?>
-						<span class="review-count"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>#reviews"><?php echo JText::sprintf('COM_KA_REVIEWS_COUNT', $jc::getCommentsCount($item->id, 'com_kinoarhiv')); ?></a></span>
-					<?php endif; ?>
 				</div>
 			</div>
 		</article>

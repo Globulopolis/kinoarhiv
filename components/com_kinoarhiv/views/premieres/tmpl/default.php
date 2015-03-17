@@ -269,8 +269,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 
 					<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>
 					<div class="premiere-date">
-						<div class="date"><?php echo date('d', strtotime($item->premiere_date)); ?></div>
-						<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?></div>
+						<div class="date"><?php echo JHTML::_('date', $item->premiere_date, 'd'); ?></div>
+						<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?> <?php echo JHTML::_('date', $item->premiere_date, 'Y'); ?></div>
 						<div class="vendor"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$item->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo $item->vendor; ?></a></div>
 					</div>
 					<?php endif; ?>

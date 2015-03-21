@@ -1022,11 +1022,11 @@ div.rating {
 	margin-right: 5px;
 }
 
-.selectlist-premieres .inputbox {
+.selectlist-premieres .inputbox, .selectlist-releases .inputbox {
 	margin: 0;
 }
 
-.selectlist-premieres .btn-group {
+.selectlist-premieres .btn-group, .selectlist-releases .btn-group {
 	display: inline-block;
 }
 

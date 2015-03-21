@@ -89,18 +89,18 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 	endif; ?>
 
 	<div class="selectlist">
-		<div class="selectlist-premieres">
+		<div class="selectlist-releases">
 			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
 				<input type="hidden" name="option" value="com_kinoarhiv" />
-				<input type="hidden" name="view" value="premieres" />
-				<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox'), 'code', 'name', $this->sel_country); ?>
+				<input type="hidden" name="view" value="releases" />
+				<?php echo JText::_('COM_KA_RELEASES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox'), 'code', 'name', $this->sel_country); ?>
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class'=>'inputbox span2'), 'value', 'name', $this->sel_year); ?>
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?>
 				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 				<div class="btn-group uk-button-group">
 					<button type="submit" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-search"></span></button>
 					<button type="reset" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-close"></span></button>
-					<button type="button" class="btn btn-default uk-button uk-button-small cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid='.$this->itemid, false); ?>';"><span class="ui-icon ui-icon-cancel"></span></button>
+					<button type="button" class="btn btn-default uk-button uk-button-small cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&Itemid='.$this->itemid, false); ?>';"><span class="ui-icon ui-icon-cancel"></span></button>
 				</div>
 			</form>
 		</div>
@@ -245,7 +245,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 					<div class="premiere-date">
 						<div class="date"><?php echo date('d', strtotime($item->premiere_date)); ?></div>
 						<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?></div>
-						<div class="vendor"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor='.$item->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo $item->vendor; ?></a></div>
+						<div class="vendor"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&vendor='.$item->vendor_id.'&Itemid='.$this->itemid); ?>"><?php echo $item->vendor; ?></a></div>
 					</div>
 					<?php endif; ?>
 

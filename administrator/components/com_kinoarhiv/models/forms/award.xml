@@ -3,7 +3,7 @@
 	<fieldset name="edit">
 		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="title" type="text" default="" label="COM_KA_FIELD_AW_LABEL" class="span5" required="true" filter="string" size="45" />
-		<field name="desc" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="raw" width="40%" cols="6" rows="5" buttons="false" editor="alternative" />
+		<field name="desc" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="raw" width="40%" cols="6" rows="5" editor="alternative" buttons="true" hide="readmore,pagebreak" />
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

@@ -5,7 +5,7 @@
 		<field name="company_name" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE" class="span5" required="true" filter="string" size="45" />
 		<field name="company_name_intl" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE_INTL" class="span5" filter="string" size="45" />
 		<field name="company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string" />
-		<field name="description" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="raw" width="40%" cols="6" rows="5" buttons="false" editor="alternative" />
+		<field name="description" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="raw" width="40%" cols="6" rows="5" editor="alternative" buttons="true" hide="readmore,pagebreak" />
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

@@ -33,6 +33,8 @@ class KinoarhivViewReleases extends JViewLegacy {
 		$this->sel_country = $app->input->get('country', '', 'word');  // It's a string because country_id == 0 it'a world premiere
 		$this->sel_year = $app->input->get('year', 0, 'int');
 		$this->sel_month = $app->input->get('month', '', 'string');
+		$this->sel_vendor = $app->input->get('vendor', 0, 'int');
+		$this->sel_mediatype = $app->input->get('mediatype', '', 'string');
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 

@@ -97,6 +97,7 @@ $sortFields = $this->getSortFields();
 			<?php else:
 				foreach ($this->items as $i => $item) :
 					$canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
+					$canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">

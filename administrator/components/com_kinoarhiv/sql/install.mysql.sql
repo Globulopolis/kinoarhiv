@@ -318,6 +318,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_releases` (
   `movie_id` int(11) NOT NULL,
   `media_type` tinyint(1) NOT NULL DEFAULT '0',
   `release_date` date NOT NULL DEFAULT '0000-00-00',
+  `desc` mediumtext NOT NULL,
   `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_country` (`country_id`),

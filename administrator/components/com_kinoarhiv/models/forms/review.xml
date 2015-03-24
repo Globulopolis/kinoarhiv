@@ -2,7 +2,7 @@
 <form addrulepath="/administrator/components/com_kinoarhiv/models/rules">
 	<fieldset name="edit">
 		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
-		<field name="review" type="editor" class="inputbox" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="false" required="true" />
+		<field name="review" type="editor" class="inputbox" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="true" hide="readmore,pagebreak" required="true" />
 		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="movies" />
 		<field name="created" type="datetime" default="NOW" class="inputbox" datatype="datetime" label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
 		<field name="uid" type="user" label="COM_KA_REVIEWS_FIELD_USER" labelclass="control-label" />

@@ -49,7 +49,7 @@ class KinoarhivModelReleases extends JModelList {
 		$this->setState('filter.media_type', $mediaType);
 
 		// List state information.
-		parent::populateState('r.release_date', 'desc');
+		parent::populateState('r.ordering', 'desc');
 	}
 
 	protected function getStoreId($id = '') {
@@ -129,7 +129,7 @@ class KinoarhivModelReleases extends JModelList {
 			$orderCol = 'r.ordering ' . $orderDirn . ', r.release_date';
 		}
 
-		$query->order($db->escape($orderCol . ' ' . $orderDirn . ', m.title ' . $orderDirn));
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 
 		return $query;
 	}

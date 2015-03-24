@@ -28,7 +28,9 @@ class KinoarhivModelReleases extends JModelList {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 - all countries
 		$year = $app->input->get('year', 0, 'int');
+		$vendor = $app->input->get('vendor', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
+		$mediatype = $app->input->get('mediatype', '', 'string');
 
 		$query = $db->getQuery(true);
 
@@ -37,17 +39,17 @@ class KinoarhivModelReleases extends JModelList {
 			->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
 
 			if ($country != '') {
-				$query->select(' `p`.`premiere_date`, `p`.`vendor_id`')
-				->leftJoin($db->quoteName('#__ka_premieres').' AS `p` ON `p`.`movie_id` = `m`.`id` AND `p`.`country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').'))');
+				$query->select(' `r`.`release_date`, `r`.`vendor_id`')
+				->leftJoin($db->quoteName('#__ka_releases').' AS `r` ON `r`.`movie_id` = `m`.`id` AND `r`.`country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').'))');
 
 				$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
-				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `p`.`vendor_id` AND `v`.`state` = 1');
+				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id` AND `v`.`state` = 1');
 			} else {
-				$query->select(' `p`.`premiere_date`, `p`.`vendor_id`')
-				->leftJoin($db->quoteName('#__ka_premieres').' AS `p` ON `p`.`movie_id` = `m`.`id` AND `p`.`country_id` != 0');
+				$query->select(' `r`.`release_date`, `r`.`vendor_id`')
+				->leftJoin($db->quoteName('#__ka_releases').' AS `r` ON `r`.`movie_id` = `m`.`id` AND `r`.`country_id` != 0');
 
 				$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
-				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `p`.`vendor_id` AND `v`.`state` = 1 AND `v`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
+				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id` AND `v`.`state` = 1 AND `v`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
 			}
 
 		if (!$user->get('guest')) {
@@ -72,23 +74,31 @@ class KinoarhivModelReleases extends JModelList {
 		}
 
 		if ($country != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
 		}
 
 		if (!empty($year)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$year.'%")';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `release_date` LIKE "%'.$year.'%")';
 		}
 
 		if ($month != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$month.'%")';
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `release_date` LIKE "%'.$month.'%")';
 		}
 
-		$where .= " AND `p`.`premiere_date` != '".$db->nullDate()."'";
+		if (!empty($vendor)) {
+			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `vendor_id` = "'.(int)$vendor.'")';
+		}
+
+		if ($mediatype != '') {
+			//$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `vendor_id` = "'.(int)$mediatype.'")';
+		}
+
+		$where .= " AND `r`.`release_date` != '".$db->nullDate()."'";
 
 		$query->where($where);
 		$query->group($db->quoteName('m.id'));
 
-		$orderCol = $this->state->get('list.ordering', $db->quoteName('p.premiere_date'));
+		$orderCol = $this->state->get('list.ordering', $db->quoteName('r.release_date'));
 		$orderDirn = $this->state->get('list.direction', 'DESC');
 		$query->order($db->escape($orderCol.' '.$orderDirn));
 
@@ -102,6 +112,8 @@ class KinoarhivModelReleases extends JModelList {
 		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 it'a world premiere
 		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
+		$vendor = $app->input->get('vendor', 0, 'int');
+		$mediatype = $app->input->get('mediatype', '', 'string');
 		$result = array(
 			'countries' => array(
 				array('name'=>JText::_('JALL'), 'code'=>'')
@@ -111,13 +123,19 @@ class KinoarhivModelReleases extends JModelList {
 			),
 			'months' => array(
 				array('value'=>'', 'name'=>JText::_('JALL'))
+			),
+			'vendors' => array(
+				array('value'=>'', 'name'=>JText::_('JALL'))
+			),
+			'mediatype' => array(
+				array('value'=>'', 'name'=>JText::_('JALL'))
 			)
 		);
 
 		// Countries list
 		$db->setQuery("SELECT `name`, `code`"
 			. "\n FROM ".$db->quoteName('#__ka_countries')
-			. "\n WHERE `id` IN (SELECT `country_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `country_id` != 0) AND `state` = 1"
+			. "\n WHERE `id` IN (SELECT `country_id` FROM ".$db->quoteName('#__ka_releases')." WHERE `country_id` != 0) AND `state` = 1"
 			. "\n GROUP BY `code`");
 		try {
 			$countries = $db->loadAssocList();
@@ -136,8 +154,8 @@ class KinoarhivModelReleases extends JModelList {
 			$year_where = "";
 		}
 
-		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `value`, DATE_FORMAT(`premiere_date`, '%Y') AS `name`"
-			. "\n FROM ".$db->quoteName('#__ka_premieres')
+		$db->setQuery("SELECT DATE_FORMAT(`release_date`, '%Y') AS `value`, DATE_FORMAT(`release_date`, '%Y') AS `name`"
+			. "\n FROM ".$db->quoteName('#__ka_releases')
 			. $year_where
 			. "\n GROUP BY `value`");
 		try {
@@ -155,18 +173,18 @@ class KinoarhivModelReleases extends JModelList {
 			$month_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
 
 			if (!empty($year)) {
-				$month_where .= " AND `premiere_date` LIKE '%".$year."%'";
+				$month_where .= " AND `release_date` LIKE '%".$year."%'";
 			}
 		} else {
 			if (!empty($year)) {
-				$month_where = " WHERE `premiere_date` LIKE '%".$year."%'";
+				$month_where = " WHERE `release_date` LIKE '%".$year."%'";
 			} else {
 				$month_where = "";
 			}
 		}
 
-		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y-%m') AS `value`, `premiere_date`"
-			. "\n FROM ".$db->quoteName('#__ka_premieres')
+		$db->setQuery("SELECT DATE_FORMAT(`release_date`, '%Y-%m') AS `value`, `release_date`"
+			. "\n FROM ".$db->quoteName('#__ka_releases')
 			. $month_where
 			. "\n GROUP BY `value`");
 		try {
@@ -174,7 +192,7 @@ class KinoarhivModelReleases extends JModelList {
 
 			if (count($months) > 0) {
 				foreach ($months as $key=>$month) {
-					$months[$key]['name'] = JHTML::_('date', strtotime($month['premiere_date']), 'F Y');
+					$months[$key]['name'] = JHTML::_('date', strtotime($month['release_date']), 'F Y');
 				}
 
 				$result['months'] = array_merge($result['months'], $months);
@@ -182,6 +200,26 @@ class KinoarhivModelReleases extends JModelList {
 		} catch (Exception $e) {
 			GlobalHelper::eventLog($e->getMessage());
 		}
+
+		// Distributors list
+		$db->setQuery("SELECT `id` AS `value`, `company_name` AS `name`, `company_name_intl`"
+			. "\n FROM ".$db->quoteName('#__ka_vendors')
+			. "\n WHERE `id` IN (SELECT `vendor_id` FROM ".$db->quoteName('#__ka_releases')." WHERE `vendor_id` != 0 AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")) AND `state` = 1");
+		try {
+			$vendors = $db->loadAssocList();
+
+			if (count($vendors) > 0) {
+				$result['vendors'] = array_merge($result['vendors'], $vendors);
+			}
+		} catch (Exception $e) {
+			GlobalHelper::eventLog($e->getMessage());
+		}
+
+		// Media types
+		for ($i=0, $n=20; $i<$n; $i++) {
+			$mediatypes[] = array('value'=>$i, 'name'=>JText::_('COM_KA_RELEASES_MEDIATYPE_'.$i));
+		}
+		$result['mediatype'] = array_merge($result['mediatype'], $mediatypes);
 
 		return $result;
 	}

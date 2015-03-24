@@ -98,10 +98,10 @@ class KinoarhivViewReleases extends JViewLegacy {
 	protected function getSortFields() {
 		return array(
 			'r.release_date' => JText::_('COM_KA_FIELD_RELEASE_DATE_LABEL'),
-			'm.title' => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
-			'c.name' => JText::_('COM_KA_FIELD_RELEASE_COUNTRY'),
-			'r.media_type' => JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'),
-			'r.id' => JText::_('JGRID_HEADING_ID')
+			'm.title'        => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
+			'c.name'         => JText::_('COM_KA_FIELD_RELEASE_COUNTRY'),
+			'r.media_type'   => JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'),
+			'r.id'           => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

@@ -627,7 +627,7 @@ class KinoarhivViewMovie extends JViewLegacy {
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
 
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_MOVIES');
+		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=movies') ? $menu->title : JText::_('COM_KA_MOVIES');
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,

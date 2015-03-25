@@ -32,7 +32,7 @@ class KinoarhivModelRelease extends JModelForm {
 			return array();
 		}
 
-		$db->setQuery("SELECT `r`.`id`, `r`.`country_id`, `r`.`vendor_id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`ordering`, `c`.`code`, `c`.`name` AS `title`"
+		$db->setQuery("SELECT `r`.`id`, `r`.`country_id`, `r`.`vendor_id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`language`, `r`.`ordering`, `c`.`code`, `c`.`name` AS `title`"
 			. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
 			. "\n WHERE `r`.`id` = ".(int)$id[0]);
@@ -51,11 +51,11 @@ class KinoarhivModelRelease extends JModelForm {
 
 		if ((isset($data['r_vendor_id']) && !empty($data['r_vendor_id'])) || (isset($data['r_country_id']) && !empty($data['r_country_id']))) {
 			if ($is_new == 1) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_releases')." (`id`, `country_id`, `vendor_id`, `movie_id`, `media_type`, `release_date`, `desc`, `ordering`)"
-					. "\n VALUES ('', '".(int)$data['r_country_id']."', '".(int)$data['r_vendor_id']."', '".$movie_id."', '".(int)$data['r_media_type']."', '".$data['r_release_date']."', '".$db->escape($data['desc'])."', '".(int)$data['r_ordering']."')");
+				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_releases')." (`id`, `country_id`, `vendor_id`, `movie_id`, `media_type`, `release_date`, `desc`, `language`, `ordering`)"
+					. "\n VALUES ('', '".(int)$data['r_country_id']."', '".(int)$data['r_vendor_id']."', '".$movie_id."', '".(int)$data['r_media_type']."', '".$data['r_release_date']."', '".$db->escape($data['desc'])."', '".$db->escape($data['language'])."', '".(int)$data['r_ordering']."')");
 			} else {
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_releases')
-					. "\n SET `country_id` = '".(int)$data['r_country_id']."', `vendor_id` = '".(int)$data['r_vendor_id']."', `media_type` = '".(int)$data['r_media_type']."', `release_date` = '".$data['r_release_date']."', `desc` = '".$db->escape($data['desc'])."', `ordering` = '".(int)$data['r_ordering']."'"
+					. "\n SET `country_id` = '".(int)$data['r_country_id']."', `vendor_id` = '".(int)$data['r_vendor_id']."', `media_type` = '".(int)$data['r_media_type']."', `release_date` = '".$data['r_release_date']."', `desc` = '".$db->escape($data['desc'])."', `language` = '".$db->escape($data['language'])."', `ordering` = '".(int)$data['r_ordering']."'"
 					. "\n WHERE `id` = ".(int)$id);
 			}
 
@@ -77,11 +77,11 @@ class KinoarhivModelRelease extends JModelForm {
 		$id = $app->input->get('id', 0, 'int');
 
 		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_releases')." (`id`, `country_id`, `vendor_id`, `movie_id`, `media_type`, `release_date`, `desc`, `ordering`)"
-				. "\n VALUES ('', '".(int)$data['country_id']."', '".(int)$data['vendor_id']."', '".(int)$data['movie_id']."', '".(int)$data['media_type']."', '".$data['release_date']."', '".$db->escape($data['desc'])."', '".(int)$data['ordering']."')");
+			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_releases')." (`id`, `country_id`, `vendor_id`, `movie_id`, `media_type`, `release_date`, `desc`, `language`, `ordering`)"
+				. "\n VALUES ('', '".(int)$data['country_id']."', '".(int)$data['vendor_id']."', '".(int)$data['movie_id']."', '".(int)$data['media_type']."', '".$data['release_date']."', '".$db->escape($data['desc'])."', '".$db->escape($data['language'])."', '".(int)$data['ordering']."')");
 		} else {
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_releases')
-				. "\n SET `country_id` = '".$data['country_id']."', `vendor_id` = '".(int)$data['vendor_id']."', `movie_id` = '".(int)$data['movie_id']."', `media_type` = '".(int)$data['media_type']."', `release_date` = '".$data['release_date']."', `desc` = '".$db->escape($data['desc'])."', `ordering` = '".(int)$data['ordering']."'"
+				. "\n SET `country_id` = '".$data['country_id']."', `vendor_id` = '".(int)$data['vendor_id']."', `movie_id` = '".(int)$data['movie_id']."', `media_type` = '".(int)$data['media_type']."', `release_date` = '".$data['release_date']."', `desc` = '".$db->escape($data['desc'])."', `language` = '".$db->escape($data['language'])."', `ordering` = '".(int)$data['ordering']."'"
 				. "\n WHERE `id` = ".(int)$id);
 		}
 

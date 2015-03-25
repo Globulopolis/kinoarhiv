@@ -32,6 +32,9 @@
 			</group>
 			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
 		</field>
+		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
 		<field name="ordering" type="order" data="releases" class="inputbox span5" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" />
 		<field name="desc" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="raw" width="40%" cols="6" rows="5" editor="alternative" buttons="true" hide="readmore,pagebreak" />
 	</fieldset>

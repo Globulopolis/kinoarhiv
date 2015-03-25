@@ -92,6 +92,15 @@ class KinoarhivViewReleases extends JViewLegacy {
 			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			}
+
+			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
+				JHtml::_('bootstrap.modal', 'collapseModal');
+				$title = JText::_('JTOOLBAR_BATCH');
+				$layout = new JLayoutFile('joomla.toolbar.batch');
+
+				$dhtml = $layout->render(array('title' => $title));
+				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
 		}
 	}
 
@@ -101,6 +110,7 @@ class KinoarhivViewReleases extends JViewLegacy {
 			'm.title'        => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
 			'c.name'         => JText::_('COM_KA_FIELD_RELEASE_COUNTRY'),
 			'r.media_type'   => JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'),
+			'language'       => JText::_('JGRID_HEADING_LANGUAGE'),
 			'r.id'           => JText::_('JGRID_HEADING_ID')
 		);
 	}

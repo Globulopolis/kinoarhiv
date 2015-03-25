@@ -319,11 +319,13 @@ CREATE TABLE IF NOT EXISTS `#__ka_releases` (
   `media_type` tinyint(1) NOT NULL DEFAULT '0',
   `release_date` date NOT NULL DEFAULT '0000-00-00',
   `desc` mediumtext NOT NULL,
+  `language` CHAR(7) NOT NULL,
   `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_country` (`country_id`),
   KEY `idx_vendor` (`vendor_id`),
-  KEY `idx_movie` (`movie_id`)
+  KEY `idx_movie` (`movie_id`),
+  KEY `idx_language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_reviews` (

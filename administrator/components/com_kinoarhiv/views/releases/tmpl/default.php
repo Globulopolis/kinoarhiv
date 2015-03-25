@@ -84,6 +84,9 @@ $sortFields = $this->getSortFields();
 					<th width="15%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_RELEASES_MEDIATYPE_TITLE', 'r.media_type', $listDirn, $listOrder); ?>
 					</th>
+					<th width="10%" class="nowrap hidden-phone">
+						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'r.language', $listDirn, $listOrder); ?>
+					</th>
 					<th width="5%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'r.id', $listDirn, $listOrder); ?>
 					</th>
@@ -92,7 +95,7 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="8" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="9" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item) :
@@ -133,6 +136,13 @@ $sortFields = $this->getSortFields();
 					<td class="hidden-phone">
 						<?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_'.$item->media_type); ?>
 					</td>
+					<td class="small hidden-phone">
+						<?php if ($item->language == '*'):?>
+							<?php echo JText::alt('JALL', 'language'); ?>
+						<?php else:?>
+							<?php echo $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
+						<?php endif;?>
+					</td>
 					<td class="center">
 						<?php echo (int)$item->id; ?>
 					</td>
@@ -142,6 +152,7 @@ $sortFields = $this->getSortFields();
 			</tbody>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
+		<?php echo $this->loadTemplate('batch'); ?>
 
 		<input type="hidden" name="controller" value="releases" />
 		<input type="hidden" name="task" value="" />

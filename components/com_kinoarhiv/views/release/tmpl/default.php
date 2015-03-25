@@ -162,6 +162,27 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			</div>
 		</div>
 
+		<?php if (count($this->item->items) > 0): ?>
+		<table class="table table-striped table-hover uk-table uk-table-striped uk-table-hover">
+			<thead>
+				<tr>
+					<th><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_DATE_TITLE'); ?></th>
+					<th><?php echo JText::_('COM_KA_COUNTRY'); ?></th>
+					<th><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ($this->item->items as $row): ?>
+				<tr>
+					<td><span class="hasTooltip" title="<?php echo $row->release_date; ?>"><?php echo JHtml::_('date', $row->release_date, JText::_('DATE_FORMAT_LC3')); ?></span></td>
+					<td><img class="flag-dd" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $row->code; ?>.png" /><?php echo $row->name; ?></td>
+					<td><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_'.$row->media_type); ?></td>
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+		<?php endif; ?>
+
 		<?php if (!empty($this->item->desc)): ?>
 		<div class="ui-widget desc">
 			<h3><?php echo JText::_('COM_KA_TECH'); ?></h3>

@@ -17,22 +17,6 @@ class KinoarhivModelRelease extends JModelItem {
 		$this->setState('release.id', $pk);
 	}
 
-	/*protected function getListQuery() {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$id = $app->input->get('id', 0, 'int');
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(array('r.id', 'r.media_type', 'r.release_date', 'r.desc')));
-		$query->from($db->quoteName('#__ka_releases', 'r'));
-		//$query->select(' `n`.`gender`');
-		//$query->leftJoin($db->quoteName('#__ka_names').' AS `n` ON `n`.`id` = `g`.`name_id`');
-		$query->where($db->quoteName('movie_id').' = '.(int)$id);
-
-		return $query;
-	}*/
-
 	public function getItem($pk = null) {
 		$pk = (!empty($pk)) ? $pk : (int) $this->getState('release.id');
 
@@ -63,9 +47,11 @@ class KinoarhivModelRelease extends JModelItem {
 
 				$query = $db->getQuery(true)
 					->select(
-						$this->getState('item.select', $db->quoteName(array('r.id', 'r.media_type', 'r.release_date', 'r.desc')))
+						$this->getState('item.select', $db->quoteName(array('r.id', 'r.media_type', 'r.release_date', 'r.desc', 'cn.name', 'cn.code')))
 					);
-				$query->from($db->quoteName('#__ka_releases', 'r'));
+				$query->from($db->quoteName('#__ka_releases', 'r'))
+				->join('LEFT', $db->quoteName('#__ka_countries', 'cn').' ON '.$db->quoteName('cn.id').' = '.$db->quoteName('r.country_id'))
+				->where($db->quoteName('r.language').' IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').')');
 				$db->setQuery($query);
 
 				$data->items = $db->loadObjectList();

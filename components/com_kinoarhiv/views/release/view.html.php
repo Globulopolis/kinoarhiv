@@ -25,9 +25,7 @@ class KinoarhivViewRelease extends JViewLegacy {
 			GlobalHelper::eventLog(is_null($errors) ? $errors : implode("\n", $errors), 'ui');
 			return false;
 		}
-echo '<pre>';
-print_r($item);
-echo '</pre>';
+
 		// Prepare the data
 		$item->year_str = ($item->year != '0000') ? ' ('.$item->year.')' : '';
 
@@ -126,7 +124,7 @@ echo '</pre>';
 		$menu = $menus->getActive();
 		$pathway = $app->getPathway();
 
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_RELEASE');
+		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=release') ? $menu->title : JText::_('COM_KA_RELEASES');
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,

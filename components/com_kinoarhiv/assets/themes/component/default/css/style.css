@@ -888,6 +888,10 @@ div.rating {
 	text-align: center;
 }
 
+.flag-dd {
+	margin: 0 4px 2px 0;
+}
+
 .rate {
 	margin: 2em 0;
 }

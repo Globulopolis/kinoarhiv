@@ -20,6 +20,7 @@ class KinoarhivModelReleases extends JModelList {
 				'name', 'c.name',
 				'media_type', 'r.media_type',
 				'vendor', 'v.company_name', 'v.company_name_intl',
+				'language', 'a.language',
 				'ordering', 'r.ordering');
 		}
 
@@ -48,8 +49,18 @@ class KinoarhivModelReleases extends JModelList {
 		$mediaType = $this->getUserStateFromRequest($this->context . '.filter.media_type', 'filter_media_type', '');
 		$this->setState('filter.media_type', $mediaType);
 
+		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+		$this->setState('filter.language', $language);
+
 		// List state information.
 		parent::populateState('r.ordering', 'desc');
+
+		$forcedLanguage = $app->input->get('forcedLanguage');
+		if (!empty($forcedLanguage))
+		{
+			$this->setState('filter.language', $forcedLanguage);
+			$this->setState('filter.forcedLanguage', $forcedLanguage);
+		}
 	}
 
 	protected function getStoreId($id = '') {
@@ -58,6 +69,7 @@ class KinoarhivModelReleases extends JModelList {
 		$id .= ':' . $this->getState('filter.country');
 		$id .= ':' . $this->getState('filter.vendor');
 		$id .= ':' . $this->getState('filter.mediatype');
+		$id .= ':' . $this->getState('filter.language');
 
 		return parent::getStoreId($id);
 	}
@@ -70,7 +82,7 @@ class KinoarhivModelReleases extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`r`.`id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`ordering`'
+				'`r`.`id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`language`, `r`.`ordering`'
 			)
 		);
 		$query->from($db->quoteName('#__ka_releases').' AS `r`')
@@ -80,6 +92,10 @@ class KinoarhivModelReleases extends JModelList {
 			->leftjoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id`')
 		->select('`c`.`name`, `c`.`code`')
 			->leftjoin($db->quoteName('#__ka_countries').' AS `c` ON `c`.`id` = `r`.`country_id`');
+
+		// Join over the language
+		$query->select(' l.title AS language_title')
+			->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = r.language');
 
 		// Filter by country
 		$country = $this->getState('filter.country');
@@ -97,6 +113,11 @@ class KinoarhivModelReleases extends JModelList {
 		$mediatype = $this->getState('filter.media_type');
 		if (is_numeric($mediatype)) {
 			$query->where('`r`.`media_type` = ' . (int) $mediatype);
+		}
+
+		// Filter on the language.
+		if ($language = $this->getState('filter.language')) {
+			$query->where('r.language = ' . $db->quote($language));
 		}
 
 		$search = $this->getState('filter.search');
@@ -127,6 +148,11 @@ class KinoarhivModelReleases extends JModelList {
 		$orderDirn = $this->state->get('list.direction', 'desc');
 		if ($orderCol == 'r.ordering') {
 			$orderCol = 'r.ordering ' . $orderDirn . ', r.release_date';
+		}
+
+		// SQL server change
+		if ($orderCol == 'language') {
+			$orderCol = 'l.title';
 		}
 
 		$query->order($db->escape($orderCol . ' ' . $orderDirn));

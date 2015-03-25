@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS `#__ka_music_albums`;
 DROP TABLE IF EXISTS `#__ka_music_genres`;
 DROP TABLE IF EXISTS `#__ka_music_rel_albums`;
 DROP TABLE IF EXISTS `#__ka_music_rel_genres`;
+DROP TABLE IF EXISTS `#__ka_music_rel_movies`;
 DROP TABLE IF EXISTS `#__ka_names`;
 DROP TABLE IF EXISTS `#__ka_names_career`;
 DROP TABLE IF EXISTS `#__ka_names_gallery`;

@@ -182,7 +182,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			<div class="content clearfix ui-helper-clearfix">
 				<div>
 					<div class="poster<?php echo $item->y_poster; ?>">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" title="<?php echo $this->escape($item->title.$item->year_str); ?>">
+						<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $this->escape($item->title.$item->year_str); ?>">
 							<div>
 								<img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT').$this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>" />
 							</div>
@@ -253,7 +253,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 
 				</div>
 				<div class="links">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
+					<a href="<?php echo $item->params->get('url'); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title.$item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?><span class="icon-chevron-right"></span></a>
 				</div>
 			</div>
 		</article>

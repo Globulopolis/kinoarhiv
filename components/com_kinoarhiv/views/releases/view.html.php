@@ -107,7 +107,7 @@ class KinoarhivViewReleases extends JViewLegacy {
 
 			$item->event = new stdClass;
 			$item->params = new JObject;
-			$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$item->id.'&Itemid='.$this->itemid), false);
+			$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=release&id='.$item->id.'&Itemid='.$this->itemid), false);
 
 			$dispatcher = JEventDispatcher::getInstance();
 			JPluginHelper::importPlugin('content');

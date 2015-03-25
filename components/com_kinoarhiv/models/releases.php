@@ -66,9 +66,9 @@ class KinoarhivModelReleases extends JModelList {
 				if ($letter == '0-1') {
 					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
 				} else {
-					preg_match('#\p{L}#u', $letter, $matches); // only any kind of letter from any language.
-
-					$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+					if (preg_match('#\p{L}#u', $letter, $matches)) { // only any kind of letter from any language.
+						$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+					}
 				}
 			}
 		}

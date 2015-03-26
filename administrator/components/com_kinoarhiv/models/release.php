@@ -32,7 +32,7 @@ class KinoarhivModelRelease extends JModelForm {
 			return array();
 		}
 
-		$db->setQuery("SELECT `r`.`id`, `r`.`country_id`, `r`.`vendor_id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`language`, `r`.`ordering`, `c`.`code`, `c`.`name` AS `title`"
+		$db->setQuery("SELECT `r`.`id`, `r`.`country_id`, `r`.`vendor_id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`desc`, `r`.`language`, `r`.`ordering`, `c`.`code`, `c`.`name` AS `title`"
 			. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
 			. "\n WHERE `r`.`id` = ".(int)$id[0]);

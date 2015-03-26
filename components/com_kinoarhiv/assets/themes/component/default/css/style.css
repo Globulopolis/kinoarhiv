@@ -42,6 +42,10 @@ div.clear {
 	color: #21b33f;
 }
 
+.hasDesc {
+	cursor: pointer;
+}
+
 .small {
 	color: #aaa;
 	font-size: .8em;

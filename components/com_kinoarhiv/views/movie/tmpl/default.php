@@ -59,7 +59,7 @@ endif; ?>
 	}
 
 	jQuery(document).ready(function($){
-		$('.hasTooltip, .hasTooltip').attr('data-uk-tooltip', '');
+		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		<?php if (!$this->user->guest): ?>
 		<?php if ($this->params->get('allow_votes') == 1): ?>
 		$('.rateit').bind('over', function(e, v){ $(this).attr('title', v); });

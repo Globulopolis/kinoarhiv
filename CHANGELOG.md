@@ -1,4 +1,7 @@
 ## HEAD (Unreleased)
+No changes
+
+## 3.0.5
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/21
 * Fixed https://github.com/Globulopolis/kinoarhiv/issues/25
 * Fixed double slash for poster image on feed page

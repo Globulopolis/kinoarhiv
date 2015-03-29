@@ -90,11 +90,12 @@ endif; ?>
 									url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelease&format=json&movie_id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
-										'form[r_vendor_id]':	$('#form_r_vendor_id').select2('val'),
-										'form[r_country_id]':	$('#form_r_country_id').select2('val'),
+										'form[r_vendor_id]':    $('#form_r_vendor_id').select2('val'),
+										'form[r_country_id]':   $('#form_r_country_id').select2('val'),
 										'form[r_release_date]': $('#form_r_release_date').val(),
-										'form[r_media_type]':	$('#form_r_media_type').select2('val'),
-										'form[r_ordering]':		$('#form_r_ordering').val(),
+										'form[r_media_type]':   $('#form_r_media_type').select2('val'),
+										'form[r_language]':     $('#form_r_language').val(),
+										'form[r_ordering]':     $('#form_r_ordering').val(),
 										'new': 1
 									}
 								}).done(function(response){
@@ -161,11 +162,12 @@ endif; ?>
 										url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelease&format=json&movie_id=' + $('#id').val() + '&id=' + ids[3],
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
-											'form[r_vendor_id]':	$('#form_r_vendor_id').select2('val'),
-											'form[r_country_id]':	$('#form_r_country_id').select2('val'),
+											'form[r_vendor_id]':    $('#form_r_vendor_id').select2('val'),
+											'form[r_country_id]':   $('#form_r_country_id').select2('val'),
 											'form[r_release_date]': $('#form_r_release_date').val(),
-											'form[r_media_type]':	$('#form_r_media_type').select2('val'),
-											'form[r_ordering]':		$('#form_r_ordering').val(),
+											'form[r_media_type]':   $('#form_r_media_type').select2('val'),
+											'form[r_language]':     $('#form_r_language').val(),
+											'form[r_ordering]':     $('#form_r_ordering').val(),
 											'new': 0
 										}
 									}).done(function(response){

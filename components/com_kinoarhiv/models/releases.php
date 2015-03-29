@@ -90,7 +90,7 @@ class KinoarhivModelReleases extends JModelList {
 		}
 
 		if ($mediatype != '') {
-			//$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `vendor_id` = "'.(int)$mediatype.'")';
+			$where .= ' AND `r`.`media_type` = '.(int)$mediatype;
 		}
 
 		$where .= " AND `r`.`release_date` != '".$db->nullDate()."'";

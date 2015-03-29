@@ -106,6 +106,10 @@
 					<div class="controls"><?php echo $this->form->getInput('r_media_type'); ?></div>
 				</div>
 				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('r_language'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('r_language'); ?></div>
+				</div>
+				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('r_ordering'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('r_ordering'); ?></div>
 				</div>

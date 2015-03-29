@@ -77,9 +77,10 @@ class KinoarhivModelMovie extends JModelForm {
 		} elseif ($tmpl == 'releases_edit') {
 			$release_id = $app->input->get('release_id', 0, 'int');
 
-			$db->setQuery("SELECT `id` AS `release_id`, `vendor_id` AS `r_vendor_id`, `release_date` AS `r_release_date`, `country_id` AS `r_country_id`, `media_type` AS `r_media_type`, `ordering` AS `r_ordering`"
-				. "\n FROM ".$db->quoteName('#__ka_releases')
-				. "\n WHERE `id` = ".(int)$release_id);
+			$db->setQuery("SELECT `r`.`id` AS `release_id`, `r`.`vendor_id` AS `r_vendor_id`, `r`.`release_date` AS `r_release_date`, `r`.`country_id` AS `r_country_id`, `r`.`media_type` AS `r_media_type`, `r`.`language` AS `r_language`, `r`.`ordering` AS `r_ordering`, `l`.`title` AS `language_title`"
+				. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
+				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `r`.`language`"
+				. "\n WHERE `r`.`id` = ".(int)$release_id);
 			$result = $db->loadObject();
 		} else {
 			$result = array('movie'=>(object)array());

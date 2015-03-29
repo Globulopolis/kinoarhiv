@@ -275,6 +275,9 @@
 			</group>
 			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
 		</field>
+		<field name="r_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
 		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
 	</fieldset>
 </form>

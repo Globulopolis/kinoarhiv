@@ -104,7 +104,7 @@ class KinoarhivModelRelease extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('ord', array(), 'array');
-		$movie_id = $app->input->post->get('movie_id', null, 'int');
+		$movie_id = $app->input->post->get('movie_id', 0, 'int');
 
 		if (count($data) < 2) {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));

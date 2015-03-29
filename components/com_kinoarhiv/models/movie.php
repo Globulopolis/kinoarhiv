@@ -124,7 +124,7 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 		}
 
-		// Select countries
+		// Selecting countries
 		$db->setQuery("SELECT `c`.`id`, `c`.`name`, `c`.`code`, `t`.`ordering`"
 			. "\n FROM ".$db->quoteName('#__ka_countries')." AS `c`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_countries')." AS `t` ON `t`.`country_id` = `c`.`id` AND `t`.`movie_id` = ".(int)$id
@@ -132,7 +132,7 @@ class KinoarhivModelMovie extends JModelForm {
 			. "\n ORDER BY `ordering` ASC");
 		$result->countries = $db->loadObjectList();
 
-		// Select genres
+		// Selecting genres
 		$db->setQuery("SELECT `g`.`id`, `g`.`name`, `g`.`alias`, `t`.`ordering`"
 			. "\n FROM ".$db->quoteName('#__ka_genres')." AS `g`"
 			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_genres')." AS `t` ON `t`.`genre_id` = `g`.`id` AND `t`.`movie_id` = ".(int)$id
@@ -201,7 +201,7 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 		}
 
-		// Select premiere dates
+		// Selecting premiere dates
 		if ($params->get('premieres_list_limit') > 0) {
 			$db->setQuery("SELECT `p`.`id`, `p`.`vendor_id`, `p`.`premiere_date`, `p`.`info`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
 				. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
@@ -215,9 +215,9 @@ class KinoarhivModelMovie extends JModelForm {
 			$result->premieres = array();
 		}
 
-		// Select release dates
+		// Selecting release dates
 		if ($params->get('releases_list_limit') > 0) {
-			$db->setQuery("SELECT `r`.`id`, `r`.`media_type`, `r`.`release_date`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
+			$db->setQuery("SELECT `r`.`id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
 				. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `r`.`vendor_id`"

@@ -185,7 +185,10 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							$tr_class = ($row->desc != '') ? ' hasDesc info uk-alert' : '';
 						?>
 						<tr class="<?php echo $tr_class; ?>">
-							<td><span class="hasTooltip" title="<?php echo $row->release_date; ?>"><?php echo JHtml::_('date', $row->release_date, JText::_('DATE_FORMAT_LC3')); ?></span></td>
+							<td>
+								<span class="hasTooltip" title="<?php echo $row->release_date; ?>"><?php echo JHtml::_('date', $row->release_date, JText::_('DATE_FORMAT_LC3')); ?></span>
+								<a name="row-<?php echo $row->id; ?>"></a>
+							</td>
 							<td><img class="flag-dd" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $row->code; ?>.png" /><?php echo $row->name; ?></td>
 							<td><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_'.$row->media_type); ?></td>
 							<td><?php if ($row->desc != ''): ?><span class="icon icon-chevron-down uk-icon-caret-down"></span><?php endif; ?></td>
@@ -193,9 +196,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 						<?php if ($row->desc != ''): ?>
 						<tr style="display: none;">
 							<td colspan="4">
-								<a name="row_<?php echo $row->id; ?>"></a>
 								<div><?php echo $row->desc; ?></div>
-								<div class="pull-right"><a href="#row_<?php echo $row->id; ?>"><?php echo JText::_('COM_KA_TO_TOP'); ?></a></div>
+								<div class="pull-right"><a href="#row-<?php echo $row->id; ?>"><?php echo JText::_('COM_KA_TO_TOP'); ?></a></div>
 							</td>
 						</tr>
 						<?php endif; ?>

@@ -51,7 +51,8 @@ class KinoarhivModelRelease extends JModelItem {
 					);
 				$query->from($db->quoteName('#__ka_releases', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_countries', 'cn').' ON '.$db->quoteName('cn.id').' = '.$db->quoteName('r.country_id'))
-				->where($db->quoteName('r.language').' IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').')');
+				->where($db->quoteName('r.language').' IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').')')
+				->order($db->quoteName('r.release_date').' DESC');
 				$db->setQuery($query);
 
 				$data->items = $db->loadObjectList();

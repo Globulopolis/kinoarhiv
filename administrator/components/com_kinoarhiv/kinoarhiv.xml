@@ -11,6 +11,7 @@
 	<description>COM_KA_XML_DESCRIPTION</description>
 
 	<scriptfile>installer.php</scriptfile>
+
 	<install>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/install.mysql.sql</file>
@@ -23,6 +24,11 @@
 			<file driver="mysqli" charset="utf8">sql/uninstall.mysql.sql</file>
 		</sql>
 	</uninstall>
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates</schemapath>
+		</schemas>
+	</update>
 
 	<files folder="site">
 		<filename>controller.php</filename>

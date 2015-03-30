@@ -11,14 +11,14 @@
 @set_time_limit(0);
 
 class com_kinoarhivInstallerScript {
-	public function postflight($type, $parent) {
+	public function install($parent) {
 		$db = JFactory::getDBO();
 
 		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
 		$form = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
 
 		if (empty($form)) {
-			throw new Exception('Cannot load the config.xml form!');
+			throw new Exception('Cannot load the config.xml file!');
 			return false;
 		}
 
@@ -66,6 +66,10 @@ class com_kinoarhivInstallerScript {
 			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
 		$result = $db->execute();
 
-		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv');
+		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv&layout=firstrun');
+	}
+
+	public function update($parent) {
+		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv&layout=update');
 	}
 }

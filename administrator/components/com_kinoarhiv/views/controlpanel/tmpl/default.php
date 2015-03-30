@@ -6,3 +6,7 @@
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=countries"><span class="icon-location"> </span> <?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a>
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=settings"><span class="icon-options"> </span> <?php echo JText::_('COM_KA_SETTINGS_TITLE'); ?></a>
 </div>
+<br />
+<div id="j-main-container" class="control-panel">
+	<p class="text-center"><?php echo $this->component['name'].' '.$this->component['version']; ?></p>
+</div>

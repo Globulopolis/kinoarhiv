@@ -99,4 +99,36 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 
 		$this->setRedirect('index.php?option=com_kinoarhiv');
 	}
+
+	public function saveConfig() {
+		$app = JFactory::getApplication();
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		$document = JFactory::getDocument();
+		$document->setMimeEncoding('application/octet-stream');
+		$app->setHeader('Pragma', '1');
+		$app->setHeader('Expires', '-1');
+		$app->setHeader('Cache-Control', 'public, must-revalidate, post-check=0, pre-check=0');
+		$app->setHeader('Content-Transfer-Encoding', 'Binary');
+		$app->setHeader('Content-disposition', 'attachment; filename="com_kinoarhiv-settings-'.JHtml::_('date', time(), 'Y-m-d_H-i-s').'.json"');
+		echo json_encode(JComponentHelper::getParams('com_kinoarhiv'));
+	}
+
+	public function restoreConfig() {
+		$app = JFactory::getApplication();
+
+		// Check if the user is authorized to do this.
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
+
+		//$model = $this->getModel('settings');
+		//$result = $model->save($this->input->post->get('jform', array(), 'array'));
+	}
 }

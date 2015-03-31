@@ -4,7 +4,7 @@
 	Joomla.submitbutton = function(task) {
 		jQuery(document).ready(function($){
 			var form = $('#application-form');
-			if (task != 'cancel' && task != 'save') {
+			if (task != 'cancel' && task != 'save' && task != 'saveConfig' && task != 'restoreConfig') {
 				$.post(form.attr('action'), form.serialize()+'&task='+task+'&format=json', function(response){
 					showMsg('.container-main', response.message);
 					$(document).scrollTop(0);
@@ -13,7 +13,13 @@
 				});
 				return;
 			} else {
-				Joomla.submitform(task, document.getElementById('application-form'));
+				if (task == 'saveConfig') {
+					window.location = '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=settings&task=saveConfig&format=raw';
+				} else if (task == 'restoreConfig') {
+					alert(1);
+				} else {
+					Joomla.submitform(task, document.getElementById('application-form'));
+				}
 			}
 		});
 	}

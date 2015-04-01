@@ -51,7 +51,7 @@ class KinoarhivViewSettings extends JViewLegacy {
 		JToolbarHelper::save('save');
 		JToolbarHelper::divider();
 		JToolbarHelper::custom('saveConfig', 'download', 'download', 'COM_KA_SETTINGS_BUTTON_SAVECONFIG', false);
-		JToolbarHelper::custom('restoreConfig', 'upload', 'upload', 'COM_KA_SETTINGS_BUTTON_RESTORECONFIG', false);
+		JToolbarHelper::custom('restoreConfigLayout', 'upload', 'upload', 'COM_KA_SETTINGS_BUTTON_RESTORECONFIG', false);
 		JToolbarHelper::divider();
 		JToolbarHelper::cancel('cancel');
 		JToolbarHelper::divider();

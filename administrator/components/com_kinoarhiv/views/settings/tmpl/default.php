@@ -1,10 +1,12 @@
-<?php defined('_JEXEC') or die; ?>
+<?php defined('_JEXEC') or die;
+JHtml::_('bootstrap.modal', 'collapseModal');
+?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		jQuery(document).ready(function($){
 			var form = $('#application-form');
-			if (task != 'cancel' && task != 'save' && task != 'saveConfig' && task != 'restoreConfig') {
+			if (task != 'cancel' && task != 'save' && task != 'saveConfig' && task != 'restoreConfigLayout' && task != 'restoreConfig') {
 				$.post(form.attr('action'), form.serialize()+'&task='+task+'&format=json', function(response){
 					showMsg('.container-main', response.message);
 					$(document).scrollTop(0);
@@ -15,8 +17,10 @@
 			} else {
 				if (task == 'saveConfig') {
 					window.location = '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=settings&task=saveConfig&format=raw';
+				} else if (task == 'restoreConfigLayout') {
+					$('#collapseModal').modal();
 				} else if (task == 'restoreConfig') {
-					alert(1);
+					Joomla.submitform(task, document.getElementById('adminRestoreConfig'));
 				} else {
 					Joomla.submitform(task, document.getElementById('application-form'));
 				}
@@ -276,3 +280,6 @@
 		<!-- End Content -->
 	</div>
 </form>
+
+<!-- Upload config layout -->
+<?php echo $this->loadTemplate('upload_config'); ?>

@@ -120,6 +120,8 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 	}
 
 	public function restoreConfig() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
 		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
@@ -128,7 +130,36 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 			return;
 		}
 
-		//$model = $this->getModel('settings');
-		//$result = $model->save($this->input->post->get('jform', array(), 'array'));
+		jimport('joomla.filesystem.file');
+		JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
+		$media = KAMedia::getInstance();
+		$model = $this->getModel('settings');
+
+		$file = $this->input->files->get('form_upload_config', '', 'array');
+		$file['name'] = JFile::makeSafe($file['name']);
+		$url = 'index.php?option=com_kinoarhiv&view=settings';
+
+		if ($media->detectMime($file['tmp_name']) != 'text/plain' || JFile::getExt($file['name']) != 'json') {
+			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
+			return;
+		}
+
+		if (isset($file['name'])) {
+			$fc = file_get_contents($file['tmp_name']);
+			$data = json_decode($fc);
+			$errors = json_last_error();
+
+			if ($errors === JSON_ERROR_NONE) {
+				if ($model->restoreConfig($data)) {
+					$app->redirect($url, JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_SUCCESS'));
+				} else {
+					$app->redirect($url, JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_ERROR'), 'error');
+				}
+			} else {
+				$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_FILE'), 'error');
+			}
+		} else {
+			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
+		}
 	}
 }

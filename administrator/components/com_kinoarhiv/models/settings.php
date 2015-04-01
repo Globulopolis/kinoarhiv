@@ -158,4 +158,14 @@ class KinoarhivModelSettings extends JModelForm {
 
 		return true;
 	}
+
+	public function restoreConfig($data) {
+		$db = $this->getDBO();
+		$data = json_encode($data);
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__extensions')." SET `params` = '".$db->escape($data)."' WHERE `type` = 'component' AND `element` = 'com_kinoarhiv'");
+		$result = $db->execute();
+
+		return $result ? true : false;
+	}
 }

@@ -65,8 +65,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		JResponse::setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
 		JResponse::setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
-		JResponse::setHeader('Cache-Control', 'no-store, no-cache, must-revalidate', true);
-		JResponse::setHeader('Cache-Control', 'post-check=0, pre-check=0', true);
+		JResponse::setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
 		JResponse::setHeader('Pragma', 'no-cache', true);
 		JResponse::sendHeaders();
 

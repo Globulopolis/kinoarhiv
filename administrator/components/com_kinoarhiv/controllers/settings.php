@@ -111,11 +111,12 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 
 		$document = JFactory::getDocument();
 		$document->setMimeEncoding('application/octet-stream');
-		$app->setHeader('Pragma', '1');
-		$app->setHeader('Expires', '-1');
-		$app->setHeader('Cache-Control', 'public, must-revalidate, post-check=0, pre-check=0');
-		$app->setHeader('Content-Transfer-Encoding', 'Binary');
-		$app->setHeader('Content-disposition', 'attachment; filename="com_kinoarhiv-settings-'.JHtml::_('date', time(), 'Y-m-d_H-i-s').'.json"');
+		JResponse::setHeader('Pragma', 'no-cache', true);
+		JResponse::setHeader('Expires', '-1');
+		JResponse::setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
+		JResponse::setHeader('Content-Transfer-Encoding', 'Binary');
+		JResponse::setHeader('Content-disposition', 'attachment; filename="com_kinoarhiv-settings-'.JHtml::_('date', time(), 'Y-m-d_H-i-s').'.json"');
+		JResponse::sendHeaders();
 		echo json_encode(JComponentHelper::getParams('com_kinoarhiv'));
 	}
 

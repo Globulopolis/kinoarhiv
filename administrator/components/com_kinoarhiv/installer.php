@@ -66,10 +66,10 @@ class com_kinoarhivInstallerScript {
 			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
 		$result = $db->execute();
 
-		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv&layout=firstrun');
+		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&layout=firstrun');
 	}
 
 	public function update($parent) {
-		JFactory::getApplication()->redirect('index.php?option=com_kinoarhiv&layout=update');
+		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&layout=update');
 	}
 }

@@ -1,5 +1,4 @@
 <?php defined('_JEXEC') or die;
-
 $custom_review_comp = false;
 if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') !== 'default') {
 	// JComments
@@ -225,7 +224,9 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 							<?php if (!empty($item->rate_custom)): ?>
 							<div><?php echo $item->rate_custom; ?></div>
 							<?php else: ?>
-								<?php if ($this->params->get('ratings_show_img') == 1): ?>
+								<?php if (($item->attribs->ratings_show_remote == '' && $this->params->get('ratings_show_remote') == 1) || $item->attribs->ratings_show_remote == 1): ?>
+									<?php if ($this->params->get('ratings_show_img') == 1): ?>
+
 									<div style="display: inline-block;">
 										<?php if ($this->params->get('ratings_img_imdb') != 0 && !empty($item->imdb_id)) {
 											if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$item->id.'_big.png')) { ?>
@@ -252,7 +253,9 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 											<?php endif; ?>
 										<?php endif; ?>
 									</div>
-								<?php else: ?>
+
+									<?php else: ?>
+
 									<?php if (!empty($item->imdb_votesum) && !empty($item->imdb_votes)): ?>
 										<div id="rate-imdb"><span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <span class="b"><a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank"><?php echo $item->imdb_votesum; ?> (<?php echo $item->imdb_votes; ?>)</a></span></div>
 									<?php else: ?>
@@ -273,11 +276,16 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 									<?php else: ?>
 										<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
 									<?php endif; ?>
+									<?php endif; ?>
+
 								<?php endif; ?>
 							<?php endif; ?>
+
+							<?php if (($item->attribs->ratings_show_local == '' && $this->params->get('ratings_show_local') == 1) || $item->attribs->ratings_show_local == 1): ?>
 							<div class="local-rt<?php echo $item->rate_loc_label_class; ?>">
 								<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $item->rate_loc_label; ?>
 							</div>
+							<?php endif; ?>
 						</div>
 						<?php endif; ?>
 					</div>

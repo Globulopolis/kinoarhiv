@@ -188,8 +188,16 @@ JHtml::_('behavior.keepalive');
 										<div class="controls"><?php echo $this->form->getInput('show_modify_date', $this->form_attribs_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('show_vote', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('show_vote', $this->form_attribs_group); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('allow_votes', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('allow_votes', $this->form_attribs_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('ratings_show_local', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('ratings_show_local', $this->form_attribs_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('ratings_show_remote', $this->form_attribs_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('ratings_show_remote', $this->form_attribs_group); ?></div>
 									</div>
 									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>

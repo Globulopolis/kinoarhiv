@@ -296,7 +296,8 @@ endif; ?>
 					<?php if (!empty($this->item->rate_custom)): ?>
 					<div><?php echo $this->item->rate_custom; ?></div>
 					<?php else: ?>
-						<?php if ($this->params->get('ratings_show_img') == 1): ?>
+						<?php if (($this->item->attribs->ratings_show_remote == '' && $this->params->get('ratings_show_remote') == 1) || $this->item->attribs->ratings_show_remote == 1): ?>
+							<?php if ($this->params->get('ratings_show_img') == 1): ?>
 							<div style="text-align: center;">
 								<?php if ($this->params->get('ratings_img_imdb') != 0 && !empty($this->item->imdb_id)) {
 									if (file_exists($this->params->get('media_rating_image_root').'/imdb/'.$this->item->id.'_big.png')) { ?>
@@ -323,7 +324,8 @@ endif; ?>
 									<?php }
 								} ?>
 							</div>
-						<?php else: ?>
+
+							<?php else: ?>
 							<?php if (!empty($this->item->imdb_votesum) && !empty($this->item->imdb_votes)): ?>
 								<div id="rate-imdb"><span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <span class="b"><a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank"><?php echo $this->item->imdb_votesum; ?> (<?php echo $this->item->imdb_votes; ?>)</a></span></div>
 							<?php else: ?>
@@ -343,6 +345,8 @@ endif; ?>
 								<br /><br /><div id="rate-mc"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <span class="b"><a href="http://www.metacritic.com/movie/<?php echo $this->item->metacritics_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->metacritics; ?>%</a></span></div>
 							<?php else: ?>
 								<div id="rate-mc"><span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?></div>
+							<?php endif; ?>
+
 							<?php endif; ?>
 						<?php endif; ?>
 					<?php endif; ?>
@@ -515,8 +519,9 @@ endif; ?>
 			</div>
 		</div>
 
-		<?php if ($this->item->attribs->show_vote == 1): ?>
+		<?php if (($this->item->attribs->allow_votes == '' && $this->params->get('allow_votes') == 1) || $this->item->attribs->allow_votes == 1): ?>
 			<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>
+				<?php if ($this->params->get('ratings_show_local') == 1): ?>
 				<div class="clear"></div>
 				<div class="rate">
 					<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br />
@@ -531,13 +536,19 @@ endif; ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid='.$this->itemid); ?>" class="small"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
 					</div>
 				</div>
+				<?php endif; ?>
 			<?php else: ?>
+				<?php if ($this->params->get('ratings_show_local') == 1): ?>
 				<div class="clear"></div>
 				<div class="rate">
 					<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br />
 					<div class="rateit" data-rateit-value="<?php echo $this->item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $this->item->rate_loc_label; ?>
+
+					<?php if ($this->params->get('allow_votes') == 1): ?>
 					<div><?php echo GlobalHelper::showMsg(JText::sprintf(JText::_('COM_KA_VOTES_AUTHREQUIRED'), '<a href="'.JRoute::_('index.php?option=com_users&view=registration').'">'.JText::_('COM_KA_REGISTER').'</a>', '<a href="'.JRoute::_('index.php?option=com_users&view=login').'">'.JText::_('COM_KA_LOGIN').'</a>')); ?></div>
+					<?php endif; ?>
 				</div>
+				<?php endif; ?>
 			<?php endif; ?>
 			<div class="clear"></div>
 		<?php endif; ?>

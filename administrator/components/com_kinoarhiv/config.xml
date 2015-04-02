@@ -179,13 +179,13 @@
 		<field name="player_swf" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_SWF_LABEL" description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12" />
 	</fieldset>
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
-		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL" description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="vote_summ_precision" type="text" default="2" label="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL" description="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="ratings_show_frontpage" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL" description="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL_DESC" filter="integer">
+		<field name="ratings_show_local" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL" description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_show_img" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL_DESC" filter="integer">
+		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL" description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="vote_summ_precision" type="text" default="2" label="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL" description="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL_DESC" required="true" filter="integer" size="6" />
+		<field name="ratings_show_frontpage" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL" description="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
@@ -195,6 +195,14 @@
 		</field>
 	</fieldset>
 	<fieldset name="ap_rate_img" label="COM_KA_SETTINGS_AP_RATE_IMG_LABEL">
+		<field name="ratings_show_remote" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_show_img" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="ratings_img_imdb" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_IMDB_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>

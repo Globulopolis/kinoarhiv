@@ -1,5 +1,11 @@
 ## HEAD (Unreleased)
-No changes
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/34
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/30
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/37
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/38
+* Update jQueryUI to 1.11.4
+* Fixed https://github.com/Globulopolis/kinoarhiv/issues/27
+* Fixed https://github.com/Globulopolis/kinoarhiv/issues/28
 
 ## 3.0.5
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/21

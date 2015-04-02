@@ -114,9 +114,20 @@
 			<option	value="0">JHIDE</option>
 			<option	value="1">JSHOW</option>
 		</field>
-		<field name="show_vote" type="list" default="1" label="JGLOBAL_SHOW_VOTE_LABEL" description="JGLOBAL_SHOW_VOTE_DESC">
-			<option value="0">JHIDE</option>
-			<option	value="1">JSHOW</option>
+		<field name="allow_votes" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_show_local" type="list" label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL" description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_show_remote" type="list" label="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
 		</field>
 		<field name="tab_movie_wallpp" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL">
 			<option value="">JGLOBAL_USE_GLOBAL</option>

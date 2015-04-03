@@ -9,6 +9,16 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
+			<option value="5">J5</option>
+			<option value="10">J10</option>
+			<option value="15">J15</option>
+			<option value="20">J20</option>
+			<option value="25">J25</option>
+			<option value="30">J30</option>
+			<option value="50">J50</option>
+			<option value="100">J100</option>
+		</field>
 		<field name="sort_movielist_field" type="list" class="inputbox" default="ordering" label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
 			<option value="id">JGLOBAL_FIELD_ID_LABEL</option>
 			<option value="title">JFIELD_TITLE_DESC</option>

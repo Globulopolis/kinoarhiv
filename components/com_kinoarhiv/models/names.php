@@ -142,7 +142,7 @@ class KinoarhivModelNames extends JModelList {
 			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$mtitle." GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $name_ids);
+			$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
 		}
 
 		// Filter by birthplace
@@ -163,11 +163,7 @@ class KinoarhivModelNames extends JModelList {
 			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `career_id` = ".(int)$amplua." GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
-			if (count($name_ids) > 0) {
-				$where_id = array_merge($where_id, $name_ids);
-			} else {
-				$where_id = array(0);
-			}
+			$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
 		}
 
 		if ((!empty($mtitle) || !empty($amplua)) && !empty($where_id)) {

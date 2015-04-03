@@ -1,4 +1,6 @@
 ## HEAD (Unreleased)
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/40
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/39
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/34
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/30
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/37

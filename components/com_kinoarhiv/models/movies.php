@@ -167,7 +167,7 @@ class KinoarhivModelMovies extends JModelList {
 			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `country_id` = ".(int)$country);
 			$movie_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $movie_ids);
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
 		}
 
 		// Filter by person name
@@ -176,7 +176,7 @@ class KinoarhivModelMovies extends JModelList {
 			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `name_id` = ".(int)$cast);
 			$movie_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $movie_ids);
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
 		}
 
 		// Filter by vendor
@@ -185,7 +185,7 @@ class KinoarhivModelMovies extends JModelList {
 			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_releases')." WHERE `vendor_id` = ".(int)$vendor." GROUP BY `movie_id`");
 			$movie_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $movie_ids);
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
 		}
 
 		// Filter by genres
@@ -194,7 +194,7 @@ class KinoarhivModelMovies extends JModelList {
 			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `genre_id` IN (".implode(',', $genres).") GROUP BY `movie_id`");
 			$movie_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $movie_ids);
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
 		}
 
 		// Filter by MPAA
@@ -269,7 +269,7 @@ class KinoarhivModelMovies extends JModelList {
 				. "\n WHERE `type_alias` = 'com_kinoarhiv.movie' AND `tag_id` IN (".$tags.")");
 			$movie_ids = $db->loadColumn();
 
-			$where_id = array_merge($where_id, $movie_ids);
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
 		}
 
 		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres) || !empty($tags) && !empty($where_id)) {

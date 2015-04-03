@@ -15,8 +15,33 @@ class KinoarhivModelPremieres extends JModelList {
 		parent::__construct($config);
 
 		if (empty($this->context)) {
-			$this->context = $this->context = strtolower('com_kinoarhiv.premieres.global');
+			$this->context = $this->context = strtolower('com_kinoarhiv.premieres');
 		}
+	}
+
+	protected function populateState($ordering = null, $direction = null) {
+		if ($this->context) {
+			$app = JFactory::getApplication();
+			$params = JComponentHelper::getParams('com_kinoarhiv');
+
+			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
+			$limit = $value;
+			$this->setState('list.limit', $limit);
+
+			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
+			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
+			$this->setState('list.start', $limitstart);
+		} else {
+			$this->setState('list.start', 0);
+			$this->state->set('list.limit', 0);
+		}
+	}
+
+	protected function getStoreId($id = '') {
+		// Compile the store id.
+		$id .= ':' . $this->getState('list.limit');
+
+		return parent::getStoreId($id);
 	}
 
 	protected function getListQuery() {
@@ -224,36 +249,5 @@ class KinoarhivModelPremieres extends JModelList {
 		$this->cache[$store] = $page;
 
 		return $this->cache[$store];
-	}
-
-	protected function populateState($ordering = null, $direction = null) {
-		if ($this->context) {
-			$app = JFactory::getApplication();
-
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $limit);
-
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-
-			$value = $app->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $ordering);
-			if (!in_array($value, $this->filter_fields)) {
-				$value = $ordering;
-				$app->setUserState($this->context . '.ordercol', $value);
-			}
-			$this->setState('list.ordering', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.orderdirn', 'filter_order_Dir', $direction);
-			if (!in_array(strtoupper($value), array('ASC', 'DESC', ''))) {
-				$value = $direction;
-				$app->setUserState($this->context . '.orderdirn', $value);
-			}
-			$this->setState('list.direction', $value);
-		} else {
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
-		}
 	}
 }

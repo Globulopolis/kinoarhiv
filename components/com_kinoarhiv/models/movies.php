@@ -14,13 +14,13 @@ class KinoarhivModelMovies extends JModelList {
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
 			// Setup a list of columns for ORDER BY from 'sort_movielist_field' params from component settings
-			$config['filter_fields'] = array('id', 'title', 'year', 'created', 'ordering');
+			$config['filter_fields'] = array('id', 'm.id', 'title', 'year', 'created', 'ordering', 'm.ordering');
 		}
 
 		parent::__construct($config);
 
 		if (empty($this->context)) {
-			$this->context = strtolower('com_kinoarhiv.movies.global');
+			$this->context = strtolower('com_kinoarhiv.movies');
 		}
 	}
 

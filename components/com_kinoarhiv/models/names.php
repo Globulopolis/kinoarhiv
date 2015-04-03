@@ -12,17 +12,58 @@ class KinoarhivModelNames extends JModelList {
 	protected $context = null;
 
 	public function __construct($config = array()) {
+		if (empty($config['filter_fields'])) {
+			// Setup a list of columns for ORDER BY from 'sort_namelist_field' params from component settings
+			$config['filter_fields'] = array('id', 'n.id', 'name', 'n.name', 'latin_name', 'n.latin_name', 'ordering', 'n.ordering');
+		}
+
 		parent::__construct($config);
 
 		if (empty($this->context)) {
-			$this->context = strtolower('com_kinoarhiv.names.global');
+			$this->context = strtolower('com_kinoarhiv.names');
 		}
 	}
 
 	protected function populateState($ordering = null, $direction = null) {
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		if ($this->context) {
+			$app = JFactory::getApplication();
+			$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		parent::populateState($params->get('sort_namelist_field'), strtoupper($params->get('sort_namelist_ord')));
+			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
+			$limit = $value;
+			$this->setState('list.limit', $value);
+
+			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
+			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
+			$this->setState('list.start', $limitstart);
+
+			$value = $app->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $params->get('sort_namelist_field'));
+			if (!in_array($value, $this->filter_fields)) {
+				$value = $ordering;
+				$app->setUserState($this->context . '.ordercol', $value);
+			}
+			$this->setState('list.ordering', $value);
+
+			$value = $app->getUserStateFromRequest($this->context . '.orderdirn', 'filter_order_Dir', strtoupper($params->get('sort_namelist_ord')));
+			if (!in_array(strtoupper($value), array('ASC', 'DESC', ''))) {
+				$value = $direction;
+				$app->setUserState($this->context . '.orderdirn', $value);
+			}
+			$this->setState('list.direction', $value);
+		} else {
+			$this->setState('list.start', 0);
+			$this->state->set('list.limit', 0);
+		}
+	}
+
+	protected function getStoreId($id = '') {
+		// Compile the store id.
+		$id .= ':' . $this->getState('filter.name');
+		$id .= ':' . $this->getState('list.limit');
+		$id .= ':' . $this->getState('list.ordering');
+		$id .= ':' . $this->getState('list.direction');
+
+		return parent::getStoreId($id);
 	}
 
 	protected function getListQuery() {
@@ -55,7 +96,7 @@ class KinoarhivModelNames extends JModelList {
 		$query->where($where.$filters);
 		$query->group($db->quoteName('n.id'));
 
-		$orderCol = $this->state->get('list.ordering', '`ordering`');
+		$orderCol = $this->state->get('list.ordering', $db->quoteName('n.ordering'));
 		$orderDirn = $this->state->get('list.direction', 'DESC');
 		$query->order($db->escape('`n`.'.$orderCol.' '.$orderDirn));
 

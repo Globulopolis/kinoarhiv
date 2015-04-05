@@ -11,7 +11,7 @@
 @set_time_limit(0);
 
 class com_kinoarhivInstallerScript {
-	public function install($parent) {
+	function install($parent) {
 		$db = JFactory::getDBO();
 
 		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
@@ -66,10 +66,64 @@ class com_kinoarhivInstallerScript {
 			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
 		$result = $db->execute();
 
-		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&layout=firstrun');
+		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv');
 	}
 
-	public function update($parent) {
-		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&layout=update');
+	function update($parent) {
+		$db = JFactory::getDBO();
+		$params = $this->getParams();
+
+		/* Load the config.xml file on update and compare current existing parameters from DB
+		 * with the parameters from file and add new into array and store in DB.
+		*/
+		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
+		$config = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
+
+		if (empty($config)) {
+			throw new Exception('Cannot load the config.xml file!');
+			return false;
+		}
+
+		// Get the fieldset names
+		$name_fieldsets = array();
+		foreach ($config->getFieldsets() as $fieldset) {
+			$name_fieldsets[] = $fieldset->name;
+		}
+
+		foreach ($name_fieldsets as $fieldset_name) {
+			foreach ($config->getFieldset($fieldset_name) as $field) {
+				$fieldname = $field->getAttribute('name');
+
+				// Add new parameter only if it's not exists in current component parameters
+				if (!array_key_exists($fieldname, $params)) {
+					$params[$fieldname] = $field->getAttribute('default');
+				}
+			}
+		}
+
+		$params = json_encode($params);
+
+		$db->setQuery("UPDATE ".$db->quoteName('#__extensions')
+			. "\n SET `params` = '".$db->escape($params)."'"
+			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
+		$result = $db->execute();
+		/* End of loading and updating component parameters */
+
+		// Run DB update if installed version lower than 3.0.6
+		if (version_compare($parent->get('manifest')->version, '3.0.5', '>') && version_compare($parent->get('manifest')->version, '3.0.6', '=')) {
+			$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&controller=update&version=306');
+			return true;
+		}
+
+		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv');
+	}
+
+	function getParams($name='') {
+		$db = JFactory::getDBO();
+
+		$db->setQuery("SELECT `params` FROM `#__extensions` WHERE `type` = 'component' AND `name` = 'Kinoarhiv'");
+		$params = json_decode($db->loadResult(), true);
+
+		return !empty($name) ? $params[$name] : $params;
 	}
 }

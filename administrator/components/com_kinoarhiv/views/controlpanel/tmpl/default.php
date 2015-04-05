@@ -14,5 +14,5 @@
 </div>
 <br />
 <div id="j-main-container" class="control-panel">
-	<p class="text-center"><?php echo $this->component['name'].' '.$this->component['version']; ?></p>
+	<p class="text-center"><a href="<?php echo $this->component['authorUrl']; ?>" target="_blank"><?php echo $this->component['name'].' '.$this->component['version']; ?></a></p>
 </div>

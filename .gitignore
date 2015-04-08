@@ -486,11 +486,7 @@
 /administrator/modules
 /administrator/templates
 /cache/
-/bin/*.php
-/bin/waveform.plt
-/bin/waveform.png
-/bin/waveform.cmd.txt
-/bin/gnuplot/
+/bin/
 /cli/
 /components/index.html
 /components/com_ajax/

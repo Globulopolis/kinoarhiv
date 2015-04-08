@@ -110,7 +110,7 @@ class KinoarhivViewReleases extends JViewLegacy {
 			'm.title'        => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
 			'c.name'         => JText::_('COM_KA_FIELD_RELEASE_COUNTRY'),
 			'r.media_type'   => JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'),
-			'language'       => JText::_('JGRID_HEADING_LANGUAGE'),
+			'r.language'       => JText::_('JGRID_HEADING_LANGUAGE'),
 			'r.id'           => JText::_('JGRID_HEADING_ID')
 		);
 	}

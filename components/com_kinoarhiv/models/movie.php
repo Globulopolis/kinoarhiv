@@ -103,8 +103,8 @@ class KinoarhivModelMovie extends JModelForm {
 		try {
 			$result = $db->loadObject();
 
-				$this->setError('Error');
-				$result = (object)array();
+			if (empty($result)) {
+				return;
 			}
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
@@ -599,9 +599,13 @@ class KinoarhivModelMovie extends JModelForm {
 				}
 
 				if (isset($value->files['video'][0]['resolution']) && !empty($value->files['video'][0]['resolution'])) {
-					$resolution = $value->files['video'][0]['resolution'];
+					if ($value->files['video'][0]['resolution'] != '' && $value->files['video'][0]['resolution'] != 'x') {
+						$resolution = $value->files['video'][0]['resolution'];
+					} else {
+						$resolution = '1280x720';
+					}
 				} else {
-					if ($value->resolution != '') {
+					if ($value->resolution != '' && $value->resolution != 'x') {
 						$resolution = $value->resolution;
 					} else {
 						$resolution = '1280x720';
@@ -611,6 +615,11 @@ class KinoarhivModelMovie extends JModelForm {
 				$tr_resolution = explode('x', $resolution);
 				$tr_height = $tr_resolution[1];
 				$value->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+
+				// Set default aspect ratio if it's not set
+				if ($value->dar == '') {
+					$value->dar = '16:9';
+				}
 
 				// Check if subtitle file exists
 				$_subtitles = json_decode($value->_subtitles, true);
@@ -790,9 +799,13 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 
 			if (isset($result->files['video'][0]['resolution']) && !empty($result->files['video'][0]['resolution'])) {
-				$resolution = $result->files['video'][0]['resolution'];
+				if ($result->files['video'][0]['resolution'] != '' && $result->files['video'][0]['resolution'] != 'x') {
+					$resolution = $result->files['video'][0]['resolution'];
+				} else {
+					$resolution = '1280x720';
+				}
 			} else {
-				if ($result->resolution != '') {
+				if ($result->resolution != '' && $result->resolution != 'x') {
 					$resolution = $result->resolution;
 				} else {
 					$resolution = '1280x720';
@@ -802,6 +815,11 @@ class KinoarhivModelMovie extends JModelForm {
 			$tr_resolution = explode('x', $resolution);
 			$tr_height = $tr_resolution[1];
 			$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+
+			// Set default aspect ratio if it's not set
+			if ($result->dar == '') {
+				$result->dar = '16:9';
+			}
 
 			// Check if subtitle file exists
 			$_subtitles = json_decode($result->_subtitles, true);

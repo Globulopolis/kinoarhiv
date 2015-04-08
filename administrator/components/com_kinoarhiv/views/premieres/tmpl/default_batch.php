@@ -11,11 +11,6 @@
 					<?php echo JHtml::_('batch.language'); ?>
 				</div>
 			</div>
-			<div class="control-group span6">
-				<div class="controls">
-					<?php //echo JHtml::_('batch.language'); ?>
-				</div>
-			</div>
 		</div>
 	</div>
 	<div class="modal-footer">

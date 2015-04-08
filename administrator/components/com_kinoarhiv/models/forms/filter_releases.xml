@@ -36,6 +36,10 @@
 			</group>
 			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
 		</field>
+		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE" description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
+			<option value="">JOPTION_SELECT_LANGUAGE</option>
+			<option value="*">JALL</option>
+		</field>
 	</fields>
 	<fields name="list">
 		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="r.release_date DESC">
@@ -48,6 +52,10 @@
 			<option value="m.title DESC">COM_KA_MOVIES_FIELD_MOVIE_SORT_DESC</option>
 			<option value="c.name ASC">COM_KA_PREMIERES_FIELD_COUNTRY_SORT_ASC</option>
 			<option value="c.name DESC">COM_KA_PREMIERES_FIELD_COUNTRY_SORT_DESC</option>
+			<option value="r.language ASC">JGRID_HEADING_LANGUAGE_ASC</option>
+			<option value="r.language DESC">JGRID_HEADING_LANGUAGE_DESC</option>
+			<option value="r.media_type ASC">COM_KA_RELEASES_FIELD_MEDIA_SORT_ASC</option>
+			<option value="r.media_type DESC">COM_KA_RELEASES_FIELD_MEDIA_SORT_DESC</option>
 			<option value="r.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="r.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>

@@ -1119,7 +1119,11 @@ class KinoarhivModelMediamanager extends JModelList {
 				$query = $db->execute();
 
 				$output = $media->createScreenshot($data);
-				return json_encode(array('file'=>$output[0], 'output'=>$output[1]));
+				if ($output[0]) {
+					return json_encode(array('file'=>$output[0], 'output'=>$output[1]));
+				} else {
+					return 'error:'.$output[1];
+				}
 			}
 		} else {
 			return 'error:'.JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR');

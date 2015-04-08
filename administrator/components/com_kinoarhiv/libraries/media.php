@@ -11,34 +11,58 @@
 class KAMedia {
 	protected static $instance;
 
+	/**
+	 * Class constructor.
+	 */
 	public function __construct() {
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 	}
 
+	/**
+	 * Returns a reference to the KAMedia object, only creating it if it doesn't already exist.
+	 *
+	 * @return  KAMedia
+	 */
 	public static function getInstance() {
 		// Only create the object if it doesn't exist.
-		if (empty(self::$instance)) {
-			self::$instance = new KAMedia;
+		if (empty(static::$instance)) {
+			static::$instance = new KAMedia;
 		}
 
-		return self::$instance;
+		return static::$instance;
 	}
 
-	public function createScreenshot(&$data) {
+	/**
+	 * Create screenshot from videofile
+	 *
+	 * @param   array  $data  An array with the data. folder - path to the folder, screenshot - filename of the screenshot(if exists), filename - videofile.
+	 *
+	 * @return  array  Array with results
+	 */
+	public function createScreenshot($data) {
 		if (!empty($data['screenshot']) && file_exists($data['folder'].$data['screenshot'])) {
 			@unlink($data['folder'].$data['screenshot']);
 		}
 
-		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path', '', 'string'));
+		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path'));
 		if ($ffmpeg_path != '') {
 			if (!function_exists('shell_exec')) {
 				die('Function is not exists or safe mode is on!');
 			}
 
+			$check_lib = $this->checkLibrary($this->params->get('ffmpeg_path'));
+			if ($check_lib !== true) {
+				return $check_lib;
+			}
+
 			$result_filename = pathinfo($data['filename'], PATHINFO_FILENAME).'.png';
 			$video_info = $this->getVideoInfo($data['folder'].$data['filename']);
-			$video_info = json_decode($video_info);
 
+			if ($video_info[0] === false) {
+				return array(false, $video_info[1]);
+			}
+
+			$video_info = json_decode($video_info);
 			$scr_w = (int)$this->params->get('player_width');
 			$scr_h = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;
 
@@ -56,6 +80,13 @@ class KAMedia {
 		}
 	}
 
+	/**
+	 * Create screenshot from videofile
+	 *
+	 * @param   string  $path  Path to a file.
+	 *
+	 * @return  string
+	 */
 	public function detectMime($path) {
 		if (!empty($path) && file_exists($path)) {
 			if (function_exists('finfo_open')) {
@@ -72,9 +103,23 @@ class KAMedia {
 		return $mime;
 	}
 
+	/**
+	 * Get metadata information from video file
+	 *
+	 * @param   string  $path    Path to a file.
+	 * @param   string  $stream  Stream number. v:0 - first video stream from file.
+	 * @param   string  $format  Output format. See http://ffmpeg.org/ffprobe.html#Writers
+	 *
+	 * @return  mixed   Array with results if error, string otherwise
+	 */
 	public function getVideoInfo($path, $stream='v:0', $format='json') {
 		if (!function_exists('shell_exec')) {
 			die('Function is not exists or safe mode is on!');
+		}
+
+		$check_lib = $this->checkLibrary($this->params->get('ffprobe_path'));
+		if ($check_lib !== true) {
+			return $check_lib;
 		}
 
 		if (IS_WIN) {
@@ -86,9 +131,22 @@ class KAMedia {
 		return $output;
 	}
 
+	/**
+	 * Get video file duration
+	 *
+	 * @param   string  $path    Path to a file.
+	 * @param   string  $format  Output format. If set to true, format result to 00:00:00:000, as is otherwise.
+	 *
+	 * @return  mixed   Array with results if error, string otherwise
+	 */
 	public function getVideoDuration($path, $format=false) {
 		if (!function_exists('shell_exec')) {
 			die('Function is not exists or safe mode is on!');
+		}
+
+		$check_lib = $this->checkLibrary($this->params->get('ffprobe_path'));
+		if ($check_lib !== true) {
+			return $check_lib;
 		}
 
 		if (IS_WIN) {
@@ -107,5 +165,25 @@ class KAMedia {
 		}
 
 		return $duration;
+	}
+
+	/**
+	 * Check if media library(ffmpeg, ffprobe) exists or available.
+	 *
+	 * @param   string  $path  Path to a file.
+	 *
+	 * @return  mixed   Array with results if error, true otherwise
+	 */
+	public function checkLibrary($path) {
+		$path = JPath::clean($path);
+
+		if (!file_exists($path)) {
+			$error = JText::sprintf('COM_KA_MEDIAMANAGER_FFMPEG_NOTFOUND', $path);
+			JLog::add($error.' in '.__METHOD__, JLog::CRITICAL);
+
+			return array(false, $error);
+		}
+
+		return true;
 	}
 }

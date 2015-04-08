@@ -440,7 +440,8 @@ $type = $input->get('type', '', 'word');
 						$.post(_this.attr('href'), {'time': $('#time').val(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
 							$('.err_msg', dlg).text('').hide();
 
-							if (response.test(/error:/)) {
+							var pattern = /error:/g;
+							if (pattern.test(response)) {
 								$('.err_msg', dlg).text(response.substr(6)).show();
 								blockUI();
 								return false;
@@ -679,7 +680,7 @@ $type = $input->get('type', '', 'word');
 								<?php endif; ?>
 							</div>
 							<div style="float: right;">
-								<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
+								<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_UPLOAD_TITLE'); ?>"><span class="icon-upload"></span></a>
 								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw" class="file-create-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
 								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->form->getValue('screenshot'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
 							</div>

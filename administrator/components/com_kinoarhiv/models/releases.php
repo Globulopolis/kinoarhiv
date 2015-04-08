@@ -20,7 +20,7 @@ class KinoarhivModelReleases extends JModelList {
 				'name', 'c.name',
 				'media_type', 'r.media_type',
 				'vendor', 'v.company_name', 'v.company_name_intl',
-				'language', 'a.language',
+				'language', 'r.language',
 				'ordering', 'r.ordering');
 		}
 
@@ -56,8 +56,7 @@ class KinoarhivModelReleases extends JModelList {
 		parent::populateState('r.ordering', 'desc');
 
 		$forcedLanguage = $app->input->get('forcedLanguage');
-		if (!empty($forcedLanguage))
-		{
+		if (!empty($forcedLanguage)) {
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
@@ -201,5 +200,31 @@ class KinoarhivModelReleases extends JModelList {
 		}
 
 		return array('success'=>$success, 'message'=>$message);
+	}
+
+	public function batch() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->post->get('id', array(), 'array');
+		$batch_data = $app->input->post->get('batch', array(), 'array');
+
+		if (!empty($batch_data['language_id'])) {
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_releases'))
+				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
+				->where('`id` IN ('.implode(',', $ids).')');
+
+			$db->setQuery($query);
+			try {
+				$db->execute();
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

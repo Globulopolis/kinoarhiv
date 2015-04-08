@@ -166,10 +166,17 @@ endif; ?>
 
 							<?php elseif ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer'):
 								$watch = $item_trailer->is_movie ? 'watch-movie' : 'watch-trailer';
-								$ln_watch = $item_trailer->is_movie ? JText::_('COM_KA_WATCH_MOVIE') : JText::_('COM_KA_WATCH_TRAILER'); ?>
+								$ln_watch = $item_trailer->is_movie ? JText::_('COM_KA_WATCH_MOVIE') : JText::_('COM_KA_WATCH_TRAILER');
+							?>
 
 							<div style="height: <?php echo $item_trailer->player_height; ?>px;">
+							<?php if (!file_exists($item_trailer->path.$item_trailer->screenshot)): ?>
+								<div class="text-vertical-parent" style="height: <?php echo $item_trailer->player_height; ?>px;">
+									<div class="text-center text-vertical"><a href="#" class="play hasTooltip <?php echo $watch; ?>" title="<?php echo $ln_watch; ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/movie_24.png" alt="<?php echo $ln_watch; ?>" /></a></div>
+								</div>
+							<?php else: ?>
 								<a href="#" class="play hasTooltip <?php echo $watch; ?>" title="<?php echo $ln_watch; ?>"><img src="<?php echo $item_trailer->path.$item_trailer->screenshot; ?>" /></a>
+							<?php endif; ?>
 							</div>
 
 							<?php endif; ?>

@@ -42,6 +42,22 @@ div.clear {
 	color: #21b33f;
 }
 
+.text-center {
+	text-align: center;
+}
+
+.text-vertical-parent {
+	transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-webkit-transform-style: preserve-3d;
+}
+
+.text-vertical {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
 .hasDesc {
 	cursor: pointer;
 }

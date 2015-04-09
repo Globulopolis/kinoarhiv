@@ -89,6 +89,7 @@ endif; ?>
 										'form[p_country_id]':	$('#form_p_country_id').select2('val'),
 										'form[p_premiere_date]':$('#form_p_premiere_date').val(),
 										'form[p_info]':			$('#form_p_info').val(),
+										'form[p_language]':     $('#form_p_language').val(),
 										'form[p_ordering]':		$('#form_p_ordering').val(),
 										'new': 1
 									}
@@ -156,6 +157,7 @@ endif; ?>
 											'form[p_country_id]':	$('#form_p_country_id').select2('val'),
 											'form[p_premiere_date]':$('#form_p_premiere_date').val(),
 											'form[p_info]':			$('#form_p_info').val(),
+											'form[p_language]':     $('#form_p_language').val(),
 											'form[p_ordering]':		$('#form_p_ordering').val(),
 											'new': 0
 										}

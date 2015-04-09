@@ -1,4 +1,14 @@
 ## HEAD (Unreleased)
+* Added an options to disable ratings. User rating, movie rating from other sites.
+* Added list limit for global lists. E.g. movies list or premieres list.
+* Added checking for ffmpeg/ffprobe.
+* Added some new filters for releases, premieres in backend.
+* Fixed errors in batch process.
+* Fixed error with empty video resolution.
+* Fixed wrong aspect ration for jwplayer and flowplayer.
+* Add language for premieres. Now premieres language matches with content language.
+* Add language for releases. Now releases language matches with content language.
+* Fixed bug with sql dump for update
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/40
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/39
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/34

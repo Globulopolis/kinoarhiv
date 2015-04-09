@@ -70,7 +70,7 @@ $sortFields = $this->getSortFields();
 					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="11%" class="center">
+					<th width="12%" class="center">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_PREMIERE_DATE_LABEL', 'p.premiere_date', $listDirn, $listOrder); ?>
 					</th>
 					<th width="30%" style="min-width:55px">

@@ -197,21 +197,40 @@ class KinoarhivModelPremieres extends JModelList {
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 
+		if (empty($batch_data)) {
+			return false;
+		}
+
+		$fields = array();
+
+		if (!empty($batch_data['vendor_id'])) {
+			$fields[] = $db->quoteName('vendor_id')." = '".(int)$batch_data['vendor_id']."'";
+		}
+		if (!empty($batch_data['country_id'])) {
+			$fields[] = $db->quoteName('country_id')." = '".(int)$batch_data['country_id']."'";
+		}
 		if (!empty($batch_data['language_id'])) {
-			$query = $db->getQuery(true);
+			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
+		}
 
-			$query->update($db->quoteName('#__ka_premieres'))
-				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
-				->where('`id` IN ('.implode(',', $ids).')');
+		if (empty($fields)) {
+			return false;
+		}
 
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
+		$query = $db->getQuery(true);
 
-				return false;
-			}
+		$query->update($db->quoteName('#__ka_premieres'))
+			->set(implode(', ', $fields))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+		
+			return false;
 		}
 
 		return true;

@@ -51,10 +51,10 @@ class KinoarhivModelPremiere extends JModelForm {
 		if (isset($data['p_vendor_id']) && !empty($data['p_vendor_id'])) {
 			if ($is_new == 1) {
 				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_premieres')." (`id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `language`, `ordering`)"
-					. "\n VALUES ('', '".$movie_id."', '".(int)$data['p_vendor_id']."', '".$data['p_premiere_date']."', '".(int)$data['p_country_id']."', '".$db->escape($data['p_info'])."', '".$db->escape($data['language'])."', '".(int)$data['p_ordering']."')");
+					. "\n VALUES ('', '".$movie_id."', '".(int)$data['p_vendor_id']."', '".$data['p_premiere_date']."', '".(int)$data['p_country_id']."', '".$db->escape($data['p_info'])."', '".$db->escape($data['p_language'])."', '".(int)$data['p_ordering']."')");
 			} else {
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_premieres')
-					. "\n SET `vendor_id` = '".(int)$data['p_vendor_id']."', `premiere_date` = '".(int)$data['p_premiere_date']."', `country_id` = '".(int)$data['p_country_id']."', `info` = '".$db->escape($data['p_info'])."', `language` = '".$db->escape($data['language'])."', `ordering` = '".(int)$data['p_ordering']."'"
+					. "\n SET `vendor_id` = '".(int)$data['p_vendor_id']."', `premiere_date` = '".$data['p_premiere_date']."', `country_id` = '".(int)$data['p_country_id']."', `info` = '".$db->escape($data['p_info'])."', `language` = '".$db->escape($data['p_language'])."', `ordering` = '".(int)$data['p_ordering']."'"
 					. "\n WHERE `id` = ".(int)$id);
 			}
 

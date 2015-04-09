@@ -26,6 +26,8 @@ class KinoarhivController extends JControllerLegacy {
 			return false;
 		}
 
+		JHtml::addIncludePath(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR);
+
 		parent::display();
 
 		return $this;

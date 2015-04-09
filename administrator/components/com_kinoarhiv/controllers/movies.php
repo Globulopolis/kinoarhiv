@@ -466,6 +466,18 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		echo json_encode($result);
 	}
 
+	public function deleteReleases() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$document = JFactory::getDocument();
+		$document->setName('response');
+
+		$model = $this->getModel('releases');
+		$result = $model->deleteReleases();
+
+		echo json_encode($result);
+	}
+
 	public function batch() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 

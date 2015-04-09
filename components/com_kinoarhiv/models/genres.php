@@ -16,10 +16,9 @@ class KinoarhivModelGenres extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->select('`id`, `name`, `alias`, `stats`');
-		$query->from($db->quoteName('#__ka_genres'));
-
-		$query->where('`state` = 1 AND `access` IN ('.$groups.') AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').')');
+		$query->select($db->quoteName(array('id', 'name', 'alias', 'stats')))
+			->from($db->quoteName('#__ka_genres'))
+			->where($db->quoteName('state').' = 1 AND '.$db->quoteName('access').' IN ('.$groups.') AND '.$db->quoteName('language').' IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').')');
 
 		return $query;
 	}

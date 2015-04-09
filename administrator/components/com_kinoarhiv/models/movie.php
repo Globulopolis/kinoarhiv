@@ -70,14 +70,15 @@ class KinoarhivModelMovie extends JModelForm {
 		} elseif ($tmpl == 'premieres_edit') {
 			$premiere_id = $app->input->get('premiere_id', 0, 'int');
 
-			$db->setQuery("SELECT `id` AS `premiere_id`, `vendor_id` AS `p_vendor_id`, `premiere_date` AS `p_premiere_date`, `country_id` AS `p_country_id`, `info` AS `p_info`, `ordering` AS `p_ordering`"
-				. "\n FROM ".$db->quoteName('#__ka_premieres')
+			$db->setQuery("SELECT `p`.`id` AS `premiere_id`, `p`.`vendor_id` AS `p_vendor_id`, `p`.`premiere_date` AS `p_premiere_date`, `p`.`country_id` AS `p_country_id`, `p`.`info` AS `p_info`, `p`.`language` AS `p_language`, `p`.`ordering` AS `p_ordering`"
+				. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
+				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `p`.`language`"
 				. "\n WHERE `id` = ".(int)$premiere_id);
 			$result = $db->loadObject();
 		} elseif ($tmpl == 'releases_edit') {
 			$release_id = $app->input->get('release_id', 0, 'int');
 
-			$db->setQuery("SELECT `r`.`id` AS `release_id`, `r`.`vendor_id` AS `r_vendor_id`, `r`.`release_date` AS `r_release_date`, `r`.`country_id` AS `r_country_id`, `r`.`media_type` AS `r_media_type`, `r`.`language` AS `r_language`, `r`.`ordering` AS `r_ordering`, `l`.`title` AS `language_title`"
+			$db->setQuery("SELECT `r`.`id` AS `release_id`, `r`.`vendor_id` AS `r_vendor_id`, `r`.`release_date` AS `r_release_date`, `r`.`country_id` AS `r_country_id`, `r`.`media_type` AS `r_media_type`, `r`.`desc` AS `r_desc`, `r`.`language` AS `r_language`, `r`.`ordering` AS `r_ordering`, `l`.`title` AS `language_title`"
 				. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
 				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `r`.`language`"
 				. "\n WHERE `r`.`id` = ".(int)$release_id);

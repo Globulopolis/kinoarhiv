@@ -81,22 +81,26 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`plot`, `m`.`desc`, `m`.`known`, `m`.`slogan`, `m`.`budget`, `m`.`age_restrict`, `m`.`ua_rate`, `m`.`mpaa`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`metacritics`, `m`.`metacritics_id`, `m`.`rate_custom`, `m`.`urls`, `m`.`length`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`metakey`, `m`.`metadesc`, `m`.`attribs`, `m`.`state`, `m`.`metadata`, `g`.`filename`");
-		$query->from($db->quoteName('#__ka_movies').' AS `m`');
-		$query->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
+		$query->select($db->quoteName(array('m.id', 'm.parent_id', 'm.title', 'm.alias', 'm.plot', 'm.desc', 'm.known', 'm.slogan', 'm.budget', 'm.age_restrict', 'm.ua_rate', 'm.mpaa', 'm.rate_loc', 'm.rate_sum_loc', 'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id', 'm.kp_votesum', 'm.kp_votes', 'm.kp_id', 'm.rate_fc', 'm.rottentm_id', 'm.metacritics', 'm.metacritics_id', 'm.rate_custom', 'm.urls', 'm.length', 'm.year')))
+			->select("DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`")
+			->select(array('m.created_by', 'm.metakey', 'm.metadesc', 'm.attribs', 'm.state', 'm.metadata'))
+			->from($db->quoteName('#__ka_movies', 'm'));
+
+			// Join over gallery item
+			$query->select($db->quoteName('g.filename'))
+				->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g').' ON '.$db->quoteName('g.movie_id').' = '.$db->quoteName('m.id').' AND '.$db->quoteName('g.type').' = 2 AND '.$db->quoteName('g.poster_frontpage').' = 1 AND '.$db->quoteName('g.state').' = 1');
 
 		if (!$user->get('guest')) {
-			$query->select(' `u`.`favorite`, `u`.`watched`');
-			$query->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
+			$query->select($db->quoteName(array('u.favorite', 'u.watched')))
+				->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u').' ON '.$db->quoteName('u.uid').' = '.$user->get('id').' AND '.$db->quoteName('u.movie_id').' = '.$db->quoteName('m.id'));
 
-			$query->select(' `v`.`vote` AS `my_vote`, `v`.`_datetime`');
-			$query->leftJoin($db->quoteName('#__ka_user_votes').' AS `v` ON `v`.`movie_id` = `m`.`id` AND `v`.`uid` = '.$user->get('id'));
+			$query->select($db->quoteName('v.vote', 'my_vote'))->select($db->quoteName('v._datetime'))
+				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v').' ON '.$db->quoteName('v.movie_id').' = '.$db->quoteName('m.id').' AND '.$db->quoteName('v.uid').' = '.$user->get('id'));
 		}
 
-		$query->select(' `user`.`name` AS `username`');
-		$query->leftJoin($db->quoteName('#__users').' AS `user` ON `user`.`id` = `m`.`created_by`');
-
-		$query->where('`m`.`id` = '.(int)$id.' AND `m`.`state` = 1 AND `access` IN ('.$groups.') AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
+		$query->select($db->quoteName('user.name', 'username'))
+			->join('LEFT', $db->quoteName('#__users', 'user').' ON '.$db->quoteName('user.id').' = '.$db->quoteName('m.created_by'))
+			->where('`m`.`id` = '.(int)$id.' AND '.$db->quoteName('m.state').' = 1 AND '.$db->quoteName('access').' IN ('.$groups.') AND '.$db->quoteName('language').' IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
 
 		$db->setQuery($query);
 
@@ -206,12 +210,12 @@ class KinoarhivModelMovie extends JModelForm {
 				. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `p`.`vendor_id`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `p`.`country_id`"
-				. "\n WHERE `movie_id` = ".(int)$id
+				. "\n WHERE `movie_id` = ".(int)$id." AND `p`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
 				. "\n ORDER BY `p`.`ordering` ASC"
 				. "\n LIMIT ".(int)$params->get('premieres_list_limit'));
 			$result->premieres = $db->loadObjectList();
 		} else {
-			$result->premieres = array();
+			$result->premieres = (object)array();
 		}
 
 		// Selecting release dates
@@ -220,12 +224,12 @@ class KinoarhivModelMovie extends JModelForm {
 				. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
 				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `r`.`vendor_id`"
-				. "\n WHERE `movie_id` = ".(int)$id
+				. "\n WHERE `movie_id` = ".(int)$id." AND `r`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
 				. "\n ORDER BY `ordering` ASC"
 				. "\n LIMIT ".(int)$params->get('releases_list_limit'));
 			$result->releases = $db->loadObjectList();
 		} else {
-			$result->releases = array();
+			$result->releases = (object)array();
 		}
 
 		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();

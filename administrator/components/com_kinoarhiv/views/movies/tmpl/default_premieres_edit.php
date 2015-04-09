@@ -104,6 +104,10 @@
 					<div class="controls"><?php echo $this->form->getInput('p_info'); ?></div>
 				</div>
 				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('p_language'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('p_language'); ?></div>
+				</div>
+				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('p_ordering'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('p_ordering'); ?></div>
 				</div>

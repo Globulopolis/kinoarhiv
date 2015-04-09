@@ -48,9 +48,9 @@ class KinoarhivModelAwards extends JModelList {
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
 
-		$query->select('`id`, `title`, `desc`')
+		$query->select($db->quoteName(array('id', 'title', 'desc')))
 			->from($db->quoteName('#__ka_awards'))
-			->where('`state` = 1');
+			->where($db->quoteName('state').' = 1');
 
 		return $query;
 	}
@@ -61,9 +61,9 @@ class KinoarhivModelAwards extends JModelList {
 		$id = $app->input->get('id', null, 'int');
 		$query = $db->getQuery(true);
 
-		$query->select('`id`, `title`, `desc`')
+		$query->select($db->quoteName(array('id', 'title', 'desc')))
 			->from($db->quoteName('#__ka_awards'))
-			->where('`id` = '.(int)$id.' AND `state` = 1');
+			->where($db->quoteName('id').' = '.(int)$id.' AND '.$db->quoteName('state').' = 1');
 		$db->setQuery($query);
 
 		try {

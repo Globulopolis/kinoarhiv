@@ -89,30 +89,12 @@
 	<div class="span12 rel-form_premiere">
 		<fieldset class="form-horizontal">
 			<div class="group">
+				<?php foreach($this->form->getFieldset('release_edit') as $field): ?>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('r_vendor_id'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('r_vendor_id'); ?></div>
+					<div class="control-label"><?php echo $field->label; ?></div>
+					<div class="controls"><?php echo $field->input; ?></div>
 				</div>
-				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('r_country_id'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('r_country_id'); ?></div>
-				</div>
-				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('r_release_date'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('r_release_date'); ?></div>
-				</div>
-				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('r_media_type'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('r_media_type'); ?></div>
-				</div>
-				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('r_language'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('r_language'); ?></div>
-				</div>
-				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('r_ordering'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('r_ordering'); ?></div>
-				</div>
+				<?php endforeach; ?>
 			</div>
 		</fieldset>
 		<div class="placeholder"></div>

@@ -250,11 +250,13 @@ CREATE TABLE IF NOT EXISTS `#__ka_premieres` (
   `premiere_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `country_id` int(11) NOT NULL DEFAULT '0',
   `info` mediumtext NOT NULL,
+  `language` CHAR(7) NOT NULL,
   `ordering` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_movie_id` (`movie_id`),
   KEY `idx_vendor_id` (`vendor_id`),
-  KEY `idx_country_id` (`country_id`)
+  KEY `idx_country_id` (`country_id`),
+  KEY `idx_language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_rel_awards` (

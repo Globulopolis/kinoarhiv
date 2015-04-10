@@ -260,6 +260,7 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 							<?php echo $this->loadTemplate('search_names'); ?>
 						</div>
 					</div>
+					<?php echo $this->loadTemplate('search_other'); ?>
 				</div>
 
 				<?php if ($this->userIsSuperAdmin): ?>

@@ -234,6 +234,11 @@ class KinoarhivModelSearch extends JModelLegacy {
 							'min'	=> isset($filters['rtrate']['min']) ? $filter->clean($filters['rtrate']['min'], 'int') : 0,
 							'max'	=> isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
 						),
+						'metacritic'    => array(
+							'enable'=> isset($filters['metacritic']['enable']) ? $filter->clean($filters['metacritic']['enable'], 'int') : 0,
+							'min'	=> isset($filters['metacritic']['min']) ? $filter->clean($filters['metacritic']['min'], 'int') : 0,
+							'max'	=> isset($filters['metacritic']['max']) ? $filter->clean($filters['metacritic']['max'], 'int') : 100
+						),
 						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
 						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : '',
 						'tags'			=> isset($filters['tags']) ? $filter->clean($filters['tags'], 'string') : ''

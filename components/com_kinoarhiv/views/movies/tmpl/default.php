@@ -109,18 +109,18 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
 
-	<?php if ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')): ?>
-	<div class="adv-search">
-		<h3><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></h3>
-		<div id="search_form"></div>
-	</div>
-	<?php endif; ?>
-
 	<?php if ($this->params->get('show_feed_link', 1)):
 	$link = 'index.php?option=com_kinoarhiv&view=movies&format=feed&Itemid='.$this->itemid.'&limitstart='; ?>
 	<div class="feed-link">
 		<a href="<?php echo JRoute::_($link.'&type=rss'); ?>" title="RSS" rel="noindex">RSS</a>
 		<a href="<?php echo JRoute::_($link.'&type=atom'); ?>" title="Atom" rel="noindex">Atom</a>
+	</div>
+	<?php endif; ?>
+
+	<?php if ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')): ?>
+	<div class="adv-search">
+		<h3><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></h3>
+		<div id="search_form"></div>
 	</div>
 	<?php endif; ?>
 

@@ -411,6 +411,10 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="search_movies_metacritic" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_METACRITIC_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="search_movies_budget" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BUDGET_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
@@ -456,6 +460,54 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="search_names_amplua_disabled" type="careers" default="" class="span12" label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string" />
+	</fieldset>
+	<fieldset name="filter_premieres" label="COM_KA_SEARCH_SETTINGS_PREMIERES">
+		<field name="filter_premieres_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_premieres_country" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_COUNTRY" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_premieres_year" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_YEAR" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_premieres_month" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_MONTH" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_release_vendor" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_VENDOR" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+	</fieldset>
+	<fieldset name="filter_releases" label="COM_KA_SEARCH_SETTINGS_RELEASES">
+		<field name="filter_release_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_release_country" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_COUNTRY" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_release_year" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_YEAR" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_release_month" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_MONTH" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_release_vendor" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_VENDOR" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_release_mediatype" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_MEDIATYPE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="component" validate="rules" />

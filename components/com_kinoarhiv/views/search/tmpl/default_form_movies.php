@@ -108,38 +108,8 @@ if ($this->params->get('search_movies_enable') == 0) {
 			max: <?php echo (int)$this->params->get('vote_summ_num'); ?>,
 			values: [<?php echo (int)$this->activeFilters->def('filters.movies.rate.min', 0); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.rate.max', $this->params->get('vote_summ_num')); ?>],
 			slide: function(event, ui){
-				$('#filters_movies_rate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_rate_min').val(ui.values[0]);
 				$('#filters_movies_rate_max').val(ui.values[1]);
-			}
-		});
-		$('#filters_movies_rate_min').val($('#filters_movies_rate').slider('values', 0)).spinner({
-			spin: function(event, ui){
-				if (ui.value > <?php echo (int)$this->params->get('vote_summ_num'); ?>) {
-					$(this).spinner('value', <?php echo (int)$this->params->get('vote_summ_num'); ?>);
-					return false;
-				} else if (ui.value > $('#filters_movies_rate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_rate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_rate').slider('values', 0, ui.value);
-			}
-		});
-		$('#filters_movies_rate_max').val($('#filters_movies_rate').slider('values', 1)).spinner({
-			spin: function(event, ui){
-				if (ui.value > <?php echo (int)$this->params->get('vote_summ_num'); ?>) {
-					$(this).spinner('value', <?php echo (int)$this->params->get('vote_summ_num'); ?>);
-					return false;
-				} else if (ui.value < $('#filters_movies_rate').slider('values', 0)) {
-					$(this).spinner('value', $('#filters_movies_rate').slider('values', 1));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_rate').slider('values', 1, ui.value);
 			}
 		});
 
@@ -149,38 +119,8 @@ if ($this->params->get('search_movies_enable') == 0) {
 			max: 10,
 			values: [<?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.min', 6); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.max', 10); ?>],
 			slide: function(event, ui){
-				$('#filters_movies_imdbrate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_imdbrate_min').val(ui.values[0]);
 				$('#filters_movies_imdbrate_max').val(ui.values[1]);
-			}
-		});
-		$('#filters_movies_imdbrate_min').val($('#filters_movies_imdbrate').slider('values', 0)).spinner({
-			spin: function(event, ui){
-				if (ui.value > 10) {
-					$(this).spinner('value', 10);
-					return false;
-				} else if (ui.value > $('#filters_movies_imdbrate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_imdbrate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_imdbrate').slider('values', 0, ui.value);
-			}
-		});
-		$('#filters_movies_imdbrate_max').val($('#filters_movies_imdbrate').slider('values', 1)).spinner({
-			spin: function(event, ui){
-				if (ui.value > 10) {
-					$(this).spinner('value', 10);
-					return false;
-				} else if (ui.value < $('#filters_movies_imdbrate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_imdbrate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_imdbrate').slider('values', 1, ui.value);
 			}
 		});
 
@@ -190,38 +130,8 @@ if ($this->params->get('search_movies_enable') == 0) {
 			max: 10,
 			values: [<?php echo (int)$this->activeFilters->def('filters.movies.kprate.min', 6); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.kprate.max', 10); ?>],
 			slide: function(event, ui){
-				$('#filters_movies_kprate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_kprate_min').val(ui.values[0]);
 				$('#filters_movies_kprate_max').val(ui.values[1]);
-			}
-		});
-		$('#filters_movies_kprate_min').val($('#filters_movies_kprate').slider('values', 0)).spinner({
-			spin: function(event, ui){
-				if (ui.value > 10) {
-					$(this).spinner('value', 10);
-					return false;
-				} else if (ui.value > $('#filters_movies_kprate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_kprate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_kprate').slider('values', 0, ui.value);
-			}
-		});
-		$('#filters_movies_kprate_max').val($('#filters_movies_kprate').slider('values', 1)).spinner({
-			spin: function(event, ui){
-				if (ui.value > 10) {
-					$(this).spinner('value', 10);
-					return false;
-				} else if (ui.value < $('#filters_movies_kprate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_kprate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_kprate').slider('values', 1, ui.value);
 			}
 		});
 
@@ -231,82 +141,74 @@ if ($this->params->get('search_movies_enable') == 0) {
 			max: 100,
 			values: [<?php echo (int)$this->activeFilters->def('filters.movies.rtrate.min', 0); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.rtrate.max', 100); ?>],
 			slide: function(event, ui){
-				$('#filters_movies_rtrate_min').spinner('value', ui.values[0]);
+				$('#filters_movies_rtrate_min').val(ui.values[0]);
 				$('#filters_movies_rtrate_max').val(ui.values[1]);
 			}
 		});
-		$('#filters_movies_rtrate_min').val($('#filters_movies_rtrate').slider('values', 0)).spinner({
-			spin: function(event, ui){
-				if (ui.value > 100) {
-					$(this).spinner('value', 100);
-					return false;
-				} else if (ui.value > $('#filters_movies_rtrate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_rtrate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_rtrate').slider('values', 0, ui.value);
-			}
-		});
-		$('#filters_movies_rtrate_max').val($('#filters_movies_rtrate').slider('values', 1)).spinner({
-			spin: function(event, ui){
-				if (ui.value > 100) {
-					$(this).spinner('value', 100);
-					return false;
-				} else if (ui.value < $('#filters_movies_rtrate').slider('values', 1)) {
-					$(this).spinner('value', $('#filters_movies_rtrate').slider('values', 0));
-					return false;
-				} else if (ui.value < 0) {
-					$(this).spinner('value', 0);
-					return false;
-				}
-				$('#filters_movies_rtrate').slider('values', 1, ui.value);
+
+		$('#filters_movies_metacritic').slider({
+			range: true,
+			min: 0,
+			max: 100,
+			values: [<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.min', 0); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.metacritic.max', 100); ?>],
+			slide: function(event, ui){
+				$('#filters_movies_metacritic_min').val(ui.values[0]);
+				$('#filters_movies_metacritic_max').val(ui.values[1]);
 			}
 		});
 
 		$('#filters_movies_rate_enable').change(function(){
 			if (!$(this).is(':checked')) {
-				$('#filters_movies_rate_min, #filters_movies_rate_max').spinner('disable');
+				$('#filters_movies_rate_min, #filters_movies_rate_max').attr('disabled', 'disabled');
 				$('#filters_movies_rate').slider('disable');
 				$(this).val(0);
 			} else {
-				$('#filters_movies_rate_min, #filters_movies_rate_max').spinner('enable');
+				$('#filters_movies_rate_min, #filters_movies_rate_max').removeAttr('disabled');
 				$('#filters_movies_rate').slider('enable');
 				$(this).val(1);
 			}
 		}).trigger('change');
 		$('#filters_movies_imdbrate_enable').change(function(){
 			if (!$(this).is(':checked')) {
-				$('#filters_movies_imdbrate_min, #filters_movies_imdbrate_max').spinner('disable');
+				$('#filters_movies_imdbrate_min, #filters_movies_imdbrate_max').attr('disabled', 'disabled');
 				$('#filters_movies_imdbrate').slider('disable');
 				$(this).val(0);
 			} else {
-				$('#filters_movies_imdbrate_min, #filters_movies_imdbrate_max').spinner('enable');
+				$('#filters_movies_imdbrate_min, #filters_movies_imdbrate_max').removeAttr('disabled');
 				$('#filters_movies_imdbrate').slider('enable');
 				$(this).val(1);
 			}
 		}).trigger('change');
 		$('#filters_movies_kprate_enable').change(function(){
 			if (!$(this).is(':checked')) {
-				$('#filters_movies_kprate_min, #filters_movies_kprate_max').spinner('disable');
+				$('#filters_movies_kprate_min, #filters_movies_kprate_max').attr('disabled', 'disabled');
 				$('#filters_movies_kprate').slider('disable');
 				$(this).val(0);
 			} else {
-				$('#filters_movies_kprate_min, #filters_movies_kprate_max').spinner('enable');
+				$('#filters_movies_kprate_min, #filters_movies_kprate_max').removeAttr('disabled');
 				$('#filters_movies_kprate').slider('enable');
 				$(this).val(1);
 			}
 		}).trigger('change');
 		$('#filters_movies_rtrate_enable').change(function(){
 			if (!$(this).is(':checked')) {
-				$('#filters_movies_rtrate_min, #filters_movies_rtrate_max').spinner('disable');
+				$('#filters_movies_rtrate_min, #filters_movies_rtrate_max').attr('disabled', 'disabled');
 				$('#filters_movies_rtrate').slider('disable');
 				$(this).val(0);
 			} else {
-				$('#filters_movies_rtrate_min, #filters_movies_rtrate_max').spinner('enable');
+				$('#filters_movies_rtrate_min, #filters_movies_rtrate_max').removeAttr('disabled');
 				$('#filters_movies_rtrate').slider('enable');
+				$(this).val(1);
+			}
+		}).trigger('change');
+		$('#filters_movies_metacritic_enable').change(function(){
+			if (!$(this).is(':checked')) {
+				$('#filters_movies_metacritic_min, #filters_movies_metacritic_max').attr('disabled', 'disabled');
+				$('#filters_movies_metacritic').slider('disable');
+				$(this).val(0);
+			} else {
+				$('#filters_movies_metacritic_min, #filters_movies_metacritic_max').removeAttr('disabled');
+				$('#filters_movies_metacritic').slider('enable');
 				$(this).val(1);
 			}
 		}).trigger('change');
@@ -541,6 +443,34 @@ if ($this->params->get('search_movies_enable') == 0) {
 							</div>
 							<div class="span6">
 								<div id="filters_movies_rtrate" style="margin-top: 4px;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_movies_metacritic') == 1): ?>
+			<div class="row-fluid uk-form-row">
+				<div class="span12 uk-width-1-1">
+					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
+						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_movies_metacritic', 'COM_KA_SEARCH_ADV_MOVIES_MTC_RATE'); ?></div>
+						<div class="controls uk-width-1-2" style="padding-top: 4px;">
+							<input type="checkbox" name="filters[movies][metacritic][enable]" id="filters_movies_metacritic_enable" value="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.enable', 0); ?>"<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo GlobalHelper::setLabel('filters_movies_metacritic_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid uk-form-row">
+				<div class="span12 uk-width-1-1">
+					<div class="control-group uk-width-1-1">
+						<div class="control-label uk-width-1-6">&nbsp;</div>
+						<div class="controls uk-width-1-2" style="padding-top: 4px;">
+							<div class="span3">
+								<input type="text" name="filters[movies][metacritic][min]" value="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.min', 0); ?>" id="filters_movies_metacritic_min" maxlength="3" size="3" /> - <input type="text" name="filters[movies][metacritic][max]" value="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.max', 100); ?>" id="filters_movies_metacritic_max" maxlength="3" size="3" />
+							</div>
+							<div class="span6">
+								<div id="filters_movies_metacritic" style="margin-top: 4px;"></div>
 							</div>
 						</div>
 					</div>

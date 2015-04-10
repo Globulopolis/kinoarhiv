@@ -97,15 +97,29 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 		echo $this->loadTemplate('alphabet');
 	endif; ?>
 
+	<?php if ($this->params->get('filter_premieres_enable') == 1): ?>
 	<div class="selectlist">
 		<div class="selectlist-premieres">
 			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
 				<input type="hidden" name="option" value="com_kinoarhiv" />
 				<input type="hidden" name="view" value="premieres" />
+
+				<?php if ($this->params->get('filter_premieres_country') == 1): ?>
 				<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox'), 'code', 'name', $this->sel_country); ?>
+				<?php endif; ?>
+
+				<?php if ($this->params->get('filter_premieres_year') == 1): ?>
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class'=>'inputbox span2'), 'value', 'name', $this->sel_year); ?>
+				<?php endif; ?>
+
+				<?php if ($this->params->get('filter_premieres_month') == 1): ?>
 				<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class'=>'inputbox span3'), 'value', 'name', $this->sel_month); ?><br />
+				<?php endif; ?>
+
+				<?php if ($this->params->get('filter_release_vendor') == 1): ?>
 				<?php echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['vendors'], 'vendor', array('class'=>'inputbox'), 'value', 'name', $this->sel_vendor); ?>
+				<?php endif; ?>
+
 				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 				<div class="btn-group uk-button-group">
 					<button type="submit" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-search"></span></button>
@@ -115,6 +129,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			</form>
 		</div>
 	</div>
+	<?php endif; ?>
+
 	<?php if (count($this->items) > 0): ?>
 	<?php if ($this->params->get('pagevan_top') == 1): ?>
 		<div class="pagination top">

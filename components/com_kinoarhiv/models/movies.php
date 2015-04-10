@@ -247,6 +247,14 @@ class KinoarhivModelMovies extends JModelList {
 			$where .= " AND `m`.`rate_fc` BETWEEN ".(int)$rtrate_min." AND ".(int)$rtrate_max;
 		}
 
+		// Filter by metacritic rating
+		$metacritic = $searches->def('filters.movies.metacritic.enable', 0);
+		if ($params->get('search_movies_metacritic') == 1 && $metacritic === 1) {
+			$metacritic_min = $searches->def('filters.movies.metacritic.min', 0);
+			$metacritic_max = $searches->def('filters.movies.metacritic.max', 100);
+			$where .= " AND `m`.`metacritics` BETWEEN ".(int)$metacritic_min." AND ".(int)$metacritic_max;
+		}
+
 		// Filter by budget
 		$from_budget = $searches->get('filters.movies.from_budget');
 		$to_budget = $searches->get('filters.movies.to_budget');
@@ -337,6 +345,11 @@ class KinoarhivModelMovies extends JModelList {
 							'enable'=> isset($filters['rtrate']['enable']) ? $filter->clean($filters['rtrate']['enable'], 'int') : 0,
 							'min'	=> isset($filters['rtrate']['min']) ? $filter->clean($filters['rtrate']['min'], 'int') : 0,
 							'max'	=> isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
+						),
+						'metacritic'    => array(
+							'enable'=> isset($filters['metacritic']['enable']) ? $filter->clean($filters['metacritic']['enable'], 'int') : 0,
+							'min'	=> isset($filters['metacritic']['min']) ? $filter->clean($filters['metacritic']['min'], 'int') : 0,
+							'max'	=> isset($filters['metacritic']['max']) ? $filter->clean($filters['metacritic']['max'], 'int') : 100
 						),
 						'from_budget'	=> isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
 						'to_budget'		=> isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : '',

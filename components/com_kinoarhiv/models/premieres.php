@@ -90,26 +90,26 @@ class KinoarhivModelPremieres extends JModelList {
 				if ($letter == '0-1') {
 					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
 				} else {
-					preg_match('#\p{L}#u', $letter, $matches); // only any kind of letter from any language.
-
-					$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+					if (preg_match('#\p{L}#u', $letter, $matches)) { // only any kind of letter from any language.
+						$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+					}
 				}
 			}
 		}
 
-		if ($country != '') {
+		if ($params->get('filter_premieres_country') == 1 && $country != '') {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
 		}
 
-		if (!empty($year)) {
+		if ($params->get('filter_premieres_year') == 1 && !empty($year)) {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$year.'%")';
 		}
 
-		if ($month != '') {
+		if ($params->get('filter_premieres_month') == 1 && $month != '') {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `premiere_date` LIKE "%'.$month.'%")';
 		}
 
-		if (!empty($vendor)) {
+		if ($params->get('filter_release_vendor') == 1 && !empty($vendor)) {
 			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_premieres').' WHERE `vendor_id` = "'.(int)$vendor.'")';
 		}
 
@@ -129,6 +129,7 @@ class KinoarhivModelPremieres extends JModelList {
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 it'a world premiere
 		$year = $app->input->get('year', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
@@ -149,86 +150,94 @@ class KinoarhivModelPremieres extends JModelList {
 		);
 
 		// Countries list
-		$db->setQuery("SELECT `name`, `code`"
-			. "\n FROM ".$db->quoteName('#__ka_countries')
-			. "\n WHERE `id` IN (SELECT `country_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `country_id` != 0) AND `state` = 1"
-			. "\n GROUP BY `code`");
-		try {
-			$countries = $db->loadAssocList();
+		if ($params->get('filter_premieres_country') == 1) {
+			$db->setQuery("SELECT `name`, `code`"
+				. "\n FROM ".$db->quoteName('#__ka_countries')
+				. "\n WHERE `id` IN (SELECT `country_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `country_id` != 0) AND `state` = 1"
+				. "\n GROUP BY `code`");
+			try {
+				$countries = $db->loadAssocList();
 
-			if (count($countries) > 0) {
-				$result['countries'] = array_merge($result['countries'], $countries);
+				if (count($countries) > 0) {
+					$result['countries'] = array_merge($result['countries'], $countries);
+				}
+			} catch (Exception $e) {
+				GlobalHelper::eventLog($e->getMessage());
 			}
-		} catch (Exception $e) {
-			GlobalHelper::eventLog($e->getMessage());
 		}
 
 		// Years list
-		if ($country !== '') {
-			$year_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
-		} else {
-			$year_where = "";
-		}
-
-		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `value`, DATE_FORMAT(`premiere_date`, '%Y') AS `name`"
-			. "\n FROM ".$db->quoteName('#__ka_premieres')
-			. $year_where
-			. "\n GROUP BY `value`");
-		try {
-			$years = $db->loadAssocList();
-
-			if (count($years) > 0) {
-				$result['years'] = array_merge($result['years'], $years);
+		if ($params->get('filter_premieres_year') == 1) {
+			if ($country !== '') {
+				$year_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
+			} else {
+				$year_where = "";
 			}
-		} catch (Exception $e) {
-			GlobalHelper::eventLog($e->getMessage());
+
+			$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `value`, DATE_FORMAT(`premiere_date`, '%Y') AS `name`"
+				. "\n FROM ".$db->quoteName('#__ka_premieres')
+				. $year_where
+				. "\n GROUP BY `value`");
+			try {
+				$years = $db->loadAssocList();
+
+				if (count($years) > 0) {
+					$result['years'] = array_merge($result['years'], $years);
+				}
+			} catch (Exception $e) {
+				GlobalHelper::eventLog($e->getMessage());
+			}
 		}
 
 		// Months list
-		if ($country != '') {
-			$month_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
+		if ($params->get('filter_premieres_month') == 1) {
+			if ($country != '') {
+				$month_where = " WHERE `country_id` = (SELECT `id` FROM ".$db->quoteName('#__ka_countries')." WHERE `code` = '".$db->escape($country)."' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*')."))";
 
-			if (!empty($year)) {
-				$month_where .= " AND `premiere_date` LIKE '%".$year."%'";
-			}
-		} else {
-			if (!empty($year)) {
-				$month_where = " WHERE `premiere_date` LIKE '%".$year."%'";
-			} else {
-				$month_where = "";
-			}
-		}
-
-		$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y-%m') AS `value`, `premiere_date`"
-			. "\n FROM ".$db->quoteName('#__ka_premieres')
-			. $month_where
-			. "\n GROUP BY `value`");
-		try {
-			$months = $db->loadAssocList();
-
-			if (count($months) > 0) {
-				foreach ($months as $key=>$month) {
-					$months[$key]['name'] = JHTML::_('date', strtotime($month['premiere_date']), 'F Y');
+				if (!empty($year)) {
+					$month_where .= " AND `premiere_date` LIKE '%".$year."%'";
 				}
-
-				$result['months'] = array_merge($result['months'], $months);
+			} else {
+				if (!empty($year)) {
+					$month_where = " WHERE `premiere_date` LIKE '%".$year."%'";
+				} else {
+					$month_where = "";
+				}
 			}
-		} catch (Exception $e) {
-			GlobalHelper::eventLog($e->getMessage());
+
+			$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y-%m') AS `value`, `premiere_date`"
+				. "\n FROM ".$db->quoteName('#__ka_premieres')
+				. $month_where
+				. "\n GROUP BY `value`");
+			try {
+				$months = $db->loadAssocList();
+
+				if (count($months) > 0) {
+					foreach ($months as $key=>$month) {
+						$months[$key]['name'] = JHTML::_('date', strtotime($month['premiere_date']), 'F Y');
+					}
+
+					$result['months'] = array_merge($result['months'], $months);
+				}
+			} catch (Exception $e) {
+				GlobalHelper::eventLog($e->getMessage());
+			}
 		}
 
 		// Distributors list
-		$db->setQuery("SELECT `id` AS `value`, `company_name` AS `name`, `company_name_intl`"
-			. "\n FROM ".$db->quoteName('#__ka_vendors')
-			. "\n WHERE `id` IN (SELECT `vendor_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `vendor_id` != 0 AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")) AND `state` = 1");
-		try {
-			$vendors = $db->loadAssocList();
+		if ($params->get('filter_release_vendor') == 1) {
+			$db->setQuery("SELECT `id` AS `value`, `company_name` AS `name`, `company_name_intl`"
+				. "\n FROM ".$db->quoteName('#__ka_vendors')
+				. "\n WHERE `id` IN (SELECT `vendor_id` FROM ".$db->quoteName('#__ka_premieres')." WHERE `vendor_id` != 0 AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")) AND `state` = 1");
+			try {
+				$vendors = $db->loadAssocList();
 
-			if (count($vendors) > 0) {
-				$result['vendors'] = array_merge($result['vendors'], $vendors);
+				if (count($vendors) > 0) {
+					$result['vendors'] = array_merge($result['vendors'], $vendors);
+				}
+			} catch (Exception $e) {
+				GlobalHelper::eventLog($e->getMessage());
 			}
-		} catch (Exception $e) {
-			GlobalHelper::eventLog($e->getMessage());
 		}
 
 		return $result;

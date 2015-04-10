@@ -474,36 +474,38 @@ class KinoarhivModelMovies extends JModelList {
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
-		$query = $db->getQuery(true);
 
-		if (!empty($batch_data['language_id'])) {
-			$query->update($db->quoteName('#__ka_movies'))
-				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
-				->where('`id` IN ('.implode(',', $ids).')');
-
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
-
-				return false;
-			}
+		if (empty($batch_data)) {
+			return false;
 		}
 
+		$fields = array();
+
+		if (!empty($batch_data['language_id'])) {
+			$fields[] = $db->quoteName('language')." = '".(int)$batch_data['language_id']."'";
+		}
 		if (!empty($batch_data['assetgroup_id'])) {
-			$query->update($db->quoteName('#__ka_movies'))
-				->set("`access` = '".(int)$batch_data['assetgroup_id']."'")
-				->where('`id` IN ('.implode(',', $ids).')');
+			$fields[] = $db->quoteName('access')." = '".(int)$batch_data['assetgroup_id']."'";
+		}
 
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
+		if (empty($fields)) {
+			return false;
+		}
 
-				return false;
-			}
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__ka_movies'))
+			->set(implode(', ', $fields))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+		
+			return false;
 		}
 
 		if (!empty($batch_data['tag'])) {
@@ -526,6 +528,8 @@ class KinoarhivModelMovies extends JModelList {
 					$db->execute();
 				} catch (Exception $e) {
 					$this->setError($e->getMessage());
+
+					return false;
 				}
 			}
 		}

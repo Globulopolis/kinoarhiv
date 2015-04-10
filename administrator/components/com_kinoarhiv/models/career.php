@@ -99,7 +99,7 @@ class KinoarhivModelCareer extends JModelForm {
 				$title=>'string', $ordering=>'int', $language=>'string', $is_mainpage=>'int', $is_amplua=>'int'
 			)
 		));
-		$title = $data['form'][$title];
+		$title = trim($data['form'][$title]);
 		$is_mainpage = empty($data['form'][$is_mainpage]) ? 0 : $data['form'][$is_mainpage];
 		$is_amplua = empty($data['form'][$is_amplua]) ? 0 : $data['form'][$is_amplua];
 		$ordering = empty($data['form'][$ordering]) ? 0 : $data['form'][$ordering];
@@ -107,6 +107,14 @@ class KinoarhivModelCareer extends JModelForm {
 
 		if (empty($title)) {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_REQUIRED'));
+		}
+
+		// Check if career with this title allready exists
+		$db->setQuery("SELECT COUNT(id) FROM ".$db->quoteName('#__ka_names_career')." WHERE title = '".$db->escape($title)."'");
+		$count = $db->loadResult();
+
+		if ($count > 0) {
+			return array('success'=>false, 'message'=>JText::_('COM_KA_CAREER_EXISTS'));
 		}
 
 		if (empty($id)) {

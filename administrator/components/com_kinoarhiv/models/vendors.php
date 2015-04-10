@@ -143,21 +143,35 @@ class KinoarhivModelVendors extends JModelList {
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
-		$query = $db->getQuery(true);
+
+		if (empty($batch_data)) {
+			return false;
+		}
+
+		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$query->update($db->quoteName('#__ka_vendors'))
-				->set("`language` = '".$db->escape((string)$batch_data['language_id'])."'")
-				->where('`id` IN ('.implode(',', $ids).')');
+			$fields[] = $db->quoteName('language')." = '".(int)$batch_data['language_id']."'";
+		}
 
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
+		if (empty($fields)) {
+			return false;
+		}
 
-				return false;
-			}
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__ka_vendors'))
+			->set(implode(', ', $fields))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+		
+			return false;
 		}
 
 		return true;

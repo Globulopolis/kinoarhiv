@@ -206,38 +206,37 @@ class KinoarhivModelReviews extends JModelList {
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 
-		if ($batch_data['type'] != '') {
-			$query = $db->getQuery(true);
-
-			$query->update($db->quoteName('#__ka_reviews'))
-				->set("`type` = '".(int)$batch_data['batch-type']."'")
-				->where('`id` IN ('.implode(',', $ids).')');
-
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
-
-				return false;
-			}
+		if (empty($batch_data)) {
+			return false;
 		}
 
-		if ($batch_data['user_id'] != '') {
-			$query = $db->getQuery(true);
+		$fields = array();
 
-			$query->update($db->quoteName('#__ka_reviews'))
-				->set("`uid` = '".(int)$batch_data['user_id']."'")
-				->where('`id` IN ('.implode(',', $ids).')');
+		if (!empty($batch_data['type'])) {
+			$fields[] = $db->quoteName('type')." = '".(int)$batch_data['type']."'";
+		}
+		if (!empty($batch_data['user_id'])) {
+			$fields[] = $db->quoteName('uid')." = '".(int)$batch_data['user_id']."'";
+		}
 
-			$db->setQuery($query);
-			try {
-				$db->execute();
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
+		if (empty($fields)) {
+			return false;
+		}
 
-				return false;
-			}
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__ka_reviews'))
+			->set(implode(', ', $fields))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+		
+			return false;
 		}
 
 		return true;

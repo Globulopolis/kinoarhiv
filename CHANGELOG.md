@@ -1,10 +1,12 @@
 ## HEAD (Unreleased)
+* Removed spinner from rating fields in advanced search.
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/42
 * Added an option to search by metacritic rating.
 * Added an options to disable ratings. User rating, movie rating from other sites.
 * Added list limit for global lists. E.g. movies list or premieres list.
 * Added checking for ffmpeg/ffprobe.
 * Added some new filters for releases, premieres.
+* Improved batch process.
 * Fixed errors in batch process.
 * Fixed error with empty video resolution.
 * Fixed wrong aspect ration for jwplayer and flowplayer.

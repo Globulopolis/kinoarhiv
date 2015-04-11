@@ -232,10 +232,10 @@
 	</fieldset>
 
 	<fieldset name="rel_award_edit">
-		<field name="rel_aw_id" type="text" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 		<field name="award_id" type="hidden" label="COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE" class="span10 required" required="true" default="" />
 		<field name="aw_year" type="datetime" label="COM_KA_FIELD_AW_YEAR" class="required" required="true" default="" filter="integer" datatype="date" size="22" dateformat="yy" />
 		<field name="aw_desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="raw" cols="6" rows="5" />
+		<field name="rel_aw_id" type="text" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
 	</fieldset>
 
 	<fieldset name="award_quick_add">

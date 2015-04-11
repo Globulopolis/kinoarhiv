@@ -79,7 +79,7 @@ class KinoarhivModelCareer extends JModelForm {
 		$ids = $app->input->get('id', array(), 'array');
 		$id = isset($ids[0]) ? $ids[0] : 0;
 
-		// We need set alias for quick save on movie page
+		// We need to setup alias for quick save on movie page
 		if ($alias == 1) {
 			$title = 'c_title';
 			$is_mainpage = 'c_is_mainpage';

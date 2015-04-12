@@ -21,25 +21,27 @@ class KinoarhivModelAward extends JModelForm {
 
 	protected function loadFormData() {
 		$app = JFactory::getApplication();
-		$data = $app->getUserState('com_kinoarhiv.awards.'.JFactory::getUser()->id.'.data', array());
+		$data = $app->getUserState('com_kinoarhiv.awards.'.JFactory::getUser()->id.'.edit_data', array());
 
 		if (empty($data)) {
-			$data = $this->getItems();
+			$data = $this->getItem();
 		}
 
 		return $data;
 	}
 
-	public function getItems() {
+	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$query = $db->getQuery(true);
 
-		$db->setQuery("SELECT `id`, `title`, `desc`, `language`, `state`"
-			. "\n FROM ".$db->quoteName('#__ka_awards')
-			. "\n WHERE `id` = ".(int)$id);
+		$query->select($db->quoteName(array('id', 'title', 'desc', 'language', 'state')))
+			->from($db->quoteName('#__ka_awards'))
+			->where($db->quoteName('id').' = '.(int)$id);
+
+		$db->setQuery($query);
 		$result = $db->loadObject();
 
 		return $result;
@@ -50,8 +52,13 @@ class KinoarhivModelAward extends JModelForm {
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
+		$query = $db->getQuery(true);
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_awards')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
+		$query->update($db->quoteName('#__ka_awards'))
+			->set($db->quoteName('state').' = '.(int)$state)
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -68,8 +75,12 @@ class KinoarhivModelAward extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
+		$query = $db->getQuery(true);
 
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_awards')." WHERE `id` IN (".implode(',', $ids).")");
+		$query->delete($db->quoteName('#__ka_awards'))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -92,84 +103,78 @@ class KinoarhivModelAward extends JModelForm {
 		if (empty($title)) {
 			$this->setError(JText::_('COM_KA_REQUIRED'));
 
+			$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('COM_KA_REQUIRED')
+			));
+
 			return false;
 		}
 
 		if (empty($id)) {
-			// Check if career with this title allready exists
-			$db->setQuery("SELECT COUNT(id) FROM ".$db->quoteName('#__ka_awards')." WHERE title = '".$db->escape($title)."'");
+			// Check if award with this title allready exists
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(id)')
+				->from($db->quoteName('#__ka_awards'))
+				->where($db->quoteName('title')." = '".$db->escape($title)."'");
+
+			$db->setQuery($query);
 			$count = $db->loadResult();
 
 			if ($count > 0) {
 				$this->setError(JText::_('COM_KA_AW_EXISTS'));
 
+				$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', array(
+					'success' => false,
+					'message' => JText::_('COM_KA_AW_EXISTS')
+				));
+
 				return false;
 			}
 
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_awards')." (`id`, `title`, `desc`, `state`, `language`)"
-				. "\n VALUES ('', '".$db->escape($title)."', '".$db->escape($data['desc'])."', '".$data['state']."', '".$data['language']."')");
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_awards'))
+				->columns($db->quoteName(array('title', 'desc', 'state', 'language')))
+				->values("'".$db->escape($title)."','".$db->escape($data['desc'])."','".$data['state']."','".$db->escape($data['language'])."'");
 		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_awards')
-				. "\n SET `title` = '".$db->escape($title)."', `desc` = '".$db->escape($data['desc'])."', `state` = '".$data['state']."', `language` = '".$data['language']."'"
-				. "\n WHERE `id` = ".(int)$id);
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_awards'))
+				->set($db->quoteName('title')." = '".$db->escape($title)."'")
+				->set($db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
+				->set($db->quoteName('state')." = '".$data['state']."'")
+				->set($db->quoteName('language')." = '".$db->escape($data['language'])."'")
+				->where($db->quoteName('id').' = '.(int)$id);
 		}
 
 		try {
+			$db->setQuery($query);
 			$db->execute();
 
 			if (empty($id)) {
-				$insertid = $db->insertid();
-				$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', array('id' => $insertid));
+				$id = $db->insertid();
 			}
+
+			$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', array(
+				'success' => true,
+				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
+				'data'    => array('id' => $id, 'title' => $title)
+			));
 
 			return true;
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 
+			$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+			));
+
 			return false;
 		}
 	}
-
-	/*public function quickSave() {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-
-		// We need set alias for quick save on movie page
-		$title = 'a_title';
-		$desc = 'a_desc';
-		$state = 'a_state';
-		$language = 'a_language';
-
-		$data = $app->input->getArray(array(
-			'form'=>array(
-				$title=>'string', $desc=>'string', $state=>'string', $language=>'string'
-			)
-		));
-		$title = $data['form'][$title];
-		$desc = $data['form'][$desc];
-		$state = empty($data['form'][$state]) ? 0 : $data['form'][$state];
-		$language = empty($data['form'][$language]) ? '*' : $data['form'][$language];
-
-		if (empty($title)) {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_REQUIRED'));
-		}
-
-		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_awards')." (`id`, `title`, `desc`, `state`, `language`)"
-			. "\n VALUES ('', '".$db->escape($title)."', '".$db->escape($desc)."', '".$state."', '".$language."')");
-		$query = $db->execute();
-
-		if ($query !== true) {
-			return array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
-		} else {
-			$insertid = $db->insertid();
-
-			return array(
-				'success'	=> true,
-				'message'	=> JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-				'data'		=> array('id'=>$insertid, 'title'=>$title)
-			);
-		}
-	}*/
 
 	/**
 	 * Method to validate the form data.

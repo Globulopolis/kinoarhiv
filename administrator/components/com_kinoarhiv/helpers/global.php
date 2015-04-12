@@ -53,4 +53,38 @@ class GlobalHelper {
 
 		return $language::getScriptLanguage($file, $jhtml, $script_type, $frontend);
 	}
+
+	/**
+	 * Method to get an errors from $errors and enqueue or directly display them.
+	 *
+	 * @param   mixed   $errors   An Exception object or array.
+	 * @param   bool    $format   Document type format.
+	 * @param   int     $count    Number of errors to process.
+	 *
+	 * @return  string
+	 *
+	*/
+	public static function renderErrors($errors, $format='html', $count=3) {
+		$_errors = array();
+
+		for ($i = 0, $n = count($errors); $i < $n && $i < $count; $i++) {
+			if ($errors[$i] instanceof Exception) {
+				if ($format == 'html') {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$_errors[] = $errors[$i]->getMessage();
+				}
+			} else {
+				if ($format == 'html') {
+					$app->enqueueMessage($errors[$i], 'warning');
+				} else {
+					$_errors[] = $errors[$i];
+				}
+			}
+		}
+
+		if ($format != 'html') {
+			return implode(PHP_EOL, $_errors);
+		}
+	}
 }

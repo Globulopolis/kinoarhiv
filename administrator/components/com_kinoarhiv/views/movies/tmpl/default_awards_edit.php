@@ -28,7 +28,7 @@ $award_id = $input->get('award_id', 0, 'int');
 			if ($('#form_a_title').val() != '') {
 				$.ajax({
 					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=awards&task=quickSave&format=json',
+					url: 'index.php?option=com_kinoarhiv&controller=awards&task=save&format=json',
 					data: $('.form_award fieldset').serialize() + '&<?php echo JSession::getFormToken(); ?>=1'
 				}).done(function(response){
 					if (response.success) {

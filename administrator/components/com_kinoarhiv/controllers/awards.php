@@ -212,7 +212,7 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
 	}
 
-	public function quickSave() {
+	/*public function quickSave() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$document = JFactory::getDocument();
 		$user = JFactory::getUser();
@@ -235,7 +235,7 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 
 		$document->setName('response');
 		echo json_encode($result);
-	}
+	}*/
 
 	public function batch() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));

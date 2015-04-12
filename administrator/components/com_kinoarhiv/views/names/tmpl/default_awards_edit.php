@@ -28,7 +28,7 @@ $award_id = $input->get('award_id', 0, 'int');
 			if ($('#form_a_title').val() != '') {
 				$.ajax({
 					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=awards&task=quickSave&format=json',
+					url: 'index.php?option=com_kinoarhiv&controller=awards&task=save&format=json',
 					data: $('.form_award fieldset').serialize() + '&<?php echo JSession::getFormToken(); ?>=1'
 				}).done(function(response){
 					if (response.success) {
@@ -121,21 +121,13 @@ $award_id = $input->get('award_id', 0, 'int');
 	<div class="span12 form_award" style="display: none;">
 		<fieldset class="form-horizontal">
 			<legend><?php echo JText::_('COM_KA_MOVIES_AW_LAYOUT_ADD_TITLE'); ?></legend>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('a_title'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('a_title'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('a_desc'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('a_desc'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('a_state'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('a_state'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('a_language'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('a_language'); ?></div>
+			<div class="group">
+				<?php foreach($this->form->getFieldset('award_quick_add') as $field): ?>
+				<div class="control-group">
+					<div class="control-label"><?php echo $field->label; ?></div>
+					<div class="controls"><?php echo $field->input; ?></div>
+				</div>
+				<?php endforeach; ?>
 			</div>
 			<div class="control-group">
 				<button id="form_award_apply"><?php echo JText::_('JTOOLBAR_APPLY'); ?></button>

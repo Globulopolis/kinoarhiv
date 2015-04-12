@@ -130,7 +130,7 @@ class KinoarhivModelAward extends JModelForm {
 		}
 	}
 
-	public function quickSave() {
+	/*public function quickSave() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 
@@ -169,7 +169,7 @@ class KinoarhivModelAward extends JModelForm {
 				'data'		=> array('id'=>$insertid, 'title'=>$title)
 			);
 		}
-	}
+	}*/
 
 	/**
 	 * Method to validate the form data.

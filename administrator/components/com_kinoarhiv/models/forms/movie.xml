@@ -249,6 +249,7 @@
 			<option value="*">JALL</option>
 		</field>
 	</fieldset>
+
 	<fieldset name="premiere_edit">
 		<field name="p_vendor_id" type="text" default="" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
 		<field name="p_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="string" size="45" />
@@ -259,6 +260,7 @@
 		</field>
 		<field name="p_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
 	</fieldset>
+
 	<fieldset name="release_edit">
 		<field name="r_vendor_id" type="text" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
 		<field name="r_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="span10 required" filter="string" size="45" />

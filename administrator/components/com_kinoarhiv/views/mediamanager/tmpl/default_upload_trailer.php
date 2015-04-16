@@ -500,7 +500,6 @@ $type = $input->get('type', '', 'word');
 		$('.cmd-form-urls').click(function(e){
 			e.preventDefault();
 			var _this = $(this),
-				url_regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/, // from angular.js
 				dlg = $('<div style="display: none;" class="dialog" title=""><p></p></div>');
 
 			if ($(this).hasClass('video')) {
@@ -510,7 +509,7 @@ $type = $input->get('type', '', 'word');
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
 							var input = $('.dialog #urls_url_video');
-							if (input.val() != '' && url_regex.test(input.val())) {
+							if (input.val() != '') {
 								var form_urls = $('#form_urls').val();
 								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'" type="'+ $('#urls_url_video_type').val() +'" player="'+ $('#urls_url_video_inplayer').val() +'"]'); // Set value
 								$('#urls_layout_video_form')[0].reset();

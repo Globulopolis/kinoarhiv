@@ -35,40 +35,100 @@ class KinoarhivControllerCountries extends JControllerLegacy {
 
 	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$document = JFactory::getDocument();
+		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.create.country', 'com_kinoarhiv') && !$user->authorise('core.edit.country', 'com_kinoarhiv')) {
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
+			if ($document->getType() == 'html') {
+				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+				return;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR')));
+				return;
+			}
 		}
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('country');
-		$form = $model->getForm();
 		$data = $this->input->post->get('form', array(), 'array');
-		$id = $this->input->post->get('id', 0, 'int');
-		$return = $model->save($data);
+		$form = $model->getForm($data, false);
 
-		// Check the return value.
-		if ($return === false) {
-			// Save failed, go back to the screen and display a notice.
-			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', $message, 'error');
-			return false;
+		if (!$form) {
+			if ($document->getType() == 'html') {
+				$app->enqueueMessage($model->getError(), 'error');
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>$model->getError()));
+				return;
+			}
+		}
+
+		// Store data for use in KinoarhivModelCountry::loadFormData()
+		$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.edit_data', $data);
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false) {
+			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
+
+			if ($document->getType() == 'html') {
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]='.$data['id']);
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>$errors));
+				return;
+			}
+		}
+
+		$result = $model->save($validData);
+		$session_data = $app->getUserState('com_kinoarhiv.countries.'.$user->id.'.data');
+
+		if (!$result) {
+			if ($document->getType() == 'html') {
+				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+				$this->setMessage($this->getError(), 'error');
+
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]='.$data['id']);
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode($session_data);
+				return;
+			}
 		}
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.edit_data', null);
 
-		// Set the redirect based on the task.
-		switch ($this->getTask()) {
-			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]='.(int)$id, $message);
-				break;
+		if ($document->getType() == 'html') {
+			$id = $session_data['data']['id'];
 
-			case 'save':
-			default:
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', $message);
-				break;
+			// Set the redirect based on the task.
+			switch ($this->getTask()) {
+				case 'save2new':
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=add', $message);
+					break;
+				case 'apply':
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]='.$id, $message);
+					break;
+
+				case 'save':
+				default:
+					$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', $message);
+					break;
+			}
+		} else {
+			$document->setName('response');
+			echo json_encode($session_data);
 		}
 
 		return true;
@@ -127,15 +187,18 @@ class KinoarhivControllerCountries extends JControllerLegacy {
 	}
 
 	public function cancel() {
+		$user = JFactory::getUser();
+
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.admin', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
 		// Clean the session data.
 		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.countries.global.data', null);
+		$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 	}
@@ -158,16 +221,7 @@ class KinoarhivControllerCountries extends JControllerLegacy {
 			$result = $model->batch();
 
 			if ($result === false) {
-				$errors = $model->getErrors();
-
-				for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-					if ($errors[$i] instanceof Exception) {
-						$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-					} else {
-						$app->enqueueMessage($errors[$i], 'warning');
-					}
-				}
-
+				GlobalHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 
 				return false;

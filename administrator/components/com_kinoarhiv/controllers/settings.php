@@ -101,11 +101,9 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 	}
 
 	public function saveConfig() {
-		$app = JFactory::getApplication();
-
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
-			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			JFactory::getApplication()->redirect('index.php', JText::_('JLIB_RULES_NOT_ALLOWED'), 'error');
 			return;
 		}
 

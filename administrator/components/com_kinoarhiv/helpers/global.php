@@ -65,6 +65,7 @@ class GlobalHelper {
 	 *
 	*/
 	public static function renderErrors($errors, $format='html', $count=3) {
+		$app = JFactory::getApplication();
 		$_errors = array();
 
 		for ($i = 0, $n = count($errors); $i < $n && $i < $count; $i++) {

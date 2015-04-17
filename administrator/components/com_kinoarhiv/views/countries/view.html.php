@@ -129,7 +129,7 @@ class KinoarhivViewCountries extends JViewLegacy {
 	protected function getSortFields() {
 		return array(
 			'a.state' => JText::_('JSTATUS'),
-			'a.name' => JText::_('JGLOBAL_TITLE'),
+			'a.name' => JText::_('COM_KA_FIELD_COUNTRY_LABEL'),
 			'a.code' => JText::_('COM_KA_FIELD_COUNTRY_CODE_LABEL'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
 			'a.id' => JText::_('JGRID_HEADING_ID')

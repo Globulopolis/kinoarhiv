@@ -16,20 +16,24 @@ JHtml::_('behavior.keepalive');
 		Joomla.submitform(task);
 	}
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
-	<div id="j-main-container">
-		<fieldset class="form-horizontal">
-			<?php foreach ($this->form->getFieldset('edit') as $field): ?>
-			<div class="control-group">
-				<div class="control-label"><?php echo $field->label; ?></div>
-				<div class="controls"><?php echo $field->input; ?></div>
+<div id="j-main-container">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
+		<div class="row-fluid">
+			<div class="span6">
+				<fieldset class="form-horizontal">
+					<?php foreach ($this->form->getFieldset('edit') as $field): ?>
+					<div class="control-group">
+						<div class="control-label"><?php echo $field->label; ?></div>
+						<div class="controls"><?php echo $field->input; ?></div>
+					</div>
+					<?php endforeach; ?>
+				</fieldset>
 			</div>
-			<?php endforeach; ?>
-		</fieldset>
-	</div>
+		</div>
 
-	<input type="hidden" name="controller" value="countries" />
-	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
-	<?php echo JHtml::_('form.token'); ?>
-</form>
+		<input type="hidden" name="controller" value="countries" />
+		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
+		<?php echo JHtml::_('form.token'); ?>
+	</form>
+</div>

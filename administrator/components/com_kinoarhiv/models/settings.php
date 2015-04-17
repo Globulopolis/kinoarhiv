@@ -133,9 +133,13 @@ class KinoarhivModelSettings extends JModelForm {
 		$params = json_encode($data);
 		$rules = json_encode($rules);
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__extensions')
-			. "\n SET `params` = '".$db->escape($params)."'"
-			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('params')." = '".$db->escape($params)."'")
+			->where(array($db->quoteName('type')." = 'component'", $db->quoteName('element')." = 'com_kinoarhiv'"));
+
+		$db->setQuery($query);
 		$result = $db->execute();
 
 		if (!$result) {
@@ -144,10 +148,14 @@ class KinoarhivModelSettings extends JModelForm {
 		}
 
 		if (JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
-			$db->setQuery("UPDATE ".$db->quoteName('#__assets')
-				. "\n SET `rules` = '".$rules."'"
-				. "\n WHERE `name` = 'com_kinoarhiv' AND `level` = 1 AND `parent_id` = 1");
-			$query = $db->execute();
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__assets'))
+				->set($db->quoteName('rules')." = '".$rules."'")
+				->where(array($db->quoteName('level')." = 1", $db->quoteName('parent_id')." = 1", $db->quoteName('name')." = 'com_kinoarhiv'"));
+
+			$db->setQuery($query);
+			$db->execute();
 		} else {
 			$this->setError(JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
 			return false;
@@ -161,9 +169,14 @@ class KinoarhivModelSettings extends JModelForm {
 
 	public function restoreConfig($data) {
 		$db = $this->getDBO();
-		$data = json_encode($data);
+		$params = json_encode($data);
+		$query = $db->getQuery(true);
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__extensions')." SET `params` = '".$db->escape($data)."' WHERE `type` = 'component' AND `element` = 'com_kinoarhiv'");
+		$query->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('params')." = '".$db->escape($params)."'")
+			->where(array($db->quoteName('type')." = 'component'", $db->quoteName('element')." = 'com_kinoarhiv'"));
+
+		$db->setQuery($query);
 		$result = $db->execute();
 
 		return $result ? true : false;

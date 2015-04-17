@@ -69,14 +69,14 @@ class KinoarhivModelVendors extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`v`.`id`, `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`, `v`.`language`, `v`.`state`'
+				$db->quoteName(array('v.id', 'v.company_name', 'v.company_name_intl', 'v.company_name_alias', 'v.language', 'v.state'))
 			)
 		);
-		$query->from('#__ka_vendors AS `v`');
+		$query->from($db->quoteName('#__ka_vendors', 'v'));
 
 		// Join over the language
-		$query->select(' `l`.`title` AS `language_title`')
-			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `v`.`language`');
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('v.language'));
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
@@ -119,16 +119,23 @@ class KinoarhivModelVendors extends JModelList {
 		return $query;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems() {
 		$items = parent::getItems();
-		$app = JFactory::getApplication();
 
-		if ($app->isSite()) {
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
 			for ($x = 0, $count = count($items); $x < $count; $x++) {
-				//Check the access level. Remove articles the user shouldn't see
+				// Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}

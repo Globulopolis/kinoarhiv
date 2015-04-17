@@ -234,16 +234,7 @@ class KinoarhivControllerAwards extends JControllerLegacy {
 			$result = $model->batch();
 
 			if ($result === false) {
-				$errors = $model->getErrors();
-
-				for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-					if ($errors[$i] instanceof Exception) {
-						$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-					} else {
-						$app->enqueueMessage($errors[$i], 'warning');
-					}
-				}
-
+				GlobalHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
 
 				return false;

@@ -36,7 +36,7 @@ $name_id = $input->get('name_id', 0, 'int');
 				if ($('#form_c_title').val() != '') {
 					$.ajax({
 						type: 'POST',
-						url: 'index.php?option=com_kinoarhiv&controller=careers&task=save&quick=1&format=json',
+						url: 'index.php?option=com_kinoarhiv&controller=careers&task=save&alias=1&format=json',
 						data: $('.form_career fieldset').serialize() + '&<?php echo JSession::getFormToken(); ?>=1'
 					}).done(function(response){
 						if (response.success) {
@@ -272,25 +272,13 @@ $name_id = $input->get('name_id', 0, 'int');
 	<div class="span12 form_career" style="display: none;">
 		<fieldset class="form-horizontal">
 			<legend><?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_CAREER_LEGEND'); ?></legend>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('c_title'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('c_title'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('c_is_mainpage'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('c_is_mainpage'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('c_is_amplua'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('c_is_amplua'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('c_language'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('c_language'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('c_ordering'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('c_ordering'); ?></div>
+			<div class="group">
+				<?php foreach($this->form->getFieldset('career_quick_add') as $field): ?>
+				<div class="control-group">
+					<div class="control-label"><?php echo $field->label; ?></div>
+					<div class="controls"><?php echo $field->input; ?></div>
+				</div>
+				<?php endforeach; ?>
 			</div>
 			<div class="control-group">
 				<button id="form_career_apply"><?php echo JText::_('JTOOLBAR_APPLY'); ?></button>

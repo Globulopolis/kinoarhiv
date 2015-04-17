@@ -14,6 +14,8 @@ class KinoarhivModelCareers extends JModelList {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'title', 'a.title',
+				'is_mainpage', 'a.is_mainpage',
+				'is_amplua', 'a.is_amplua',
 				'ordering', 'a.ordering',
 				'language', 'a.language');
 		}
@@ -59,19 +61,18 @@ class KinoarhivModelCareers extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
-		$task = $app->input->get('task', '', 'cmd');
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`a`.`id`, `a`.`title`, `a`.`ordering`, `a`.`language`'
+				$db->quoteName(array('a.id', 'a.title', 'a.is_mainpage', 'a.is_amplua', 'a.ordering', 'a.language'))
 			)
 		);
-		$query->from('#__ka_names_career AS `a`');
+		$query->from($db->quoteName('#__ka_names_career', 'a'));
 
 		// Join over the language
-		$query->select(' `l`.`title` AS `language_title`')
-			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
 
 		// Filter by search in title.
 		$search = $this->getState('filter.search');
@@ -103,6 +104,14 @@ class KinoarhivModelCareers extends JModelList {
 		return $query;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems() {
 		$items = parent::getItems();
 
@@ -137,7 +146,12 @@ class KinoarhivModelCareers extends JModelList {
 		$db->transactionStart();
 
 		foreach ($data as $key=>$value) {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names_career')." SET `ordering` = '".(int)$key."' WHERE `id` = ".(int)$value.";");
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_names_career'))
+				->set($db->quoteName('ordering')." = '".(int)$key."'")
+				->where($db->quoteName('id').' = '.(int)$value);
+			$db->setQuery($query.';');
 			$result = $db->execute();
 
 			if ($result === false) {

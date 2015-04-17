@@ -121,7 +121,9 @@ class KinoarhivViewCareers extends JViewLegacy {
 
 	protected function getSortFields() {
 		return array(
-			'a.title' => JText::_('JGLOBAL_TITLE'),
+			'a.title' => JText::_('COM_KA_CAREER_FIELD_TITLE'),
+			'a.is_mainpage' => JText::_('COM_KA_FIELD_CAREER_MAINPAGE'),
+			'a.is_amplua' => JText::_('COM_KA_FIELD_CAREER_AMPLUA'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
 			'a.id' => JText::_('JGRID_HEADING_ID')
 		);

@@ -70,23 +70,22 @@ class KinoarhivModelGenres extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
-		$task = $app->input->get('task', '', 'cmd');
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`a`.`id`, `a`.`name`, `a`.`alias`, `a`.`stats`, `a`.`language`, `a`.`state`, `a`.`access`'
+				$db->quoteName(array('a.id', 'a.name', 'a.alias', 'a.stats', 'a.language', 'a.state', 'a.access'))
 			)
 		);
-		$query->from('#__ka_genres AS `a`');
+		$query->from($db->quoteName('#__ka_genres', 'a'));
 
 		// Join over the language
-		$query->select(' `l`.`title` AS `language_title`')
-			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
 
 		// Join over the asset groups.
-		$query->select('ag.title AS access_level')
-			->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+		$query->select($db->quoteName('ag.title', 'access_level'))
+			->join('LEFT',  $db->quoteName('#__viewlevels', 'ag').' ON ag.id = a.access');
 
 		// Filter by access level.
 		if ($access = $this->getState('filter.access')) {
@@ -139,16 +138,23 @@ class KinoarhivModelGenres extends JModelList {
 		return $query;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems() {
 		$items = parent::getItems();
-		$app = JFactory::getApplication();
 
-		if ($app->isSite()) {
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
 			for ($x = 0, $count = count($items); $x < $count; $x++) {
-				//Check the access level. Remove articles the user shouldn't see
+				// Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}

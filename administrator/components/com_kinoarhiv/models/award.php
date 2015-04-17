@@ -20,8 +20,7 @@ class KinoarhivModelAward extends JModelForm {
 	}
 
 	protected function loadFormData() {
-		$app = JFactory::getApplication();
-		$data = $app->getUserState('com_kinoarhiv.awards.'.JFactory::getUser()->id.'.edit_data', array());
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.awards.'.JFactory::getUser()->id.'.edit_data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -136,8 +135,8 @@ class KinoarhivModelAward extends JModelForm {
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__ka_awards'))
-				->columns($db->quoteName(array('title', 'desc', 'state', 'language')))
-				->values("'".$db->escape($title)."','".$db->escape($data['desc'])."','".$data['state']."','".$db->escape($data['language'])."'");
+				->columns($db->quoteName(array('id', 'title', 'desc', 'state', 'language')))
+				->values("'','".$db->escape($title)."','".$db->escape($data['desc'])."','".$data['state']."','".$db->escape($data['language'])."'");
 		} else {
 			$query = $db->getQuery(true);
 

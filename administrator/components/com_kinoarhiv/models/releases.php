@@ -81,37 +81,37 @@ class KinoarhivModelReleases extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`r`.`id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `r`.`language`, `r`.`ordering`'
+				$db->quoteName(array('r.id', 'r.movie_id', 'r.media_type', 'r.release_date', 'r.language', 'r.ordering'))
 			)
 		);
-		$query->from($db->quoteName('#__ka_releases').' AS `r`')
-		->select('`m`.`title`, `m`.`year`')
-			->leftjoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `r`.`movie_id`')
-		->select('`v`.`company_name`, `v`.`company_name_intl`')
-			->leftjoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id`')
-		->select('`c`.`name`, `c`.`code`')
-			->leftjoin($db->quoteName('#__ka_countries').' AS `c` ON `c`.`id` = `r`.`country_id`');
+		$query->from($db->quoteName('#__ka_releases', 'r'))
+			->select($db->quoteName(array('m.title', 'm.year')))
+			->join('LEFT', $db->quoteName('#__ka_movies', 'm').' ON '.$db->quoteName('m.id').' = '.$db->quoteName('r.movie_id'))
+			->select($db->quoteName(array('v.company_name', 'v.company_name_intl')))
+			->join('LEFT', $db->quoteName('#__ka_vendors', 'v').' ON '.$db->quoteName('v.id').' = '.$db->quoteName('r.vendor_id'))
+			->select($db->quoteName(array('c.name', 'c.code')))
+			->join('LEFT', $db->quoteName('#__ka_countries', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('r.country_id'));
 
 		// Join over the language
-		$query->select(' l.title AS language_title')
-			->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = r.language');
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('r.language'));
 
 		// Filter by country
 		$country = $this->getState('filter.country');
 		if (is_numeric($country)) {
-			$query->where('`r`.`country_id` = ' . (int) $country);
+			$query->where('r.country_id = ' . (int) $country);
 		}
 
 		// Filter by vendor
 		$vendor = $this->getState('filter.vendor');
 		if (is_numeric($vendor)) {
-			$query->where('`r`.`vendor_id` = ' . (int) $vendor);
+			$query->where('r.vendor_id = ' . (int) $vendor);
 		}
 
 		// Filter by media type
 		$mediatype = $this->getState('filter.media_type');
 		if (is_numeric($mediatype)) {
-			$query->where('`r`.`media_type` = ' . (int) $mediatype);
+			$query->where('r.media_type = ' . (int) $mediatype);
 		}
 
 		// Filter on the language.
@@ -159,10 +159,42 @@ class KinoarhivModelReleases extends JModelList {
 		return $query;
 	}
 
-	public function deleteReleases() {
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
+	public function getItems() {
+		$items = parent::getItems();
+
+		if (JFactory::getApplication()->isSite()) {
+			$user = JFactory::getUser();
+			$groups = $user->getAuthorisedViewLevels();
+
+			for ($x = 0, $count = count($items); $x < $count; $x++) {
+				// Check the access level. Remove articles the user shouldn't see
+				if (!in_array($items[$x]->access, $groups)) {
+					unset($items[$x]);
+				}
+			}
+		}
+
+		return $items;
+	}
+
+	public function saveOrder() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$data = $app->input->post->get('data', array(), 'array');
+		$data = $app->input->post->get('ord', array(), 'array');
+		$movie_id = $app->input->post->get('movie_id', 0, 'int');
+
+		if (count($data) < 2) {
+			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
+		}
+
 		$query = true;
 
 		$db->setDebug(true);
@@ -170,10 +202,13 @@ class KinoarhivModelReleases extends JModelList {
 		$db->transactionStart();
 
 		foreach ($data as $key=>$value) {
-			$_name = explode('_', $value['name']);
-			$item_id = $_name[3];
+			$query = $db->getQuery(true);
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_releases')." WHERE `id` = ".(int)$item_id.";");
+			$query->update($db->quoteName('#__ka_releases'))
+				->set($db->quoteName('ordering')." = '".(int)$key."'")
+				->where(array($db->quoteName('ordering').' = '.(int)$value, $db->quoteName('movie_id').' = '.(int)$movie_id));
+
+			$db->setQuery($query.';');
 			$result = $db->execute();
 
 			if ($result === false) {
@@ -193,10 +228,10 @@ class KinoarhivModelReleases extends JModelList {
 
 		if ($query) {
 			$success = true;
-			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
+			$message = JText::_('COM_KA_SAVED');
 		} else {
 			$success = false;
-			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
+			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
 		}
 
 		return array('success'=>$success, 'message'=>$message);

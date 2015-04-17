@@ -20,20 +20,27 @@ class KinoarhivModelVendor extends JModelForm {
 	}
 
 	protected function loadFormData() {
-		return $this->getItems();
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.vendors.'.JFactory::getUser()->id.'.edit_data', array());
+
+		if (empty($data)) {
+			$data = $this->getItem();
+		}
+
+		return $data;
 	}
 
-	public function getItems() {
+	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$task = $app->input->get('task', '', 'cmd');
-
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$query = $db->getQuery(true);
 
-		$db->setQuery("SELECT `id`, `company_name`, `company_name_intl`, `company_name_alias`, `description`, `language`, `state`"
-			. "\n FROM ".$db->quoteName('#__ka_vendors')
-			. "\n WHERE `id` = ".(int)$id);
+		$query->select($db->quoteName(array('id', 'company_name', 'company_name_intl', 'company_name_alias', 'description', 'language', 'state')))
+			->from($db->quoteName('#__ka_vendors'))
+			->where($db->quoteName('id').' = '.(int)$id);
+
+		$db->setQuery($query);
 		$result = $db->loadObject();
 
 		return $result;
@@ -44,8 +51,13 @@ class KinoarhivModelVendor extends JModelForm {
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
+		$query = $db->getQuery(true);
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_vendors')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
+		$query->update($db->quoteName('#__ka_vendors'))
+			->set($db->quoteName('state').' = '.(int)$state)
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -62,8 +74,12 @@ class KinoarhivModelVendor extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
+		$query = $db->getQuery(true);
 
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_vendors')." WHERE `id` IN (".implode(',', $ids).")");
+		$query->delete($db->quoteName('#__ka_vendors'))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -79,33 +95,134 @@ class KinoarhivModelVendor extends JModelForm {
 	public function save($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
+		$user = JFactory::getUser();
 		$id = $app->input->post->get('id', null, 'int');
+		$company_name = trim($data['company_name']);
+		$company_name_intl = trim($data['company_name_intl']);
 
-		if (empty($data['company_name'])) {
+		if (empty($company_name)) {
+			$this->setError(JText::_('COM_KA_REQUIRED'));
+
+			$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('COM_KA_REQUIRED')
+			));
+
 			return false;
 		}
 
-		if (empty($data['company_name_alias'])) {
-			$data['company_name_alias'] = JFilterOutput::stringURLSafe($data['company_name']);
+		// Automatic handling of alias for empty fields
+		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new')) && (int) $app->input->get('id') == 0) {
+			if ($data['company_name_alias'] == null) {
+				if (JFactory::getConfig()->get('unicodeslugs') == 1) {
+					$data['company_name_alias'] = JFilterOutput::stringURLUnicodeSlug($company_name);
+				} else {
+					$data['company_name_alias'] = JFilterOutput::stringURLSafe($company_name);
+				}
+			}
 		}
 
 		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_vendors')." (`id`, `company_name`, `company_name_intl`, `company_name_alias`, `description`, `language`, `state`)"
-				. "\n VALUES ('', '".$data['company_name']."', '".$data['company_name_intl']."', '".JFilterOutput::stringURLSafe($data['company_name_alias'])."', '".$db->escape($data['description'])."', '".$data['language']."', '".$data['state']."')");
+			// Check if vendor with this company name allready exists
+			$query = $db->getQuery(true);
+
+			$query->select('COUNT(id)')
+				->from($db->quoteName('#__ka_vendors'))
+				->where($db->quoteName('company_name')." = '".$db->escape($company_name)."'");
+
+			$db->setQuery($query);
+			$count = $db->loadResult();
+
+			if ($count > 0) {
+				$this->setError(JText::_('COM_KA_AW_EXISTS'));
+
+				$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', array(
+					'success' => false,
+					'message' => JText::_('COM_KA_AW_EXISTS')
+				));
+
+				return false;
+			}
+
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_vendors'))
+				->columns($db->quoteName(array('id', 'company_name', 'company_name_intl', 'company_name_alias', 'description', 'language', 'state')))
+				->values("'','".$db->escape($company_name)."','".$db->escape($company_name_intl)."','".$data['company_name_alias']."','".$db->escape($data['description'])."','".$db->escape($data['language'])."','".$state."'");
 		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_vendors')
-				. "\n SET `company_name` = '".$data['company_name']."', `company_name_intl` = '".$data['company_name_intl']."', `company_name_alias` = '".JFilterOutput::stringURLSafe($data['company_name_alias'])."', `description` = '".$db->escape($data['description'])."', `language` = '".$data['language']."', `state` = '".$data['state']."'"
-				. "\n WHERE `id` = ".(int)$id);
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_vendors'))
+				->set($db->quoteName('company_name')." = '".$db->escape($company_name)."'")
+				->set($db->quoteName('company_name_intl')." = '".$db->escape($company_name_intl)."'")
+				->set($db->quoteName('company_name_alias')." = '".$data['company_name_alias']."'")
+				->set($db->quoteName('description')." = '".$db->escape($data['description'])."'")
+				->set($db->quoteName('language')." = '".$db->escape($data['language'])."'")
+				->set($db->quoteName('state')." = '".$data['state']."'")
+				->where($db->quoteName('id').' = '.(int)$id);
 		}
 
 		try {
+			$db->setQuery($query);
 			$db->execute();
+
+			if (empty($id)) {
+				$id = $db->insertid();
+			}
+
+			$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', array(
+				'success' => true,
+				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
+				'data'    => array('id' => $id, 'title' => $company_name.' / '.$company_name_intl)
+			));
 
 			return true;
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 
+			$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+			));
+
 			return false;
 		}
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null) {
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			$this->setError($return->getMessage());
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

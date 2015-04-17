@@ -20,31 +20,44 @@ class KinoarhivModelReview extends JModelForm {
 	}
 
 	protected function loadFormData() {
-		return $this->getItem();
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.reviews.'.JFactory::getUser()->id.'.edit_data', array());
+
+		if (empty($data)) {
+			$data = $this->getItem();
+		}
+
+		return $data;
 	}
 
 	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$task = $app->input->get('task', '', 'cmd');
-		$id = $app->input->get('id', array(), 'array');
+		$_id = $app->input->get('id', array(), 'array');
+		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$query = $db->getQuery(true);
 
-		$db->setQuery("SELECT `id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`"
-			. "\n FROM ".$db->quoteName('#__ka_reviews')
-			. "\n WHERE `id` = ".(int)$id[0]);
+		$query->select($db->quoteName(array('id', 'uid', 'movie_id', 'review', 'created', 'type', 'ip', 'state')))
+			->from($db->quoteName('#__ka_reviews'))
+			->where($db->quoteName('id').' = '.(int)$id);
+
+		$db->setQuery($query);
 		$result = $db->loadObject();
 
 		return $result;
 	}
 
-	public function save($data) {
+	public function publish($isUnpublish) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$id = $app->input->post->get('id', null, 'int');
+		$ids = $app->input->get('id', array(), 'array');
+		$state = $isUnpublish ? 0 : 1;
+		$query = $db->getQuery(true);
 
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')
-			. "\n SET `uid` = '".(int)$data['uid']."', `movie_id` = '".(int)$data['movie_id']."', `review` = '".$db->escape($data['review'])."', `created` = '".$data['created']."', `type` = '".(int)$data['type']."', `ip` = '".(string)$data['ip']."', `state` = '".(int)$data['state']."'"
-			. "\n WHERE `id` = ".(int)$id);
+		$query->update($db->quoteName('#__ka_reviews'))
+			->set($db->quoteName('state').' = '.(int)$state)
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -55,5 +68,128 @@ class KinoarhivModelReview extends JModelForm {
 
 			return false;
 		}
+	}
+
+	public function remove() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->get('id', array(), 'array');
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__ka_reviews'))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+	}
+
+	public function save($data) {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$user = JFactory::getUser();
+		$id = $app->input->post->get('id', null, 'int');
+		$review = trim($data['review']);
+
+		if (empty($review)) {
+			$this->setError(JText::_('COM_KA_REQUIRED'));
+
+			$app->setUserState('com_kinoarhiv.reviews.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('COM_KA_REQUIRED')
+			));
+
+			return false;
+		}
+
+		if (empty($id)) {
+			$this->setError(JText::_('ERROR'));
+
+			$app->setUserState('com_kinoarhiv.reviews.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('ERROR')
+			));
+
+			return false;
+		} else {
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_reviews'))
+				->set($db->quoteName('uid')." = '".(int)$data['uid']."'")
+				->set($db->quoteName('movie_id')." = '".(int)$data['movie_id']."'")
+				->set($db->quoteName('review')." = '".$db->escape($data['review'])."'")
+				->set($db->quoteName('created')." = '".$data['created']."'")
+				->set($db->quoteName('type')." = '".(int)$data['type']."'")
+				->set($db->quoteName('ip')." = '".(string)$data['ip']."'")
+				->set($db->quoteName('state')." = '".$data['state']."'")
+				->where($db->quoteName('id').' = '.(int)$id);
+		}
+
+		try {
+			$db->setQuery($query);
+			$db->execute();
+
+			$app->setUserState('com_kinoarhiv.reviews.'.$user->id.'.data', array(
+				'success' => true,
+				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
+				'data'    => array('id' => $id)
+			));
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			$app->setUserState('com_kinoarhiv.reviews.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+			));
+
+			return false;
+		}
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null) {
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception) {
+			$this->setError($return->getMessage());
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false) {
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message) {
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

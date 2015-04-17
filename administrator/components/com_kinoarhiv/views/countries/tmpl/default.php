@@ -45,7 +45,7 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>
-						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.name', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_COUNTRY_LABEL', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_COUNTRY_CODE_LABEL', 'a.code', $listDirn, $listOrder); ?>

@@ -5,7 +5,7 @@
 		<field name="movie_id" type="movies" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span5" filter="intval" required="true" size="11" data-ac-type="movies" />
 		<field name="country_id" type="countries" default="" label="COM_KA_FIELD_COUNTRY_LABEL" class="span5" filter="intval" required="true" size="11" data-ac-type="countries" />
 		<field name="vendor_id" type="vendors" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true" class="span5" filter="intval" size="11" data-ac-type="vendors" />
-		<field name="release_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="date" filter="user_utc" required="true" />
+		<field name="release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="date" filter="user_utc" required="true" />
 		<field name="media_type" type="groupedlist" class="span5" default="11" label="COM_KA_RELEASES_MEDIATYPE_TITLE" description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
 			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
 				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>

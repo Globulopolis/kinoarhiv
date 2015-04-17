@@ -20,91 +20,112 @@ class KinoarhivModelPremiere extends JModelForm {
 	}
 
 	protected function loadFormData() {
-		return $this->getItem();
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.premieres.'.JFactory::getUser()->id.'.edit_data', array());
+
+		if (empty($data)) {
+			$data = $this->getItem();
+		}
+
+		return $data;
 	}
 
 	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$id = $app->input->get('id', array(0), 'array');
+		$_id = $app->input->get('id', array(), 'array');
+		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$query = $db->getQuery(true);
 
-		if (empty($id)) {
-			return array();
-		}
+		$query->select($db->quoteName(array('id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering')))
+			->from($db->quoteName('#__ka_premieres'))
+			->where($db->quoteName('id').' = '.(int)$id);
 
-		$db->setQuery("SELECT `id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `language`, `ordering`"
-			. "\n FROM ".$db->quoteName('#__ka_premieres')
-			. "\n WHERE `id` = ".(int)$id[0]);
+		$db->setQuery($query);
 		$result = $db->loadObject();
 
 		return $result;
 	}
 
-	public function savePremiereAjax() {
+	public function save($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$id = $app->input->get('id', null, 'int');
-		$movie_id = $app->input->get('movie_id', null, 'int');
-		$data = $app->input->get('form', array(), 'array');
-		$is_new = $app->input->get('new', 0, 'int');
+		$user = JFactory::getUser();
+		$id = $app->input->post->get('id', null, 'int');
 
-		if (isset($data['p_vendor_id']) && !empty($data['p_vendor_id'])) {
-			if ($is_new == 1) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_premieres')." (`id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `language`, `ordering`)"
-					. "\n VALUES ('', '".$movie_id."', '".(int)$data['p_vendor_id']."', '".$data['p_premiere_date']."', '".(int)$data['p_country_id']."', '".$db->escape($data['p_info'])."', '".$db->escape($data['p_language'])."', '".(int)$data['p_ordering']."')");
-			} else {
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_premieres')
-					. "\n SET `vendor_id` = '".(int)$data['p_vendor_id']."', `premiere_date` = '".$data['p_premiere_date']."', `country_id` = '".(int)$data['p_country_id']."', `info` = '".$db->escape($data['p_info'])."', `language` = '".$db->escape($data['p_language'])."', `ordering` = '".(int)$data['p_ordering']."'"
-					. "\n WHERE `id` = ".(int)$id);
-			}
+		if (empty($id)) {
+			$query = $db->getQuery(true);
 
-			try {
-				$db->execute();
-				return array('success'=>true, 'message'=>JText::_('COM_KA_SAVED'));
-			} catch(Exception $e) {
-				return array('success'=>false, 'message'=>$e->getMessage());
-			}
+			$query->insert($db->quoteName('#__ka_premieres'))
+				->columns($db->quoteName(array('id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering')))
+				->values("'','".(int)$data['movie_id']."','".(int)$data['vendor_id']."','".$data['premiere_date']."','".(int)$data['country_id']."','".$db->escape($data['info'])."','".$db->escape($data['language'])."','".(int)$data['ordering']."'");
 		} else {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_FIELD_PREMIERE_VENDOR_REQUIRED'));
-		}
-	}
+			$query = $db->getQuery(true);
 
-	public function savePremiere($data) {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$id = $app->input->get('id', array(0), 'array');
-
-		if (empty($id[0])) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_premieres')." (`id`, `movie_id`, `vendor_id`, `premiere_date`, `country_id`, `info`, `language`, `ordering`)"
-				. "\n VALUES ('', '".(int)$data['movie_id']."', '".(int)$data['vendor_id']."', '".$data['premiere_date']."', '".$data['country_id']."', '".$db->escape($data['info'])."', '".$db->escape($data['language'])."', '".(int)$data['ordering']."')");
-		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_premieres')
-				. "\n SET `movie_id` = '".$data['movie_id']."', `vendor_id` = '".(int)$data['vendor_id']."', `premiere_date` = '".$data['premiere_date']."', `country_id` = '".$data['country_id']."', `info` = '".$db->escape($data['info'])."', `language` = '".$db->escape($data['language'])."', `ordering` = '".(int)$data['ordering']."'"
-				. "\n WHERE `id` = ".(int)$id);
+			$query->update($db->quoteName('#__ka_premieres'))
+				->set($db->quoteName('movie_id')." = '".(int)$data['movie_id']."'")
+				->set($db->quoteName('vendor_id')." = '".(int)$data['vendor_id']."'")
+				->set($db->quoteName('premiere_date')." = '".$data['premiere_date']."'")
+				->set($db->quoteName('country_id')." = '".(int)$data['country_id']."'")
+				->set($db->quoteName('info')." = '".$db->escape($data['info'])."'")
+				->set($db->quoteName('language')." = '".$db->escape($data['language'])."'")
+				->set($db->quoteName('ordering')." = '".(int)$data['ordering']."'")
+				->where($db->quoteName('id').' = '.(int)$id);
 		}
 
 		try {
+			$db->setQuery($query);
 			$db->execute();
-			if (empty($id[0])) {
-				$app->input->set('id', array($db->insertid()));
+
+			if (empty($id)) {
+				$id = $db->insertid();
 			}
+
+			$app->setUserState('com_kinoarhiv.premieres.'.$user->id.'.data', array(
+				'success' => true,
+				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
+				'data'    => array('id' => $id)
+			));
+
 			return true;
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
+
+			$app->setUserState('com_kinoarhiv.premieres.'.$user->id.'.data', array(
+				'success' => false,
+				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+			));
+
 			return false;
 		}
 	}
 
-	public function saveOrder() {
+	public function remove() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$data = $app->input->post->get('ord', array(), 'array');
-		$movie_id = $app->input->post->get('movie_id', null, 'int');
+		$ids = $app->input->get('id', array(), 'array');
+		$query = $db->getQuery(true);
 
-		if (count($data) < 2) {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
+		$query->delete($db->quoteName('#__ka_premieres'))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
 		}
+	}
 
+	// Should be removed in the feature releases
+	public function deletePremieres() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$data = $app->input->post->get('data', array(), 'array');
 		$query = true;
 
 		$db->setDebug(true);
@@ -112,7 +133,10 @@ class KinoarhivModelPremiere extends JModelForm {
 		$db->transactionStart();
 
 		foreach ($data as $key=>$value) {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_premieres')." SET `ordering` = '".(int)$key."' WHERE `id` = ".(int)$value." AND `movie_id` = ".(int)$movie_id.";");
+			$_name = explode('_', $value['name']);
+			$item_id = $_name[3];
+
+			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `id` = ".(int)$item_id.";");
 			$result = $db->execute();
 
 			if ($result === false) {
@@ -132,31 +156,13 @@ class KinoarhivModelPremiere extends JModelForm {
 
 		if ($query) {
 			$success = true;
-			$message = JText::_('COM_KA_SAVED');
+			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
 		} else {
 			$success = false;
-			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
+			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
 		}
 
 		return array('success'=>$success, 'message'=>$message);
-	}
-
-	public function remove() {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$ids = $app->input->get('id', array(), 'array');
-
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `id` IN (".implode(',', $ids).")");
-
-		try {
-			$db->execute();
-
-			return true;
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
 	}
 
 	/**

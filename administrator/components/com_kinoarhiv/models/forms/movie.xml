@@ -251,6 +251,7 @@
 	</fieldset>
 
 	<fieldset name="premiere_edit">
+		<field name="p_movie_id" type="hidden" label="COM_KA_FIELD_MOVIE_LABEL" class="span10 required" required="true" default="" />
 		<field name="p_vendor_id" type="text" default="" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
 		<field name="p_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="string" size="45" />
 		<field name="p_premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
@@ -262,6 +263,7 @@
 	</fieldset>
 
 	<fieldset name="release_edit">
+		<field name="r_movie_id" type="hidden" label="COM_KA_FIELD_MOVIE_LABEL" class="span10 required" required="true" default="" />
 		<field name="r_vendor_id" type="text" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true" class="span10 required" filter="string" size="45" />
 		<field name="r_country_id" type="text" default="0" label="COM_KA_FIELD_COUNTRY_LABEL" required="true" class="span10 required" filter="string" size="45" />
 		<field name="r_release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox" datatype="date" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />

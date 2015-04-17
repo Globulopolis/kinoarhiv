@@ -69,16 +69,16 @@ class KinoarhivModelReviews extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`a`.`id`, `a`.`uid`, `a`.`movie_id`, `a`.`review`, `a`.`created`, `a`.`type`, `a`.`ip`, `a`.`state`'
+				$db->quoteName(array('a.id', 'a.uid', 'a.movie_id', 'a.review', 'a.created', 'a.type', 'a.ip', 'a.state'))
 			)
 		);
-		$query->from('#__ka_reviews AS `a`');
+		$query->from($db->quoteName('#__ka_reviews', 'a'));
 
-		$query->select(' `u`.`name` AS `username`')
-			->join('LEFT', $db->quoteName('#__users') . ' AS `u` ON `u`.`id` = `a`.`uid`');
+		$query->select($db->quoteName('u.name', 'username'))
+			->join('LEFT', $db->quoteName('#__users', 'u').' ON '.$db->quoteName('u.id').' = '.$db->quoteName('a.uid'));
 
-		$query->select(' `m`.`title` AS `movie`')
-			->join('LEFT', $db->quoteName('#__ka_movies') . ' AS `m` ON `m`.`id` = `a`.`movie_id`');
+		$query->select($db->quoteName('m.title', 'movie'))
+			->join('LEFT', $db->quoteName('#__ka_movies', 'm').' ON '.$db->quoteName('m.id').' = '.$db->quoteName('a.movie_id'));
 
 		// Filter by author ID
 		$author_id = $this->getState('filter.author_id');
@@ -144,16 +144,23 @@ class KinoarhivModelReviews extends JModelList {
 		return $query;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems() {
 		$items = parent::getItems();
-		$app = JFactory::getApplication();
 
-		if ($app->isSite()) {
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
 			for ($x = 0, $count = count($items); $x < $count; $x++) {
-				//Check the access level. Remove articles the user shouldn't see
+				// Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}
@@ -161,43 +168,6 @@ class KinoarhivModelReviews extends JModelList {
 		}
 
 		return $items;
-	}
-
-	public function publish($isUnpublish) {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$ids = $app->input->get('id', array(), 'array');
-		$state = $isUnpublish ? 0 : 1;
-
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_reviews')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-
-		try {
-			$db->execute();
-
-			return true;
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-	}
-
-	public function remove() {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$ids = $app->input->get('id', array(), 'array');
-
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE `id` IN (".implode(',', $ids).")");
-
-		try {
-			$db->execute();
-
-			return true;
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
 	}
 
 	public function batch() {

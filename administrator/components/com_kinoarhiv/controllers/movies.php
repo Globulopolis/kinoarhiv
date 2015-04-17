@@ -418,24 +418,6 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		echo json_encode($result);
 	}
 
-	public function savePremiere() {
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv')) {
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
-		}
-
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
-		$model = $this->getModel('premiere');
-		$result = $model->savePremiereAjax();
-
-		echo json_encode($result);
-	}
-
 	public function saveRelease() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -460,7 +442,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('premieres');
+		$model = $this->getModel('premiere');
 		$result = $model->deletePremieres();
 
 		echo json_encode($result);
@@ -472,7 +454,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		$document = JFactory::getDocument();
 		$document->setName('response');
 
-		$model = $this->getModel('releases');
+		$model = $this->getModel('release');
 		$result = $model->deleteReleases();
 
 		echo json_encode($result);

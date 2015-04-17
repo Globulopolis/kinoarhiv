@@ -63,19 +63,18 @@ class KinoarhivModelAwards extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
-		$task = $app->input->get('task', '', 'cmd');
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				'`a`.`id`, `a`.`title`, `a`.`desc`, `a`.`language`, `a`.`state`'
+				$db->quoteName(array('a.id', 'a.title', 'a.desc', 'a.language', 'a.state'))
 			)
 		);
-		$query->from($db->quoteName('#__ka_awards').' AS `a`');
+		$query->from($db->quoteName('#__ka_awards', 'a'));
 
 		// Join over the language
-		$query->select(' `l`.`title` AS `language_title`')
-			->join('LEFT', $db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `a`.`language`');
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
@@ -115,16 +114,23 @@ class KinoarhivModelAwards extends JModelList {
 		return $query;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems() {
 		$items = parent::getItems();
-		$app = JFactory::getApplication();
 
-		if ($app->isSite()) {
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
 			for ($x = 0, $count = count($items); $x < $count; $x++) {
-				//Check the access level. Remove articles the user shouldn't see
+				// Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}

@@ -62,7 +62,7 @@ JHtml::_('behavior.keepalive');
 		});
 	});
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<fieldset class="form-horizontal">

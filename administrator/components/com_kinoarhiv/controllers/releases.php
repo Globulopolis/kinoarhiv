@@ -9,17 +9,6 @@
  */
 
 class KinoarhivControllerReleases extends JControllerLegacy {
-	public function saveOrder() {
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
-
-		$model = $this->getModel('release');
-		$result = $model->saveOrder();
-
-		$document->setName('response');
-		echo json_encode($result);
-	}
-
 	public function add() {
 		$this->edit(true);
 	}
@@ -40,81 +29,133 @@ class KinoarhivControllerReleases extends JControllerLegacy {
 		return $this;
 	}
 
-	public function apply() {
+	public function save2new() {
 		$this->save();
 	}
 
-	public function save2new() {
+	public function apply() {
 		$this->save();
 	}
 
 	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$document = JFactory::getDocument();
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv')) {
-			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
+			if ($document->getType() == 'html') {
+				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+				return;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR')));
+				return;
+			}
 		}
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('release');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
 
 		if (!$form) {
-			$app->enqueueMessage($model->getError(), 'error');
-			return false;
+			if ($document->getType() == 'html') {
+				$app->enqueueMessage($model->getError(), 'error');
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>$model->getError()));
+				return;
+			}
 		}
 
+		// Process aliases for columns name
+		if ($app->input->get('alias', 0, 'int') == 1) {
+			foreach ($data as $key=>$value) {
+				$key = substr($key, 2);
+				$data[$key] = $value;
+				unset($data['r_'.$key]);
+			}
+		}
+
+		// Store data for use in KinoarhivModelRelease::loadFormData()
+		$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.edit_data', $data);
 		$validData = $model->validate($form, $data);
 
 		if ($validData === false) {
-			$errors = $model->getErrors();
+			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
 
-			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-				if ($errors[$i] instanceof Exception) {
-					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				} else {
-					$app->enqueueMessage($errors[$i], 'warning');
-				}
+			if ($document->getType() == 'html') {
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$data['id']);
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>$errors));
+				return;
 			}
-
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
-
-			return false;
 		}
 
-		$result = $model->saveRelease($validData);
+		$result = $model->save($validData);
+		$session_data = $app->getUserState('com_kinoarhiv.releases.'.$user->id.'.data');
 
 		if (!$result) {
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
-			$this->setMessage($this->getError(), 'error');
+			if ($document->getType() == 'html') {
+				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
+				$this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$data['id']);
 
-			return false;
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode($session_data);
+				return;
+			}
 		}
 
 		// Set the success message.
-		$app->enqueueMessage(JText::_('COM_KA_ITEMS_SAVE_SUCCESS'));
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.edit_data', null);
 
-		// Set the redirect based on the task.
-		switch ($this->getTask()) {
-			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$app->getUserState('com_kinoarhiv.releases.data.'.$user->id.'.id'));
-				break;
-			case 'save2new':
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]=0');
-				break;
-			case 'save':
-			default:
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
-				break;
+		if ($document->getType() == 'html') {
+			$id = $session_data['data']['id'];
+
+			// Set the redirect based on the task.
+			switch ($this->getTask()) {
+				case 'save2new':
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=add', $message);
+					break;
+				case 'apply':
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=releases&task=edit&id[]='.$id, $message);
+					break;
+
+				case 'save':
+				default:
+					$this->setRedirect('index.php?option=com_kinoarhiv&view=releases', $message);
+					break;
+			}
+		} else {
+			$document->setName('response');
+			echo json_encode($session_data);
 		}
 
 		return true;
+	}
+
+	public function saveOrder() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$document = JFactory::getDocument();
+
+		$model = $this->getModel('releases');
+		$result = $model->saveOrder();
+
+		$document->setName('response');
+		echo json_encode($result);
 	}
 
 	public function remove() {
@@ -150,7 +191,8 @@ class KinoarhivControllerReleases extends JControllerLegacy {
 
 		// Clean the session data.
 		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.releases.global.data', null);
+		$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
 	}
@@ -173,16 +215,7 @@ class KinoarhivControllerReleases extends JControllerLegacy {
 			$result = $model->batch();
 
 			if ($result === false) {
-				$errors = $model->getErrors();
-
-				for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-					if ($errors[$i] instanceof Exception) {
-						$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-					} else {
-						$app->enqueueMessage($errors[$i], 'warning');
-					}
-				}
-
+				GlobalHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
 
 				return false;

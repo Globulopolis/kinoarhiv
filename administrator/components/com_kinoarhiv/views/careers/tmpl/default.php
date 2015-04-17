@@ -73,12 +73,18 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
 					<th>
-						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_CAREER_FIELD_TITLE', 'a.title', $listDirn, $listOrder); ?>
+					</th>
+					<th width="7%" class="nowrap hidden-phone center">
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_CAREER_MAINPAGE', 'a.is_mainpage', $listDirn, $listOrder); ?>
+					</th>
+					<th width="7%" class="nowrap hidden-phone center">
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_CAREER_AMPLUA', 'a.is_amplua', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'language', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap center">
+					<th width="7%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
@@ -86,7 +92,7 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="7" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item): ?>
@@ -104,9 +110,22 @@ $sortFields = $this->getSortFields();
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->title); ?></a>
 							<?php else : ?>
-								<span><?php echo $this->escape($item->title); ?></span> 
+								<span><?php echo $this->escape($item->title); ?></span>
 							<?php endif; ?>
 						</div>
+					</td>
+					<td class="small hidden-phone center">
+						<?php echo JHtml::_('jgrid.state', array(
+							1 => array('offmainpage', 'COM_KA_FIELD_CAREER_MAINPAGE', 'COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISH', 'COM_KA_FIELD_CAREER_MAINPAGE_PUBLISHED', true, 'publish', 'publish'),
+							0 => array('onmainpage', 'COM_KA_FIELD_CAREER_MAINPAGE', 'COM_KA_FIELD_CAREER_MAINPAGE_PUBLISH', 'COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISHED', true, 'unpublish', 'unpublish')
+							), $item->is_mainpage, $i, '', $this->canEdit, 'cbm'); ?>
+					</td>
+					<td class="small hidden-phone center">
+						<?php if ($item->is_amplua == 0): ?>
+						<span class="icon-unpublish"></span> <?php echo JText::_('JNO'); ?>
+						<?php else: ?>
+						<span class="icon-publish"></span> <?php echo JText::_('JYES'); ?>
+						<?php endif; ?>
 					</td>
 					<td class="small hidden-phone">
 						<?php if ($item->language == '*'):?>

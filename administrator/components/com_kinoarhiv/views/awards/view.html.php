@@ -43,8 +43,8 @@ class KinoarhivViewAwards extends JViewLegacy {
 			$this->addToolbar();
 		}
 
-		$this->canEdit = $user->authorise('core.edit.country', 'com_kinoarhiv');
-		$this->canEditState = $user->authorise('core.edit.state.country', 'com_kinoarhiv');
+		$this->canEdit = $user->authorise('core.edit.award', 'com_kinoarhiv');
+		$this->canEditState = $user->authorise('core.edit.state.award', 'com_kinoarhiv');
 
 		parent::display($tpl);
 	}

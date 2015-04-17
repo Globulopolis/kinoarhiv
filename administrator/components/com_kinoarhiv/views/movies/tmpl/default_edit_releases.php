@@ -87,9 +87,10 @@ endif; ?>
 
 								$.ajax({
 									type: 'POST',
-									url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelease&format=json&movie_id=' + $('#id').val(),
+									url: 'index.php?option=com_kinoarhiv&controller=releases&task=save&alias=1&format=json',
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
+										'form[r_movie_id]':	    $('#id').val(),
 										'form[r_vendor_id]':    $('#form_r_vendor_id').select2('val'),
 										'form[r_country_id]':   $('#form_r_country_id').select2('val'),
 										'form[r_release_date]': $('#form_r_release_date').val(),
@@ -160,9 +161,10 @@ endif; ?>
 
 									$.ajax({
 										type: 'POST',
-										url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelease&format=json&movie_id=' + $('#id').val() + '&id=' + ids[3],
+										url: 'index.php?option=com_kinoarhiv&controller=releases&task=save&alias=1&format=json',
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
+											'form[r_movie_id]':	    $('#id').val(),
 											'form[r_vendor_id]':    $('#form_r_vendor_id').select2('val'),
 											'form[r_country_id]':   $('#form_r_country_id').select2('val'),
 											'form[r_release_date]': $('#form_r_release_date').val(),
@@ -170,6 +172,7 @@ endif; ?>
 											'form[r_desc]':         $('#form_r_desc').val(),
 											'form[r_language]':     $('#form_r_language').val(),
 											'form[r_ordering]':     $('#form_r_ordering').val(),
+											'id':  ids[3],
 											'new': 0
 										}
 									}).done(function(response){

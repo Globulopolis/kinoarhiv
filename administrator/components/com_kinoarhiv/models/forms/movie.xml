@@ -299,4 +299,18 @@
 		</field>
 		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
 	</fieldset>
+
+	<fieldset name="vendor_quick_add">
+		<field name="v_company_name" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE" class="span5" required="true" filter="string" size="45" />
+		<field name="v_company_name_intl" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE_INTL" class="span5" filter="string" size="45" />
+		<field name="v_company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string" />
+		<field name="v_description" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="raw" cols="6" rows="5" />
+		<field name="v_state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field>
+		<field name="v_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
+	</fieldset>
 </form>

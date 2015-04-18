@@ -148,7 +148,7 @@ class KinoarhivModelVendor extends JModelForm {
 
 			$query->insert($db->quoteName('#__ka_vendors'))
 				->columns($db->quoteName(array('id', 'company_name', 'company_name_intl', 'company_name_alias', 'description', 'language', 'state')))
-				->values("'','".$db->escape($company_name)."','".$db->escape($company_name_intl)."','".$data['company_name_alias']."','".$db->escape($data['description'])."','".$db->escape($data['language'])."','".$state."'");
+				->values("'','".$db->escape($company_name)."','".$db->escape($company_name_intl)."','".$data['company_name_alias']."','".$db->escape($data['description'])."','".$db->escape($data['language'])."','".$data['state']."'");
 		} else {
 			$query = $db->getQuery(true);
 
@@ -173,7 +173,7 @@ class KinoarhivModelVendor extends JModelForm {
 			$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', array(
 				'success' => true,
 				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-				'data'    => array('id' => $id, 'title' => $company_name.' / '.$company_name_intl)
+				'data'    => array('id' => $id, 'company_name' => $company_name, 'company_name_intl' => $company_name_intl)
 			));
 
 			return true;

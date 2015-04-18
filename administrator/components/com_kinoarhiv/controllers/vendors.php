@@ -71,6 +71,15 @@ class KinoarhivControllerVendors extends JControllerLegacy {
 			}
 		}
 
+		// Process aliases for columns name
+		if ($app->input->get('alias', 0, 'int') == 1) {
+			foreach ($data as $key=>$value) {
+				$key = substr($key, 2);
+				$data[$key] = $value;
+				unset($data['v_'.$key]);
+			}
+		}
+
 		// Store data for use in KinoarhivModelVendor::loadFormData()
 		$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.edit_data', $data);
 		$validData = $model->validate($form, $data);

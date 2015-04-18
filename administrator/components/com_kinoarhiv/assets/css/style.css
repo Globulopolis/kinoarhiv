@@ -319,3 +319,8 @@ img.movie-poster-preview.y-poster {
 	font-weight: bold;
 	font-size: 1.1em;
 }
+
+#dialog-award-add .rel-form_award, #dialog-award-add .form_award,
+#dialog-premiere-add .form_vendor {
+	margin-left: 5px;
+}

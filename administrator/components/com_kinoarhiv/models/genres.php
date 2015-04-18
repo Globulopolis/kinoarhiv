@@ -177,7 +177,7 @@ class KinoarhivModelGenres extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".(int)$batch_data['language_id']."'";
+			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
 		}
 		if (!empty($batch_data['assetgroup_id'])) {
 			$fields[] = $db->quoteName('access')." = '".(int)$batch_data['assetgroup_id']."'";

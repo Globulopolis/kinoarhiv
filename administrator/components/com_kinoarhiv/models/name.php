@@ -31,8 +31,7 @@ class KinoarhivModelName extends JModelForm {
 	}
 
 	protected function loadFormData() {
-		$app = JFactory::getApplication();
-		$data = $app->getUserState('com_kinoarhiv.edit.name.data', array());
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.names.'.JFactory::getUser()->id.'.edit_data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -41,7 +40,7 @@ class KinoarhivModelName extends JModelForm {
 		return $data;
 	}
 
-	public function getItem($pk = null) {
+	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$tmpl = $app->input->get('template', '', 'string');
@@ -49,10 +48,13 @@ class KinoarhivModelName extends JModelForm {
 
 		if ($tmpl == 'awards_edit') {
 			$award_id = $app->input->get('award_id', 0, 'int');
+			$query = $db->getQuery(true);
 
-			$db->setQuery("SELECT `id` AS `rel_aw_id`, `item_id`, `award_id`, `desc` AS `aw_desc`, `year` AS `aw_year`"
-				. "\n FROM ".$db->quoteName('#__ka_rel_awards')
-				. "\n WHERE `id` = ".(int)$award_id);
+			$query->select($db->quoteName('id', 'rel_aw_id').','.$db->quoteName('item_id').','.$db->quoteName('award_id').','.$db->quoteName('desc', 'aw_desc').','.$db->quoteName('year', 'aw_year'))
+				->from($db->quoteName('#__ka_rel_awards'))
+				->where($db->quoteName('id').' = '.(int)$award_id);
+
+			$db->setQuery($query);
 			$result = $db->loadObject();
 		} else {
 			$result = array('name'=>(object)array());
@@ -60,12 +62,25 @@ class KinoarhivModelName extends JModelForm {
 				return $result;
 			}
 
-			$db->setQuery("SELECT `n`.`id`, `n`.`asset_id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`date_of_birth`, `n`.`date_of_death`, `n`.`birthplace`, `n`.`birthcountry`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`ordering`, `n`.`state`, `n`.`access`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `n`.`language`, `l`.`title` AS `language_title`, `g`.`id` AS `gid`, `g`.`filename`, `c`.`name` AS `country`, `c`.`code` AS `country_code`"
-				. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
-				. "\n LEFT JOIN ".$db->quoteName('#__languages')." AS `l` ON `l`.`lang_code` = `n`.`language`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `n`.`birthcountry`"
-				. "\n WHERE `n`.`id` = ".(int)$id[0]);
+			$query = $db->getQuery(true);
+
+			$query->select($db->quoteName(array('n.id', 'n.asset_id', 'n.name', 'n.latin_name', 'n.alias', 'n.date_of_birth', 'n.date_of_death', 'n.birthplace', 'n.birthcountry', 'n.gender', 'n.height', 'n.desc', 'n.attribs', 'n.ordering', 'n.state', 'n.access', 'n.metakey', 'n.metadesc', 'n.metadata', 'n.language')))
+				->from($db->quoteName('#__ka_names', 'n'))
+				->where($db->quoteName('n.id').' = '.(int)$id[0]);
+
+			// Join over the language
+			$query->select($db->quoteName('l.title', 'language_title'))
+				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('n.language'));
+
+			// Join over the gallery item
+			$query->select($db->quoteName('g.id', 'gid').','.$db->quoteName('g.filename'))
+				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g').' ON '.$db->quoteName('g.name_id').' = '.$db->quoteName('n.id').' AND '.$db->quoteName('g.type').' = 3 AND '.$db->quoteName('g.photo_frontpage').' = 1');
+
+			// Join over countries
+			$query->select($db->quoteName('c.name', 'country').','.$db->quoteName('c.code', 'country_code'))
+				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON '.$db->quoteName('c.id').' = '.$db->quoteName('n.birthcountry'));
+
+			$db->setQuery($query);
 			$result['name'] = $db->loadObject();
 
 			$result['name']->genres = $this->getGenres();
@@ -81,15 +96,48 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
+	public function publish($isUnpublish) {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->get('id', array(), 'array');
+		$state = $isUnpublish ? 0 : 1;
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__ka_names'))
+			->set($db->quoteName('state').' = '.(int)$state)
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+
+			return true;
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+	}
+
 	protected function getGenres() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
 		$result = array('data'=>array(), 'ids'=>array());
+		$query = $db->getQuery(true);
 
-		$db->setQuery("SELECT `g`.`id`, `g`.`name` AS `title`"
-			. "\n FROM ".$db->quoteName('#__ka_genres')." AS `g`"
-			. "\n WHERE `id` IN (SELECT `genre_id` FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` = ".(int)$id[0].")");
+		$query->select($db->quoteName('g.id').','.$db->quoteName('g.name', 'title'))
+			->from($db->quoteName('#__ka_genres', 'g'));
+
+			$subquery = $db->getQuery(true);
+			$subquery->select($db->quoteName('genre_id'))
+				->from($db->quoteName('#__ka_rel_names_genres'))
+				->where($db->quoteName('name_id').' = '.(int)$id[0]);
+
+		$query->where($db->quoteName('id').' IN ('.$subquery.')');
+
+		$db->setQuery($query);
 		$result['data'] = $db->loadObjectList();
 
 		foreach ($result['data'] as $value) {
@@ -104,15 +152,89 @@ class KinoarhivModelName extends JModelForm {
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
 		$result = array('data'=>array(), 'ids'=>array());
+		$query = $db->getQuery(true);
 
-		$db->setQuery("SELECT `c`.`id`, `c`.`title`"
-			. "\n FROM ".$db->quoteName('#__ka_names_career')." AS `c`"
-			. "\n WHERE `id` IN (SELECT `career_id` FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `name_id` = ".(int)$id[0].")");
+		$query->select($db->quoteName(array('c.id', 'c.title')))
+			->from($db->quoteName('#__ka_names_career', 'c'));
+
+			$subquery = $db->getQuery(true);
+			$subquery->select($db->quoteName('career_id'))
+				->from($db->quoteName('#__ka_rel_names_career'))
+				->where($db->quoteName('name_id').' = '.(int)$id[0]);
+
+		$query->where($db->quoteName('id').' IN ('.$subquery.')');
+
+		$db->setQuery($query);
 		$result['data'] = $db->loadObjectList();
 
 		foreach ($result['data'] as $value) {
 			$result['ids'][] = $value->id;
 		}
+
+		return $result;
+	}
+
+	public function getAwards() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$id = $app->input->get('id', null, 'int');
+		$orderby = $app->input->get('sidx', '1', 'string');
+		$order = $app->input->get('sord', 'asc', 'word');
+		$limit = $app->input->get('rows', 50, 'int');
+		$page = $app->input->get('page', 0, 'int');
+		$search_field = $app->input->get('searchField', '', 'string');
+		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
+		$search_string = $app->input->get('searchString', '', 'string');
+		$limitstart = $limit * $page - $limit;
+		$result = (object)array('rows'=>array());
+		$where = "";
+
+		if (!empty($search_string)) {
+			$where .= " AND ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+		}
+
+		$query = $db->getQuery(true);
+
+		$query->select('COUNT(id)')
+			->from($db->quoteName('#__ka_rel_awards'))
+			->where($db->quoteName('item_id').' = '.(int)$id.' AND '.$db->quoteName('type').' = 1'.$where);
+
+		$db->setQuery($query);
+		$total = $db->loadResult();
+
+		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $total_pages) ? $total_pages : $page;
+
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName(array('rel.id', 'rel.item_id', 'rel.award_id', 'rel.desc', 'rel.year', 'rel.type', 'aw.title')))
+			->from($db->quoteName('#__ka_rel_awards', 'rel'))
+			->join('LEFT', $db->quoteName('#__ka_awards', 'aw').' ON '.$db->quoteName('aw.id').' = '.$db->quoteName('rel.award_id'))
+			->where($db->quoteName('rel.item_id').' = '.(int)$id.' AND '.$db->quoteName('rel.type').' = 1'.$where)
+			->order($db->quoteName($orderby).' '.strtoupper($order))
+			->setLimit($limit, $limitstart);
+
+		$db->setQuery($query);
+		$rows = $db->loadObjectList();
+
+		$k = 0;
+		foreach ($rows as $elem) {
+			$result->rows[$k]['id'] = $elem->id.'_'.$elem->item_id.'_'.$elem->award_id;
+			$result->rows[$k]['cell'] = array(
+				'id'		=> $elem->id,
+				'award_id'	=> $elem->award_id,
+				'title'		=> $elem->title,
+				'year'		=> $elem->year,
+				'desc'		=> JHtml::_('string.truncate', $elem->desc, $params->get('limit_text'))
+			);
+
+			$k++;
+		}
+
+		$result->page = $page;
+		$result->total = $total_pages;
+		$result->records = $total;
 
 		return $result;
 	}
@@ -256,69 +378,6 @@ class KinoarhivModelName extends JModelForm {
 		return true;
 	}
 
-	/**
-	 * Method to move all media items which is linked to the name into a new location, if name alias was changed.
-	 *
-	 * @param   int      $id          Name ID.
-	 * @param   string   $old_alias   Old name alias.
-	 * @param   string   $new_alias   New name alias.
-	 * @param   object   $params      Component parameters.
-	 *
-	 * @return  boolean   True on success
-	 *
-	*/
-	protected function moveMediaItems($id, $old_alias, $new_alias, &$params) {
-		if (empty($id) || empty($old_alias) || empty($new_alias)) {
-			$this->setError('Name ID or alias cannot be empty!');
-
-			return false;
-		} else {
-			jimport('joomla.filesystem.folder');
-			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
-
-			$error = false;
-			$old_alias = JString::substr($old_alias, 0, 1);
-			$new_alias = JString::substr($new_alias, 0, 1);
-
-			// Move gallery items
-			$path_poster = $params->get('media_actor_posters_root');
-			$path_wallpp = $params->get('media_actor_wallpapers_root');
-			$path_photo = $params->get('media_actor_photo_root');
-			$old_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
-			$old_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
-			$old_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
-			$new_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
-			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
-			$new_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
-
-			if (!KAFilesystemHelper::move(
-				array($old_folder_poster, $old_folder_wallpp, $old_folder_photo),
-				array($new_folder_poster, $new_folder_wallpp, $new_folder_photo))
-				) {
-				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
-			}
-
-			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
-			if (KAFilesystemHelper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
-				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
-					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
-				}
-			}
-			if (KAFilesystemHelper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
-				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
-					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
-				}
-			}
-			if (KAFilesystemHelper::getFolderSize($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
-				if (file_exists($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
-					JFolder::delete($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
-				}
-			}
-		}
-
-		return true;
-	}
-
 	public function quickSave() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -392,6 +451,69 @@ class KinoarhivModelName extends JModelForm {
 		}
 	}
 
+	/**
+	 * Method to move all media items which is linked to the name into a new location, if name alias was changed.
+	 *
+	 * @param   int      $id          Name ID.
+	 * @param   string   $old_alias   Old name alias.
+	 * @param   string   $new_alias   New name alias.
+	 * @param   object   $params      Component parameters.
+	 *
+	 * @return  boolean   True on success
+	 *
+	*/
+	protected function moveMediaItems($id, $old_alias, $new_alias, &$params) {
+		if (empty($id) || empty($old_alias) || empty($new_alias)) {
+			$this->setError('Name ID or alias cannot be empty!');
+
+			return false;
+		} else {
+			jimport('joomla.filesystem.folder');
+			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
+
+			$error = false;
+			$old_alias = JString::substr($old_alias, 0, 1);
+			$new_alias = JString::substr($new_alias, 0, 1);
+
+			// Move gallery items
+			$path_poster = $params->get('media_actor_posters_root');
+			$path_wallpp = $params->get('media_actor_wallpapers_root');
+			$path_photo = $params->get('media_actor_photo_root');
+			$old_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
+			$old_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
+			$old_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
+			$new_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
+			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
+			$new_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
+
+			if (!KAFilesystemHelper::move(
+				array($old_folder_poster, $old_folder_wallpp, $old_folder_photo),
+				array($new_folder_poster, $new_folder_wallpp, $new_folder_photo))
+				) {
+				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
+			}
+
+			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
+			if (KAFilesystemHelper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+			if (KAFilesystemHelper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+			if (KAFilesystemHelper::getFolderSize($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
+				if (file_exists($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
+					JFolder::delete($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+				}
+			}
+		}
+
+		return true;
+	}
+
 	public function saveNameAccessRules() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -417,12 +539,23 @@ class KinoarhivModelName extends JModelForm {
 
 		if (JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv')) {
 			// Get parent id
-			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+			$query = $db->getQuery(true);
+
+			$query->select($db->quoteName('id'))
+				->from($db->quoteName('#__assets'))
+				->where($db->quoteName('name')." = 'com_kinoarhiv' AND ".$db->quoteName('parent_id')." = 1");
+
+			$db->setQuery($query);
 			$parent_id = $db->loadResult();
 
-			$db->setQuery("UPDATE ".$db->quoteName('#__assets')
-				. "\n SET `rules` = '".$rules."'"
-				. "\n WHERE `name` = 'com_kinoarhiv.name.".(int)$id."' AND `level` = 2 AND `parent_id` = ".(int)$parent_id);
+			// Update rules
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__assets'))
+				->set($db->quoteName('rules')." = '".$rules."'")
+				->where($db->quoteName('name')." = 'com_kinoarhiv.name.".(int)$id."' AND ".$db->quoteName('level')." = 2 AND ".$db->quoteName('parent_id')." = ".(int)$parent_id);
+
+			$db->setQuery($query);
 
 			try {
 				$db->execute();
@@ -433,61 +566,6 @@ class KinoarhivModelName extends JModelForm {
 		} else {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
 		}
-	}
-
-	public function getAwards() {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$id = $app->input->get('id', null, 'int');
-		$orderby = $app->input->get('sidx', '1', 'string');
-		$order = $app->input->get('sord', 'asc', 'word');
-		$limit = $app->input->get('rows', 50, 'int');
-		$page = $app->input->get('page', 0, 'int');
-		$search_field = $app->input->get('searchField', '', 'string');
-		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
-		$search_string = $app->input->get('searchString', '', 'string');
-		$limitstart = $limit * $page - $limit;
-		$result = (object)array('rows'=>array());
-		$where = "";
-
-		if (!empty($search_string)) {
-			$where .= " AND ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
-		}
-
-		$db->setQuery("SELECT COUNT(`rel`.`id`)"
-			. "\n FROM ".$db->quoteName('#__ka_rel_awards')." AS `rel`"
-			. "\n WHERE `rel`.`item_id` = ".(int)$id." AND `type` = 1".$where);
-		$total = $db->loadResult();
-
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
-
-		$db->setQuery("SELECT `rel`.`id`, `rel`.`item_id`, `rel`.`award_id`, `rel`.`desc`, `rel`.`year`, `rel`.`type`, `aw`.`title`"
-			. "\n FROM ".$db->quoteName('#__ka_rel_awards')." AS `rel`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_awards')." AS `aw` ON `aw`.`id` = `rel`.`award_id`"
-			. "\n WHERE `rel`.`item_id` = ".(int)$id." AND `type` = 1".$where
-			. "\n ORDER BY ".$db->quoteName($orderby).' '.strtoupper($order), $limitstart, $limit);
-		$rows = $db->loadObjectList();
-
-		$k = 0;
-		foreach ($rows as $elem) {
-			$result->rows[$k]['id'] = $elem->id.'_'.$elem->item_id.'_'.$elem->award_id;
-			$result->rows[$k]['cell'] = array(
-				'id'		=> $elem->id,
-				'award_id'	=> $elem->award_id,
-				'title'		=> $elem->title,
-				'year'		=> $elem->year,
-				'desc'		=> $elem->desc
-			);
-
-			$k++;
-		}
-
-		$result->page = $page;
-		$result->total = $total_pages;
-		$result->records = $total;
-
-		return $result;
 	}
 
 	public function deleteRelAwards() {
@@ -530,6 +608,152 @@ class KinoarhivModelName extends JModelForm {
 		$db->setDebug(false);
 
 		return array('success'=>$success, 'message'=>$message);
+	}
+
+	public function remove() {
+		jimport('joomla.filesystem.folder');
+		jimport('joomla.filesystem.file');
+
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$ids = $app->input->get('id', array(), 'array');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		// Remove award relations
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_rel_awards'))
+			->where($db->quoteName('item_id').' IN ('.implode(',', $ids).') AND '.$db->quoteName('type').' = 1');
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove genre relations
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_rel_names_genres'))
+			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove favorited and watched movies
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_user_marked_names'))
+			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove career relations
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_rel_names_career'))
+			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove media items
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('id').',SUBSTRING('.$db->quoteName('alias').', 1, 1) AS '.$db->quoteName('alias'))
+			->from($db->quoteName('#__ka_names'))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+
+		$db->setQuery($query);
+		$items = $db->loadObjectList();
+
+		foreach ($items as $item) {
+			// Delete root folders
+			if (file_exists($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+			if (file_exists($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+			if (file_exists($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
+				JFolder::delete($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			}
+		}
+
+		// Remove name(s) from DB
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_names'))
+			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove gallery items
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_names_gallery'))
+			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		// Remove access rules
+		$query_result = true;
+		$db->setDebug(true);
+		$db->lockTable('#__assets');
+		$db->transactionStart();
+
+		foreach ($ids as $id) {
+			$query = $db->getQuery(true);
+			$query->delete($db->quoteName('#__assets'))
+				->where($db->quoteName('name')." = 'com_kinoarhiv.name.".(int)$id."' AND ".$db->quoteName('level')." = 2");
+			$db->setQuery($query.';');
+
+			if ($db->execute() === false) {
+				$query_result = false;
+				break;
+			}
+		}
+
+		if ($query_result === false) {
+			$db->transactionRollback();
+			return false;
+		} else {
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		return true;
 	}
 
 	/**

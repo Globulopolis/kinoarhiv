@@ -153,7 +153,7 @@ class KinoarhivModelAwards extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".(int)$batch_data['language_id']."'";
+			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
 		}
 
 		if (empty($fields)) {

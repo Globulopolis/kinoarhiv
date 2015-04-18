@@ -29,15 +29,15 @@ class KinoarhivControllerNames extends JControllerLegacy {
 		return $this;
 	}
 
-	public function save() {
-		$this->apply();
-	}
-
 	public function save2new() {
-		$this->apply();
+		$this->save();
 	}
 
 	public function apply() {
+		$this->save();
+	}
+
+	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
@@ -147,7 +147,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 			return;
 		}
 
-		$model = $this->getModel('names');
+		$model = $this->getModel('name');
 		$result = $model->publish($isUnpublish);
 
 		if ($result === false) {
@@ -171,7 +171,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 			return;
 		}
 
-		$model = $this->getModel('names');
+		$model = $this->getModel('name');
 		$result = $model->remove();
 
 		if ($result === false) {
@@ -195,7 +195,8 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 		// Clean the session data.
 		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.names.global.data', null);
+		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names');
 	}
@@ -216,7 +217,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv') && !$user->authorise('core.edit.state', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.name') && !$user->authorise('core.edit.state', 'com_kinoarhiv.name')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return false;
 		}
@@ -229,16 +230,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 			$result = $model->batch();
 
 			if ($result === false) {
-				$errors = $model->getErrors();
-
-				for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-					if ($errors[$i] instanceof Exception) {
-						$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-					} else {
-						$app->enqueueMessage($errors[$i], 'warning');
-					}
-				}
-
+				GlobalHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=names');
 
 				return false;

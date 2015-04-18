@@ -75,18 +75,18 @@ class KinoarhivModelNames extends JModelList {
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.name, a.latin_name, a.date_of_birth, a.date_of_death, a.birthplace, a.birthcountry, a.alias, a.state, a.access, a.ordering, a.language'
+				$db->quoteName(array('a.id', 'a.name', 'a.latin_name', 'a.date_of_birth', 'a.date_of_death', 'a.birthplace', 'a.birthcountry', 'a.alias', 'a.state', 'a.access', 'a.ordering', 'a.language'))
 			)
 		);
-		$query->from('#__ka_names AS a');
+		$query->from($db->quoteName('#__ka_names', 'a'));
 
 		// Join over the language
-		$query->select(' l.title AS language_title')
-			->join('LEFT', $db->quoteName('#__languages') . ' AS l ON l.lang_code = a.language');
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
 
 		// Join over the asset groups.
-		$query->select(' ag.title AS access_level')
-			->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+		$query->select($db->quoteName('ag.title', 'access_level'))
+			->join('LEFT', $db->quoteName('#__viewlevels', 'ag').' ON '.$db->quoteName('ag.id').' = '.$db->quoteName('a.access'));
 
 		// Filter by access level.
 		if ($access = $this->getState('filter.access')) {
@@ -143,16 +143,23 @@ class KinoarhivModelNames extends JModelList {
 		return $query;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems() {
 		$items = parent::getItems();
-		$app = JFactory::getApplication();
 
-		if ($app->isSite()) {
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
 			for ($x = 0, $count = count($items); $x < $count; $x++) {
-				//Check the access level. Remove articles the user shouldn't see
+				// Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}
@@ -160,120 +167,6 @@ class KinoarhivModelNames extends JModelList {
 		}
 
 		return $items;
-	}
-
-	public function publish($isUnpublish) {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$ids = $app->input->get('id', array(), 'array');
-		$state = $isUnpublish ? 0 : 1;
-
-		$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')." SET `state` = '".(int)$state."' WHERE `id` IN (".implode(',', $ids).")");
-
-		try {
-			$db->execute();
-
-			return true;
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-	}
-
-	public function remove() {
-		jimport('joomla.filesystem.folder');
-		jimport('joomla.filesystem.file');
-
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-		$ids = $app->input->get('id', array(), 'array');
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		// Remove award relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `item_id` IN (".implode(',', $ids).") AND `type` = 1");
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove genre relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` IN (".implode(',', $ids).")");
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove favorited and watched movies
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_marked_names')." WHERE `name_id` IN (".implode(',', $ids).")");
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove career relations
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `name_id` IN (".implode(',', $ids).")");
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove media items
-		$db->setQuery("SELECT `id`, SUBSTRING(`alias`, 1, 1) AS `alias` FROM ".$db->quoteName('#__ka_names')." WHERE `id` IN (".implode(',', $ids).")");
-		$items = $db->loadObjectList();
-
-		foreach ($items as $item) {
-			// Delete root folders
-			if (file_exists($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
-			}
-			if (file_exists($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
-			}
-			if (file_exists($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
-			}
-		}
-
-		// Remove movie(s) from DB
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names')." WHERE `id` IN (".implode(',', $ids).")");
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove gallery items
-		$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_names_gallery')." WHERE `name_id` IN (".implode(',', $ids).")");
-		try {
-			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove access rules
-		foreach ($ids as $id) {
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv.name.".(int)$id."' AND `level` = 2");
-			$db->execute();
-		}
-
-		return true;
 	}
 
 	public function saveOrder() {
@@ -292,7 +185,13 @@ class KinoarhivModelNames extends JModelList {
 		$db->transactionStart();
 
 		foreach ($data as $key=>$value) {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')." SET `ordering` = '".(int)$key."' WHERE `id` = ".(int)$value.";");
+			$query = $db->getQuery(true);
+
+			$query->update($db->quoteName('#__ka_names'))
+				->set($db->quoteName('ordering')." = '".(int)$key."'")
+				->where($db->quoteName('id').' = '.(int)$value);
+
+			$db->setQuery($query.';');
 			$result = $db->execute();
 
 			if ($result === false) {
@@ -334,7 +233,7 @@ class KinoarhivModelNames extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".(int)$batch_data['language_id']."'";
+			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
 		}
 		if (!empty($batch_data['assetgroup_id'])) {
 			$fields[] = $db->quoteName('access')." = '".(int)$batch_data['assetgroup_id']."'";

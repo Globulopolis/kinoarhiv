@@ -139,8 +139,7 @@ class KinoarhivModelCareers extends JModelList {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
 		}
 
-		$query = true;
-
+		$query_result = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_names_career');
 		$db->transactionStart();
@@ -152,15 +151,14 @@ class KinoarhivModelCareers extends JModelList {
 				->set($db->quoteName('ordering')." = '".(int)$key."'")
 				->where($db->quoteName('id').' = '.(int)$value);
 			$db->setQuery($query.';');
-			$result = $db->execute();
 
-			if ($result === false) {
-				$query = false;
+			if ($db->execute() === false) {
+				$query_result = false;
 				break;
 			}
 		}
 
-		if ($query === false) {
+		if ($query_result === false) {
 			$db->transactionRollback();
 		} else {
 			$db->transactionCommit();
@@ -169,7 +167,7 @@ class KinoarhivModelCareers extends JModelList {
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query) {
+		if ($query_result) {
 			$success = true;
 			$message = JText::_('COM_KA_SAVED');
 		} else {
@@ -193,7 +191,7 @@ class KinoarhivModelCareers extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".(int)$batch_data['language_id']."'";
+			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
 		}
 
 		if (empty($fields)) {

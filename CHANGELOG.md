@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/47
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/46
 * Removed spinner from rating fields in advanced search.
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/42

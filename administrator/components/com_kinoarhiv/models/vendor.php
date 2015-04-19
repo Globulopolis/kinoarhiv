@@ -134,11 +134,11 @@ class KinoarhivModelVendor extends JModelForm {
 			$count = $db->loadResult();
 
 			if ($count > 0) {
-				$this->setError(JText::_('COM_KA_AW_EXISTS'));
+				$this->setError(JText::_('COM_KA_VENDORS_EXISTS'));
 
 				$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', array(
 					'success' => false,
-					'message' => JText::_('COM_KA_AW_EXISTS')
+					'message' => JText::_('COM_KA_VENDORS_EXISTS')
 				));
 
 				return false;

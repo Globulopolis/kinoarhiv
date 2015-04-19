@@ -321,6 +321,7 @@ img.movie-poster-preview.y-poster {
 }
 
 #dialog-award-add .rel-form_award, #dialog-award-add .form_award,
-#dialog-premiere-add .form_vendor {
+#dialog-premiere-add .rel-form_vendor, #dialog-premiere-add .form_vendor,
+#dialog-release-add .rel-form_release, #dialog-release-add .form_vendor {
 	margin-left: 5px;
 }

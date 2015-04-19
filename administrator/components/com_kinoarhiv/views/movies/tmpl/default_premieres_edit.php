@@ -136,7 +136,7 @@
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('p_vendor_id'); ?>&nbsp;
-						<a class="btn btn-small quick-add hasTip" id="form_award" href="#" title="::<?php echo JText::_('COM_KA_PREMIERE_LAYOUT_QUICK_ADD_VENDOR_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
+						<a class="btn btn-small quick-add hasTip" id="form_vendor" href="#" title="::<?php echo JText::_('COM_KA_PREMIERE_LAYOUT_QUICK_ADD_VENDOR_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
 				</div>
 				<div class="control-group">

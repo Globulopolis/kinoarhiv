@@ -218,13 +218,18 @@
 	</fieldset>
 
 	<fieldset name="name_quick_add">
-		<field name="n_name" type="text" default="" label="COM_KA_FIELD_NAME" class="span12" filter="string" size="45" />
-		<field name="n_latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12" filter="string" size="45" />
-		<field name="n_date_of_birth" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_BIRTH" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" class="required" required="true" />
+		<field name="n_name" type="text" default="" label="COM_KA_FIELD_NAME" class="span12 required" required="true" filter="string" size="45" />
+		<field name="n_latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12 required" required="true" filter="string" size="45" />
+		<field name="n_date_of_birth" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+		<field name="n_date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+		<field name="n_height" type="text" label="COM_KA_FIELD_NAME_HEIGHT" class="span9" size="45" />
 		<field name="n_gender" type="list" default="0" label="COM_KA_FIELD_NAME_GENDER_LABEL" filter="integer">
 			<option value="1">COM_KA_FIELD_NAME_GENDER_M</option>
 			<option value="0">COM_KA_FIELD_NAME_GENDER_F</option>
 		</field>
+		<field name="n_birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string" />
+		<field name="n_birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11" filter="intval" data-ac-type="countries" multiple="false" />
+		<field name="n_desc" type="textarea" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="raw" cols="6" rows="5" />
 		<field name="n_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

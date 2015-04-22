@@ -39,6 +39,113 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$document = JFactory::getDocument();
+		$user = JFactory::getUser();
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.name')) {
+			if ($document->getType() == 'html') {
+				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+				return;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR')));
+				return;
+			}
+		}
+
+		$app = JFactory::getApplication();
+		$model = $this->getModel('name');
+		$data = $this->input->post->get('form', array(), 'array');
+		$form = $model->getForm($data, false);
+
+		if (!$form) {
+			if ($document->getType() == 'html') {
+				$app->enqueueMessage($model->getError(), 'error');
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>$model->getError()));
+				return;
+			}
+		}
+
+		// Process aliases for columns name
+		if ($app->input->get('quick_save', 0, 'int') == 1) {
+			foreach ($data as $key=>$value) {
+				$key = substr($key, 2);
+				$data['name'][$key] = $value;
+				unset($data['n_'.$key]);
+			}
+		}
+
+		// Store data for use in KinoarhivModelName::loadFormData()
+		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.edit_data', $data);
+		$validData = $model->validate($form, $data, 'name');
+
+		if ($validData === false) {
+			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
+
+			if ($document->getType() == 'html') {
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$data['id']);
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode(array('success'=>false, 'message'=>$errors));
+				return;
+			}
+		}
+
+		$result = $model->save($validData);
+		$session_data = $app->getUserState('com_kinoarhiv.names.'.$user->id.'.data');
+
+		if (!$result) {
+			if ($document->getType() == 'html') {
+				GlobalHelper::renderErrors($model->getErrors(), 'html');
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$data['id']);
+
+				return false;
+			} else {
+				$document->setName('response');
+				echo json_encode($session_data);
+				return;
+			}
+		}
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.edit_data', null);
+
+		if ($document->getType() == 'html') {
+			$id = $session_data['data']['id'];
+
+			// Set the redirect based on the task.
+			switch ($this->getTask()) {
+				case 'save2new':
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=add', $message);
+					break;
+				case 'apply':
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$id, $message);
+					break;
+
+				case 'save':
+				default:
+					$this->setRedirect('index.php?option=com_kinoarhiv&view=names', $message);
+					break;
+			}
+		} else {
+			$document->setName('response');
+			echo json_encode($session_data);
+		}
+
+		return true;
+	}
+	/*public function save() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.create.name', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.name', 'com_kinoarhiv')) {
@@ -108,7 +215,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 		return true;
 	}
 
-	public function quickSave() {
+	/*public function quickSave() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$document = JFactory::getDocument();
@@ -132,7 +239,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 		$document->setName('response');
 		echo json_encode($result);
-	}
+	}*/
 
 	public function unpublish() {
 		$this->publish(true);
@@ -142,7 +249,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.edit.state', 'com_kinoarhiv.name')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
@@ -166,7 +273,7 @@ class KinoarhivControllerNames extends JControllerLegacy {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv.name')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
@@ -187,14 +294,16 @@ class KinoarhivControllerNames extends JControllerLegacy {
 	}
 
 	public function cancel() {
+		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
+
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+		if (!$user->authorise('core.edit', 'com_kinoarhiv.name')) {
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', null);
 		$app->setUserState('com_kinoarhiv.names.'.$user->id.'.edit_data', null);
 

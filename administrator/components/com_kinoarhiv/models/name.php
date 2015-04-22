@@ -239,216 +239,242 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
-	public function apply($data) {
+	
+	public function save($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
+		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$id = $app->input->post->get('id', null, 'int');
+		$quick_save = $app->input->get('quick_save', 0, 'int');
 
-		$id = $app->input->get('id', 0, 'int');
-		$data = $data['name'];
-		$metadata = array('robots' => $data['robots']);
-		$form_data = $app->input->post->get('form', array(), 'array');
-		$attribs = json_encode($form_data['attribs']);
+		// Check if person with this name allready exists
+		if (empty($id)) {
+			$query = $db->getQuery(true);
 
-		// Proccess genres IDs and store in relation table
-		if (!empty($data['genres']) && ($data['genres_orig'] != $data['genres'])) {
-			$genres_arr = explode(',', $data['genres']);
+			$query->select('COUNT(id)')
+				->from($db->quoteName('#__ka_names'))
+				->where($db->quoteName('name')." LIKE '".$db->escape(trim($data['name']['name']))."%' OR ".$db->quoteName('latin_name')." LIKE '".$db->escape(trim($data['name']['latin_name']))."%'");
 
-			$query = true;
-			$db->lockTable('#__ka_rel_names_genres');
-			$db->transactionStart();
+			$db->setQuery($query);
+			$count = $db->loadResult();
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_genres')." WHERE `name_id` = ".(int)$id);
-			$db->execute();
+			if ($count > 0) {
+				$this->setError(JText::_('COM_KA_NAMES_EXISTS'));
 
-			foreach ($genres_arr as $genre_id) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_names_genres')." (`genre_id`, `name_id`) VALUES ('".(int)$genre_id."', '".(int)$id."');");
-				$result = $db->execute();
+				$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', array(
+					'success' => false,
+					'message' => JText::_('COM_KA_NAMES_EXISTS')
+				));
 
-				if ($result === false) {
-					$query = false;
-					break;
-				}
-			}
-
-			if ($query === false) {
-				$db->transactionRollback();
-				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_names_genres" failed!');
-				$db->unlockTables();
 				return false;
-			} else {
-				$db->transactionCommit();
-				$db->unlockTables();
 			}
 		}
 
-		// Proccess careers IDs and store in relation table
-		if (!empty($data['careers']) && ($data['careers_orig'] != $data['careers'])) {
-			$careers_arr = explode(',', $data['careers']);
-
-			$query = true;
-			$db->lockTable('#__ka_rel_names_career');
-			$db->transactionStart();
-
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `name_id` = ".(int)$id);
-			$db->execute();
-
-			foreach ($careers_arr as $career_id) {
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_rel_names_career')." (`career_id`, `name_id`) VALUES ('".(int)$career_id."', '".(int)$id."');");
-				$result = $db->execute();
-
-				if ($result === false) {
-					$query = false;
-					break;
-				}
-			}
-
-			if ($query === false) {
-				$db->transactionRollback();
-				$this->setError('Commit for "'.$db->getPrefix().'_ka_rel_names_career" failed!');
-				$db->unlockTables();
-				return false;
+		if (empty($data['name']['alias'])) {
+			if (!empty($data['name']['latin_name'])) {
+				$alias = JFilterOutput::stringURLSafe($data['name']['latin_name']);
 			} else {
-				$db->transactionCommit();
-				$db->unlockTables();
-			}
-		}
-
-		if (empty($data['alias'])) {
-			if (!empty($data['latin_name'])) {
-				$alias = JFilterOutput::stringURLSafe($data['latin_name']);
-			} else {
-				$alias = JFilterOutput::stringURLSafe($data['name']);
+				$alias = JFilterOutput::stringURLSafe($data['name']['name']);
 			}
 		} else {
-			$alias = JFilterOutput::stringURLSafe($data['alias']);
+			$alias = JFilterOutput::stringURLSafe($data['name']['alias']);
 		}
 
 		if (empty($id)) {
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names')
-				. " (`id`, `asset_id`, `name`, `latin_name`, `alias`, `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `attribs`, `ordering`, `state`, `access`, `metakey`, `metadesc`, `metadata`, `language`)"
-				. "\n VALUES ('', '0', '".$db->escape(trim($data['name']))."', '".$db->escape(trim($data['latin_name']))."', '".$alias."', '".$data['date_of_birth']."', '".$data['date_of_death']."', '".$db->escape($data['birthplace'])."', '".(int)$data['birthcountry']."', '".(int)$data['gender']."', '".$db->escape($data['height'])."', '".$db->escape($data['desc'])."', '".$attribs."', '".(int)$data['ordering']."', '".$data['state']."', '".(int)$data['access']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".json_encode($metadata)."', '".$data['language']."')");
+			$metadata = array('robots' => '');
+
+			$form = $this->getForm();
+			$attribs = array();
+			foreach ($form->getGroup('attribs') as $key=>$value) {
+				// Array key start from form 'control' attribute + fields group name
+				$attribs[substr($key, strlen('form_attribs_'))] = '';
+			}
+			$attribs = json_encode($attribs);
+
+			$data['name']['state'] = 1;
+			$data['name']['access'] = 1;
+			$data['name']['metakey'] = '';
+			$data['name']['metadesc'] = '';
 		} else {
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')
-				. "\n SET `name` = '".$db->escape(trim($data['name']))."', `latin_name` = '".$db->escape(trim($data['latin_name']))."', `alias` = '".$alias."', `date_of_birth` = '".$data['date_of_birth']."', `date_of_death` = '".$data['date_of_death']."', `birthplace` = '".$db->escape($data['birthplace'])."', `birthcountry` = '".(int)$data['birthcountry']."', `gender` = '".(int)$data['gender']."', `height` = '".$db->escape($data['height'])."', `desc` = '".$db->escape($data['desc'])."', `attribs` = '".$attribs."', `ordering` = '".(int)$data['ordering']."', `state` = '".$data['state']."', `access` = '".(int)$data['access']."', `metakey` = '".$db->escape($data['metakey'])."', `metadesc` = '".$db->escape($data['metadesc'])."', `metadata` = '".json_encode($metadata)."', `language` = '".$data['language']."'"
-				. "\n WHERE `id` = ".(int)$id);
+			$metadata = array('robots' => $data['name']['robots']);
+			$attribs = json_encode($data['attribs']);
+		}
+
+		$query = $db->getQuery(true);
+
+		if (empty($id)) {
+			$query->insert($db->quoteName('#__ka_names'))
+				->columns($db->quoteName(array('id','asset_id','name','latin_name','alias','date_of_birth','date_of_death','birthplace','birthcountry','gender','height','desc','attribs','ordering','state','access','metakey','metadesc','metadata','language')))
+				->values("'','0','".$db->escape(trim($data['name']['name']))."','".$db->escape(trim($data['name']['latin_name']))."','".$alias."','".$data['name']['date_of_birth']."','".$data['name']['date_of_death']."','".$db->escape(trim($data['name']['birthplace']))."','".(int)$data['name']['birthcountry']."','".(int)$data['name']['gender']."','".$db->escape($data['name']['height'])."','".$db->escape($data['name']['desc'])."','".$attribs."','".(int)$data['name']['ordering']."','".$data['name']['state']."','".(int)$data['name']['access']."','".$db->escape($data['name']['metakey'])."','".$db->escape($data['name']['metadesc'])."','".json_encode($metadata)."','".$db->escape($data['name']['language'])."'");
+		} else {
+			$query->update($db->quoteName('#__ka_names'))
+				->set($db->quoteName('name')." = '".$db->escape(trim($data['name']['name']))."'")
+				->set($db->quoteName('latin_name')." = '".$db->escape(trim($data['name']['latin_name']))."'")
+				->set($db->quoteName('alias')." = '".$alias."'")
+				->set($db->quoteName('date_of_birth')." = '".$data['name']['date_of_birth']."'")
+				->set($db->quoteName('date_of_death')." = '".$data['name']['date_of_death']."'")
+				->set($db->quoteName('birthplace')." = '".$db->escape($data['name']['birthplace'])."'")
+				->set($db->quoteName('birthcountry')." = '".(int)$data['name']['birthcountry']."'")
+				->set($db->quoteName('gender')." = '".(int)$data['name']['gender']."'")
+				->set($db->quoteName('height')." = '".$db->escape($data['name']['height'])."'")
+				->set($db->quoteName('desc')." = '".$db->escape($data['name']['desc'])."'")
+				->set($db->quoteName('attribs')." = '".$attribs."'")
+				->set($db->quoteName('ordering')." = '".(int)$data['name']['ordering']."'")
+				->set($db->quoteName('state')." = '".$data['name']['state']."'")
+				->set($db->quoteName('access')." = '".(int)$data['name']['access']."'")
+				->set($db->quoteName('metakey')." = '".$db->escape($data['name']['metakey'])."'")
+				->set($db->quoteName('metadesc')." = '".$db->escape($data['name']['metadesc'])."'")
+				->set($db->quoteName('metadata')." = '".json_encode($metadata)."'")
+				->set($db->quoteName('language')." = '".$db->escape($data['name']['language'])."'")
+				->where($db->quoteName('id').' = '.(int)$id);
 		}
 
 		try {
+			$db->setQuery($query);
 			$db->execute();
 
 			if (empty($id)) {
-				$insertid = $db->insertid();
-				$app->input->set('id', array($insertid)); // Need to proper redirect to edited item
+				$id = $db->insertid();
 
 				// Create access rules
-				$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1");
+				$query = $db->getQuery(true);
+
+				$query->select($db->quoteName('id'))
+					->from($db->quoteName('#__assets'))
+					->where($db->quoteName('name')." = 'com_kinoarhiv' AND ".$db->quoteName('parent_id')." = 1");
+
+				$db->setQuery($query);
 				$parent_id = $db->loadResult();
 
-				$db->setQuery("SELECT MAX(`lft`)+2 AS `lft`, MAX(`rgt`)+2 AS `rgt` FROM ".$db->quoteName('#__assets'));
+				$query = $db->getQuery(true);
+
+				$query->select('MAX(lft)+2 AS lft, MAX(`rgt`)+2 AS rgt')
+					->from($db->quoteName('#__assets'));
+
+				$db->setQuery($query);
 				$lft_rgt = $db->loadObject();
 
-				$asset_title = !empty($data['latin_name']) ? $data['latin_name'] : $data['name'];
-				$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')
-					. "\n (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
-					. "\n VALUES ('', '".$parent_id."', '".$lft_rgt->lft."', '".$lft_rgt->rgt."', '2', 'com_kinoarhiv.name.".$insertid."', '".$db->escape($asset_title)."', '{}')");
+				$asset_title = !empty($data['name']['latin_name']) ? $data['name']['latin_name'] : $data['name']['name'];
+				$query = $db->getQuery(true);
+
+				$query->insert($db->quoteName('#__assets'))
+					->columns($db->quoteName(array('id', 'parent_id', 'lft', 'rgt', 'level', 'name', 'title', 'rules')))
+					->values("'','".$parent_id."','".$lft_rgt->lft."','".$lft_rgt->rgt."','2','com_kinoarhiv.name.".$id."','".$db->escape($asset_title)."','{}'");
+
+				$db->setQuery($query);
 				$db->execute();
 				$asset_id = $db->insertid();
 
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')
-					. "\n SET `asset_id` = '".(int)$asset_id."'"
-					. "\n WHERE `id` = ".(int)$insertid);
+				$query = $db->getQuery(true);
+
+				$query->update($db->quoteName('#__ka_names'))
+					->set($db->quoteName('asset_id')." = '".(int)$asset_id."'")
+					->where($db->quoteName('id').' = '.(int)$id);
+
+				$db->setQuery($query);
 				$db->execute();
 			} else {
-				$app->input->set('id', array($id));
-
 				// Alias was changed? Move all linked items into new filesystem location.
-				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
-					$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
+				if (JString::substr($alias, 0, 1) != JString::substr($data['name']['alias_orig'], 0, 1)) {
+					$this->moveMediaItems($id, $data['name']['alias_orig'], $alias, $params);
 				}
 			}
 
-			return true;
+			$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', array(
+				'success' => true,
+				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
+				'data'    => array('id' => $id, 'name' => trim($data['name']['name']), 'latin_name' => trim($data['name']['latin_name']))
+			));
 		} catch(Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
 		}
 
+		if ($quick_save == 0) {
+			// Proccess genres IDs and store in relation table
+			if (!empty($data['name']['genres']) && ($data['name']['genres_orig'] != $data['name']['genres'])) {
+				$genres_arr = explode(',', $data['name']['genres']);
+
+				$query_result_g = true;
+				$query = $db->getQuery(true);
+				$db->lockTable('#__ka_rel_names_genres');
+				$db->transactionStart();
+
+				$query->delete($db->quoteName('#__ka_rel_names_genres'))
+					->where($db->quoteName('name_id').' = '.(int)$id);
+
+				$db->setQuery($query);
+				$db->execute();
+
+				foreach ($genres_arr as $genre_id) {
+					$query = $db->getQuery(true);
+
+					$query->insert($db->quoteName('#__ka_rel_names_genres'))
+						->columns($db->quoteName(array('genre_id', 'name_id')))
+						->values("'".(int)$genre_id."','".(int)$id."'");
+
+					$db->setQuery($query.';');
+
+					if ($db->execute() === false) {
+						$query_result_g = false;
+						break;
+					}
+				}
+
+				if ($query_result_g === false) {
+					$db->transactionRollback();
+					$this->setError('Update genres was failed!');
+				} else {
+					$db->transactionCommit();
+				}
+
+				$db->unlockTables();
+			}
+
+			// Proccess careers IDs and store in relation table
+			if (!empty($data['name']['careers']) && ($data['name']['careers_orig'] != $data['name']['careers'])) {
+				$careers_arr = explode(',', $data['name']['careers']);
+
+				$query_result_g = true;
+				$query = $db->getQuery(true);
+				$db->lockTable('#__ka_rel_names_career');
+				$db->transactionStart();
+
+				$query->delete($db->quoteName('#__ka_rel_names_career'))
+					->where($db->quoteName('name_id').' = '.(int)$id);
+
+				$db->setQuery($query);
+				$db->execute();
+
+				foreach ($careers_arr as $career_id) {
+					$query = $db->getQuery(true);
+
+					$query->insert($db->quoteName('#__ka_rel_names_career'))
+						->columns($db->quoteName(array('career_id', 'name_id')))
+						->values("'".(int)$career_id."','".(int)$id."'");
+
+					$db->setQuery($query.';');
+
+					if ($db->execute() === false) {
+						$query_result_g = false;
+						break;
+					}
+				}
+
+				if ($query === false) {
+					$db->transactionRollback();
+					$this->setError('Update careers was failed!');
+				} else {
+					$db->transactionCommit();
+				}
+
+				$db->unlockTables();
+			}
+		}
+
 		return true;
-	}
-
-	public function quickSave() {
-		$app = JFactory::getApplication();
-		$db = $this->getDBO();
-
-		// We need to set alias for quick save on movie page
-		$name = 'n_name';
-		$latin_name = 'n_latin_name';
-		$date_of_birth = 'n_date_of_birth';
-		$gender = 'n_gender';
-		$ordering = 'n_ordering';
-		$language = 'n_language';
-
-		$data = $app->input->getArray(array(
-			'form'=>array(
-				$name=>'string', $latin_name=>'string', $date_of_birth=>'string', $gender=>'int', $ordering=>'int', $language=>'string'
-			)
-		));
-		$name = $data['form'][$name];
-		$latin_name = $data['form'][$latin_name];
-		$alias = $name != '' ? $name : $latin_name;
-		$date_of_birth = (empty($data['form'][$date_of_birth]) && $data['form'][$date_of_birth] == '0000-00-00') ? date('Y-m-d') : $data['form'][$date_of_birth];
-		$gender = $data['form'][$gender];
-		$ordering = empty($data['form'][$ordering]) ? 0 : $data['form'][$ordering];
-		$metadata = json_encode(array('tags'=>array(), 'robots'=>''));
-		$language = empty($data['form'][$language]) ? '*' : $data['form'][$language];
-		$attribs = array();
-
-		if (empty($name) && empty($latin_name)) {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_REQUIRED'));
-		}
-
-		$form = JForm::getInstance('com_kinoarhiv.name', __DIR__.'\forms\name.xml', array('control' => '', 'load_data' => false), false, "fields[@name = 'attribs']");
-
-		foreach ($form->getXml()->xpath('//field') as $field) {
-			$attribs[(string)$field->attributes()->name] = '';
-		}
-
-		if (empty($form)) {
-			return false;
-		}
-
-		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_names')." (`id`, `asset_id`, `name`, `latin_name`, `alias`, `date_of_birth`, `date_of_death`, `birthplace`, `birthcountry`, `gender`, `height`, `desc`, `attribs`, `ordering`, `state`, `access`, `metakey`, `metadesc`, `metadata`, `language`)"
-			. "\n VALUES ('', '0', '".$db->escape($name)."', '".$db->escape($latin_name)."', '".JFilterOutput::stringURLSafe($alias)."', '".$date_of_birth."', '', '', '', '".$gender."', '', '', '".json_encode($attribs)."', '".(int)$ordering."', '1', '1', '', '', '".$metadata."', '".$language."')");
-		$query = $db->execute();
-
-		if ($query !== true) {
-			return array('success'=>false, 'message'=>JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
-		} else {
-			$insertid = $db->insertid();
-			$rules = json_encode((object)array());
-
-			$db->setQuery("SELECT MAX(`rgt`) + 1 FROM ".$db->quoteName('#__assets'));
-			$lft = $db->loadResult();
-
-			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__assets')." WHERE `name` = 'com_kinoarhiv' AND `parent_id` = 1 AND `level` = 1");
-			$parent_id = $db->loadResult();
-
-			$db->setQuery("INSERT INTO ".$db->quoteName('#__assets')." (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`)"
-				. "\n VALUES ('', '".$parent_id."', '".$lft."', '".($lft+1)."', '1', 'com_kinoarhiv.name.".(int)$insertid."', '".$alias."', '".$rules."')");
-			$assets_query = $db->execute();
-			$assets_id = $db->insertid();
-
-			$db->setQuery("UPDATE ".$db->quoteName('#__ka_names')." SET `asset_id` = '".$assets_id."' WHERE `id` = ".$insertid);
-			$update_query = $db->execute();
-
-			return array(
-				'success'	=> true,
-				'message'	=> JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-				'data'		=> array('id'=>$insertid, 'name'=>$name, 'latin_name'=>$latin_name)
-			);
-		}
 	}
 
 	/**

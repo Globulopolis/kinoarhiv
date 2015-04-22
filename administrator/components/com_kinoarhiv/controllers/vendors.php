@@ -200,14 +200,16 @@ class KinoarhivControllerVendors extends JControllerLegacy {
 	}
 
 	public function cancel() {
+		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
+
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+		if (!$user->authorise('core.admin', 'com_kinoarhiv')) {
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.data', null);
 		$app->setUserState('com_kinoarhiv.vendors.'.$user->id.'.edit_data', null);
 

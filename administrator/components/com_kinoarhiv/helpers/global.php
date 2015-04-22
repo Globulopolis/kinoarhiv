@@ -85,7 +85,7 @@ class GlobalHelper {
 		}
 
 		if ($format != 'html') {
-			return implode(PHP_EOL, $_errors);
+			return implode('<br />', $_errors);
 		}
 	}
 }

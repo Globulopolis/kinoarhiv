@@ -58,7 +58,7 @@ $name_id = $input->get('name_id', 0, 'int');
 				if ($('#form_n_name').val() != '' || $('#form_n_latin_name').val() != '') {
 					$.ajax({
 						type: 'POST',
-						url: 'index.php?option=com_kinoarhiv&controller=names&task=quickSave&format=json',
+						url: 'index.php?option=com_kinoarhiv&controller=names&task=save&quick_save=1&format=json',
 						data: $('.form_name fieldset').serialize() + '&<?php echo JSession::getFormToken(); ?>=1'
 					}).done(function(response){
 						if (response.success) {
@@ -200,6 +200,35 @@ $name_id = $input->get('name_id', 0, 'int');
 			escapeMarkup: function(m) { return m; }
 		});
 
+		$('#form_n_birthcountry').select2({
+			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
+			quietMillis: 200,
+			allowClear: true,
+			minimumInputLength: 1,
+			maximumSelectionSize: 1,
+			ajax: {
+				cache: true,
+				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json',
+				data: function(term, page){
+					return { term: term, showAll: 0 }
+				},
+				results: function(data, page){
+					return { results: data };
+				}
+			},
+			formatResult: function(data){
+				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
+			},
+			formatSelection: function(data, container){
+				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
+			},
+			escapeMarkup: function(m) { return m; }
+		}).select2('container').find('ul.select2-choices').sortable({
+			containment: 'parent',
+			start: function() { $("#form_n_birthcountry").select2('onSortStart'); },
+			update: function() { $("#form_n_birthcountry").select2('onSortEnd'); }
+		});
+
 		$('#form_is_directors').change(function(){
 			if (this.value == 1) {
 				$('#form_is_actors').val(0);
@@ -288,29 +317,13 @@ $name_id = $input->get('name_id', 0, 'int');
 	</div>
 	<div class="span12 form_name" style="display: none;">
 		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('n_name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('n_name'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('n_latin_name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('n_latin_name'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('n_date_of_birth'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('n_date_of_birth'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('n_gender'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('n_gender'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('n_language'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('n_language'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('n_ordering'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('n_ordering'); ?></div>
+			<div class="group">
+				<?php foreach($this->form->getFieldset('name_quick_add') as $field): ?>
+				<div class="control-group">
+					<div class="control-label"><?php echo $field->label; ?></div>
+					<div class="controls"><?php echo $field->input; ?></div>
+				</div>
+				<?php endforeach; ?>
 			</div>
 			<div class="control-group">
 				<button id="form_name_apply"><?php echo JText::_('JTOOLBAR_APPLY'); ?></button>

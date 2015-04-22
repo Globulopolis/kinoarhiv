@@ -8,7 +8,7 @@
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
 			<field name="alias_orig" type="hidden" />
 
-			<field name="date_of_birth" type="datetime" default="NOW" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
+			<field name="date_of_birth" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
 			<field name="date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
 			<field name="height" type="text" label="COM_KA_FIELD_NAME_HEIGHT" class="span9" size="45" />
 			<field name="gender" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_NAME_GENDER_LABEL" filter="integer">

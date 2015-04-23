@@ -115,7 +115,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." WHERE (`name` LIKE '".$db->escape($term)."%' OR `latin_name` LIKE '".$db->escape($term)."%')".$where_lang.$ignored);
+					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." WHERE (`name` LIKE '%".$db->escape($term)."%' OR `latin_name` LIKE '%".$db->escape($term)."%')".$where_lang.$ignored);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." WHERE `id` = ".(int)$id.$where_lang.$ignored);

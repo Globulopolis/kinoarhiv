@@ -60,6 +60,7 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->params = &$params;
 
 		parent::display('edit');
+		$app->input->set('hidemainmenu', true);
 	}
 
 	protected function addToolbar($task='') {

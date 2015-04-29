@@ -124,7 +124,7 @@ class KinoarhivModelRelease extends JModelForm {
 		}
 	}
 
-	// Should be removed in the feature releases
+	// TODO Should be removed in the feature releases
 	public function deleteReleases() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();

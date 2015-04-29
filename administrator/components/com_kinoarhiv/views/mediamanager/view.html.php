@@ -36,7 +36,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					return false;
 				}
 
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_GALLERY')), 'images');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.JText::_('COM_KA_MOVIES_GALLERY').' - '.$page_title), 'images');
 
 				if ($tab == 1) {
 					$path = $params->get('media_wallpapers_root');
@@ -104,7 +104,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 						return false;
 					}
 
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_TRAILERS')), 'images');
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.JText::_('COM_KA_MOVIES_TRAILERS').' - '.$page_title), 'images');
 
 					if (!empty($item)) {
 						$movie_id = $app->input->get('id', 0, 'int');

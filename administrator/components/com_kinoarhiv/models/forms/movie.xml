@@ -15,8 +15,8 @@
 			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
-			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" filter="string" data-ac-type="genres" />
-			<field name="countries" type="countries" default="" label="COM_KA_FIELD_MOVIE_COUNTRIES" description="COM_KA_FIELD_MOVIE_COUNTRIES_DESC" class="span11" filter="string" data-ac-type="countries" />
+			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres" />
+			<field name="countries" type="countries" default="" label="COM_KA_FIELD_MOVIE_COUNTRIES" description="COM_KA_FIELD_MOVIE_COUNTRIES_DESC" class="span10" filter="string" data-ac-type="countries" />
 
 			<field name="mpaa" type="list" label="COM_KA_FIELD_MOVIE_RATES_MPAA" description="COM_KA_FIELD_MOVIE_RATES_MPAA_DESC" class="span10" filter="string" default="g">
 				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>

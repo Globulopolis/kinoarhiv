@@ -19,14 +19,12 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		}
 
 		if ($tpl == 'upload_subtitles_lang_edit') {
-			$data = $this->get('SubtitleEdit');
-
-			$this->data = &$data;
+			$this->data = $this->get('SubtitleEdit');
+		} elseif ($tpl == 'upload_videodata_edit') {
+			$this->data = $this->get('VideoDataEdit');
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		$this->params = &$params;
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		parent::display($tpl);
 	}

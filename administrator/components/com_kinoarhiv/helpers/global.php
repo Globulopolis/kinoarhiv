@@ -46,6 +46,11 @@ class GlobalHelper {
 
 	/**
 	 * Just proxy for KALanguage::getScriptLanguage()
+     *
+     * @param   string    $file           Part of the filename w/o language tag and extension
+     * @param   string    $jhtml          Use JHTML::script() to load
+     * @param   string    $script_type    Type of the script(folder name in assets/js/i8n/)
+     * @param   bool      $frontend       Load language file from the frontend if set to true
 	 */
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend) {
 		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
@@ -57,9 +62,9 @@ class GlobalHelper {
 	/**
 	 * Method to get an errors from $errors and enqueue or directly display them.
 	 *
-	 * @param   mixed   $errors   An Exception object or array.
-	 * @param   bool    $format   Document type format.
-	 * @param   int     $count    Number of errors to process.
+	 * @param   mixed     $errors   An Exception object or array.
+	 * @param   string    $format   Document type format.
+	 * @param   int       $count    Number of errors to process.
 	 *
 	 * @return  string
 	 *
@@ -87,5 +92,7 @@ class GlobalHelper {
 		if ($format != 'html') {
 			return implode('<br />', $_errors);
 		}
+
+        return true;
 	}
 }

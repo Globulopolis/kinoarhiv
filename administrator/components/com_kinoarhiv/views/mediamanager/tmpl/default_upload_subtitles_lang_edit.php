@@ -20,7 +20,7 @@
 				<label for="jform_desc"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_DESC'); ?></label>
 			</div>
 			<div class="controls">
-				<input id="jform_desc" type="text" size="50" value="<?php echo $this->data['lang']; ?>" name="desc">
+				<input id="jform_desc" type="text" size="50" value="<?php echo $this->data['lang']; ?>" name="desc" />
 			</div>
 		</div>
 		<div class="control-group">

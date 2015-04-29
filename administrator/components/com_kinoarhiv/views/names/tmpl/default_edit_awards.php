@@ -30,9 +30,9 @@ endif; ?>
 			colModel:[
 				{name:'id', index:'rel.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
 				{name:'award_id', index:'rel.award_id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'title', index:'rel.title', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'title', index:'title', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
 				{name:'year', index:'rel.year', width:150, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'desc', index:'rel.desc', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}}
+				{name:'desc', index:'rel.desc', width:350, sortable: false, searchoptions: {sopt: ['cn','eq','bw','ew']}}
 			],
 			multiselect: true,
 			caption: '',

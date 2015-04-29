@@ -307,6 +307,40 @@ $type = $input->get('type', '', 'word');
 			});
 		});
 
+		$('#v_sortable').on('click', '.video-edit', function(e){
+			e.preventDefault();
+			var _this = $(this);
+			var dlg = $('<div style="display: none;" class="dialog" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT'); ?>"><p class="ajax-loading"></p></div>');
+
+			dlg.dialog({
+				buttons: {
+					'<?php echo JText::_('JAPPLY'); ?>': function(){
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&task=saveVideofileData&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&format=raw', $('#video_edit_form').serialize(), function(response){
+							if (response) {
+								$('.t-video').trigger('click');
+							} else {
+								showMsg('#video_edit_form .message', '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
+							}
+						}).fail(function(xhr, status, error){
+							showMsg('#video_edit_form .message', error);
+						});
+					},
+					'<?php echo JText::_('JCANCEL'); ?>': function(){
+						dlg.remove();
+					}
+				},
+				resizable: false,
+				modal: true,
+				height: 300,
+				width: 550,
+				close: function(e, ui){
+					dlg.remove();
+				}
+			});
+
+			dlg.load(_this.attr('href'));
+		});
+
 		$('#sub_sortable').on('click', '.lang-edit', function(e){
 			e.preventDefault();
 			var _this = $(this);
@@ -368,7 +402,7 @@ $type = $input->get('type', '', 'word');
 					$.each(response, function(k, object){
 						html += '<li>'
 							+ '<input type="hidden" name="ord[]" value="'+ k +'" />'
-							+ '<div style="float: left;"><span class="ord_numbering">'+ k +'</span>. '+ object.src +'</div>'
+							+ '<div style="float: left;"><span class="ord_numbering">'+ k +'</span>. '+ object.src +' <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_videodata_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&video_id='+ k +'" class="video-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a></div>'
 							+ '<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ object.src +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a></div>'
 						+ '</li>';
 					});
@@ -664,7 +698,7 @@ $type = $input->get('type', '', 'word');
 								foreach ($files as $key=>$item): ?>
 									<li>
 										<input type="hidden" name="ord[]" value="<?php echo (int)$key; ?>" />
-										<div style="float: left;"><span class="ord_numbering"><?php echo (int)$key; ?></span>. <?php echo $item->src; ?></div>
+										<div style="float: left;"><span class="ord_numbering"><?php echo (int)$key; ?></span>. <?php echo $item->src; ?> <a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_videodata_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&video_id=<?php echo (int)$key; ?>" class="video-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0" /></a></div>
 										<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $item->src; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a></div>
 									</li>
 								<?php endforeach;

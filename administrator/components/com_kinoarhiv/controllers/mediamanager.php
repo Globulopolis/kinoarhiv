@@ -537,6 +537,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
 	}
 
+	public function saveVideofileData() {
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app = JFactory::getApplication();
+		$trailer_id = $app->input->get('trailer_id', 0, 'int');
+		$video_id = $app->input->get('video_id', 0, 'int');
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->saveVideofileData($trailer_id, $video_id);
+
+		echo $result;
+	}
+
 	public function saveSubtitles() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 

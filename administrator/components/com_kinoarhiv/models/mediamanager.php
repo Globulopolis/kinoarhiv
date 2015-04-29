@@ -512,8 +512,8 @@ class KinoarhivModelMediamanager extends JModelList {
 		if ($section == 'movie') {
 			if ($type == 'trailers') {
 				if ($trailer_id == 0) {
-					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `urls`, `filename`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
-						. "\n VALUES ('', '".$movie_id."', '".$db->escape($data['title'])."', '".$db->escape($data['embed_code'])."', '', '".$db->escape($data['urls'])."', '{}', '', '{}', '{}', '".(int)$data['frontpage']."', '".(int)$data['access']."', '".(int)$data['state']."', '".$data['language']."', '".(int)$data['is_movie']."')");
+					$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_trailers')." (`id`, `movie_id`, `title`, `embed_code`, `screenshot`, `urls`, `filename`, `resolution`, `dar`, `duration`, `_subtitles`, `_chapters`, `frontpage`, `access`, `state`, `language`, `is_movie`)"
+						. "\n VALUES ('', '".$movie_id."', '".$db->escape($data['title'])."', '".$db->escape($data['embed_code'])."', '', '".$db->escape($data['urls'])."', '{}', '', '', '', '{}', '{}', '".(int)$data['frontpage']."', '".(int)$data['access']."', '".(int)$data['state']."', '".$data['language']."', '".(int)$data['is_movie']."')");
 
 					try {
 						$db->execute();
@@ -524,7 +524,7 @@ class KinoarhivModelMediamanager extends JModelList {
 					}
 				} else {
 					$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')
-						. "\n SET `title` = '".$db->escape($data['title'])."', `embed_code` = '".$data['embed_code']."', `urls` = '".$data['urls']."', `frontpage` = '".(int)$data['frontpage']."', `access` = '".(int)$data['access']."', `state` = '".(int)$data['state']."', `language` = '".$data['language']."', `is_movie` = '".$data['is_movie']."'"
+						. "\n SET `title` = '".$db->escape($data['title'])."', `embed_code` = '".$data['embed_code']."', `urls` = '".$data['urls']."', `resolution` = '".$data['resolution']."', `dar` = '".$data['dar']."', `duration` = '".$data['duration']."', `frontpage` = '".(int)$data['frontpage']."', `access` = '".(int)$data['access']."', `state` = '".(int)$data['state']."', `language` = '".$data['language']."', `is_movie` = '".$data['is_movie']."'"
 						. "\n WHERE `id` = ".(int)$trailer_id);
 
 					try {
@@ -825,25 +825,25 @@ class KinoarhivModelMediamanager extends JModelList {
 		return $items;
 	}
 
-	public function getItem($pk = null) {
+	public function getItem() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
 		$id = $app->input->get('item_id', 0, 'int');
 
-		$query->select('`g`.`id`, `g`.`movie_id`, `g`.`title`, `g`.`embed_code`, `g`.`screenshot`, `g`.`urls`, `g`.`filename`, `g`.`duration`, `g`.`_subtitles`, `g`.`_chapters`, `g`.`frontpage`, `g`.`access`, `g`.`state`, `g`.`language`, `g`.`is_movie`');
+		$query->select($db->quoteName(array('g.id', 'g.movie_id', 'g.title', 'g.embed_code', 'g.screenshot', 'g.urls', 'g.filename', 'g.resolution', 'g.dar', 'g.duration', 'g._subtitles', 'g._chapters', 'g.frontpage', 'g.access', 'g.state', 'g.language', 'g.is_movie')));
 		$query->from($db->quoteName('#__ka_trailers').' AS `g`');
 
-		$query->select(' `m`.`alias` AS `movie_alias`')
-			->leftJoin($db->quoteName('#__ka_movies').' AS `m` ON `m`.`id` = `g`.`movie_id`');
+		$query->select($db->quoteName('m.alias', 'movie_alias'))
+			->leftJoin($db->quoteName('#__ka_movies', 'm').' ON `m`.`id` = `g`.`movie_id`');
 
-		$query->select(' `l`.`title` AS `language_title`')
+		$query->select($db->quoteName('l.title', 'language_title'))
 			->leftJoin($db->quoteName('#__languages') . ' AS `l` ON `l`.`lang_code` = `g`.`language`');
 
 		$query->select(' ag.title AS access_level')
 			->leftJoin('#__viewlevels AS ag ON ag.id = g.access');
 
-		$query->where('`g`.`id` = '.$id);
+		$query->where($db->quoteName('g.id').' = '.$id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -981,6 +981,80 @@ class KinoarhivModelMediamanager extends JModelList {
 		}
 	}
 
+	public function getVideoDataEdit() {
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$trailer_id = $app->input->get('trailer_id', 0, 'int');
+		$video_id = $app->input->get('video_id', 0, 'int');
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('filename'))
+			->from($db->quoteName('#__ka_trailers'))
+			->where($db->quoteName('id').' = '.(int)$trailer_id);
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		$file_obj = json_decode($result, true);
+
+		return array(
+			'src'        => $file_obj[$video_id]['src'],
+			'type'       => $file_obj[$video_id]['type'],
+			'resolution' => $file_obj[$video_id]['resolution'],
+			'trailer_id' => $trailer_id,
+			'video_id'   => $video_id
+		);
+	}
+
+	public function saveVideofileData($trailer_id, $video_id=null) {
+		jimport('joomla.filesystem.file');
+
+		$app = JFactory::getApplication();
+		$db = $this->getDBO();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		if (is_null($video_id)) {
+			return false;
+		}
+
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('filename'))
+			->from($db->quoteName('#__ka_trailers'))
+			->where($db->quoteName('id').' = '.(int)$trailer_id);
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		$file_obj = json_decode($result, true);
+
+		$file_obj[$video_id] = array(
+			'src'        => $app->input->get('src', '', 'string'),
+			'type'       => $app->input->get('type', '', 'string'),
+			'resolution' => $app->input->get('resolution', '', 'string')
+		);
+
+		$new_file_obj = json_encode((object)$file_obj);
+
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__ka_trailers'))
+			->set($db->quoteName('filename')." = '".$new_file_obj."'")
+			->where($db->quoteName('id').' = '.(int)$trailer_id);
+
+		$db->setQuery($query);
+
+		try {
+			$db->execute();
+		} catch(Exception $e) {
+			$this->setError($e->getMessage());
+
+			return false;
+		}
+
+		return true;
+	}
+
 	public function getSubtitleEdit() {
 		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
 		$language = new KALanguage();
@@ -997,12 +1071,12 @@ class KinoarhivModelMediamanager extends JModelList {
 		$subtl_obj = json_decode($result);
 
 		return array(
-			'langs'=>$lang_list,
-			'lang_code'=>$subtl_obj->$subtitle_id->lang_code,
-			'lang'=>$subtl_obj->$subtitle_id->lang,
-			'is_default'=>$subtl_obj->$subtitle_id->default,
-			'trailer_id'=>$trailer_id,
-			'subtitle_id'=>$subtitle_id
+			'langs'       => $lang_list,
+			'lang_code'   => $subtl_obj->$subtitle_id->lang_code,
+			'lang'        => $subtl_obj->$subtitle_id->lang,
+			'is_default'  => $subtl_obj->$subtitle_id->default,
+			'trailer_id'  => $trailer_id,
+			'subtitle_id' => $subtitle_id
 		);
 	}
 

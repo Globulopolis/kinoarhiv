@@ -200,7 +200,6 @@ class GlobalHelper {
 	 *
 	*/
 	static function loadEditorAssets() {
-		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
 
 		$document->addScript(JURI::base().'components/com_kinoarhiv/assets/js/editor.rules.advanced.min.js');

@@ -10,6 +10,9 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="resolution" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION" description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6" filter="string" size="35" />
+		<field name="dar" type="text" default="" label="COM_KA_TRAILERS_HEADING_DAR_TITLE" description="COM_KA_TRAILERS_HEADING_DAR_TITLE_DESC" class="span6" filter="string" size="35" />
+		<field name="duration" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6" datatype="time" timeformat="HH:mm:ss" />
 		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="span12" size="1" />
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>

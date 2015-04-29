@@ -26,7 +26,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 
 				if (empty($id)) {
 					if (empty($term)) return array();
-					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `name` LIKE '".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `name` LIKE '%".$db->escape($term)."%'".$where_lang);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `id` = ".(int)$id.$where_lang);
@@ -44,7 +44,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 
 				if (empty($id)) {
 					if (empty($term)) return array();
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `name` LIKE '".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `name` LIKE '%".$db->escape($term)."%'".$where_lang);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` = ".(int)$id.$where_lang);
@@ -67,7 +67,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang.$ignored);
+					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `title` LIKE '%".$db->escape($term)."%'".$where_lang.$ignored);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `id` = ".(int)$id.$where_lang.$ignored);
@@ -91,7 +91,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 					if (empty($id)) {
-						$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+						$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." WHERE `title` LIKE '%".$db->escape($term)."%'".$where_lang);
 						$result = $db->loadObjectList();
 					} else {
 						$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." WHERE `id` = ".(int)$id.$where_lang);
@@ -132,7 +132,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `title` LIKE '%".$db->escape($term)."%' AND `title` != 'ROOT'".$where_lang);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `id` = ".(int)$id.$where_lang);
@@ -149,7 +149,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `title` LIKE '".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `title` LIKE '%".$db->escape($term)."%'".$where_lang);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `id` = ".(int)$id.$where_lang);
@@ -188,7 +188,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `company_name` LIKE '".$db->escape($term)."%' OR `company_name_intl` LIKE '".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `company_name` LIKE '%".$db->escape($term)."%' OR `company_name_intl` LIKE '".$db->escape($term)."%'".$where_lang);
 					$result = $db->loadObjectList();
 				} else {
 					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `id` = ".(int)$id.$where_lang);

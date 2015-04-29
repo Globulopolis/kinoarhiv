@@ -178,8 +178,7 @@ class KinoarhivModelNames extends JModelList {
 			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
 		}
 
-		$query = true;
-
+		$query_result = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_names');
 		$db->transactionStart();
@@ -192,15 +191,14 @@ class KinoarhivModelNames extends JModelList {
 				->where($db->quoteName('id').' = '.(int)$value);
 
 			$db->setQuery($query.';');
-			$result = $db->execute();
 
-			if ($result === false) {
-				$query = false;
+			if ($db->execute() === false) {
+				$query_result = false;
 				break;
 			}
 		}
 
-		if ($query === false) {
+		if ($query_result === false) {
 			$db->transactionRollback();
 		} else {
 			$db->transactionCommit();
@@ -209,7 +207,7 @@ class KinoarhivModelNames extends JModelList {
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query) {
+		if ($query_result) {
 			$success = true;
 			$message = JText::_('COM_KA_SAVED');
 		} else {

@@ -19,7 +19,6 @@ class KinoarhivModelName extends JModelForm {
 		}
 
 		$input = JFactory::getApplication()->input;
-		$ids = $input->get('id', array(), 'array');
 		$id = (isset($id[0]) && !empty($id[0])) ? $id[0] : 0;
 		$user = JFactory::getUser();
 
@@ -399,6 +398,7 @@ class KinoarhivModelName extends JModelForm {
 
 				$query_result_g = true;
 				$query = $db->getQuery(true);
+				$db->setDebug(true);
 				$db->lockTable('#__ka_rel_names_genres');
 				$db->transactionStart();
 
@@ -431,6 +431,7 @@ class KinoarhivModelName extends JModelForm {
 				}
 
 				$db->unlockTables();
+				$db->setDebug(false);
 			}
 
 			// Proccess careers IDs and store in relation table
@@ -439,6 +440,7 @@ class KinoarhivModelName extends JModelForm {
 
 				$query_result_g = true;
 				$query = $db->getQuery(true);
+				$db->setDebug(true);
 				$db->lockTable('#__ka_rel_names_career');
 				$db->transactionStart();
 
@@ -471,6 +473,7 @@ class KinoarhivModelName extends JModelForm {
 				}
 
 				$db->unlockTables();
+				$db->setDebug(false);
 			}
 		}
 
@@ -673,7 +676,7 @@ class KinoarhivModelName extends JModelForm {
 			return false;
 		}
 
-		// Remove favorited and watched movies
+		// Remove favorited persons
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_user_marked_names'))
 			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
@@ -771,7 +774,6 @@ class KinoarhivModelName extends JModelForm {
 
 		if ($query_result === false) {
 			$db->transactionRollback();
-			return false;
 		} else {
 			$db->transactionCommit();
 		}
@@ -779,7 +781,7 @@ class KinoarhivModelName extends JModelForm {
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		return true;
+		return $query_result;
 	}
 
 	/**

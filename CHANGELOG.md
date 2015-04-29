@@ -1,4 +1,14 @@
 ## HEAD (Unreleased)
+
+## 3.0.6
+* Closed https://github.com/Globulopolis/kinoarhiv/issues/41
+* Fixed wrong sorting in awards table in person edit layout.
+* Fixed wrong sorting in premieres/releases/awards table in movie edit layout.
+* Fixed a bug when assets table still locked after removing person or movie.
+* Fixed error with wrong columns on trailer save.
+* Add edit video data layout.
+* Update videoJS to 4.12.5
+* Fixed error with tags mapping.
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/47
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/46
 * Removed spinner from rating fields in advanced search.
@@ -11,7 +21,7 @@
 * Improved batch process.
 * Fixed errors in batch process.
 * Fixed error with empty video resolution.
-* Fixed wrong aspect ration for jwplayer and flowplayer.
+* Fixed wrong aspect ratio for jwplayer and flowplayer.
 * Add language for premieres. Now premieres language matches with content language.
 * Add language for releases. Now releases language matches with content language.
 * Fixed bug with sql dump for update

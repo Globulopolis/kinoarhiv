@@ -54,7 +54,7 @@ class KALanguage extends JLanguage {
 			'sd'=>'Sindhi', 'se'=>'Northern Sami', 'sm'=>'Samoan', 'sg'=>'Sango',
 			'sr'=>'Serbian', 'gd'=>'Scottish Gaelic', 'sn'=>'Shona', 'si'=>'Sinhala',
 			'sk'=>'Slovak', 'sl'=>'Slovene', 'so'=>'Somali', 'st'=>'Southern Sotho',
-			'az'=>'South Azerbaijani', 'es'=>'Spanish', 'su'=>'Sundanese', 'sw'=>'Swahili',
+			'es'=>'Spanish', 'su'=>'Sundanese', 'sw'=>'Swahili',
 			'ss'=>'Swati', 'sv'=>'Swedish', 'ta'=>'Tamil', 'te'=>'Telugu',
 			'tg'=>'Tajik', 'th'=>'Thai', 'ti'=>'Tigrinya', 'bo'=>'Tibetan',
 			'tk'=>'Turkmen', 'tl'=>'Tagalog', 'tn'=>'Tswana', 'to'=>'Tonga',
@@ -72,7 +72,7 @@ class KALanguage extends JLanguage {
 	/**
 	 * Load language files for JS scripts
 	 *
-	 * @param   string    $file           Part of the filename w/o language tag and extention
+	 * @param   string    $file           Part of the filename w/o language tag and extension
 	 * @param   string    $jhtml          Use JHTML::script() to load
 	 * @param   string    $script_type    Type of the script(folder name in assets/js/i8n/)
 	 * @param   bool      $frontend       Load language file from the frontend if set to true

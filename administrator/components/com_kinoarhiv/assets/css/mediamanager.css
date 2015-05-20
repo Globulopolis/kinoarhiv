@@ -316,7 +316,7 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	font-weight: bold;	
 }
 
-plupload_message i {
+.plupload_message i {
 	font-style: italic;	
 }
 

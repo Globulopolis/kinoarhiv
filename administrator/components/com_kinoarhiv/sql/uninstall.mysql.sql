@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `#__ka_movies`;
 DROP TABLE IF EXISTS `#__ka_movies_gallery`;
 DROP TABLE IF EXISTS `#__ka_music`;
 DROP TABLE IF EXISTS `#__ka_music_albums`;
+DROP TABLE IF EXISTS `#__ka_music_gallery`;
 DROP TABLE IF EXISTS `#__ka_music_genres`;
 DROP TABLE IF EXISTS `#__ka_music_rel_albums`;
 DROP TABLE IF EXISTS `#__ka_music_rel_genres`;

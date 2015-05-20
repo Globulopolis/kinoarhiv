@@ -71,13 +71,19 @@ class KinoarhivModelGenres extends JModelList {
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
 
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table = '#__ka_music_genres';
+		} else {
+			$table = '#__ka_genres';
+		}
+
 		$query->select(
 			$this->getState(
 				'list.select',
 				$db->quoteName(array('a.id', 'a.name', 'a.alias', 'a.stats', 'a.language', 'a.state', 'a.access'))
 			)
 		);
-		$query->from($db->quoteName('#__ka_genres', 'a'));
+		$query->from($db->quoteName($table, 'a'));
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
@@ -174,6 +180,12 @@ class KinoarhivModelGenres extends JModelList {
 			return false;
 		}
 
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table = '#__ka_music_genres';
+		} else {
+			$table = '#__ka_genres';
+		}
+
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
@@ -189,7 +201,7 @@ class KinoarhivModelGenres extends JModelList {
 
 		$query = $db->getQuery(true);
 
-		$query->update($db->quoteName('#__ka_genres'))
+		$query->update($db->quoteName($table))
 			->set(implode(', ', $fields))
 			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
 

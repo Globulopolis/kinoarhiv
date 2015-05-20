@@ -161,7 +161,7 @@ endif; ?>
 				if (items.length > 1) {
 					showMsg('.actors-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
-					var ids = items.attr('id').substr(16).split('_');
+					var ids = items.attr('id').split('_');
 					var dialog = $('<div id="dialog-name-edit" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 					$(dialog).dialog({
@@ -228,7 +228,7 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=names_edit&model=movie&view=movies&format=raw&movie_id='+ids[1]+'&name_id='+ids[0]+'&career_id='+ids[2]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=names_edit&model=movie&view=movies&format=raw&movie_id='+ids[4]+'&name_id='+ids[3]+'&career_id='+ids[5]+'#edit');
 				} else {
 					showMsg('.actors-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}

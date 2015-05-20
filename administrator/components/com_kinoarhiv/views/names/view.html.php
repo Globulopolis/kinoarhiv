@@ -106,11 +106,11 @@ class KinoarhivViewNames extends JViewLegacy {
 			$items->set('y_poster', 'y-poster');
 		}
 
-		$this->items = &$items;
-		$this->form = &$form;
+		$this->items = $items;
+		$this->form = $form;
 		$this->form_edit_group = 'name';
 		$this->form_attribs_group = 'attribs';
-		$this->params = &$params;
+		$this->params = $params;
 
 		if ($this->getLayout() !== 'modal') {
 			$this->addToolbar($tpl);

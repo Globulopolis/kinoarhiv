@@ -519,6 +519,11 @@ endif; ?>
 			</div>
 		</div>
 
+		<div class="clear"></div>
+		<div class="buy">
+			<p><?php echo $this->item->buy_urls; ?></p>
+		</div>
+
 		<?php if (($this->item->attribs->allow_votes == '' && $this->params->get('allow_votes') == 1) || $this->item->attribs->allow_votes == 1): ?>
 			<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>
 				<?php if ($this->params->get('ratings_show_local') == 1): ?>

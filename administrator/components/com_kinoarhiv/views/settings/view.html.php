@@ -20,24 +20,20 @@ class KinoarhivViewSettings extends JViewLegacy {
 			return false;
 		}
 
-		$form = $this->get('Form');
-		$data = $this->get('Settings');
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
+		$app        = JFactory::getApplication();
+		$user       = JFactory::getUser();
+		$this->lang = JFactory::getLanguage();
+		$this->form = $this->get('Form');
+		$this->data = $this->get('Settings');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 			return false;
 		}
 
-		if ($form && $data->params) {
-			$form->bind($data->params);
+		if ($this->form && $this->data->params) {
+			$this->form->bind($this->data->params);
 		}
-
-		$this->form = &$form;
-		$this->data = &$data;
-		$this->lang = &$lang;
 
 		$this->userIsSuperAdmin = $user->authorise('core.admin');
 		$this->return = $app->input->get('return', '', 'base64');

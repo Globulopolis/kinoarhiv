@@ -8,6 +8,8 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\Registry\Registry;
+
 class GlobalHelper {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
@@ -36,7 +38,7 @@ class GlobalHelper {
 	}
 
 	public static function getRemoteData($url, $headers=null, $timeout=30, $transport='curl') {
-		$options = new JRegistry;
+		$options = new Registry;
 
 		$http = JHttpFactory::getHttp($options, $transport);
 		$response = $http->get($url, $headers, $timeout);
@@ -55,8 +57,7 @@ class GlobalHelper {
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend) {
 		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
 		$language = new KALanguage();
-
-		return $language::getScriptLanguage($file, $jhtml, $script_type, $frontend);
+		$language::getScriptLanguage($file, $jhtml, $script_type, $frontend);
 	}
 
 	/**

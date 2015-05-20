@@ -122,7 +122,7 @@ endif; ?>
 				if (items.length > 1) {
 					showMsg('.premieres-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
-					var ids = items.attr('id').substr(19).split('_');
+					var ids = items.attr('id').split('_');
 					var dialog = $('<div id="dialog-premiere-edit" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 					$(dialog).dialog({
@@ -185,7 +185,7 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=premieres_edit&model=movie&view=movies&format=raw&premiere_id='+ids[0]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=premieres_edit&model=movie&view=movies&format=raw&premiere_id='+ids[3]+'#edit');
 				} else {
 					showMsg('.premieres-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}

@@ -25,9 +25,17 @@ JHtml::_('behavior.keepalive');
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
-		} else if (task == 'gallery' || task == 'trailers' || task == 'sounds') {
+		} else if (task == 'gallery' || task == 'trailers') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
 			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			var handler = window.open(url);
+			if (!handler) {
+				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
+			}
+
+			return false;
+		} else if (task == 'sounds') {
+			var url = 'index.php?option=com_kinoarhiv&view=music&type=albums<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&movie_id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
@@ -274,9 +282,7 @@ JHtml::_('behavior.keepalive');
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('countries_orig', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
-	<?php echo $this->form->getInput('tags_orig', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group): 0; ?>" />

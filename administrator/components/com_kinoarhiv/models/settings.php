@@ -43,7 +43,7 @@ class KinoarhivModelSettings extends JModelForm {
 	/**
 	 * Method to save the configuration data.
 	 *
-	 * @param   array  An array containing config data.
+	 * @param   array   Array containing config data.
 	 *
 	 * @return  bool	True on success, false on failure.
 	 */
@@ -143,7 +143,7 @@ class KinoarhivModelSettings extends JModelForm {
 		$result = $db->execute();
 
 		if (!$result) {
-			$this->setError($db->get('errorMsg'));
+			$this->setError(JText::_('ERROR'));
 			return false;
 		}
 

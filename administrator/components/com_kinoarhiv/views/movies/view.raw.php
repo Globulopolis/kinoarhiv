@@ -12,11 +12,8 @@ class KinoarhivViewMovies extends JViewLegacy {
 	protected $form;
 
 	public function display($tpl = null) {
-		$form   = $this->get('Form');
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		$this->form   = &$form;
-		$this->params = &$params;
+		$this->form   = $this->get('Form');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		parent::display($tpl);
 	}

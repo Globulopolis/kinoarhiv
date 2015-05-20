@@ -36,7 +36,6 @@ class JFormFieldNames extends JFormField {
 	public function getLabel($name='', $label='', $description='', $class='') {
 		$name = $this->name ? $this->name : $name;
 		$id = $this->id ? $this->id : $name;
-		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $label;
 
 		if (isset($this->element['class'])) {
 			$label = (string)$this->element['class'];
@@ -45,6 +44,8 @@ class JFormFieldNames extends JFormField {
 		} else {
 			$label = '';
 		}
+
+        $text = $this->element['label'] ? (string) $this->element['label'] : (string) $label;
 
 		if (isset($this->element['class'])) {
 			$class = (string)$this->element['class'];

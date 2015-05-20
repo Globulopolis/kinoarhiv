@@ -38,7 +38,8 @@ class KinoarhivControllerSettings extends JControllerLegacy {
 			} else {
 				JFactory::getApplication()->redirect('index.php', JText::_('COM_KA_NO_ACCESS_RIGHTS'));
 			}
-			return;
+
+			return false;
 		}
 
 		$app = JFactory::getApplication();

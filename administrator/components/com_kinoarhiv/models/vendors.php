@@ -61,10 +61,8 @@ class KinoarhivModelVendors extends JModelList {
 	}
 
 	protected function getListQuery() {
-		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
-		$task = $app->input->get('task', '', 'cmd');
 
 		$query->select(
 			$this->getState(

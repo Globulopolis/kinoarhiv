@@ -34,10 +34,15 @@ class KinoarhivModelGenre extends JModelForm {
 		$db = $this->getDBO();
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table = '#__ka_music_genres';
+		} else {
+			$table = '#__ka_genres';
+		}
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'name', 'alias', 'stats', 'state', 'access', 'language')))
-			->from($db->quoteName('#__ka_genres'))
+			->from($db->quoteName($table))
 			->where($db->quoteName('id').' = '.(int)$id);
 
 		$db->setQuery($query);
@@ -51,9 +56,14 @@ class KinoarhivModelGenre extends JModelForm {
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table = '#__ka_music_genres';
+		} else {
+			$table = '#__ka_genres';
+		}
 		$query = $db->getQuery(true);
 
-		$query->update($db->quoteName('#__ka_genres'))
+		$query->update($db->quoteName($table))
 			->set($db->quoteName('state').' = '.(int)$state)
 			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
 
@@ -74,9 +84,14 @@ class KinoarhivModelGenre extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table = '#__ka_music_genres';
+		} else {
+			$table = '#__ka_genres';
+		}
 		$query = $db->getQuery(true);
 
-		$query->delete($db->quoteName('#__ka_genres'))
+		$query->delete($db->quoteName($table))
 			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
 
 		$db->setQuery($query);
@@ -97,6 +112,11 @@ class KinoarhivModelGenre extends JModelForm {
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
 		$id = $app->input->post->get('id', null, 'int');
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table = '#__ka_music_genres';
+		} else {
+			$table = '#__ka_genres';
+		}
 		$name = trim($data['name']);
 
 		if (empty($name)) {
@@ -126,7 +146,7 @@ class KinoarhivModelGenre extends JModelForm {
 			$query = $db->getQuery(true);
 
 			$query->select('COUNT(id)')
-				->from($db->quoteName('#__ka_genres'))
+				->from($db->quoteName($table))
 				->where($db->quoteName('name')." = '".$db->escape($name)."'");
 
 			$db->setQuery($query);
@@ -145,13 +165,13 @@ class KinoarhivModelGenre extends JModelForm {
 
 			$query = $db->getQuery(true);
 
-			$query->insert($db->quoteName('#__ka_genres'))
+			$query->insert($db->quoteName($table))
 				->columns($db->quoteName(array('id', 'name', 'alias', 'stats', 'state', 'access', 'language')))
 				->values("'','".$db->escape($name)."','".$data['alias']."','".(int)$data['stats']."','".$data['state']."','".(int)$data['access']."','".$db->escape($data['language'])."'");
 		} else {
 			$query = $db->getQuery(true);
 
-			$query->update($db->quoteName('#__ka_genres'))
+			$query->update($db->quoteName($table))
 				->set($db->quoteName('name')." = '".$db->escape($name)."'")
 				->set($db->quoteName('alias')." = '".$data['alias']."'")
 				->set($db->quoteName('stats')." = '".(int)$data['stats']."'")
@@ -193,6 +213,13 @@ class KinoarhivModelGenre extends JModelForm {
 		$db = $this->getDBO();
 		$gid = $app->input->get('id', array(), 'array');
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$table_genres = '#__ka_music_genres';
+			$table_rel_genres = '#__ka_music_rel_genres';
+		} else {
+			$table_genres = '#__ka_genres';
+			$table_rel_genres = '#__ka_rel_genres';
+		}
 
 		if (count($gid) > 1) {
 			if (count($gid) != $boxchecked) {
@@ -206,12 +233,17 @@ class KinoarhivModelGenre extends JModelForm {
 
 			foreach ($gid as $genre_id) {
 				$query = $db->getQuery(true)
-					->update($db->quoteName('#__ka_genres'));
+					->update($db->quoteName($table_genres));
 
-				$subquery = $db->getQuery(true)
-					->select('COUNT(genre_id)')
-					->from($db->quoteName('#__ka_rel_genres'))
-					->where($db->quoteName('genre_id').' = '.(int)$genre_id);
+					$subquery = $db->getQuery(true)
+						->select('COUNT(genre_id)')
+						->from($db->quoteName($table_rel_genres));
+
+					if ($app->input->get('type', 'movie', 'word') == 'music') {
+						$subquery->where($db->quoteName('genre_id').' = '.(int)$genre_id.' AND '.$db->quoteName('type').' = 0');
+					} else {
+						$subquery->where($db->quoteName('genre_id').' = '.(int)$genre_id);
+					}
 
 				$query->set($db->quoteName('stats')." = (".$subquery.")")
 					->where($db->quoteName('id').' = '.(int)$genre_id.';');
@@ -241,12 +273,17 @@ class KinoarhivModelGenre extends JModelForm {
 			}
 
 			$query = $db->getQuery(true)
-				->update($db->quoteName('#__ka_genres'));
+				->update($db->quoteName($table_genres));
 
 			$subquery = $db->getQuery(true)
 				->select('COUNT(genre_id)')
-				->from($db->quoteName('#__ka_rel_genres'))
-				->where($db->quoteName('genre_id').' = '.(int)$gid[0]);
+				->from($db->quoteName($table_rel_genres));
+
+			if ($app->input->get('type', 'movie', 'word') == 'music') {
+				$subquery->where($db->quoteName('genre_id').' = '.(int)$gid[0].' AND '.$db->quoteName('type').' = 0');
+			} else {
+				$subquery->where($db->quoteName('genre_id').' = '.(int)$gid[0]);
+			}
 
 			$query->set($db->quoteName('stats')." = (".$subquery.")")
 				->where($db->quoteName('id').' = '.(int)$gid[0]);
@@ -258,7 +295,7 @@ class KinoarhivModelGenre extends JModelForm {
 
 				$query = $db->getQuery(true)
 					->select($db->quoteName('stats'))
-					->from($db->quoteName('#__ka_genres'))
+					->from($db->quoteName($table_genres))
 					->where($db->quoteName('id').' = '.(int)$gid[0]);
 
 				$db->setQuery($query);

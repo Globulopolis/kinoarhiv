@@ -3,6 +3,13 @@ $user		= JFactory::getUser();
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
+if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') {
+	$item_type = 'music';
+	$upd_stat_text = 'COM_KA_GENRES_MUSIC_STATS_UPDATED_COUNT';
+} else {
+	$item_type = 'movie';
+	$upd_stat_text = 'COM_KA_GENRES_STATS_UPDATED_COUNT';
+}
 ?>
 <script type="text/javascript">
 	Joomla.orderTable = function() {
@@ -23,7 +30,7 @@ $sortFields = $this->getSortFields();
 			return;
 		}
 		if (pressbutton == 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=<?php echo $item_type; ?>';
 			return;
 		}
 		Joomla.submitform(pressbutton);
@@ -33,10 +40,10 @@ $sortFields = $this->getSortFields();
 			e.preventDefault();
 			var _this = $(this);
 
-			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&id[]='+_this.closest('tr').attr('sortable-group-id')+'&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
+			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&type=<?php echo $item_type; ?>&id[]='+_this.closest('tr').attr('sortable-group-id')+'&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {
 					_this.closest('td').find('span.total').text(response.total);
-					showMsg('#articleList', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>');
+					showMsg('#articleList', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>&nbsp;' + response.total + '<?php echo JText::_($upd_stat_text); ?>');
 				} else {
 					showMsg('#articleList', response.message);
 				}
@@ -45,7 +52,7 @@ $sortFields = $this->getSortFields();
 	});
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres&type='.$item_type); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
@@ -63,7 +70,7 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('searchtools.sort', 'COM_KA_GENRES_STATS', 'a.stats', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', ($item_type == 'movie') ? 'COM_KA_GENRES_STATS' : 'COM_KA_GENRES_MUSIC_STATS', 'a.stats', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
@@ -93,7 +100,7 @@ $sortFields = $this->getSortFields();
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=genres&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=genres&type='.$item_type.'&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>
 								<span class="small">(<?php echo JText::_('JFIELD_ALIAS_LABEL'); ?>: <?php echo $this->escape($item->alias); ?>)</span>
 							<?php else : ?>
@@ -115,7 +122,7 @@ $sortFields = $this->getSortFields();
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&id='.$item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS').': '.$this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type='.$item_type.'&id='.$item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS').': '.$this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>

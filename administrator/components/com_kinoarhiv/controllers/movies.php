@@ -136,7 +136,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		return true;
 	}
 
-	public function saveMovieAccessRules() {
+	public function saveAccessRules() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
@@ -145,7 +145,7 @@ class KinoarhivControllerMovies extends JControllerLegacy {
 		}
 
 		$model = $this->getModel('movie');
-		$result = $model->saveMovieAccessRules();
+		$result = $model->saveAccessRules();
 
 		echo json_encode($result);
 	}

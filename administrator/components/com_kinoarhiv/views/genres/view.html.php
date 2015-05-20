@@ -73,15 +73,21 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
+		if ($app->input->get('type', 'movie', 'word') == 'music') {
+			$title = 'COM_KA_GENRES_MUSIC_TITLE';
+		} else {
+			$title = 'COM_KA_GENRES_TITLE';
+		}
+
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_GENRES_TITLE').': '.JText::_('COM_KA_NEW')), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title).': '.JText::_('COM_KA_NEW')), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_GENRES_TITLE').': '.$this->form->getValue('name')), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title).': '.$this->form->getValue('name')), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -91,7 +97,7 @@ class KinoarhivViewGenres extends JViewLegacy {
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} else {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_GENRES_TITLE')), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title)), 'smiley-2');
 
 			if ($user->authorise('core.create.genre', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');

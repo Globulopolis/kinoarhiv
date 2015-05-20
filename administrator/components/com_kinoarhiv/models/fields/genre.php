@@ -12,13 +12,9 @@ JFormHelper::loadFieldClass('list');
 
 class JFormFieldGenre extends JFormFieldList {
 	protected $type = 'Genre';
-	protected $comParams = null;
 
 	public function __construct() {
 		parent::__construct();
-
-		// Load com_kinoarhiv config
-		$this->comParams = JComponentHelper::getParams('com_kinoarhiv');
 	}
 
 	protected function getInput() {
@@ -34,8 +30,6 @@ class JFormFieldGenre extends JFormFieldList {
 	}
 
 	protected function getOptions() {
-		$options = array();
-		$name = (string)$this->element['name'];
 		$lang = JFactory::getLanguage();
 
 		$db	= JFactory::getDBO();

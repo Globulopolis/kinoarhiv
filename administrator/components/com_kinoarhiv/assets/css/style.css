@@ -27,11 +27,11 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	z-index: 10001 !important;
 }
 
-#movie_tabs .ui-tabs-panel {
+#movie_tabs .ui-tabs-panel, #albums_tabs .ui-tabs-panel {
 	padding: 1em 0.5em;
 }
 
-#page-cast-crew, #page-awards, #page-premieres, #page-releases {
+#page-cast-crew, #page-awards, #page-premieres, #page-releases, #page-composer {
 	padding: .5em 0 !important;
 }
 
@@ -97,7 +97,7 @@ label.hasTip {
 }
 
 #relations_menu {
-	position: relaive;
+	position: relative;
 }
 
 .searchFilter .input-elm {
@@ -272,14 +272,14 @@ span.icon {
 	outline: none !important;
 }
 
-img.movie-poster-preview {
+img.movie-poster-preview, img.album-cover-preview {
 	padding: 2px;
 	height: 110px !important;
 	max-width: 110px;
 	display: block;
 }
 
-img.movie-poster-preview.y-poster {
+img.movie-poster-preview.y-poster, img.album-cover-preview.y-poster {
 	background-color: #FFFFFF;
 	border: 1px solid #CCCCCC;
 }

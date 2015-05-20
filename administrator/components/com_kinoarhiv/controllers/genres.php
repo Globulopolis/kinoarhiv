@@ -79,7 +79,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html') {
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&task=edit&id[]='.$data['id']);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type='.$app->input->get('type', 'movie', 'word').'&task=edit&id[]='.$data['id']);
 
 				return false;
 			} else {
@@ -97,7 +97,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 				$this->setMessage($this->getError(), 'error');
 
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&task=edit&id[]='.$data['id']);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type='.$app->input->get('type', 'movie', 'word').'&task=edit&id[]='.$data['id']);
 
 				return false;
 			} else {
@@ -119,15 +119,15 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 			// Set the redirect based on the task.
 			switch ($this->getTask()) {
 				case 'save2new':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&task=add', $message);
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type='.$app->input->get('type', 'movie', 'word').'&task=add', $message);
 					break;
 				case 'apply':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&task=edit&id[]='.$id, $message);
+					$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type='.$app->input->get('type', 'movie', 'word').'&task=edit&id[]='.$id, $message);
 					break;
 
 				case 'save':
 				default:
-					$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', $message);
+					$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'), $message);
 					break;
 			}
 		} else {
@@ -155,7 +155,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 		$result = $model->publish($isUnpublish);
 
 		if ($result === false) {
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 			return false;
 		}
 
@@ -163,7 +163,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.genres.global.data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED'));
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'), $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED'));
 	}
 
 	public function remove() {
@@ -179,7 +179,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 		$result = $model->remove();
 
 		if ($result === false) {
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 			return false;
 		}
 
@@ -187,7 +187,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.genres.global.data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'), JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 
 	public function cancel() {
@@ -204,7 +204,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 		$app->setUserState('com_kinoarhiv.genres.'.$user->id.'.data', null);
 		$app->setUserState('com_kinoarhiv.genres.'.$user->id.'.edit_data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres');
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'));
 	}
 
 	public function updateStat() {
@@ -215,6 +215,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 		}
 
 		$document = JFactory::getDocument();
+		$app = JFactory::getApplication();
 
 		if ($document->getType() == 'html') {
 			JSession::checkToken('post') or jexit(JText::_('JINVALID_TOKEN'));
@@ -228,7 +229,7 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 				$message = JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR');
 			}
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', $message);
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'), $message);
 		} else {
 			JSession::checkToken('get') or jexit(json_encode(array('success'=>false, 'message'=>JText::_('JINVALID_TOKEN'))));
 
@@ -259,12 +260,12 @@ class KinoarhivControllerGenres extends JControllerLegacy {
 
 			if ($result === false) {
 				GlobalHelper::renderErrors($model->getErrors(), 'html');
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=genres');
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'));
 
 				return false;
 			}
 		}
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres');
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type='.$app->input->get('type', 'movie', 'word'));
 	}
 }

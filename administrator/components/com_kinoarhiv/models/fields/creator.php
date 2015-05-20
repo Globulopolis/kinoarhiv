@@ -22,9 +22,6 @@ class JFormFieldCreator extends JFormFieldList {
 
 		if (!isset(static::$options[$hash])) {
 			static::$options[$hash] = parent::getOptions();
-
-			$options = array();
-
 			$db = JFactory::getDbo();
 
 			// Construct the query

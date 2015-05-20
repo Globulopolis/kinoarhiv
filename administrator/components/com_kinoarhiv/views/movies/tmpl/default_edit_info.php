@@ -69,7 +69,7 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('countries', $this->form_edit_group))):
+			<?php if (!empty($this->form->getValue('countries', $this->form_edit_group)) && is_array($this->form->getValue('countries', $this->form_edit_group))):
 				$countries = $this->form->getValue('countries', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($countries['data']); ?>;
@@ -105,7 +105,7 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('genres', $this->form_edit_group))):
+			<?php if (!empty($this->form->getValue('genres', $this->form_edit_group)) && is_array($this->form->getValue('genres', $this->form_edit_group))):
 				$genres = $this->form->getValue('genres', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($genres['data']); ?>;
@@ -494,6 +494,10 @@
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('desc', $this->form_edit_group); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('desc', $this->form_edit_group); ?></div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('buy_urls', $this->form_edit_group); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('buy_urls', $this->form_edit_group); ?></div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('urls', $this->form_edit_group); ?></div>

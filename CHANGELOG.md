@@ -1,4 +1,13 @@
 ## HEAD (Unreleased)
+* Change JRegistry into Registry in some classes.
+* Remove unused variables.
+* Improve display title on some views for some materials.
+* Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
+* Update VideoJS to 4.12.7
+* Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
+* Added "Links to buy".
+* Added posibility to edit a music genres.
+* SQL-dump was updated.
 
 ## 3.0.6
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/41

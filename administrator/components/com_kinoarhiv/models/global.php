@@ -39,21 +39,23 @@ class KinoarhivModelGlobal extends JModelLegacy {
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'genres') {
+			$table = ($app->input->get('type', 'movie', 'word') == 'movie') ? '#__ka_genres' : '#__ka_music_genres';
+
 			if (empty($all)) {
 				$where_lang = !empty($lang) ? " AND `language` = '".$db->escape($lang)."'" : "";
 
 				if (empty($id)) {
 					if (empty($term)) return array();
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `name` LIKE '%".$db->escape($term)."%'".$where_lang);
+					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName($table)." WHERE `name` LIKE '%".$db->escape($term)."%'".$where_lang);
 					$result = $db->loadObjectList();
 				} else {
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `id` = ".(int)$id.$where_lang);
+					$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id.$where_lang);
 					$result = $db->loadObject();
 				}
 			} else {
 				$where_lang = !empty($lang) ? " WHERE `language` = '".$db->escape($lang)."'" : "";
 
-				$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres').$where_lang);
+				$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName($table).$where_lang);
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'movies') {

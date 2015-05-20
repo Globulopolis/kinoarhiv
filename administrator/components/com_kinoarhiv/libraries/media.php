@@ -134,8 +134,8 @@ class KAMedia {
 	/**
 	 * Get video file duration
 	 *
-	 * @param   string  $path    Path to a file.
-	 * @param   string  $format  Output format. If set to true, format result to 00:00:00:000, as is otherwise.
+	 * @param   string   $path    Path to a file.
+	 * @param   boolean  $format  Output format. If set to true, format result to 00:00:00:000, as is otherwise.
 	 *
 	 * @return  mixed   Array with results if error, string otherwise
 	 */

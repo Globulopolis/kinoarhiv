@@ -81,7 +81,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('m.id', 'm.parent_id', 'm.title', 'm.alias', 'm.plot', 'm.desc', 'm.known', 'm.slogan', 'm.budget', 'm.age_restrict', 'm.ua_rate', 'm.mpaa', 'm.rate_loc', 'm.rate_sum_loc', 'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id', 'm.kp_votesum', 'm.kp_votes', 'm.kp_id', 'm.rate_fc', 'm.rottentm_id', 'm.metacritics', 'm.metacritics_id', 'm.rate_custom', 'm.urls', 'm.length', 'm.year')))
+		$query->select($db->quoteName(array('m.id', 'm.parent_id', 'm.title', 'm.alias', 'm.plot', 'm.desc', 'm.known', 'm.slogan', 'm.budget', 'm.age_restrict', 'm.ua_rate', 'm.mpaa', 'm.rate_loc', 'm.rate_sum_loc', 'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id', 'm.kp_votesum', 'm.kp_votes', 'm.kp_id', 'm.rate_fc', 'm.rottentm_id', 'm.metacritics', 'm.metacritics_id', 'm.rate_custom', 'm.urls', 'm.buy_urls', 'm.length', 'm.year')))
 			->select("DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`")
 			->select(array('m.created_by', 'm.metakey', 'm.metadesc', 'm.attribs', 'm.state', 'm.metadata'))
 			->from($db->quoteName('#__ka_movies', 'm'));

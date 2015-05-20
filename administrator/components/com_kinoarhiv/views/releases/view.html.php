@@ -22,9 +22,9 @@ class KinoarhivViewReleases extends JViewLegacy {
 			return;
 		}
 
-		$items      = $this->get('Items');
-		$pagination = $this->get('Pagination');
-		$state      = $this->get('State');
+		$this->items      = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state      = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -34,9 +34,6 @@ class KinoarhivViewReleases extends JViewLegacy {
 		$this->addToolbar();
 		$this->canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
 
-		$this->items         = &$items;
-		$this->pagination    = &$pagination;
-		$this->state         = &$state;
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 		$this->params        = JComponentHelper::getParams('com_kinoarhiv');

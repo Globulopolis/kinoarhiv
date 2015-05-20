@@ -139,10 +139,13 @@ class KinoarhivModelRelease extends JModelForm {
 			$_name = explode('_', $value['name']);
 			$item_id = $_name[3];
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_releases')." WHERE `id` = ".(int)$item_id.";");
-			$result = $db->execute();
+            $query = $db->getQuery(true);
 
-			if ($result === false) {
+			$query->delete($db->quoteName('#__ka_releases'))
+			    ->where($db->quoteName('id').' = '.(int)$item_id);
+			$db->setQuery($query.';');
+
+			if ($db->execute() === false) {
 				$query = false;
 				break;
 			}

@@ -304,4 +304,14 @@ class KinoarhivControllerNames extends JControllerLegacy {
 
 		echo json_encode($result);
 	}
+
+	public function check_name() {
+		$document = JFactory::getDocument();
+		$document->setName('response');
+
+		$model = $this->getModel('name');
+		$result = $model->check_name();
+
+		echo json_encode($result);
+	}
 }

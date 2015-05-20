@@ -1,6 +1,23 @@
 <?php defined('_JEXEC') or die; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
+		$('#form_name_name, #form_name_latin_name').blur(function(){
+			$.each($(this), function(i, el){
+				if ($(el).val() != "") {
+					$.ajax({
+						url: 'index.php?option=com_kinoarhiv&controller=names&task=check_name&format=json',
+						type: 'POST',
+						data: {data: $(el).val()},
+						cache: true
+					}).done(function(response){
+						if (!response.success) {
+							showMsg('#system-message-container', response.message);
+						}
+					});
+				}
+			});
+		});
+
 		$('#form_name_birthcountry').select2({
 			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
 			quietMillis: 100,
@@ -58,7 +75,7 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('genres', $this->form_edit_group))):
+			<?php if (!empty($this->form->getValue('genres', $this->form_edit_group)) && is_array($this->form->getValue('genres', $this->form_edit_group))):
 				$genres = $this->form->getValue('genres', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($genres['data']); ?>;
@@ -93,7 +110,7 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('careers', $this->form_edit_group))):
+			<?php if (!empty($this->form->getValue('careers', $this->form_edit_group)) && is_array($this->form->getValue('careers', $this->form_edit_group))):
 				$careers = $this->form->getValue('careers', $this->form_edit_group); ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($careers['data']); ?>;

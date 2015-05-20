@@ -8,10 +8,10 @@
  * @url			http://киноархив.com/
  */
 
-//use Joomla\Registry\Registry;
+use Joomla\Registry\Registry;
 
 class JFormRuleIp extends JFormRule {
-	public function test(SimpleXMLElement $element, $value, $group = null, JRegistry $input = null, JForm $form = null) {
+	public function test(SimpleXMLElement $element, $value, $group = null, Registry $input = null, JForm $form = null) {
 		// If the field is empty and not required, the field is valid.
 		$required = ((string) $element['required'] == 'true' || (string) $element['required'] == 'required');
 
@@ -22,5 +22,7 @@ class JFormRuleIp extends JFormRule {
 		if (!filter_var($value, FILTER_VALIDATE_IP)) {
 			return false;
 		}
+
+        return true;
 	}
 }

@@ -2,7 +2,7 @@
 SQLyog Ultimate v11.33 (64 bit)
 MySQL - 5.6.20 : Database - xn80aeqbhthr9b_demo
 *********************************************************************
-*/
+*/
 
 /*!40101 SET NAMES utf8 */;
 

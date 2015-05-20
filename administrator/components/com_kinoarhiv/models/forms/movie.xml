@@ -13,6 +13,7 @@
 			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
 			<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="raw" cols="6" rows="15" />
 			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
+			<field name="buy_urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_BUY_URLS" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres" />
@@ -79,10 +80,7 @@
 				<option value="0">JUNPUBLISHED</option>
 			</field>
 			<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules" component="com_kinoarhiv" section="movie" validate="rules" />
-
-			<field name="countries_orig" type="hidden" />
 			<field name="genres_orig" type="hidden" />
-			<field name="tags_orig" type="hidden" />
 
 			<field name="gid" type="hidden" class="readonly" default="0" readonly="true" />
 			<field name="filename" type="hidden" class="readonly" default="" readonly="true" />

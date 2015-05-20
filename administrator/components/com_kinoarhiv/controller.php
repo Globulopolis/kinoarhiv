@@ -12,25 +12,9 @@ class KinoarhivController extends JControllerLegacy {
 	protected $default_view = 'controlpanel';
 
 	public function display($cachable = false, $urlparams = false) {
-		$view   = $this->input->get('view', 'movies');
-		$layout = $this->input->get('layout', 'movies');
-		$id     = $this->input->getInt('id');
-
-		// Check for edit form.
-		if ($view == 'movies' && $layout == 'edit' && !$this->checkEditId('com_kinoarhiv.edit.movie', $id)) {
-			// Somehow the person just went to the form - we don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
-			$this->setMessage($this->getError(), 'error');
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movies', false));
-
-			return false;
-		}
-
 		JHtml::addIncludePath(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR);
 
 		parent::display();
-
-		return $this;
 	}
 
 	public function ajaxData() {
@@ -44,6 +28,8 @@ class KinoarhivController extends JControllerLegacy {
 	}
 
 	public function loadTemplate() {
+		$this->addModelPath(JPATH_COMPONENT.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'music'.DIRECTORY_SEPARATOR);
+
 		$format = $this->input->get('format', 'html', 'word');
 		$template = $this->input->get('template', '', 'string');
 		$model = $this->input->get('model', '', 'cmd');

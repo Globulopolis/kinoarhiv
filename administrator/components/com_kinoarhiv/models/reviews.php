@@ -62,7 +62,6 @@ class KinoarhivModelReviews extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
-		$task = $app->input->get('task', '', 'cmd');
 		$uid = $app->input->get('uid', 0, 'int');
 		$mid = $app->input->get('mid', 0, 'int');
 

@@ -33,8 +33,8 @@ class KinoarhivControllerUpdate extends JControllerLegacy {
 				return false;
 			}
 
-			$message = $app->enqueueMessage(JText::_('COM_KA_UPDATE_DB_SUCCESS'));
-			$this->setRedirect('index.php?option=com_kinoarhiv', $message);
+			$app->enqueueMessage(JText::_('COM_KA_UPDATE_DB_SUCCESS'));
+			$this->setRedirect('index.php?option=com_kinoarhiv');
 		} else {
 			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('ERROR'), 'error');
 		}

@@ -79,57 +79,7 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_show_remote" type="list" label="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL_DESC">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="tab_movie_wallpp" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="tab_movie_posters" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_POSTERS_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="tab_movie_scr" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_SCR_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="tab_movie_awards" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_AWARDS_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="tab_movie_tr" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_TR_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="tab_movie_snd" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_SND_LABEL">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="trailer_collapsed" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="movie_collapsed" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 		<field name="allow_reviews" type="list" default="1" label="COM_KA_FIELD_AP_MOVIE_ALLOW_REVIEWS_LABEL">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="slider" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_LABEL" filter="integer">
-			<option value="">JGLOBAL_USE_GLOBAL</option>
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

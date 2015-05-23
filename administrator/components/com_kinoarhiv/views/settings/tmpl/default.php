@@ -190,6 +190,7 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 			<div id="settings_tabs">
 				<ul>
 					<li><a href="#page-global"><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></a></li>
+					<li><a href="#page-music"><?php echo JText::_('COM_KA_MUSIC_TAB'); ?></a></li>
 					<li><a href="#page-appearance"><?php echo JText::_('COM_KA_APPEARANCE_TAB'); ?></a></li>
 					<li><a href="#page-reviews"><?php echo JText::_('COM_KA_REVIEWS_TAB'); ?></a></li>
 					<li><a href="#page-search"><?php echo JText::_('COM_KA_SEARCH_TAB'); ?></a></li>
@@ -214,6 +215,17 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 					<div class="row-fluid">
 						<div class="span12">
 							<?php echo $this->loadTemplate('gallery'); ?>
+						</div>
+					</div>
+				</div>
+
+				<div id="page-music">
+					<div class="row-fluid">
+						<div class="span6">
+							<?php echo $this->loadTemplate('music_global'); ?>
+						</div>
+						<div class="span6">
+							<?php echo $this->loadTemplate('music_covers'); ?>
 						</div>
 					</div>
 				</div>

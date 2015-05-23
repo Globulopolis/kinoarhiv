@@ -8,6 +8,8 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\Registry\Registry;
+
 class KinoarhivModelMovies extends JModelList {
 	protected $context = null;
 
@@ -297,7 +299,7 @@ class KinoarhivModelMovies extends JModelList {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$filter = JFilterInput::getInstance();
 		$input = JFactory::getApplication()->input;
-		$items = new JRegistry;
+		$items = new Registry;
 
 		if ($params->get('search_movies_enable') != 1) {
 			return $items;

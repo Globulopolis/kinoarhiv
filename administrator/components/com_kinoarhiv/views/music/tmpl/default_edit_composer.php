@@ -118,7 +118,7 @@ endif; ?>
 
 								$.ajax({
 									type: 'POST',
-									url: 'index.php?option=com_kinoarhiv&controller=music&task=saveRelNames&format=json&id=' + $('#id').val(),
+									url: 'index.php?option=com_kinoarhiv&controller=music&task=saveRelNames&type=composers&format=json&id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
 										'form[type]':     $('#form_type').select2('val'),
@@ -188,7 +188,7 @@ endif; ?>
 
 									$.ajax({
 										type: 'POST',
-										url: 'index.php?option=com_kinoarhiv&controller=music&task=saveRelNames&format=json&id=' + $('#id').val(),
+										url: 'index.php?option=com_kinoarhiv&controller=music&task=saveRelNames&type=composers&format=json&id=' + $('#id').val(),
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
 											'form[type]':     $('#form_type').select2('val'),

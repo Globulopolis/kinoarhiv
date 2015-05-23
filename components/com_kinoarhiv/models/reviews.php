@@ -147,7 +147,6 @@ class KinoarhivModelReviews extends JModelForm {
 		$user = JFactory::getUser();
 		$review_id = $app->input->get('review_id', null, 'int');
 		$review_ids = $app->input->get('review_ids', array(), 'array');
-		$success = false;
 
 		if (!empty($review_ids)) {
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));

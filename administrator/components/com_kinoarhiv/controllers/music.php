@@ -215,7 +215,7 @@ class KinoarhivControllerMusic extends JControllerLegacy {
 		$app->setUserState('com_kinoarhiv.awards.global.data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
-	}
+	}*/
 
 	public function cancel() {
 		$user = JFactory::getUser();
@@ -228,11 +228,11 @@ class KinoarhivControllerMusic extends JControllerLegacy {
 		}
 
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', null);
-		$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.edit_data', null);
+		$app->setUserState('com_kinoarhiv.music.'.$user->id.'.data', null);
+		$app->setUserState('com_kinoarhiv.music.'.$user->id.'.edit_data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
-	}*/
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=albums');
+	}
 
 	public function getComposers() {
 		$document = JFactory::getDocument();

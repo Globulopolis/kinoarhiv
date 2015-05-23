@@ -159,10 +159,6 @@ JHtml::_('behavior.keepalive');
 										<div class="controls"><?php echo $this->form->getInput('link_titles', $this->form_attribs_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('show_tags', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('show_tags', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('show_author', $this->form_attribs_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('show_author', $this->form_attribs_group); ?></div>
 									</div>
@@ -173,26 +169,6 @@ JHtml::_('behavior.keepalive');
 									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('show_modify_date', $this->form_attribs_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('show_modify_date', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('allow_votes', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('allow_votes', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('ratings_show_local', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('ratings_show_local', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('ratings_show_remote', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('ratings_show_remote', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('allow_reviews', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('slider', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('slider', $this->form_attribs_group); ?></div>
 									</div>
 								</fieldset>
 							</div>
@@ -220,38 +196,22 @@ JHtml::_('behavior.keepalive');
 										<?php endif; ?>
 										</div>
 									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_wallpp', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_movie_wallpp', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_posters', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_movie_posters', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_scr', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_movie_scr', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_awards', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_movie_awards', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_tr', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_movie_tr', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_snd', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_movie_snd', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('trailer_collapsed', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('trailer_collapsed', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('movie_collapsed', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('movie_collapsed', $this->form_attribs_group); ?></div>
-									</div>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $this->form->getLabel('show_tags', $this->form_attribs_group); ?></div>
+                                        <div class="controls"><?php echo $this->form->getInput('show_tags', $this->form_attribs_group); ?></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $this->form->getLabel('allow_votes', $this->form_attribs_group); ?></div>
+                                        <div class="controls"><?php echo $this->form->getInput('allow_votes', $this->form_attribs_group); ?></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $this->form->getLabel('ratings_show_local', $this->form_attribs_group); ?></div>
+                                        <div class="controls"><?php echo $this->form->getInput('ratings_show_local', $this->form_attribs_group); ?></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>
+                                        <div class="controls"><?php echo $this->form->getInput('allow_reviews', $this->form_attribs_group); ?></div>
+                                    </div>
 								</fieldset>
 							</div>
 						</div>

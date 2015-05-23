@@ -28,7 +28,6 @@ class KinoarhivModelName extends JModelList {
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true);
@@ -191,7 +190,6 @@ class KinoarhivModelName extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$page = $app->input->get('page', null, 'cmd');
-		$filter = $app->input->get('dim_filter', 0, 'string');
 
 		if ($page == 'wallpapers') {
 			$db->setQuery("SELECT `dimension` AS `value`, `dimension` AS `title`, SUBSTRING_INDEX(`dimension`, 'x', 1) AS `width`"
@@ -245,7 +243,6 @@ class KinoarhivModelName extends JModelList {
 	public function getPagination() {
 		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
 
-		$app = JFactory::getApplication();
 		$store = $this->getStoreId('getPagination');
 
 		if (isset($this->cache[$store])) {

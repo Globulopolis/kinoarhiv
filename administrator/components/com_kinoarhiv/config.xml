@@ -112,17 +112,6 @@
 			<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64" class="span6" />
 			<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_CHAPTERS_LABEL" required="true" filter="string" size="64" class="span6" />
 
-		<field type="spacer" name="sp_audio" class="separator" label="COM_KA_FIELD_UPLOAD_AUDIO_SPACER" />
-			<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg" label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span6" />
-			<field name="upload_audio_preview" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL" description="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL_DESC" filter="integer">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-			<field name="create_waveform" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CREATE_WAVEFORM_LABEL" description="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL_DESC" filter="integer">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-
 		<field type="spacer" name="sp_image" class="separator" label="COM_KA_FIELD_UPLOAD_IMAGE_SPACER" />
 			<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif" label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" class="span6" />
 			<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
@@ -130,6 +119,26 @@
 				<option value="0">JNO</option>
 			</field>
 			<field name="upload_gallery_watermark_image" type="text" default="/components/com_kinoarhiv/assets/themes/component/default/images/powered_by.png" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
+	</fieldset>
+	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
+		<field type="spacer" name="sp_music_global" class="separator" label="COM_KA_FIELD_MUSIC_GLOBAL_SPACER" />
+			<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg" label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span11" />
+			<field name="upload_audio_preview" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL" description="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL_DESC" filter="integer">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="create_waveform" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CREATE_WAVEFORM_LABEL" filter="integer">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+	</fieldset>
+	<fieldset name="music_arts" label="COM_KA_FIELD_MUSIC_COVERS_SPACER">
+		<field type="spacer" name="sp_music_covers" class="separator" label="COM_KA_FIELD_MUSIC_COVERS_SPACER" />
+			<field name="music_covers_front" type="textarea" default="front.jpg" label="COM_KA_FIELD_MUSIC_COVERS_FRONT" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
+			<field name="music_covers_back" type="textarea" default="back.jpg" label="COM_KA_FIELD_MUSIC_COVERS_BACK" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
+			<field name="music_covers_artist" type="textarea" default="artist.jpg" label="COM_KA_FIELD_MUSIC_COVERS_ARTIST" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
+			<field name="music_covers_disc" type="textarea" default="disc.jpg" label="COM_KA_FIELD_MUSIC_COVERS_DISC" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
+			<field name="music_covers_size" type="text" default="500x500" label="COM_KA_FIELD_MUSIC_COVERS_SIZE" filter="string" size="64" class="span11" />
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
 		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" />

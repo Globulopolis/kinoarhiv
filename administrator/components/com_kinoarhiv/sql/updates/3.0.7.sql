@@ -13,6 +13,7 @@ UPDATE `#__ka_music_genres` SET `access` = '1';
 ALTER TABLE `#__ka_music_albums` 
   ADD COLUMN `asset_id` INT (10) UNSIGNED NOT NULL AFTER `id`,
   ADD COLUMN `buy_url` VARCHAR (255) NOT NULL AFTER `tracks_preview_path`,
+  ADD COLUMN `fs_alias` VARCHAR (255) NOT NULL COMMENT 'Is the same as alias but only in latin charset' AFTER `alias`,
   ADD COLUMN `composer` VARCHAR (255) NOT NULL AFTER `fs_alias`,
   ADD COLUMN `attribs` VARCHAR (5120) NOT NULL AFTER `buy_url`,
   ADD COLUMN `created` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `attribs`,
@@ -23,7 +24,6 @@ ALTER TABLE `#__ka_music_albums`
   ADD COLUMN `ordering` INT (11) DEFAULT 0 NOT NULL AFTER `tracks_preview_path`,
   ADD COLUMN `metakey` TEXT NOT NULL AFTER `ordering`,
   ADD COLUMN `metadesc` TEXT NOT NULL AFTER `metakey`,
-  ADD COLUMN `fs_alias` VARCHAR (255) NOT NULL COMMENT 'Is the same as alias but only in latin charset' AFTER `alias`,
   ADD COLUMN `rate` INT (10) DEFAULT 0 NOT NULL AFTER `desc`,
   ADD COLUMN `rate_sum` INT (10) DEFAULT 0 NOT NULL AFTER `rate`,
   ADD COLUMN `metadata` TEXT NOT NULL AFTER `access`,

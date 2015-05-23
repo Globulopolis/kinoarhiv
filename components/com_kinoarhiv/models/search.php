@@ -8,6 +8,8 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\Registry\Registry;
+
 class KinoarhivModelSearch extends JModelLegacy {
 	/**
 	 * Get initial data for lists in search form
@@ -194,7 +196,7 @@ class KinoarhivModelSearch extends JModelLegacy {
 	public function getActiveFilters() {
 		$filter = JFilterInput::getInstance();
 		$input = JFactory::getApplication()->input;
-		$items = new JRegistry;
+		$items = new Registry;
 
 		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
 			$filters_arr = $input->get('filters', array(), 'array');

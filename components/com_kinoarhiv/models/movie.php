@@ -899,7 +899,6 @@ class KinoarhivModelMovie extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$page = $app->input->get('page', null, 'cmd');
-		$filter = $app->input->get('dim_filter', 0, 'string');
 
 		if ($page == 'wallpapers') {
 			$db->setQuery("SELECT `dimension` AS `value`, `dimension` AS `title`, SUBSTRING_INDEX(`dimension`, 'x', 1) AS `width`"
@@ -942,7 +941,7 @@ class KinoarhivModelMovie extends JModelForm {
 					$rate_loc_rounded = round($vote_result->rate_sum_loc / $vote_result->rate_loc, 0);
 
 					$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = '".(int)$rate_loc."', `rate_sum_loc` = '".(int)$rate_sum_loc."', `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
-					$query = $db->execute();
+					$db->execute();
 
 					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
 					$_result = $db->execute();
@@ -987,10 +986,10 @@ class KinoarhivModelMovie extends JModelForm {
 						$rate_loc_rounded = round($rate_sum_loc / $rate_loc, 0);
 
 						$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = '".(int)$rate_loc."', `rate_sum_loc` = '".(int)$rate_sum_loc."', `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
-						$query = $db->execute();
+						$db->execute();
 
 						$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_user_votes')." (`uid`, `movie_id`, `vote`, `_datetime`) VALUES ('".$user->get('id')."', '".$movie_id."', '".$value."', NOW())");
-						$_result = $db->execute();
+						$db->execute();
 						$result = array('success'=>false, 'message'=>JText::_('COM_KA_RATE_RATED'));
 					}
 				} else {

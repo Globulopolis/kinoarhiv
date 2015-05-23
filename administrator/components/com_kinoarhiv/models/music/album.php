@@ -391,55 +391,6 @@ class KinoarhivModelAlbum extends JModelForm {
 		}
 	}
 
-    public function saveOrder() {
-        $app = JFactory::getApplication();
-        $db = $this->getDBO();
-        $data = $app->input->post->get('ord', array(), 'array');
-
-        if (count($data) < 2) {
-            return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
-        }
-
-        $query_result = true;
-        $db->setDebug(true);
-        $db->lockTable('#__ka_music_albums');
-        $db->transactionStart();
-
-        foreach ($data as $key=>$value) {
-            $query = $db->getQuery(true);
-
-            $query->update($db->quoteName('#__ka_music_albums'))
-                ->set($db->quoteName('ordering')." = '".(int)$key."'")
-                ->where($db->quoteName('id').' = '.(int)$value);
-
-            $db->setQuery($query.';');
-
-            if ($db->execute() === false) {
-                $query_result = false;
-                break;
-            }
-        }
-
-        if ($query_result === false) {
-            $db->transactionRollback();
-        } else {
-            $db->transactionCommit();
-        }
-
-        $db->unlockTables();
-        $db->setDebug(false);
-
-        if ($query_result) {
-            $success = true;
-            $message = JText::_('COM_KA_SAVED');
-        } else {
-            $success = false;
-            $message = JText::_('COM_KA_SAVE_ORDER_ERROR');
-        }
-
-        return array('success'=>$success, 'message'=>$message);
-    }
-
 	/**
 	 * Method to validate the form data.
 	 *

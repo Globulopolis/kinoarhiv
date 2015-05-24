@@ -36,7 +36,6 @@ class KinoarhivViewGenres extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($this->getLayout() !== 'modal') {
@@ -56,7 +55,6 @@ class KinoarhivViewGenres extends JViewLegacy {
 
 		if (!$user->authorise('core.create.genre', 'com_kinoarhiv') && !$user->authorise('core.edit.genre', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
-			return false;
 		}
 
 		$this->form = $this->get('Form');

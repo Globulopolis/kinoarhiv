@@ -10,12 +10,12 @@ JHtml::_('behavior.keepalive');
 			}
 		}
 		Joomla.submitform(task);
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('.hasAutocomplete').each(function(){
 			var datatype = $(this).data('ac-type'),
-				allow_clear = $(this).data('allow-clear');;
+				allow_clear = $(this).data('allow-clear');
 
 			$(this).select2({
 				placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',

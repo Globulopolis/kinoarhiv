@@ -37,7 +37,6 @@ class KinoarhivViewCountries extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($this->getLayout() !== 'modal') {
@@ -56,7 +55,6 @@ class KinoarhivViewCountries extends JViewLegacy {
 
 		if (!$user->authorise('core.create.country', 'com_kinoarhiv') && !$user->authorise('core.edit.country', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
-			return false;
 		}
 
 		$this->form = $this->get('Form');
@@ -70,7 +68,6 @@ class KinoarhivViewCountries extends JViewLegacy {
 	}
 
 	protected function addToolbar($task='') {
-		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {

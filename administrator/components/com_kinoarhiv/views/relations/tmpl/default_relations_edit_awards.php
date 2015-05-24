@@ -6,7 +6,6 @@ JHtml::_('behavior.keepalive');
 		var _$ = jQuery;
 		if (task == 'cancel') {
 			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=<?php echo $this->param; ?>&award_type=<?php echo (int)$this->award_type; ?>';
-			return;
 		} else if (task == 'save' || task == 'apply' || task == 'save2new') {
 			var state_required = true;
 
@@ -30,7 +29,6 @@ JHtml::_('behavior.keepalive');
 								_$('.ui-widget-overlay').show();
 								document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param=awards&award_id='+response.ids[0]+'&item_id='+response.ids[1]+'&award_type='+_$('#form_r_type').val();
 							}
-							return;
 
 							showMsg('#j-main-container', response.message);
 							_$('input[name="control_id[0]"]').val(response.ids[0]);
@@ -47,9 +45,8 @@ JHtml::_('behavior.keepalive');
 					showMsg('#j-main-container', error);
 				});
 			}
-			return;
 		}
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('#form_r_award_id').select2({
@@ -130,7 +127,7 @@ JHtml::_('behavior.keepalive');
 					if (data.year == '0000') return data.title;
 					return data.title+' ('+data.year+')';
 				} else if ($('#form_r_type').val() == 1) {
-					var title = ''
+					var title = '';
 					if (data.name != '') title += data.name;
 					if (data.name != '' && data.latin_name != '')  title += ' / ';
 					if (data.latin_name != '') title += data.latin_name;
@@ -144,7 +141,7 @@ JHtml::_('behavior.keepalive');
 					if (data.year == '0000') return data.title;
 					return data.title+' ('+data.year+')';
 				} else if ($('#form_r_type').val() == 1) {
-					var title = ''
+					var title = '';
 					if (data.name != '') title += data.name;
 					if (data.name != '' && data.latin_name != '')  title += ' / ';
 					if (data.latin_name != '') title += data.latin_name;

@@ -8,11 +8,16 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\Registry\Registry;
+
 class KinoarhivViewMovies extends JViewLegacy {
 	protected $items;
 	protected $pagination;
 	protected $state;
 	protected $form;
+	protected $params;
+	protected $form_edit_group;
+	protected $form_attribs_group;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
@@ -34,7 +39,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($this->getLayout() !== 'modal') {
@@ -48,12 +52,11 @@ class KinoarhivViewMovies extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$items = new JRegistry;
+		$items = new Registry;
 		$form = $this->get('Form');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($form->getValue('filename', 'movie') == '') {
@@ -104,7 +107,6 @@ class KinoarhivViewMovies extends JViewLegacy {
 	}
 
 	protected function addToolbar($task='') {
-		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {

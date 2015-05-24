@@ -13,7 +13,6 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 				}).fail(function(xhr, status, error){
 					showMsg('.container-main', error);
 				});
-				return;
 			} else {
 				if (task == 'saveConfig') {
 					window.location = '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=settings&task=saveConfig&format=raw';
@@ -26,7 +25,7 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 				}
 			}
 		});
-	}
+	};
 
 	jQuery(document).ready(function($){
 		var active_tab = 0;

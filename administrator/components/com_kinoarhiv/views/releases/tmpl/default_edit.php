@@ -10,7 +10,7 @@ JHtml::_('behavior.keepalive');
 			}
 		}
 		Joomla.submitform(task);
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('.hasAutocomplete').each(function(){
@@ -60,7 +60,7 @@ JHtml::_('behavior.keepalive');
 						if (data.year == '0000') return data.title;
 						return data.title+' ('+data.year+')';
 					} else if (datatype == 'vendors') {
-						title = '';
+						var title = '';
 						if (data.company_name != '') title += data.company_name;
 						if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
 						if (data.company_name_intl != '') title += data.company_name_intl;
@@ -79,7 +79,7 @@ JHtml::_('behavior.keepalive');
 						if (data.year == '0000') return data.title;
 						return data.title+' ('+data.year+')';
 					} else if (datatype == 'vendors') {
-						title = '';
+						var title = '';
 						if (data.company_name != '') title += data.company_name;
 						if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
 						if (data.company_name_intl != '') title += data.company_name_intl;

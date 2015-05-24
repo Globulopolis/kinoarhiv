@@ -28,7 +28,6 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		$this->addToolbar();
@@ -47,21 +46,18 @@ class KinoarhivViewPremieres extends JViewLegacy {
 
 		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
-			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->form = $this->get('Form');
 
 		$this->addToolbar($tpl);
-		$this->params = &$params;
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		parent::display('edit');
 		$app->input->set('hidemainmenu', true);
 	}
 
 	protected function addToolbar($task='') {
-		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
 		if ($task == 'add' || $task == 'edit') {

@@ -17,8 +17,8 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('genres', $this->form_edit_group))):
-				$genres = $this->form->getValue('genres', $this->form_edit_group); ?>
+			<?php $genres = $this->form->getValue('genres', $this->form_edit_group);
+			if (!empty($genres) && is_array($genres)): ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($genres['data']); ?>;
 				callback(data);

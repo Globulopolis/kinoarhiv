@@ -12,10 +12,8 @@
 					top: ($('#toolbar-link').offset().top+$('#toolbar-link').height()+5)+'px'
 				});
 				$('.rel-menu').toggle();
-				return;
 			}<?php if (!empty($this->task)): ?> else if (task == 'relations_add') {
 				document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=add&element=<?php echo $this->element; ?>&param=<?php echo $this->task; ?>';
-				return;
 			} else if (task == 'relations_edit') {
 				var items = $('#list .cbox').filter(':checked');
 				if (items.length > 1) {
@@ -37,7 +35,6 @@
 						document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&element=<?php echo $this->element; ?>&param='+_task+'&career_id='+id[2]+'&name_id='+id[3];
 					}
 				}
-				return;
 			} else if (task == 'relations_remove') {
 				var items = $('#list .cbox').filter(':checked');
 
@@ -56,13 +53,11 @@
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);
 				});
-				return;
 			} else if (task == '<?php echo $this->task; ?>') {
 				document.location.href = 'index.php?option=com_kinoarhiv&view=<?php echo $this->task; ?>';
-				return;
 			}<?php endif; ?>
 		});
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('#relations_menu').menu();

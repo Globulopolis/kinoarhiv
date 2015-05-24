@@ -16,7 +16,7 @@ endif; ?>
 			},
 			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
 			grid_width: $('#movie_tabs').width()
-		}
+		};
 
 		c_grid_cfg.grid_height = (c_grid_cfg.grid_height < 100) ? 200 : c_grid_cfg.grid_height;
 

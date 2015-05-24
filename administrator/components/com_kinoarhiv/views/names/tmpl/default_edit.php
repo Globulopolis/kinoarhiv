@@ -36,7 +36,7 @@ JHtml::_('behavior.keepalive');
 			return false;
 		}
 		Joomla.submitform(task);
-	}
+	};
 
 	jQuery(document).ready(function($){
 		// Strongly needed for override fucking bootstrap

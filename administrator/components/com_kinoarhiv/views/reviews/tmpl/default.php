@@ -6,16 +6,16 @@ $sortFields = $this->getSortFields();
 ?>
 <script type="text/javascript">
 	Joomla.orderTable = function() {
-		table = document.getElementById("sortTable");
-		direction = document.getElementById("directionTable");
-		order = table.options[table.selectedIndex].value;
+		var table = document.getElementById("sortTable");
+		var direction = document.getElementById("directionTable");
+		var order = table.options[table.selectedIndex].value;
 		if (order != '<?php echo $listOrder; ?>') {
-			dirn = 'asc';
+			var dirn = 'asc';
 		} else {
-			dirn = direction.options[direction.selectedIndex].value;
+			var dirn = direction.options[direction.selectedIndex].value;
 		}
 		Joomla.tableOrdering(order, dirn, '');
-	}
+	};
 
 	Joomla.submitbutton = function(pressbutton) {
 		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
@@ -23,7 +23,7 @@ $sortFields = $this->getSortFields();
 			return;
 		}
 		Joomla.submitform(pressbutton);
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_REVIEWS_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');

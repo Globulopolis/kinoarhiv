@@ -8,16 +8,16 @@ $sortFields = $this->getSortFields();
 <script type="text/javascript">
 //<![CDATA[
 	Joomla.orderTable = function() {
-		table = document.getElementById("sortTable");
-		direction = document.getElementById("directionTable");
-		order = table.options[table.selectedIndex].value;
+		var table = document.getElementById("sortTable");
+		var direction = document.getElementById("directionTable");
+		var order = table.options[table.selectedIndex].value;
 		if (order != '<?php echo $listOrder; ?>') {
-			dirn = 'desc';
+			var dirn = 'desc';
 		} else {
-			dirn = direction.options[direction.selectedIndex].value;
+			var dirn = direction.options[direction.selectedIndex].value;
 		}
 		Joomla.tableOrdering(order, dirn, '');
-	}
+	};
 
 	jQuery(document).ready(function($){
 		Joomla.submitbutton = function(task) {
@@ -32,7 +32,7 @@ $sortFields = $this->getSortFields();
 			}
 
 			Joomla.submitform(task);
-		}
+		};
 
 		$('.cmd-upload').click(function(e){
 			e.preventDefault();

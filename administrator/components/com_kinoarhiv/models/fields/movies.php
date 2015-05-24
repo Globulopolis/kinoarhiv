@@ -45,7 +45,7 @@ class JFormFieldMovies extends JFormField {
 			$label = '';
 		}
 
-        $text = $this->element['label'] ? (string) $this->element['label'] : (string) $label;
+		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $label;
 
 		if (isset($this->element['class'])) {
 			$class = (string)$this->element['class'];

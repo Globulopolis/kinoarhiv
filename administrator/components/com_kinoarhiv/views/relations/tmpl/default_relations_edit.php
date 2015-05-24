@@ -5,7 +5,6 @@ JHtml::_('behavior.keepalive');
 	Joomla.submitbutton = function(task) {
 		if (task == 'cancel') {
 			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=<?php echo $this->param; ?>&element=<?php echo $this->element; ?>';
-			return;
 		} else if (task == 'save' || task == 'apply' || task == 'save2new') {
 			var state_required = true;
 
@@ -38,9 +37,8 @@ JHtml::_('behavior.keepalive');
 					}
 				});
 			}
-			return;
 		}
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('.hasAutocomplete').each(function(){
@@ -88,7 +86,7 @@ JHtml::_('behavior.keepalive');
 						if (data.year == '0000') return data.title;
 						return data.title+' ('+data.year+')';
 					} else if (datatype == 'names') {
-						title = '';
+						var title = '';
 						if (data.name != '') title += data.name;
 						if (data.name != '' && data.latin_name != '') title += ' / ';
 						if (data.latin_name != '') title += data.latin_name;
@@ -105,7 +103,7 @@ JHtml::_('behavior.keepalive');
 						if (data.year == '0000') return data.title;
 						return data.title+' ('+data.year+')';
 					} else if (datatype == 'names') {
-						title = '';
+						var title = '';
 						if (data.name != '') title += data.name;
 						if (data.name != '' && data.latin_name != '') title += ' / ';
 						if (data.latin_name != '') title += data.latin_name;

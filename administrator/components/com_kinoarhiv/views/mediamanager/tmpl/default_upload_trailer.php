@@ -384,7 +384,8 @@ $type = $input->get('type', '', 'word');
 
 		$('.cmd-refresh-filelist').click(function(e){
 			e.preventDefault();
-			var _this = $(this);
+			var _this = $(this),
+				html = '';
 
 			blockUI('show');
 			$('body').aurora.destroy({indexes:'all'});
@@ -398,7 +399,6 @@ $type = $input->get('type', '', 'word');
 
 					_this.closest('h3').next('ul').children('li').remove();
 
-					var html = '';
 					$.each(response, function(k, object){
 						html += '<li>'
 							+ '<input type="hidden" name="ord[]" value="'+ k +'" />'
@@ -418,7 +418,6 @@ $type = $input->get('type', '', 'word');
 
 					_this.closest('h3').next('ul').children('li').remove();
 
-					var html = '';
 					$.each(response, function(i, obj){
 						var checked = obj.default ? ' checked="checked"' : '';
 
@@ -442,7 +441,7 @@ $type = $input->get('type', '', 'word');
 
 					_this.closest('h3').next('ul').children('li').remove();
 
-					var html = '<li>'
+					html = '<li>'
 						+ '<div style="float: left;">'+response.file+'</div>'
 						+ '<div style="float: right;"><a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+response.file+'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a></div>'
 					+ '</li>';
@@ -568,7 +567,7 @@ $type = $input->get('type', '', 'word');
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
 							var input = $('.dialog #urls_url_subtitles');
-							if (input.val() != '' && url_regex.test(input.val())) {
+							if (input.val() != '') {
 								var form_urls = $('#form_urls').val();
 								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'" kind="subtitles" srclang="'+ $('#urls_url_subtitles_lang').val() +'" label="'+ $('#urls_url_subtitles_lang :selected').text() +'" default="'+ $('#urls_url_subtitles_default').val() +'"]'); // Set value
 								$('#urls_layout_subtitles_form')[0].reset();
@@ -593,7 +592,7 @@ $type = $input->get('type', '', 'word');
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
 							var input = $('.dialog #urls_url_chp');
-							if (input.val() != '' && url_regex.test(input.val())) {
+							if (input.val() != '') {
 								var form_urls = $('#form_urls').val();
 								$('#form_urls').val(form_urls + "\n"+'[url="'+ input.val() +'" kind="chapters"]'); // Set value
 								input.val(''); // Clear input in dialog

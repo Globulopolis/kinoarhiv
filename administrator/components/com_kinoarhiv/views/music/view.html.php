@@ -8,11 +8,16 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\Registry\Registry;
+
 class KinoarhivViewMusic extends JViewLegacy {
 	protected $items;
 	protected $pagination;
 	protected $state;
 	protected $form;
+	protected $params;
+	protected $form_edit_group;
+	protected $form_attribs_group;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
@@ -40,7 +45,6 @@ class KinoarhivViewMusic extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($this->getLayout() !== 'modal') {
@@ -59,7 +63,6 @@ class KinoarhivViewMusic extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($this->getLayout() !== 'modal') {
@@ -74,11 +77,10 @@ class KinoarhivViewMusic extends JViewLegacy {
 		$app = JFactory::getApplication();
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$items = new JRegistry;
+		$items = new Registry;
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
-			return false;
 		}
 
 		if ($form->getValue('filename', 'album') == '') {

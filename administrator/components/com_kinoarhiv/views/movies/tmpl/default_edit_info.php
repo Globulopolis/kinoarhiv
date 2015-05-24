@@ -69,8 +69,8 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('countries', $this->form_edit_group)) && is_array($this->form->getValue('countries', $this->form_edit_group))):
-				$countries = $this->form->getValue('countries', $this->form_edit_group); ?>
+			<?php $countries = $this->form->getValue('countries', $this->form_edit_group);
+			if (!empty($countries) && is_array($countries)): ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($countries['data']); ?>;
 				callback(data);
@@ -105,8 +105,8 @@
 					return { results: data };
 				}
 			},
-			<?php if (!empty($this->form->getValue('genres', $this->form_edit_group)) && is_array($this->form->getValue('genres', $this->form_edit_group))):
-				$genres = $this->form->getValue('genres', $this->form_edit_group); ?>
+			<?php $genres = $this->form->getValue('genres', $this->form_edit_group);
+			if (!empty($genres) && is_array($genres)): ?>
 			initSelection: function(element, callback){
 				var data = <?php echo json_encode($genres['data']); ?>;
 				callback(data);
@@ -225,7 +225,8 @@
 					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : ''; ?>&elem=' + elem,
 					data: data
 				}).done(function(response){
-					var mktime = new Date().getTime();
+					var mktime = new Date().getTime(),
+						folder = '';
 					if (response.success) {
 						if (elem == 'imdb_vote') {
 							folder = 'imdb';

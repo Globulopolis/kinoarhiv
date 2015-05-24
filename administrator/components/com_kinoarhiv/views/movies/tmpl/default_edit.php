@@ -20,6 +20,7 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js"></script>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
+		var url, handler;
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
 			if (jQuery('#form_movie_title').val() == '') {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
@@ -27,16 +28,16 @@ JHtml::_('behavior.keepalive');
 			}
 		} else if (task == 'gallery' || task == 'trailers') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
-			var handler = window.open(url);
+			url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
 			}
 
 			return false;
 		} else if (task == 'sounds') {
-			var url = 'index.php?option=com_kinoarhiv&view=music&type=albums<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&movie_id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
-			var handler = window.open(url);
+			url = 'index.php?option=com_kinoarhiv&view=music&type=albums<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&movie_id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			handler = window.open(url);
 			if (!handler) {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
 			}
@@ -44,7 +45,7 @@ JHtml::_('behavior.keepalive');
 			return false;
 		}
 		Joomla.submitform(task);
-	}
+	};
 
 	jQuery(document).ready(function($){
 		// Strongly needed for override fucking bootstrap

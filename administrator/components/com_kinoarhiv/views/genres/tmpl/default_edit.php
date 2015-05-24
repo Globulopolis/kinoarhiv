@@ -15,7 +15,7 @@ $item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') ==
 			}
 		}
 		Joomla.submitform(task);
-	}
+	};
 
 	jQuery(document).ready(function($){
 		$('#form_stats').after('&nbsp;<a href="#" class="updateStat hasTooltip" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a>');

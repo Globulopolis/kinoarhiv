@@ -805,195 +805,195 @@ class KinoarhivModelRelations extends JModelForm {
 		$app = JFactory::getApplication();
 		$type = $app->input->get('type', '', 'word');
 
-        if ($type == 'composers') {
-            $data = $app->input->getArray(array(
-                'form' => array(
-                    'type'     => 'array',
-                    'name_id'  => 'array',
-                    'role'     => 'string',
-                    'ordering' => 'int',
-                    'desc'     => 'string'
-                )
-            ), $_POST);
-            $isNew = $app->input->post->get('new', 1, 'int');
-            $album_id = $app->input->get('id', 0, 'int');
-            $data = $data['form'];
+		if ($type == 'composers') {
+			$data = $app->input->getArray(array(
+				'form' => array(
+					'type'     => 'array',
+					'name_id'  => 'array',
+					'role'     => 'string',
+					'ordering' => 'int',
+					'desc'     => 'string'
+				)
+			), $_POST);
+			$isNew = $app->input->post->get('new', 1, 'int');
+			$album_id = $app->input->get('id', 0, 'int');
+			$data = $data['form'];
 
-            if (count($data['type']) == 0 || count($data['name_id']) == 0) {
-                return array('success' => false, 'message' => JText::_('COM_KA_REQUIRED'));
-            }
+			if (count($data['type']) == 0 || count($data['name_id']) == 0) {
+				return array('success' => false, 'message' => JText::_('COM_KA_REQUIRED'));
+			}
 
-            if ($isNew == 1) {
-                $query = $db->getQuery(true)
-                    ->select('COUNT(name_id)')
-                    ->from($db->quoteName('#__ka_music_rel_composers'))
-                    ->where($db->quoteName('name_id') . ' = ' . (int)$data['name_id'][0] . ' AND ' . $db->quoteName('album_id') . ' = ' . (int)$album_id);
+			if ($isNew == 1) {
+				$query = $db->getQuery(true)
+					->select('COUNT(name_id)')
+					->from($db->quoteName('#__ka_music_rel_composers'))
+					->where($db->quoteName('name_id') . ' = ' . (int)$data['name_id'][0] . ' AND ' . $db->quoteName('album_id') . ' = ' . (int)$album_id);
 
-                $db->setQuery($query);
-                $total = $db->loadResult();
+				$db->setQuery($query);
+				$total = $db->loadResult();
 
-                if ($total > 0) {
-                    $query = $db->getQuery(true)
-                        ->select($db->quoteName('type'))
-                        ->from($db->quoteName('#__ka_music_rel_composers'))
-                        ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('album_id').' = '.(int)$album_id);
+				if ($total > 0) {
+					$query = $db->getQuery(true)
+						->select($db->quoteName('type'))
+						->from($db->quoteName('#__ka_music_rel_composers'))
+						->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('album_id').' = '.(int)$album_id);
 
-                    $db->setQuery($query);
-                    $type = $db->loadResult();
+					$db->setQuery($query);
+					$type = $db->loadResult();
 
-                    $types = explode(',', $type);
-                    array_push($types, $data['type'][0]);
+					$types = explode(',', $type);
+					array_push($types, $data['type'][0]);
 
-                    $query = $db->getQuery(true);
+					$query = $db->getQuery(true);
 
-                    $query->update($db->quoteName('#__ka_music_rel_composers'))
-                        ->set($db->quoteName('type')." = '".implode(',', $types)."'")
-                        ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('album_id').' = '.(int)$album_id);
+					$query->update($db->quoteName('#__ka_music_rel_composers'))
+						->set($db->quoteName('type')." = '".implode(',', $types)."'")
+						->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('album_id').' = '.(int)$album_id);
 
-                    $db->setQuery($query);
+					$db->setQuery($query);
 
-                    if ($db->execute() !== true) {
-                        $success = false;
-                        $message = JText::_('ERROR');
-                    } else {
-                        $success = true;
-                        $message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
-                    }
-                } else {
-                    $query = $db->getQuery(true);
+					if ($db->execute() !== true) {
+						$success = false;
+						$message = JText::_('ERROR');
+					} else {
+						$success = true;
+						$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+					}
+				} else {
+					$query = $db->getQuery(true);
 
-                    $query->insert($db->quoteName('#__ka_music_rel_composers'))
-                        ->columns($db->quoteName(array('name_id', 'album_id', 'type', 'role', 'ordering', 'desc')))
-                        ->values("'" . (int)$data['name_id'][0] . "', '" . (int)$album_id . "', '" . (int)$data['type'][0] . "', '" . $data['role'] . "', '" . (int)$data['ordering'] . "', '" . $db->escape($data['desc']) . "'");
+					$query->insert($db->quoteName('#__ka_music_rel_composers'))
+						->columns($db->quoteName(array('name_id', 'album_id', 'type', 'role', 'ordering', 'desc')))
+						->values("'" . (int)$data['name_id'][0] . "', '" . (int)$album_id . "', '" . (int)$data['type'][0] . "', '" . $data['role'] . "', '" . (int)$data['ordering'] . "', '" . $db->escape($data['desc']) . "'");
 
-                    $db->setQuery($query);
+					$db->setQuery($query);
 
-                    if ($db->execute() !== true) {
-                        $success = false;
-                        $message = JText::_('ERROR');
-                    } else {
-                        $success = true;
-                        $message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
-                    }
-                }
-            } else {
-                $query = $db->getQuery(true);
+					if ($db->execute() !== true) {
+						$success = false;
+						$message = JText::_('ERROR');
+					} else {
+						$success = true;
+						$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+					}
+				}
+			} else {
+				$query = $db->getQuery(true);
 
-                $query->update($db->quoteName('#__ka_music_rel_composers'))
-                    ->set($db->quoteName('type')." = '".(int)$data['type'][0]."', ".$db->quoteName('role')." = '".$data['role']."'")
-                    ->set($db->quoteName('ordering')." = '".(int)$data['ordering']."', ".$db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
-                    ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('album_id').' = '.(int)$album_id);
+				$query->update($db->quoteName('#__ka_music_rel_composers'))
+					->set($db->quoteName('type')." = '".(int)$data['type'][0]."', ".$db->quoteName('role')." = '".$data['role']."'")
+					->set($db->quoteName('ordering')." = '".(int)$data['ordering']."', ".$db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
+					->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('album_id').' = '.(int)$album_id);
 
-                $db->setQuery($query);
+				$db->setQuery($query);
 
-                if ($db->execute() !== true) {
-                    $success = false;
-                    $message = JText::_('ERROR');
-                } else {
-                    $success = true;
-                    $message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
-                }
-            }
-        } else {
-            $data = $app->input->getArray(array(
-                'form' => array(
-                    'type'          => 'array',
-                    'name_id'       => 'array',
-                    'dub_id'        => 'array',
-                    'role'          => 'string',
-                    'is_directors'  => 'int',
-                    'is_actors'     => 'int',
-                    'voice_artists' => 'int',
-                    'ordering'      => 'int',
-                    'desc'          => 'string'
-                )
-            ), $_POST);
-            $isNew = $app->input->post->get('new', 1, 'int');
-            $movie_id = $app->input->get('id', 0, 'int');
-            $data = $data['form'];
+				if ($db->execute() !== true) {
+					$success = false;
+					$message = JText::_('ERROR');
+				} else {
+					$success = true;
+					$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+				}
+			}
+		} else {
+			$data = $app->input->getArray(array(
+				'form' => array(
+					'type'          => 'array',
+					'name_id'       => 'array',
+					'dub_id'        => 'array',
+					'role'          => 'string',
+					'is_directors'  => 'int',
+					'is_actors'     => 'int',
+					'voice_artists' => 'int',
+					'ordering'      => 'int',
+					'desc'          => 'string'
+				)
+			), $_POST);
+			$isNew = $app->input->post->get('new', 1, 'int');
+			$movie_id = $app->input->get('id', 0, 'int');
+			$data = $data['form'];
 
-            if (count($data['type']) == 0 || count($data['name_id']) == 0) {
-                return array('success' => false, 'message' => JText::_('COM_KA_REQUIRED'));
-            }
+			if (count($data['type']) == 0 || count($data['name_id']) == 0) {
+				return array('success' => false, 'message' => JText::_('COM_KA_REQUIRED'));
+			}
 
-            if (empty($data['dub_id'][0])) {
-                $data['dub_id'][0] = 0;
-            }
+			if (empty($data['dub_id'][0])) {
+				$data['dub_id'][0] = 0;
+			}
 
-            if ($isNew == 1) {
-                $query = $db->getQuery(true)
-                    ->select('COUNT(name_id)')
-                    ->from($db->quoteName('#__ka_rel_names'))
-                    ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
+			if ($isNew == 1) {
+				$query = $db->getQuery(true)
+					->select('COUNT(name_id)')
+					->from($db->quoteName('#__ka_rel_names'))
+					->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
 
-                $db->setQuery($query);
-                $total = $db->loadResult();
+				$db->setQuery($query);
+				$total = $db->loadResult();
 
-                if ($total > 0) {
-                    $query = $db->getQuery(true)
-                        ->select($db->quoteName('type'))
-                        ->from($db->quoteName('#__ka_rel_names'))
-                        ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
+				if ($total > 0) {
+					$query = $db->getQuery(true)
+						->select($db->quoteName('type'))
+						->from($db->quoteName('#__ka_rel_names'))
+						->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
 
-                    $db->setQuery($query);
-                    $type = $db->loadResult();
+					$db->setQuery($query);
+					$type = $db->loadResult();
 
-                    $types = explode(',', $type);
-                    array_push($types, $data['type'][0]);
+					$types = explode(',', $type);
+					array_push($types, $data['type'][0]);
 
-                    $query = $db->getQuery(true);
+					$query = $db->getQuery(true);
 
-                    $query->update($db->quoteName('#__ka_rel_names'))
-                        ->set($db->quoteName('type')." = '".implode(',', $types)."'")
-                        ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
+					$query->update($db->quoteName('#__ka_rel_names'))
+						->set($db->quoteName('type')." = '".implode(',', $types)."'")
+						->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
 
-                    $db->setQuery($query);
+					$db->setQuery($query);
 
-                    if ($db->execute() !== true) {
-                        $success = false;
-                        $message = JText::_('ERROR');
-                    } else {
-                        $success = true;
-                        $message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
-                    }
-                } else {
-                    $query = $db->getQuery(true);
+					if ($db->execute() !== true) {
+						$success = false;
+						$message = JText::_('ERROR');
+					} else {
+						$success = true;
+						$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+					}
+				} else {
+					$query = $db->getQuery(true);
 
-                    $query->insert($db->quoteName('#__ka_rel_names'))
-                        ->columns($db->quoteName(array('name_id', 'movie_id', 'type', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors', 'ordering', 'desc')))
-                        ->values("'" . (int)$data['name_id'][0] . "', '" . (int)$movie_id . "', '" . (int)$data['type'][0] . "', '" . $data['role'] . "', '" . (int)$data['dub_id'][0] . "', '" . (int)$data['is_actors'] . "', '" . (int)$data['voice_artists'] . "', '" . (int)$data['is_directors'] . "', '" . (int)$data['ordering'] . "', '" . $db->escape($data['desc']) . "'");
+					$query->insert($db->quoteName('#__ka_rel_names'))
+						->columns($db->quoteName(array('name_id', 'movie_id', 'type', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors', 'ordering', 'desc')))
+						->values("'" . (int)$data['name_id'][0] . "', '" . (int)$movie_id . "', '" . (int)$data['type'][0] . "', '" . $data['role'] . "', '" . (int)$data['dub_id'][0] . "', '" . (int)$data['is_actors'] . "', '" . (int)$data['voice_artists'] . "', '" . (int)$data['is_directors'] . "', '" . (int)$data['ordering'] . "', '" . $db->escape($data['desc']) . "'");
 
-                    $db->setQuery($query);
+					$db->setQuery($query);
 
-                    if ($db->execute() !== true) {
-                        $success = false;
-                        $message = JText::_('ERROR');
-                    } else {
-                        $success = true;
-                        $message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
-                    }
-                }
-            } else {
-                $query = $db->getQuery(true);
+					if ($db->execute() !== true) {
+						$success = false;
+						$message = JText::_('ERROR');
+					} else {
+						$success = true;
+						$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+					}
+				}
+			} else {
+				$query = $db->getQuery(true);
 
-                $query->update($db->quoteName('#__ka_rel_names'))
-                    ->set($db->quoteName('type')." = '".(int)$data['type'][0]."', ".$db->quoteName('role')." = '".$data['role']."'")
-                    ->set($db->quoteName('dub_id')." = '".(int)$data['dub_id'][0]."', ".$db->quoteName('is_actors')." = '".(int)$data['is_actors']."'")
-                    ->set($db->quoteName('voice_artists')." = '".(int)$data['voice_artists']."', ".$db->quoteName('is_directors')." = '".(int)$data['is_directors']."'")
-                    ->set($db->quoteName('ordering')." = '".(int)$data['ordering']."', ".$db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
-                    ->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
+				$query->update($db->quoteName('#__ka_rel_names'))
+					->set($db->quoteName('type')." = '".(int)$data['type'][0]."', ".$db->quoteName('role')." = '".$data['role']."'")
+					->set($db->quoteName('dub_id')." = '".(int)$data['dub_id'][0]."', ".$db->quoteName('is_actors')." = '".(int)$data['is_actors']."'")
+					->set($db->quoteName('voice_artists')." = '".(int)$data['voice_artists']."', ".$db->quoteName('is_directors')." = '".(int)$data['is_directors']."'")
+					->set($db->quoteName('ordering')." = '".(int)$data['ordering']."', ".$db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
+					->where($db->quoteName('name_id').' = '.(int)$data['name_id'][0].' AND '.$db->quoteName('movie_id').' = '.(int)$movie_id);
 
-                $db->setQuery($query);
+				$db->setQuery($query);
 
-                if ($db->execute() !== true) {
-                    $success = false;
-                    $message = JText::_('ERROR');
-                } else {
-                    $success = true;
-                    $message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
-                }
-            }
-        }
+				if ($db->execute() !== true) {
+					$success = false;
+					$message = JText::_('ERROR');
+				} else {
+					$success = true;
+					$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+				}
+			}
+		}
 
 		return array('success'=>$success, 'message'=>$message);
 	}
@@ -1019,13 +1019,13 @@ class KinoarhivModelRelations extends JModelForm {
 		}
 
 		if ($isNew == 1) {
-            $query = $db->getQuery(true);
+			$query = $db->getQuery(true);
 
-            $query->insert($db->quoteName('#__ka_rel_awards'))
-                ->columns($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
-                ->values("'', '".(int)$item_id."', '".(int)$data['award_id'][0]."', '".$db->escape($data['desc'])."', '".$data['year']."', '".(int)$type."'");
+			$query->insert($db->quoteName('#__ka_rel_awards'))
+				->columns($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
+				->values("'', '".(int)$item_id."', '".(int)$data['award_id'][0]."', '".$db->escape($data['desc'])."', '".$data['year']."', '".(int)$type."'");
 
-            $db->setQuery($query);
+			$db->setQuery($query);
 
 			if ($db->execute() !== true) {
 				$success = false;
@@ -1035,15 +1035,15 @@ class KinoarhivModelRelations extends JModelForm {
 				$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
 			}
 		} else {
-            $query = $db->getQuery(true);
+			$query = $db->getQuery(true);
 
-            $query->update($db->quoteName('#__ka_rel_awards'))
-                ->set($db->quoteName('award_id')." = '".(int)$data['award_id'][0]."'")
-                ->set($db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
-                ->set($db->quoteName('year')." = '".$data['year']."'")
-                ->where($db->quoteName('id').' = '.(int)$data['id']);
+			$query->update($db->quoteName('#__ka_rel_awards'))
+				->set($db->quoteName('award_id')." = '".(int)$data['award_id'][0]."'")
+				->set($db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
+				->set($db->quoteName('year')." = '".$data['year']."'")
+				->where($db->quoteName('id').' = '.(int)$data['id']);
 
-            $db->setQuery($query);
+			$db->setQuery($query);
 
 			if ($db->execute() !== true) {
 				$success = false;

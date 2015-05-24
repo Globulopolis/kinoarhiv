@@ -60,7 +60,7 @@ class KinoarhivModelAlbum extends JModelForm {
 
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName(array('a.id','a.asset_id','a.title','a.alias','a.fs_alias','a.composer','a.year','a.length','a.isrc','a.desc','a.rate','a.rate_sum','a.covers_path','a.tracks_path','a.tracks_preview_path','a.buy_url','a.attribs','a.created','a.created_by','a.modified','a.ordering','a.metakey','a.metadesc','a.access','a.metadata','a.language','a.state')))
+			$query->select($db->quoteName(array('a.id','a.asset_id','a.title','a.alias','a.fs_alias','a.composer','a.year','a.length','a.isrc','a.desc','a.rate','a.rate_sum','a.covers_path','a.tracks_path','a.tracks_preview_path','a.buy_url','a.attribs','a.created','a.created_by','a.modified','a.ordering','a.metakey','a.metadesc','a.access','a.metadata','a.language','a.state')))->select($db->quoteName('a.cover_filename', 'filename'))
 				->from($db->quoteName('#__ka_music_albums', 'a'))
 				->where($db->quoteName('a.id').' = '.(int)$id[0]);
 
@@ -68,9 +68,9 @@ class KinoarhivModelAlbum extends JModelForm {
 			$query->select($db->quoteName('l.title', 'language_title'))
 				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
 
-			// Join over gallery item
+			/*// Join over gallery item
 			$query->select($db->quoteName('g.id', 'gid').','.$db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g').' ON '.$db->quoteName('g.item_id').' = '.$db->quoteName('a.id').' AND '.$db->quoteName('g.poster_frontpage').' = 1');
+				->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g').' ON '.$db->quoteName('g.item_id').' = '.$db->quoteName('a.id').' AND '.$db->quoteName('g.poster_frontpage').' = 1');*/
 
 			$db->setQuery($query);
 

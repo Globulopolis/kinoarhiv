@@ -26,6 +26,7 @@ ALTER TABLE `#__ka_music_albums`
   ADD COLUMN `metadesc` TEXT NOT NULL AFTER `metakey`,
   ADD COLUMN `rate` INT (10) DEFAULT 0 NOT NULL AFTER `desc`,
   ADD COLUMN `rate_sum` INT (10) DEFAULT 0 NOT NULL AFTER `rate`,
+  ADD COLUMN `cover_filename` VARCHAR(128) DEFAULT '' NOT NULL AFTER `rate_sum`,
   ADD COLUMN `metadata` TEXT NOT NULL AFTER `access`,
   CHANGE `id` `id` INT (11) UNSIGNED NOT NULL AUTO_INCREMENT,
   CHANGE `year` `year` DATE DEFAULT '0000-00-00' NOT NULL,
@@ -33,19 +34,6 @@ ALTER TABLE `#__ka_music_albums`
   ADD INDEX `idx_access` (`access`),
   ADD INDEX `idx_state` (`state`),
   ADD INDEX `idx_language` (`language`);
-
-CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `filename` varchar(128) NOT NULL DEFAULT '',
-  `dimension` varchar(10) NOT NULL DEFAULT '',
-  `item_id` bigint(19) NOT NULL DEFAULT '0',
-  `poster_frontpage` tinyint(1) unsigned DEFAULT '0',
-  `state` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `idx_itemid` (`item_id`),
-  KEY `idx_poster` (`poster_frontpage`),
-  KEY `idx_state` (`state`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `#__ka_movies` 
   ADD COLUMN `buy_urls` TEXT NOT NULL AFTER `urls`;

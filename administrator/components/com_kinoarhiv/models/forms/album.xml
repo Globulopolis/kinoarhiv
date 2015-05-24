@@ -13,8 +13,8 @@
 			<field name="isrc" type="text" label="COM_KA_FIELD_ALBUMS_FIELD_ISRC_LABEL" class="span9" size="45" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres" />
 			<field name="covers_path" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
-			<field name="buy_url" type="editor" default="" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL" description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" class="span5" filter="raw" width="40%" cols="6" rows="5" editor="alternative" buttons="true" hide="readmore,pagebreak" />
-			<field name="desc" type="editor" default="" label="JGLOBAL_DESCRIPTION" class="span5" filter="raw" width="40%" cols="6" rows="5" editor="alternative" buttons="true" hide="readmore,pagebreak" />
+			<field name="buy_url" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL" description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="true" hide="readmore,pagebreak" />
+			<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true" hide="readmore,pagebreak" />
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">
@@ -40,7 +40,6 @@
 			</field>
 			<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules" component="com_kinoarhiv" section="album" validate="rules" />
 
-			<field name="gid" type="hidden" class="readonly" default="0" readonly="true" />
 			<field name="filename" type="hidden" class="readonly" default="" readonly="true" />
 		</fieldset>
 	</fields>

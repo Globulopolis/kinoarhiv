@@ -8,6 +8,7 @@
 * Added "Links to buy".
 * Added posibility to edit a music genres.
 * SQL-dump was updated.
+* Other fixes
 
 ## 3.0.6
 * Closed https://github.com/Globulopolis/kinoarhiv/issues/41

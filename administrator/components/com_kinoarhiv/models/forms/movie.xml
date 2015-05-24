@@ -9,11 +9,11 @@
 			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6" datatype="time" timeformat="HH:mm:ss" />
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
 			<field name="alias_orig" type="hidden" />
-			<field name="plot" type="editor" default="" label="COM_KA_FIELD_MOVIE_PLOT" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
-			<field name="known" type="editor" default="" label="COM_KA_FIELD_MOVIE_KNOWN" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
+			<field name="plot" type="editor" label="COM_KA_FIELD_MOVIE_PLOT" filter="raw" buttons="true" hide="readmore,pagebreak" />
+			<field name="known" type="editor" label="COM_KA_FIELD_MOVIE_KNOWN" filter="raw" buttons="true" hide="readmore,pagebreak" />
 			<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="raw" cols="6" rows="15" />
-			<field name="urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_URLS" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
-			<field name="buy_urls" type="editor" default="" label="COM_KA_FIELD_MOVIE_BUY_URLS" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
+			<field name="urls" type="editor" label="COM_KA_FIELD_MOVIE_URLS" filter="raw" buttons="true" hide="readmore,pagebreak" />
+			<field name="buy_urls" type="editor" label="COM_KA_FIELD_MOVIE_BUY_URLS" filter="raw" buttons="true" hide="readmore,pagebreak" />
 			<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string" size="45" />
 			<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string" size="45" />
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres" />
@@ -54,7 +54,7 @@
 			<field name="metacritics_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_MC_ID" class="span12" filter="string" size="45" />
 			<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="intval" size="45" />
 			<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM" class="span6" filter="intval" size="45" />
-			<field name="rate_custom" type="editor" default="" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" class="span12" filter="raw" cols="6" rows="5" buttons="true" hide="readmore,pagebreak" />
+			<field name="rate_custom" type="editor" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT" description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" filter="raw" buttons="true" hide="readmore,pagebreak" />
 
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
 			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />

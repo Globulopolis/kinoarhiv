@@ -111,12 +111,14 @@ jQuery(document).ready(function($){
 			});
 		} else if ($(el).data('type') == 'date') {
 			$(el).datepicker({
-				dateFormat: $(el).data('date-format')
+				dateFormat: $(el).data('date-format'),
+				showButtonPanel: true
 			});
 		} else if ($(el).data('type') == 'datetime') {
 			$(el).datetimepicker({
 				dateFormat: $(el).data('date-format'),
-				timeFormat: $(el).data('time-format')
+				timeFormat: $(el).data('time-format'),
+				showButtonPanel: true
 			});
 		}
 	}).next('.cmd-datetime').click(function(e){

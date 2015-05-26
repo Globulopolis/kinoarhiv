@@ -29,8 +29,8 @@ class KinoarhivModelMediamanager extends JModelList {
 	 *
 	 * @param   string   $section	Type of the item. Can be 'movie' or 'name'.
 	 * @param   string   $type		Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
-	 * @param   string   $tab		Tab number from gallery.
-	 * @param   string   $id		The item ID (movie or name).
+	 * @param   int      $tab		Tab number from gallery.
+	 * @param   int      $id		The item ID (movie or name).
 	 *
 	 * @return  string   Absolute filesystem path to a file.
 	 *
@@ -79,7 +79,12 @@ class KinoarhivModelMediamanager extends JModelList {
 			}
 		}
 
-		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+		$query = $db->getQuery(true)
+			->select($db->quoteName('alias'))
+			->from($db->quoteName($table))
+			->where($db->quoteName('id').' = '.(int)$id);
+
+		$db->setQuery($query);
 		$alias = $db->loadResult();
 
 		$result = JPath::clean($path.DIRECTORY_SEPARATOR.JString::substr($alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$folder);
@@ -97,6 +102,7 @@ class KinoarhivModelMediamanager extends JModelList {
 	 *
 	 */
 	public function getAlias($section, $id) {
+		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
 		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
@@ -107,15 +113,30 @@ class KinoarhivModelMediamanager extends JModelList {
 			$table = '#__ka_names';
 		}
 
-		$db->setQuery("SELECT `alias` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+		$query = $db->getQuery(true)
+			->select($db->quoteName('alias'))
+			->from($db->quoteName($table))
+			->where($db->quoteName('id').' = '.(int)$id);
+
+		$db->setQuery($query);
 		$alias = $db->loadResult();
 
 		if (empty($alias)) {
 			if ($section == 'movie') {
-				$db->setQuery("SELECT `title` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+				$query = $db->getQuery(true)
+					->select($db->quoteName('title'))
+					->from($db->quoteName($table))
+					->where($db->quoteName('id').' = '.(int)$id);
+
+				$db->setQuery($query);
 				$result = $db->loadResult();
 			} elseif ($section == 'names') {
-				$db->setQuery("SELECT `name`, `latin_name` FROM ".$db->quoteName($table)." WHERE `id` = ".(int)$id);
+				$query = $db->getQuery(true)
+					->select($db->quoteName(array('name', 'latin_name')))
+					->from($db->quoteName($table))
+					->where($db->quoteName('id').' = '.(int)$id);
+
+				$db->setQuery($query);
 				$result = $db->loadObject();
 
 				if (!empty($result->latin_name)) {
@@ -472,7 +493,6 @@ class KinoarhivModelMediamanager extends JModelList {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$type = $app->input->get('type', '', 'word');
-		$movie_id = $app->input->get('id', 0, 'int');
 		$id = $app->input->get('_id', array(), 'array');
 		$section = $app->input->get('section', null, 'word');
 
@@ -503,7 +523,6 @@ class KinoarhivModelMediamanager extends JModelList {
 	public function apply($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
 		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$type = $app->input->get('type', '', 'word');
@@ -545,7 +564,6 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item_id = $app->input->get('id', 0, 'int');
 		$ids = $app->input->get('_id', array(), 'array');
 		$section = $app->input->get('section', '', 'cmd');
@@ -1000,21 +1018,20 @@ class KinoarhivModelMediamanager extends JModelList {
 		return array(
 			'src'        => $file_obj[$video_id]['src'],
 			'type'       => $file_obj[$video_id]['type'],
-			'resolution' => $file_obj[$video_id]['resolution'],
+			'resolution' => array_key_exists('resolution', $file_obj[$video_id]) ? $file_obj[$video_id]['resolution'] : '',
 			'trailer_id' => $trailer_id,
 			'video_id'   => $video_id
 		);
 	}
 
-	public function saveVideofileData($trailer_id, $video_id=null) {
+	public function saveVideofileData($trailer_id, $video_id=null, $movie_id=null) {
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (is_null($video_id)) {
-			return false;
+			return 'ID cannot be null!';
 		}
 
 		$query = $db->getQuery(true);
@@ -1026,33 +1043,42 @@ class KinoarhivModelMediamanager extends JModelList {
 		$db->setQuery($query);
 		$result = $db->loadResult();
 
-		$file_obj = json_decode($result, true);
+		$file_arr = json_decode($result, true);
+		$old_filename = JPath::clean($file_arr[$video_id]['src']);
+		$new_filename = JPath::clean($app->input->get('src', '', 'string'));
 
-		$file_obj[$video_id] = array(
+		$file_arr[$video_id] = array(
 			'src'        => $app->input->get('src', '', 'string'),
 			'type'       => $app->input->get('type', '', 'string'),
 			'resolution' => $app->input->get('resolution', '', 'string')
 		);
 
-		$new_file_obj = json_encode((object)$file_obj);
+		$file_obj = json_encode((object)$file_arr);
 
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__ka_trailers'))
-			->set($db->quoteName('filename')." = '".$new_file_obj."'")
+			->set($db->quoteName('filename')." = '".$file_obj."'")
 			->where($db->quoteName('id').' = '.(int)$trailer_id);
 
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
-			$this->setError($e->getMessage());
 
-			return false;
+			// Rename the file
+			$path = $this->getPath('movie', 'trailers', 0, $movie_id);
+
+			if ($app->input->get('src_rename', 0, 'int') == 1 && (file_exists($path.$old_filename) && is_file($path.$old_filename))) {
+				if (rename($path.$old_filename, $path.$new_filename) === false) {
+					return JText::_('ERROR');
+				}
+			}
+		} catch(Exception $e) {
+			return $e->getMessage();
 		}
 
-		return true;
+		return JText::_('COM_KA_SAVED');
 	}
 
 	public function getSubtitleEdit() {
@@ -1158,7 +1184,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 				$subtl_obj = JArrayHelper::toObject($subtl_arr);
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `_subtitles` = '".$db->escape(json_encode($subtl_obj))."' WHERE `id` = ".(int)$trailer_id);
-				$query = $db->execute();
+				$db->execute();
 			}
 		}
 	}
@@ -1190,7 +1216,7 @@ class KinoarhivModelMediamanager extends JModelList {
 		if ($time != '00:00:00.000') {
 			if (preg_match('#^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])\.[0-1][0-9][0-9]?$#', $time)) {
 				$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `screenshot` = '".JFile::getExt($files[0]['src']).".png' WHERE `id` = ".(int)$trailer_id);
-				$query = $db->execute();
+				$db->execute();
 
 				$output = $media->createScreenshot($data);
 				if ($output[0]) {
@@ -1207,7 +1233,6 @@ class KinoarhivModelMediamanager extends JModelList {
 	public function saveVideo($file='', $trailer_id, $movie_id) {
 		JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
 		$media = KAMedia::getInstance();
-		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 
 		$db->setQuery("SELECT `filename` FROM ".$db->quoteName('#__ka_trailers')." WHERE `id` = ".(int)$trailer_id);
@@ -1243,7 +1268,7 @@ class KinoarhivModelMediamanager extends JModelList {
 
 			$new_obj = JArrayHelper::toObject($files_arr);
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `resolution` = '".$video_info->streams[0]->width.'x'.$video_info->streams[0]->height."', `dar` = '".$video_info->streams[0]->display_aspect_ratio."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
-			$query = $db->execute();
+			$db->execute();
 		} else {
 			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id).$file);
 			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id).$file));
@@ -1260,14 +1285,13 @@ class KinoarhivModelMediamanager extends JModelList {
 			$new_obj = JArrayHelper::toObject($files_arr);
 
 			$db->setQuery("UPDATE ".$db->quoteName('#__ka_trailers')." SET `filename` = '".json_encode($new_obj)."', `resolution` = '".$video_info->streams[0]->width.'x'.$video_info->streams[0]->height."', `dar` = '".$video_info->streams[0]->display_aspect_ratio."', `duration` = '".$duration."' WHERE `id` = ".(int)$trailer_id);
-			$query = $db->execute();
+			$db->execute();
 		}
 	}
 
 	public function removeTrailerFiles() {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 		$item_id = $app->input->get('item_id', 0, 'int');
 		$filename = $app->input->get('file', '', 'string');
@@ -1479,7 +1503,6 @@ class KinoarhivModelMediamanager extends JModelList {
 
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Current item ID.
 		$id = $app->input->get('id', 0, 'int');

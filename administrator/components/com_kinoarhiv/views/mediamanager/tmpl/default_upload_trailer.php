@@ -193,14 +193,15 @@ $type = $input->get('type', '', 'word');
 					}
 				},
 				FileUploaded: function(up, file, info){
-					var obj = $.parseJSON(info.response);
+					var obj = $.parseJSON(info.response),
+						div_video_scr = $('div.video_screenshot');
 
-					if ($('div.video_screenshot').find('#screenshot_file').length == 0) {
+					if (div_video_scr.find('#screenshot_file').length == 0) {
 						var a = '<a href="<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.id + '?_=' + new Date().getTime() +'" class="tooltip-img" id="screenshot_file">'+ obj.id +'</a>';
 						$('div.video_screenshot div').eq(0).html('').append(a);
 					} else {
-						$('div.video_screenshot').find('#screenshot_file').text(obj.id);
-						$('div.video_screenshot').find('#screenshot_file').attr('href', '<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.id + '?_=' + new Date().getTime());
+						div_video_scr.find('#screenshot_file').text(obj.id);
+						div_video_scr.find('#screenshot_file').attr('href', '<?php echo $this->item->get('screenshot_folder_www'); ?>' + obj.id + '?_=' + new Date().getTime());
 					}
 					$('#screenshot_file').show();
 					$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file='+ obj.id +'&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json');
@@ -315,9 +316,10 @@ $type = $input->get('type', '', 'word');
 			dlg.dialog({
 				buttons: {
 					'<?php echo JText::_('JAPPLY'); ?>': function(){
-						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&task=saveVideofileData&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&format=raw', $('#video_edit_form').serialize(), function(response){
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&task=saveVideofileData&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&movie_id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw', $('#video_edit_form').serialize(), function(response){
 							if (response) {
 								$('.t-video').trigger('click');
+								showMsg('#video_edit_form .message', response == '1' ? '' : response);
 							} else {
 								showMsg('#video_edit_form .message', '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
 							}
@@ -331,7 +333,7 @@ $type = $input->get('type', '', 'word');
 				},
 				resizable: false,
 				modal: true,
-				height: 300,
+				height: 330,
 				width: 550,
 				close: function(e, ui){
 					dlg.remove();
@@ -543,8 +545,8 @@ $type = $input->get('type', '', 'word');
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
 							var input = $('.dialog #urls_url_video');
 							if (input.val() != '') {
-								var form_urls = $('#form_urls').val();
-								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'" type="'+ $('#urls_url_video_type').val() +'" player="'+ $('#urls_url_video_inplayer').val() +'"]'); // Set value
+								var form_urls = $('#form_urls');
+								form_urls.val(form_urls.val() + (form_urls.val() != '' ? "\n" : '') +'[url="'+ input.val() +'" type="'+ $('#urls_url_video_type').val() +'" player="'+ $('#urls_url_video_inplayer').val() +'"]'); // Set value
 								$('#urls_layout_video_form')[0].reset();
 							} else {
 								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
@@ -568,8 +570,8 @@ $type = $input->get('type', '', 'word');
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
 							var input = $('.dialog #urls_url_subtitles');
 							if (input.val() != '') {
-								var form_urls = $('#form_urls').val();
-								$('#form_urls').val(form_urls + (form_urls != '' ? "\n" : '') +'[url="'+ input.val() +'" kind="subtitles" srclang="'+ $('#urls_url_subtitles_lang').val() +'" label="'+ $('#urls_url_subtitles_lang :selected').text() +'" default="'+ $('#urls_url_subtitles_default').val() +'"]'); // Set value
+								var form_urls = $('#form_urls');
+								form_urls.val(form_urls.val() + (form_urls.val() != '' ? "\n" : '') +'[url="'+ input.val() +'" kind="subtitles" srclang="'+ $('#urls_url_subtitles_lang').val() +'" label="'+ $('#urls_url_subtitles_lang :selected').text() +'" default="'+ $('#urls_url_subtitles_default').val() +'"]'); // Set value
 								$('#urls_layout_subtitles_form')[0].reset();
 							} else {
 								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
@@ -593,8 +595,8 @@ $type = $input->get('type', '', 'word');
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function(){
 							var input = $('.dialog #urls_url_chp');
 							if (input.val() != '') {
-								var form_urls = $('#form_urls').val();
-								$('#form_urls').val(form_urls + "\n"+'[url="'+ input.val() +'" kind="chapters"]'); // Set value
+								var form_urls = $('#form_urls');
+								form_urls.val(form_urls.val() + "\n"+'[url="'+ input.val() +'" kind="chapters"]'); // Set value
 								input.val(''); // Clear input in dialog
 							} else {
 								showMsg('.dialog .err_msg', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');

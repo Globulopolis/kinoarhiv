@@ -10,6 +10,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<div class="control-label">&nbsp;</div>
+			<div class="controls">
+				<input id="jform_src_rename" type="checkbox" value="1" name="src_rename" checked /> <label for="jform_src_rename" style="display: inline;" class="hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME_RENAME_DESC'); ?>"><?php echo JText::_('COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME_RENAME'); ?></label>
+			</div>
+		</div>
+		<div class="control-group">
 			<div class="control-label">
 				<label for="jform_type"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE'); ?></label>
 			</div>

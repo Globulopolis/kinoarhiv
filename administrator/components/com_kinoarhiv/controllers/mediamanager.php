@@ -543,9 +543,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$app = JFactory::getApplication();
 		$trailer_id = $app->input->get('trailer_id', 0, 'int');
 		$video_id = $app->input->get('video_id', 0, 'int');
+		$movie_id = $app->input->get('movie_id', 0, 'int');
 
 		$model = $this->getModel('mediamanager');
-		$result = $model->saveVideofileData($trailer_id, $video_id);
+		$result = $model->saveVideofileData($trailer_id, $video_id, $movie_id);
 
 		echo $result;
 	}

@@ -9,10 +9,11 @@ $sortFields = $this->getSortFields();
 		var table = document.getElementById("sortTable");
 		var direction = document.getElementById("directionTable");
 		var order = table.options[table.selectedIndex].value;
+		var dirn;
 		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
+			dirn = 'asc';
 		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
+			dirn = direction.options[direction.selectedIndex].value;
 		}
 		Joomla.tableOrdering(order, dirn, '');
 	};
@@ -44,7 +45,7 @@ $sortFields = $this->getSortFields();
 			},
 			handle: '.sortable-handler',
 			cursor: 'move',
-			update: function(e, ui){
+			update: function(){
 				$.post('index.php?option=com_kinoarhiv&controller=careers&task=saveOrder&format=json', $('#articleList tbody .order input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
 						showMsg('#j-main-container', response.message);

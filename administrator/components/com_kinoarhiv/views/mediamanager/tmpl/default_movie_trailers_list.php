@@ -43,7 +43,8 @@ $sortFields = $this->getSortFields();
 
 		$('.cmd-fp_off, .cmd-fp_on').click(function(){
 			$(this).closest('tr').find(':checkbox').prop('checked', true);
-			$('input[name="boxchecked"]').val(parseInt($('input[name="boxchecked"]').val(), 10) + 1);
+			var boxchecked = $('input[name="boxchecked"]');
+			boxchecked.val(parseInt(boxchecked.val(), 10) + 1);
 
 			if ($(this).hasClass('cmd-fp_off')) {
 				$('input[name="task"]').val('fpOff');

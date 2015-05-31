@@ -28,6 +28,7 @@ ALTER TABLE `#__ka_music_albums`
   ADD COLUMN `rate_sum` INT (10) DEFAULT 0 NOT NULL AFTER `rate`,
   ADD COLUMN `cover_filename` VARCHAR(128) DEFAULT '' NOT NULL AFTER `rate_sum`,
   ADD COLUMN `metadata` TEXT NOT NULL AFTER `access`,
+  ADD COLUMN `covers_path_www` VARCHAR(255) NOT NULL AFTER `covers_path`,
   CHANGE `id` `id` INT (11) UNSIGNED NOT NULL AUTO_INCREMENT,
   CHANGE `year` `year` DATE DEFAULT '0000-00-00' NOT NULL,
   CHANGE `state` `state` TINYINT (3) UNSIGNED DEFAULT 0 NOT NULL,

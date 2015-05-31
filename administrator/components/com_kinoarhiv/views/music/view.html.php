@@ -9,9 +9,11 @@
  */
 
 use Joomla\Registry\Registry;
+use Joomla\String\String;
 
 class KinoarhivViewMusic extends JViewLegacy {
 	protected $items;
+	protected $item;
 	protected $pagination;
 	protected $state;
 	protected $form;
@@ -24,12 +26,12 @@ class KinoarhivViewMusic extends JViewLegacy {
 		$type = $app->input->get('type', 'albums', 'word');
 
 		switch ($type) {
-			case 'tracks': $this->displayTracks('tracks'); break;
-			default: $this->displayAlbums('albums'); break;
+			case 'tracks': $this->displayTracks(); break;
+			default: $this->displayAlbums(); break;
 		}
 	}
 
-	protected function displayAlbums($tpl) {
+	protected function displayAlbums() {
 		$app = JFactory::getApplication();
 
 		if ($app->input->get('task', '', 'cmd') == 'edit') {
@@ -51,10 +53,10 @@ class KinoarhivViewMusic extends JViewLegacy {
 			$this->addToolbar();
 		}
 
-		parent::display($tpl);
+		parent::display('albums');
 	}
 
-	protected function displayTracks($tpl) {
+	protected function displayTracks() {
 		$this->items         = $this->get('Items');
 		$this->pagination    = $this->get('Pagination');
 		$this->state         = $this->get('State');
@@ -69,13 +71,15 @@ class KinoarhivViewMusic extends JViewLegacy {
 			//$this->addToolbar();
 		}
 
-		parent::display($tpl);
+		parent::display();
 	}
 
-	protected function edit($tpl) {
-		$form = $this->get('Form');
+	protected function edit() {
+		$this->form = $this->get('Form');
+		$this->item = $this->get('Item');
 		$app = JFactory::getApplication();
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		jimport('joomla.filesystem.folder');
 
 		$items = new Registry;
 
@@ -83,18 +87,67 @@ class KinoarhivViewMusic extends JViewLegacy {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		if ($form->getValue('filename', 'album') == '') {
-			$items->set(
-				'poster',
-				JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$this->params->get('ka_theme').'/images/no_movie_cover.png'
-			);
-			$items->set(
-				'th_poster',
-				JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$this->params->get('ka_theme').'/images/no_movie_cover.png'
-			);
-			$items->set('y_poster', '');
+		if ($this->item['album']->covers_path != '' && file_exists(JPath::clean($this->item['album']->covers_path))) {
+			$path = $this->item['album']->covers_path;
+			$file_patterns = array();
+
+			foreach (explode("\n", $this->params->get('music_covers_front')) as $file_pattern) {
+				$file_patterns[] = trim($file_pattern);
+			}
+
+			$files = JFolder::files(JPath::clean($path), implode('|', $file_patterns));
+			if (count($files) > 0) {
+				foreach ($files as $file) {
+					if (file_exists(JPath::clean($path . DIRECTORY_SEPARATOR . $file))) {
+						$items->set('poster', $this->item['album']->covers_path_www . $file);
+						$items->set('th_poster', $this->item['album']->covers_path_www . $file);
+						$items->set('y_poster', 'y-poster');
+						break;
+					}
+				}
+			} else {
+				$path_poster = JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/images/no_movie_cover.png';
+				$items->set('poster', $path_poster);
+				$items->set('th_poster', $path_poster);
+				$items->set('y_poster', '');
+			}
+		} elseif ($this->params->get('media_music_images_root') != '' && file_exists(JPath::clean($this->params->get('media_music_images_root')))) {
+			//$path = JPath::clean($this->params->get('media_music_images_root_www'));
+			//$segment = substr($form->getValue('fs_alias', 'album'), 0, 1).'/'.$form->getValue('id', 'album').'/';
 		} else {
-			if (JString::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/') {
+		}
+		//echo $path.$segment;
+		// Get album art
+		/*if ($form->getValue('filename', 'album') != '') {
+			$segment = '';
+
+			if ($form->getValue('covers_path', 'album') != '') {
+				$path = $form->getValue('covers_path', 'album');
+			} else {
+				$path = $this->params->get('media_music_images_root_www');
+				$segment = substr($form->getValue('fs_alias', 'album'), 0, 1).'/'.$form->getValue('id', 'album').'/';
+			}
+
+			if (preg_match('%^https?://[^\s]+$%', $path)) { // HTTP(S) url
+				$path_poster = $path.'/'.$form->getValue('filename', 'album');
+				$items->set('y_poster', 'y-poster');
+			} elseif (String::substr($path, 0, 1) == '/') { // Url start with '/'
+				$path_poster = JURI::root().String::substr($path, 1).'/'.$segment.$form->getValue('filename', 'album');
+				$items->set('y_poster', 'y-poster');
+			} else {
+				$path_poster = JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$this->params->get('ka_theme').'/images/no_movie_cover.png';
+				$items->set('y_poster', '');
+			}
+
+			$items->set('poster', $path_poster);
+			$items->set('th_poster', $path_poster);
+		} else {
+			if ($form->getValue('covers_path', 'album') != '') {
+				$files = glob('*');
+				print_r($files);
+			} else {
+			}
+			/*if (JString::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/') {
 				$items->set(
 					'poster',
 					JURI::root().JString::substr($this->params->get('media_music_images_root_www'), 1).'/'.JString::substr($form->getValue('fs_alias', 'album'), 0, 1).'/'.$form->getValue('id', 'album').'/'.$form->getValue('filename', 'album')
@@ -113,11 +166,10 @@ class KinoarhivViewMusic extends JViewLegacy {
 					$this->params->get('media_posters_root_www').'/'.JString::substr($form->getValue('fs_alias', 'album'), 0, 1).'/'.$form->getValue('id', 'album').'/thumb_'.$form->getValue('filename', 'album')
 				);
 			}
-			$items->set('y_poster', 'y-poster');
-		}
+			$items->set('y_poster', 'y-poster');*/
+		//}*/
 
 		$this->items = $items;
-		$this->form = $form;
 		$this->form_edit_group = 'album';
 		$this->form_attribs_group = 'attribs';
 

@@ -70,23 +70,23 @@ class KinoarhivViewMovies extends JViewLegacy {
 			);
 			$items->set('y_poster', '');
 		} else {
-			if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
+			if (substr($params->get('media_posters_root_www'), 0, 1) == '/') {
 				$items->set(
 					'poster',
-					JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/'.$form->getValue('filename', 'movie')
+					JURI::root().substr($params->get('media_posters_root_www'), 1).'/'.substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/'.$form->getValue('filename', 'movie')
 				);
 				$items->set(
 					'th_poster',
-					JURI::root().JString::substr($params->get('media_posters_root_www'), 1).'/'.JString::substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/thumb_'.$form->getValue('filename', 'movie')
+					JURI::root().substr($params->get('media_posters_root_www'), 1).'/'.substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/thumb_'.$form->getValue('filename', 'movie')
 				);
 			} else {
 				$items->set(
 					'poster',
-					$params->get('media_posters_root_www').'/'.JString::substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/'.$form->getValue('filename', 'movie')
+					$params->get('media_posters_root_www').'/'.substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/'.$form->getValue('filename', 'movie')
 				);
 				$items->set(
 					'th_poster',
-					$params->get('media_posters_root_www').'/'.JString::substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/thumb_'.$form->getValue('filename', 'movie')
+					$params->get('media_posters_root_www').'/'.substr($form->getValue('alias', 'movie'), 0, 1).'/'.$form->getValue('id', 'movie').'/posters/thumb_'.$form->getValue('filename', 'movie')
 				);
 			}
 			$items->set('y_poster', 'y-poster');

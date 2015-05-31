@@ -16,6 +16,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 	protected $pagination;
 	protected $state;
 	protected $form;
+	protected $params;
 
 	public function display($tpl = null) {
 		$app = JFactory::getApplication();
@@ -93,7 +94,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 
 				if ($app->input->get('task', '', 'cmd') == 'edit') {
 					JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
-					$_lang = new KALanguage();
 
 					$this->form = $this->get('Form');
 					$item = new Registry;
@@ -118,7 +118,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 							$item->set('screenshot_folder_www', $this->params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
 						}
 						$item->set('screenshot_path', $this->params->get('media_trailers_root').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
-						$item->set('subtitles_lang_list', $_lang::listOfLanguages());
+						$item->set('subtitles_lang_list', KALanguage::listOfLanguages());
 					}
 
 					$this->item = &$item;
@@ -139,59 +139,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					$this->items = &$items;
 					$this->pagination = &$pagination;
 					$this->state = &$state;
-
-					parent::display($tpl);
-				}
-			} elseif ($type == 'sounds') {
-				$this->addToolbar();
-
-				if ($app->input->get('task', '', 'cmd') == 'edit') {
-					/*JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
-					$_lang = new KALanguage();
-
-					$this->form = $this->get('Form');
-					$item = new JRegistry;
-					$page_title = $this->get('ItemTitle');
-
-					if (count($errors = $this->get('Errors'))) {
-						throw new Exception(implode("\n", $this->get('Errors')), 500);
-						return false;
-					}
-
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
-
-					if (!empty($item)) {
-						$movie_id = $app->input->get('id', 0, 'int');
-						$screenshot = $this->form->getValue('screenshot');
-						$movie_alias = $this->form->getValue('movie_alias');
-
-						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-							$item->set('screenshot_path_www', JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
-							$item->set('screenshot_folder_www', JURI::root().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
-						} else {
-							$item->set('screenshot_path_www', $params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
-							$item->set('screenshot_folder_www', $params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
-						}
-						$item->set('screenshot_path', $params->get('media_trailers_root').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
-						$item->set('subtitles_lang_list', $_lang::listOfLanguages());
-					}
-
-					$this->item = &$item;
-
-					parent::display('upload_trailer');
-					$app->input->set('hidemainmenu', true);*/
-				} else {
-					$items = $this->get('Soundtracks');
-					//$state = $this->get('State');
-					$page_title = $this->get('ItemTitle');
-
-					if (count($errors = $this->get('Errors'))) {
-						throw new Exception(implode("\n", $this->get('Errors')), 500);
-					}
-
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_SOUNDS')), 'music');
-					$this->items = &$items;
-					//$this->state = &$state;
 
 					parent::display($tpl);
 				}
@@ -295,22 +242,6 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 				}
 			} elseif ($type == 'trailers') {
-				if ($user->authorise('core.create', 'com_kinoarhiv')) {
-					JToolbarHelper::custom('add', 'new', 'new', JText::_('JTOOLBAR_NEW'), false);
-					JToolbarHelper::editList('edit');
-					JToolbarHelper::divider();
-				}
-
-				if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
-					JToolbarHelper::publishList();
-					JToolbarHelper::unpublishList();
-					JToolbarHelper::divider();
-				}
-
-				if ($user->authorise('core.delete', 'com_kinoarhiv')) {
-					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
-				}
-			} elseif ($type == 'sounds') {
 				if ($user->authorise('core.create', 'com_kinoarhiv')) {
 					JToolbarHelper::custom('add', 'new', 'new', JText::_('JTOOLBAR_NEW'), false);
 					JToolbarHelper::editList('edit');

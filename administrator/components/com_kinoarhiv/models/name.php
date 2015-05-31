@@ -18,7 +18,7 @@ class KinoarhivModelName extends JModelForm {
 			return false;
 		}
 
-		$input = JFactory::getApplication()->input;
+		$id = JFactory::getApplication()->input->get('id', array(), 'array');
 		$id = (isset($id[0]) && !empty($id[0])) ? $id[0] : 0;
 		$user = JFactory::getUser();
 

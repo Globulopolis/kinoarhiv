@@ -56,8 +56,8 @@ class GlobalHelper {
 	 */
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend) {
 		JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
-		$language = new KALanguage();
-		$language::getScriptLanguage($file, $jhtml, $script_type, $frontend);
+
+		KALanguage::getScriptLanguage($file, $jhtml, $script_type, $frontend);
 	}
 
 	/**

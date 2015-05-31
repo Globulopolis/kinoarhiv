@@ -83,18 +83,18 @@ class KinoarhivViewNames extends JViewLegacy {
 			);
 			$items->set('y_poster', '');
 		} else {
-			$alias = JString::substr($form->getValue('alias', 'name'), 0, 1);
+			$alias = substr($form->getValue('alias', 'name'), 0, 1);
 			$item_id = $form->getValue('id', 'name');
 			$poster = $form->getValue('filename', 'name');
 
-			if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+			if (substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
 				$items->set(
 					'poster',
-					JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/'.$poster
+					JURI::root().substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/'.$poster
 				);
 				$items->set(
 					'th_poster',
-					JURI::root().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/thumb_'.$poster
+					JURI::root().substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/thumb_'.$poster
 				);
 			} else {
 				$items->set(

@@ -9,6 +9,7 @@
  */
 
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 class KinoarhivModelMovies extends JModelList {
 	protected $context = null;
@@ -283,7 +284,7 @@ class KinoarhivModelMovies extends JModelList {
 		}
 
 		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres) || !empty($tags) && !empty($where_id)) {
-			$where .= " AND `m`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
+			$where .= " AND `m`.`id` IN (".implode(',', ArrayHelper::arrayUnique($where_id)).")";
 		}
 
 		return $where;

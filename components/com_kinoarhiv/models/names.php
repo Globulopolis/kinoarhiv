@@ -9,6 +9,7 @@
  */
 
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 
 class KinoarhivModelNames extends JModelList {
 	protected $context = null;
@@ -175,7 +176,7 @@ class KinoarhivModelNames extends JModelList {
 				unset($where_id[$k]);
 			}
 
-			$where .= " AND `n`.`id` IN (".implode(',', JArrayHelper::arrayUnique($where_id)).")";
+			$where .= " AND `n`.`id` IN (".implode(',', ArrayHelper::arrayUnique($where_id)).")";
 		}
 
 		return $where;

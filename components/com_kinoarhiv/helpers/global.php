@@ -8,6 +8,8 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\Utilities\ArrayHelper;
+
 class GlobalHelper {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
@@ -60,7 +62,7 @@ class GlobalHelper {
 		}
 
 		$html = '<div class="ui-message"><div class="ui-widget">
-			<div class="ui-corner-all ui-state-'.$type.'" style="padding: 0pt 0.5em;">
+			<div class="ui-corner-all ui-state-'.$type.'" style="padding: 0 0.5em;">
 				<div style="margin: 5px ! important;">
 					<span class="ui-icon ui-icon-'.$icon.'" style="float: left; margin-right: 0.3em;"></span>
 					<span style="overflow: hidden; display: block;">'.$text.$close_str.'</span>
@@ -114,6 +116,11 @@ class GlobalHelper {
 
 	/**
 	 * Load CSS and Javascript for HTML5/Flash player
+	 *
+	 * @param   string  $player   Player type.
+	 * @param   string  $key      License key.
+	 *
+	 * @return  string
 	 *
 	*/
 	static function loadPlayerAssets($player, $key='') {
@@ -298,7 +305,7 @@ class GlobalHelper {
 
 		$attrs = '';
 		if (is_array($attribs) && func_num_args() == 5) {
-			$attrs = JArrayHelper::toString($attribs);
+			$attrs = ArrayHelper::toString($attribs);
 		}
 
 		return '<label id="'.$for.'-lbl"'.$class.' for="'.$for.'"'.$title.$attrs.'>'.JText::_($text).'</label>';

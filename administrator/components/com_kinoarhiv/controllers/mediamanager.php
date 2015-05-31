@@ -210,7 +210,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						$rn_filename = $alias.'-'.$trailer_id.'-'.$item_id.'.'.$video_height.'p.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
-						$result = $model->saveVideo($rn_filename, $trailer_id, $item_id);
+						$model->saveVideo($rn_filename, $trailer_id, $item_id);
 					} elseif ($app->input->get('upload') == 'subtitles') {
 						if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches)) {
 							$lang_code = strtolower($matches[1]);
@@ -222,7 +222,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_code.'.'.$ext;
 						rename($old_filename, $rn_dest_dir.$rn_filename);
 
-						$result = $model->saveSubtitles(false, $rn_filename, $trailer_id, $item_id);
+						$model->saveSubtitles(false, $rn_filename, $trailer_id, $item_id);
 					} elseif ($app->input->get('upload') == 'chapters') {
 						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir.$filename;
@@ -330,7 +330,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$model = $this->getModel('mediamanager');
 
 		// Unpublish item from frontpage
-		$result = $model->publishOnFrontpage((int)$action);
+		$model->publishOnFrontpage((int)$action);
 		$errors = $model->getErrors();
 
 		if (count($errors) > 0) {
@@ -365,7 +365,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
-		$result = $model->publish((int)$action);
+		$model->publish((int)$action);
 		$errors = $model->getErrors();
 
 		if (count($errors) > 0) {
@@ -394,7 +394,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
-		$result = $model->remove();
+		$model->remove();
 		$errors = $model->getErrors();
 
 		if (count($errors) > 0) {
@@ -470,7 +470,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.create.movie', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.movie', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
+			return false;
 		}
 
 		$app = JFactory::getApplication();

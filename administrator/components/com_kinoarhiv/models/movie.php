@@ -373,7 +373,7 @@ class KinoarhivModelMovie extends JModelForm {
 				$db->execute();
 			} else {
 				// Alias was changed? Move all linked items into new filesystem location.
-				if (JString::substr($alias, 0, 1) != JString::substr($data['alias_orig'], 0, 1)) {
+				if (substr($alias, 0, 1) != substr($data['alias_orig'], 0, 1)) {
 					$this->moveMediaItems($id, $data['alias_orig'], $alias, $params);
 				}
 			}
@@ -397,6 +397,15 @@ class KinoarhivModelMovie extends JModelForm {
 		return true;
 	}
 
+	/**
+	 * Create intro text for movie
+	 *
+	 * @param   array     $data     Movie info array
+	 * @param   object    $params   Component parameters
+	 * @param   int       $id       Item ID
+	 *
+	 * @return  bool
+     */
 	protected function createIntroText($data, $params, $id) {
 		$db = $this->getDBO();
 		$query_result = true;
@@ -671,9 +680,8 @@ class KinoarhivModelMovie extends JModelForm {
 			jimport('joomla.filesystem.folder');
 			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
 
-			$error = false;
-			$old_alias = JString::substr($old_alias, 0, 1);
-			$new_alias = JString::substr($new_alias, 0, 1);
+			$old_alias = substr($old_alias, 0, 1);
+			$new_alias = substr($new_alias, 0, 1);
 
 			// Move gallery items
 			$path_poster = $params->get('media_posters_root');

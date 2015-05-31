@@ -86,8 +86,9 @@
 					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
 						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
 					).done(function(response){
-						$('img.album-cover-preview').attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
-						$('img.album-cover-preview').parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
+						var cover_preview = $('img.album-cover-preview');
+						cover_preview.attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
+						cover_preview.parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
 						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');
 						blockUI();
 						$('.layout_img_upload').dialog('close');
@@ -121,8 +122,9 @@
 				if (typeof response !== 'object' && response != "") {
 					showMsg('#system-message-container', response);
 				} else {
-					$('img.album-cover-preview').attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png').removeClass('y-poster');
-					$('img.album-cover-preview').parent('a').attr('href', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
+					var cover_preview = $('img.album-cover-preview');
+					cover_preview.attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png').removeClass('y-poster');
+					cover_preview.parent('a').attr('href', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
 				}
 				blockUI();
 			}).fail(function(xhr, status, error){
@@ -167,9 +169,10 @@
 							text: '<?php echo JText::_('JMODIFY'); ?>',
 							id: 'alias-modify',
 							click: function(){
-								$('#form_album_alias').removeAttr('readonly').trigger('focus');
+								var album_alias = $('#form_album_alias');
+								album_alias.removeAttr('readonly').trigger('focus');
 								$(this).dialog('close');
-								$('#form_album_alias').focus();
+								album_alias.focus();
 							}
 						},
 						{
@@ -237,7 +240,7 @@
 			<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
 			<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="album-cover-preview <?php echo $this->items->get('y_poster'); ?>" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 			<?php endif; ?>
 		</div>
 	</div>

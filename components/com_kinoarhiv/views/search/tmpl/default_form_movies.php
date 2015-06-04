@@ -71,34 +71,41 @@ if ($this->params->get('search_movies_enable') == 0) {
 		$('#filters_movies_tags').select2({
 			placeholder: '<?php echo JText::_('JGLOBAL_KEEP_TYPING'); ?>',
 			allowClear: true,
-			minimumInputLength: 2,
+			minimumInputLength: 1,
 			maximumSelectionSize: 5,
 			multiple: true,
 			ajax: {
 				cache: true,
 				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid='.$this->home_itemid['movies'], false); ?>',
 				data: function(term, page){
-					return { term: term, showAll: 0 }
+					return {
+						term: term,
+						showAll: 0
+					}
 				},
 				results: function(data, page){
-					return { results: data };
+					return {results: data};
 				}
 			},
 			initSelection: function(element, callback){
-				var id = $(element).val();
+				var id = parseInt($(element).val(), 10);
 
-				if (id !== 0 || id !== "") {
+				if (id !== 0) {
 					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid='.$this->home_itemid['movies'], false); ?>', {
 						data: {
-							term: id
+							id: id
 						}
 					}).done(function(data){
 						callback(data);
 					});
 				}
 			},
-			formatResult: function(data){ return data.title; },
-			formatSelection: function(data){ return data.title; },
+			formatResult: function(data){
+				return data.title;
+			},
+			formatSelection: function(data){
+				return data.title;
+			},
 			escapeMarkup: function(m) { return m; }
 		});
 

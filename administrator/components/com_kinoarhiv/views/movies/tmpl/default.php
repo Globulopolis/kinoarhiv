@@ -9,10 +9,11 @@ $sortFields = $this->getSortFields();
 		var table = document.getElementById("sortTable");
 		var direction = document.getElementById("directionTable");
 		var order = table.options[table.selectedIndex].value;
+		var dirn;
 		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
+			dirn = 'asc';
 		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
+			dirn = direction.options[direction.selectedIndex].value;
 		}
 		Joomla.tableOrdering(order, dirn, '');
 	};
@@ -31,9 +32,10 @@ $sortFields = $this->getSortFields();
 	jQuery(document).ready(function($){
 		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_MOVIES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
 
+		var toolbar_tools = $('#toolbar-tools');
 		$('.rel-menu').css({
-			left: $('#toolbar-tools').offset().left+'px',
-			top: ($('#toolbar-tools').offset().top+$('#toolbar-tools').height()+5)+'px'
+			left: toolbar_tools.offset().left+'px',
+			top: (toolbar_tools.offset().top + toolbar_tools.height() + 5)+'px'
 		});
 		$('#relations_menu').menu();
 		$('a.dd-relations').click(function(e){
@@ -148,7 +150,7 @@ $sortFields = $this->getSortFields();
 					<td class="small">
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=trailers&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0" /></a>
-						<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/music.png" border="0" /></a>
+						<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/music.png" border="0" /></a>&nbsp;
 						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all hidden-phone">
 							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a></li>

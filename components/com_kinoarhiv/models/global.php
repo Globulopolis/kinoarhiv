@@ -32,7 +32,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1");
+				$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1");
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'genres') {
@@ -46,7 +46,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.")");
+				$db->setQuery("SELECT `id`, `name` AS `title` FROM ".$db->quoteName('#__ka_genres')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.")");
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'movies') {
@@ -59,7 +59,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.")");
+				$db->setQuery("SELECT `id`, `title`, `year` FROM ".$db->quoteName('#__ka_movies')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.")");
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'awards') {
@@ -79,7 +79,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 						$result = $db->loadObject();
 					}
 				} else {
-					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1");
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_awards')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1");
 					$result = $db->loadObjectList();
 				}
 			}
@@ -93,20 +93,20 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.")");
+				$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM ".$db->quoteName('#__ka_names')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1 AND `access` IN (".$groups.")");
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'tags') {
 			if (empty($all)) {
 				if (empty($id)) {
-					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `id` IN (".$db->escape($term).") AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `published` = 1 AND `access` IN (".$groups.")");
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `title` LIKE '".$db->escape($term)."%' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `published` = 1 AND `access` IN (".$groups.")");
 					$result = $db->loadObjectList();
 				} else {
-					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `title` LIKE '".$db->escape($term)."%' AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `published` = 1 AND `access` IN (".$groups.")");
+					$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `id` = ".(int)$id." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `published` = 1 AND `access` IN (".$groups.")");
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `published` = 1 AND `access` IN (".$groups.")");
+				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__tags')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `published` = 1 AND `access` IN (".$groups.")");
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'career' || $element == 'careers') {
@@ -119,7 +119,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
+				$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
 				$result = $db->loadObjectList();
 			}
 		} elseif ($element == 'vendors') {
@@ -132,7 +132,7 @@ class KinoarhivModelGlobal extends JModelLegacy {
 					$result = $db->loadObject();
 				}
 			} else {
-				$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." AND `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1");
+				$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `state` = 1");
 				$result = $db->loadObjectList();
 			}
 		} else {

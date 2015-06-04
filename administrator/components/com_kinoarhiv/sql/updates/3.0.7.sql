@@ -37,7 +37,10 @@ ALTER TABLE `#__ka_music_albums`
   ADD INDEX `idx_language` (`language`);
 
 ALTER TABLE `#__ka_movies` 
-  ADD COLUMN `buy_urls` TEXT NOT NULL AFTER `urls`;
+  ADD COLUMN `buy_urls` TEXT NOT NULL AFTER `urls`,
+  ADD COLUMN `modified_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `modified`,
+  ADD COLUMN `publish_up` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `modified_by`,
+  ADD COLUMN `publish_down` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `publish_up`;
 
 CREATE TABLE `#__ka_music_rel_composers` (
   `name_id` int(11) NOT NULL DEFAULT '0',

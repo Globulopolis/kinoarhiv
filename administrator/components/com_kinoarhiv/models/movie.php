@@ -102,7 +102,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName(array('m.id','m.asset_id','m.parent_id','m.title','m.alias','m.introtext','m.plot','m.desc','m.known','m.year','m.slogan','m.budget','m.age_restrict','m.ua_rate','m.mpaa','m.length','m.rate_loc','m.rate_sum_loc','m.imdb_votesum','m.imdb_votes','m.imdb_id','m.kp_votesum','m.kp_votes','m.kp_id','m.rate_fc','m.rottentm_id','m.metacritics','m.metacritics_id','m.rate_custom','m.rate_loc_rounded','m.rate_imdb_rounded','m.rate_kp_rounded','m.urls','m.buy_urls','m.attribs','m.created','m.created_by','m.modified','m.state','m.ordering','m.metakey','m.metadesc','m.access','m.metadata','m.language')))->select($db->quoteName('m.alias', 'alias_orig'))
+			$query->select($db->quoteName(array('m.id','m.asset_id','m.parent_id','m.title','m.alias','m.introtext','m.plot','m.desc','m.known','m.year','m.slogan','m.budget','m.age_restrict','m.ua_rate','m.mpaa','m.length','m.rate_loc','m.rate_sum_loc','m.imdb_votesum','m.imdb_votes','m.imdb_id','m.kp_votesum','m.kp_votes','m.kp_id','m.rate_fc','m.rottentm_id','m.metacritics','m.metacritics_id','m.rate_custom','m.rate_loc_rounded','m.rate_imdb_rounded','m.rate_kp_rounded','m.urls','m.buy_urls','m.attribs','m.created','m.created_by','m.modified','m.modified_by','m.publish_up','m.publish_down','m.state','m.ordering','m.metakey','m.metadesc','m.access','m.metadata','m.language')))->select($db->quoteName('m.alias', 'alias_orig'))
 				->from($db->quoteName('#__ka_movies', 'm'))
 				->where($db->quoteName('m.id').' = '.(int)$id[0]);
 
@@ -256,10 +256,12 @@ class KinoarhivModelMovie extends JModelForm {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
+		$date = JFactory::getDate();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 		$data = $data['movie'];
 		$title = trim($data['title']);
+		$data['modified'] = $date->toSql();
 
 		// Check if movie with this title allready exists
 		if (empty($id)) {
@@ -282,9 +284,20 @@ class KinoarhivModelMovie extends JModelForm {
 
 				return false;
 			}
+
+			if (!(int)$data['created']) {
+				$data['created'] = $date->toSql();
+			}
+
+			if (empty($data['created_by'])) {
+				$data['created_by'] = $user->get('id');
+			}
+		} else {
+			$data['modified_by'] = $user->get('id');
 		}
 
-		$created_by = $data['created_by'] == 0 ? $user->id : $data['created_by'];
+		$created_by = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
+		$modified_by = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
 		$metadata = array(
 			'tags' => json_decode('['.$data['tags'].']', true),
 			'robots' => $data['robots']
@@ -302,8 +315,8 @@ class KinoarhivModelMovie extends JModelForm {
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__ka_movies'))
-				->columns($db->quoteName(array('id', 'asset_id', 'parent_id', 'title', 'alias', 'introtext', 'plot', 'desc', 'known', 'year', 'slogan', 'budget', 'age_restrict', 'ua_rate', 'mpaa', 'length', 'rate_loc', 'rate_sum_loc', 'imdb_votesum', 'imdb_votes', 'imdb_id', 'kp_votesum', 'kp_votes', 'kp_id', 'rate_fc', 'rottentm_id', 'metacritics', 'metacritics_id', 'rate_custom', 'rate_loc_rounded', 'rate_imdb_rounded', 'rate_kp_rounded', 'urls', 'buy_urls', 'attribs', 'created', 'created_by', 'modified', 'state', 'ordering', 'metakey', 'metadesc', 'access', 'metadata', 'language')))
-				->values("'', '0', '".(int)$data['parent_id']."', '".$db->escape($title)."', '".$alias."', '', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$db->escape($year)."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".(int)$data['metacritics']."', '".$data['metacritics_id']."', '".$db->escape($data['rate_custom'])."', '".$rate_loc_rounded."', '".$rate_imdb_rounded."', '".$rate_kp_rounded."', '".$db->escape($data['urls'])."', '".$db->escape($data['buy_urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."'");
+				->columns($db->quoteName(array('id','asset_id','parent_id','title','alias','introtext','plot','desc','known','year','slogan','budget','age_restrict','ua_rate','mpaa','length','rate_loc','rate_sum_loc','imdb_votesum','imdb_votes','imdb_id','kp_votesum','kp_votes','kp_id','rate_fc','rottentm_id','metacritics','metacritics_id','rate_custom','rate_loc_rounded','rate_imdb_rounded','rate_kp_rounded','urls','buy_urls','attribs','created','created_by','modified','modified_by','publish_up','publish_down','state','ordering','metakey','metadesc','access','metadata','language')))
+				->values("'', '0', '".(int)$data['parent_id']."', '".$db->escape($title)."', '".$alias."', '', '".$db->escape($data['plot'])."', '".$db->escape($data['desc'])."', '".$db->escape($data['known'])."', '".$db->escape($year)."', '".$db->escape($data['slogan'])."', '".$data['budget']."', '".$data['age_restrict']."', '".$data['ua_rate']."', '".$data['mpaa']."', '".$data['length']."', '".(int)$data['rate_loc']."', '".(int)$data['rate_sum_loc']."', '".$data['imdb_votesum']."', '".(int)$data['imdb_votes']."', '".(int)$data['imdb_id']."', '".$data['kp_votesum']."', '".(int)$data['kp_votes']."', '".(int)$data['kp_id']."', '".(int)$data['rate_fc']."', '".$data['rottentm_id']."', '".(int)$data['metacritics']."', '".$data['metacritics_id']."', '".$db->escape($data['rate_custom'])."', '".$rate_loc_rounded."', '".$rate_imdb_rounded."', '".$rate_kp_rounded."', '".$db->escape($data['urls'])."', '".$db->escape($data['buy_urls'])."', '".$attribs."', '".$data['created']."', '".$created_by."', '".$data['modified']."', '".$modified_by."', '".$data['publish_up']."', '".$data['publish_down']."', '".$data['state']."', '".(int)$data['ordering']."', '".$db->escape($data['metakey'])."', '".$db->escape($data['metadesc'])."', '".(int)$data['access']."', '".json_encode($metadata)."', '".$data['language']."'");
 		} else {
 			$query->update($db->quoteName('#__ka_movies'))
 				->set($db->quoteName('parent_id')." = '".(int)$data['parent_id']."',".$db->quoteName('title')." = '".$db->escape($title)."'")
@@ -324,6 +337,8 @@ class KinoarhivModelMovie extends JModelForm {
 				->set($db->quoteName('buy_urls')." = '".$db->escape($data['buy_urls'])."'")
 				->set($db->quoteName('attribs')." = '".$attribs."',".$db->quoteName('created')." = '".$data['created']."'")
 				->set($db->quoteName('created_by')." = '".$created_by."',".$db->quoteName('modified')." = '".$data['modified']."'")
+				->set($db->quoteName('modified_by')." = '".$modified_by."',".$db->quoteName('publish_up')." = '".$data['publish_up']."'")
+				->set($db->quoteName('publish_down')." = '".$data['publish_down']."'")
 				->set($db->quoteName('state')." = '".$data['state']."',".$db->quoteName('ordering')." = '".(int)$data['ordering']."'")
 				->set($db->quoteName('metakey')." = '".$db->escape($data['metakey'])."',".$db->quoteName('metadesc')." = '".$db->escape($data['metadesc'])."'")
 				->set($db->quoteName('access')." = '".(int)$data['access']."',".$db->quoteName('metadata')." = '".json_encode($metadata)."'")
@@ -546,7 +561,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$names_d = $db->loadObjectList();
 
 			if (count($names_d) > 0) {
-				$intro_directors .= count($names_d == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
+				$intro_directors .= (count($names_d) == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
 				foreach ($names_d as $director) {
 					$n = !empty($director->name) ? $director->name : '';
 					if (!empty($director->name) && !empty($director->latin_name)) {

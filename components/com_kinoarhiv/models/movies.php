@@ -10,6 +10,7 @@
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\String;
 
 class KinoarhivModelMovies extends JModelList {
 	protected $context = null;
@@ -75,63 +76,62 @@ class KinoarhivModelMovies extends JModelList {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$filters = $this->buildFilters($params);
+		$searches = $this->getFiltersData();
+		$where_id = array();
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`metacritics`, `m`.`metacritics_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`attribs`, `m`.`state`, `g`.`filename`, `g`.`dimension`");
-		$query->from($db->quoteName('#__ka_movies').' AS `m`');
-		$query->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'm.id, m.parent_id, m.title, m.alias, '.$db->quoteName('m.introtext', 'text').', m.plot, '.
+				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, '.
+				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, '.
+				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS '.$db->quoteName('created').', m.created_by, '.
+				'CASE WHEN m.modified = '.$db->quote($db->getNullDate()).' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, '.
+				'CASE WHEN m.publish_up = '.$db->quote($db->getNullDate()).' THEN m.created ELSE m.publish_up END AS publish_up, '.
+				'm.publish_down, m.attribs, m.state')
+		);
+		$query->from($db->quoteName('#__ka_movies', 'm'));
 
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g').' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1');
+
+		// Join over favorited
 		if (!$user->get('guest')) {
-			$query->select(' `u`.`favorite`');
-			$query->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
+			$query->select($db->quoteName('u.favorite'));
+			$query->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u').' ON u.uid = '.$user->get('id').' AND u.movie_id = m.id');
 		}
 
-		$query->select(' `user`.`name` AS `username`, `user`.`email` AS `author_email`');
-		$query->leftJoin($db->quoteName('#__users').' AS `user` ON `user`.`id` = `m`.`created_by`');
+		$query->select($db->quoteName('user.name', 'username').', '.$db->quoteName('user.email', 'author_email'));
+		$query->leftJoin($db->quoteName('#__users', 'user').' ON user.id = m.created_by');
 
-		$where = '`m`.`state` = 1 AND `language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
+		$query->where('m.state = 1 AND language IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND parent_id = 0 AND m.access IN ('.$groups.')');
 
 		if ($params->get('use_alphabet') == 1) {
 			$letter = $app->input->get('letter', '', 'string');
 
 			if ($letter != '') {
 				if ($letter == '0-1') {
-					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
+					$query->where('(m.title LIKE "0%" AND m.title LIKE "1%" AND m.title LIKE "2%" AND m.title LIKE "3%" AND m.title LIKE "4%" AND m.title LIKE "5%" AND m.title LIKE "6%" AND m.title LIKE "7%" AND m.title LIKE "8%" AND m.title LIKE "9%")');
 				} else {
 					if (preg_match('#\p{L}#u', $letter, $matches)) { // only any kind of letter from any language.
-						$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+						$query->where('m.title LIKE "'.$db->escape(String::strtoupper($matches[0])).'%"');
 					}
 				}
 			}
 		}
 
-		$query->where($where.$filters);
+		// Define null and now dates
+		$null_date = $db->quote($db->getNullDate());
+		$now_date = $db->quote(JFactory::getDate()->toSql());
 
-		$query->group($db->quoteName('m.id')); // Prevent duplicate records if accidentally have a more than one poster for frontpage.
-
-		$orderCol = $this->state->get('list.ordering', $db->quoteName('m.ordering'));
-		$orderDirn = $this->state->get('list.direction', 'DESC');
-		$query->order($db->escape($orderCol.' '.$orderDirn));
-
-		return $query;
-	}
-
-	/**
-	 * Build WHERE from values from the search inputs
-	 *
-	 * @param   object   $params     Component parameters.
-	 *
-	 * @return   string
-	 *
-	*/
-	protected function buildFilters(&$params) {
-		$where = "";
-
-		$db = $this->getDBO();
-		$where_id = array();
-		$searches = $this->getFiltersData();
+		// Filter by start and end dates.
+		if ((!$user->authorise('core.edit.state', 'com_kinoarhiv.movie')) && (!$user->authorise('core.edit', 'com_content'))) {
+			$query->where('(m.publish_up = ' . $null_date . ' OR m.publish_up <= ' . $now_date . ')')
+				->where('(m.publish_down = ' . $null_date . ' OR m.publish_down >= ' . $now_date . ')');
+		}
 
 		// Filter by title
 		$title = $searches->get('filters.movies.title');
@@ -139,26 +139,27 @@ class KinoarhivModelMovies extends JModelList {
 			if (JString::strlen($title) < $params->get('search_movies_length_min') || JString::strlen($title) > $params->get('search_movies_length_max')) {
 				echo GlobalHelper::showMsg(JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')), array('icon'=>'alert'), true);
 			} else {
-				$where .= " AND `m`.`title` LIKE '".$db->escape($title)."%'";
+				$query->where("m.title LIKE '".$db->escape($title)."%'");
 			}
 		}
 
 		// Filter by year
 		$year = $searches->get('filters.movies.year');
 		if ($params->get('search_movies_year') == 1 && !empty($year)) {
-			$where .= " AND `m`.`year` LIKE '".$db->escape($year)."%'";
+			$query->where("m.year LIKE '".$db->escape($year)."%'");
 		} else {
 			// Filter by years range
 			$from_year = $searches->get('filters.movies.from_year');
 			$to_year = $searches->get('filters.movies.to_year');
+
 			if ($params->get('search_movies_year_range') == 1) {
 				if (!empty($from_year) && !empty($to_year)) {
-					$where .= " AND `m`.`year` BETWEEN '".$db->escape($from_year)."' AND '".$db->escape($to_year)."'";
+					$query->where("m.year BETWEEN '".$db->escape($from_year)."' AND '".$db->escape($to_year)."'");
 				} else {
 					if (!empty($from_year)) {
-						$where .= " AND `m`.`year` REGEXP '^".$db->escape($from_year)."'";
+						$query->where("m.year REGEXP '^".$db->escape($from_year)."'");
 					} elseif (!empty($to_year)) {
-						$where .= " AND `m`.`year` REGEXP '".$db->escape($to_year)."$'";
+						$query->where("m.year REGEXP '".$db->escape($to_year)."$'");
 					}
 				}
 			}
@@ -167,7 +168,12 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by country
 		$country = $searches->get('filters.movies.country');
 		if ($params->get('search_movies_country') == 1 && !empty($country)) {
-			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `country_id` = ".(int)$country);
+			$subquery_cn = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_countries'))
+				->where('country_id = '.(int)$country);
+
+			$db->setQuery($subquery_cn);
 			$movie_ids = $db->loadColumn();
 
 			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
@@ -176,7 +182,12 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by person name
 		$cast = $searches->get('filters.movies.cast');
 		if ($params->get('search_movies_cast') == 1 && !empty($cast)) {
-			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `name_id` = ".(int)$cast);
+			$subquery_cast = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_names'))
+				->where('name_id = '.(int)$cast);
+
+			$db->setQuery($subquery_cast);
 			$movie_ids = $db->loadColumn();
 
 			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
@@ -185,7 +196,13 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by vendor
 		$vendor = $searches->get('filters.movies.vendor');
 		if ($params->get('search_movies_vendor') == 1 && !empty($vendor)) {
-			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_releases')." WHERE `vendor_id` = ".(int)$vendor." GROUP BY `movie_id`");
+			$subquery_vnd = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_releases'))
+				->where('vendor_id = '.(int)$vendor)
+				->group('movie_id');
+
+			$db->setQuery($subquery_vnd);
 			$movie_ids = $db->loadColumn();
 
 			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
@@ -194,7 +211,13 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by genres
 		$genres = $searches->get('filters.movies.genre');
 		if ($params->get('search_movies_genre') == 1 && !empty($genres)) {
-			$db->setQuery("SELECT `movie_id` FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `genre_id` IN (".implode(',', $genres).") GROUP BY `movie_id`");
+			$subquery_genre = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_genres'))
+				->where('genre_id IN ('.implode(',', $genres).')')
+				->group('movie_id');
+
+			$db->setQuery($subquery_genre);
 			$movie_ids = $db->loadColumn();
 
 			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
@@ -203,19 +226,19 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by MPAA
 		$mpaa = $searches->get('filters.movies.mpaa');
 		if ($params->get('search_movies_mpaa') == 1 && !empty($mpaa)) {
-			$where .= " AND `m`.`mpaa` = '".$db->escape($mpaa)."'";
+			$query->where("m.mpaa = '".$db->escape($mpaa)."'");
 		}
 
 		// Filter by age
 		$age_restrict = $searches->get('filters.movies.age_restrict');
 		if ($params->get('search_movies_age_restrict') == 1 && (!empty($age_restrict) && $age_restrict != '-1')) {
-			$where .= " AND `m`.`age_restrict` = '".$db->escape($age_restrict)."'";
+			$query->where("m.age_restrict = '".$db->escape($age_restrict)."'");
 		}
 
 		// Filter by UA rating
 		$ua_rate = $searches->get('filters.movies.ua_rate');
 		if ($params->get('search_movies_ua_rate') == 1 && (!empty($ua_rate) && $ua_rate != '-1')) {
-			$where .= " AND `m`.`ua_rate` = '".$db->escape($ua_rate)."'";
+			$query->where("m.ua_rate = '".$db->escape($ua_rate)."'");
 		}
 
 		// Filter by site rating
@@ -223,7 +246,7 @@ class KinoarhivModelMovies extends JModelList {
 		if ($params->get('search_movies_rate') == 1 && $rate === 1) {
 			$rate_min = $searches->def('filters.movies.rate.min', 0);
 			$rate_max = $searches->def('filters.movies.rate.max', 10);
-			$where .= " AND `m`.`rate_loc_rounded` BETWEEN ".(int)$rate_min." AND ".(int)$rate_max;
+			$query->where("m.rate_loc_rounded BETWEEN ".(int)$rate_min." AND ".(int)$rate_max);
 		}
 
 		// Filter by imdb rating
@@ -231,7 +254,7 @@ class KinoarhivModelMovies extends JModelList {
 		if ($params->get('search_movies_imdbrate') == 1 && $imdbrate === 1) {
 			$imdbrate_min = $searches->def('filters.movies.imdbrate.min', 6);
 			$imdbrate_max = $searches->def('filters.movies.imdbrate.max', 10);
-			$where .= " AND `m`.`rate_imdb_rounded` BETWEEN ".(int)$imdbrate_min." AND ".(int)$imdbrate_max;
+			$query->where("m.rate_imdb_rounded BETWEEN ".(int)$imdbrate_min." AND ".(int)$imdbrate_max);
 		}
 
 		// Filter by kinopoisk rating
@@ -239,7 +262,7 @@ class KinoarhivModelMovies extends JModelList {
 		if ($params->get('search_movies_kprate') == 1 && $kprate === 1) {
 			$kprate_min = $searches->def('filters.movies.kprate.min', 6);
 			$kprate_max = $searches->def('filters.movies.kprate.max', 10);
-			$where .= " AND `m`.`rate_kp_rounded` BETWEEN ".(int)$kprate_min." AND ".(int)$kprate_max;
+			$query->where("m.rate_kp_rounded BETWEEN ".(int)$kprate_min." AND ".(int)$kprate_max);
 		}
 
 		// Filter by rotten tomatoes rating
@@ -247,7 +270,7 @@ class KinoarhivModelMovies extends JModelList {
 		if ($params->get('search_movies_rtrate') == 1 && $rtrate === 1) {
 			$rtrate_min = $searches->def('filters.movies.rtrate.min', 0);
 			$rtrate_max = $searches->def('filters.movies.rtrate.max', 100);
-			$where .= " AND `m`.`rate_fc` BETWEEN ".(int)$rtrate_min." AND ".(int)$rtrate_max;
+			$query->where("m.rate_fc BETWEEN ".(int)$rtrate_min." AND ".(int)$rtrate_max);
 		}
 
 		// Filter by metacritic rating
@@ -255,7 +278,7 @@ class KinoarhivModelMovies extends JModelList {
 		if ($params->get('search_movies_metacritic') == 1 && $metacritic === 1) {
 			$metacritic_min = $searches->def('filters.movies.metacritic.min', 0);
 			$metacritic_max = $searches->def('filters.movies.metacritic.max', 100);
-			$where .= " AND `m`.`metacritics` BETWEEN ".(int)$metacritic_min." AND ".(int)$metacritic_max;
+			$query->where("m.metacritics BETWEEN ".(int)$metacritic_min." AND ".(int)$metacritic_max);
 		}
 
 		// Filter by budget
@@ -263,12 +286,12 @@ class KinoarhivModelMovies extends JModelList {
 		$to_budget = $searches->get('filters.movies.to_budget');
 		if ($params->get('search_movies_budget') == 1) {
 			if (!empty($from_budget) && !empty($to_budget)) {
-				$where .= " AND `m`.`budget` BETWEEN '".$db->escape($from_budget)."' AND '".$db->escape($to_budget)."'";
+				$query->where("m.budget BETWEEN '".$db->escape($from_budget)."' AND '".$db->escape($to_budget)."'");
 			} else {
 				if (!empty($from_budget)) {
-					$where .= " AND `m`.`budget` = '".$db->escape($from_budget)."'";
+					$query->where("m.budget = '".$db->escape($from_budget)."'");
 				} elseif (!empty($to_budget)) {
-					$where .= " AND `m`.`budget` = '".$db->escape($to_budget)."'";
+					$query->where("m.budget = '".$db->escape($to_budget)."'");
 				}
 			}
 		}
@@ -276,18 +299,25 @@ class KinoarhivModelMovies extends JModelList {
 		// Filter by tags
 		$tags = $searches->get('filters.movies.tags');
 		if ($params->get('search_movies_tags') == 1 && !empty($tags)) {
-			$db->setQuery("SELECT `content_item_id` FROM ".$db->quoteName('#__contentitem_tag_map')
-				. "\n WHERE `type_alias` = 'com_kinoarhiv.movie' AND `tag_id` IN (".$tags.")");
+			$subquery_tags = $db->getQuery(true)
+				->select('content_item_id')
+				->from($db->quoteName('#__contentitem_tag_map'))
+				->where("type_alias = 'com_kinoarhiv.movie' AND tag_id IN (".$tags.")");
+
+			$db->setQuery($subquery_tags);
 			$movie_ids = $db->loadColumn();
 
 			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
 		}
 
 		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres) || !empty($tags) && !empty($where_id)) {
-			$where .= " AND `m`.`id` IN (".implode(',', ArrayHelper::arrayUnique($where_id)).")";
+			$query->where('m.id IN ('.implode(',', ArrayHelper::arrayUnique($where_id)).')');
 		}
 
-		return $where;
+		$query->group($db->quoteName('m.id')); // Prevent duplicate records if accidentally have a more than one poster for frontpage.
+		$query->order($this->getState('list.ordering', 'm.ordering') . ' ' . $this->getState('list.direction', 'ASC'));
+
+		return $query;
 	}
 
 	/**
@@ -385,23 +415,36 @@ class KinoarhivModelMovies extends JModelList {
 		$text = '';
 
 		if (empty($movie_ids)) {
-			$db->setQuery("SELECT `favorite` FROM `#__ka_user_marked_movies` WHERE `uid` = ".(int)$user->get('id')." AND `movie_id` = ".(int)$movie_id);
-			$query = $db->loadResult();
+			$query = $db->getQuery(true)
+				->select('favorite')
+				->from($db->quoteName('#__ka_user_marked_movies'))
+				->where('uid = '.(int)$user->get('id').' AND movie_id = '.(int)$movie_id);
+
+			$db->setQuery($query);
+			$result = $db->loadResult();
 		}
 
 		if ($action == 'add') {
-			if ($query == 1) {
+			if ($result == 1) {
 				$message = JText::_('COM_KA_FAVORITE_ERROR');
 			} else {
-				if (is_null($query)) {
-					$db->setQuery("INSERT INTO `#__ka_user_marked_movies` (`uid`, `movie_id`, `favorite`, `watched`) VALUES ('".$user->get('id')."', '".(int)$movie_id."', '1', '0')");
-				} elseif ($query == 0) {
-					$db->setQuery("UPDATE `#__ka_user_marked_movies` SET `favorite` = '1' WHERE `uid` = ".$user->get('id')." AND `movie_id` = ".(int)$movie_id);
+				if (is_null($result)) {
+					$query = $db->getQuery(true)
+						->insert($db->quoteName('#__ka_user_marked_movies'))
+						->columns($db->quoteName(array('uid', 'movie_id', 'favorite', 'watched')))
+						->values("'".$user->get('id')."', '".(int)$movie_id."', '1', '0')");
+
+					$db->setQuery($query);
+				} elseif ($result == 0) {
+					$query = $db->getQuery(true)
+						->update($db->quoteName('#__ka_user_marked_movies'))
+						->set("favorite = '1'")
+						->where('uid = '.$user->get('id').' AND movie_id = '.(int)$movie_id);
+
+					$db->setQuery($query);
 				}
 
-				$r = $db->execute();
-
-				if ($r) {
+				if ($db->execute()) {
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_ADDED');
 					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=delete&Itemid='.$itemid.'&id='.$movie_id, false);
@@ -411,11 +454,15 @@ class KinoarhivModelMovies extends JModelList {
 				}
 			}
 		} elseif ($action == 'delete') {
-			if ($query == 1) {
-				$db->setQuery("UPDATE `#__ka_user_marked_movies` SET `favorite` = '0' WHERE `uid` = ".$user->get('id')." AND `movie_id` = ".(int)$movie_id);
-				$r = $db->execute();
+			if ($result == 1) {
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__ka_user_marked_movies'))
+					->set("favorite = '0'")
+					->where('uid = '.$user->get('id').' AND movie_id = '.(int)$movie_id);
 
-				if ($r) {
+				$db->setQuery($query);
+
+				if ($db->execute()) {
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_REMOVED');
 					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid='.$itemid.'&id='.$movie_id, false);
@@ -425,22 +472,27 @@ class KinoarhivModelMovies extends JModelList {
 				}
 			} else {
 				if (!empty($movie_ids)) {
-					$query = true;
+					$query_result = true;
 					$db->setDebug(true);
 					$db->lockTable('#__ka_user_marked_movies');
 					$db->transactionStart();
 
 					foreach ($movie_ids as $id) {
-						$db->setQuery("UPDATE `#__ka_user_marked_movies` SET `favorite` = '0' WHERE `uid` = ".$user->get('id')." AND `movie_id` = ".(int)$id.";");
-						$result = $db->execute();
+						$query = $db->getQuery(true);
 
-						if ($result === false) {
-							$query = false;
+						$query->update($db->quoteName('#__ka_user_marked_movies'))
+							->set("favorite = '0'")
+							->where('uid = '.$user->get('id').' AND movie_id = '.(int)$id);
+
+						$db->setQuery($query.';');
+
+						if ($db->execute() === false) {
+							$query_result = false;
 							break;
 						}
 					}
 
-					if ($query === true) {
+					if ($query_result === true) {
 						$db->transactionCommit();
 
 						$success = true;
@@ -484,23 +536,36 @@ class KinoarhivModelMovies extends JModelList {
 		$text = '';
 
 		if (empty($movie_ids)) {
-			$db->setQuery("SELECT `watched` FROM `#__ka_user_marked_movies` WHERE `uid` = ".(int)$user->get('id')." AND `movie_id` = ".(int)$movie_id);
-			$query = $db->loadResult();
+			$query = $db->getQuery(true)
+				->select('watched')
+				->from($db->quoteName('#__ka_user_marked_movies'))
+				->where('uid = '.(int)$user->get('id').' AND movie_id = '.(int)$movie_id);
+
+			$db->setQuery($query);
+			$result = $db->loadResult();
 		}
 
 		if ($action == 'add') {
-			if ($query == 1) {
+			if ($result == 1) {
 				$message = JText::_('COM_KA_WATCHED_ERROR');
 			} else {
-				if (is_null($query)) {
-					$db->setQuery("INSERT INTO `#__ka_user_marked_movies` (`uid`, `movie_id`, `favorite`, `watched`) VALUES ('".$user->get('id')."', '".(int)$movie_id."', '0', '1')");
-				} elseif ($query == 0) {
-					$db->setQuery("UPDATE `#__ka_user_marked_movies` SET `watched` = '1' WHERE `uid` = ".$user->get('id')." AND `movie_id` = ".(int)$movie_id);
+				if (is_null($result)) {
+					$query = $db->getQuery(true)
+						->insert($db->quoteName('#__ka_user_marked_movies'))
+						->columns($db->quoteName(array('uid', 'movie_id', 'favorite', 'watched')))
+						->values("'".$user->get('id')."', '".(int)$movie_id."', '0', '1')");
+
+					$db->setQuery($query);
+				} elseif ($result == 0) {
+					$query = $db->getQuery(true)
+						->update($db->quoteName('#__ka_user_marked_movies'))
+						->set("watched = '1'")
+						->where('uid = '.$user->get('id').' AND movie_id = '.(int)$movie_id);
+
+					$db->setQuery($query);
 				}
 
-				$r = $db->execute();
-
-				if ($r) {
+				if ($db->execute()) {
 					$success = true;
 					$message = JText::_('COM_KA_WATCHED_ADDED');
 					$url = JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=delete&Itemid='.$itemid.'&id='.$movie_id, false);
@@ -510,11 +575,15 @@ class KinoarhivModelMovies extends JModelList {
 				}
 			}
 		} elseif ($action == 'delete') {
-			if ($query == 1) {
-				$db->setQuery("UPDATE `#__ka_user_marked_movies` SET `watched` = '0' WHERE `uid` = ".$user->get('id')." AND `movie_id` = ".(int)$movie_id);
-				$r = $db->execute();
+			if ($result == 1) {
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__ka_user_marked_movies'))
+					->set("watched = '0'")
+					->where('uid = '.$user->get('id').' AND movie_id = '.(int)$movie_id);
 
-				if ($r) {
+				$db->setQuery($query);
+
+				if ($db->execute()) {
 					$success = true;
 					$message = JText::_('COM_KA_WATCHED_REMOVED');
 					$url = JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=add&Itemid='.$itemid.'&id='.$movie_id, false);
@@ -524,22 +593,27 @@ class KinoarhivModelMovies extends JModelList {
 				}
 			} else {
 				if (!empty($movie_ids)) {
-					$query = true;
+					$query_result = true;
 					$db->setDebug(true);
 					$db->lockTable('#__ka_user_marked_movies');
 					$db->transactionStart();
 
 					foreach ($movie_ids as $id) {
-						$db->setQuery("UPDATE `#__ka_user_marked_movies` SET `watched` = '0' WHERE `uid` = ".$user->get('id')." AND `movie_id` = ".(int)$id.";");
-						$r = $db->execute();
+						$query = $db->getQuery(true);
 
-						if ($r === false) {
-							$query = false;
+						$query->update($db->quoteName('#__ka_user_marked_movies'))
+							->set("watched = '0'")
+							->where('uid = '.$user->get('id').' AND movie_id = '.(int)$id);
+
+						$db->setQuery($query.';');
+
+						if ($db->execute() === false) {
+							$query_result = false;
 							break;
 						}
 					}
 
-					if ($query === true) {
+					if ($query_result === true) {
 						$db->transactionCommit();
 
 						$success = true;

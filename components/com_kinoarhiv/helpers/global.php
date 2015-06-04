@@ -10,6 +10,9 @@
 
 use Joomla\Utilities\ArrayHelper;
 
+/**
+ * Class GlobalHelper
+ */
 class GlobalHelper {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
@@ -120,7 +123,7 @@ class GlobalHelper {
 	 * @param   string  $player   Player type.
 	 * @param   string  $key      License key.
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	*/
 	static function loadPlayerAssets($player, $key='') {
@@ -200,6 +203,8 @@ class GlobalHelper {
 
 			echo $html;
 		}
+
+		return true;
 	}
 
 	/**
@@ -218,10 +223,13 @@ class GlobalHelper {
 	 *
 	 * @param   string   $message   Text to log.
 	 * @param   mixed    $silent    Throw exception error or not. True - throw, false - not, 'ui' - show message.
+	 *
+	 * @throws  Exception
 	*/
 	static function eventLog($message, $silent = true) {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$uri = JURI::getInstance();
+		$user = JFactory::getUser();
 
 		$message = $message."\t".$uri->current().'?'.$uri->getQuery();
 
@@ -243,6 +251,10 @@ class GlobalHelper {
 			if (!$silent || is_string($silent)) {
 				if ($silent == 'ui') {
 					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), array('icon'=>'alert', 'type'=>'error'));
+
+					if ($user->get('isRoot')) {
+						echo '<pre>'.$message.'</pre>';
+					}
 				} else {
 					throw new Exception($message, 500);
 				}
@@ -262,6 +274,10 @@ class GlobalHelper {
 			if (!$silent || is_string($silent)) {
 				if ($silent == 'ui') {
 					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), array('icon'=>'alert', 'type'=>'error'));
+
+					if ($user->get('isRoot')) {
+						echo '<pre>'.$message.'</pre>';
+					}
 				} else {
 					throw new Exception($message, 500);
 				}

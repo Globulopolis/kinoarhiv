@@ -1,4 +1,7 @@
 ## HEAD (Unreleased)
+* Fixed bug with tags in advanced search.
+* Fixed bugs in global model.
+* Fixed problem with date/time picker, when user cannot change value because input was overlapped in some situations.
 * Change JRegistry into Registry in some classes.
 * Remove unused variables.
 * Improve display title on some views for some materials.

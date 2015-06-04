@@ -161,20 +161,28 @@ JHtml::_('behavior.keepalive');
 							<div class="span6">
 								<fieldset class="form-horizontal">
 									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('publish_up', $this->form_edit_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('publish_up', $this->form_edit_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('publish_down', $this->form_edit_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('publish_down', $this->form_edit_group); ?></div>
+									</div>
+									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('created', $this->form_edit_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('created', $this->form_edit_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('created_by', $this->form_edit_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('created_by', $this->form_edit_group); ?></div>
 									</div>
 									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('modified', $this->form_edit_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('modified', $this->form_edit_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('created_by', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('created_by', $this->form_edit_group); ?></div>
+										<div class="control-label"><?php echo $this->form->getLabel('modified_by', $this->form_edit_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('modified_by', $this->form_edit_group); ?></div>
 									</div>
 									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('link_titles', $this->form_attribs_group); ?></div>
@@ -225,12 +233,12 @@ JHtml::_('behavior.keepalive');
 										<div class="controls"><?php echo $this->form->getInput('language', $this->form_edit_group); ?></div>
 									</div>
 									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('access', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_edit_group); ?></div>
 										<div class="controls"><?php echo $this->form->getInput('state', $this->form_edit_group); ?></div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_edit_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('access', $this->form_edit_group); ?></div>
 									</div>
 									<div class="control-group">
 										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
@@ -241,6 +249,10 @@ JHtml::_('behavior.keepalive');
 											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php endif; ?>
 										</div>
+									</div>
+									<div class="control-group">
+										<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_edit_group); ?></div>
+										<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_edit_group); ?></div>
 									</div>
 									<div class="control-group">
 										<div class="control-label"><?php echo $this->form->getLabel('tab_movie_wallpp', $this->form_attribs_group); ?></div>

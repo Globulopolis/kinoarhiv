@@ -101,28 +101,34 @@ jQuery(document).ready(function($){
 	});
 
 	$('.hasDatetime').each(function(i, el){
+		if ($(el).attr('readonly')) {
+			return;
+		}
+
 		if ($(el).val() === 'NOW') {
 			$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
 		}
 
 		if ($(el).data('type') == 'time') {
 			$(el).timepicker({
-				timeFormat: $(el).data('time-format')
+				timeFormat: $(el).data('time-format'),
+				showOn: 'button'
 			});
 		} else if ($(el).data('type') == 'date') {
 			$(el).datepicker({
 				dateFormat: $(el).data('date-format'),
-				showButtonPanel: true
+				showButtonPanel: true,
+				showOn: 'button'
 			});
 		} else if ($(el).data('type') == 'datetime') {
 			$(el).datetimepicker({
 				dateFormat: $(el).data('date-format'),
 				timeFormat: $(el).data('time-format'),
-				showButtonPanel: true
+				showButtonPanel: true,
+				showOn: 'button'
 			});
 		}
-	}).next('.cmd-datetime').click(function(e){
-		e.preventDefault();
-		$(this).prev('input').trigger('focus');
+
+		$(el).next('.ui-datepicker-trigger').addClass('btn btn-default').html('<i class="icon-calendar"></i>');
 	});
 });

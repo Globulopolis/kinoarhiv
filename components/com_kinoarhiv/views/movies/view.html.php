@@ -11,6 +11,7 @@
 class KinoarhivViewMovies extends JViewLegacy {
 	protected $items = null;
 	protected $pagination = null;
+	protected $params;
 
 	public function display($tpl = null) {
 		$user = JFactory::getUser();

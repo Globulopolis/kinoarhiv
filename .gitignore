@@ -380,8 +380,8 @@
 /administrator/language/ru-RU/ru-RU.plg_content_gravatar.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_installer_webinstaller.ini
 /administrator/language/ru-RU/ru-RU.plg_installer_webinstaller.sys.ini
-/administrator/language/ru-RU/ru-RU.plg_content_contact.ini
 /administrator/language/ru-RU/ru-RU.plg_content_contact.sys.ini
+/administrator/language/ru-RU/ru-RU.plg_content_contact.ini
 /administrator/language/ru-RU/ru-RU.plg_content_geshi.ini
 /administrator/language/ru-RU/ru-RU.plg_content_geshi.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_content_joomla.ini
@@ -617,10 +617,12 @@
 /language/ru-RU/ru-RU.com_wrapper.ini
 /language/ru-RU/ru-RU.files_joomla.sys.ini
 /language/ru-RU/ru-RU.finder_cli.ini
+/language/ru-RU/ru-RU.lib_fof.sys.ini
 /language/ru-RU/ru-RU.lib_idna_convert.sys.ini
 /language/ru-RU/ru-RU.ini
 /language/ru-RU/ru-RU.lib_joomla.ini
 /language/ru-RU/ru-RU.lib_joomla.sys.ini
+/language/ru-RU/ru-RU.lib_phpass.sys.ini
 /language/ru-RU/ru-RU.lib_phpmailer.sys.ini
 /language/ru-RU/ru-RU.lib_phputf8.sys.ini
 /language/ru-RU/ru-RU.lib_simplepie.sys.ini
@@ -699,7 +701,6 @@ htaccess.txt
 web.config.txt
 robots.txt
 README.txt
-README.md
 README.md
 CONTRIBUTING.md
 *jcomments*

@@ -127,6 +127,10 @@ div.clear {
 	width: 78%;
 }
 
+span.cn-list, span.gn-list, span.dc-list, span.cast-list {
+	display: block;
+}
+
 .content .links {
 	clear: both;
 }

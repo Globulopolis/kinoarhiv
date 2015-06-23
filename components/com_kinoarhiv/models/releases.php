@@ -8,6 +8,8 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\String\String;
+
 class KinoarhivModelReleases extends JModelList {
 	protected $context = null;
 
@@ -56,76 +58,86 @@ class KinoarhivModelReleases extends JModelList {
 		$vendor = $app->input->get('vendor', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
 		$mediatype = $app->input->get('mediatype', '', 'string');
+		$null_date = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rottentm_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`attribs`, `m`.`state`, `g`.`filename`, `g`.`dimension`")
-			->from($db->quoteName('#__ka_movies').' AS `m`')
-			->leftJoin($db->quoteName('#__ka_movies_gallery').' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'm.id, m.parent_id, m.title, m.alias, '.$db->quoteName('m.introtext', 'text').', m.plot, '.
+				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, '.
+				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, '.
+				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS '.$db->quoteName('created').', m.created_by, '.
+				'CASE WHEN m.modified = '.$null_date.' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, '.
+				'CASE WHEN m.publish_up = '.$null_date.' THEN m.created ELSE m.publish_up END AS publish_up, '.
+				'm.publish_down, m.attribs, m.state'
+			)
+		);
+		$query->from($db->quoteName('#__ka_movies', 'm'));
 
-			if ($country != '') {
-				$query->select(' `r`.`release_date`, `r`.`vendor_id`')
-				->leftJoin($db->quoteName('#__ka_releases').' AS `r` ON `r`.`movie_id` = `m`.`id` AND `r`.`country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').'))');
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g').' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1');
 
-				$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
-				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id` AND `v`.`state` = 1');
-			} else {
-				$query->select(' `r`.`release_date`, `r`.`vendor_id`')
-				->leftJoin($db->quoteName('#__ka_releases').' AS `r` ON `r`.`movie_id` = `m`.`id` AND `r`.`country_id` != 0');
+		if ($country != '') {
+			$query->select('r.release_date, r.vendor_id')
+				->join('LEFT', $db->quoteName('#__ka_releases', 'r').' ON r.movie_id = m.id AND r.country_id = (SELECT id FROM '.$db->quoteName('#__ka_countries').' WHERE code = "'.$db->escape($country).'" AND language IN ('.$db->quote($lang->getTag()).','.$db->quote('*').'))');
 
-				$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
-				->leftJoin($db->quoteName('#__ka_vendors').' AS `v` ON `v`.`id` = `r`.`vendor_id` AND `v`.`state` = 1 AND `v`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
-			}
+			$query->select('v.company_name, v.company_name_intl, v.company_name_alias')
+				->join('LEFT', $db->quoteName('#__ka_vendors', 'v').' ON v.id = r.vendor_id AND v.state = 1');
+		} else {
+			$query->select('r.release_date, r.vendor_id')
+				->join('LEFT', $db->quoteName('#__ka_releases', 'r').' ON r.movie_id = m.id AND r.country_id != 0');
 
-		if (!$user->get('guest')) {
-			$query->select(' `u`.`favorite`')
-				->leftJoin($db->quoteName('#__ka_user_marked_movies').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`movie_id` = `m`.`id`');
+			$query->select('v.company_name, v.company_name_intl, v.company_name_alias')
+				->join('LEFT', $db->quoteName('#__ka_vendors', 'v').' ON v.id = r.vendor_id AND v.state = 1 AND v.language IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
 		}
 
-		$where = '`m`.`state` = 1 AND `m`.`language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND `parent_id` = 0 AND `m`.`access` IN ('.$groups.')';
+		if (!$user->get('guest')) {
+			$query->select('u.favorite')
+				->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u').' ON u.uid = '.$user->get('id').' AND u.movie_id = m.id');
+		}
+
+		$query->where('m.state = 1 AND m.language IN ('.$db->quote($lang->getTag()).','.$db->quote('*').') AND parent_id = 0 AND m.access IN ('.$groups.')');
 
 		if ($params->get('use_alphabet') == 1) {
 			$letter = $app->input->get('letter', '', 'string');
 
 			if ($letter != '') {
 				if ($letter == '0-1') {
-					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
+					$query->where('(m.title LIKE "0%" AND m.title LIKE "1%" AND m.title LIKE "2%" AND m.title LIKE "3%" AND m.title LIKE "4%" AND m.title LIKE "5%" AND m.title LIKE "6%" AND m.title LIKE "7%" AND m.title LIKE "8%" AND m.title LIKE "9%")');
 				} else {
 					if (preg_match('#\p{L}#u', $letter, $matches)) { // only any kind of letter from any language.
-						$where .= ' AND `m`.`title` LIKE "'.$db->escape(JString::strtoupper($matches[0])).'%"';
+						$query->where('m.title LIKE "'.$db->escape(String::strtoupper($matches[0])).'%"');
 					}
 				}
 			}
 		}
 
 		if ($params->get('filter_release_country') == 1 && $country != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `country_id` = (SELECT `id` FROM '.$db->quoteName('#__ka_countries').' WHERE `code` = "'.$db->escape($country).'" AND `language` IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))';
+			$query->where('m.id IN (SELECT movie_id FROM '.$db->quoteName('#__ka_releases').' WHERE country_id = (SELECT id FROM '.$db->quoteName('#__ka_countries').' WHERE code = "'.$db->escape($country).'" AND language IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')))');
 		}
 
 		if ($params->get('filter_release_year') == 1 && !empty($year)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `release_date` LIKE "%'.$year.'%")';
+			$query->where('m.id IN (SELECT movie_id FROM '.$db->quoteName('#__ka_releases').' WHERE release_date LIKE "%'.$year.'%")');
 		}
 
 		if ($params->get('filter_release_month') == 1 && $month != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `release_date` LIKE "%'.$month.'%")';
+			$query->where('m.id IN (SELECT movie_id FROM '.$db->quoteName('#__ka_releases').' WHERE release_date LIKE "%'.$month.'%")');
 		}
 
 		if ($params->get('filter_release_vendor') == 1 && !empty($vendor)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_releases').' WHERE `vendor_id` = "'.(int)$vendor.'")';
+			$query->where('m.id IN (SELECT movie_id FROM '.$db->quoteName('#__ka_releases').' WHERE vendor_id = "'.(int)$vendor.'")');
 		}
 
 		if ($params->get('filter_release_mediatype') == 1 && $mediatype != '') {
-			$where .= ' AND `r`.`media_type` = '.(int)$mediatype;
+			$query->where('r.media_type = '.(int)$mediatype);
 		}
 
-		$where .= " AND `r`.`release_date` != '".$db->nullDate()."'";
-
-		$query->where($where);
-		$query->group($db->quoteName('m.id'));
-
-		$orderCol = $this->state->get('list.ordering', $db->quoteName('r.release_date'));
-		$orderDirn = $this->state->get('list.direction', 'DESC');
-		$query->order($db->escape($orderCol.' '.$orderDirn));
+		$query->where('r.release_date != '.$null_date)
+			->group($db->quoteName('m.id'))
+			->order($this->getState('list.ordering', 'r.release_date') . ' ' . $this->getState('list.direction', 'DESC'));
 
 		return $query;
 	}

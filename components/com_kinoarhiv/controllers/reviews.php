@@ -16,6 +16,8 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		if (JSession::checkToken() === false) {
 			GlobalHelper::eventLog(JText::_('JINVALID_TOKEN'));
 			$this->setRedirect($redir_url);
+
+			return false;
 		}
 
 		$user = JFactory::getUser();
@@ -23,6 +25,8 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		if ($user->guest) {
 			GlobalHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
 			$this->setRedirect($redir_url);
+
+			return false;
 		}
 
 		$app = JFactory::getApplication();
@@ -40,7 +44,10 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		$validData = $model->validate($form, $data);
 
 		if ($validData === false) {
-			$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), $data);
+			if (!$user->guest) {
+				$app->setUserState('com_kinoarhiv.reviews.'.$id.'_user_'.$user->get('id').'edit', $data);
+			}
+
 			$errors = $model->getErrors();
 
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
@@ -59,17 +66,25 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		$result = $model->save($validData);
 
 		if (!$result) {
+			if (!$user->guest) {
+				$app->setUserState('com_kinoarhiv.reviews.'.$id.'_user_'.$user->get('id').'edit', $data);
+			}
+
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 			$this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect($redir_url);
+			//$this->setRedirect($redir_url);
 
 			return false;
 		}
 
 		// Clear stored data in session and redirect
-		$app->setUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'), null);
-		$this->setRedirect($redir_url);
+		if (!$user->guest) {
+			$app->setUserState('com_kinoarhiv.reviews.'.$id.'_user_'.$user->get('id').'edit', null);
+		}
+		//$this->setRedirect($redir_url);
+
+		return true;
 	}
 
 	public function delete() {
@@ -93,5 +108,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 		} else {
 			$this->setRedirect($redir_url);
 		}
+
+		return true;
 	}
 }

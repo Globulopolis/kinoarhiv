@@ -78,6 +78,9 @@ class KinoarhivModelMovies extends JModelList {
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$searches = $this->getFiltersData();
 		$where_id = array();
+		// Define null and now dates
+		$null_date = $db->quote($db->getNullDate());
+		$now_date = $db->quote(JFactory::getDate()->toSql());
 
 		$query = $db->getQuery(true);
 
@@ -88,9 +91,10 @@ class KinoarhivModelMovies extends JModelList {
 				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, '.
 				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, '.
 				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS '.$db->quoteName('created').', m.created_by, '.
-				'CASE WHEN m.modified = '.$db->quote($db->getNullDate()).' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, '.
-				'CASE WHEN m.publish_up = '.$db->quote($db->getNullDate()).' THEN m.created ELSE m.publish_up END AS publish_up, '.
-				'm.publish_down, m.attribs, m.state')
+				'CASE WHEN m.modified = '.$null_date.' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, '.
+				'CASE WHEN m.publish_up = '.$null_date.' THEN m.created ELSE m.publish_up END AS publish_up, '.
+				'm.publish_down, m.attribs, m.state'
+			)
 		);
 		$query->from($db->quoteName('#__ka_movies', 'm'));
 
@@ -122,10 +126,6 @@ class KinoarhivModelMovies extends JModelList {
 				}
 			}
 		}
-
-		// Define null and now dates
-		$null_date = $db->quote($db->getNullDate());
-		$now_date = $db->quote(JFactory::getDate()->toSql());
 
 		// Filter by start and end dates.
 		if ((!$user->authorise('core.edit.state', 'com_kinoarhiv.movie')) && (!$user->authorise('core.edit', 'com_content'))) {

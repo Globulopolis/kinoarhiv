@@ -445,7 +445,7 @@ class KinoarhivModelMovie extends JModelForm {
 				$intro_countries .= '[cn='.$cn->code.']'.$cn->name.'[/cn], ';
 			}
 
-			$intro_countries = '[country ln='.$ln_str.']: '.JString::substr($intro_countries, 0, -2).'[/country]<br />';
+			$intro_countries = '<span class="cn-list">[country ln='.$ln_str.']: '.JString::substr($intro_countries, 0, -2).'[/country]</span>';
 
 			$countries_new_arr = explode(',', $data['countries']);
 
@@ -502,7 +502,7 @@ class KinoarhivModelMovie extends JModelForm {
 				$intro_genres .= $genre->name.', ';
 			}
 
-			$intro_genres = '[genres ln='.$ln_str.']: '.JString::substr($intro_genres, 0, -2).'[/genres]<br />';
+			$intro_genres = '<span class="gn-list">[genres ln='.$ln_str.']: '.JString::substr($intro_genres, 0, -2).'[/genres]</span>';
 
 			$genres_new_arr = explode(',', $data['genres']);
 
@@ -561,7 +561,8 @@ class KinoarhivModelMovie extends JModelForm {
 			$names_d = $db->loadObjectList();
 
 			if (count($names_d) > 0) {
-				$intro_directors .= (count($names_d) == 1) ? '[names ln=COM_KA_DIRECTOR]: ' : '[names ln=COM_KA_DIRECTORS]: ';
+				$ln_str = count($names_d) > 1 ? 'COM_KA_DIRECTORS' : 'COM_KA_DIRECTOR';
+
 				foreach ($names_d as $director) {
 					$n = !empty($director->name) ? $director->name : '';
 					if (!empty($director->name) && !empty($director->latin_name)) {
@@ -570,7 +571,7 @@ class KinoarhivModelMovie extends JModelForm {
 					$n .= !empty($director->latin_name) ? $director->latin_name : '';
 					$intro_directors .= '[name='.$director->name_id.']'.$n.'[/name], ';
 				}
-				$intro_directors = JString::substr($intro_directors, 0, -2).'[/names]<br />';
+				$intro_directors = '<span class="dc-list">[names ln='.$ln_str.']: '.JString::substr($intro_directors, 0, -2).'[/names]</span>';
 			}
 			// End
 
@@ -591,7 +592,6 @@ class KinoarhivModelMovie extends JModelForm {
 			$names = $db->loadObjectList();
 
 			if (count($names) > 0) {
-				$intro_cast .= '[names ln=COM_KA_CAST]: ';
 				foreach ($names as $name) {
 					$n = !empty($name->name) ? $name->name : '';
 					if (!empty($name->name) && !empty($name->latin_name)) {
@@ -600,7 +600,7 @@ class KinoarhivModelMovie extends JModelForm {
 					$n .= !empty($name->latin_name) ? $name->latin_name : '';
 					$intro_cast .= '[name='.$name->name_id.']'.$n.'[/name], ';
 				}
-				$intro_cast = JString::substr($intro_cast, 0, -2).'[/names]';
+				$intro_cast = '<span class="cast-list">[names ln=COM_KA_CAST]: '.JString::substr($intro_cast, 0, -2).'[/names]</span>';
 			}
 			// End
 		}

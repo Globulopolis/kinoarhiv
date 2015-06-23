@@ -8,6 +8,8 @@
  * @url			http://киноархив.com/
  */
 
+use Joomla\String\String;
+
 class KinoarhivModelReviews extends JModelForm {
 	public function getForm($data = array(), $loadData = true) {
 		$form = $this->loadForm('com_kinoarhiv.reviews', 'reviews', array('control' => 'form', 'load_data' => $loadData));
@@ -19,10 +21,6 @@ class KinoarhivModelReviews extends JModelForm {
 		return $form;
 	}
 
-	protected function loadFormData() {
-		return array();
-	}
-
 	public function save($data) {
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
@@ -31,7 +29,7 @@ class KinoarhivModelReviews extends JModelForm {
 		$movie_id = $app->input->get('id', 0, 'int');
 		$strip_tag = GlobalHelper::cleanHTML($data['review'], null);
 
-		if (JString::strlen($strip_tag) < $params->get('reviews_length_min') || JString::strlen($strip_tag) > $params->get('reviews_length_max')) {
+		if (String::strlen($strip_tag) < $params->get('reviews_length_min') || String::strlen($strip_tag) > $params->get('reviews_length_max')) {
 			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
 
 			return false;
@@ -52,8 +50,12 @@ class KinoarhivModelReviews extends JModelForm {
 			$ip .= $_SERVER['REMOTE_ADDR'];
 		}
 
-		$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_reviews')." (`id`, `uid`, `movie_id`, `review`, `created`, `type`, `ip`, `state`)"
-			. "\n VALUES ('', '".(int)$user->get('id')."', '".(int)$movie_id."', '".$db->escape($cleaned_text)."', '".$datetime."', '".(int)$data['type']."', '".$ip."', '".(int)$state."')");
+		$query = $db->getQuery(true)
+			->insert($db->quoteName('#__ka_reviews'))
+			->columns($db->quoteName(array('id', 'uid', 'movie_id', 'review', 'created', 'type', 'ip', 'state')))
+			->values("'', '".(int)$user->get('id')."', '".(int)$movie_id."', '".$db->escape($cleaned_text)."', '".$datetime."', '".(int)$data['type']."', '".$ip."', '".(int)$state."'");
+
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -121,7 +123,14 @@ class KinoarhivModelReviews extends JModelForm {
 		if ($params->get('reviews_send_email_touser') == 1) {
 			// Get Itemid for menu
 			$db = $this->getDBO();
-			$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')." WHERE `link` = 'index.php?option=com_kinoarhiv&view=profile' AND `language` IN(".$db->quote(JFactory::getLanguage()->getTag()).",".$db->quote('*').") LIMIT 1");
+			$query = $db->getQuery(true);
+
+			$query->select('id')
+				->from($db->quoteName('#__menu'))
+				->where("link` = 'index.php?option=com_kinoarhiv&view=profile' AND `language` IN(".$db->quote(JFactory::getLanguage()->getTag()).",".$db->quote('*').")")
+				->setLimit(1, 0);
+
+			$db->setQuery($query);
 			$menu_itemid = $db->loadResult();
 
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $app->input->post->get('movie_name', 'N/A', 'string'));
@@ -152,33 +161,36 @@ class KinoarhivModelReviews extends JModelForm {
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		}
 
-		if ($user->get('isRoot')) {
-			$where = "";
-		} else {
-			$where = "`uid` = ".$user->id." AND ";
-		}
-
 		if (!empty($review_ids)) {
 			if (empty($review_ids)) {
 				return false;
 			}
 
-			$query = true;
+			$query_result = true;
 			$db->setDebug(true);
 			$db->lockTable('#__ka_reviews');
 			$db->transactionStart();
 
 			foreach ($review_ids as $id) {
-				$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE ".$where."`id` = ".(int)$id.";");
-				$result = $db->execute();
+				$query = $db->getQuery(true);
 
-				if ($result === false) {
-					$query = false;
+				$query->delete($db->quoteName('#__ka_reviews'));
+
+				if (!$user->get('isRoot')) {
+					$query->where('uid = '.$user->get('id'));
+				}
+
+				$query->where('id = '.(int)$id);
+
+				$db->setQuery($query.';');
+
+				if ($db->execute() === false) {
+					$query_result = false;
 					break;
 				}
 			}
 
-			if ($query === true) {
+			if ($query_result === true) {
 				$db->transactionCommit();
 				if (count($review_ids) > 1) {
 					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED_MANY'));
@@ -193,7 +205,7 @@ class KinoarhivModelReviews extends JModelForm {
 			$db->unlockTables();
 			$db->setDebug(false);
 
-			if ($query === false) {
+			if ($query_result === false) {
 				return false;
 			}
 		} else {
@@ -201,7 +213,18 @@ class KinoarhivModelReviews extends JModelForm {
 				return false;
 			}
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_reviews')." WHERE ".$where."`id` = ".(int)$review_id);
+			$query = $db->getQuery(true);
+
+			$query->delete($db->quoteName('#__ka_reviews'));
+
+			if (!$user->get('isRoot')) {
+				$query->where('uid = '.$user->get('id'));
+			}
+
+			$query->where('id = '.(int)$review_id);
+
+			$db->setQuery($query);
+
 			try {
 				$db->execute();
 				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));

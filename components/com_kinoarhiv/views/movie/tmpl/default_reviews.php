@@ -30,14 +30,14 @@
 						editor.disable();
 						$('input[type="submit"]', this).attr('disabled', true);
 
-						if (editor.parse(editor.getValue()).length < <?php echo $this->params->get('reviews_length_min'); ?> || editor.parse(editor.getValue()).length > <?php echo $this->params->get('reviews_length_max'); ?>) {
+						/*if (editor.parse(editor.getValue()).length < <?php echo $this->params->get('reviews_length_min'); ?> || editor.parse(editor.getValue()).length > <?php echo $this->params->get('reviews_length_max'); ?>) {
 							showMsg($(this), '<?php echo JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $this->params->get('reviews_length_min'), $this->params->get('reviews_length_max')); ?>');
 							editor.enable();
 							window.setTimeout(function(){
 								$('#review-form input[type="submit"]').removeAttr('disabled');
 							}, 5000);
 							return false;
-						}
+						}*/
 
 						return true;
 					});

@@ -30,7 +30,12 @@ class KinoarhivModelSearch extends JModelLegacy {
 		);
 
 		// Get years for movies
-		$db->setQuery("SELECT `year` FROM ".$db->quoteName('#__ka_movies')." GROUP BY `year`");
+		$query = $db->getQuery(true)
+			->select('year')
+			->from($db->quoteName('#__ka_movies'))
+			->group('year');
+
+		$db->setQuery($query);
 		$_from_year = $db->loadObjectList();
 		$new_years_arr = array();
 
@@ -50,19 +55,36 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items->movies->to_year = &$items->movies->from_year;
 
 		// Get the list of countries
-		$db->setQuery("SELECT `id`, `name`, `code` FROM ".$db->quoteName('#__ka_countries')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `name` ASC");
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('id', 'name', 'code')))
+			->from($db->quoteName('#__ka_countries'))
+			->where("state = 1 AND language IN (".$db->quote($lang->getTag()).",'*')")
+			->order('name ASC');
+
+		$db->setQuery($query);
 		$countries = $db->loadObjectList();
 
 		$items->movies->countries = array_merge(array((object)array('id' => '', 'name' => '', 'code' => '')), $countries);
 
 		// Get the list of names
-		$db->setQuery("SELECT `id`, `name`, `latin_name` FROM ".$db->quoteName('#__ka_names')." WHERE `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).",'*') ORDER BY `id` ASC");
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('id', 'name', 'latin_name')))
+			->from($db->quoteName('#__ka_names'))
+			->where("state = 1 AND access IN (".$groups.") AND language IN (".$db->quote($lang->getTag()).",'*')")
+			->order('id ASC');
+
+		$db->setQuery($query);
 		$cast = $db->loadObjectList();
 
 		$items->movies->cast = array_merge(array((object)array('id' => '', 'name' => '')), $cast);
 
 		// Get the list of vendors
-		$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM ".$db->quoteName('#__ka_vendors')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*')");
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('id', 'company_name', 'company_name_intl')))
+			->from($db->quoteName('#__ka_vendors'))
+			->where("state = 1 AND language IN (".$db->quote($lang->getTag()).",'*')");
+
+		$db->setQuery($query);
 		$_vendors = $db->loadObjectList();
 
 		foreach ($_vendors as $vendor) {
@@ -86,7 +108,13 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items->movies->vendors = array_merge(array(array('value' => '', 'text' => '')), $vendors);
 
 		// Get the list of genres
-		$db->setQuery("SELECT `id` AS `value`, `name` AS `text` FROM ".$db->quoteName('#__ka_genres')." WHERE `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") ORDER BY `name` ASC");
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id', 'value').', '.$db->quoteName('name', 'text'))
+			->from($db->quoteName('#__ka_genres'))
+			->where("state = 1 AND access IN (".$groups.") AND language IN (".$db->quote($lang->getTag()).",'*')")
+			->order('name ASC');
+
+		$db->setQuery($query);
 		$items->movies->genres = $db->loadObjectList();
 
 		// MPAA
@@ -119,7 +147,14 @@ class KinoarhivModelSearch extends JModelLegacy {
 		);
 
 		// Budgets
-		$db->setQuery("SELECT `budget` AS `value`, `budget` AS `text` FROM ".$db->quoteName('#__ka_movies')." WHERE `budget` != '' AND `state` = 1 AND `language` IN (".$db->quote($lang->getTag()).",'*') AND `access` IN (".$groups.") GROUP BY `budget` ORDER BY `budget` ASC");
+		$query = $db->getQuery(true)
+			->select($db->quoteName('budget', 'value').', '.$db->quoteName('budget', 'text'))
+			->from($db->quoteName('#__ka_movies'))
+			->where("budget != '' AND state = 1 AND access IN (".$groups.") AND language IN (".$db->quote($lang->getTag()).",'*')")
+			->group('budget')
+			->order('budget ASC');
+
+		$db->setQuery($query);
 		$budgets = $db->loadObjectList();
 
 		$items->movies->from_budget = array_merge(
@@ -139,9 +174,20 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$items->names->birthcountry = &$items->movies->countries;
 
 		// Amplua
-		$amplua_disabled = $params->get('search_names_amplua_disabled');
-		$amplua_disabled = !empty($amplua_disabled) ? "AND `id` NOT IN (".$params->get('search_names_amplua_disabled').")" : "";
-		$db->setQuery("SELECT `id` AS `value`, `title` AS `text` FROM ".$db->quoteName('#__ka_names_career')." WHERE (`is_mainpage` = 1 OR `is_amplua` = 1) ".$amplua_disabled." AND `language` IN (".$db->quote($lang->getTag()).",'*') GROUP BY `title` ORDER BY `ordering` ASC, `title` ASC");
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id', 'value').', '.$db->quoteName('title', 'text'))
+			->from($db->quoteName('#__ka_names_career'))
+			->where("(is_mainpage = 1 OR is_amplua = 1) AND language IN (".$db->quote($lang->getTag()).",'*')");
+
+			$amplua_disabled = $params->get('search_names_amplua_disabled');
+			if (!empty($amplua_disabled)) {
+				$query->where('id NOT IN ('.$amplua_disabled.')');
+			}
+
+		$query->group('title')
+			->order('ordering ASC, title ASC');
+
+		$db->setQuery($query);
 		$amplua = $db->loadObjectList();
 
 		$items->names->amplua = array_merge(
@@ -166,22 +212,24 @@ class KinoarhivModelSearch extends JModelLegacy {
 		$groups	= implode(',', $user->getAuthorisedViewLevels());
 		$itemid = array('movies'=>0, 'names'=>0);
 
-		$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')
-			. "\n WHERE `link` = 'index.php?option=com_kinoarhiv&view=movies'"
-				. " AND `type` = 'component'"
-				. " AND `published` = 1"
-				. " AND `access` IN (".$groups.")"
-				. " AND `language` IN (".$db->quote($lang->getTag()).",'*')"
-			. "\n LIMIT 1");
+		$query = $db->getQuery(true)
+			->select('id')
+			->from($db->quoteName('#__menu'))
+			->where("link = 'index.php?option=com_kinoarhiv&view=movies' AND type = 'component'")
+			->where("published = 1 AND access IN (".$groups.") AND language IN (".$db->quote($lang->getTag()).",'*')")
+			->setLimit(1, 0);
+
+		$db->setQuery($query);
 		$itemid['movies'] = $db->loadResult();
 
-		$db->setQuery("SELECT `id` FROM ".$db->quoteName('#__menu')
-			. "\n WHERE `link` = 'index.php?option=com_kinoarhiv&view=names'"
-				. " AND `type` = 'component'"
-				. " AND `published` = 1"
-				. " AND `access` IN (".$groups.")"
-				. " AND `language` IN (".$db->quote($lang->getTag()).",'*')"
-			. "\n LIMIT 1");
+		$query = $db->getQuery(true)
+			->select('id')
+			->from($db->quoteName('#__menu'))
+			->where("link = 'index.php?option=com_kinoarhiv&view=names' AND type = 'component'")
+			->where("published = 1 AND access IN (".$groups.") AND language IN (".$db->quote($lang->getTag()).",'*')")
+			->setLimit(1, 0);
+
+		$db->setQuery($query);
 		$itemid['names'] = $db->loadResult();
 
 		return $itemid;

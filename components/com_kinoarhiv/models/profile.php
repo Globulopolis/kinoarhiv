@@ -21,43 +21,72 @@ class KinoarhivModelProfile extends JModelList {
 			$query = $db->getQuery(true);
 
 			if ($tab == '' || $tab == 'movies') {
-				$query->select("`id`, `title`, `alias`, `year`")
-					->from($db->quoteName('#__ka_movies'))
-					->where('`state` = 1 AND `id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_user_marked_movies').' WHERE `uid` = '.$user->get('id').' AND `favorite` = 1) AND `access` IN ('.$groups.')')
-					->order($db->escape('`created` DESC'));
+				$query->select($db->quoteName(array('id', 'title', 'alias', 'year')))
+					->from($db->quoteName('#__ka_movies'));
+
+					$subquery = $db->getQuery(true)
+						->select('movie_id')
+						->from($db->quoteName('#__ka_user_marked_movies'))
+						->where('uid = '.$user->get('id').' AND favorite = 1');
+
+				$query->where('state = 1 AND id IN ('.$subquery.') AND access IN ('.$groups.')')
+					->order($db->quoteName('created').' DESC');
 			} elseif ($tab == 'names') {
-				$query->select("`id`, `name`, `latin_name`, `alias`, `date_of_birth`")
-					->from($db->quoteName('#__ka_names'))
-					->where('`state` = 1 AND `id` IN (SELECT `name_id` FROM '.$db->quoteName('#__ka_user_marked_names').' WHERE `uid` = '.$user->get('id').' AND `favorite` = 1) AND `access` IN ('.$groups.')')
-					->order($db->escape('`ordering` DESC'));
+				$query->select($db->quoteName(array('id', 'name', 'latin_name', 'alias', 'date_of_birth')))
+					->from($db->quoteName('#__ka_names'));
+
+					$subquery = $db->getQuery(true)
+						->select('name_id')
+						->from($db->quoteName('#__ka_user_marked_names'))
+						->where('uid = '.$user->get('id').' AND favorite = 1');
+
+				$query->where('state = 1 AND id IN ('.$subquery.') AND access IN ('.$groups.')')
+					->order($db->quoteName('ordering').' DESC');
 			}
 		} elseif ($page == 'watched') {
 			$query = $db->getQuery(true);
 
-			$query->select("`id`, `title`, `alias`, `year`")
-				->from($db->quoteName('#__ka_movies'))
-				->where('`state` = 1 AND `id` IN (SELECT `movie_id` FROM '.$db->quoteName('#__ka_user_marked_movies').' WHERE `uid` = '.$user->get('id').' AND `watched` = 1) AND `access` IN ('.$groups.')')
-				->order($db->escape('`created` DESC'));
+			$query->select($db->quoteName(array('id', 'title', 'alias', 'year')))
+				->from($db->quoteName('#__ka_movies'));
+
+				$subquery = $db->getQuery(true)
+					->select('movie_id')
+					->from($db->quoteName('#__ka_user_marked_movies'))
+					->where('uid = '.$user->get('id').' AND watched = 1');
+
+			$query->where('state = 1 AND id IN ('.$subquery.') AND access IN ('.$groups.')')
+				->order($db->quoteName('created').' DESC');
 		} elseif ($page == 'votes') {
 			$query = $db->getQuery(true);
 
-			$query->select("`m`.`id`, `m`.`title`, `m`.`alias`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`year`, (SELECT COUNT(`uid`) FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` = `m`.`id`) AS `total_voted`")
-				->from($db->quoteName('#__ka_movies')." AS `m`");
+				$sel_subquery = $db->getQuery(true)
+					->select('COUNT(uid)')
+					->from($db->quoteName('#__ka_user_votes'))
+					->where('movie_id = m.id');
+
+			$query->select($db->quoteName(array('m.id', 'm.title', 'm.alias', 'm.rate_loc', 'm.rate_sum_loc', 'm.year')))
+				->select('('.$sel_subquery.') AS total_voted')
+				->from($db->quoteName('#__ka_movies', 'm'));
 
 			// Join over user votes
-			$query->select(" `v`.`vote` AS `my_vote`, `v`.`_datetime`")
-				->leftJoin($db->quoteName('#__ka_user_votes')." AS `v` ON `v`.`uid` = ".(int)$user->get('id')." AND `v`.`movie_id` = `m`.`id`");
+			$query->select('v.vote AS my_vote, v._datetime')
+				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v').' ON v.uid = '.(int)$user->get('id').' AND v.movie_id = m.id');
 
-			$query->where("`state` = 1 AND `id` IN (SELECT `movie_id` FROM ".$db->quoteName('#__ka_user_votes')." WHERE `uid` = ".$user->get('id').") AND `access` IN (".$groups.")");
-			$query->order($db->escape('`_datetime` DESC'));
+				$subquery = $db->getQuery(true)
+					->select('movie_id')
+					->from($db->quoteName('#__ka_user_votes'))
+					->where('uid = '.$user->get('id'));
+
+			$query->where('state = 1 AND id IN ('.$subquery.') AND `access` IN ('.$groups.')')
+				->order($db->quoteName('_datetime').' DESC');
 		} elseif ($page == 'reviews') {
 			$query = $db->getQuery(true);
 
-			$query->select("`r`.`id`, `r`.`movie_id`, `r`.`review`, `r`.`created`, `r`.`type`, `r`.`ip`, `r`.`state`, `m`.`title`, `m`.`year`");
-			$query->from($db->quoteName('#__ka_reviews')." AS `r`");
-			$query->leftJoin($db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `r`.`movie_id`");
-			$query->where('`r`.`uid` = '.(int)$user->get('id').' AND `m`.`state` = 1');
-			$query->order($db->escape('`created` DESC'));
+			$query->select($db->quoteName(array('r.id', 'r.movie_id', 'r.review', 'r.created', 'r.type', 'r.ip', 'r.state', 'm.title', 'm.year')))
+				->from($db->quoteName('#__ka_reviews', 'r'))
+				->join('LEFT', $db->quoteName('#__ka_movies', 'm').' ON m.id = r.movie_id')
+				->where('r.uid = '.(int)$user->get('id').' AND m.state = 1')
+				->order($db->quoteName('created').' DESC');
 		} else {
 			$query = null;
 		}

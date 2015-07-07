@@ -2,19 +2,20 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
-class KinoarhivModelNames extends JModelList {
+class KinoarhivModelNames extends JModelList
+{
 	protected $context = null;
 
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		if (empty($config['filter_fields'])) {
 			// Setup a list of columns for ORDER BY from 'sort_namelist_field' params from component settings
 			$config['filter_fields'] = array('id', 'n.id', 'name', 'n.name', 'latin_name', 'n.latin_name', 'ordering', 'n.ordering');
@@ -27,7 +28,8 @@ class KinoarhivModelNames extends JModelList {
 		}
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		if ($this->context) {
 			$app = JFactory::getApplication();
 			$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -59,7 +61,8 @@ class KinoarhivModelNames extends JModelList {
 		}
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.name');
 		$id .= ':' . $this->getState('list.limit');
@@ -69,39 +72,40 @@ class KinoarhivModelNames extends JModelList {
 		return parent::getStoreId($id);
 	}
 
-	protected function getListQuery() {
+	protected function getListQuery()
+	{
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$filters = $this->buildFilters($params);
 
 		$query = $db->getQuery(true);
 
 		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`birthplace`, `n`.`gender`, `n`.`attribs`, `cn`.`name` AS `country`, `cn`.`code`, `gal`.`filename`, `gal`.`dimension`, GROUP_CONCAT(DISTINCT `g`.`name` SEPARATOR ', ') AS `genres`, GROUP_CONCAT(DISTINCT `cr`.`title` SEPARATOR ', ') AS `career`")
-			->from($db->quoteName('#__ka_names').' AS `n`');
+			->from($db->quoteName('#__ka_names') . ' AS `n`');
 
-		$query->leftJoin($db->quoteName('#__ka_countries').' AS `cn` ON `cn`.`id` = `n`.`birthcountry` AND `cn`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `cn`.`state` = 1');
+		$query->leftJoin($db->quoteName('#__ka_countries') . ' AS `cn` ON `cn`.`id` = `n`.`birthcountry` AND `cn`.`language` IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ') AND `cn`.`state` = 1');
 
-		$query->leftJoin($db->quoteName('#__ka_names_gallery').' AS `gal` ON `gal`.`name_id` = `n`.`id` AND `gal`.`type` = 3 AND `gal`.`photo_frontpage` = 1 AND `gal`.`state` = 1');
+		$query->leftJoin($db->quoteName('#__ka_names_gallery') . ' AS `gal` ON `gal`.`name_id` = `n`.`id` AND `gal`.`type` = 3 AND `gal`.`photo_frontpage` = 1 AND `gal`.`state` = 1');
 
-		$query->leftJoin($db->quoteName('#__ka_genres').' AS `g` ON `g`.`id` IN (SELECT `genre_id` FROM '.$db->quoteName('#__ka_rel_names_genres').' WHERE `name_id` = `n`.`id`)');
+		$query->leftJoin($db->quoteName('#__ka_genres') . ' AS `g` ON `g`.`id` IN (SELECT `genre_id` FROM ' . $db->quoteName('#__ka_rel_names_genres') . ' WHERE `name_id` = `n`.`id`)');
 
-		$query->leftJoin($db->quoteName('#__ka_names_career').' AS `cr` ON `cr`.`id` IN (SELECT `career_id` FROM '.$db->quoteName('#__ka_rel_names_career').' WHERE `name_id` = `n`.`id`)');
+		$query->leftJoin($db->quoteName('#__ka_names_career') . ' AS `cr` ON `cr`.`id` IN (SELECT `career_id` FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE `name_id` = `n`.`id`)');
 
 		if (!$user->get('guest')) {
 			$query->select(' `u`.`favorite`');
-			$query->leftJoin($db->quoteName('#__ka_user_marked_names').' AS `u` ON `u`.`uid` = '.$user->get('id').' AND `u`.`name_id` = `n`.`id`');
+			$query->leftJoin($db->quoteName('#__ka_user_marked_names') . ' AS `u` ON `u`.`uid` = ' . $user->get('id') . ' AND `u`.`name_id` = `n`.`id`');
 		}
 
-		$where = '`n`.`state` = 1 AND `n`.`language` IN ('.$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').') AND `n`.`access` IN ('.$groups.')';
+		$where = '`n`.`state` = 1 AND `n`.`language` IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ') AND `n`.`access` IN (' . $groups . ')';
 
-		$query->where($where.$filters);
+		$query->where($where . $filters);
 		$query->group($db->quoteName('n.id'));
 
 		$orderCol = $this->state->get('list.ordering', $db->quoteName('n.ordering'));
 		$orderDirn = $this->state->get('list.direction', 'DESC');
-		$query->order($db->escape('`n`.'.$orderCol.' '.$orderDirn));
+		$query->order($db->escape('`n`.' . $orderCol . ' ' . $orderDirn));
 
 		return $query;
 	}
@@ -109,12 +113,12 @@ class KinoarhivModelNames extends JModelList {
 	/**
 	 * Build WHERE from values from the search inputs
 	 *
-	 * @param   object   $params     Component parameters.
+	 * @param   object $params Component parameters.
 	 *
 	 * @return   string
-	 *
-	*/
-	protected function buildFilters(&$params) {
+	 */
+	protected function buildFilters(&$params)
+	{
 		$where = "";
 
 		$db = $this->getDBO();
@@ -124,25 +128,25 @@ class KinoarhivModelNames extends JModelList {
 		// Filter by name
 		$name = $searches->get('filters.names.name');
 		if ($params->get('search_names_name') == 1 && !empty($name)) {
-			$where .= " AND (`n`.`name` LIKE '%".$db->escape($name)."%' OR `n`.`latin_name` LIKE '%".$db->escape($name)."%')";
+			$where .= " AND (`n`.`name` LIKE '%" . $db->escape($name) . "%' OR `n`.`latin_name` LIKE '%" . $db->escape($name) . "%')";
 		}
 
 		// Filter by birthday
 		$birthday = $searches->get('filters.names.birthday');
 		if ($params->get('search_names_birthday') == 1 && !empty($birthday)) {
-			$where .= " AND `n`.`date_of_birth` LIKE '%".$db->escape($birthday)."%'";
+			$where .= " AND `n`.`date_of_birth` LIKE '%" . $db->escape($birthday) . "%'";
 		}
 
 		// Filter by gender
 		$gender = $searches->get('filters.names.gender');
 		if ($params->get('search_names_gender') == 1 && ($gender === 0 || $gender === 1)) {
-			$where .= " AND `n`.`gender` = ".(int)$gender;
+			$where .= " AND `n`.`gender` = " . (int)$gender;
 		}
 
 		// Filter by movie title
 		$mtitle = $searches->get('filters.names.mtitle');
 		if ($params->get('search_names_mtitle') == 1 && !empty($mtitle)) {
-			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$mtitle." GROUP BY `name_id`");
+			$db->setQuery("SELECT `name_id` FROM " . $db->quoteName('#__ka_rel_names') . " WHERE `movie_id` = " . (int)$mtitle . " GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
 			$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
@@ -151,19 +155,19 @@ class KinoarhivModelNames extends JModelList {
 		// Filter by birthplace
 		$birthplace = trim($searches->get('filters.names.birthplace'));
 		if ($params->get('search_names_birthplace') == 1 && !empty($birthplace)) {
-			$where .= " AND `n`.`birthplace` LIKE '%".$db->escape($birthplace)."%'";
+			$where .= " AND `n`.`birthplace` LIKE '%" . $db->escape($birthplace) . "%'";
 		}
 
 		// Filter by country
 		$country = $searches->get('filters.names.birthcountry');
 		if ($params->get('search_names_birthcountry') == 1 && !empty($country)) {
-			$where .= " AND `n`.`birthcountry` = ".(int)$country;
+			$where .= " AND `n`.`birthcountry` = " . (int)$country;
 		}
 
 		// Filter by amplua
 		$amplua = $searches->get('filters.names.amplua');
 		if ($params->get('search_names_amplua') == 1 && !empty($amplua)) {
-			$db->setQuery("SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names_career')." WHERE `career_id` = ".(int)$amplua." GROUP BY `name_id`");
+			$db->setQuery("SELECT `name_id` FROM " . $db->quoteName('#__ka_rel_names_career') . " WHERE `career_id` = " . (int)$amplua . " GROUP BY `name_id`");
 			$name_ids = $db->loadColumn();
 
 			$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
@@ -176,7 +180,7 @@ class KinoarhivModelNames extends JModelList {
 				unset($where_id[$k]);
 			}
 
-			$where .= " AND `n`.`id` IN (".implode(',', ArrayHelper::arrayUnique($where_id)).")";
+			$where .= " AND `n`.`id` IN (" . implode(',', ArrayHelper::arrayUnique($where_id)) . ")";
 		}
 
 		return $where;
@@ -184,11 +188,10 @@ class KinoarhivModelNames extends JModelList {
 
 	/**
 	 * Get the values from search inputs
-	 *
 	 * @return   object
-	 *
-	*/
-	public function getFiltersData() {
+	 */
+	public function getFiltersData()
+	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$filter = JFilterInput::getInstance();
 		$input = JFactory::getApplication()->input;
@@ -209,13 +212,13 @@ class KinoarhivModelNames extends JModelList {
 			$vars = array(
 				'filters' => array(
 					'names' => array(
-						'name'			=> isset($filters['name']) ? $filter->clean($filters['name'], 'string') : '',
-						'gender'		=> isset($filters['gender']) ? $filter->clean($filters['gender'], 'alnum') : '',
-						'mtitle'		=> isset($filters['mtitle']) ? $filter->clean($filters['mtitle'], 'int') : '',
-						'birthday'		=> isset($filters['birthday']) ? $filter->clean($filters['birthday'], 'string') : '',
-						'birthplace'	=> isset($filters['birthplace']) ? $filter->clean($filters['birthplace'], 'string') : '',
-						'birthcountry'	=> isset($filters['birthcountry']) ? $filter->clean($filters['birthcountry'], 'int') : '',
-						'amplua'		=> isset($filters['amplua']) ? $filter->clean($filters['amplua'], 'int') : ''
+						'name'         => isset($filters['name']) ? $filter->clean($filters['name'], 'string') : '',
+						'gender'       => isset($filters['gender']) ? $filter->clean($filters['gender'], 'alnum') : '',
+						'mtitle'       => isset($filters['mtitle']) ? $filter->clean($filters['mtitle'], 'int') : '',
+						'birthday'     => isset($filters['birthday']) ? $filter->clean($filters['birthday'], 'string') : '',
+						'birthplace'   => isset($filters['birthplace']) ? $filter->clean($filters['birthplace'], 'string') : '',
+						'birthcountry' => isset($filters['birthcountry']) ? $filter->clean($filters['birthcountry'], 'int') : '',
+						'amplua'       => isset($filters['amplua']) ? $filter->clean($filters['amplua'], 'int') : ''
 					)
 				)
 			);
@@ -226,7 +229,8 @@ class KinoarhivModelNames extends JModelList {
 		return $items;
 	}
 
-	public function favorite() {
+	public function favorite()
+	{
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
@@ -244,7 +248,7 @@ class KinoarhivModelNames extends JModelList {
 		$text = '';
 
 		if (empty($name_ids)) {
-			$db->setQuery("SELECT `favorite` FROM `#__ka_user_marked_names` WHERE `uid` = ".(int)$user->get('id')." AND `name_id` = ".(int)$name_id);
+			$db->setQuery("SELECT `favorite` FROM `#__ka_user_marked_names` WHERE `uid` = " . (int)$user->get('id') . " AND `name_id` = " . (int)$name_id);
 			$query = $db->loadResult();
 		}
 
@@ -253,9 +257,9 @@ class KinoarhivModelNames extends JModelList {
 				$message = JText::_('COM_KA_FAVORITE_ERROR');
 			} else {
 				if (is_null($query)) {
-					$db->setQuery("INSERT INTO `#__ka_user_marked_names` (`uid`, `name_id`, `favorite`) VALUES ('".$user->get('id')."', '".(int)$name_id."', '1')");
+					$db->setQuery("INSERT INTO `#__ka_user_marked_names` (`uid`, `name_id`, `favorite`) VALUES ('" . $user->get('id') . "', '" . (int)$name_id . "', '1')");
 				} elseif ($query == 0) {
-					$db->setQuery("UPDATE `#__ka_user_marked_names` SET `favorite` = '1' WHERE `uid` = ".$user->get('id')." AND `name_id` = ".(int)$name_id);
+					$db->setQuery("UPDATE `#__ka_user_marked_names` SET `favorite` = '1' WHERE `uid` = " . $user->get('id') . " AND `name_id` = " . (int)$name_id);
 				}
 
 				$r = $db->execute();
@@ -263,7 +267,7 @@ class KinoarhivModelNames extends JModelList {
 				if ($r) {
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_ADDED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=delete&Itemid='.$itemid.'&id='.$name_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=delete&Itemid=' . $itemid . '&id=' . $name_id, false);
 					$text = JText::_('COM_KA_REMOVEFROM_FAVORITE');
 				} else {
 					$message = JText::_('JERROR_ERROR');
@@ -271,13 +275,13 @@ class KinoarhivModelNames extends JModelList {
 			}
 		} elseif ($action == 'delete') {
 			if ($query == 1) {
-				$db->setQuery("DELETE FROM `#__ka_user_marked_names` WHERE `uid` = ".$user->get('id')." AND `name_id` = ".(int)$name_id);
+				$db->setQuery("DELETE FROM `#__ka_user_marked_names` WHERE `uid` = " . $user->get('id') . " AND `name_id` = " . (int)$name_id);
 				$r = $db->execute();
 
 				if ($r) {
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_REMOVED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=add&Itemid='.$itemid.'&id='.$name_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=add&Itemid=' . $itemid . '&id=' . $name_id, false);
 					$text = JText::_('COM_KA_ADDTO_FAVORITE');
 				} else {
 					$message = JText::_('JERROR_ERROR');
@@ -290,7 +294,7 @@ class KinoarhivModelNames extends JModelList {
 					$db->transactionStart();
 
 					foreach ($name_ids as $id) {
-						$db->setQuery("DELETE FROM `#__ka_user_marked_names` WHERE `uid` = ".$user->get('id')." AND `name_id` = ".(int)$id.";");
+						$db->setQuery("DELETE FROM `#__ka_user_marked_names` WHERE `uid` = " . $user->get('id') . " AND `name_id` = " . (int)$id . ";");
 						$result = $db->execute();
 
 						if ($result === false) {
@@ -304,7 +308,7 @@ class KinoarhivModelNames extends JModelList {
 
 						$success = true;
 						$message = JText::_('COM_KA_FAVORITE_REMOVED');
-						$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid='.$itemid.'&id='.$name_id, false);
+						$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid=' . $itemid . '&id=' . $name_id, false);
 						$text = JText::_('COM_KA_ADDTO_FAVORITE');
 					} else {
 						$db->transactionRollback();
@@ -322,11 +326,12 @@ class KinoarhivModelNames extends JModelList {
 			$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
 		}
 
-		return array('success'=>$success, 'message'=>$message, 'url'=>$url, 'text'=>$text);
+		return array('success' => $success, 'message' => $message, 'url' => $url, 'text' => $text);
 	}
 
-	public function getPagination() {
-		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+	public function getPagination()
+	{
+		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
 
 		$store = $this->getStoreId('getPagination');
 

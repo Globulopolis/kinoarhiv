@@ -2,15 +2,16 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
 use Joomla\Registry\Registry;
+use Joomla\String\String;
 
-class KinoarhivViewMediamanager extends JViewLegacy {
+class KinoarhivViewMediamanager extends JViewLegacy
+{
 	protected $item;
 	protected $items;
 	protected $pagination;
@@ -18,7 +19,8 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 	protected $form;
 	protected $params;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$app = JFactory::getApplication();
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -37,7 +39,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					throw new Exception(implode("\n", $this->get('Errors')), 500);
 				}
 
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.JText::_('COM_KA_MOVIES_GALLERY').' - '.$page_title), 'images');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $page_title), 'images');
 
 				if ($tab == 1) {
 					$path = $this->params->get('media_wallpapers_root');
@@ -54,30 +56,30 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				}
 
 				foreach ($items as $item) {
-					$file_path = JPath::clean($path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->movie_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR);
+					$file_path = JPath::clean($path . DIRECTORY_SEPARATOR . String::substr($item->alias, 0, 1) . DIRECTORY_SEPARATOR . $item->movie_id . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR);
 					$item->error = '';
 
-					if (!file_exists($file_path.$item->filename)) {
+					if (!file_exists($file_path . $item->filename)) {
 						$item->filepath = 'javascript:void(0);';
 						$item->folderpath = '';
 						$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND');
 					} else {
 						$item->folderpath = $file_path;
-						if (JString::substr($path_www, 0, 1) == '/') {
-							$item->filepath = JURI::root().JString::substr($path_www, 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$folder.'/'.$item->filename;
+						if (String::substr($path_www, 0, 1) == '/') {
+							$item->filepath = JURI::root() . String::substr($path_www, 1) . '/' . String::substr($item->alias, 0, 1) . '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
 						} else {
-							$item->filepath = $path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$folder.'/'.$item->filename;
+							$item->filepath = $path_www . '/' . String::substr($item->alias, 0, 1) . '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
 						}
 					}
 
-					if (!file_exists($file_path.'thumb_'.$item->filename)) {
+					if (!file_exists($file_path . 'thumb_' . $item->filename)) {
 						$item->th_filepath = '';
 						$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_THUMB_FILENOTFOUND');
 					} else {
-						if (JString::substr($path_www, 0, 1) == '/') {
-							$item->th_filepath = JURI::root().JString::substr($path_www, 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$folder.'/thumb_'.$item->filename;
+						if (String::substr($path_www, 0, 1) == '/') {
+							$item->th_filepath = JURI::root() . String::substr($path_www, 1) . '/' . String::substr($item->alias, 0, 1) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
 						} else {
-							$item->th_filepath = $path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->movie_id.'/'.$folder.'/thumb_'.$item->filename;
+							$item->th_filepath = $path_www . '/' . String::substr($item->alias, 0, 1) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
 						}
 					}
 				}
@@ -93,7 +95,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				$this->addToolbar();
 
 				if ($app->input->get('task', '', 'cmd') == 'edit') {
-					JLoader::register('KALanguage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'language.php');
+					JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
 
 					$this->form = $this->get('Form');
 					$item = new Registry;
@@ -103,21 +105,21 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 						throw new Exception(implode("\n", $this->get('Errors')), 500);
 					}
 
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.JText::_('COM_KA_MOVIES_TRAILERS').' - '.$page_title), 'images');
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_TRAILERS') . ' - ' . $page_title), 'images');
 
 					if (!empty($item)) {
 						$movie_id = $app->input->get('id', 0, 'int');
 						$screenshot = $this->form->getValue('screenshot');
 						$movie_alias = $this->form->getValue('movie_alias');
 
-						if (JString::substr($this->params->get('media_trailers_root_www'), 0, 1) == '/') {
-							$item->set('screenshot_path_www', JURI::root().JString::substr($this->params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
-							$item->set('screenshot_folder_www', JURI::root().JString::substr($this->params->get('media_trailers_root_www'), 1).'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
+						if (String::substr($this->params->get('media_trailers_root_www'), 0, 1) == '/') {
+							$item->set('screenshot_path_www', JURI::root() . String::substr($this->params->get('media_trailers_root_www'), 1) . '/' . String::substr($movie_alias, 0, 1) . '/' . $movie_id . '/' . $screenshot);
+							$item->set('screenshot_folder_www', JURI::root() . String::substr($this->params->get('media_trailers_root_www'), 1) . '/' . String::substr($movie_alias, 0, 1) . '/' . $movie_id . '/');
 						} else {
-							$item->set('screenshot_path_www', $this->params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
-							$item->set('screenshot_folder_www', $this->params->get('media_trailers_root_www').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/');
+							$item->set('screenshot_path_www', $this->params->get('media_trailers_root_www') . '/' . String::substr($movie_alias, 0, 1) . '/' . $movie_id . '/' . $screenshot);
+							$item->set('screenshot_folder_www', $this->params->get('media_trailers_root_www') . '/' . String::substr($movie_alias, 0, 1) . '/' . $movie_id . '/');
 						}
-						$item->set('screenshot_path', $this->params->get('media_trailers_root').'/'.JString::substr($movie_alias, 0, 1).'/'.$movie_id.'/'.$screenshot);
+						$item->set('screenshot_path', $this->params->get('media_trailers_root') . '/' . String::substr($movie_alias, 0, 1) . '/' . $movie_id . '/' . $screenshot);
 						$item->set('subtitles_lang_list', KALanguage::listOfLanguages());
 					}
 
@@ -135,7 +137,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 						throw new Exception(implode("\n", $this->get('Errors')), 500);
 					}
 
-					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title.' - '.JText::_('COM_KA_MOVIES_TRAILERS')), 'images');
+					JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . $page_title . ' - ' . JText::_('COM_KA_MOVIES_TRAILERS')), 'images');
 					$this->items = &$items;
 					$this->pagination = &$pagination;
 					$this->state = &$state;
@@ -154,7 +156,7 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 					throw new Exception(implode("\n", $this->get('Errors')), 500);
 				}
 
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER').': '.$page_title), 'images');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . $page_title), 'images');
 
 				if ($tab == 1) {
 					$path = $this->params->get('media_actor_wallpapers_root');
@@ -171,30 +173,30 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 				}
 
 				foreach ($items as $item) {
-					$file_path = JPath::clean($path.DIRECTORY_SEPARATOR.JString::substr($item->alias, 0, 1).DIRECTORY_SEPARATOR.$item->name_id.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR);
+					$file_path = JPath::clean($path . DIRECTORY_SEPARATOR . String::substr($item->alias, 0, 1) . DIRECTORY_SEPARATOR . $item->name_id . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR);
 					$item->error = '';
 
-					if (!file_exists($file_path.$item->filename)) {
+					if (!file_exists($file_path . $item->filename)) {
 						$item->filepath = 'javascript:void(0);';
 						$item->folderpath = '';
 						$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND');
 					} else {
 						$item->folderpath = $file_path;
-						if (JString::substr($path_www, 0, 1) == '/') {
-							$item->filepath = JURI::root().JString::substr($path_www, 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/'.$item->filename;
+						if (String::substr($path_www, 0, 1) == '/') {
+							$item->filepath = JURI::root() . String::substr($path_www, 1) . '/' . String::substr($item->alias, 0, 1) . '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
 						} else {
-							$item->filepath = $path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/'.$item->filename;
+							$item->filepath = $path_www . '/' . String::substr($item->alias, 0, 1) . '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
 						}
 					}
 
-					if (!file_exists($file_path.'thumb_'.$item->filename)) {
+					if (!file_exists($file_path . 'thumb_' . $item->filename)) {
 						$item->th_filepath = '';
 						$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_THUMB_FILENOTFOUND');
 					} else {
-						if (JString::substr($path_www, 0, 1) == '/') {
-							$item->th_filepath = JURI::root().JString::substr($path_www, 1).'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/thumb_'.$item->filename;
+						if (String::substr($path_www, 0, 1) == '/') {
+							$item->th_filepath = JURI::root() . String::substr($path_www, 1) . '/' . String::substr($item->alias, 0, 1) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
 						} else {
-							$item->th_filepath = $path_www.'/'.JString::substr($item->alias, 0, 1).'/'.$item->name_id.'/'.$folder.'/thumb_'.$item->filename;
+							$item->th_filepath = $path_www . '/' . String::substr($item->alias, 0, 1) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
 						}
 					}
 				}
@@ -210,7 +212,8 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		}
 	}
 
-	protected function addToolbar($task='') {
+	protected function addToolbar()
+	{
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
@@ -261,26 +264,30 @@ class KinoarhivViewMediamanager extends JViewLegacy {
 		}
 	}
 
-	protected function getSortFields() {
+	protected function getSortFields()
+	{
 		$input = JFactory::getApplication()->input;
+		$sort_fields = array();
 
 		if ($input->get('type') == 'gallery') {
-			return array(
-				'g.filename' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
-				'g.dimension' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'),
+			$sort_fields = array(
+				'g.filename'         => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
+				'g.dimension'        => JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'),
 				'g.poster_frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
-				'g.state' => JText::_('JSTATUS'),
-				'g.id' => JText::_('JGRID_HEADING_ID')
+				'g.state'            => JText::_('JSTATUS'),
+				'g.id'               => JText::_('JGRID_HEADING_ID')
 			);
 		} elseif ($input->get('type') == 'trailers') {
-			return array(
-				'g.filename' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
-				'g.access' => JText::_('JGRID_HEADING_ACCESS'),
-				'language' => JText::_('JGRID_HEADING_LANGUAGE'),
+			$sort_fields = array(
+				'g.filename'  => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'),
+				'g.access'    => JText::_('JGRID_HEADING_ACCESS'),
+				'language'    => JText::_('JGRID_HEADING_LANGUAGE'),
 				'g.frontpage' => JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'),
-				'g.state' => JText::_('JSTATUS'),
-				'g.id' => JText::_('JGRID_HEADING_ID')
+				'g.state'     => JText::_('JSTATUS'),
+				'g.id'        => JText::_('JGRID_HEADING_ID')
 			);
 		}
+
+		return $sort_fields;
 	}
 }

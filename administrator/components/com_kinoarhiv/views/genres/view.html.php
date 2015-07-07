@@ -1,37 +1,45 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivViewGenres extends JViewLegacy {
+class KinoarhivViewGenres extends JViewLegacy
+{
 	protected $items;
 	protected $pagination;
 	protected $state;
 	protected $form;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
 
 		switch ($task) {
-			case 'add': $this->edit($tpl); break;
-			case 'edit': $this->edit($tpl); break;
-			default: $this->_display($tpl); break;
+			case 'add':
+				$this->edit($tpl);
+				break;
+			case 'edit':
+				$this->edit($tpl);
+				break;
+			default:
+				$this->_display($tpl);
+				break;
 		}
 	}
 
-	protected function _display($tpl) {
+	protected function _display($tpl)
+	{
 		$user = JFactory::getUser();
 
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->state         = $this->get('State');
-		$this->filterForm    = $this->get('FilterForm');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state = $this->get('State');
+		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -49,7 +57,8 @@ class KinoarhivViewGenres extends JViewLegacy {
 		parent::display($tpl);
 	}
 
-	protected function edit($tpl) {
+	protected function edit($tpl)
+	{
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
@@ -67,7 +76,8 @@ class KinoarhivViewGenres extends JViewLegacy {
 		$app->input->set('hidemainmenu', true);
 	}
 
-	protected function addToolbar($task='') {
+	protected function addToolbar($task = '')
+	{
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
@@ -78,14 +88,14 @@ class KinoarhivViewGenres extends JViewLegacy {
 		}
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title).': '.JText::_('COM_KA_NEW')), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title) . ': ' . JText::_('COM_KA_NEW')), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title).': '.$this->form->getValue('name')), 'smiley-2');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title) . ': ' . $this->form->getValue('name')), 'smiley-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -134,14 +144,15 @@ class KinoarhivViewGenres extends JViewLegacy {
 		}
 	}
 
-	protected function getSortFields() {
+	protected function getSortFields()
+	{
 		return array(
-			'a.state' => JText::_('JSTATUS'),
-			'a.name' => JText::_('JGLOBAL_TITLE'),
-			'a.stats' => JText::_('COM_KA_GENRES_STATS'),
+			'a.state'  => JText::_('JSTATUS'),
+			'a.name'   => JText::_('JGLOBAL_TITLE'),
+			'a.stats'  => JText::_('COM_KA_GENRES_STATS'),
 			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id' => JText::_('JGRID_HEADING_ID')
+			'a.id'     => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelUpdate extends JModelLegacy {
-	public function update($version) {
+class KinoarhivModelUpdate extends JModelLegacy
+{
+	public function update($version)
+	{
 		$db = $this->getDbo();
 		$query = true;
 
@@ -37,7 +38,7 @@ class KinoarhivModelUpdate extends JModelLegacy {
 
 				$attribs = json_encode($attribs);
 
-				$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `attribs` = '".$db->escape($attribs)."' WHERE `id` = ".(int)$row->id.";");
+				$db->setQuery("UPDATE " . $db->quoteName('#__ka_movies') . " SET `attribs` = '" . $db->escape($attribs) . "' WHERE `id` = " . (int)$row->id . ";");
 				$result = $db->execute();
 
 				if ($result === false) {

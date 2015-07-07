@@ -1,18 +1,19 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivViewAwards extends JViewLegacy {
+class KinoarhivViewAwards extends JViewLegacy
+{
 	protected $items = null;
 	protected $pagination = null;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$id = JFactory::getApplication()->input->get('id', null, 'int');
 
 		if (!empty($id)) {
@@ -22,11 +23,13 @@ class KinoarhivViewAwards extends JViewLegacy {
 		}
 	}
 
-	protected function awards() {
+	protected function awards()
+	{
 		$items = $this->get('Items');
 
 		if (count($errors = $this->get('Errors')) || is_null($items)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+
 			return false;
 		}
 
@@ -43,11 +46,13 @@ class KinoarhivViewAwards extends JViewLegacy {
 		parent::display();
 	}
 
-	protected function award() {
+	protected function award()
+	{
 		$item = $this->get('Item');
 
 		if (count($errors = $this->get('Errors')) || is_null($item)) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+
 			return false;
 		}
 
@@ -65,7 +70,8 @@ class KinoarhivViewAwards extends JViewLegacy {
 	/**
 	 * Prepares the document
 	 */
-	protected function _prepareDocument() {
+	protected function _prepareDocument()
+	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
@@ -75,7 +81,7 @@ class KinoarhivViewAwards extends JViewLegacy {
 		// Create a new pathway object
 		$path = (object)array(
 			'name' => $title,
-			'link' => 'index.php?option=com_kinoarhiv&view=awards&Itemid='.$this->itemid
+			'link' => 'index.php?option=com_kinoarhiv&view=awards&Itemid=' . $this->itemid
 		);
 
 		$pathway->setPathway(array($path));

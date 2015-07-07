@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelGenres extends JModelList {
-	public function __construct($config = array()) {
+class KinoarhivModelGenres extends JModelList
+{
+	public function __construct($config = array())
+	{
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
@@ -24,7 +25,8 @@ class KinoarhivModelGenres extends JModelList {
 		parent::__construct($config);
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		$app = JFactory::getApplication();
 
 		// Adjust the context to support modal layouts.
@@ -46,8 +48,7 @@ class KinoarhivModelGenres extends JModelList {
 
 		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
-		if (!empty($forcedLanguage))
-		{
+		if (!empty($forcedLanguage)) {
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
@@ -56,7 +57,8 @@ class KinoarhivModelGenres extends JModelList {
 		parent::populateState('a.name', 'asc');
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.access');
@@ -66,7 +68,8 @@ class KinoarhivModelGenres extends JModelList {
 		return parent::getStoreId($id);
 	}
 
-	protected function getListQuery() {
+	protected function getListQuery()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
@@ -87,21 +90,21 @@ class KinoarhivModelGenres extends JModelList {
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
-			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
 
 		// Join over the asset groups.
 		$query->select($db->quoteName('ag.title', 'access_level'))
-			->join('LEFT',  $db->quoteName('#__viewlevels', 'ag').' ON ag.id = a.access');
+			->join('LEFT', $db->quoteName('#__viewlevels', 'ag') . ' ON ag.id = a.access');
 
 		// Filter by access level.
 		if ($access = $this->getState('filter.access')) {
-			$query->where('a.access = ' . (int) $access);
+			$query->where('a.access = ' . (int)$access);
 		}
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
 		if (is_numeric($published)) {
-			$query->where('a.state = ' . (int) $published);
+			$query->where('a.state = ' . (int)$published);
 		} elseif ($published === '') {
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
@@ -110,12 +113,12 @@ class KinoarhivModelGenres extends JModelList {
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = ' . (int) substr(trim($search), 3));
+				$query->where('a.id = ' . (int)substr(trim($search), 3));
 			} elseif (stripos($search, 'alias:') === 0) {
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 6)), true) . '%');
 				$query->where('(a.alias LIKE ' . $search . ')');
 			} elseif (stripos($search, 'stat:') === 0) {
-				$query->where('a.stats = ' . (int) substr(trim($search), 5));
+				$query->where('a.stats = ' . (int)substr(trim($search), 5));
 			} else {
 				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.name LIKE ' . $search . ')');
@@ -147,12 +150,11 @@ class KinoarhivModelGenres extends JModelList {
 	/**
 	 * Method to get a list of articles.
 	 * Overridden to add a check for access levels.
-	 *
 	 * @return  mixed  An array of data items on success, false on failure.
-	 *
 	 * @since   1.6.1
 	 */
-	public function getItems() {
+	public function getItems()
+	{
 		$items = parent::getItems();
 
 		if (JFactory::getApplication()->isSite()) {
@@ -170,7 +172,8 @@ class KinoarhivModelGenres extends JModelList {
 		return $items;
 	}
 
-	public function batch() {
+	public function batch()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
@@ -189,10 +192,10 @@ class KinoarhivModelGenres extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string)$batch_data['language_id']) . "'";
 		}
 		if (!empty($batch_data['assetgroup_id'])) {
-			$fields[] = $db->quoteName('access')." = '".(int)$batch_data['assetgroup_id']."'";
+			$fields[] = $db->quoteName('access') . " = '" . (int)$batch_data['assetgroup_id'] . "'";
 		}
 
 		if (empty($fields)) {
@@ -203,7 +206,7 @@ class KinoarhivModelGenres extends JModelList {
 
 		$query->update($db->quoteName($table))
 			->set(implode(', ', $fields))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -211,7 +214,7 @@ class KinoarhivModelGenres extends JModelList {
 			$db->execute();
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-		
+
 			return false;
 		}
 

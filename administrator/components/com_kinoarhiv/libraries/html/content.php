@@ -1,22 +1,22 @@
 <?php defined('JPATH_PLATFORM') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-abstract class KAHtmlContent {
+abstract class KAHtmlContent
+{
 	protected static $items = null;
 
 	/**
 	 * Get a list of the available content country items.
-	 *
 	 * @return  string
 	 */
-	public static function country() {
+	public static function country()
+	{
 		if (empty(static::$items[__METHOD__])) {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -35,10 +35,10 @@ abstract class KAHtmlContent {
 
 	/**
 	 * Get a list of the available content vendor items.
-	 *
 	 * @return  string
 	 */
-	public static function vendor() {
+	public static function vendor()
+	{
 		if (empty(static::$items[__METHOD__])) {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -52,11 +52,11 @@ abstract class KAHtmlContent {
 			$data = array();
 
 			foreach ($rows as $row) {
-				$vendor = ($row->company_name_intl != '') ? $row->company_name.' / '.$row->company_name_intl : $row->company_name;
+				$vendor = ($row->company_name_intl != '') ? $row->company_name . ' / ' . $row->company_name_intl : $row->company_name;
 
 				$data[] = array(
 					'value' => $row->value,
-					'text' => $vendor
+					'text'  => $vendor
 				);
 			}
 

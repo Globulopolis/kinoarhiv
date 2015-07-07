@@ -1,23 +1,24 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelSettings extends JModelForm {
+class KinoarhivModelSettings extends JModelForm
+{
 	/**
 	 * Method to get a form object.
 	 *
-	 * @param   array  $data		Data for the form.
-	 * @param   boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @param   array   $data     Data for the form.
+	 * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
 	 *
 	 * @return  mixed  A JForm object on success, false on failure
 	 */
-	public function getForm($data = array(), $loadData = true) {
+	public function getForm($data = array(), $loadData = true)
+	{
 		// Load config.xml from root component folder.
 		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
 		$form = $this->loadForm('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => $loadData), false, '/config');
@@ -31,10 +32,10 @@ class KinoarhivModelSettings extends JModelForm {
 
 	/**
 	 * Get the component information.
-	 *
 	 * @return  object
 	 */
-	public function getSettings() {
+	public function getSettings()
+	{
 		$result = JComponentHelper::getComponent('com_kinoarhiv');
 
 		return $result;
@@ -45,17 +46,18 @@ class KinoarhivModelSettings extends JModelForm {
 	 *
 	 * @param   array   Array containing config data.
 	 *
-	 * @return  bool	True on success, false on failure.
+	 * @return  bool    True on success, false on failure.
 	 */
-	public function save($data) {
+	public function save($data)
+	{
 		$db = $this->getDBO();
 		$form_rules = $data['rules'];
 		// Unset rules array because we do not need it in the component parameters
 		unset($data['rules']);
 		$rules = array();
 
-		foreach ($form_rules as $rule=>$groups) {
-			foreach ($groups as $group=>$value) {
+		foreach ($form_rules as $rule => $groups) {
+			foreach ($groups as $group => $value) {
 				if ($value != '') {
 					$rules[$rule][$group] = (int)$value;
 				} else {
@@ -105,8 +107,8 @@ class KinoarhivModelSettings extends JModelForm {
 		$_alphabet = array();
 
 		if (count($alphabet['movie']) > 0) {
-			foreach ($alphabet['movie'] as $key=>$el) {
-				foreach ($el as $i=>$val) {
+			foreach ($alphabet['movie'] as $key => $el) {
+				foreach ($el as $i => $val) {
 					if ($key == 'lang') {
 						$_alphabet['movie_alphabet'][$i][$key] = $filter->clean($val, 'string');
 					} elseif ($key == 'letters') {
@@ -117,8 +119,8 @@ class KinoarhivModelSettings extends JModelForm {
 		}
 
 		if (count($alphabet['name']) > 0) {
-			foreach ($alphabet['name'] as $key=>$el) {
-				foreach ($el as $i=>$val) {
+			foreach ($alphabet['name'] as $key => $el) {
+				foreach ($el as $i => $val) {
 					if ($key == 'lang') {
 						$_alphabet['name_alphabet'][$i][$key] = $filter->clean($val, 'string');
 					} elseif ($key == 'letters') {
@@ -136,14 +138,15 @@ class KinoarhivModelSettings extends JModelForm {
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__extensions'))
-			->set($db->quoteName('params')." = '".$db->escape($params)."'")
-			->where(array($db->quoteName('type')." = 'component'", $db->quoteName('element')." = 'com_kinoarhiv'"));
+			->set($db->quoteName('params') . " = '" . $db->escape($params) . "'")
+			->where(array($db->quoteName('type') . " = 'component'", $db->quoteName('element') . " = 'com_kinoarhiv'"));
 
 		$db->setQuery($query);
 		$result = $db->execute();
 
 		if (!$result) {
 			$this->setError(JText::_('ERROR'));
+
 			return false;
 		}
 
@@ -151,13 +154,14 @@ class KinoarhivModelSettings extends JModelForm {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__assets'))
-				->set($db->quoteName('rules')." = '".$rules."'")
-				->where(array($db->quoteName('level')." = 1", $db->quoteName('parent_id')." = 1", $db->quoteName('name')." = 'com_kinoarhiv'"));
+				->set($db->quoteName('rules') . " = '" . $rules . "'")
+				->where(array($db->quoteName('level') . " = 1", $db->quoteName('parent_id') . " = 1", $db->quoteName('name') . " = 'com_kinoarhiv'"));
 
 			$db->setQuery($query);
 			$db->execute();
 		} else {
 			$this->setError(JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
+
 			return false;
 		}
 
@@ -167,14 +171,15 @@ class KinoarhivModelSettings extends JModelForm {
 		return true;
 	}
 
-	public function restoreConfig($data) {
+	public function restoreConfig($data)
+	{
 		$db = $this->getDBO();
 		$params = json_encode($data);
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__extensions'))
-			->set($db->quoteName('params')." = '".$db->escape($params)."'")
-			->where(array($db->quoteName('type')." = 'component'", $db->quoteName('element')." = 'com_kinoarhiv'"));
+			->set($db->quoteName('params') . " = '" . $db->escape($params) . "'")
+			->where(array($db->quoteName('type') . " = 'component'", $db->quoteName('element') . " = 'com_kinoarhiv'"));
 
 		$db->setQuery($query);
 		$result = $db->execute();

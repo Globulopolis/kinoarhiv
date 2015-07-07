@@ -2,16 +2,19 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
-JLoader::register('DatabaseHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'database.php');
+use Joomla\String\String;
 
-class KinoarhivModelName extends JModelForm {
-	public function getForm($data = array(), $loadData = true) {
+JLoader::register('DatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
+
+class KinoarhivModelName extends JModelForm
+{
+	public function getForm($data = array(), $loadData = true)
+	{
 		$form = $this->loadForm('com_kinoarhiv.name', 'name', array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form)) {
@@ -22,15 +25,16 @@ class KinoarhivModelName extends JModelForm {
 		$id = (isset($id[0]) && !empty($id[0])) ? $id[0] : 0;
 		$user = JFactory::getUser();
 
-		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_kinoarhiv.name.' . (int) $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_kinoarhiv'))) {
+		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_kinoarhiv.name.' . (int)$id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_kinoarhiv'))) {
 			$form->setFieldAttribute('state', 'disabled', 'true');
 		}
 
 		return $form;
 	}
 
-	protected function loadFormData() {
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.names.'.JFactory::getUser()->id.'.edit_data', array());
+	protected function loadFormData()
+	{
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.names.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -39,7 +43,8 @@ class KinoarhivModelName extends JModelForm {
 		return $data;
 	}
 
-	public function getItem() {
+	public function getItem()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$tmpl = $app->input->get('template', '', 'string');
@@ -49,14 +54,14 @@ class KinoarhivModelName extends JModelForm {
 			$award_id = $app->input->get('award_id', 0, 'int');
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName('id', 'rel_aw_id').','.$db->quoteName('item_id').','.$db->quoteName('award_id').','.$db->quoteName('desc', 'aw_desc').','.$db->quoteName('year', 'aw_year'))
+			$query->select($db->quoteName('id', 'rel_aw_id') . ',' . $db->quoteName('item_id') . ',' . $db->quoteName('award_id') . ',' . $db->quoteName('desc', 'aw_desc') . ',' . $db->quoteName('year', 'aw_year'))
 				->from($db->quoteName('#__ka_rel_awards'))
-				->where($db->quoteName('id').' = '.(int)$award_id);
+				->where($db->quoteName('id') . ' = ' . (int)$award_id);
 
 			$db->setQuery($query);
 			$result = $db->loadObject();
 		} else {
-			$result = array('name'=>(object)array());
+			$result = array('name' => (object)array());
 			if (count($id) == 0 || empty($id) || empty($id[0])) {
 				return $result;
 			}
@@ -65,19 +70,19 @@ class KinoarhivModelName extends JModelForm {
 
 			$query->select($db->quoteName(array('n.id', 'n.asset_id', 'n.name', 'n.latin_name', 'n.alias', 'n.date_of_birth', 'n.date_of_death', 'n.birthplace', 'n.birthcountry', 'n.gender', 'n.height', 'n.desc', 'n.attribs', 'n.ordering', 'n.state', 'n.access', 'n.metakey', 'n.metadesc', 'n.metadata', 'n.language')))
 				->from($db->quoteName('#__ka_names', 'n'))
-				->where($db->quoteName('n.id').' = '.(int)$id[0]);
+				->where($db->quoteName('n.id') . ' = ' . (int)$id[0]);
 
 			// Join over the language
 			$query->select($db->quoteName('l.title', 'language_title'))
-				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('n.language'));
+				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('n.language'));
 
 			// Join over the gallery item
-			$query->select($db->quoteName('g.id', 'gid').','.$db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g').' ON '.$db->quoteName('g.name_id').' = '.$db->quoteName('n.id').' AND '.$db->quoteName('g.type').' = 3 AND '.$db->quoteName('g.photo_frontpage').' = 1');
+			$query->select($db->quoteName('g.id', 'gid') . ',' . $db->quoteName('g.filename'))
+				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON ' . $db->quoteName('g.name_id') . ' = ' . $db->quoteName('n.id') . ' AND ' . $db->quoteName('g.type') . ' = 3 AND ' . $db->quoteName('g.photo_frontpage') . ' = 1');
 
 			// Join over countries
-			$query->select($db->quoteName('c.name', 'country').','.$db->quoteName('c.code', 'country_code'))
-				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON '.$db->quoteName('c.id').' = '.$db->quoteName('n.birthcountry'));
+			$query->select($db->quoteName('c.name', 'country') . ',' . $db->quoteName('c.code', 'country_code'))
+				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('n.birthcountry'));
 
 			$db->setQuery($query);
 			$result['name'] = $db->loadObject();
@@ -95,7 +100,8 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
-	public function publish($isUnpublish) {
+	public function publish($isUnpublish)
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
@@ -103,8 +109,8 @@ class KinoarhivModelName extends JModelForm {
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__ka_names'))
-			->set($db->quoteName('state').' = '.(int)$state)
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->set($db->quoteName('state') . ' = ' . (int)$state)
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -112,29 +118,30 @@ class KinoarhivModelName extends JModelForm {
 			$db->execute();
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
 		}
 	}
 
-	protected function getGenres() {
+	protected function getGenres()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
-		$result = array('data'=>array(), 'ids'=>array());
+		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName('g.id').','.$db->quoteName('g.name', 'title'))
+		$query->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
 			->from($db->quoteName('#__ka_genres', 'g'));
 
-			$subquery = $db->getQuery(true);
-			$subquery->select($db->quoteName('genre_id'))
-				->from($db->quoteName('#__ka_rel_names_genres'))
-				->where($db->quoteName('name_id').' = '.(int)$id[0]);
+		$subquery = $db->getQuery(true);
+		$subquery->select($db->quoteName('genre_id'))
+			->from($db->quoteName('#__ka_rel_names_genres'))
+			->where($db->quoteName('name_id') . ' = ' . (int)$id[0]);
 
-		$query->where($db->quoteName('id').' IN ('.$subquery.')');
+		$query->where($db->quoteName('id') . ' IN (' . $subquery . ')');
 
 		$db->setQuery($query);
 		$result['data'] = $db->loadObjectList();
@@ -146,22 +153,23 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
-	protected function getCareers() {
+	protected function getCareers()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
-		$result = array('data'=>array(), 'ids'=>array());
+		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('c.id', 'c.title')))
 			->from($db->quoteName('#__ka_names_career', 'c'));
 
-			$subquery = $db->getQuery(true);
-			$subquery->select($db->quoteName('career_id'))
-				->from($db->quoteName('#__ka_rel_names_career'))
-				->where($db->quoteName('name_id').' = '.(int)$id[0]);
+		$subquery = $db->getQuery(true);
+		$subquery->select($db->quoteName('career_id'))
+			->from($db->quoteName('#__ka_rel_names_career'))
+			->where($db->quoteName('name_id') . ' = ' . (int)$id[0]);
 
-		$query->where($db->quoteName('id').' IN ('.$subquery.')');
+		$query->where($db->quoteName('id') . ' IN (' . $subquery . ')');
 
 		$db->setQuery($query);
 		$result['data'] = $db->loadObjectList();
@@ -173,7 +181,8 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
-	public function getAwards() {
+	public function getAwards()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -186,18 +195,18 @@ class KinoarhivModelName extends JModelForm {
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = $app->input->get('searchString', '', 'string');
 		$limitstart = $limit * $page - $limit;
-		$result = (object)array('rows'=>array());
+		$result = (object)array('rows' => array());
 		$where = "";
 
 		if (!empty($search_string)) {
-			$where .= " AND ".DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+			$where .= " AND " . DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
 		}
 
 		$query = $db->getQuery(true);
 
 		$query->select('COUNT(id)')
 			->from($db->quoteName('#__ka_rel_awards'))
-			->where($db->quoteName('item_id').' = '.(int)$id.' AND '.$db->quoteName('type').' = 1'.$where);
+			->where($db->quoteName('item_id') . ' = ' . (int)$id . ' AND ' . $db->quoteName('type') . ' = 1' . $where);
 
 		$db->setQuery($query);
 		$total = $db->loadResult();
@@ -209,9 +218,9 @@ class KinoarhivModelName extends JModelForm {
 
 		$query->select($db->quoteName(array('rel.id', 'rel.item_id', 'rel.award_id', 'rel.desc', 'rel.year', 'rel.type', 'aw.title')))
 			->from($db->quoteName('#__ka_rel_awards', 'rel'))
-			->join('LEFT', $db->quoteName('#__ka_awards', 'aw').' ON '.$db->quoteName('aw.id').' = '.$db->quoteName('rel.award_id'))
-			->where($db->quoteName('rel.item_id').' = '.(int)$id.' AND '.$db->quoteName('rel.type').' = 1'.$where)
-			->order($db->quoteName($orderby).' '.strtoupper($order))
+			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON ' . $db->quoteName('aw.id') . ' = ' . $db->quoteName('rel.award_id'))
+			->where($db->quoteName('rel.item_id') . ' = ' . (int)$id . ' AND ' . $db->quoteName('rel.type') . ' = 1' . $where)
+			->order($db->quoteName($orderby) . ' ' . strtoupper($order))
 			->setLimit($limit, $limitstart);
 
 		$db->setQuery($query);
@@ -219,13 +228,13 @@ class KinoarhivModelName extends JModelForm {
 
 		$k = 0;
 		foreach ($rows as $elem) {
-			$result->rows[$k]['id'] = $elem->id.'_'.$elem->item_id.'_'.$elem->award_id;
+			$result->rows[$k]['id'] = $elem->id . '_' . $elem->item_id . '_' . $elem->award_id;
 			$result->rows[$k]['cell'] = array(
-				'id'		=> $elem->id,
-				'award_id'	=> $elem->award_id,
-				'title'		=> $elem->title,
-				'year'		=> $elem->year,
-				'desc'		=> JHtml::_('string.truncate', $elem->desc, $params->get('limit_text'))
+				'id'       => $elem->id,
+				'award_id' => $elem->award_id,
+				'title'    => $elem->title,
+				'year'     => $elem->year,
+				'desc'     => JHtml::_('string.truncate', $elem->desc, $params->get('limit_text'))
 			);
 
 			$k++;
@@ -238,8 +247,9 @@ class KinoarhivModelName extends JModelForm {
 		return $result;
 	}
 
-	
-	public function save($data) {
+
+	public function save($data)
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
@@ -253,7 +263,7 @@ class KinoarhivModelName extends JModelForm {
 
 			$query->select('COUNT(id)')
 				->from($db->quoteName('#__ka_names'))
-				->where($db->quoteName('name')." LIKE '".$db->escape(trim($data['name']['name']))."%' OR ".$db->quoteName('latin_name')." LIKE '".$db->escape(trim($data['name']['latin_name']))."%'");
+				->where($db->quoteName('name') . " LIKE '" . $db->escape(trim($data['name']['name'])) . "%' OR " . $db->quoteName('latin_name') . " LIKE '" . $db->escape(trim($data['name']['latin_name'])) . "%'");
 
 			$db->setQuery($query);
 			$count = $db->loadResult();
@@ -261,7 +271,7 @@ class KinoarhivModelName extends JModelForm {
 			if ($count > 0) {
 				$this->setError(JText::_('COM_KA_NAMES_EXISTS'));
 
-				$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', array(
+				$app->setUserState('com_kinoarhiv.names.' . $user->id . '.data', array(
 					'success' => false,
 					'message' => JText::_('COM_KA_NAMES_EXISTS')
 				));
@@ -285,7 +295,7 @@ class KinoarhivModelName extends JModelForm {
 
 			$form = $this->getForm();
 			$attribs = array();
-			foreach ($form->getGroup('attribs') as $key=>$value) {
+			foreach ($form->getGroup('attribs') as $key => $value) {
 				// Array key start from form 'control' attribute + fields group name
 				$attribs[substr($key, strlen('form_attribs_'))] = '';
 			}
@@ -304,29 +314,29 @@ class KinoarhivModelName extends JModelForm {
 
 		if (empty($id)) {
 			$query->insert($db->quoteName('#__ka_names'))
-				->columns($db->quoteName(array('id','asset_id','name','latin_name','alias','date_of_birth','date_of_death','birthplace','birthcountry','gender','height','desc','attribs','ordering','state','access','metakey','metadesc','metadata','language')))
-				->values("'','0','".$db->escape(trim($data['name']['name']))."','".$db->escape(trim($data['name']['latin_name']))."','".$alias."','".$data['name']['date_of_birth']."','".$data['name']['date_of_death']."','".$db->escape(trim($data['name']['birthplace']))."','".(int)$data['name']['birthcountry']."','".(int)$data['name']['gender']."','".$db->escape($data['name']['height'])."','".$db->escape($data['name']['desc'])."','".$attribs."','".(int)$data['name']['ordering']."','".$data['name']['state']."','".(int)$data['name']['access']."','".$db->escape($data['name']['metakey'])."','".$db->escape($data['name']['metadesc'])."','".json_encode($metadata)."','".$db->escape($data['name']['language'])."'");
+				->columns($db->quoteName(array('id', 'asset_id', 'name', 'latin_name', 'alias', 'date_of_birth', 'date_of_death', 'birthplace', 'birthcountry', 'gender', 'height', 'desc', 'attribs', 'ordering', 'state', 'access', 'metakey', 'metadesc', 'metadata', 'language')))
+				->values("'','0','" . $db->escape(trim($data['name']['name'])) . "','" . $db->escape(trim($data['name']['latin_name'])) . "','" . $alias . "','" . $data['name']['date_of_birth'] . "','" . $data['name']['date_of_death'] . "','" . $db->escape(trim($data['name']['birthplace'])) . "','" . (int)$data['name']['birthcountry'] . "','" . (int)$data['name']['gender'] . "','" . $db->escape($data['name']['height']) . "','" . $db->escape($data['name']['desc']) . "','" . $attribs . "','" . (int)$data['name']['ordering'] . "','" . $data['name']['state'] . "','" . (int)$data['name']['access'] . "','" . $db->escape($data['name']['metakey']) . "','" . $db->escape($data['name']['metadesc']) . "','" . json_encode($metadata) . "','" . $db->escape($data['name']['language']) . "'");
 		} else {
 			$query->update($db->quoteName('#__ka_names'))
-				->set($db->quoteName('name')." = '".$db->escape(trim($data['name']['name']))."'")
-				->set($db->quoteName('latin_name')." = '".$db->escape(trim($data['name']['latin_name']))."'")
-				->set($db->quoteName('alias')." = '".$alias."'")
-				->set($db->quoteName('date_of_birth')." = '".$data['name']['date_of_birth']."'")
-				->set($db->quoteName('date_of_death')." = '".$data['name']['date_of_death']."'")
-				->set($db->quoteName('birthplace')." = '".$db->escape($data['name']['birthplace'])."'")
-				->set($db->quoteName('birthcountry')." = '".(int)$data['name']['birthcountry']."'")
-				->set($db->quoteName('gender')." = '".(int)$data['name']['gender']."'")
-				->set($db->quoteName('height')." = '".$db->escape($data['name']['height'])."'")
-				->set($db->quoteName('desc')." = '".$db->escape($data['name']['desc'])."'")
-				->set($db->quoteName('attribs')." = '".$attribs."'")
-				->set($db->quoteName('ordering')." = '".(int)$data['name']['ordering']."'")
-				->set($db->quoteName('state')." = '".$data['name']['state']."'")
-				->set($db->quoteName('access')." = '".(int)$data['name']['access']."'")
-				->set($db->quoteName('metakey')." = '".$db->escape($data['name']['metakey'])."'")
-				->set($db->quoteName('metadesc')." = '".$db->escape($data['name']['metadesc'])."'")
-				->set($db->quoteName('metadata')." = '".json_encode($metadata)."'")
-				->set($db->quoteName('language')." = '".$db->escape($data['name']['language'])."'")
-				->where($db->quoteName('id').' = '.(int)$id);
+				->set($db->quoteName('name') . " = '" . $db->escape(trim($data['name']['name'])) . "'")
+				->set($db->quoteName('latin_name') . " = '" . $db->escape(trim($data['name']['latin_name'])) . "'")
+				->set($db->quoteName('alias') . " = '" . $alias . "'")
+				->set($db->quoteName('date_of_birth') . " = '" . $data['name']['date_of_birth'] . "'")
+				->set($db->quoteName('date_of_death') . " = '" . $data['name']['date_of_death'] . "'")
+				->set($db->quoteName('birthplace') . " = '" . $db->escape($data['name']['birthplace']) . "'")
+				->set($db->quoteName('birthcountry') . " = '" . (int)$data['name']['birthcountry'] . "'")
+				->set($db->quoteName('gender') . " = '" . (int)$data['name']['gender'] . "'")
+				->set($db->quoteName('height') . " = '" . $db->escape($data['name']['height']) . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['name']['desc']) . "'")
+				->set($db->quoteName('attribs') . " = '" . $attribs . "'")
+				->set($db->quoteName('ordering') . " = '" . (int)$data['name']['ordering'] . "'")
+				->set($db->quoteName('state') . " = '" . $data['name']['state'] . "'")
+				->set($db->quoteName('access') . " = '" . (int)$data['name']['access'] . "'")
+				->set($db->quoteName('metakey') . " = '" . $db->escape($data['name']['metakey']) . "'")
+				->set($db->quoteName('metadesc') . " = '" . $db->escape($data['name']['metadesc']) . "'")
+				->set($db->quoteName('metadata') . " = '" . json_encode($metadata) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['name']['language']) . "'")
+				->where($db->quoteName('id') . ' = ' . (int)$id);
 		}
 
 		try {
@@ -341,7 +351,7 @@ class KinoarhivModelName extends JModelForm {
 
 				$query->select($db->quoteName('id'))
 					->from($db->quoteName('#__assets'))
-					->where($db->quoteName('name')." = 'com_kinoarhiv' AND ".$db->quoteName('parent_id')." = 1");
+					->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
 
 				$db->setQuery($query);
 				$parent_id = $db->loadResult();
@@ -359,7 +369,7 @@ class KinoarhivModelName extends JModelForm {
 
 				$query->insert($db->quoteName('#__assets'))
 					->columns($db->quoteName(array('id', 'parent_id', 'lft', 'rgt', 'level', 'name', 'title', 'rules')))
-					->values("'','".$parent_id."','".$lft_rgt->lft."','".$lft_rgt->rgt."','2','com_kinoarhiv.name.".$id."','".$db->escape($asset_title)."','{}'");
+					->values("'','" . $parent_id . "','" . $lft_rgt->lft . "','" . $lft_rgt->rgt . "','2','com_kinoarhiv.name." . $id . "','" . $db->escape($asset_title) . "','{}'");
 
 				$db->setQuery($query);
 				$db->execute();
@@ -368,24 +378,24 @@ class KinoarhivModelName extends JModelForm {
 				$query = $db->getQuery(true);
 
 				$query->update($db->quoteName('#__ka_names'))
-					->set($db->quoteName('asset_id')." = '".(int)$asset_id."'")
-					->where($db->quoteName('id').' = '.(int)$id);
+					->set($db->quoteName('asset_id') . " = '" . (int)$asset_id . "'")
+					->where($db->quoteName('id') . ' = ' . (int)$id);
 
 				$db->setQuery($query);
 				$db->execute();
 			} else {
 				// Alias was changed? Move all linked items into new filesystem location.
-				if (JString::substr($alias, 0, 1) != JString::substr($data['name']['alias_orig'], 0, 1)) {
+				if (String::substr($alias, 0, 1) != String::substr($data['name']['alias_orig'], 0, 1)) {
 					$this->moveMediaItems($id, $data['name']['alias_orig'], $alias, $params);
 				}
 			}
 
-			$app->setUserState('com_kinoarhiv.names.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.names.' . $user->id . '.data', array(
 				'success' => true,
 				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
 				'data'    => array('id' => $id, 'name' => trim($data['name']['name']), 'latin_name' => trim($data['name']['latin_name']))
 			));
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -403,7 +413,7 @@ class KinoarhivModelName extends JModelForm {
 				$db->transactionStart();
 
 				$query->delete($db->quoteName('#__ka_rel_names_genres'))
-					->where($db->quoteName('name_id').' = '.(int)$id);
+					->where($db->quoteName('name_id') . ' = ' . (int)$id);
 
 				$db->setQuery($query);
 				$db->execute();
@@ -413,9 +423,9 @@ class KinoarhivModelName extends JModelForm {
 
 					$query->insert($db->quoteName('#__ka_rel_names_genres'))
 						->columns($db->quoteName(array('genre_id', 'name_id')))
-						->values("'".(int)$genre_id."','".(int)$id."'");
+						->values("'" . (int)$genre_id . "','" . (int)$id . "'");
 
-					$db->setQuery($query.';');
+					$db->setQuery($query . ';');
 
 					if ($db->execute() === false) {
 						$query_result_g = false;
@@ -445,7 +455,7 @@ class KinoarhivModelName extends JModelForm {
 				$db->transactionStart();
 
 				$query->delete($db->quoteName('#__ka_rel_names_career'))
-					->where($db->quoteName('name_id').' = '.(int)$id);
+					->where($db->quoteName('name_id') . ' = ' . (int)$id);
 
 				$db->setQuery($query);
 				$db->execute();
@@ -455,9 +465,9 @@ class KinoarhivModelName extends JModelForm {
 
 					$query->insert($db->quoteName('#__ka_rel_names_career'))
 						->columns($db->quoteName(array('career_id', 'name_id')))
-						->values("'".(int)$career_id."','".(int)$id."'");
+						->values("'" . (int)$career_id . "','" . (int)$id . "'");
 
-					$db->setQuery($query.';');
+					$db->setQuery($query . ';');
 
 					if ($db->execute() === false) {
 						$query_result_g = false;
@@ -483,59 +493,59 @@ class KinoarhivModelName extends JModelForm {
 	/**
 	 * Method to move all media items which is linked to the name into a new location, if name alias was changed.
 	 *
-	 * @param   int      $id          Name ID.
-	 * @param   string   $old_alias   Old name alias.
-	 * @param   string   $new_alias   New name alias.
-	 * @param   object   $params      Component parameters.
+	 * @param   int    $id        Name ID.
+	 * @param   string $old_alias Old name alias.
+	 * @param   string $new_alias New name alias.
+	 * @param   object $params    Component parameters.
 	 *
 	 * @return  boolean   True on success
-	 *
-	*/
-	protected function moveMediaItems($id, $old_alias, $new_alias, &$params) {
+	 */
+	protected function moveMediaItems($id, $old_alias, $new_alias, &$params)
+	{
 		if (empty($id) || empty($old_alias) || empty($new_alias)) {
 			$this->setError('Name ID or alias cannot be empty!');
 
 			return false;
 		} else {
 			jimport('joomla.filesystem.folder');
-			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'filesystem.php');
+			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'filesystem.php');
 
 			$error = false;
-			$old_alias = JString::substr($old_alias, 0, 1);
-			$new_alias = JString::substr($new_alias, 0, 1);
+			$old_alias = String::substr($old_alias, 0, 1);
+			$new_alias = String::substr($new_alias, 0, 1);
 
 			// Move gallery items
 			$path_poster = $params->get('media_actor_posters_root');
 			$path_wallpp = $params->get('media_actor_wallpapers_root');
 			$path_photo = $params->get('media_actor_photo_root');
-			$old_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
-			$old_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
-			$old_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
-			$new_folder_poster = $path_poster.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'posters';
-			$new_folder_wallpp = $path_wallpp.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'wallpapers';
-			$new_folder_photo = $path_photo.DIRECTORY_SEPARATOR.$new_alias.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'photo';
+			$old_folder_poster = $path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'posters';
+			$old_folder_wallpp = $path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'wallpapers';
+			$old_folder_photo = $path_photo . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'photo';
+			$new_folder_poster = $path_poster . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'posters';
+			$new_folder_wallpp = $path_wallpp . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'wallpapers';
+			$new_folder_photo = $path_photo . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'photo';
 
 			if (!KAFilesystemHelper::move(
 				array($old_folder_poster, $old_folder_wallpp, $old_folder_photo),
 				array($new_folder_poster, $new_folder_wallpp, $new_folder_photo))
-				) {
+			) {
 				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
 			}
 
 			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
-			if (KAFilesystemHelper::getFolderSize($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
-				if (file_exists($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
-					JFolder::delete($path_poster.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+			if (KAFilesystemHelper::getFolderSize($path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id) === 0) {
+				if (file_exists($path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id)) {
+					JFolder::delete($path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id);
 				}
 			}
-			if (KAFilesystemHelper::getFolderSize($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
-				if (file_exists($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
-					JFolder::delete($path_wallpp.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+			if (KAFilesystemHelper::getFolderSize($path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id) === 0) {
+				if (file_exists($path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id)) {
+					JFolder::delete($path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id);
 				}
 			}
-			if (KAFilesystemHelper::getFolderSize($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id) === 0) {
-				if (file_exists($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id)) {
-					JFolder::delete($path_photo.DIRECTORY_SEPARATOR.$old_alias.DIRECTORY_SEPARATOR.$id);
+			if (KAFilesystemHelper::getFolderSize($path_photo . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id) === 0) {
+				if (file_exists($path_photo . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id)) {
+					JFolder::delete($path_photo . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id);
 				}
 			}
 		}
@@ -543,7 +553,8 @@ class KinoarhivModelName extends JModelForm {
 		return true;
 	}
 
-	public function saveNameAccessRules() {
+	public function saveNameAccessRules()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('form', array(), 'array');
@@ -551,11 +562,11 @@ class KinoarhivModelName extends JModelForm {
 		$rules = array();
 
 		if (empty($id)) {
-			return array('success'=>false, 'message'=>'Error');
+			return array('success' => false, 'message' => 'Error');
 		}
 
-		foreach ($data['name']['rules'] as $rule=>$groups) {
-			foreach ($groups as $group=>$value) {
+		foreach ($data['name']['rules'] as $rule => $groups) {
+			foreach ($groups as $group => $value) {
 				if ($value != '') {
 					$rules[$rule][$group] = (int)$value;
 				} else {
@@ -572,7 +583,7 @@ class KinoarhivModelName extends JModelForm {
 
 			$query->select($db->quoteName('id'))
 				->from($db->quoteName('#__assets'))
-				->where($db->quoteName('name')." = 'com_kinoarhiv' AND ".$db->quoteName('parent_id')." = 1");
+				->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
 
 			$db->setQuery($query);
 			$parent_id = $db->loadResult();
@@ -581,40 +592,42 @@ class KinoarhivModelName extends JModelForm {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__assets'))
-				->set($db->quoteName('rules')." = '".$rules."'")
-				->where($db->quoteName('name')." = 'com_kinoarhiv.name.".(int)$id."' AND ".$db->quoteName('level')." = 2 AND ".$db->quoteName('parent_id')." = ".(int)$parent_id);
+				->set($db->quoteName('rules') . " = '" . $rules . "'")
+				->where($db->quoteName('name') . " = 'com_kinoarhiv.name." . (int)$id . "' AND " . $db->quoteName('level') . " = 2 AND " . $db->quoteName('parent_id') . " = " . (int)$parent_id);
 
 			$db->setQuery($query);
 
 			try {
 				$db->execute();
-				return array('success'=>true);
-			} catch(Exception $e) {
-				return array('success'=>false, 'message'=>$e->getMessage());
+
+				return array('success' => true);
+			} catch (Exception $e) {
+				return array('success' => false, 'message' => $e->getMessage());
 			}
 		} else {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
+			return array('success' => false, 'message' => JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
 		}
 	}
 
-	public function deleteRelAwards() {
+	public function deleteRelAwards()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query = true;
 
 		if (count($data) <= 0) {
-			return array('success'=>false, 'message'=>JText::_('JERROR_NO_ITEMS_SELECTED'));
+			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
 		}
 
 		$db->setDebug(true);
 		$db->lockTable('#__ka_rel_awards');
 		$db->transactionStart();
 
-		foreach ($data as $key=>$value) {
+		foreach ($data as $key => $value) {
 			$ids = explode('_', substr($value['name'], 16));
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_rel_awards')." WHERE `id` = ".(int)$ids[0].";");
+			$db->setQuery("DELETE FROM " . $db->quoteName('#__ka_rel_awards') . " WHERE `id` = " . (int)$ids[0] . ";");
 			$result = $db->execute();
 
 			if ($result === false) {
@@ -636,10 +649,11 @@ class KinoarhivModelName extends JModelForm {
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		return array('success'=>$success, 'message'=>$message);
+		return array('success' => $success, 'message' => $message);
 	}
 
-	public function remove() {
+	public function remove()
+	{
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
 
@@ -651,12 +665,12 @@ class KinoarhivModelName extends JModelForm {
 		// Remove award relations
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_rel_awards'))
-			->where($db->quoteName('item_id').' IN ('.implode(',', $ids).') AND '.$db->quoteName('type').' = 1');
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ') AND ' . $db->quoteName('type') . ' = 1');
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -665,12 +679,12 @@ class KinoarhivModelName extends JModelForm {
 		// Remove genre relations
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_rel_names_genres'))
-			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('name_id') . ' IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -679,12 +693,12 @@ class KinoarhivModelName extends JModelForm {
 		// Remove favorited persons
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_user_marked_names'))
-			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('name_id') . ' IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -693,12 +707,12 @@ class KinoarhivModelName extends JModelForm {
 		// Remove career relations
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_rel_names_career'))
-			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('name_id') . ' IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -706,35 +720,35 @@ class KinoarhivModelName extends JModelForm {
 
 		// Remove media items
 		$query = $db->getQuery(true);
-		$query->select($db->quoteName('id').',SUBSTRING('.$db->quoteName('alias').', 1, 1) AS '.$db->quoteName('alias'))
+		$query->select($db->quoteName('id') . ',SUBSTRING(' . $db->quoteName('alias') . ', 1, 1) AS ' . $db->quoteName('alias'))
 			->from($db->quoteName('#__ka_names'))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 		$items = $db->loadObjectList();
 
 		foreach ($items as $item) {
 			// Delete root folders
-			if (file_exists($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_actor_posters_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			if (file_exists($params->get('media_actor_posters_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id)) {
+				JFolder::delete($params->get('media_actor_posters_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id);
 			}
-			if (file_exists($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_actor_photo_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			if (file_exists($params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id)) {
+				JFolder::delete($params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id);
 			}
-			if (file_exists($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id)) {
-				JFolder::delete($params->get('media_actor_wallpapers_root').DIRECTORY_SEPARATOR.$item->alias.DIRECTORY_SEPARATOR.$item->id);
+			if (file_exists($params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id)) {
+				JFolder::delete($params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id);
 			}
 		}
 
 		// Remove name(s) from DB
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_names'))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -743,12 +757,12 @@ class KinoarhivModelName extends JModelForm {
 		// Remove gallery items
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__ka_names_gallery'))
-			->where($db->quoteName('name_id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('name_id') . ' IN (' . implode(',', $ids) . ')');
 		$db->setQuery($query);
 
 		try {
 			$db->execute();
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -763,8 +777,8 @@ class KinoarhivModelName extends JModelForm {
 		foreach ($ids as $id) {
 			$query = $db->getQuery(true);
 			$query->delete($db->quoteName('#__assets'))
-				->where($db->quoteName('name')." = 'com_kinoarhiv.name.".(int)$id."' AND ".$db->quoteName('level')." = 2");
-			$db->setQuery($query.';');
+				->where($db->quoteName('name') . " = 'com_kinoarhiv.name." . (int)$id . "' AND " . $db->quoteName('level') . " = 2");
+			$db->setQuery($query . ';');
 
 			if ($db->execute() === false) {
 				$query_result = false;
@@ -784,7 +798,8 @@ class KinoarhivModelName extends JModelForm {
 		return $query_result;
 	}
 
-	public function check_name() {
+	public function check_name()
+	{
 		$data = JFactory::getApplication()->input->post->get('data', '', 'string');
 		$message = '';
 
@@ -795,7 +810,7 @@ class KinoarhivModelName extends JModelForm {
 
 			$query->select('COUNT(id)')
 				->from($db->quoteName('#__ka_names'))
-				->where($db->quoteName('name')." LIKE '".$db->escape(trim($data))."%' OR ".$db->quoteName('latin_name')." LIKE '".$db->escape(trim($data))."%'");
+				->where($db->quoteName('name') . " LIKE '" . $db->escape(trim($data)) . "%' OR " . $db->quoteName('latin_name') . " LIKE '" . $db->escape(trim($data)) . "%'");
 
 			$db->setQuery($query);
 			$count = $db->loadResult();
@@ -820,17 +835,17 @@ class KinoarhivModelName extends JModelForm {
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
+	 * @param   JForm  $form  The form to validate against.
+	 * @param   array  $data  The data to validate.
+	 * @param   string $group The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
-	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
 	 * @since   12.2
 	 */
-	public function validate($form, $data, $group = null) {
+	public function validate($form, $data, $group = null)
+	{
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);
@@ -838,6 +853,7 @@ class KinoarhivModelName extends JModelForm {
 		// Check for an error.
 		if ($return instanceof Exception) {
 			$this->setError($return->getMessage());
+
 			return false;
 		}
 

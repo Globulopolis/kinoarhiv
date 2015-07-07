@@ -1,17 +1,18 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelPremieres extends JModelList {
+class KinoarhivModelPremieres extends JModelList
+{
 	protected $context = null;
 
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'p.id',
@@ -25,10 +26,11 @@ class KinoarhivModelPremieres extends JModelList {
 
 		parent::__construct($config);
 
-		$this->context = strtolower($this->option.'.'.$this->getName().'.premieres');
+		$this->context = strtolower($this->option . '.' . $this->getName() . '.premieres');
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		$app = JFactory::getApplication();
 
 		// Adjust the context to support modal layouts.
@@ -58,7 +60,8 @@ class KinoarhivModelPremieres extends JModelList {
 		}
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.country');
@@ -68,7 +71,8 @@ class KinoarhivModelPremieres extends JModelList {
 		return parent::getStoreId($id);
 	}
 
-	protected function getListQuery() {
+	protected function getListQuery()
+	{
 		$db = $this->getDBO();
 
 		$query = $db->getQuery(true);
@@ -81,26 +85,26 @@ class KinoarhivModelPremieres extends JModelList {
 		);
 		$query->from($db->quoteName('#__ka_premieres', 'p'))
 			->select($db->quoteName(array('m.title', 'm.year')))
-			->join('LEFT', $db->quoteName('#__ka_movies', 'm').' ON '.$db->quoteName('m.id').' = '.$db->quoteName('p.movie_id'))
+			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('p.movie_id'))
 			->select($db->quoteName(array('v.company_name', 'v.company_name_intl')))
-			->join('LEFT', $db->quoteName('#__ka_vendors', 'v').' ON '.$db->quoteName('v.id').' = '.$db->quoteName('p.vendor_id'))
+			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('p.vendor_id'))
 			->select($db->quoteName(array('c.name', 'c.code')))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('p.country_id'));
+			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('p.country_id'));
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
-			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('p.language'));
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('p.language'));
 
 		// Filter by country
 		$country = $this->getState('filter.country');
 		if (is_numeric($country)) {
-			$query->where($db->quoteName('p.country_id').' = ' . (int)$country);
+			$query->where($db->quoteName('p.country_id') . ' = ' . (int)$country);
 		}
 
 		// Filter by vendor
 		$vendor = $this->getState('filter.vendor');
 		if (is_numeric($vendor)) {
-			$query->where($db->quoteName('p.vendor_id').' = ' . (int)$vendor);
+			$query->where($db->quoteName('p.vendor_id') . ' = ' . (int)$vendor);
 		}
 
 		// Filter on the language.
@@ -111,7 +115,7 @@ class KinoarhivModelPremieres extends JModelList {
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
-				$query->where('p.id = ' . (int) substr($search, 3));
+				$query->where('p.id = ' . (int)substr($search, 3));
 			} elseif (stripos($search, 'title:') === 0) {
 				$search = trim(substr($search, 6));
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
@@ -151,12 +155,11 @@ class KinoarhivModelPremieres extends JModelList {
 	/**
 	 * Method to get a list of articles.
 	 * Overridden to add a check for access levels.
-	 *
 	 * @return  mixed  An array of data items on success, false on failure.
-	 *
 	 * @since   1.6.1
 	 */
-	public function getItems() {
+	public function getItems()
+	{
 		$items = parent::getItems();
 
 		if (JFactory::getApplication()->isSite()) {
@@ -174,14 +177,15 @@ class KinoarhivModelPremieres extends JModelList {
 		return $items;
 	}
 
-	public function saveOrder() {
+	public function saveOrder()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('ord', array(), 'array');
 		$movie_id = $app->input->post->get('movie_id', null, 'int');
 
 		if (count($data) < 2) {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
+			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
 		}
 
 		$query_result = true;
@@ -189,14 +193,14 @@ class KinoarhivModelPremieres extends JModelList {
 		$db->lockTable('#__ka_premieres');
 		$db->transactionStart();
 
-		foreach ($data as $key=>$value) {
+		foreach ($data as $key => $value) {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_premieres'))
-				->set($db->quoteName('ordering')." = '".(int)$key."'")
-				->where(array($db->quoteName('ordering').' = '.(int)$value, $db->quoteName('movie_id').' = '.(int)$movie_id));
-				
-			$db->setQuery($query.';');
+				->set($db->quoteName('ordering') . " = '" . (int)$key . "'")
+				->where(array($db->quoteName('ordering') . ' = ' . (int)$value, $db->quoteName('movie_id') . ' = ' . (int)$movie_id));
+
+			$db->setQuery($query . ';');
 
 			if ($db->execute() === false) {
 				$query_result = false;
@@ -221,10 +225,11 @@ class KinoarhivModelPremieres extends JModelList {
 			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
 		}
 
-		return array('success'=>$success, 'message'=>$message);
+		return array('success' => $success, 'message' => $message);
 	}
 
-	public function batch() {
+	public function batch()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
@@ -237,13 +242,13 @@ class KinoarhivModelPremieres extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['vendor_id'])) {
-			$fields[] = $db->quoteName('vendor_id')." = '".(int)$batch_data['vendor_id']."'";
+			$fields[] = $db->quoteName('vendor_id') . " = '" . (int)$batch_data['vendor_id'] . "'";
 		}
 		if (!empty($batch_data['country_id'])) {
-			$fields[] = $db->quoteName('country_id')." = '".(int)$batch_data['country_id']."'";
+			$fields[] = $db->quoteName('country_id') . " = '" . (int)$batch_data['country_id'] . "'";
 		}
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string)$batch_data['language_id']) . "'";
 		}
 
 		if (empty($fields)) {
@@ -254,7 +259,7 @@ class KinoarhivModelPremieres extends JModelList {
 
 		$query->update($db->quoteName('#__ka_premieres'))
 			->set(implode(', ', $fields))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -262,7 +267,7 @@ class KinoarhivModelPremieres extends JModelList {
 			$db->execute();
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-		
+
 			return false;
 		}
 

@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
-		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
-		<field name="title" type="text" default="" label="COM_KA_CAREER_FIELD_TITLE" class="inputbox" required="true" filter="string" size="45" />
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
+		<field name="title" type="text" default="" label="COM_KA_CAREER_FIELD_TITLE" class="inputbox" required="true"
+			   filter="string" size="45"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
-		<field name="is_mainpage" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CAREER_MAINPAGE" description="COM_KA_FIELD_CAREER_MAINPAGE_DESC" filter="integer">
+		<field name="is_mainpage" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CAREER_MAINPAGE"
+			   description="COM_KA_FIELD_CAREER_MAINPAGE_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="is_amplua" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CAREER_AMPLUA" description="COM_KA_FIELD_CAREER_AMPLUA_DESC" filter="integer">
+		<field name="is_amplua" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CAREER_AMPLUA"
+			   description="COM_KA_FIELD_CAREER_AMPLUA_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
+			   class="inputbox" size="6" default="0"/>
 	</fieldset>
 </form>

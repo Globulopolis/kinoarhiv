@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelCountry extends JModelForm {
-	public function getForm($data = array(), $loadData = true) {
+class KinoarhivModelCountry extends JModelForm
+{
+	public function getForm($data = array(), $loadData = true)
+	{
 		$form = $this->loadForm('com_kinoarhiv.country', 'country', array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form)) {
@@ -19,8 +20,9 @@ class KinoarhivModelCountry extends JModelForm {
 		return $form;
 	}
 
-	protected function loadFormData() {
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.countries.'.JFactory::getUser()->id.'.edit_data', array());
+	protected function loadFormData()
+	{
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.countries.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -29,7 +31,8 @@ class KinoarhivModelCountry extends JModelForm {
 		return $data;
 	}
 
-	public function getItem() {
+	public function getItem()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$_id = $app->input->get('id', array(), 'array');
@@ -38,7 +41,7 @@ class KinoarhivModelCountry extends JModelForm {
 
 		$query->select($db->quoteName(array('id', 'name', 'code', 'language', 'state')))
 			->from($db->quoteName('#__ka_countries'))
-			->where($db->quoteName('id').' = '.(int)$id);
+			->where($db->quoteName('id') . ' = ' . (int)$id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -46,7 +49,8 @@ class KinoarhivModelCountry extends JModelForm {
 		return $result;
 	}
 
-	public function publish($isUnpublish) {
+	public function publish($isUnpublish)
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
@@ -54,8 +58,8 @@ class KinoarhivModelCountry extends JModelForm {
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__ka_countries'))
-			->set($db->quoteName('state').' = '.(int)$state)
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->set($db->quoteName('state') . ' = ' . (int)$state)
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -63,21 +67,22 @@ class KinoarhivModelCountry extends JModelForm {
 			$db->execute();
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
 		}
 	}
 
-	public function remove() {
+	public function remove()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
 		$query->delete($db->quoteName('#__ka_countries'))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -85,14 +90,15 @@ class KinoarhivModelCountry extends JModelForm {
 			$db->execute();
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
 		}
 	}
 
-	public function save($data) {
+	public function save($data)
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
@@ -102,7 +108,7 @@ class KinoarhivModelCountry extends JModelForm {
 		if (empty($name)) {
 			$this->setError(JText::_('COM_KA_REQUIRED'));
 
-			$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data', array(
 				'success' => false,
 				'message' => JText::_('COM_KA_REQUIRED')
 			));
@@ -116,7 +122,7 @@ class KinoarhivModelCountry extends JModelForm {
 
 			$query->select('COUNT(id)')
 				->from($db->quoteName('#__ka_countries'))
-				->where($db->quoteName('name')." = '".$db->escape($name)."'");
+				->where($db->quoteName('name') . " = '" . $db->escape($name) . "'");
 
 			$db->setQuery($query);
 			$count = $db->loadResult();
@@ -124,7 +130,7 @@ class KinoarhivModelCountry extends JModelForm {
 			if ($count > 0) {
 				$this->setError(JText::_('COM_KA_COUNTRY_EXISTS'));
 
-				$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.data', array(
+				$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data', array(
 					'success' => false,
 					'message' => JText::_('COM_KA_COUNTRY_EXISTS')
 				));
@@ -136,16 +142,16 @@ class KinoarhivModelCountry extends JModelForm {
 
 			$query->insert($db->quoteName('#__ka_countries'))
 				->columns($db->quoteName(array('id', 'name', 'code', 'language', 'state')))
-				->values("'','".$db->escape($name)."','".$db->escape($data['code'])."','".$db->escape($data['language'])."','".$data['state']."'");
+				->values("'','" . $db->escape($name) . "','" . $db->escape($data['code']) . "','" . $db->escape($data['language']) . "','" . $data['state'] . "'");
 		} else {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_countries'))
-				->set($db->quoteName('name')." = '".$db->escape($name)."'")
-				->set($db->quoteName('code')." = '".$db->escape($data['code'])."'")
-				->set($db->quoteName('language')." = '".$db->escape($data['language'])."'")
-				->set($db->quoteName('state')." = '".$data['state']."'")
-				->where($db->quoteName('id').' = '.(int)$id);
+				->set($db->quoteName('name') . " = '" . $db->escape($name) . "'")
+				->set($db->quoteName('code') . " = '" . $db->escape($data['code']) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
+				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int)$id);
 		}
 
 		try {
@@ -156,17 +162,17 @@ class KinoarhivModelCountry extends JModelForm {
 				$id = $db->insertid();
 			}
 
-			$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data', array(
 				'success' => true,
 				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
 				'data'    => array('id' => $id, 'name' => $name)
 			));
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
-			$app->setUserState('com_kinoarhiv.countries.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data', array(
 				'success' => false,
 				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
 			));
@@ -178,17 +184,17 @@ class KinoarhivModelCountry extends JModelForm {
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
+	 * @param   JForm  $form  The form to validate against.
+	 * @param   array  $data  The data to validate.
+	 * @param   string $group The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
-	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
 	 * @since   12.2
 	 */
-	public function validate($form, $data, $group = null) {
+	public function validate($form, $data, $group = null)
+	{
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);
@@ -196,6 +202,7 @@ class KinoarhivModelCountry extends JModelForm {
 		// Check for an error.
 		if ($return instanceof Exception) {
 			$this->setError($return->getMessage());
+
 			return false;
 		}
 

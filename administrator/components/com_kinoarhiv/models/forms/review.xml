@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form addrulepath="/administrator/components/com_kinoarhiv/models/rules">
 	<fieldset name="edit">
-		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
-		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="true" hide="readmore,pagebreak" />
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span12" filter="intval" size="11" data-ac-type="movies" />
-		<field name="created" type="datetime" default="NOW" class="inputbox" datatype="datetime" label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
-		<field name="uid" type="user" label="COM_KA_REVIEWS_FIELD_USER" labelclass="control-label" />
-		<field name="ip" type="text" default="" label="COM_KA_REVIEWS_FIELD_USER_IP" class="span12" filter="string" size="45" validate="ip" />
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
+		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="true"
+			   hide="readmore,pagebreak"/>
+		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span12"
+			   filter="intval" size="11" data-ac-type="movies"/>
+		<field name="created" type="datetime" default="NOW" class="inputbox" datatype="datetime"
+			   label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
+		<field name="uid" type="user" label="COM_KA_REVIEWS_FIELD_USER" labelclass="control-label"/>
+		<field name="ip" type="text" default="" label="COM_KA_REVIEWS_FIELD_USER_IP" class="span12" filter="string"
+			   size="45" validate="ip"/>
 		<field name="type" type="list" default="0" label="COM_KA_REVIEWS_FIELD_TYPE_TITLE">
 			<option value="0">COM_KA_REVIEWS_TYPE_0</option>
 			<option value="1">COM_KA_REVIEWS_TYPE_1</option>
 			<option value="2">COM_KA_REVIEWS_TYPE_2</option>
 			<option value="3">COM_KA_REVIEWS_TYPE_3</option>
 		</field>
-		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
+			   filter="intval" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field>

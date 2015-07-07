@@ -1,17 +1,18 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelAwards extends JModelList {
+class KinoarhivModelAwards extends JModelList
+{
 	protected $context = null;
 
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		parent::__construct($config);
 
 		if (empty($this->context)) {
@@ -19,7 +20,8 @@ class KinoarhivModelAwards extends JModelList {
 		}
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		if ($this->context) {
 			$app = JFactory::getApplication();
 			$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -37,25 +39,28 @@ class KinoarhivModelAwards extends JModelList {
 		}
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('list.limit');
 
 		return parent::getStoreId($id);
 	}
 
-	protected function getListQuery() {
+	protected function getListQuery()
+	{
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'title', 'desc')))
 			->from($db->quoteName('#__ka_awards'))
-			->where($db->quoteName('state').' = 1');
+			->where($db->quoteName('state') . ' = 1');
 
 		return $query;
 	}
 
-	public function getItem() {
+	public function getItem()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', null, 'int');
@@ -63,7 +68,7 @@ class KinoarhivModelAwards extends JModelList {
 
 		$query->select($db->quoteName(array('id', 'title', 'desc')))
 			->from($db->quoteName('#__ka_awards'))
-			->where($db->quoteName('id').' = '.(int)$id.' AND '.$db->quoteName('state').' = 1');
+			->where($db->quoteName('id') . ' = ' . (int)$id . ' AND ' . $db->quoteName('state') . ' = 1');
 		$db->setQuery($query);
 
 		try {
@@ -78,8 +83,9 @@ class KinoarhivModelAwards extends JModelList {
 		return $result;
 	}
 
-	public function getPagination() {
-		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+	public function getPagination()
+	{
+		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
 
 		$store = $this->getStoreId('getPagination');
 

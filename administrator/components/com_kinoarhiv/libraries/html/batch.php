@@ -1,20 +1,20 @@
 <?php defined('JPATH_PLATFORM') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-abstract class KAHtmlBatch {
+abstract class KAHtmlBatch
+{
 	/**
 	 * Display a batch widget for the country selector.
-	 *
 	 * @return  string  The necessary HTML for the widget.
 	 */
-	public static function country() {
+	public static function country()
+	{
 		JHtml::_('bootstrap.tooltip', '.modalTooltip', array('container' => '.modal-body'));
 		JHtml::_('formbehavior.chosen', '.modal-batch select');
 
@@ -32,17 +32,17 @@ abstract class KAHtmlBatch {
 
 	/**
 	 * Display a batch widget for the mediatype selector.
-	 *
 	 * @return  string  The necessary HTML for the widget.
 	 */
-	public static function mediatype() {
+	public static function mediatype()
+	{
 		JHtml::_('bootstrap.tooltip', '.modalTooltip', array('container' => '.modal-body'));
 		JHtml::_('formbehavior.chosen', '.modal-batch select');
 
 		$mediatypes = array();
 
-		for ($i=0, $n=20; $i<$n; $i++) {
-			$mediatypes[] = array('value'=>$i, 'text'=>JText::_('COM_KA_RELEASES_MEDIATYPE_'.$i));
+		for ($i = 0, $n = 20; $i < $n; $i++) {
+			$mediatypes[] = array('value' => $i, 'text' => JText::_('COM_KA_RELEASES_MEDIATYPE_' . $i));
 		}
 
 		// Create the batch selector to change the media type on a selection list.
@@ -59,10 +59,10 @@ abstract class KAHtmlBatch {
 
 	/**
 	 * Display a batch widget for the vendor selector.
-	 *
 	 * @return  string  The necessary HTML for the widget.
 	 */
-	public static function vendor() {
+	public static function vendor()
+	{
 		JHtml::_('bootstrap.tooltip', '.modalTooltip', array('container' => '.modal-body'));
 		JHtml::_('formbehavior.chosen', '.modal-batch select');
 

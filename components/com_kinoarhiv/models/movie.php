@@ -1,20 +1,21 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelMovie extends JModelForm {
+class KinoarhivModelMovie extends JModelForm
+{
 	protected $cache = array();
 	protected $context = null;
 	protected $filter_fields = array();
 	protected $query = array();
 
-	public function __construct($config = array()) {
+	public function __construct($config = array())
+	{
 		parent::__construct($config);
 
 		if (isset($config['filter_fields'])) {
@@ -25,11 +26,12 @@ class KinoarhivModelMovie extends JModelForm {
 			$input = JFactory::getApplication()->input;
 			$page = $input->get('page', 'global');
 
-			$this->context = strtolower($this->option.'.'.$this->getName().'.'.$page);
+			$this->context = strtolower($this->option . '.' . $this->getName() . '.' . $page);
 		}
 	}
 
-	public function getForm($data = array(), $loadData = true) {
+	public function getForm($data = array(), $loadData = true)
+	{
 		$form = $this->loadForm('com_kinoarhiv.reviews', 'reviews', array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form)) {
@@ -41,16 +43,16 @@ class KinoarhivModelMovie extends JModelForm {
 
 	/**
 	 * Method to get the data that should be injected in the form.
-	 *
 	 * @return  mixed  The data for the form.
 	 * @since   1.6
 	 */
-	protected function loadFormData() {
+	protected function loadFormData()
+	{
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$id = $app->input->get('id', 0, 'int');
 		$itemid = $app->input->get('Itemid', 0, 'int');
-		$data = $app->getUserState('com_kinoarhiv.movie.'.$id.'.user.'.$user->get('id'));
+		$data = $app->getUserState('com_kinoarhiv.movie.' . $id . '.user.' . $user->get('id'));
 
 		if (empty($data)) {
 			$data = $this->getFormData();
@@ -62,20 +64,22 @@ class KinoarhivModelMovie extends JModelForm {
 		return $data;
 	}
 
-	protected function getFormData() {
+	protected function getFormData()
+	{
 		$app = JFactory::getApplication();
 		$itemid = $app->input->get('Itemid', 0, 'int');
 		$id = $app->input->get('id', 0, 'int');
 
-		return array('Itemid'=>$itemid, 'id'=>$id);
+		return array('Itemid' => $itemid, 'id' => $id);
 	}
 
-	public function getData() {
+	public function getData()
+	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 
@@ -86,21 +90,21 @@ class KinoarhivModelMovie extends JModelForm {
 			->select(array('m.created_by', 'm.metakey', 'm.metadesc', 'm.attribs', 'm.state', 'm.metadata'))
 			->from($db->quoteName('#__ka_movies', 'm'));
 
-			// Join over gallery item
-			$query->select($db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g').' ON '.$db->quoteName('g.movie_id').' = '.$db->quoteName('m.id').' AND '.$db->quoteName('g.type').' = 2 AND '.$db->quoteName('g.poster_frontpage').' = 1 AND '.$db->quoteName('g.state').' = 1');
+		// Join over gallery item
+		$query->select($db->quoteName('g.filename'))
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON ' . $db->quoteName('g.movie_id') . ' = ' . $db->quoteName('m.id') . ' AND ' . $db->quoteName('g.type') . ' = 2 AND ' . $db->quoteName('g.poster_frontpage') . ' = 1 AND ' . $db->quoteName('g.state') . ' = 1');
 
 		if (!$user->get('guest')) {
 			$query->select($db->quoteName(array('u.favorite', 'u.watched')))
-				->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u').' ON '.$db->quoteName('u.uid').' = '.$user->get('id').' AND '.$db->quoteName('u.movie_id').' = '.$db->quoteName('m.id'));
+				->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u') . ' ON ' . $db->quoteName('u.uid') . ' = ' . $user->get('id') . ' AND ' . $db->quoteName('u.movie_id') . ' = ' . $db->quoteName('m.id'));
 
 			$query->select($db->quoteName('v.vote', 'my_vote'))->select($db->quoteName('v._datetime'))
-				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v').' ON '.$db->quoteName('v.movie_id').' = '.$db->quoteName('m.id').' AND '.$db->quoteName('v.uid').' = '.$user->get('id'));
+				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v') . ' ON ' . $db->quoteName('v.movie_id') . ' = ' . $db->quoteName('m.id') . ' AND ' . $db->quoteName('v.uid') . ' = ' . $user->get('id'));
 		}
 
 		$query->select($db->quoteName('user.name', 'username'))
-			->join('LEFT', $db->quoteName('#__users', 'user').' ON '.$db->quoteName('user.id').' = '.$db->quoteName('m.created_by'))
-			->where('`m`.`id` = '.(int)$id.' AND '.$db->quoteName('m.state').' = 1 AND '.$db->quoteName('access').' IN ('.$groups.') AND '.$db->quoteName('language').' IN ('.$db->quote($lang->getTag()).','.$db->quote('*').')');
+			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON ' . $db->quoteName('user.id') . ' = ' . $db->quoteName('m.created_by'))
+			->where('`m`.`id` = ' . (int)$id . ' AND ' . $db->quoteName('m.state') . ' = 1 AND ' . $db->quoteName('access') . ' IN (' . $groups . ') AND ' . $db->quoteName('language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 		$db->setQuery($query);
 
@@ -110,7 +114,7 @@ class KinoarhivModelMovie extends JModelForm {
 			if (empty($result)) {
 				return;
 			}
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 			$result = (object)array();
 		}
@@ -129,23 +133,23 @@ class KinoarhivModelMovie extends JModelForm {
 
 		// Selecting countries
 		$db->setQuery("SELECT `c`.`id`, `c`.`name`, `c`.`code`, `t`.`ordering`"
-			. "\n FROM ".$db->quoteName('#__ka_countries')." AS `c`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_countries')." AS `t` ON `t`.`country_id` = `c`.`id` AND `t`.`movie_id` = ".(int)$id
-			. "\n WHERE `id` IN (SELECT `country_id` FROM ".$db->quoteName('#__ka_rel_countries')." WHERE `movie_id` = ".(int)$id.") AND `state` = 1"
+			. "\n FROM " . $db->quoteName('#__ka_countries') . " AS `c`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_countries') . " AS `t` ON `t`.`country_id` = `c`.`id` AND `t`.`movie_id` = " . (int)$id
+			. "\n WHERE `id` IN (SELECT `country_id` FROM " . $db->quoteName('#__ka_rel_countries') . " WHERE `movie_id` = " . (int)$id . ") AND `state` = 1"
 			. "\n ORDER BY `ordering` ASC");
 		$result->countries = $db->loadObjectList();
 
 		// Selecting genres
 		$db->setQuery("SELECT `g`.`id`, `g`.`name`, `g`.`alias`, `t`.`ordering`"
-			. "\n FROM ".$db->quoteName('#__ka_genres')." AS `g`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_genres')." AS `t` ON `t`.`genre_id` = `g`.`id` AND `t`.`movie_id` = ".(int)$id
-			. "\n WHERE `id` IN (SELECT `genre_id` FROM ".$db->quoteName('#__ka_rel_genres')." WHERE `movie_id` = ".(int)$id.") AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
+			. "\n FROM " . $db->quoteName('#__ka_genres') . " AS `g`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_genres') . " AS `t` ON `t`.`genre_id` = `g`.`id` AND `t`.`movie_id` = " . (int)$id
+			. "\n WHERE `id` IN (SELECT `genre_id` FROM " . $db->quoteName('#__ka_rel_genres') . " WHERE `movie_id` = " . (int)$id . ") AND `state` = 1 AND `access` IN (" . $groups . ") AND `language` IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")"
 			. "\n ORDER BY `ordering` ASC");
 		$result->genres = $db->loadObjectList();
 
 		// Get cast and crew
 		$careers = array();
-		$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." WHERE `is_mainpage` = 1 AND `is_amplua` = 0 ORDER BY `ordering` ASC");
+		$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `is_mainpage` = 1 AND `is_amplua` = 0 ORDER BY `ordering` ASC");
 		$_careers = $db->loadObjectList();
 
 		foreach ($_careers as $career) {
@@ -153,30 +157,30 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `t`.`type`, `t`.`is_actors`, `t`.`voice_artists`"
-			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = ".(int)$id
-			. "\n WHERE `id` IN (SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$id.") AND `state` = 1 AND `access` IN (".$groups.") AND `language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
+			. "\n FROM " . $db->quoteName('#__ka_names') . " AS `n`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_names') . " AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = " . (int)$id
+			. "\n WHERE `id` IN (SELECT `name_id` FROM " . $db->quoteName('#__ka_rel_names') . " WHERE `movie_id` = " . (int)$id . ") AND `state` = 1 AND `access` IN (" . $groups . ") AND `language` IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")"
 			. "\n ORDER BY `t`.`ordering` ASC");
 		$crew = $db->loadObjectList();
 
 		$_result = array();
-		foreach ($crew as $key=>$value) {
-			foreach (explode(',', $value->type) as $k=>$type) {
+		foreach ($crew as $key => $value) {
+			foreach (explode(',', $value->type) as $k => $type) {
 				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0) {
 					$_result['crew'][$type]['career'] = $careers[$type];
 					$_result['crew'][$type]['items'][] = array(
-						'id'	=> $value->id,
-						'name'	=> !empty($value->name) ? $value->name : $value->latin_name,
-						'alias'	=> $value->alias
+						'id'    => $value->id,
+						'name'  => !empty($value->name) ? $value->name : $value->latin_name,
+						'alias' => $value->alias
 					);
 				}
 
 				if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0) {
 					$_result['cast'][$type]['career'] = $careers[$type];
 					$_result['cast'][$type]['items'][] = array(
-						'id'	=> $value->id,
-						'name'	=> !empty($value->name) ? $value->name : $value->latin_name,
-						'alias'	=> $value->alias
+						'id'    => $value->id,
+						'name'  => !empty($value->name) ? $value->name : $value->latin_name,
+						'alias' => $value->alias
 					);
 				}
 			}
@@ -207,12 +211,12 @@ class KinoarhivModelMovie extends JModelForm {
 		// Selecting premiere dates
 		if ($params->get('premieres_list_limit') > 0) {
 			$db->setQuery("SELECT `p`.`id`, `p`.`vendor_id`, `p`.`premiere_date`, `p`.`info`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
-				. "\n FROM ".$db->quoteName('#__ka_premieres')." AS `p`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `p`.`vendor_id`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `p`.`country_id`"
-				. "\n WHERE `movie_id` = ".(int)$id." AND `p`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
+				. "\n FROM " . $db->quoteName('#__ka_premieres') . " AS `p`"
+				. "\n LEFT JOIN " . $db->quoteName('#__ka_vendors') . " AS `v` ON `v`.`id` = `p`.`vendor_id`"
+				. "\n LEFT JOIN " . $db->quoteName('#__ka_countries') . " AS `c` ON `c`.`id` = `p`.`country_id`"
+				. "\n WHERE `movie_id` = " . (int)$id . " AND `p`.`language` IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")"
 				. "\n ORDER BY `p`.`ordering` ASC"
-				. "\n LIMIT ".(int)$params->get('premieres_list_limit'));
+				. "\n LIMIT " . (int)$params->get('premieres_list_limit'));
 			$result->premieres = $db->loadObjectList();
 		} else {
 			$result->premieres = (object)array();
@@ -221,12 +225,12 @@ class KinoarhivModelMovie extends JModelForm {
 		// Selecting release dates
 		if ($params->get('releases_list_limit') > 0) {
 			$db->setQuery("SELECT `r`.`id`, `r`.`movie_id`, `r`.`media_type`, `r`.`release_date`, `c`.`name` AS `country`, `v`.`company_name`, `v`.`company_name_intl`"
-				. "\n FROM ".$db->quoteName('#__ka_releases')." AS `r`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_countries')." AS `c` ON `c`.`id` = `r`.`country_id`"
-				. "\n LEFT JOIN ".$db->quoteName('#__ka_vendors')." AS `v` ON `v`.`id` = `r`.`vendor_id`"
-				. "\n WHERE `movie_id` = ".(int)$id." AND `r`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
+				. "\n FROM " . $db->quoteName('#__ka_releases') . " AS `r`"
+				. "\n LEFT JOIN " . $db->quoteName('#__ka_countries') . " AS `c` ON `c`.`id` = `r`.`country_id`"
+				. "\n LEFT JOIN " . $db->quoteName('#__ka_vendors') . " AS `v` ON `v`.`id` = `r`.`vendor_id`"
+				. "\n WHERE `movie_id` = " . (int)$id . " AND `r`.`language` IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")"
 				. "\n ORDER BY `ordering` ASC"
-				. "\n LIMIT ".(int)$params->get('releases_list_limit'));
+				. "\n LIMIT " . (int)$params->get('releases_list_limit'));
 			$result->releases = $db->loadObjectList();
 		} else {
 			$result->releases = (object)array();
@@ -237,7 +241,7 @@ class KinoarhivModelMovie extends JModelForm {
 
 		// Get Slider
 		if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1) {
-			$db->setQuery("SELECT `id`, `filename`, `dimension` FROM ".$db->quoteName('#__ka_movies_gallery')." WHERE `movie_id` = ".(int)$id." AND `state` = 1 AND `type` = 3 LIMIT ".(int)$params->get('slider_max_item'));
+			$db->setQuery("SELECT `id`, `filename`, `dimension` FROM " . $db->quoteName('#__ka_movies_gallery') . " WHERE `movie_id` = " . (int)$id . " AND `state` = 1 AND `type` = 3 LIMIT " . (int)$params->get('slider_max_item'));
 			try {
 				$result->slides = $db->loadObjectList();
 			} catch (Exception $e) {
@@ -249,18 +253,19 @@ class KinoarhivModelMovie extends JModelForm {
 		return $result;
 	}
 
-	public function getMovieData() {
+	public function getMovieData()
+	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$id = $app->input->get('id', 0, 'int');
 
 		$db->setQuery("SELECT `m`.`id`, `m`.`title`, `m`.`alias`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`metakey`, `m`.`metadesc`, `m`.`metadata`, `m`.`attribs`, `user`.`name` AS `username`"
-			. "\n FROM ".$db->quoteName('#__ka_movies')." AS `m`"
-			. "\n LEFT JOIN ".$db->quoteName('#__users')." AS `user` ON `user`.`id` = `m`.`created_by`"
-			. "\n WHERE `m`.`id` = ".(int)$id." AND `m`.`state` = 1 AND `m`.`access` IN (".$groups.") AND `m`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
+			. "\n FROM " . $db->quoteName('#__ka_movies') . " AS `m`"
+			. "\n LEFT JOIN " . $db->quoteName('#__users') . " AS `user` ON `user`.`id` = `m`.`created_by`"
+			. "\n WHERE `m`.`id` = " . (int)$id . " AND `m`.`state` = 1 AND `m`.`access` IN (" . $groups . ") AND `m`.`language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 		try {
 			$result = $db->loadObject();
 
@@ -268,7 +273,7 @@ class KinoarhivModelMovie extends JModelForm {
 				$this->setError('Error');
 				$result = (object)array();
 			}
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 			GlobalHelper::eventLog($e->getMessage());
 		}
@@ -278,7 +283,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $result;
 	}
 
-	protected function getTags($ids) {
+	protected function getTags($ids)
+	{
 		$db = $this->getDBO();
 
 		if (empty($ids)) {
@@ -290,26 +296,27 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$db->setQuery("SELECT `id` AS `tag_id`, `title` AS `tag_title`, `alias` AS `tag_alias`"
-			. "\n FROM ".$db->quoteName('#__tags')
-			. "\n WHERE `id` IN (".$ids.")");
+			. "\n FROM " . $db->quoteName('#__tags')
+			. "\n WHERE `id` IN (" . $ids . ")");
 		$result = $db->loadObjectList();
 
 		return $result;
 	}
 
-	public function getCast() {
+	public function getCast()
+	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 
 		$result = $this->getMovieData();
 
 		$careers = array();
-		$db->setQuery("SELECT `id`, `title` FROM ".$db->quoteName('#__ka_names_career')." ORDER BY `ordering` ASC");
+		$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " ORDER BY `ordering` ASC");
 		$_careers = $db->loadObjectList();
 
 		foreach ($_careers as $career) {
@@ -317,24 +324,24 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$db->setQuery("SELECT `n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, `n`.`gender`, `t`.`type`, `t`.`role`, `t`.`is_actors`, `t`.`voice_artists`, `d`.`id` AS `dub_id`, `d`.`name` AS `dub_name`, `d`.`latin_name` AS `dub_latin_name`, `d`.`alias` AS `dub_alias`, `d`.`gender` AS `dub_gender`, GROUP_CONCAT(`r`.`role` SEPARATOR ', ') AS `dub_role`, `ac`.`desc`, `g`.`filename` AS `url_photo`, `dg`.`filename` AS `dub_url_photo`"
-			. "\n FROM ".$db->quoteName('#__ka_names')." AS `n`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = ".(int)$id
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_names')." AS `d` ON `d`.`id` = `t`.`dub_id` AND `d`.`state` = 1 AND `d`.`access` IN (".$groups.") AND `d`.`language` IN (".$db->quote(JFactory::getLanguage()->getTag()).','.$db->quote('*').")"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `r` ON `r`.`dub_id` = `n`.`id` AND `r`.`movie_id` = ".(int)$id
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_rel_names')." AS `ac` ON `ac`.`name_id` = `n`.`id` AND `ac`.`movie_id` = ".(int)$id
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_names_gallery')." AS `dg` ON `dg`.`name_id` = `d`.`id` AND `dg`.`type` = 3 AND `dg`.`photo_frontpage` = 1"
-			. "\n WHERE `n`.`id` IN (SELECT `name_id` FROM ".$db->quoteName('#__ka_rel_names')." WHERE `movie_id` = ".(int)$id.")"
-			. "\n AND `n`.`state` = 1 AND `n`.`access` IN (".$groups.") AND `n`.`language` IN (".$db->quote($lang->getTag()).','.$db->quote('*').")"
+			. "\n FROM " . $db->quoteName('#__ka_names') . " AS `n`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_names') . " AS `t` ON `t`.`name_id` = `n`.`id` AND `t`.`movie_id` = " . (int)$id
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_names') . " AS `d` ON `d`.`id` = `t`.`dub_id` AND `d`.`state` = 1 AND `d`.`access` IN (" . $groups . ") AND `d`.`language` IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ")"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_names') . " AS `r` ON `r`.`dub_id` = `n`.`id` AND `r`.`movie_id` = " . (int)$id
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_names') . " AS `ac` ON `ac`.`name_id` = `n`.`id` AND `ac`.`movie_id` = " . (int)$id
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_names_gallery') . " AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_names_gallery') . " AS `dg` ON `dg`.`name_id` = `d`.`id` AND `dg`.`type` = 3 AND `dg`.`photo_frontpage` = 1"
+			. "\n WHERE `n`.`id` IN (SELECT `name_id` FROM " . $db->quoteName('#__ka_rel_names') . " WHERE `movie_id` = " . (int)$id . ")"
+			. "\n AND `n`.`state` = 1 AND `n`.`access` IN (" . $groups . ") AND `n`.`language` IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")"
 			. "\n GROUP BY `n`.`id`"
 			. "\n ORDER BY `t`.`ordering` ASC");
 		$crew = $db->loadObjectList();
 
-		$_result = array('crew'=>array(), 'cast'=>array(), 'dub'=>array());
+		$_result = array('crew' => array(), 'cast' => array(), 'dub' => array());
 		$_careers_crew = array();
 
-		foreach ($crew as $key=>$value) {
-			foreach (explode(',', $value->type) as $k=>$type) {
+		foreach ($crew as $key => $value) {
+			foreach (explode(',', $value->type) as $k => $type) {
 				// Crew
 				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0) {
 					$_result['crew'][$type]['career'] = $careers[$type];
@@ -342,27 +349,27 @@ class KinoarhivModelMovie extends JModelForm {
 
 					if (empty($value->url_photo)) {
 						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
-						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
+						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
 						$value->y_poster = '';
 					} else {
 						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
-							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
+							$value->poster = JUri::base() . JString::substr($params->get('media_actor_photo_root_www'), 1) . '/' . JString::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						} else {
-							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . JString::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 						$value->y_poster = ' y-poster';
 					}
 
 					$_result['crew'][$type]['items'][] = array(
-						'id'=>			$value->id,
-						'name'=>		$value->name,
-						'latin_name'=>	$value->latin_name,
-						'alias'=>		$value->alias,
-						'poster'=>		$value->poster,
-						'y_poster'=>	$value->y_poster,
-						'gender'=>		$value->gender,
-						'role'=>		$value->role,
-						'desc'=>		$value->desc
+						'id'         => $value->id,
+						'name'       => $value->name,
+						'latin_name' => $value->latin_name,
+						'alias'      => $value->alias,
+						'poster'     => $value->poster,
+						'y_poster'   => $value->y_poster,
+						'gender'     => $value->gender,
+						'role'       => $value->role,
+						'desc'       => $value->desc
 					);
 				}
 
@@ -373,48 +380,48 @@ class KinoarhivModelMovie extends JModelForm {
 
 					if (empty($value->url_photo)) {
 						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
-						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
+						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
 						$value->y_poster = '';
 					} else {
 						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
-							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
+							$value->poster = JUri::base() . JString::substr($params->get('media_actor_photo_root_www'), 1) . '/' . JString::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						} else {
-							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . JString::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 						$value->y_poster = ' y-poster';
 					}
 
 					if (empty($value->dub_url_photo)) {
 						$ftype = $value->dub_gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
-						$value->dub_url_photo = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
+						$value->dub_url_photo = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
 						$value->dub_y_poster = '';
 					} else {
 						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
-							$value->dub_url_photo = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/photo/thumb_'.$value->dub_url_photo;
+							$value->dub_url_photo = JUri::base() . JString::substr($params->get('media_actor_photo_root_www'), 1) . '/' . JString::substr($value->dub_alias, 0, 1) . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
 						} else {
-							$value->dub_url_photo = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->dub_alias, 0, 1).'/'.$value->dub_id.'/photo/thumb_'.$value->dub_url_photo;
+							$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . JString::substr($value->dub_alias, 0, 1) . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
 						}
 						$value->dub_y_poster = ' y-poster';
 					}
 
 					$_result['cast'][$type]['items'][] = array(
-						'id'=>			$value->id,
-						'name'=>		$value->name,
-						'latin_name'=>	$value->latin_name,
-						'alias'=>		$value->alias,
-						'poster'=>		$value->poster,
-						'y_poster'=>	$value->y_poster,
-						'gender'=>		$value->gender,
-						'role'=>		$value->role,
-						'dub_id'=>		$value->dub_id,
-						'dub_name'=>	$value->dub_name,
-						'dub_latin_name'=>$value->dub_latin_name,
-						'dub_alias'=>	$value->dub_alias,
-						'dub_url_photo'=>$value->dub_url_photo,
-						'dub_y_poster'=>$value->dub_y_poster,
-						'dub_gender'=>	$value->dub_gender,
-						'dub_role'=>	$value->dub_role,
-						'desc'=>		$value->desc
+						'id'             => $value->id,
+						'name'           => $value->name,
+						'latin_name'     => $value->latin_name,
+						'alias'          => $value->alias,
+						'poster'         => $value->poster,
+						'y_poster'       => $value->y_poster,
+						'gender'         => $value->gender,
+						'role'           => $value->role,
+						'dub_id'         => $value->dub_id,
+						'dub_name'       => $value->dub_name,
+						'dub_latin_name' => $value->dub_latin_name,
+						'dub_alias'      => $value->dub_alias,
+						'dub_url_photo'  => $value->dub_url_photo,
+						'dub_y_poster'   => $value->dub_y_poster,
+						'dub_gender'     => $value->dub_gender,
+						'dub_role'       => $value->dub_role,
+						'desc'           => $value->desc
 					);
 				}
 
@@ -425,27 +432,27 @@ class KinoarhivModelMovie extends JModelForm {
 
 					if (empty($value->url_photo)) {
 						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
-						$value->poster = JURI::base().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/'.$ftype;
+						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
 						$value->y_poster = '';
 					} else {
 						if (JString::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
-							$value->poster = JUri::base().JString::substr($params->get('media_actor_photo_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
+							$value->poster = JUri::base() . JString::substr($params->get('media_actor_photo_root_www'), 1) . '/' . JString::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						} else {
-							$value->poster = $params->get('media_actor_photo_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$value->id.'/photo/thumb_'.$value->url_photo;
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . JString::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 						$value->y_poster = ' y-poster';
 					}
 
 					$_result['dub'][$type]['items'][] = array(
-						'id'=>			$value->id,
-						'name'=>		$value->name,
-						'latin_name'=>	$value->latin_name,
-						'alias'=>		$value->alias,
-						'poster'=>		$value->poster,
-						'y_poster'=>	$value->y_poster,
-						'gender'=>		$value->gender,
-						'role'=>		$value->dub_role,
-						'desc'=>		$value->desc
+						'id'         => $value->id,
+						'name'       => $value->name,
+						'latin_name' => $value->latin_name,
+						'alias'      => $value->alias,
+						'poster'     => $value->poster,
+						'y_poster'   => $value->y_poster,
+						'gender'     => $value->gender,
+						'role'       => $value->dub_role,
+						'desc'       => $value->desc
 					);
 				}
 			}
@@ -468,14 +475,15 @@ class KinoarhivModelMovie extends JModelForm {
 		return $result;
 	}
 
-	public function getTrailers($id=null, $type=null) {
+	public function getTrailers($id = null, $type = null)
+	{
 		jimport('joomla.filesystem.file');
 
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
 		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
@@ -483,27 +491,28 @@ class KinoarhivModelMovie extends JModelForm {
 		$result->player_width = $params->get('player_width');
 
 		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`resolution`, `tr`.`dar`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
-			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
-			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').")");
+			. "\n FROM " . $db->quoteName('#__ka_trailers') . " AS `tr`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_movies') . " AS `m` ON `m`.`id` = `tr`.`movie_id`"
+			. "\n WHERE `tr`.`movie_id` = " . (int)$id . " AND `tr`.`state` = 1 AND `tr`.`access` IN (" . $groups . ") AND `tr`.`language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 		$result->trailers = $db->loadObjectList();
 
 		if (count($result->trailers) < 1) {
 			$result->trailers = array();
+
 			return $result;
 		}
 
-		foreach ($result->trailers as $key=>$value) {
+		foreach ($result->trailers as $key => $value) {
 			if (!empty($value->urls)) { // Get the data from urls
 				$urls_arr = explode("\n", $value->urls);
 				$value->path = '';
 
 				if (count($urls_arr) > 0) {
-					if (file_exists($params->get('media_trailers_root').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot)) {
+					if (file_exists($params->get('media_trailers_root') . '/' . JString::substr($value->alias, 0, 1) . '/' . $id . '/' . $value->screenshot)) {
 						if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-							$value->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+							$value->screenshot = JUri::base() . JString::substr($params->get('media_trailers_root_www'), 1) . '/' . JString::substr($value->alias, 0, 1) . '/' . $id . '/' . $value->screenshot;
 						} else {
-							$value->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/'.$value->screenshot;
+							$value->screenshot = $params->get('media_trailers_root_www') . '/' . JString::substr($value->alias, 0, 1) . '/' . $id . '/' . $value->screenshot;
 						}
 					} else {
 						$value->screenshot = '';
@@ -550,29 +559,29 @@ class KinoarhivModelMovie extends JModelForm {
 								if ($kind == '') {
 									if ($in_player === true) {
 										$value->files['video'][] = array(
-											'src'=>$url,
-											'type'=>$type,
-											'resolution'=>$resolution
+											'src'        => $url,
+											'type'       => $type,
+											'resolution' => $resolution
 										);
 									} else {
 										$value->files['video_links'][] = array(
-											'src'=>$url,
-											'type'=>$type,
-											'resolution'=>$resolution
+											'src'        => $url,
+											'type'       => $type,
+											'resolution' => $resolution
 										);
 									}
 								}
 								if ($kind == 'subtitles') {
 									$value->files['subtitles'][] = array(
-										'default'=>$default,
-										'lang_code'=>$srclang,
-										'lang'=>$label,
-										'file'=>$url
+										'default'   => $default,
+										'lang_code' => $srclang,
+										'lang'      => $label,
+										'file'      => $url
 									);
 								}
 								if ($kind == 'chapters') {
 									$value->files['chapters'] = array(
-										'file'=>$url
+										'file' => $url
 									);
 								}
 							}
@@ -583,18 +592,18 @@ class KinoarhivModelMovie extends JModelForm {
 				}
 			} else {
 				if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-					$value->path = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
-					$path = JPATH_ROOT.DIRECTORY_SEPARATOR.JString::substr($params->get('media_trailers_root_www'), 1).DIRECTORY_SEPARATOR.JString::substr($value->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
+					$value->path = JUri::base() . JString::substr($params->get('media_trailers_root_www'), 1) . '/' . JString::substr($value->alias, 0, 1) . '/' . $id . '/';
+					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . JString::substr($params->get('media_trailers_root_www'), 1) . DIRECTORY_SEPARATOR . JString::substr($value->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 				} else {
-					$value->path = $params->get('media_trailers_root_www').'/'.JString::substr($value->alias, 0, 1).'/'.$id.'/';
-					$path = JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get('media_trailers_root_www').DIRECTORY_SEPARATOR.JString::substr($value->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
+					$value->path = $params->get('media_trailers_root_www') . '/' . JString::substr($value->alias, 0, 1) . '/' . $id . '/';
+					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www') . DIRECTORY_SEPARATOR . JString::substr($value->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 				}
 				$value->files['video'] = json_decode($value->filename, true);
 				$value->files['video_links'] = array();
 
 				// Checking video extentions
 				if (count($value->files['video']) > 0) {
-					foreach ($value->files['video'] as $i=>$val) {
+					foreach ($value->files['video'] as $i => $val) {
 						if (!in_array(strtolower(JFile::getExt($val['src'])), array('mp4', 'webm', 'ogv'))) {
 							$value->files['video_links'][] = $value->files['video'][$i];
 							unset($value->files['video'][$i]);
@@ -628,8 +637,8 @@ class KinoarhivModelMovie extends JModelForm {
 				// Check if subtitle file exists
 				$_subtitles = json_decode($value->_subtitles, true);
 				if (!empty($_subtitles)) {
-					foreach ($_subtitles as $i=>$subtitle) {
-						if (!file_exists(JPath::clean($path.$subtitle['file']))) {
+					foreach ($_subtitles as $i => $subtitle) {
+						if (!file_exists(JPath::clean($path . $subtitle['file']))) {
 							unset($_subtitles[$i]);
 						}
 					}
@@ -640,8 +649,8 @@ class KinoarhivModelMovie extends JModelForm {
 				// Check if chapter file exists
 				$_chapters = json_decode($value->_chapters, true);
 				if (!empty($_chapters)) {
-					foreach ($_chapters as $i=>$chapter) {
-						if (!file_exists(JPath::clean($path.$chapter))) {
+					foreach ($_chapters as $i => $chapter) {
+						if (!file_exists(JPath::clean($path . $chapter))) {
 							unset($_chapters[$i]);
 						}
 					}
@@ -656,18 +665,17 @@ class KinoarhivModelMovie extends JModelForm {
 
 	/**
 	 * Method to get trailer or movie
-	 *
 	 * @return  object
-	 *
 	 */
-	public function getTrailer($id=null, $type=null) {
+	public function getTrailer($id = null, $type = null)
+	{
 		jimport('joomla.filesystem.file');
 
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
-		$groups	= implode(',', $user->getAuthorisedViewLevels());
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
 		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
@@ -682,9 +690,9 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 
 		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`resolution`, `tr`.`dar`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`title`, `m`.`alias`"
-			. "\n FROM ".$db->quoteName('#__ka_trailers')." AS `tr`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `m` ON `m`.`id` = `tr`.`movie_id`"
-			. "\n WHERE `tr`.`movie_id` = ".(int)$id." AND `tr`.`state` = 1 AND `tr`.`access` IN (".$groups.") AND `tr`.`language` IN (".$db->quote($lang->getTag()).",".$db->quote('*').") AND `tr`.`is_movie` = ".$is_movie." AND `tr`.`frontpage` = 1"
+			. "\n FROM " . $db->quoteName('#__ka_trailers') . " AS `tr`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_movies') . " AS `m` ON `m`.`id` = `tr`.`movie_id`"
+			. "\n WHERE `tr`.`movie_id` = " . (int)$id . " AND `tr`.`state` = 1 AND `tr`.`access` IN (" . $groups . ") AND `tr`.`language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `tr`.`is_movie` = " . $is_movie . " AND `tr`.`frontpage` = 1"
 			. "\n LIMIT 1");
 		$result = $db->loadObject();
 
@@ -699,11 +707,11 @@ class KinoarhivModelMovie extends JModelForm {
 			$urls_arr = explode("\n", $result->urls);
 
 			if (count($urls_arr) > 0) {
-				if (file_exists($params->get('media_trailers_root').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot)) {
+				if (file_exists($params->get('media_trailers_root') . '/' . JString::substr($result->alias, 0, 1) . '/' . $id . '/' . $result->screenshot)) {
 					if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-						$result->screenshot = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+						$result->screenshot = JUri::base() . JString::substr($params->get('media_trailers_root_www'), 1) . '/' . JString::substr($result->alias, 0, 1) . '/' . $id . '/' . $result->screenshot;
 					} else {
-						$result->screenshot = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/'.$result->screenshot;
+						$result->screenshot = $params->get('media_trailers_root_www') . '/' . JString::substr($result->alias, 0, 1) . '/' . $id . '/' . $result->screenshot;
 					}
 				} else {
 					$result->screenshot = '';
@@ -750,29 +758,29 @@ class KinoarhivModelMovie extends JModelForm {
 							if ($kind == '') {
 								if ($in_player === true) {
 									$result->files['video'][] = array(
-										'src'=>$url,
-										'type'=>$type,
-										'resolution'=>$resolution
+										'src'        => $url,
+										'type'       => $type,
+										'resolution' => $resolution
 									);
 								} else {
 									$result->files['video_links'][] = array(
-										'src'=>$url,
-										'type'=>$type,
-										'resolution'=>$resolution
+										'src'        => $url,
+										'type'       => $type,
+										'resolution' => $resolution
 									);
 								}
 							}
 							if ($kind == 'subtitles') {
 								$result->files['subtitles'][] = array(
-									'default'=>$default,
-									'lang_code'=>$srclang,
-									'lang'=>$label,
-									'file'=>$url
+									'default'   => $default,
+									'lang_code' => $srclang,
+									'lang'      => $label,
+									'file'      => $url
 								);
 							}
 							if ($kind == 'chapters') {
 								$result->files['chapters'] = array(
-									'file'=>$url
+									'file' => $url
 								);
 							}
 						}
@@ -783,18 +791,18 @@ class KinoarhivModelMovie extends JModelForm {
 			}
 		} else {
 			if (JString::substr($params->get('media_trailers_root_www'), 0, 1) == '/') {
-				$result->path = JUri::base().JString::substr($params->get('media_trailers_root_www'), 1).'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
-				$path = JPATH_ROOT.DIRECTORY_SEPARATOR.JString::substr($params->get('media_trailers_root_www'), 1).DIRECTORY_SEPARATOR.JString::substr($result->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
+				$result->path = JUri::base() . JString::substr($params->get('media_trailers_root_www'), 1) . '/' . JString::substr($result->alias, 0, 1) . '/' . $id . '/';
+				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . JString::substr($params->get('media_trailers_root_www'), 1) . DIRECTORY_SEPARATOR . JString::substr($result->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 			} else {
-				$result->path = $params->get('media_trailers_root_www').'/'.JString::substr($result->alias, 0, 1).'/'.$id.'/';
-				$path = JPATH_ROOT.DIRECTORY_SEPARATOR.$params->get('media_trailers_root_www').DIRECTORY_SEPARATOR.JString::substr($result->alias, 0, 1).DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR;
+				$result->path = $params->get('media_trailers_root_www') . '/' . JString::substr($result->alias, 0, 1) . '/' . $id . '/';
+				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www') . DIRECTORY_SEPARATOR . JString::substr($result->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 			}
 			$result->files['video'] = json_decode($result->filename, true);
 			$result->files['video_links'] = array();
 
 			// Checking video extentions
 			if (count($result->files['video']) > 0) {
-				foreach ($result->files['video'] as $key=>$value) {
+				foreach ($result->files['video'] as $key => $value) {
 					if (!in_array(strtolower(JFile::getExt($value['src'])), array('mp4', 'webm', 'ogv'))) {
 						$result->files['video_links'][] = $result->files['video'][$key];
 						unset($result->files['video'][$key]);
@@ -828,8 +836,8 @@ class KinoarhivModelMovie extends JModelForm {
 			// Check if subtitle file exists
 			$_subtitles = json_decode($result->_subtitles, true);
 			if (!empty($_subtitles)) {
-				foreach ($_subtitles as $i=>$subtitle) {
-					if (!file_exists(JPath::clean($path.$subtitle['file']))) {
+				foreach ($_subtitles as $i => $subtitle) {
+					if (!file_exists(JPath::clean($path . $subtitle['file']))) {
 						unset($_subtitles[$i]);
 					}
 				}
@@ -840,8 +848,8 @@ class KinoarhivModelMovie extends JModelForm {
 			// Check if chapter file exists
 			$_chapters = json_decode($result->_chapters, true);
 			if (!empty($_chapters)) {
-				foreach ($_chapters as $i=>$chapter) {
-					if (!file_exists(JPath::clean($path.$chapter))) {
+				foreach ($_chapters as $i => $chapter) {
+					if (!file_exists(JPath::clean($path . $chapter))) {
 						unset($_chapters[$i]);
 					}
 				}
@@ -853,7 +861,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $result;
 	}
 
-	public function getAwards() {
+	public function getAwards()
+	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
@@ -861,16 +870,17 @@ class KinoarhivModelMovie extends JModelForm {
 		$result = $this->getMovieData();
 
 		$db->setQuery("SELECT `a`.`desc`, `a`.`year`, `aw`.`id`, `aw`.`title` AS `aw_title`, `aw`.`desc` AS `aw_desc`"
-			. "\n FROM ".$db->quoteName('#__ka_rel_awards')." AS `a`"
-			. "\n LEFT JOIN ".$db->quoteName('#__ka_awards')." AS `aw` ON `aw`.`id` = `a`.`award_id`"
-			. "\n WHERE `type` = 0 AND `item_id` = ".(int)$id
+			. "\n FROM " . $db->quoteName('#__ka_rel_awards') . " AS `a`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_awards') . " AS `aw` ON `aw`.`id` = `a`.`award_id`"
+			. "\n WHERE `type` = 0 AND `item_id` = " . (int)$id
 			. "\n ORDER BY `year` ASC");
 		$result->awards = $db->loadObjectList();
 
 		return $result;
 	}
 
-	public function getSoundtracks() {
+	public function getSoundtracks()
+	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
@@ -891,18 +901,17 @@ class KinoarhivModelMovie extends JModelForm {
 
 	/**
 	 * Build list of filters by dimensions for gallery
-	 *
 	 * @return  array
-	 *
-	*/
-	public function getDimensionFilters() {
+	 */
+	public function getDimensionFilters()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$page = $app->input->get('page', null, 'cmd');
 
 		if ($page == 'wallpapers') {
 			$db->setQuery("SELECT `dimension` AS `value`, `dimension` AS `title`, SUBSTRING_INDEX(`dimension`, 'x', 1) AS `width`"
-				. "\n FROM ".$db->quoteName('#__ka_movies_gallery')
+				. "\n FROM " . $db->quoteName('#__ka_movies_gallery')
 				. "\n WHERE `type` = 1"
 				. "\n GROUP BY `width`"
 				. "\n ORDER BY `width` DESC");
@@ -912,7 +921,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $result;
 	}
 
-	public function voted() {
+	public function voted()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
@@ -920,19 +930,19 @@ class KinoarhivModelMovie extends JModelForm {
 		$movie_id = $app->input->get('id', 0, 'int');
 		$value = $app->input->get('value', -1, 'int');
 
-		$db->setQuery("SELECT `attribs` FROM `#__ka_movies` WHERE `id` = ".(int)$movie_id);
+		$db->setQuery("SELECT `attribs` FROM `#__ka_movies` WHERE `id` = " . (int)$movie_id);
 		$attribs = json_decode($db->loadResult());
 
 		if (($attribs->allow_votes == '' && $params->get('allow_votes') == 1) || $attribs->allow_votes == 1) {
 			if ($value == '-1') {
 				// Something went wrong
-				$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
+				$result = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 			} elseif ($value == 0) {
 				// Remove vote and update rating
 				$db->setQuery("SELECT `v`.`vote`, `r`.`rate_loc`, `r`.`rate_sum_loc`"
-					. "\n FROM ".$db->quoteName('#__ka_user_votes')." AS `v`"
-					. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `r` ON `r`.`id` = `v`.`movie_id`"
-					. "\n WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
+					. "\n FROM " . $db->quoteName('#__ka_user_votes') . " AS `v`"
+					. "\n LEFT JOIN " . $db->quoteName('#__ka_movies') . " AS `r` ON `r`.`id` = `v`.`movie_id`"
+					. "\n WHERE `movie_id` = " . (int)$movie_id . " AND `uid` = " . $user->get('id'));
 				$vote_result = $db->loadObject();
 
 				if (!empty($vote_result->vote)) {
@@ -940,14 +950,14 @@ class KinoarhivModelMovie extends JModelForm {
 					$rate_sum_loc = $vote_result->rate_sum_loc - $vote_result->vote;
 					$rate_loc_rounded = round($vote_result->rate_sum_loc / $vote_result->rate_loc, 0);
 
-					$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = '".(int)$rate_loc."', `rate_sum_loc` = '".(int)$rate_sum_loc."', `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
+					$db->setQuery("UPDATE " . $db->quoteName('#__ka_movies') . " SET `rate_loc` = '" . (int)$rate_loc . "', `rate_sum_loc` = '" . (int)$rate_sum_loc . "', `rate_loc_rounded` = '" . (int)$rate_loc_rounded . "' WHERE `id` = " . (int)$movie_id);
 					$db->execute();
 
-					$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_user_votes')." WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
+					$db->setQuery("DELETE FROM " . $db->quoteName('#__ka_user_votes') . " WHERE `movie_id` = " . (int)$movie_id . " AND `uid` = " . $user->get('id'));
 					$_result = $db->execute();
-					$result = ($_result === true) ? array('success'=>true, 'message'=>JText::_('COM_KA_RATE_REMOVED')) : array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
+					$result = ($_result === true) ? array('success' => true, 'message' => JText::_('COM_KA_RATE_REMOVED')) : array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 				} else {
-					$result = array('success'=>false, 'message'=>JText::_('COM_KA_RATE_NOTRATED'));
+					$result = array('success' => false, 'message' => JText::_('COM_KA_RATE_NOTRATED'));
 				}
 			} else {
 				// Update rating and insert or update user vote in #__ka_user_votes
@@ -955,55 +965,56 @@ class KinoarhivModelMovie extends JModelForm {
 				if ($value >= 1 || $value <= $params->get('vote_summ_num')) {
 					// At first we check if user allready voted and when just update the rating and vote
 					$db->setQuery("SELECT `v`.`vote`, `r`.`rate_loc`, `r`.`rate_sum_loc`"
-						. "\n FROM ".$db->quoteName('#__ka_user_votes')." AS `v`"
-						. "\n LEFT JOIN ".$db->quoteName('#__ka_movies')." AS `r` ON `r`.`id` = `v`.`movie_id`"
-						. "\n WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
+						. "\n FROM " . $db->quoteName('#__ka_user_votes') . " AS `v`"
+						. "\n LEFT JOIN " . $db->quoteName('#__ka_movies') . " AS `r` ON `r`.`id` = `v`.`movie_id`"
+						. "\n WHERE `movie_id` = " . (int)$movie_id . " AND `uid` = " . $user->get('id'));
 					$vote_result = $db->loadObject();
 
 					if (!empty($vote_result->vote)) { // User allready voted
 						$rate_sum_loc = ($vote_result->rate_sum_loc - $vote_result->vote) + $value;
 						$rate_loc_rounded = round($rate_sum_loc / $vote_result->rate_loc, 0);
 
-						$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_sum_loc` = ".(int)$rate_sum_loc.", `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
+						$db->setQuery("UPDATE " . $db->quoteName('#__ka_movies') . " SET `rate_sum_loc` = " . (int)$rate_sum_loc . ", `rate_loc_rounded` = '" . (int)$rate_loc_rounded . "' WHERE `id` = " . (int)$movie_id);
 						$query = $db->execute();
 
 						if ($query) {
-							$db->setQuery("UPDATE ".$db->quoteName('#__ka_user_votes')." SET `vote` = '".(int)$value."', `_datetime` = NOW() WHERE `movie_id` = ".(int)$movie_id." AND `uid` = ".$user->get('id'));
+							$db->setQuery("UPDATE " . $db->quoteName('#__ka_user_votes') . " SET `vote` = '" . (int)$value . "', `_datetime` = NOW() WHERE `movie_id` = " . (int)$movie_id . " AND `uid` = " . $user->get('id'));
 							$db->execute();
 
-							$result = array('success'=>true, 'message'=>JText::_('COM_KA_RATE_RATED'));
+							$result = array('success' => true, 'message' => JText::_('COM_KA_RATE_RATED'));
 						} else {
-							$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
+							$result = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 						}
 					} else {
 						$db->setQuery("SELECT `rate_loc`, `rate_sum_loc`"
-							. "\n FROM ".$db->quoteName('#__ka_movies')
-							. "\n WHERE `id` = ".(int)$movie_id);
+							. "\n FROM " . $db->quoteName('#__ka_movies')
+							. "\n WHERE `id` = " . (int)$movie_id);
 						$vote_result = $db->loadObject();
 
 						$rate_loc = (int)$vote_result->rate_loc + 1;
 						$rate_sum_loc = (int)$vote_result->rate_sum_loc + (int)$value;
 						$rate_loc_rounded = round($rate_sum_loc / $rate_loc, 0);
 
-						$db->setQuery("UPDATE ".$db->quoteName('#__ka_movies')." SET `rate_loc` = '".(int)$rate_loc."', `rate_sum_loc` = '".(int)$rate_sum_loc."', `rate_loc_rounded` = '".(int)$rate_loc_rounded."' WHERE `id` = ".(int)$movie_id);
+						$db->setQuery("UPDATE " . $db->quoteName('#__ka_movies') . " SET `rate_loc` = '" . (int)$rate_loc . "', `rate_sum_loc` = '" . (int)$rate_sum_loc . "', `rate_loc_rounded` = '" . (int)$rate_loc_rounded . "' WHERE `id` = " . (int)$movie_id);
 						$db->execute();
 
-						$db->setQuery("INSERT INTO ".$db->quoteName('#__ka_user_votes')." (`uid`, `movie_id`, `vote`, `_datetime`) VALUES ('".$user->get('id')."', '".$movie_id."', '".$value."', NOW())");
+						$db->setQuery("INSERT INTO " . $db->quoteName('#__ka_user_votes') . " (`uid`, `movie_id`, `vote`, `_datetime`) VALUES ('" . $user->get('id') . "', '" . $movie_id . "', '" . $value . "', NOW())");
 						$db->execute();
-						$result = array('success'=>false, 'message'=>JText::_('COM_KA_RATE_RATED'));
+						$result = array('success' => false, 'message' => JText::_('COM_KA_RATE_RATED'));
 					}
 				} else {
-					$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
+					$result = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 				}
 			}
 		} else {
-			$result = array('success'=>false, 'message'=>JText::_('COM_KA_REQUEST_ERROR'));
+			$result = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 		}
 
 		return $result;
 	}
 
-	protected function _getListQuery() {
+	protected function _getListQuery()
+	{
 		static $lastStoreId;
 
 		$currentStoreId = $this->getStoreId();
@@ -1016,7 +1027,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $this->query;
 	}
 
-	public function getItems() {
+	public function getItems()
+	{
 		$store = $this->getStoreId();
 
 		if (isset($this->cache[$store])) {
@@ -1029,6 +1041,7 @@ class KinoarhivModelMovie extends JModelForm {
 			$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
 		} catch (RuntimeException $e) {
 			$this->setError($e->getMessage());
+
 			return false;
 		}
 
@@ -1037,7 +1050,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $this->cache[$store];
 	}
 
-	protected function getListQuery() {
+	protected function getListQuery()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$id = $app->input->get('id', 0, 'int');
@@ -1051,34 +1065,35 @@ class KinoarhivModelMovie extends JModelForm {
 			$query->from($db->quoteName('#__ka_movies_gallery'));
 
 			if ($filter != '0') {
-				$where = " AND `dimension` LIKE ".$db->quote($db->escape($filter, true)."%", false);
+				$where = " AND `dimension` LIKE " . $db->quote($db->escape($filter, true) . "%", false);
 			} else {
 				$where = "";
 			}
 
-			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 1'.$where);
+			$query->where('`movie_id` = ' . (int)$id . ' AND `state` = 1 AND `type` = 1' . $where);
 		} elseif ($page == 'posters') {
 			$query->select('`id`, `filename`, `dimension`');
 			$query->from($db->quoteName('#__ka_movies_gallery'));
-			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 2');
+			$query->where('`movie_id` = ' . (int)$id . ' AND `state` = 1 AND `type` = 2');
 		} elseif ($page == 'screenshots') {
 			$query->select('`id`, `filename`, `dimension`');
 			$query->from($db->quoteName('#__ka_movies_gallery'));
-			$query->where('`movie_id` = '.(int)$id.' AND `state` = 1 AND `type` = 3');
+			$query->where('`movie_id` = ' . (int)$id . ' AND `state` = 1 AND `type` = 3');
 		} else {
 			// Select reviews
 			$query->select('`rev`.`id`, `rev`.`uid`, `rev`.`movie_id`, `rev`.`review`, `rev`.`created`, `rev`.`type`, `rev`.`state`, `u`.`name`, `u`.`username`');
-			$query->from($db->quoteName('#__ka_reviews').' AS `rev`');
-			$query->leftJoin($db->quoteName('#__users').' AS `u` ON `u`.`id` = `rev`.`uid`');
-			$query->where('`movie_id` = '.(int)$id.' AND `rev`.`state` = 1 AND `u`.`id` != 0');
+			$query->from($db->quoteName('#__ka_reviews') . ' AS `rev`');
+			$query->leftJoin($db->quoteName('#__users') . ' AS `u` ON `u`.`id` = `rev`.`uid`');
+			$query->where('`movie_id` = ' . (int)$id . ' AND `rev`.`state` = 1 AND `u`.`id` != 0');
 			$query->order('`rev`.`id` DESC');
 		}
 
 		return $query;
 	}
 
-	public function getPagination() {
-		JLoader::register('KAPagination', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'pagination.php');
+	public function getPagination()
+	{
+		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
 
 		$app = JFactory::getApplication();
 		$store = $this->getStoreId('getPagination');
@@ -1087,7 +1102,7 @@ class KinoarhivModelMovie extends JModelForm {
 			return $this->cache[$store];
 		}
 
-		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
+		$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
 		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
 
 		if ($app->input->get('review')) {
@@ -1099,7 +1114,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $this->cache[$store];
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		$id .= ':' . $this->getState('list.start');
 		$id .= ':' . $this->getState('list.limit');
 		$id .= ':' . $this->getState('list.ordering');
@@ -1108,7 +1124,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return md5($this->context . ':' . $id);
 	}
 
-	public function getTotal() {
+	public function getTotal()
+	{
 		$store = $this->getStoreId('getTotal');
 
 		if (isset($this->cache[$store])) {
@@ -1117,9 +1134,10 @@ class KinoarhivModelMovie extends JModelForm {
 
 		$query = $this->_getListQuery();
 		try {
-			$total = (int) $this->_getListCount($query);
+			$total = (int)$this->_getListCount($query);
 		} catch (RuntimeException $e) {
 			$this->setError($e->getMessage());
+
 			return false;
 		}
 
@@ -1128,7 +1146,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $this->cache[$store];
 	}
 
-	public function getStart() {
+	public function getStart()
+	{
 		$store = $this->getStoreId('getstart');
 
 		if (isset($this->cache[$store])) {
@@ -1139,7 +1158,7 @@ class KinoarhivModelMovie extends JModelForm {
 		$limit = $this->getState('list.limit');
 		$total = $this->getTotal();
 		if ($start > $total - $limit) {
-			$start = max(0, (int) (ceil($total / $limit) - 1) * $limit);
+			$start = max(0, (int)(ceil($total / $limit) - 1) * $limit);
 		}
 
 		$this->cache[$store] = $start;
@@ -1147,7 +1166,8 @@ class KinoarhivModelMovie extends JModelForm {
 		return $this->cache[$store];
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		if ($this->context) {
 			$app = JFactory::getApplication();
 
@@ -1178,7 +1198,8 @@ class KinoarhivModelMovie extends JModelForm {
 		}
 	}
 
-	public function getUserStateFromRequest($key, $request, $default = null, $type = 'none', $resetPage = true) {
+	public function getUserStateFromRequest($key, $request, $default = null, $type = 'none', $resetPage = true)
+	{
 		$app = JFactory::getApplication();
 		$old_state = $app->getUserState($key);
 		$cur_state = (!is_null($old_state)) ? $old_state : $default;

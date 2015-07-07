@@ -2,16 +2,16 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
 use Joomla\Registry\Registry;
 use Joomla\String\String;
 
-class KinoarhivViewMusic extends JViewLegacy {
+class KinoarhivViewMusic extends JViewLegacy
+{
 	protected $items;
 	protected $item;
 	protected $pagination;
@@ -21,28 +21,35 @@ class KinoarhivViewMusic extends JViewLegacy {
 	protected $form_edit_group;
 	protected $form_attribs_group;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$app = JFactory::getApplication();
 		$type = $app->input->get('type', 'albums', 'word');
 
 		switch ($type) {
-			case 'tracks': $this->displayTracks(); break;
-			default: $this->displayAlbums(); break;
+			case 'tracks':
+				$this->displayTracks();
+				break;
+			default:
+				$this->displayAlbums();
+				break;
 		}
 	}
 
-	protected function displayAlbums() {
+	protected function displayAlbums()
+	{
 		$app = JFactory::getApplication();
 
 		if ($app->input->get('task', '', 'cmd') == 'edit') {
 			$this->edit(null);
+
 			return;
 		}
 
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->state         = $this->get('State');
-		$this->filterForm    = $this->get('FilterForm');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state = $this->get('State');
+		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -56,11 +63,12 @@ class KinoarhivViewMusic extends JViewLegacy {
 		parent::display('albums');
 	}
 
-	protected function displayTracks() {
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->state         = $this->get('State');
-		$this->filterForm    = $this->get('FilterForm');
+	protected function displayTracks()
+	{
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state = $this->get('State');
+		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -74,7 +82,8 @@ class KinoarhivViewMusic extends JViewLegacy {
 		parent::display();
 	}
 
-	protected function edit() {
+	protected function edit()
+	{
 		$this->form = $this->get('Form');
 		$this->item = $this->get('Item');
 		$app = JFactory::getApplication();
@@ -181,7 +190,8 @@ class KinoarhivViewMusic extends JViewLegacy {
 		$app->input->set('hidemainmenu', true);
 	}
 
-	protected function addToolbar($task='') {
+	protected function addToolbar($task = '')
+	{
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
@@ -194,9 +204,9 @@ class KinoarhivViewMusic extends JViewLegacy {
 			JToolbarHelper::cancel();*/
 		} elseif ($task == 'edit') {
 			if ($this->form->getValue('id', $this->form_edit_group) != 0) {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE').': '.JText::_('COM_KA_EDIT').': '.$this->form->getValue('title', $this->form_edit_group)), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title', $this->form_edit_group)), 'play');
 			} else {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			}
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
@@ -205,9 +215,9 @@ class KinoarhivViewMusic extends JViewLegacy {
 			JToolbarHelper::cancel();
 		} else {
 			if ($app->input->get('type', 'albums', 'word') == 'albums') {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE').': '.JText::_('COM_KA_MUSIC_ALBUMS_TITLE')), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_MUSIC_ALBUMS_TITLE')), 'play');
 			} elseif ($app->input->get('type', 'albums', 'word') == 'tracks') {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE').': '.JText::_('COM_KA_MUSIC_TRACKS_TITLE')), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_MUSIC_TRACKS_TITLE')), 'play');
 			}
 
 			if ($user->authorise('core.create', 'com_kinoarhiv')) {
@@ -241,13 +251,14 @@ class KinoarhivViewMusic extends JViewLegacy {
 		}
 	}
 
-	protected function getSortFields() {
+	protected function getSortFields()
+	{
 		return array(
-			'a.state' => JText::_('JSTATUS'),
-			'a.title' => JText::_('COM_KA_MUSIC_ALBUMS_HEADING'),
+			'a.state'  => JText::_('JSTATUS'),
+			'a.title'  => JText::_('COM_KA_MUSIC_ALBUMS_HEADING'),
 			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id' => JText::_('JGRID_HEADING_ID')
+			'a.id'     => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

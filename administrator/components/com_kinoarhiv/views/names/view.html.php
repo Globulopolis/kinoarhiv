@@ -2,15 +2,15 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
 use Joomla\Registry\Registry;
 
-class KinoarhivViewNames extends JViewLegacy {
+class KinoarhivViewNames extends JViewLegacy
+{
 	protected $items;
 	protected $pagination;
 	protected $state;
@@ -19,22 +19,30 @@ class KinoarhivViewNames extends JViewLegacy {
 	protected $form_edit_group;
 	protected $form_attribs_group;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
 
 		switch ($task) {
-			case 'add': $this->edit($tpl); break;
-			case 'edit': $this->edit($tpl); break;
-			default: $this->_display($tpl); break;
+			case 'add':
+				$this->edit($tpl);
+				break;
+			case 'edit':
+				$this->edit($tpl);
+				break;
+			default:
+				$this->_display($tpl);
+				break;
 		}
 	}
 
-	protected function _display($tpl) {
-		$this->items         = $this->get('Items');
-		$this->pagination    = $this->get('Pagination');
-		$this->state         = $this->get('State');
-		$this->filterForm    = $this->get('FilterForm');
+	protected function _display($tpl)
+	{
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state = $this->get('State');
+		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors'))) {
@@ -48,7 +56,8 @@ class KinoarhivViewNames extends JViewLegacy {
 		parent::display($tpl);
 	}
 
-	protected function edit($tpl) {
+	protected function edit($tpl)
+	{
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -75,11 +84,11 @@ class KinoarhivViewNames extends JViewLegacy {
 		if ($form->getValue('filename', 'name') == '') {
 			$items->set(
 				'poster',
-				JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png'
+				JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
 			);
 			$items->set(
 				'th_poster',
-				JURI::root().'components/com_kinoarhiv/assets/themes/component/'.$params->get('ka_theme').'/images/no_movie_cover.png'
+				JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
 			);
 			$items->set('y_poster', '');
 		} else {
@@ -90,20 +99,20 @@ class KinoarhivViewNames extends JViewLegacy {
 			if (substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
 				$items->set(
 					'poster',
-					JURI::root().substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/'.$poster
+					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . $alias . '/' . $item_id . '/photo/' . $poster
 				);
 				$items->set(
 					'th_poster',
-					JURI::root().substr($params->get('media_actor_photo_root_www'), 1).'/'.$alias.'/'.$item_id.'/photo/thumb_'.$poster
+					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . $alias . '/' . $item_id . '/photo/thumb_' . $poster
 				);
 			} else {
 				$items->set(
 					'poster',
-					$params->get('media_actor_photo_root_www').'/'.$alias.'/'.$item_id.'/photo/'.$poster
+					$params->get('media_actor_photo_root_www') . '/' . $alias . '/' . $item_id . '/photo/' . $poster
 				);
 				$items->set(
 					'th_poster',
-					$params->get('media_actor_photo_root_www').'/'.$alias.'/'.$item_id.'/photo/thumb_'.$poster
+					$params->get('media_actor_photo_root_www') . '/' . $alias . '/' . $item_id . '/photo/thumb_' . $poster
 				);
 			}
 			$items->set('y_poster', 'y-poster');
@@ -123,11 +132,12 @@ class KinoarhivViewNames extends JViewLegacy {
 		$app->input->set('hidemainmenu', true);
 	}
 
-	protected function addToolbar($task='') {
+	protected function addToolbar($task = '')
+	{
 		$user = JFactory::getUser();
 
 		if ($task == 'add') {
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -135,9 +145,9 @@ class KinoarhivViewNames extends JViewLegacy {
 			JToolbarHelper::cancel();
 		} elseif ($task == 'edit') {
 			if ($this->form->getValue('id', $this->form_edit_group) != 0) {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.$this->items->get('title')), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . $this->items->get('title')), 'play');
 			} else {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE').': '.JText::_('COM_KA_NEW')), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			}
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
@@ -181,14 +191,15 @@ class KinoarhivViewNames extends JViewLegacy {
 		}
 	}
 
-	protected function getSortFields() {
+	protected function getSortFields()
+	{
 		return array(
-			'a.state' => JText::_('JSTATUS'),
-			'a.name' => JText::_('COM_KA_FIELD_NAME'),
+			'a.state'      => JText::_('JSTATUS'),
+			'a.name'       => JText::_('COM_KA_FIELD_NAME'),
 			'a.latin_name' => JText::_('COM_KA_FIELD_NAME_LATIN'),
-			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
-			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id' => JText::_('JGRID_HEADING_ID')
+			'a.access'     => JText::_('JGRID_HEADING_ACCESS'),
+			'language'     => JText::_('JGRID_HEADING_LANGUAGE'),
+			'a.id'         => JText::_('JGRID_HEADING_ID')
 		);
 	}
 }

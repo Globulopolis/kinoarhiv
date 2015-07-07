@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelRelease extends JModelForm {
-	public function getForm($data = array(), $loadData = true) {
+class KinoarhivModelRelease extends JModelForm
+{
+	public function getForm($data = array(), $loadData = true)
+	{
 		$form = $this->loadForm('com_kinoarhiv.release', 'release', array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form)) {
@@ -19,8 +20,9 @@ class KinoarhivModelRelease extends JModelForm {
 		return $form;
 	}
 
-	protected function loadFormData() {
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.releases.'.JFactory::getUser()->id.'.edit_data', array());
+	protected function loadFormData()
+	{
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.releases.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -29,7 +31,8 @@ class KinoarhivModelRelease extends JModelForm {
 		return $data;
 	}
 
-	public function getItem() {
+	public function getItem()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$_id = $app->input->get('id', array(), 'array');
@@ -37,10 +40,10 @@ class KinoarhivModelRelease extends JModelForm {
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('r.id', 'r.country_id', 'r.vendor_id', 'r.movie_id', 'r.media_type', 'r.release_date', 'r.desc', 'r.language', 'r.ordering')))
-			->select($db->quoteName('c.code').','.$db->quoteName('c.name', 'title'))
+			->select($db->quoteName('c.code') . ',' . $db->quoteName('c.name', 'title'))
 			->from($db->quoteName('#__ka_releases', 'r'))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('r.country_id'))
-			->where($db->quoteName('r.id').' = '.(int)$id);
+			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
+			->where($db->quoteName('r.id') . ' = ' . (int)$id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -48,7 +51,8 @@ class KinoarhivModelRelease extends JModelForm {
 		return $result;
 	}
 
-	public function save($data) {
+	public function save($data)
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
@@ -59,20 +63,20 @@ class KinoarhivModelRelease extends JModelForm {
 
 			$query->insert($db->quoteName('#__ka_releases'))
 				->columns($db->quoteName(array('id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering')))
-				->values("'','".(int)$data['country_id']."','".(int)$data['vendor_id']."','".(int)$data['movie_id']."','".(int)$data['media_type']."','".$db->escape($data['release_date'])."','".$db->escape($data['desc'])."','".$db->escape($data['language'])."','".(int)$data['ordering']."'");
+				->values("'','" . (int)$data['country_id'] . "','" . (int)$data['vendor_id'] . "','" . (int)$data['movie_id'] . "','" . (int)$data['media_type'] . "','" . $db->escape($data['release_date']) . "','" . $db->escape($data['desc']) . "','" . $db->escape($data['language']) . "','" . (int)$data['ordering'] . "'");
 		} else {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_releases'))
-				->set($db->quoteName('country_id')." = '".(int)$data['country_id']."'")
-				->set($db->quoteName('vendor_id')." = '".(int)$data['vendor_id']."'")
-				->set($db->quoteName('movie_id')." = '".(int)$data['movie_id']."'")
-				->set($db->quoteName('media_type')." = '".(int)$data['media_type']."'")
-				->set($db->quoteName('release_date')." = '".$data['release_date']."'")
-				->set($db->quoteName('desc')." = '".$db->escape($data['desc'])."'")
-				->set($db->quoteName('language')." = '".$db->escape($data['language'])."'")
-				->set($db->quoteName('ordering')." = '".(int)$data['ordering']."'")
-				->where($db->quoteName('id').' = '.(int)$id);
+				->set($db->quoteName('country_id') . " = '" . (int)$data['country_id'] . "'")
+				->set($db->quoteName('vendor_id') . " = '" . (int)$data['vendor_id'] . "'")
+				->set($db->quoteName('movie_id') . " = '" . (int)$data['movie_id'] . "'")
+				->set($db->quoteName('media_type') . " = '" . (int)$data['media_type'] . "'")
+				->set($db->quoteName('release_date') . " = '" . $data['release_date'] . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
+				->set($db->quoteName('ordering') . " = '" . (int)$data['ordering'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int)$id);
 		}
 
 		try {
@@ -83,17 +87,17 @@ class KinoarhivModelRelease extends JModelForm {
 				$id = $db->insertid();
 			}
 
-			$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.data', array(
 				'success' => true,
 				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
 				'data'    => array('id' => $id)
 			));
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
-			$app->setUserState('com_kinoarhiv.releases.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.data', array(
 				'success' => false,
 				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
 			));
@@ -102,14 +106,15 @@ class KinoarhivModelRelease extends JModelForm {
 		}
 	}
 
-	public function remove() {
+	public function remove()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
 		$query->delete($db->quoteName('#__ka_releases'))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -117,7 +122,7 @@ class KinoarhivModelRelease extends JModelForm {
 			$db->execute();
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -125,7 +130,8 @@ class KinoarhivModelRelease extends JModelForm {
 	}
 
 	// TODO Should be removed in the feature releases
-	public function deleteReleases() {
+	public function deleteReleases()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('data', array(), 'array');
@@ -135,15 +141,15 @@ class KinoarhivModelRelease extends JModelForm {
 		$db->lockTable('#__ka_releases');
 		$db->transactionStart();
 
-		foreach ($data as $key=>$value) {
+		foreach ($data as $key => $value) {
 			$_name = explode('_', $value['name']);
 			$item_id = $_name[3];
 
-            $query = $db->getQuery(true);
+			$query = $db->getQuery(true);
 
 			$query->delete($db->quoteName('#__ka_releases'))
-			    ->where($db->quoteName('id').' = '.(int)$item_id);
-			$db->setQuery($query.';');
+				->where($db->quoteName('id') . ' = ' . (int)$item_id);
+			$db->setQuery($query . ';');
 
 			if ($db->execute() === false) {
 				$query = false;
@@ -168,23 +174,23 @@ class KinoarhivModelRelease extends JModelForm {
 			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
 		}
 
-		return array('success'=>$success, 'message'=>$message);
+		return array('success' => $success, 'message' => $message);
 	}
 
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
+	 * @param   JForm  $form  The form to validate against.
+	 * @param   array  $data  The data to validate.
+	 * @param   string $group The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
-	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
 	 * @since   12.2
 	 */
-	public function validate($form, $data, $group = null) {
+	public function validate($form, $data, $group = null)
+	{
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);
@@ -192,6 +198,7 @@ class KinoarhivModelRelease extends JModelForm {
 		// Check for an error.
 		if ($return instanceof Exception) {
 			$this->setError($return->getMessage());
+
 			return false;
 		}
 

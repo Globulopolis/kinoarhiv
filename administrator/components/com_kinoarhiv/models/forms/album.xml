@@ -2,79 +2,109 @@
 <form>
 	<fields name="album">
 		<fieldset name="edit">
-			<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
-			<field name="title" type="text" default="" label="COM_KA_MUSIC_ALBUMS_HEADING" class="span12" required="true" filter="string" size="45" />
-			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
-<!-- // TODO Need to be removed? -->			<field name="alias_orig" type="hidden" />
-			<field name="fs_alias" type="hidden" label="JFIELD_ALIAS_LABEL" default="" readonly="true" />
-			<field name="composer" type="text" default="" label="COM_KA_FIELD_ALBUMS_COMPOSER" class="span12" filter="string" size="45" />
-			<field name="year" type="datetime" default="NOW" label="COM_KA_MUSIC_ALBUMS_FIELD_DATETIME" class="span6" datatype="date" dateformat="yy-mm-dd" filter="user_utc" />
-			<field name="length" type="datetime" default="" label="COM_KA_MUSIC_ALBUMS_FIELD_LENGTH" class="span6" datatype="time" timeformat="HH:mm:ss" />
-			<field name="isrc" type="text" label="COM_KA_FIELD_ALBUMS_FIELD_ISRC_LABEL" class="span9" size="45" />
-			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES" description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres" />
-			<field name="covers_path" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45" />
-			<field name="buy_url" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL" description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="true" hide="readmore,pagebreak" />
-			<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true" hide="readmore,pagebreak" />
-			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
-			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30" labelclass="control-label" />
-			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">
+			<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+				   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
+			<field name="title" type="text" default="" label="COM_KA_MUSIC_ALBUMS_HEADING" class="span12"
+				   required="true" filter="string" size="45"/>
+			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45"/>
+			<!-- // TODO Need to be removed? -->
+			<field name="alias_orig" type="hidden"/>
+			<field name="fs_alias" type="hidden" label="JFIELD_ALIAS_LABEL" default="" readonly="true"/>
+			<field name="composer" type="text" default="" label="COM_KA_FIELD_ALBUMS_COMPOSER" class="span12"
+				   filter="string" size="45"/>
+			<field name="year" type="datetime" default="NOW" label="COM_KA_MUSIC_ALBUMS_FIELD_DATETIME" class="span6"
+				   datatype="date" dateformat="yy-mm-dd" filter="user_utc"/>
+			<field name="length" type="datetime" default="" label="COM_KA_MUSIC_ALBUMS_FIELD_LENGTH" class="span6"
+				   datatype="time" timeformat="HH:mm:ss"/>
+			<field name="isrc" type="text" label="COM_KA_FIELD_ALBUMS_FIELD_ISRC_LABEL" class="span9" size="45"/>
+			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES"
+				   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres"/>
+			<field name="covers_path" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45"/>
+			<field name="buy_url" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL"
+				   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="true"
+				   hide="readmore,pagebreak"/>
+			<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true"
+				   hide="readmore,pagebreak"/>
+			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL"
+				   description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30"
+				   labelclass="control-label"/>
+			<field name="metadesc" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL"
+				   description="JFIELD_META_DESCRIPTION_DESC" class="span10" rows="3" cols="30"
+				   labelclass="control-label"/>
+			<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL"
+				   description="JFIELD_METADATA_ROBOTS_DESC" labelclass="control-label">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="index, follow">JGLOBAL_INDEX_FOLLOW</option>
 				<option value="noindex, follow">JGLOBAL_NOINDEX_FOLLOW</option>
 				<option value="index, nofollow">JGLOBAL_INDEX_NOFOLLOW</option>
 				<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
 			</field>
-			<field name="tags" type="tags" default="" label="JTAG" description="JTAG_DESC" class="span11" filter="string" data-ac-type="tags" />
+			<field name="tags" type="tags" default="" label="JTAG" description="JTAG_DESC" class="span11"
+				   filter="string" data-ac-type="tags"/>
 
-			<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
-			<field name="created_by" type="user" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" />
-			<field name="created" type="datetime" default="NOW" label="JGLOBAL_CREATED_DATE" class="inputbox" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
-			<field name="modified" type="datetime" default="NOW" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc" />
-			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
-			<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
+				   class="inputbox" size="6" default="0"/>
+			<field name="created_by" type="user" label="JGLOBAL_FIELD_CREATED_BY_LABEL"
+				   description="JGLOBAL_FIELD_CREATED_BY_DESC"/>
+			<field name="created" type="datetime" default="NOW" label="JGLOBAL_CREATED_DATE" class="inputbox"
+				   datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
+			<field name="modified" type="datetime" default="NOW" label="JGLOBAL_FIELD_MODIFIED_LABEL" class="inputbox"
+				   datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
+			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
+				   class="inputbox" size="1"/>
+			<field name="language" type="language" client="site" default="*"
+				   label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 				<option value="*">JALL</option>
 			</field>
-			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
+				   filter="intval" size="1" default="1">
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
-			<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules" component="com_kinoarhiv" section="album" validate="rules" />
+			<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules"
+				   component="com_kinoarhiv" section="album" validate="rules"/>
 
-			<field name="filename" type="hidden" class="readonly" default="" readonly="true" />
+			<field name="filename" type="hidden" class="readonly" default="" readonly="true"/>
 		</fieldset>
 	</fields>
 
 	<fields name="attribs">
-		<field name="link_titles" type="list" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
+		<field name="link_titles" type="list" label="JGLOBAL_LINKED_TITLES_LABEL"
+			   description="JGLOBAL_LINKED_TITLES_DESC">
 			<option value="">JGLOBAL_USE_GLOBAL</option>
-			<option	value="0">JNO</option>
+			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="show_tags" type="list" default="1" label="COM_KA_MOVIES_FIELD_SHOW_TAGS_LABEL" description="COM_KA_MOVIES_FIELD_SHOW_TAGS_DESC">
+		<field name="show_tags" type="list" default="1" label="COM_KA_MOVIES_FIELD_SHOW_TAGS_LABEL"
+			   description="COM_KA_MOVIES_FIELD_SHOW_TAGS_DESC">
 			<option value="1">JSHOW</option>
 			<option value="0">JHIDE</option>
 		</field>
 		<field name="show_author" type="list" label="JGLOBAL_SHOW_AUTHOR_LABEL" description="JGLOBAL_SHOW_AUTHOR_DESC">
-			<option	value="">JGLOBAL_USE_GLOBAL</option>
-			<option	value="0">JHIDE</option>
-			<option	value="1">JSHOW</option>
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
 		</field>
-		<field name="show_create_date" type="list" label="JGLOBAL_SHOW_CREATE_DATE_LABEL" description="JGLOBAL_SHOW_CREATE_DATE_DESC">
-			<option	value="">JGLOBAL_USE_GLOBAL</option>
-			<option	value="0">JHIDE</option>
-			<option	value="1">JSHOW</option>
+		<field name="show_create_date" type="list" label="JGLOBAL_SHOW_CREATE_DATE_LABEL"
+			   description="JGLOBAL_SHOW_CREATE_DATE_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
 		</field>
-		<field name="show_modify_date" type="list" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL" description="JGLOBAL_SHOW_MODIFY_DATE_DESC">
-			<option	value="">JGLOBAL_USE_GLOBAL</option>
-			<option	value="0">JHIDE</option>
-			<option	value="1">JSHOW</option>
+		<field name="show_modify_date" type="list" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL"
+			   description="JGLOBAL_SHOW_MODIFY_DATE_DESC">
+			<option value="">JGLOBAL_USE_GLOBAL</option>
+			<option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
 		</field>
-		<field name="allow_votes" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC">
+		<field name="allow_votes" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC">
 			<option value="">JGLOBAL_USE_GLOBAL</option>
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_show_local" type="list" label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL" description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC">
+		<field name="ratings_show_local" type="list" label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL"
+			   description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC">
 			<option value="">JGLOBAL_USE_GLOBAL</option>
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
@@ -86,45 +116,60 @@
 	</fields>
 
 	<fieldset name="rel_name_edit">
-		<field name="name_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" class="span9 required" required="true" default="" />
-		<field name="type" type="hidden" label="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_TYPE" class="span9" default="" />
-		<field name="role" type="text" label="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_ROLE" class="span12" size="55" maxlength="255" default="" />
-		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
-		<field name="r_desc" type="textarea" default="" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" class="span12" filter="raw" cols="6" rows="5" />
+		<field name="name_id" type="hidden" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" class="span9 required"
+			   required="true" default=""/>
+		<field name="type" type="hidden" label="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_TYPE" class="span9" default=""/>
+		<field name="role" type="text" label="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_ROLE" class="span12" size="55"
+			   maxlength="255" default=""/>
+		<field name="r_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
+			   class="inputbox" size="6" default="0"/>
+		<field name="r_desc" type="textarea" default="" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" class="span12"
+			   filter="raw" cols="6" rows="5"/>
 	</fieldset>
 
 	<fieldset name="career_quick_add">
-		<field name="c_title" type="text" default="" label="COM_KA_CAREER_FIELD_TITLE" class="span12" required="true" filter="string" size="45" />
-		<field name="c_is_mainpage" type="list" default="0" label="COM_KA_FIELD_CAREER_MAINPAGE" description="COM_KA_FIELD_CAREER_MAINPAGE_DESC" filter="integer">
+		<field name="c_title" type="text" default="" label="COM_KA_CAREER_FIELD_TITLE" class="span12" required="true"
+			   filter="string" size="45"/>
+		<field name="c_is_mainpage" type="list" default="0" label="COM_KA_FIELD_CAREER_MAINPAGE"
+			   description="COM_KA_FIELD_CAREER_MAINPAGE_DESC" filter="integer">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="c_is_amplua" type="list" default="0" label="COM_KA_FIELD_CAREER_AMPLUA" description="COM_KA_FIELD_CAREER_AMPLUA_DESC" filter="integer">
+		<field name="c_is_amplua" type="list" default="0" label="COM_KA_FIELD_CAREER_AMPLUA"
+			   description="COM_KA_FIELD_CAREER_AMPLUA_DESC" filter="integer">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
 		<field name="c_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
-		<field name="c_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+		<field name="c_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
+			   class="inputbox" size="6" default="0"/>
 	</fieldset>
 
 	<fieldset name="name_quick_add">
-		<field name="n_name" type="text" default="" label="COM_KA_FIELD_NAME" class="span12 required" required="true" filter="string" size="45" />
-		<field name="n_latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12 required" required="true" filter="string" size="45" />
-		<field name="n_date_of_birth" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
-		<field name="n_date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span12" datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc" />
-		<field name="n_height" type="text" label="COM_KA_FIELD_NAME_HEIGHT" class="span9" size="45" />
+		<field name="n_name" type="text" default="" label="COM_KA_FIELD_NAME" class="span12 required" required="true"
+			   filter="string" size="45"/>
+		<field name="n_latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12 required"
+			   required="true" filter="string" size="45"/>
+		<field name="n_date_of_birth" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12"
+			   datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc"/>
+		<field name="n_date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span12"
+			   datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc"/>
+		<field name="n_height" type="text" label="COM_KA_FIELD_NAME_HEIGHT" class="span9" size="45"/>
 		<field name="n_gender" type="list" default="0" label="COM_KA_FIELD_NAME_GENDER_LABEL" filter="integer">
 			<option value="1">COM_KA_FIELD_NAME_GENDER_M</option>
 			<option value="0">COM_KA_FIELD_NAME_GENDER_F</option>
 		</field>
-		<field name="n_birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string" />
-		<field name="n_birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11" filter="intval" data-ac-type="countries" multiple="false" />
-		<field name="n_desc" type="textarea" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="raw" cols="6" rows="5" />
+		<field name="n_birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string"/>
+		<field name="n_birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11"
+			   filter="intval" data-ac-type="countries" multiple="false"/>
+		<field name="n_desc" type="textarea" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="raw"
+			   cols="6" rows="5"/>
 		<field name="n_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
-		<field name="n_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC" class="inputbox" size="6" default="0" />
+		<field name="n_ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
+			   class="inputbox" size="6" default="0"/>
 	</fieldset>
 </form>

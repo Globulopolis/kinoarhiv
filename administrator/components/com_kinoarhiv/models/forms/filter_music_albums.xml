@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fields name="filter">
-		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
-		<field name="published" type="status" label="COM_CONTENT_FILTER_PUBLISHED" description="COM_CONTENT_FILTER_PUBLISHED_DESC" onchange="this.form.submit();">
+		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER"/>
+		<field name="published" type="status" label="COM_CONTENT_FILTER_PUBLISHED"
+			   description="COM_CONTENT_FILTER_PUBLISHED_DESC" onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_PUBLISHED</option>
 		</field>
-		<field name="access" type="accesslevel" label="JOPTION_FILTER_ACCESS" description="JOPTION_FILTER_ACCESS_DESC" onchange="this.form.submit();">
+		<field name="access" type="accesslevel" label="JOPTION_FILTER_ACCESS" description="JOPTION_FILTER_ACCESS_DESC"
+			   onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_ACCESS</option>
 		</field>
-		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE" description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
+		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE"
+			   description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_LANGUAGE</option>
 			<option value="*">JALL</option>
 		</field>
 	</fields>
 	<fields name="list">
-		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.title ASC">
+		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING"
+			   description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.title ASC">
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="a.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
 			<option value="a.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
@@ -29,6 +33,7 @@
 			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>
-		<field name="limit" type="limitbox" class="inputbox input-mini" default="25" label="COM_CONTENT_LIST_LIMIT" description="COM_CONTENT_LIST_LIMIT_DESC" onchange="this.form.submit();" />
+		<field name="limit" type="limitbox" class="inputbox input-mini" default="25" label="COM_CONTENT_LIST_LIMIT"
+			   description="COM_CONTENT_LIST_LIMIT_DESC" onchange="this.form.submit();"/>
 	</fields>
 </form>

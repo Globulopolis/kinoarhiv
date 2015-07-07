@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fields name="filter">
-		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
-		<field name="country" type="sql" query="SELECT p.country_id AS value, c.name AS country FROM #__ka_premieres AS p LEFT JOIN #__ka_countries AS c ON c.id = p.country_id WHERE p.country_id != 0 GROUP BY p.country_id, c.name" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
+		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER"/>
+		<field name="country" type="sql"
+			   query="SELECT p.country_id AS value, c.name AS country FROM #__ka_premieres AS p LEFT JOIN #__ka_countries AS c ON c.id = p.country_id WHERE p.country_id != 0 GROUP BY p.country_id, c.name"
+			   label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_COUNTRY</option>
 			<option value="0">COM_KA_PREMIERE_WORLD</option>
 		</field>
-		<field name="vendor" type="sql" query="SELECT p.vendor_id AS value, CONCAT_WS(' / ', v.company_name, v.company_name_intl) AS vendor FROM #__ka_premieres AS p LEFT JOIN #__ka_vendors AS v ON v.id = p.vendor_id GROUP BY p.vendor_id" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
+		<field name="vendor" type="sql"
+			   query="SELECT p.vendor_id AS value, CONCAT_WS(' / ', v.company_name, v.company_name_intl) AS vendor FROM #__ka_premieres AS p LEFT JOIN #__ka_vendors AS v ON v.id = p.vendor_id GROUP BY p.vendor_id"
+			   label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_VENDOR</option>
 		</field>
-		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE" description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
+		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE"
+			   description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_LANGUAGE</option>
 			<option value="*">JALL</option>
 		</field>
 	</fields>
 	<fields name="list">
-		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING" description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="p.premiere_date DESC">
+		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING"
+			   description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();"
+			   default="p.premiere_date DESC">
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="p.ordering ASC">JGRID_HEADING_ORDERING_ASC</option>
 			<option value="p.ordering DESC">JGRID_HEADING_ORDERING_DESC</option>
@@ -30,6 +37,7 @@
 			<option value="p.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="p.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>
-		<field name="limit" type="limitbox" class="inputbox input-mini" default="25" label="COM_CONTENT_LIST_LIMIT" description="COM_CONTENT_LIST_LIMIT_DESC" onchange="this.form.submit();" />
+		<field name="limit" type="limitbox" class="inputbox input-mini" default="25" label="COM_CONTENT_LIST_LIMIT"
+			   description="COM_CONTENT_LIST_LIMIT_DESC" onchange="this.form.submit();"/>
 	</fields>
 </form>

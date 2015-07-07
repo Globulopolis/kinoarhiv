@@ -1,34 +1,34 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KAImage extends JImage {
+class KAImage extends JImage
+{
 	/**
 	 * Method to create thumbnails from the current image and save them to disk. It allows creation by resizing
 	 * or croppping the original image.
 	 *
-	 * @param   string    $directory        Path where to find a file.
-	 * @param   string    $filename         Filename.
-	 * @param   mixed     $thumbSizes       String or array of strings. Example: $thumbSizes = array('150x75','250x150')
-	 * @param   integer   $creationMethod   1-3 resize $scaleMethod | 4 create croppping
-	 * @param   string    $thumbsFolder     Destination thumbs folder. null generates a thumbs folder in the image folder
-	 * @param   mixed     $thumbsName       True for default filename, false - for default filename in component (thumb_$filename), string - custom prefix for filename
+	 * @param   string  $directory      Path where to find a file.
+	 * @param   string  $filename       Filename.
+	 * @param   mixed   $thumbSizes     String or array of strings. Example: $thumbSizes = array('150x75','250x150')
+	 * @param   integer $creationMethod 1-3 resize $scaleMethod | 4 create croppping
+	 * @param   string  $thumbsFolder   Destination thumbs folder. null generates a thumbs folder in the image folder
+	 * @param   mixed   $thumbsName     True for default filename, false - for default filename in component
+	 *                                  (thumb_$filename), string - custom prefix for filename
 	 *
 	 * @return array
-	 *
 	 * @throws  LogicException
 	 * @throws  InvalidArgumentException
-	 *
 	 */
-	public function _createThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true) {
+	public function _createThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true)
+	{
 		jimport('joomla.filesystem.file');
-		$image = new JImage($directory.DIRECTORY_SEPARATOR.$filename);
+		$image = new JImage($directory . DIRECTORY_SEPARATOR . $filename);
 
 		// Make sure the resource handle is valid.
 		if (!$image->isLoaded()) {
@@ -54,21 +54,21 @@ class KAImage extends JImage {
 		if ($thumbs = $image->generateThumbs($thumbSizes, $creationMethod)) {
 			foreach ($thumbs as $thumb) {
 				// Get thumb properties
-				$thumbWidth 	= $thumb->getWidth();
-				$thumbHeight 	= $thumb->getHeight();
+				$thumbWidth = $thumb->getWidth();
+				$thumbHeight = $thumb->getHeight();
 
 				// Generate thumb name
-				$filename 		= pathinfo($image->getPath(), PATHINFO_FILENAME);
-				$fileExtension 	= JFile::getExt($image->getPath());
+				$filename = pathinfo($image->getPath(), PATHINFO_FILENAME);
+				$fileExtension = JFile::getExt($image->getPath());
 
 				if ($thumbsName === true) {
-					$thumbFileName 	= $filename . '_' . $thumbWidth . 'x' . $thumbHeight . '.' . $fileExtension;
+					$thumbFileName = $filename . '_' . $thumbWidth . 'x' . $thumbHeight . '.' . $fileExtension;
 				} elseif ($thumbsName === false) {
-					$thumbFileName 	= 'thumb_' . $filename . '.' . $fileExtension;
+					$thumbFileName = 'thumb_' . $filename . '.' . $fileExtension;
 				} elseif ($thumbsName === null) {
-					$thumbFileName 	= $filename . '.' . $fileExtension;
+					$thumbFileName = $filename . '.' . $fileExtension;
 				} else {
-					$thumbFileName 	= $thumbsName . '_' . $filename . '.' . $fileExtension;
+					$thumbFileName = $thumbsName . '_' . $filename . '.' . $fileExtension;
 				}
 
 				// Save thumb file to disk
@@ -88,21 +88,21 @@ class KAImage extends JImage {
 	/**
 	 * Method to add a watermark to an image.
 	 *
-	 * @param	string	 $directory		  path where to find file
-	 * @param	string	 $filename		  filename
-	 * @param	string	 $watermark		  path to an image
-	 * @param	string	 $position		  watermark position. Available values are: tl - top left, tc - top center, tr - top right, cl - center left,
-										  cc - center center, cr - center right, bl - bottom left, bc - bottom center, br - bottom right.
-	 * @param	array	 $properties	  additional properties
+	 * @param    string $directory  path where to find file
+	 * @param    string $filename   filename
+	 * @param    string $watermark  path to an image
+	 * @param    string $position   watermark position. Available values are: tl - top left, tc - top center, tr - top
+	 *                              right, cl - center left, cc - center center, cr - center right, bl - bottom left,
+	 *                              bc - bottom center, br - bottom right.
+	 * @param    array  $properties additional properties
 	 *
 	 * @return array
-	 *
 	 * @throws  LogicException
 	 * @throws  InvalidArgumentException
-	 *
 	 */
-	public function addWatermark($directory, $filename, $watermark, $position='br', $properties=array()) {
-		$image = new JImage($directory.DIRECTORY_SEPARATOR.$filename);
+	public function addWatermark($directory, $filename, $watermark, $position = 'br', $properties = array())
+	{
+		$image = new JImage($directory . DIRECTORY_SEPARATOR . $filename);
 		$watermark = new JImage($watermark);
 
 		// Make sure the resource handle is valid.
@@ -151,19 +151,19 @@ class KAImage extends JImage {
 		}
 
 		if ($wtCreated) {
-			$watermark_dst_width  = $watermark_src_width  = imagesx($filter);
+			$watermark_dst_width = $watermark_src_width = imagesx($filter);
 			$watermark_dst_height = $watermark_src_height = imagesy($filter);
 
 			if ($watermark_dst_width > $imgProperties->width || $watermark_dst_height > $imgProperties->height) {
-				$canvas_width  = $imgProperties->width - abs($wtProperties->width);
+				$canvas_width = $imgProperties->width - abs($wtProperties->width);
 				$canvas_height = $imgProperties->height - abs($wtProperties->height);
 
 				if (($watermark_src_width / $canvas_width) > ($watermark_src_height / $canvas_height)) {
 					$watermark_dst_width = $canvas_width;
 					$watermark_dst_height = (int)($watermark_src_height * ($canvas_width / $watermark_src_width));
 				} else {
-					$watermark_dst_height = $canvas_height/2;
-					$watermark_dst_width = (int)($watermark_src_width * ($canvas_height / $watermark_src_height))/2;
+					$watermark_dst_height = $canvas_height / 2;
+					$watermark_dst_width = (int)($watermark_src_width * ($canvas_height / $watermark_src_height)) / 2;
 				}
 			}
 
@@ -202,13 +202,13 @@ class KAImage extends JImage {
 		}
 
 		if ($imgProperties->mime == 'image/gif') {
-			$image->toFile($directory.DIRECTORY_SEPARATOR.$filename, IMAGETYPE_GIF);
+			$image->toFile($directory . DIRECTORY_SEPARATOR . $filename, IMAGETYPE_GIF);
 		} elseif ($imgProperties->mime == 'image/jpeg') {
 			$quality = isset($properties['output_quality']) ? (int)$properties['output_quality'] : 75;
-			$image->toFile($directory.DIRECTORY_SEPARATOR.$filename, IMAGETYPE_JPEG, array('quality'=>$quality));
+			$image->toFile($directory . DIRECTORY_SEPARATOR . $filename, IMAGETYPE_JPEG, array('quality' => $quality));
 		} elseif ($imgProperties->mime == 'image/png') {
 			$quality = isset($properties['output_quality']) ? (int)$properties['output_quality'] : 3;
-			$image->toFile($directory.DIRECTORY_SEPARATOR.$filename, IMAGETYPE_PNG, array('quality'=>$quality));
+			$image->toFile($directory . DIRECTORY_SEPARATOR . $filename, IMAGETYPE_PNG, array('quality' => $quality));
 		}
 	}
 }

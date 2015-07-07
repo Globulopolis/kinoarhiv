@@ -2,19 +2,20 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
 JFormHelper::loadFieldClass('list');
 
-class JFormFieldCreator extends JFormFieldList {
+class JFormFieldCreator extends JFormFieldList
+{
 	public $type = 'Creator';
 	protected static $options = array();
 
-	protected function getOptions() {
+	protected function getOptions()
+	{
 		// Accepted modifiers
 		$hash = md5($this->element);
 		$table = $this->element['table'] ? $this->element['table'] : 'content';
@@ -27,8 +28,8 @@ class JFormFieldCreator extends JFormFieldList {
 			// Construct the query
 			$query = $db->getQuery(true)
 				->select('`u`.`id` AS `value`, `u`.`name` AS `text`')
-				->from($db->quoteName('#__users').' AS `u`')
-				->join('INNER', $db->quoteName('#__'.$table).' AS `c` ON `c`.`'.$field.'` = `u`.`id`')
+				->from($db->quoteName('#__users') . ' AS `u`')
+				->join('INNER', $db->quoteName('#__' . $table) . ' AS `c` ON `c`.`' . $field . '` = `u`.`id`')
 				->group('`u`.`id`, `u`.`name`')
 				->order('`u`.`name`');
 

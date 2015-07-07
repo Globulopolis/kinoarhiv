@@ -1,47 +1,64 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <access component="com_kinoarhiv">
 	<section name="component">
-		<action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC" />
-		<action name="core.edit.access" title="COM_KA_ACTION_ACCESS_EDIT" description="COM_KA_ACTION_ACCESS_EDIT_DESC" />
-		<action name="core.create" title="JACTION_CREATE" description="JACTION_CREATE_COMPONENT_DESC" />
-		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
-		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC" />
-		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC" />
-		<action name="core.create.career" title="COM_KA_ACTION_CAREER_CREATE" description="COM_KA_ACTION_CAREER_CREATE_DESC" />
-		<action name="core.edit.career" title="COM_KA_ACTION_CAREER_EDIT" description="COM_KA_ACTION_CAREER_EDIT_DESC" />
-		<action name="core.delete.career" title="COM_KA_ACTION_CAREER_DELETE" description="COM_KA_ACTION_CAREER_DELETE_DESC" />
-		<action name="core.create.country" title="COM_KA_ACTION_COUNTRY_CREATE" description="COM_KA_ACTION_COUNTRY_CREATE_DESC" />
-		<action name="core.edit.country" title="COM_KA_ACTION_COUNTRY_EDIT" description="COM_KA_ACTION_COUNTRY_EDIT_DESC" />
-		<action name="core.edit.state.country" title="COM_KA_ACTION_COUNTRY_EDIT_STATE" description="COM_KA_ACTION_COUNTRY_EDIT_STATE_DESC" />
-		<action name="core.delete.country" title="COM_KA_ACTION_COUNTRY_DELETE" description="COM_KA_ACTION_COUNTRY_DELETE_DESC" />
-		<action name="core.create.genre" title="COM_KA_ACTION_GENRE_CREATE" description="COM_KA_ACTION_GENRE_CREATE_DESC" />
-		<action name="core.edit.genre" title="COM_KA_ACTION_GENRE_EDIT" description="COM_KA_ACTION_GENRE_EDIT_DESC" />
-		<action name="core.edit.state.genre" title="COM_KA_ACTION_GENRE_EDIT_STATE" description="COM_KA_ACTION_GENRE_EDIT_STATE_DESC" />
-		<action name="core.recount.genre" title="COM_KA_ACTION_GENRE_RECOUNT" description="COM_KA_ACTION_GENRE_RECOUNT_DESC" />
-		<action name="core.delete.genre" title="COM_KA_ACTION_GENRE_DELETE" description="COM_KA_ACTION_GENRE_DELETE_DESC" />
-		<action name="core.create.vendor" title="COM_KA_ACTION_VENDOR_CREATE" description="COM_KA_ACTION_VENDOR_CREATE_DESC" />
-		<action name="core.edit.vendor" title="COM_KA_ACTION_VENDOR_EDIT" description="COM_KA_ACTION_VENDOR_EDIT_DESC" />
-		<action name="core.edit.state.vendor" title="COM_KA_ACTION_VENDOR_EDIT_STATE" description="COM_KA_ACTION_VENDOR_EDIT_STATE_DESC" />
-		<action name="core.delete.vendor" title="COM_KA_ACTION_VENDOR_DELETE" description="COM_KA_ACTION_VENDOR_DELETE_DESC" />
-		<action name="core.create.award" title="COM_KA_ACTION_AWARD_CREATE" description="COM_KA_ACTION_AWARD_CREATE_DESC" />
-		<action name="core.edit.award" title="COM_KA_ACTION_AWARD_EDIT" description="COM_KA_ACTION_AWARD_EDIT_DESC" />
-		<action name="core.edit.state.award" title="COM_KA_ACTION_AWARD_EDIT_STATE" description="COM_KA_ACTION_AWARD_EDIT_STATE_DESC" />
-		<action name="core.delete.award" title="COM_KA_ACTION_AWARD_DELETE" description="COM_KA_ACTION_AWARD_DELETE_DESC" />
-		<action name="core.delete.reviews" title="COM_KA_ACTION_DELETE_OWNREVIEWS" description="COM_KA_ACTION_DELETE_OWNREVIEWS_DESC" />
+		<action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC"/>
+		<action name="core.edit.access" title="COM_KA_ACTION_ACCESS_EDIT" description="COM_KA_ACTION_ACCESS_EDIT_DESC"/>
+		<action name="core.create" title="JACTION_CREATE" description="JACTION_CREATE_COMPONENT_DESC"/>
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC"/>
+		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC"/>
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC"/>
+		<action name="core.create.career" title="COM_KA_ACTION_CAREER_CREATE"
+				description="COM_KA_ACTION_CAREER_CREATE_DESC"/>
+		<action name="core.edit.career" title="COM_KA_ACTION_CAREER_EDIT" description="COM_KA_ACTION_CAREER_EDIT_DESC"/>
+		<action name="core.delete.career" title="COM_KA_ACTION_CAREER_DELETE"
+				description="COM_KA_ACTION_CAREER_DELETE_DESC"/>
+		<action name="core.create.country" title="COM_KA_ACTION_COUNTRY_CREATE"
+				description="COM_KA_ACTION_COUNTRY_CREATE_DESC"/>
+		<action name="core.edit.country" title="COM_KA_ACTION_COUNTRY_EDIT"
+				description="COM_KA_ACTION_COUNTRY_EDIT_DESC"/>
+		<action name="core.edit.state.country" title="COM_KA_ACTION_COUNTRY_EDIT_STATE"
+				description="COM_KA_ACTION_COUNTRY_EDIT_STATE_DESC"/>
+		<action name="core.delete.country" title="COM_KA_ACTION_COUNTRY_DELETE"
+				description="COM_KA_ACTION_COUNTRY_DELETE_DESC"/>
+		<action name="core.create.genre" title="COM_KA_ACTION_GENRE_CREATE"
+				description="COM_KA_ACTION_GENRE_CREATE_DESC"/>
+		<action name="core.edit.genre" title="COM_KA_ACTION_GENRE_EDIT" description="COM_KA_ACTION_GENRE_EDIT_DESC"/>
+		<action name="core.edit.state.genre" title="COM_KA_ACTION_GENRE_EDIT_STATE"
+				description="COM_KA_ACTION_GENRE_EDIT_STATE_DESC"/>
+		<action name="core.recount.genre" title="COM_KA_ACTION_GENRE_RECOUNT"
+				description="COM_KA_ACTION_GENRE_RECOUNT_DESC"/>
+		<action name="core.delete.genre" title="COM_KA_ACTION_GENRE_DELETE"
+				description="COM_KA_ACTION_GENRE_DELETE_DESC"/>
+		<action name="core.create.vendor" title="COM_KA_ACTION_VENDOR_CREATE"
+				description="COM_KA_ACTION_VENDOR_CREATE_DESC"/>
+		<action name="core.edit.vendor" title="COM_KA_ACTION_VENDOR_EDIT" description="COM_KA_ACTION_VENDOR_EDIT_DESC"/>
+		<action name="core.edit.state.vendor" title="COM_KA_ACTION_VENDOR_EDIT_STATE"
+				description="COM_KA_ACTION_VENDOR_EDIT_STATE_DESC"/>
+		<action name="core.delete.vendor" title="COM_KA_ACTION_VENDOR_DELETE"
+				description="COM_KA_ACTION_VENDOR_DELETE_DESC"/>
+		<action name="core.create.award" title="COM_KA_ACTION_AWARD_CREATE"
+				description="COM_KA_ACTION_AWARD_CREATE_DESC"/>
+		<action name="core.edit.award" title="COM_KA_ACTION_AWARD_EDIT" description="COM_KA_ACTION_AWARD_EDIT_DESC"/>
+		<action name="core.edit.state.award" title="COM_KA_ACTION_AWARD_EDIT_STATE"
+				description="COM_KA_ACTION_AWARD_EDIT_STATE_DESC"/>
+		<action name="core.delete.award" title="COM_KA_ACTION_AWARD_DELETE"
+				description="COM_KA_ACTION_AWARD_DELETE_DESC"/>
+		<action name="core.delete.reviews" title="COM_KA_ACTION_DELETE_OWNREVIEWS"
+				description="COM_KA_ACTION_DELETE_OWNREVIEWS_DESC"/>
 	</section>
 	<section name="movie">
-		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC" />
-		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC" />
-		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
+		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC"/>
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC"/>
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC"/>
 	</section>
 	<section name="name">
-		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC" />
-		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC" />
-		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
+		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC"/>
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC"/>
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC"/>
 	</section>
 	<section name="album">
-		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC" />
-		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC" />
-		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
+		<action name="core.edit" title="JACTION_EDIT" description="JACTION_EDIT_COMPONENT_DESC"/>
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC"/>
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC"/>
 	</section>
 </access>

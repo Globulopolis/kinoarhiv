@@ -1,30 +1,32 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivViewPremieres extends JViewLegacy {
+class KinoarhivViewPremieres extends JViewLegacy
+{
 	protected $items;
 	protected $pagination;
 	protected $state;
 	protected $form;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$user = JFactory::getUser();
 
 		if ($tpl == 'add' || $tpl == 'edit') {
 			$this->edit($tpl);
+
 			return;
 		}
 
-		$this->items      = $this->get('Items');
+		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->state      = $this->get('State');
+		$this->state = $this->get('State');
 
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
@@ -33,14 +35,15 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$this->addToolbar();
 		$this->canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
 
-		$this->filterForm    = $this->get('FilterForm');
+		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
-		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		parent::display($tpl);
 	}
 
-	protected function edit($tpl) {
+	protected function edit($tpl)
+	{
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
@@ -57,14 +60,15 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		$app->input->set('hidemainmenu', true);
 	}
 
-	protected function addToolbar($task='') {
+	protected function addToolbar($task = '')
+	{
 		$user = JFactory::getUser();
 
 		if ($task == 'add' || $task == 'edit') {
 			if ($task == 'edit') {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE').': '.JText::_('COM_KA_EDIT')), 'calendar');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE') . ': ' . JText::_('COM_KA_EDIT')), 'calendar');
 			} else {
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE').': '.JText::_('COM_KA_NEW')), 'calendar');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'calendar');
 			}
 
 			JToolbarHelper::apply('apply');
@@ -98,7 +102,8 @@ class KinoarhivViewPremieres extends JViewLegacy {
 		}
 	}
 
-	protected function getSortFields() {
+	protected function getSortFields()
+	{
 		return array(
 			'p.premiere_date' => JText::_('COM_KA_FIELD_PREMIERE_DATE_LABEL'),
 			'm.title'         => JText::_('COM_KA_FIELD_MOVIE_LABEL'),

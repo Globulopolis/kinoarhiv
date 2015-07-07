@@ -1,25 +1,27 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class ImageHelper {
-	private static function rgb2array($rgb) {
+class ImageHelper
+{
+	private static function rgb2array($rgb)
+	{
 		$rgb = str_replace('#', '', $rgb);
 
 		return array(
-			'r'=>base_convert(substr($rgb, 0, 2), 16, 10),
-			'g'=>base_convert(substr($rgb, 2, 2), 16, 10),
-			'b'=>base_convert(substr($rgb, 4, 2), 16, 10),
+			'r' => base_convert(substr($rgb, 0, 2), 16, 10),
+			'g' => base_convert(substr($rgb, 2, 2), 16, 10),
+			'b' => base_convert(substr($rgb, 4, 2), 16, 10),
 		);
 	}
 
-	public static function createRateImage($data) {
+	public static function createRateImage($data)
+	{
 		jimport('joomla.filesystem.folder');
 
 		$document = JFactory::getDocument();
@@ -29,16 +31,16 @@ class ImageHelper {
 		$id = $app->input->get('id', 0, 'int');
 
 		if ($cmd == 'rt_vote') {
-			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'rottentomatoes_blank.png';
+			$file = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'rating' . DIRECTORY_SEPARATOR . 'rottentomatoes_blank.png';
 		} elseif ($cmd == 'mc_vote') {
-			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'metacritic_blank.png';
+			$file = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'rating' . DIRECTORY_SEPARATOR . 'metacritic_blank.png';
 		} elseif ($cmd == 'kp_vote') {
-			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'kinopoisk_blank.png';
+			$file = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'rating' . DIRECTORY_SEPARATOR . 'kinopoisk_blank.png';
 		} elseif ($cmd == 'imdb_vote') {
-			$file = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'rating'.DIRECTORY_SEPARATOR.'imdb_blank.png';
+			$file = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'rating' . DIRECTORY_SEPARATOR . 'imdb_blank.png';
 		}
 
-		$font = JPATH_COMPONENT.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'fonts'.DIRECTORY_SEPARATOR.'OpenSans-Regular.ttf';
+		$font = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'OpenSans-Regular.ttf';
 
 		if (file_exists($file)) {
 			list($w, $h) = getimagesize($file);
@@ -60,7 +62,7 @@ class ImageHelper {
 
 				if ($cmd == 'rt_vote') {
 					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
-					$offset_left = count(count_chars($data[0]['text'], 1))*10+7;
+					$offset_left = count(count_chars($data[0]['text'], 1)) * 10 + 7;
 					imagettftext($src_im, $data[1]['fontsize'], 0, $offset_left, 31, $color2, $font, $data[1]['text']);
 				} elseif ($cmd == 'mc_vote') {
 					imagettftext($src_im, $data[0]['fontsize'], 0, 45, 18, $color1, $font, $data[0]['text']);
@@ -80,20 +82,20 @@ class ImageHelper {
 			JResponse::allowCache(false);
 
 			if ($cmd == 'rt_vote') {
-				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'rottentomatoes'.DIRECTORY_SEPARATOR;
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'rottentomatoes' . DIRECTORY_SEPARATOR;
 			} elseif ($cmd == 'mc_vote') {
-				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'metacritic'.DIRECTORY_SEPARATOR;
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'metacritic' . DIRECTORY_SEPARATOR;
 			} elseif ($cmd == 'kp_vote') {
-				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'kinopoisk'.DIRECTORY_SEPARATOR;
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'kinopoisk' . DIRECTORY_SEPARATOR;
 			} elseif ($cmd == 'imdb_vote') {
-				$dst_dir = $params->get('media_rating_image_root').DIRECTORY_SEPARATOR.'imdb'.DIRECTORY_SEPARATOR;
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'imdb' . DIRECTORY_SEPARATOR;
 			}
 
 			if (!file_exists($dst_dir)) {
 				JFolder::create($dst_dir);
 			}
 
-			$result = imagepng($src_im, $dst_dir.$id.'_big.png', 1);
+			$result = imagepng($src_im, $dst_dir . $id . '_big.png', 1);
 			imagedestroy($src_im);
 
 			return $result;

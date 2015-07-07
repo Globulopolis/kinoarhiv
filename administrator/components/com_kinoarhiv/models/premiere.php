@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelPremiere extends JModelForm {
-	public function getForm($data = array(), $loadData = true) {
+class KinoarhivModelPremiere extends JModelForm
+{
+	public function getForm($data = array(), $loadData = true)
+	{
 		$form = $this->loadForm('com_kinoarhiv.premiere', 'premiere', array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form)) {
@@ -19,8 +20,9 @@ class KinoarhivModelPremiere extends JModelForm {
 		return $form;
 	}
 
-	protected function loadFormData() {
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.premieres.'.JFactory::getUser()->id.'.edit_data', array());
+	protected function loadFormData()
+	{
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.premieres.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -29,7 +31,8 @@ class KinoarhivModelPremiere extends JModelForm {
 		return $data;
 	}
 
-	public function getItem() {
+	public function getItem()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$_id = $app->input->get('id', array(), 'array');
@@ -38,7 +41,7 @@ class KinoarhivModelPremiere extends JModelForm {
 
 		$query->select($db->quoteName(array('id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering')))
 			->from($db->quoteName('#__ka_premieres'))
-			->where($db->quoteName('id').' = '.(int)$id);
+			->where($db->quoteName('id') . ' = ' . (int)$id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -46,7 +49,8 @@ class KinoarhivModelPremiere extends JModelForm {
 		return $result;
 	}
 
-	public function save($data) {
+	public function save($data)
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$user = JFactory::getUser();
@@ -57,19 +61,19 @@ class KinoarhivModelPremiere extends JModelForm {
 
 			$query->insert($db->quoteName('#__ka_premieres'))
 				->columns($db->quoteName(array('id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering')))
-				->values("'','".(int)$data['movie_id']."','".(int)$data['vendor_id']."','".$data['premiere_date']."','".(int)$data['country_id']."','".$db->escape($data['info'])."','".$db->escape($data['language'])."','".(int)$data['ordering']."'");
+				->values("'','" . (int)$data['movie_id'] . "','" . (int)$data['vendor_id'] . "','" . $data['premiere_date'] . "','" . (int)$data['country_id'] . "','" . $db->escape($data['info']) . "','" . $db->escape($data['language']) . "','" . (int)$data['ordering'] . "'");
 		} else {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_premieres'))
-				->set($db->quoteName('movie_id')." = '".(int)$data['movie_id']."'")
-				->set($db->quoteName('vendor_id')." = '".(int)$data['vendor_id']."'")
-				->set($db->quoteName('premiere_date')." = '".$data['premiere_date']."'")
-				->set($db->quoteName('country_id')." = '".(int)$data['country_id']."'")
-				->set($db->quoteName('info')." = '".$db->escape($data['info'])."'")
-				->set($db->quoteName('language')." = '".$db->escape($data['language'])."'")
-				->set($db->quoteName('ordering')." = '".(int)$data['ordering']."'")
-				->where($db->quoteName('id').' = '.(int)$id);
+				->set($db->quoteName('movie_id') . " = '" . (int)$data['movie_id'] . "'")
+				->set($db->quoteName('vendor_id') . " = '" . (int)$data['vendor_id'] . "'")
+				->set($db->quoteName('premiere_date') . " = '" . $data['premiere_date'] . "'")
+				->set($db->quoteName('country_id') . " = '" . (int)$data['country_id'] . "'")
+				->set($db->quoteName('info') . " = '" . $db->escape($data['info']) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
+				->set($db->quoteName('ordering') . " = '" . (int)$data['ordering'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int)$id);
 		}
 
 		try {
@@ -80,17 +84,17 @@ class KinoarhivModelPremiere extends JModelForm {
 				$id = $db->insertid();
 			}
 
-			$app->setUserState('com_kinoarhiv.premieres.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.premieres.' . $user->id . '.data', array(
 				'success' => true,
 				'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
 				'data'    => array('id' => $id)
 			));
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
-			$app->setUserState('com_kinoarhiv.premieres.'.$user->id.'.data', array(
+			$app->setUserState('com_kinoarhiv.premieres.' . $user->id . '.data', array(
 				'success' => false,
 				'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
 			));
@@ -99,14 +103,15 @@ class KinoarhivModelPremiere extends JModelForm {
 		}
 	}
 
-	public function remove() {
+	public function remove()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
 		$query->delete($db->quoteName('#__ka_premieres'))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -114,7 +119,7 @@ class KinoarhivModelPremiere extends JModelForm {
 			$db->execute();
 
 			return true;
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;
@@ -122,7 +127,8 @@ class KinoarhivModelPremiere extends JModelForm {
 	}
 
 	// TODO Should be removed in the feature releases
-	public function deletePremieres() {
+	public function deletePremieres()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('data', array(), 'array');
@@ -132,11 +138,11 @@ class KinoarhivModelPremiere extends JModelForm {
 		$db->lockTable('#__ka_premieres');
 		$db->transactionStart();
 
-		foreach ($data as $key=>$value) {
+		foreach ($data as $key => $value) {
 			$_name = explode('_', $value['name']);
 			$item_id = $_name[3];
 
-			$db->setQuery("DELETE FROM ".$db->quoteName('#__ka_premieres')." WHERE `id` = ".(int)$item_id.";");
+			$db->setQuery("DELETE FROM " . $db->quoteName('#__ka_premieres') . " WHERE `id` = " . (int)$item_id . ";");
 			$result = $db->execute();
 
 			if ($result === false) {
@@ -162,23 +168,23 @@ class KinoarhivModelPremiere extends JModelForm {
 			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
 		}
 
-		return array('success'=>$success, 'message'=>$message);
+		return array('success' => $success, 'message' => $message);
 	}
 
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
+	 * @param   JForm  $form  The form to validate against.
+	 * @param   array  $data  The data to validate.
+	 * @param   string $group The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
-	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
 	 * @since   12.2
 	 */
-	public function validate($form, $data, $group = null) {
+	public function validate($form, $data, $group = null)
+	{
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);
@@ -186,6 +192,7 @@ class KinoarhivModelPremiere extends JModelForm {
 		// Check for an error.
 		if ($return instanceof Exception) {
 			$this->setError($return->getMessage());
+
 			return false;
 		}
 

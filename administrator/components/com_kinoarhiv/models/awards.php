@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelAwards extends JModelList {
-	public function __construct($config = array()) {
+class KinoarhivModelAwards extends JModelList
+{
+	public function __construct($config = array())
+	{
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
@@ -21,7 +22,8 @@ class KinoarhivModelAwards extends JModelList {
 		parent::__construct($config);
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		$app = JFactory::getApplication();
 
 		// Adjust the context to support modal layouts.
@@ -40,8 +42,7 @@ class KinoarhivModelAwards extends JModelList {
 
 		// Force a language
 		$forcedLanguage = $app->input->get('forcedLanguage');
-		if (!empty($forcedLanguage))
-		{
+		if (!empty($forcedLanguage)) {
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
@@ -50,7 +51,8 @@ class KinoarhivModelAwards extends JModelList {
 		parent::populateState('a.title', 'asc');
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.published');
@@ -59,8 +61,8 @@ class KinoarhivModelAwards extends JModelList {
 		return parent::getStoreId($id);
 	}
 
-	protected function getListQuery() {
-		$app = JFactory::getApplication();
+	protected function getListQuery()
+	{
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
 
@@ -74,12 +76,12 @@ class KinoarhivModelAwards extends JModelList {
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
-			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
 		if (is_numeric($published)) {
-			$query->where('a.state = ' . (int) $published);
+			$query->where('a.state = ' . (int)$published);
 		} elseif ($published === '') {
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
@@ -88,7 +90,7 @@ class KinoarhivModelAwards extends JModelList {
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = ' . (int) substr($search, 3));
+				$query->where('a.id = ' . (int)substr($search, 3));
 			} else {
 				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.title LIKE ' . $search . ')');
@@ -117,12 +119,11 @@ class KinoarhivModelAwards extends JModelList {
 	/**
 	 * Method to get a list of articles.
 	 * Overridden to add a check for access levels.
-	 *
 	 * @return  mixed  An array of data items on success, false on failure.
-	 *
 	 * @since   1.6.1
 	 */
-	public function getItems() {
+	public function getItems()
+	{
 		$items = parent::getItems();
 
 		if (JFactory::getApplication()->isSite()) {
@@ -140,7 +141,8 @@ class KinoarhivModelAwards extends JModelList {
 		return $items;
 	}
 
-	public function batch() {
+	public function batch()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
@@ -153,7 +155,7 @@ class KinoarhivModelAwards extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string)$batch_data['language_id']) . "'";
 		}
 
 		if (empty($fields)) {
@@ -164,7 +166,7 @@ class KinoarhivModelAwards extends JModelList {
 
 		$query->update($db->quoteName('#__ka_awards'))
 			->set(implode(', ', $fields))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -172,7 +174,7 @@ class KinoarhivModelAwards extends JModelList {
 			$db->execute();
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-		
+
 			return false;
 		}
 

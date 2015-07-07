@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
-		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description ="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true" />
-		<field name="title" type="text" default="" label="COM_KA_FIELD_AW_LABEL" class="span5" required="true" filter="string" size="45" />
-		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true" hide="readmore,pagebreak" />
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
+		<field name="title" type="text" default="" label="COM_KA_FIELD_AW_LABEL" class="span5" required="true"
+			   filter="string" size="45"/>
+		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true"
+			   hide="readmore,pagebreak"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
-		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" filter="intval" size="1" default="1">
+		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
+			   filter="intval" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field>

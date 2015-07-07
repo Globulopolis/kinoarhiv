@@ -2,18 +2,19 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
 
 use Joomla\Registry\Registry;
 
-class JFormRuleIp extends JFormRule {
-	public function test(SimpleXMLElement $element, $value, $group = null, Registry $input = null, JForm $form = null) {
+class JFormRuleIp extends JFormRule
+{
+	public function test(SimpleXMLElement $element, $value, $group = null, Registry $input = null, JForm $form = null)
+	{
 		// If the field is empty and not required, the field is valid.
-		$required = ((string) $element['required'] == 'true' || (string) $element['required'] == 'required');
+		$required = ((string)$element['required'] == 'true' || (string)$element['required'] == 'required');
 
 		if (!$required && empty($value)) {
 			return true;
@@ -23,6 +24,6 @@ class JFormRuleIp extends JFormRule {
 			return false;
 		}
 
-        return true;
+		return true;
 	}
 }

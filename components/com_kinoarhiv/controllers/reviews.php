@@ -1,17 +1,18 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivControllerReviews extends JControllerLegacy {
-	public function save() {
+class KinoarhivControllerReviews extends JControllerLegacy
+{
+	public function save()
+	{
 		$id = $this->input->get('id', null, 'int');
-		$redir_url = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false);
+		$redir_url = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id, false);
 
 		if (JSession::checkToken() === false) {
 			GlobalHelper::eventLog(JText::_('JINVALID_TOKEN'));
@@ -45,7 +46,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 
 		if ($validData === false) {
 			if (!$user->guest) {
-				$app->setUserState('com_kinoarhiv.reviews.'.$id.'_user_'.$user->get('id').'edit', $data);
+				$app->setUserState('com_kinoarhiv.reviews.' . $id . '_user_' . $user->get('id') . 'edit', $data);
 			}
 
 			$errors = $model->getErrors();
@@ -67,7 +68,7 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 
 		if (!$result) {
 			if (!$user->guest) {
-				$app->setUserState('com_kinoarhiv.reviews.'.$id.'_user_'.$user->get('id').'edit', $data);
+				$app->setUserState('com_kinoarhiv.reviews.' . $id . '_user_' . $user->get('id') . 'edit', $data);
 			}
 
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
@@ -80,18 +81,20 @@ class KinoarhivControllerReviews extends JControllerLegacy {
 
 		// Clear stored data in session and redirect
 		if (!$user->guest) {
-			$app->setUserState('com_kinoarhiv.reviews.'.$id.'_user_'.$user->get('id').'edit', null);
+			$app->setUserState('com_kinoarhiv.reviews.' . $id . '_user_' . $user->get('id') . 'edit', null);
 		}
+
 		//$this->setRedirect($redir_url);
 
 		return true;
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		$user = JFactory::getUser();
 		$id = $this->input->get('id', null, 'int');
 		$return = $this->input->get('return', null, 'word');
-		$redir_url = ($return == 'movie') ? JRoute::_('index.php?option=com_kinoarhiv&view=movie&id='.$id, false) : JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=reviews', false);
+		$redir_url = ($return == 'movie') ? JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id, false) : JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=reviews', false);
 
 		if (!$user->authorise('core.delete.reviews', 'com_kinoarhiv')) {
 			$this->setRedirect($redir_url);

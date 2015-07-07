@@ -1,17 +1,19 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivViewSearch extends JViewLegacy {
+class KinoarhivViewSearch extends JViewLegacy
+{
 	protected $items;
+	protected $params;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$app = JFactory::getApplication();
 
 		$items = $this->get('Items');
@@ -20,6 +22,7 @@ class KinoarhivViewSearch extends JViewLegacy {
 
 		if (count($errors = $this->get('Errors'))) {
 			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+
 			return false;
 		}
 

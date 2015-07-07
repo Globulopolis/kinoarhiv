@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset name="global" label="COM_KA_SETTINGS_TAB">
-		<field name="offline" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL_DESC" filter="integer">
+		<field name="offline" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_OFFLINE_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="allow_votes" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC" filter="integer">
+		<field name="allow_votes" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
+		<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
 			<option value="5">J5</option>
 			<option value="10">J10</option>
 			<option value="15">J15</option>
@@ -19,7 +24,9 @@
 			<option value="50">J50</option>
 			<option value="100">J100</option>
 		</field>
-		<field name="sort_movielist_field" type="list" class="inputbox" default="ordering" label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
+		<field name="sort_movielist_field" type="list" class="inputbox" default="ordering"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
 			<option value="id">JGLOBAL_FIELD_ID_LABEL</option>
 			<option value="title">JFIELD_TITLE_DESC</option>
 			<option value="year">COM_KA_FIELD_MOVIE_YEAR</option>
@@ -30,7 +37,9 @@
 			<option value="desc">JGLOBAL_ORDER_DESCENDING</option>
 			<option value="asc">JGLOBAL_ORDER_ASCENDING</option>
 		</field>
-		<field name="sort_namelist_field" type="list" class="inputbox" default="ordering" label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_NAMES_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
+		<field name="sort_namelist_field" type="list" class="inputbox" default="ordering"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_NAMES_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
 			<option value="id">JGLOBAL_FIELD_ID_LABEL</option>
 			<option value="name">COM_KA_FIELD_NAME</option>
 			<option value="latin_name">COM_KA_FIELD_NAME_LATIN</option>
@@ -40,496 +49,723 @@
 			<option value="desc">JGLOBAL_ORDER_DESCENDING</option>
 			<option value="asc">JGLOBAL_ORDER_ASCENDING</option>
 		</field>
-		<field name="logger" type="list" class="inputbox" default="php" label="COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_LABEL_DESC" filter="word">
+		<field name="logger" type="list" class="inputbox" default="php"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_LABEL_DESC" filter="word">
 			<option value="php">COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_PHP</option>
 			<option value="syslog">COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_SYS</option>
 		</field>
 	</fieldset>
 	<fieldset name="metadata" label="COM_KA_SETTINGS_META_LABEL">
-		<field name="meta_description" type="textarea" default="" label="JFIELD_META_DESCRIPTION_LABEL" description="JFIELD_META_DESCRIPTION_DESC" filter="string" cols="60" rows="3" class="span11" />
-		<field name="meta_keywords" type="textarea" default="" label="JFIELD_META_KEYWORDS_LABEL" description="JFIELD_META_KEYWORDS_DESC" filter="string" cols="60" rows="3" class="span11" />
-		<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC" class="inputbox" default="">
+		<field name="meta_description" type="textarea" default="" label="JFIELD_META_DESCRIPTION_LABEL"
+			   description="JFIELD_META_DESCRIPTION_DESC" filter="string" cols="60" rows="3" class="span11"/>
+		<field name="meta_keywords" type="textarea" default="" label="JFIELD_META_KEYWORDS_LABEL"
+			   description="JFIELD_META_KEYWORDS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+		<field name="robots" type="list" label="JFIELD_METADATA_ROBOTS_LABEL" description="JFIELD_METADATA_ROBOTS_DESC"
+			   class="inputbox" default="">
 			<option value="">JGLOBAL_INDEX_FOLLOW</option>
 			<option value="noindex, follow">JGLOBAL_NOINDEX_FOLLOW</option>
 			<option value="index, nofollow">JGLOBAL_INDEX_NOFOLLOW</option>
 			<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
 		</field>
-		<field name="generator" type="text" default="" label="COM_KA_FIELD_METAGENERATOR_LABEL" description="COM_KA_FIELD_METAGENERATOR_LABEL_DESC" filter="string" size="50" />
+		<field name="generator" type="text" default="" label="COM_KA_FIELD_METAGENERATOR_LABEL"
+			   description="COM_KA_FIELD_METAGENERATOR_LABEL_DESC" filter="string" size="50"/>
 	</fieldset>
 	<fieldset name="paths" label="COM_KA_PATHS_LABEL">
-		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red" />
-		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="ffprobe_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFPROBE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="gnuplot_path" type="text" default="bin/gnuplot/" label="COM_KA_FIELD_PATHS_GNUPLOT_LABEL" description="COM_KA_FIELD_PATHS_GNUPLOT_LABEL_DEDC" required="true" filter="string" size="100" class="span11" />
-		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/" label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red"/>
+		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="ffprobe_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFPROBE_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="gnuplot_path" type="text" default="bin/gnuplot/" label="COM_KA_FIELD_PATHS_GNUPLOT_LABEL"
+			   description="COM_KA_FIELD_PATHS_GNUPLOT_LABEL_DEDC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/"
+			   label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
+			   filter="string" size="100" class="span11"/>
 
-		<field name="media_posters_root" type="text" default="" label="COM_KA_FIELD_PATHS_PO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_posters_root_www" type="text" default="/images/movies" label="COM_KA_FIELD_PATHS_PO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_posters_root" type="text" default="" label="COM_KA_FIELD_PATHS_PO_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_posters_root_www" type="text" default="/images/movies"
+			   label="COM_KA_FIELD_PATHS_PO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_wallpapers_root" type="text" default="" label="COM_KA_FIELD_PATHS_WP_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_wallpapers_root_www" type="text" default="/images/movies" label="COM_KA_FIELD_PATHS_WP_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_wallpapers_root" type="text" default="" label="COM_KA_FIELD_PATHS_WP_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_wallpapers_root_www" type="text" default="/images/movies"
+			   label="COM_KA_FIELD_PATHS_WP_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_scr_root" type="text" default="" label="COM_KA_FIELD_PATHS_SCR_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_scr_root_www" type="text" default="/images/movies" label="COM_KA_FIELD_PATHS_SCR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_scr_root" type="text" default="" label="COM_KA_FIELD_PATHS_SCR_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_scr_root_www" type="text" default="/images/movies" label="COM_KA_FIELD_PATHS_SCR_WWW_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
 
-		<field name="media_actor_photo_root" type="text" default="" label="COM_KA_FIELD_PATHS_PHOTO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_actor_photo_root_www" type="text" default="/images/names" label="COM_KA_FIELD_PATHS_PHOTO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_actor_photo_root" type="text" default="" label="COM_KA_FIELD_PATHS_PHOTO_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_actor_photo_root_www" type="text" default="/images/names"
+			   label="COM_KA_FIELD_PATHS_PHOTO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_actor_posters_root" type="text" default="" label="COM_KA_FIELD_PATHS_POSTER_NAMES_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_actor_posters_root_www" type="text" default="/images/names" label="COM_KA_FIELD_PATHS_POSTER_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_actor_posters_root" type="text" default="" label="COM_KA_FIELD_PATHS_POSTER_NAMES_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_actor_posters_root_www" type="text" default="/images/names"
+			   label="COM_KA_FIELD_PATHS_POSTER_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_actor_wallpapers_root" type="text" default="" label="COM_KA_FIELD_PATHS_WP_NAMES_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_actor_wallpapers_root_www" type="text" default="/images/names" label="COM_KA_FIELD_PATHS_WP_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_actor_wallpapers_root" type="text" default="" label="COM_KA_FIELD_PATHS_WP_NAMES_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_actor_wallpapers_root_www" type="text" default="/images/names"
+			   label="COM_KA_FIELD_PATHS_WP_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_trailers_root" type="text" default="" label="COM_KA_FIELD_PATHS_TR_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_trailers_root_www" type="text" default="/downloads/trailers" label="COM_KA_FIELD_PATHS_TR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_trailers_root" type="text" default="" label="COM_KA_FIELD_PATHS_TR_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_trailers_root_www" type="text" default="/downloads/trailers"
+			   label="COM_KA_FIELD_PATHS_TR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_music_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_music_root_www" type="text" default="/downloads/music" label="COM_KA_FIELD_PATHS_MUSIC_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_music_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_music_root_www" type="text" default="/downloads/music"
+			   label="COM_KA_FIELD_PATHS_MUSIC_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_music_demo_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_DEMO_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_music_demo_root_www" type="text" default="/downloads/music_demo" label="COM_KA_FIELD_PATHS_MUSIC_DEMO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_music_demo_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_DEMO_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_music_demo_root_www" type="text" default="/downloads/music_demo"
+			   label="COM_KA_FIELD_PATHS_MUSIC_DEMO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_music_images_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_IMG_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_music_images_root_www" type="text" default="/images/music" label="COM_KA_FIELD_PATHS_MUSIC_IMG_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_music_images_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_IMG_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_music_images_root_www" type="text" default="/images/music"
+			   label="COM_KA_FIELD_PATHS_MUSIC_IMG_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_music_images_wf_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_IMG_WF_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_music_images_wf_root_www" type="text" default="/images/music" label="COM_KA_FIELD_PATHS_MUSIC_IMG_WF_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_music_images_wf_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_IMG_WF_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_music_images_wf_root_www" type="text" default="/images/music"
+			   label="COM_KA_FIELD_PATHS_MUSIC_IMG_WF_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
+			   required="true" filter="string" size="100" class="span11"/>
 
-		<field name="media_rating_image_root" type="text" default="" label="COM_KA_FIELD_PATHS_RT_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
-		<field name="media_rating_image_root_www" type="text" default="/images/rating" label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100" class="span11" />
+		<field name="media_rating_image_root" type="text" default="" label="COM_KA_FIELD_PATHS_RT_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
+			   class="span11"/>
+		<field name="media_rating_image_root_www" type="text" default="/images/rating"
+			   label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
+			   filter="string" size="100" class="span11"/>
 	</fieldset>
 	<fieldset name="gallery" label="COM_KA_SETTINGS_GALLERY_LABEL">
-		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
-		<field name="upload_chunk" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_UPLOAD_CHUNK_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LABEL_DESC" filter="integer">
+		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL"
+			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32"/>
+		<field name="upload_chunk" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_UPLOAD_CHUNK_LABEL"
+			   description="COM_KA_FIELD_UPLOAD_CHUNK_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL" description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32" />
+		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL"
+			   description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32"/>
 
-		<field type="spacer" name="sp_video" class="separator" label="COM_KA_FIELD_UPLOAD_VIDEO_SPACER" />
-			<field name="upload_mime_video" type="text" default="mp4,mp4v,mpg4,mpeg,mpg,ogv,qt,mov,wmv,avi,mpd,mkv" label="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL" description="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL_DESC" required="true" filter="string" size="64" class="span6" />
-			<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64" class="span6" />
-			<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue" label="COM_KA_FIELD_UPLOAD_MIME_CHAPTERS_LABEL" required="true" filter="string" size="64" class="span6" />
+		<field type="spacer" name="sp_video" class="separator" label="COM_KA_FIELD_UPLOAD_VIDEO_SPACER"/>
+		<field name="upload_mime_video" type="text" default="mp4,mp4v,mpg4,mpeg,mpg,ogv,qt,mov,wmv,avi,mpd,mkv"
+			   label="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL" description="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL_DESC"
+			   required="true" filter="string" size="64" class="span6"/>
+		<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue"
+			   label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64"
+			   class="span6"/>
+		<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue"
+			   label="COM_KA_FIELD_UPLOAD_MIME_CHAPTERS_LABEL" required="true" filter="string" size="64" class="span6"/>
 
-		<field type="spacer" name="sp_image" class="separator" label="COM_KA_FIELD_UPLOAD_IMAGE_SPACER" />
-			<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif" label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" class="span6" />
-			<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-			<field name="upload_gallery_watermark_image" type="text" default="/components/com_kinoarhiv/assets/themes/component/default/images/powered_by.png" label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC" filter="string" size="100" class="span11" />
+		<field type="spacer" name="sp_image" class="separator" label="COM_KA_FIELD_UPLOAD_IMAGE_SPACER"/>
+		<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif"
+			   label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" class="span6"/>
+		<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="upload_gallery_watermark_image" type="text"
+			   default="/components/com_kinoarhiv/assets/themes/component/default/images/powered_by.png"
+			   label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC"
+			   filter="string" size="100" class="span11"/>
 	</fieldset>
 	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
-		<field type="spacer" name="sp_music_global" class="separator" label="COM_KA_FIELD_MUSIC_GLOBAL_SPACER" />
-			<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg" label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span11" />
-			<field name="upload_audio_preview" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL" description="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL_DESC" filter="integer">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-			<field name="create_waveform" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_CREATE_WAVEFORM_LABEL" filter="integer">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
+		<field type="spacer" name="sp_music_global" class="separator" label="COM_KA_FIELD_MUSIC_GLOBAL_SPACER"/>
+		<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg"
+			   label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span11"/>
+		<field name="upload_audio_preview" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL"
+			   description="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="create_waveform" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_CREATE_WAVEFORM_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fieldset>
 	<fieldset name="music_arts" label="COM_KA_FIELD_MUSIC_COVERS_SPACER">
-		<field type="spacer" name="sp_music_covers" class="separator" label="COM_KA_FIELD_MUSIC_COVERS_SPACER" />
-			<field name="music_covers_front" type="textarea" default="front.jpg" label="COM_KA_FIELD_MUSIC_COVERS_FRONT" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
-			<field name="music_covers_back" type="textarea" default="back.jpg" label="COM_KA_FIELD_MUSIC_COVERS_BACK" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
-			<field name="music_covers_artist" type="textarea" default="artist.jpg" label="COM_KA_FIELD_MUSIC_COVERS_ARTIST" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
-			<field name="music_covers_disc" type="textarea" default="disc.jpg" label="COM_KA_FIELD_MUSIC_COVERS_DISC" description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11" />
-			<field name="music_covers_size" type="text" default="500x500" label="COM_KA_FIELD_MUSIC_COVERS_SIZE" filter="string" size="64" class="span11" />
+		<field type="spacer" name="sp_music_covers" class="separator" label="COM_KA_FIELD_MUSIC_COVERS_SPACER"/>
+		<field name="music_covers_front" type="textarea" default="front.jpg" label="COM_KA_FIELD_MUSIC_COVERS_FRONT"
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+		<field name="music_covers_back" type="textarea" default="back.jpg" label="COM_KA_FIELD_MUSIC_COVERS_BACK"
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+		<field name="music_covers_artist" type="textarea" default="artist.jpg" label="COM_KA_FIELD_MUSIC_COVERS_ARTIST"
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+		<field name="music_covers_disc" type="textarea" default="disc.jpg" label="COM_KA_FIELD_MUSIC_COVERS_DISC"
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+		<field name="music_covers_size" type="text" default="500x500" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
+			   filter="string" size="64" class="span11"/>
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
-		<field name="ka_theme" type="folderlist" default="default" directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL" description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true" />
-		<field name="ui_theme" type="folderlist" default="ui-lightness" directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL" description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" hide_default="true" />
-		<field name="vegas_enable" default="0" type="radio" class="btn-group" label="COM_KA_FIELD_AP_VEGAS_LABEL" description="COM_KA_FIELD_AP_VEGAS_LABEL_DESC" filter="integer">
+		<field name="ka_theme" type="folderlist" default="default"
+			   directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL"
+			   description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true"/>
+		<field name="ui_theme" type="folderlist" default="ui-lightness"
+			   directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL"
+			   description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" hide_default="true"/>
+		<field name="vegas_enable" default="0" type="radio" class="btn-group" label="COM_KA_FIELD_AP_VEGAS_LABEL"
+			   description="COM_KA_FIELD_AP_VEGAS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="vegas_overlay" type="filelist" default="" directory="components/com_kinoarhiv/assets/themes/component/default/images/overlays/" label="COM_KA_FIELD_AP_VEGAS_OVERLAY_LABEL" hide_default="true" />
-		<field name="vegas_overlay_opacity" type="text" default="0.5" label="COM_KA_FIELD_AP_VEGAS_OVERLAY_OP_LABEL" filter="string" size="3" />
-		<field name="vegas_bodybg_transparent" default="0" type="radio" class="btn-group" label="COM_KA_FIELD_AP_VEGAS_BGTRANS_LABEL" filter="integer">
+		<field name="vegas_overlay" type="filelist" default=""
+			   directory="components/com_kinoarhiv/assets/themes/component/default/images/overlays/"
+			   label="COM_KA_FIELD_AP_VEGAS_OVERLAY_LABEL" hide_default="true"/>
+		<field name="vegas_overlay_opacity" type="text" default="0.5" label="COM_KA_FIELD_AP_VEGAS_OVERLAY_OP_LABEL"
+			   filter="string" size="3"/>
+		<field name="vegas_bodybg_transparent" default="0" type="radio" class="btn-group"
+			   label="COM_KA_FIELD_AP_VEGAS_BGTRANS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="vegas_bodybg_selector" type="text" default=".container" label="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL" description="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL_DESC" filter="string" class="span12" />
-		<field name="vegas_bg" type="textarea" default="" label="COM_KA_FIELD_AP_VEGAS_BG_LABEL" description="COM_KA_FIELD_AP_VEGAS_BG_LABEL_DESC" rows="3" cols="6" class="span12" />
-		<field name="vegas_slideshow_delay" type="text" default="2000" label="COM_KA_FIELD_AP_VEGAS_BGDELAY_LABEL" filter="integer" size="3" />
+		<field name="vegas_bodybg_selector" type="text" default=".container"
+			   label="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL"
+			   description="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL_DESC" filter="string" class="span12"/>
+		<field name="vegas_bg" type="textarea" default="" label="COM_KA_FIELD_AP_VEGAS_BG_LABEL"
+			   description="COM_KA_FIELD_AP_VEGAS_BG_LABEL_DESC" rows="3" cols="6" class="span12"/>
+		<field name="vegas_slideshow_delay" type="text" default="2000" label="COM_KA_FIELD_AP_VEGAS_BGDELAY_LABEL"
+			   filter="integer" size="3"/>
 	</fieldset>
 	<fieldset name="ap_item" label="COM_KA_SETTINGS_AP_ITEM_LABEL">
-		<field name="link_titles" type="radio" class="btn-group" default="1" label="JGLOBAL_LINKED_TITLES_LABEL" description="JGLOBAL_LINKED_TITLES_DESC">
+		<field name="link_titles" type="radio" class="btn-group" default="1" label="JGLOBAL_LINKED_TITLES_LABEL"
+			   description="JGLOBAL_LINKED_TITLES_DESC">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="show_author" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_AUTHOR_LABEL" description="JGLOBAL_SHOW_AUTHOR_DESC" filter="integer">
+		<field name="show_author" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_AUTHOR_LABEL"
+			   description="JGLOBAL_SHOW_AUTHOR_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="show_pubdate" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_CREATE_DATE_LABEL" description="JGLOBAL_SHOW_CREATE_DATE_DESC" filter="integer">
+		<field name="show_pubdate" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_CREATE_DATE_LABEL"
+			   description="JGLOBAL_SHOW_CREATE_DATE_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="show_moddate" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL" description="JGLOBAL_SHOW_MODIFY_DATE_DESC" filter="integer">
+		<field name="show_moddate" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL"
+			   description="JGLOBAL_SHOW_MODIFY_DATE_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		
-		<field name="limit_text" type="text" default="250" label="COM_KA_FIELD_AP_LIMITTEXT_LABEL" description="COM_KA_FIELD_AP_LIMITTEXT_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="introtext_actors_list_limit" type="text" default="10" label="COM_KA_FIELD_AP_LIMIT_INTRO_ACTORS_LIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_INTRO_ACTORS_LIST_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="person_list_limit" type="text" default="3" label="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="premieres_list_limit" type="text" default="2" label="COM_KA_FIELD_AP_LIMIT_PREMIERELIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_PREMIERELIST_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="releases_list_limit" type="text" default="2" label="COM_KA_FIELD_AP_LIMIT_RELEASELIST_LABEL" description="COM_KA_FIELD_AP_LIMIT_RELEASELIST_LABEL_DESC" required="true" filter="integer" size="6" />
 
-		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL" description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" required="true" filter="integer" size="6" />
-		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" required="true" filter="integer" size="6" />
-		<field name="size_x_photo" type="text" default="128" label="COM_KA_FIELD_AP_PHOTO_WIDTH_LABEL" required="true" filter="integer" size="6" />
+		<field name="limit_text" type="text" default="250" label="COM_KA_FIELD_AP_LIMITTEXT_LABEL"
+			   description="COM_KA_FIELD_AP_LIMITTEXT_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="introtext_actors_list_limit" type="text" default="10"
+			   label="COM_KA_FIELD_AP_LIMIT_INTRO_ACTORS_LIST_LABEL"
+			   description="COM_KA_FIELD_AP_LIMIT_INTRO_ACTORS_LIST_LABEL_DESC" required="true" filter="integer"
+			   size="6"/>
+		<field name="person_list_limit" type="text" default="3" label="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL"
+			   description="COM_KA_FIELD_AP_LIMIT_PERSONLIST_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="premieres_list_limit" type="text" default="2" label="COM_KA_FIELD_AP_LIMIT_PREMIERELIST_LABEL"
+			   description="COM_KA_FIELD_AP_LIMIT_PREMIERELIST_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="releases_list_limit" type="text" default="2" label="COM_KA_FIELD_AP_LIMIT_RELEASELIST_LABEL"
+			   description="COM_KA_FIELD_AP_LIMIT_RELEASELIST_LABEL_DESC" required="true" filter="integer" size="6"/>
 
-		<field name="slider" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_LABEL" filter="integer">
+		<field name="size_x_posters" type="text" default="128" label="COM_KA_FIELD_AP_POSTER_WIDTH_LABEL"
+			   description="COM_KA_FIELD_AP_IMG_WIDTH_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="size_x_scr" type="text" default="200" label="COM_KA_FIELD_AP_SCR_WIDTH_LABEL" required="true"
+			   filter="integer" size="6"/>
+		<field name="size_x_wallpp" type="text" default="200" label="COM_KA_FIELD_AP_WP_WIDTH_LABEL" required="true"
+			   filter="integer" size="6"/>
+		<field name="size_x_photo" type="text" default="128" label="COM_KA_FIELD_AP_PHOTO_WIDTH_LABEL" required="true"
+			   filter="integer" size="6"/>
+
+		<field name="slider" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="slider_min_item" type="text" default="3" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MIN_LABEL" required="true" filter="integer" size="6" />
-		<field name="slider_max_item" type="text" default="10" label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MAX_LABEL" required="true" filter="integer" size="6" />
+		<field name="slider_min_item" type="text" default="3"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MIN_LABEL" required="true" filter="integer" size="6"/>
+		<field name="slider_max_item" type="text" default="10"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MAX_LABEL" required="true" filter="integer" size="6"/>
 	</fieldset>
 	<fieldset name="ap_item_player" label="COM_KA_SETTINGS_AP_ITEM_PLAYER">
-		<field name="trailer_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
+		<field name="trailer_collapsed" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="movie_collapsed" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
+		<field name="movie_collapsed" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="player_width" type="text" default="690" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true" filter="integer" size="6" />
-		<field name="player_type" type="folderlist" default="mediaelement" directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL" description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" />
-		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL" description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12" />
-		<field name="player_logo" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL" description="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL_DESC" rows="3" cols="6" class="span12" />
-		<field name="player_swf" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_SWF_LABEL" description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12" />
+		<field name="player_width" type="text" default="690" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true"
+			   filter="integer" size="6"/>
+		<field name="player_type" type="folderlist" default="mediaelement"
+			   directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL"
+			   description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC"/>
+		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL"
+			   description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12"/>
+		<field name="player_logo" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL"
+			   description="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL_DESC" rows="3" cols="6" class="span12"/>
+		<field name="player_swf" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_SWF_LABEL"
+			   description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12"/>
 	</fieldset>
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
-		<field name="ratings_show_local" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL" description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC" filter="integer">
+		<field name="ratings_show_local" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL" description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL" description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="vote_summ_precision" type="text" default="2" label="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL" description="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="ratings_show_frontpage" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL" description="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL_DESC" filter="integer">
+		<field name="vote_summ_num" type="text" default="10" label="COM_KA_FIELD_AP_VOTE_NUM_LABEL"
+			   description="COM_KA_FIELD_AP_VOTE_NUM_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="vote_summ_precision" type="text" default="2" label="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL"
+			   description="COM_KA_FIELD_AP_VOTE_PRECISION_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="ratings_show_frontpage" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL" description="COM_KA_FIELD_AP_RATE_FRONTPAGE_LABEL_DESC"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_img_kp_remote" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_KP_IMG_REMORE_LABEL" filter="integer">
+		<field name="ratings_img_kp_remote" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_KP_IMG_REMORE_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 	<fieldset name="ap_rate_img" label="COM_KA_SETTINGS_AP_RATE_IMG_LABEL">
-		<field name="ratings_show_remote" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL_DESC" filter="integer">
+		<field name="ratings_show_remote" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL_DESC"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_show_img" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL_DESC" filter="integer">
+		<field name="ratings_show_img" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_AS_IMG_LABEL_DESC"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_img_imdb" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_IMDB_LABEL" filter="integer">
+		<field name="ratings_img_imdb" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_IMG_IMDB_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_img_kp" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_KP_LABEL" filter="integer">
+		<field name="ratings_img_kp" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_IMG_KP_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_img_rotten" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_RT_LABEL" filter="integer">
+		<field name="ratings_img_rotten" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_IMG_RT_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="ratings_img_metacritic" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_RATE_IMG_MT_LABEL" filter="integer">
+		<field name="ratings_img_metacritic" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_IMG_MT_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 
-	<field name="use_alphabet" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_AP_AB_USE_LABEL" filter="integer">
+	<field name="use_alphabet" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_AP_AB_USE_LABEL"
+		   filter="integer">
 		<option value="1">JYES</option>
 		<option value="0">JNO</option>
 	</field>
-	<field type="spacer" name="alphabet_movies" class="text" label="COM_KA_SETTINGS_AP_AB_MOVIES" />
-	<field type="spacer" name="alphabet_names" class="text" label="COM_KA_SETTINGS_AP_AB_NAMES" />
+	<field type="spacer" name="alphabet_movies" class="text" label="COM_KA_SETTINGS_AP_AB_MOVIES"/>
+	<field type="spacer" name="alphabet_names" class="text" label="COM_KA_SETTINGS_AP_AB_NAMES"/>
 	<fieldset name="ap_nav" label="COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL">
-		<field name="show_feed_link" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_LNK_FEED_LABEL" description="COM_KA_FIELD_AP_LNK_FEED_LABEL_DESC" filter="integer">
+		<field name="show_feed_link" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_LNK_FEED_LABEL"
+			   description="COM_KA_FIELD_AP_LNK_FEED_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="link_favorite" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_LNK_FAV_LABEL" filter="integer">
+		<field name="link_favorite" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_LNK_FAV_LABEL"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="link_watched" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_LNK_WATCHED_LABEL" filter="integer">
+		<field name="link_watched" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_LNK_WATCHED_LABEL"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_movie_wallpp" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL" filter="integer">
+		<field name="tab_movie_wallpp" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_movie_posters" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_MOVIE_POSTERS_LABEL" filter="integer">
+		<field name="tab_movie_posters" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_MOVIE_POSTERS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_movie_scr" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_MOVIE_SCR_LABEL" filter="integer">
+		<field name="tab_movie_scr" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_MOVIE_SCR_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_movie_awards" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_MOVIE_AWARDS_LABEL" filter="integer">
+		<field name="tab_movie_awards" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_MOVIE_AWARDS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_movie_tr" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_MOVIE_TR_LABEL" filter="integer">
+		<field name="tab_movie_tr" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_MOVIE_TR_LABEL"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_movie_snd" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TAB_MOVIE_SND_LABEL" filter="integer">
+		<field name="tab_movie_snd" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_AP_TAB_MOVIE_SND_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_name_wallpp" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_NAME_WALLPP_LABEL" filter="integer">
+		<field name="tab_name_wallpp" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_NAME_WALLPP_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_name_posters" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_NAME_POSTERS_LABEL" filter="integer">
+		<field name="tab_name_posters" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_NAME_POSTERS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_name_photos" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_NAME_PHOTO_LABEL" filter="integer">
+		<field name="tab_name_photos" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_NAME_PHOTO_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="tab_name_awards" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_TAB_NAME_AWARDS_LABEL" filter="integer">
+		<field name="tab_name_awards" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_NAME_AWARDS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="pagevan_top" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_PAGENAV_TOP_LABEL" description="COM_KA_FIELD_AP_PAGENAV_LABEL_DESC" filter="integer">
+		<field name="pagevan_top" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_PAGENAV_TOP_LABEL"
+			   description="COM_KA_FIELD_AP_PAGENAV_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="pagevan_bottom" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_PAGENAV_BOTTOM_LABEL" description="COM_KA_FIELD_AP_PAGENAV_LABEL_DESC" filter="integer">
+		<field name="pagevan_bottom" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_PAGENAV_BOTTOM_LABEL" description="COM_KA_FIELD_AP_PAGENAV_LABEL_DESC"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="watch_trailer" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TR_LABEL" description="COM_KA_FIELD_AP_TR_LABEL_DESC" filter="integer">
+		<field name="watch_trailer" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_TR_LABEL"
+			   description="COM_KA_FIELD_AP_TR_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="watch_movie" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_MOVIE_LABEL" description="COM_KA_FIELD_AP_MOVIE_LABEL_DESC" filter="integer">
+		<field name="watch_movie" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_MOVIE_LABEL"
+			   description="COM_KA_FIELD_AP_MOVIE_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="allow_guest_watch" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL_DESC" filter="integer">
+		<field name="allow_guest_watch" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_GUEST_WATCH_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="allow_movie_download" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL" description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL_DESC" filter="integer">
+		<field name="allow_movie_download" type="radio" class="btn-group" default="0"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_DL_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 	<fieldset name="reviews" label="COM_KA_REVIEWS_TAB">
-		<field name="allow_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_ALLOWREVIEWS_LABEL" description="COM_KA_FIELD_ALLOWREVIEWS_LABEL_DESC" filter="integer">
+		<field name="allow_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_ALLOWREVIEWS_LABEL"
+			   description="COM_KA_FIELD_ALLOWREVIEWS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="custom_review_component" type="list" class="inputbox" default="default" label="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL" description="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL_DESC">
+		<field name="custom_review_component" type="list" class="inputbox" default="default"
+			   label="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL"
+			   description="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL_DESC">
 			<option value="default">JDEFAULT</option>
 			<option value="jc">COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_JCM</option>
 			<option value="disqus">COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_DISQUS</option>
 		</field>
-		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL" description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
+		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL"
+			   description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="reviews_length_min" type="text" default="20" label="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL" description="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="reviews_length_max" type="text" default="5000" label="COM_KA_FIELD_REVIEWS_LENGTH_MAX_LABEL" description="COM_KA_FIELD_REVIEWS_LENGTH_MAX_LABEL_DESC" required="true" filter="integer" size="6" />
-		<field name="html_allowed_tags" type="textarea" default="br,h1,h2,h3,h4,h5,h6,ul,ol,li,u,div[class],i,strong,b,q[cite],span[class],blockquote[cite],hr,p[class]" label="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL" description="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL_DESC" filter="string" cols="60" rows="5" class="span11" />
+		<field name="reviews_length_min" type="text" default="20" label="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL"
+			   description="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="reviews_length_max" type="text" default="5000" label="COM_KA_FIELD_REVIEWS_LENGTH_MAX_LABEL"
+			   description="COM_KA_FIELD_REVIEWS_LENGTH_MAX_LABEL_DESC" required="true" filter="integer" size="6"/>
+		<field name="html_allowed_tags" type="textarea"
+			   default="br,h1,h2,h3,h4,h5,h6,ul,ol,li,u,div[class],i,strong,b,q[cite],span[class],blockquote[cite],hr,p[class]"
+			   label="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL" description="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL_DESC"
+			   filter="string" cols="60" rows="5" class="span11"/>
 	</fieldset>
 	<fieldset name="reviews_save" label="COM_KA_REVIEWS_SETTINGS_SAVE_LABEL">
-		<field name="reviews_premod" type="radio" class="btn-group" default="1" label="COM_KA_REVIEWS_SETTINGS_SAVE_PREMOD_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_PREMOD_LABEL_DESC" filter="integer">
+		<field name="reviews_premod" type="radio" class="btn-group" default="1"
+			   label="COM_KA_REVIEWS_SETTINGS_SAVE_PREMOD_LABEL"
+			   description="COM_KA_REVIEWS_SETTINGS_SAVE_PREMOD_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="reviews_send_email_touser" type="radio" class="btn-group" default="0" label="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_TOUSER_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_TOUSER_LABEL_DESC" filter="integer">
+		<field name="reviews_send_email_touser" type="radio" class="btn-group" default="0"
+			   label="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_TOUSER_LABEL"
+			   description="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_TOUSER_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="reviews_send_email" type="radio" class="btn-group" default="0" label="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_LABEL_DESC" filter="integer">
+		<field name="reviews_send_email" type="radio" class="btn-group" default="0"
+			   label="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_LABEL"
+			   description="COM_KA_REVIEWS_SETTINGS_SAVE_EMAIL_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="reviews_emails" type="textarea" default="" label="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL" description="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL_DESC" filter="string" cols="60" rows="5" class="span11" />
+		<field name="reviews_emails" type="textarea" default="" label="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL"
+			   description="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL_DESC" filter="string" cols="60" rows="5"
+			   class="span11"/>
 	</fieldset>
 	<fieldset name="search_movies" label="COM_KA_SEARCH_SETTINGS_MOVIES">
-		<field name="search_movies_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_MOVIES_ENABLE" filter="integer">
+		<field name="search_movies_enable" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_MOVIES_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_length_min" type="text" default="3" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3" maxlength="2" class="span2" />
-		<field name="search_movies_length_max" type="text" default="64" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3" maxlength="2" class="span2" />
-		<field name="search_movies_title" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_ENABLE" filter="integer">
+		<field name="search_movies_length_min" type="text" default="3"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3"
+			   maxlength="2" class="span2"/>
+		<field name="search_movies_length_max" type="text" default="64"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3"
+			   maxlength="2" class="span2"/>
+		<field name="search_movies_title" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_year" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_ENABLE" filter="integer">
+		<field name="search_movies_year" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_year_range" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_RANGE_ENABLE" filter="integer">
+		<field name="search_movies_year_range" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_RANGE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_country" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_COUNTRY_ENABLE" filter="integer">
+		<field name="search_movies_country" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_COUNTRY_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_cast" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_CAST_ENABLE" filter="integer">
+		<field name="search_movies_cast" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_CAST_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_vendor" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_VENDOR_ENABLE" filter="integer">
+		<field name="search_movies_vendor" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_VENDOR_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_genre" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_GENRE_ENABLE" filter="integer">
+		<field name="search_movies_genre" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_GENRE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_mpaa" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_MPAA_ENABLE" filter="integer">
+		<field name="search_movies_mpaa" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_MPAA_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_age_restrict" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_AGE_RESTRICT_ENABLE" filter="integer">
+		<field name="search_movies_age_restrict" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_AGE_RESTRICT_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_ua_rate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_UARATE_ENABLE" filter="integer">
+		<field name="search_movies_ua_rate" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_UARATE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_rate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_RATE_ENABLE" filter="integer">
+		<field name="search_movies_rate" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_RATE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_imdbrate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_IMDBRATE_ENABLE" filter="integer">
+		<field name="search_movies_imdbrate" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_IMDBRATE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_kprate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_KPRATE_ENABLE" filter="integer">
+		<field name="search_movies_kprate" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_KPRATE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_rtrate" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_RTRATE_ENABLE" filter="integer">
+		<field name="search_movies_rtrate" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_RTRATE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_metacritic" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_METACRITIC_ENABLE" filter="integer">
+		<field name="search_movies_metacritic" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_METACRITIC_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_budget" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BUDGET_ENABLE" filter="integer">
+		<field name="search_movies_budget" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_BUDGET_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_movies_tags" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_TAGS_ENABLE" filter="integer">
+		<field name="search_movies_tags" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TAGS_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 	<fieldset name="search_names" label="COM_KA_SEARCH_SETTINGS_NAMES">
-		<field name="search_names_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE" filter="integer">
+		<field name="search_names_enable" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_length_min" type="text" default="3" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3" maxlength="2" class="span2" />
-		<field name="search_names_length_max" type="text" default="64" label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3" maxlength="2" class="span2" />
-		<field name="search_names_name" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_NAME_ENABLE" filter="integer">
+		<field name="search_names_length_min" type="text" default="3"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3"
+			   maxlength="2" class="span2"/>
+		<field name="search_names_length_max" type="text" default="64"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3"
+			   maxlength="2" class="span2"/>
+		<field name="search_names_name" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_NAME_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_gender" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_GENDER_ENABLE" filter="integer">
+		<field name="search_names_gender" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_GENDER_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_mtitle" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_MOVIETITLE_ENABLE" filter="integer">
+		<field name="search_names_mtitle" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_MOVIETITLE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_birthday" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHDAY_ENABLE" filter="integer">
+		<field name="search_names_birthday" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHDAY_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_birthplace" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHPLACE_ENABLE" filter="integer">
+		<field name="search_names_birthplace" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHPLACE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_birthcountry" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHCOUNTRY_ENABLE" filter="integer">
+		<field name="search_names_birthcountry" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_BIRTHCOUNTRY_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_amplua" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_ENABLE" filter="integer">
+		<field name="search_names_amplua" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_amplua_disabled" type="careers" default="" class="span12" label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string" />
+		<field name="search_names_amplua_disabled" type="careers" default="" class="span12"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string"/>
 	</fieldset>
 	<fieldset name="filter_premieres" label="COM_KA_SEARCH_SETTINGS_PREMIERES">
-		<field name="filter_premieres_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_ENABLE" filter="integer">
+		<field name="filter_premieres_enable" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_premieres_country" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_COUNTRY" filter="integer">
+		<field name="filter_premieres_country" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_COUNTRY" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_premieres_year" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_YEAR" filter="integer">
+		<field name="filter_premieres_year" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_YEAR" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_premieres_month" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_MONTH" filter="integer">
+		<field name="filter_premieres_month" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_MONTH" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_release_vendor" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_VENDOR" filter="integer">
+		<field name="filter_release_vendor" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_VENDOR" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 	<fieldset name="filter_releases" label="COM_KA_SEARCH_SETTINGS_RELEASES">
-		<field name="filter_release_enable" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_ENABLE" filter="integer">
+		<field name="filter_release_enable" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_release_country" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_COUNTRY" filter="integer">
+		<field name="filter_release_country" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_COUNTRY" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_release_year" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_YEAR" filter="integer">
+		<field name="filter_release_year" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_YEAR" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_release_month" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_MONTH" filter="integer">
+		<field name="filter_release_month" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_MONTH" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_release_vendor" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_VENDOR" filter="integer">
+		<field name="filter_release_vendor" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_VENDOR" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="filter_release_mediatype" type="radio" class="btn-group" default="1" label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_MEDIATYPE" filter="integer">
+		<field name="filter_release_mediatype" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_RELEASES_FORM_MEDIATYPE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
-		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox" filter="rules" component="com_kinoarhiv" section="component" validate="rules" />
+		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox"
+			   filter="rules" component="com_kinoarhiv" section="component" validate="rules"/>
 	</fieldset>
 </config>

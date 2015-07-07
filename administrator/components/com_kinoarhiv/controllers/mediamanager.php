@@ -1,16 +1,17 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivControllerMediamanager extends JControllerLegacy {
-	public function upload() {
-		JSession::checkToken() or jexit('{"jsonrpc" : "2.0", "result" : "'.JText::_('JINVALID_TOKEN').'"}');
+class KinoarhivControllerMediamanager extends JControllerLegacy
+{
+	public function upload()
+	{
+		JSession::checkToken() or jexit('{"jsonrpc" : "2.0", "result" : "' . JText::_('JINVALID_TOKEN') . '"}');
 
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
@@ -76,19 +77,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$chunk = $app->input->get('chunk', 0, 'int');
 		$chunks = $app->input->get('chunks', 0, 'int');
 
-		if ($chunks < 2 && file_exists($dest_dir.DIRECTORY_SEPARATOR.$filename)) {
+		if ($chunks < 2 && file_exists($dest_dir . DIRECTORY_SEPARATOR . $filename)) {
 			$ext = strrpos($filename, '.');
 			$fileName_a = substr($filename, 0, $ext);
 			$fileName_b = substr($filename, $ext);
 
 			$count = 1;
-			while (file_exists($dest_dir.DIRECTORY_SEPARATOR.$fileName_a.'_'.$count.$fileName_b))
+			while (file_exists($dest_dir . DIRECTORY_SEPARATOR . $fileName_a . '_' . $count . $fileName_b))
 				$count++;
 
-			$filename = $fileName_a.'_'.$count.$fileName_b;
+			$filename = $fileName_a . '_' . $count . $fileName_b;
 		}
 
-		$file_path = $dest_dir.DIRECTORY_SEPARATOR.$filename;
+		$file_path = $dest_dir . DIRECTORY_SEPARATOR . $filename;
 
 		if (!file_exists($dest_dir)) {
 			JFolder::create($dest_dir);
@@ -97,7 +98,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		if ($cleanup_dir) {
 			if (is_dir($dest_dir) && ($dir = opendir($dest_dir))) {
 				while (($file = readdir($dir)) !== false) {
-					$tmpfilePath = $dest_dir.DIRECTORY_SEPARATOR.$file;
+					$tmpfilePath = $dest_dir . DIRECTORY_SEPARATOR . $file;
 
 					// Remove temp file if it is older than the max age and is not the current file
 					if (preg_match('/\.part$/', $file) && (filemtime($tmpfilePath) < time() - $max_file_age) && ($tmpfilePath != "{$file_path}.part")) {
@@ -163,7 +164,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			rename("{$file_path}.part", $file_path);
 
 			// Proccess watermarks and thumbnails
-			JLoader::register('KAImage', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'image.php');
+			JLoader::register('KAImage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'image.php');
 			$image = new KAImage();
 			$section = $app->input->get('section', '', 'word');
 
@@ -192,23 +193,23 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						}
 					}
 
-					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
+					$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
 					$result = $model->saveImageInDB($image, $filename, $orig_image, 'movie', $tab, $item_id, $frontpage);
 					$id = $result;
 				} elseif ($app->input->get('type') == 'trailers') {
 					$alias = $model->getAlias($section, $item_id);
 
 					if ($app->input->get('upload') == 'video') {
-						JLoader::register('KAMedia', JPATH_COMPONENT.DIRECTORY_SEPARATOR.'libraries'.DIRECTORY_SEPARATOR.'media.php');
+						JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
 						$media = KAMedia::getInstance();
 
-						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir.$filename;
+						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$video_info = json_decode($media->getVideoInfo($rn_dest_dir.$filename));
+						$video_info = json_decode($media->getVideoInfo($rn_dest_dir . $filename));
 						$video_height = $video_info->streams[0]->height;
-						$rn_filename = $alias.'-'.$trailer_id.'-'.$item_id.'.'.$video_height.'p.'.$ext;
-						rename($old_filename, $rn_dest_dir.$rn_filename);
+						$rn_filename = $alias . '-' . $trailer_id . '-' . $item_id . '.' . $video_height . 'p.' . $ext;
+						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						$model->saveVideo($rn_filename, $trailer_id, $item_id);
 					} elseif ($app->input->get('upload') == 'subtitles') {
@@ -216,19 +217,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 							$lang_code = strtolower($matches[1]);
 						}
 
-						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir.$filename;
+						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$rn_filename = $alias.'-'.$trailer_id.'.subtitles.'.$lang_code.'.'.$ext;
-						rename($old_filename, $rn_dest_dir.$rn_filename);
+						$rn_filename = $alias . '-' . $trailer_id . '.subtitles.' . $lang_code . '.' . $ext;
+						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						$model->saveSubtitles(false, $rn_filename, $trailer_id, $item_id);
 					} elseif ($app->input->get('upload') == 'chapters') {
-						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir.$filename;
+						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$rn_filename = $alias.'-'.$trailer_id.'.chapters.'.$ext;
-						rename($old_filename, $rn_dest_dir.$rn_filename);
+						$rn_filename = $alias . '-' . $trailer_id . '.chapters.' . $ext;
+						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						$result = $model->saveChapters($rn_filename, $trailer_id, $item_id);
 
@@ -236,11 +237,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 							$id = $result;
 						}
 					} elseif ($app->input->get('upload') == 'images') {
-						$rn_dest_dir = $dest_dir.DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir.$filename;
+						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
+						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$rn_filename = $alias.'-'.$trailer_id.'.'.$ext;
-						rename($old_filename, $rn_dest_dir.$rn_filename);
+						$rn_filename = $alias . '-' . $trailer_id . '.' . $ext;
+						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						if ($params->get('upload_gallery_watermark_image_on') == 1) {
 							$watermark_img = $params->get('upload_gallery_watermark_image');
@@ -250,10 +251,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 							}
 						}
 
-						list($width, $height) = @getimagesize($rn_dest_dir.$rn_filename);
+						list($width, $height) = @getimagesize($rn_dest_dir . $rn_filename);
 						$th_w = (int)$params->get('player_width');
 						$th_h = ($height * $th_w) / $width;
-						$image->_createThumbs($dest_dir, $rn_filename, $th_w.'x'.$th_h, 1, $dest_dir, null);
+						$image->_createThumbs($dest_dir, $rn_filename, $th_w . 'x' . $th_h, 1, $dest_dir, null);
 						$result = $model->saveImageInDB($image, $rn_filename, array(), 'trailer', null, $trailer_id);
 						$id = $result['filename'];
 					}
@@ -283,7 +284,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 						}
 					}
 
-					$image->_createThumbs($dest_dir, $filename, $width.'x'.$height, 1, $dest_dir, false);
+					$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
 					$result = $model->saveImageInDB($image, $filename, $orig_image, 'name', $tab, $item_id, $frontpage);
 					$id = $result;
 				}
@@ -293,13 +294,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		// Success
 		$response = json_encode(array(
 			'jsonrpc' => '2.0',
-			'result' => null,
-			'id' => is_array($id) ? json_encode($id) : $id
+			'result'  => null,
+			'id'      => is_array($id) ? json_encode($id) : $id
 		));
 		die($response);
 	}
 
-	public function gallery() {
+	public function gallery()
+	{
 		$view = $this->getView('mediamanager', 'raw');
 		$model = $this->getModel('mediamanager');
 		$view->setModel($model, true);
@@ -311,19 +313,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 	/**
 	 * Proxy for $this->fp_on() method
-	 *
+
 	 */
-	public function fpOff() {
+	public function fpOff()
+	{
 		$this->fpOn(1);
 	}
 
 	/**
 	 * Method to publish or unpublish posters(photo) on movie(person) info page(not on posters page)
 	 *
-	 * @param   int   $action   0 - unpublish from frontpage, 1 - publish poster(photo) on frontpage
-	 *
+	 * @param   int $action 0 - unpublish from frontpage, 1 - publish poster(photo) on frontpage
 	 */
-	public function fpOn($action=0) {
+	public function fpOn($action = 0)
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$app = JFactory::getApplication();
@@ -337,13 +340,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
 				if ($errors[$i] instanceof Exception) {
 					if ($app->input->get('format', 'html', 'word') == 'raw') {
-						echo $errors[$i]->getMessage()."\n";
+						echo $errors[$i]->getMessage() . "\n";
 					} else {
 						$app->enqueueMessage($errors[$i]->getMessage(), 'error');
 					}
 				} else {
 					if ($app->input->get('format', 'html', 'word') == 'raw') {
-						echo $errors[$i]."\n";
+						echo $errors[$i] . "\n";
 					} else {
 						$app->enqueueMessage($errors[$i], 'error');
 					}
@@ -356,11 +359,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		}
 	}
 
-	public function unpublish() {
+	public function unpublish()
+	{
 		$this->publish(0);
 	}
 
-	public function publish($action=1) {
+	public function publish($action = 1)
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$app = JFactory::getApplication();
@@ -372,13 +377,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
 				if ($errors[$i] instanceof Exception) {
 					if ($app->input->get('format', 'html', 'word') == 'raw') {
-						echo $errors[$i]->getMessage()."\n";
+						echo $errors[$i]->getMessage() . "\n";
 					} else {
 						$app->enqueueMessage($errors[$i]->getMessage(), 'error');
 					}
 				} else {
 					if ($app->input->get('format', 'html', 'word') == 'raw') {
-						echo $errors[$i]."\n";
+						echo $errors[$i] . "\n";
 					} else {
 						$app->enqueueMessage($errors[$i], 'error');
 					}
@@ -389,7 +394,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$this->setRedirect(JURI::getInstance()->toString());
 	}
 
-	public function remove() {
+	public function remove()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$app = JFactory::getApplication();
@@ -401,13 +407,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
 				if ($errors[$i] instanceof Exception) {
 					if ($app->input->get('format', 'html', 'word') == 'raw') {
-						echo $errors[$i]->getMessage()."\n";
+						echo $errors[$i]->getMessage() . "\n";
 					} else {
 						$app->enqueueMessage($errors[$i]->getMessage(), 'error');
 					}
 				} else {
 					if ($app->input->get('format', 'html', 'word') == 'raw') {
-						echo $errors[$i]."\n";
+						echo $errors[$i] . "\n";
 					} else {
 						$app->enqueueMessage($errors[$i], 'error');
 					}
@@ -420,7 +426,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		}
 	}
 
-	public function saveOrderTrailerVideofile() {
+	public function saveOrderTrailerVideofile()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$model = $this->getModel('mediamanager');
@@ -429,7 +436,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function saveDefaultTrailerSubtitlefile() {
+	public function saveDefaultTrailerSubtitlefile()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$model = $this->getModel('mediamanager');
@@ -438,7 +446,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function saveOrderTrailerSubtitlefile() {
+	public function saveOrderTrailerSubtitlefile()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$model = $this->getModel('mediamanager');
@@ -447,7 +456,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function removeTrailerFiles() {
+	public function removeTrailerFiles()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$model = $this->getModel('mediamanager');
@@ -456,20 +466,24 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function save() {
+	public function save()
+	{
 		$this->apply();
 	}
 
-	public function save2new() {
+	public function save2new()
+	{
 		$this->apply();
 	}
 
-	public function apply() {
+	public function apply()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.create.movie', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.movie', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
 			return false;
 		}
 
@@ -480,6 +494,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		if (!$form) {
 			$app->enqueueMessage($model->getError(), 'error');
+
 			return false;
 		}
 
@@ -496,7 +511,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 				}
 			}
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=' . $app->input->get('section', '', 'word') . '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int') . '&item_id=' . $app->input->get('item_id', 0, 'int'));
 
 			return false;
 		}
@@ -507,7 +522,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 			$this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=' . $app->input->get('section', '', 'word') . '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int') . '&item_id=' . $app->input->get('item_id', 0, 'int'));
 
 			return false;
 		}
@@ -516,28 +531,30 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 
 		switch ($this->getTask()) {
 			case 'save2new':
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'));
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=' . $app->input->get('section', '', 'word') . '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int'));
 				break;
 			case 'apply':
 				$item_id = is_int($result) ? $result : $app->input->get('item_id', 0, 'int');
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$item_id);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&task=edit&section=' . $app->input->get('section', '', 'word') . '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int') . '&item_id=' . $item_id);
 				break;
 			case 'save':
 			default:
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int'));
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section=' . $app->input->get('section', '', 'word') . '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int'));
 				break;
 		}
 
 		return true;
 	}
 
-	public function cancel() {
+	public function cancel()
+	{
 		$app = JFactory::getApplication();
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section='.$app->input->get('section', '', 'word').'&type='.$app->input->get('type', '', 'word').'&id='.$app->input->get('id', 0, 'int').'&item_id='.$app->input->get('item_id', 0, 'int'));
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section=' . $app->input->get('section', '', 'word') . '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int') . '&item_id=' . $app->input->get('item_id', 0, 'int'));
 	}
 
-	public function saveVideofileData() {
+	public function saveVideofileData()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$app = JFactory::getApplication();
@@ -551,7 +568,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function saveSubtitles() {
+	public function saveSubtitles()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$app = JFactory::getApplication();
@@ -565,14 +583,16 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		echo $result;
 	}
 
-	public function create_screenshot() {
+	public function create_screenshot()
+	{
 		$model = $this->getModel('mediamanager');
 		$result = $model->create_screenshot();
 
 		echo $result;
 	}
 
-	public function copyfrom() {
+	public function copyfrom()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		$document = JFactory::getDocument();
@@ -583,15 +603,15 @@ class KinoarhivControllerMediamanager extends JControllerLegacy {
 		$updated = $model->copyfrom();
 
 		if ($updated) {
-			$result = array('success'=>true);
+			$result = array('success' => true);
 		} else {
 			$errors = $app->getMessageQueue();
 
-			foreach ($errors as $i=>$e) {
-				$message .= $e['message'].'<br />';
+			foreach ($errors as $i => $e) {
+				$message .= $e['message'] . '<br />';
 			}
 
-			$result = array('success'=>false, 'message'=>$message);
+			$result = array('success' => false, 'message' => $message);
 		}
 
 		$document->setName('response');

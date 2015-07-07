@@ -1,15 +1,16 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivModelCareers extends JModelList {
-	public function __construct($config = array()) {
+class KinoarhivModelCareers extends JModelList
+{
+	public function __construct($config = array())
+	{
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
@@ -23,7 +24,8 @@ class KinoarhivModelCareers extends JModelList {
 		parent::__construct($config);
 	}
 
-	protected function populateState($ordering = null, $direction = null) {
+	protected function populateState($ordering = null, $direction = null)
+	{
 		$app = JFactory::getApplication();
 
 		// Adjust the context to support modal layouts.
@@ -49,7 +51,8 @@ class KinoarhivModelCareers extends JModelList {
 		parent::populateState('a.title', 'asc');
 	}
 
-	protected function getStoreId($id = '') {
+	protected function getStoreId($id = '')
+	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.language');
@@ -57,8 +60,8 @@ class KinoarhivModelCareers extends JModelList {
 		return parent::getStoreId($id);
 	}
 
-	protected function getListQuery() {
-		$app = JFactory::getApplication();
+	protected function getListQuery()
+	{
 		$db = $this->getDBO();
 		$query = $db->getQuery(true);
 
@@ -72,13 +75,13 @@ class KinoarhivModelCareers extends JModelList {
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
-			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON '.$db->quoteName('l.lang_code').' = '.$db->quoteName('a.language'));
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
 
 		// Filter by search in title.
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = ' . (int) substr($search, 3));
+				$query->where('a.id = ' . (int)substr($search, 3));
 			} else {
 				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
 				$query->where('(a.title LIKE ' . $search . ')');
@@ -107,12 +110,11 @@ class KinoarhivModelCareers extends JModelList {
 	/**
 	 * Method to get a list of articles.
 	 * Overridden to add a check for access levels.
-	 *
 	 * @return  mixed  An array of data items on success, false on failure.
-	 *
 	 * @since   1.6.1
 	 */
-	public function getItems() {
+	public function getItems()
+	{
 		$items = parent::getItems();
 
 		if (JFactory::getApplication()->isSite()) {
@@ -130,13 +132,14 @@ class KinoarhivModelCareers extends JModelList {
 		return $items;
 	}
 
-	public function saveOrder() {
+	public function saveOrder()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$data = $app->input->post->get('ord', array(), 'array');
 
 		if (count($data) < 2) {
-			return array('success'=>false, 'message'=>JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
+			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
 		}
 
 		$query_result = true;
@@ -144,13 +147,13 @@ class KinoarhivModelCareers extends JModelList {
 		$db->lockTable('#__ka_names_career');
 		$db->transactionStart();
 
-		foreach ($data as $key=>$value) {
+		foreach ($data as $key => $value) {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_names_career'))
-				->set($db->quoteName('ordering')." = '".(int)$key."'")
-				->where($db->quoteName('id').' = '.(int)$value);
-			$db->setQuery($query.';');
+				->set($db->quoteName('ordering') . " = '" . (int)$key . "'")
+				->where($db->quoteName('id') . ' = ' . (int)$value);
+			$db->setQuery($query . ';');
 
 			if ($db->execute() === false) {
 				$query_result = false;
@@ -175,10 +178,11 @@ class KinoarhivModelCareers extends JModelList {
 			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
 		}
 
-		return array('success'=>$success, 'message'=>$message);
+		return array('success' => $success, 'message' => $message);
 	}
 
-	public function batch() {
+	public function batch()
+	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
 		$ids = $app->input->post->get('id', array(), 'array');
@@ -191,7 +195,7 @@ class KinoarhivModelCareers extends JModelList {
 		$fields = array();
 
 		if (!empty($batch_data['language_id'])) {
-			$fields[] = $db->quoteName('language')." = '".$db->escape((string)$batch_data['language_id'])."'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string)$batch_data['language_id']) . "'";
 		}
 
 		if (empty($fields)) {
@@ -202,7 +206,7 @@ class KinoarhivModelCareers extends JModelList {
 
 		$query->update($db->quoteName('#__ka_names_career'))
 			->set(implode(', ', $fields))
-			->where($db->quoteName('id').' IN ('.implode(',', $ids).')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
@@ -210,7 +214,7 @@ class KinoarhivModelCareers extends JModelList {
 			$db->execute();
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-		
+
 			return false;
 		}
 

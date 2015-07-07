@@ -1,26 +1,27 @@
 <?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url			http://киноархив.com/
+ * @url            http://киноархив.com/
  */
-
-class KinoarhivViewSettings extends JViewLegacy {
+class KinoarhivViewSettings extends JViewLegacy
+{
 	protected $form;
 	protected $data;
 
-	public function display($tpl = null) {
+	public function display($tpl = null)
+	{
 		$user = JFactory::getUser();
 
 		if (!$user->authorise('core.admin', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 		}
 
-		$app        = JFactory::getApplication();
-		$user       = JFactory::getUser();
+		$app = JFactory::getApplication();
+		$user = JFactory::getUser();
 		$this->lang = JFactory::getLanguage();
 		$this->form = $this->get('Form');
 		$this->data = $this->get('Settings');
@@ -39,7 +40,8 @@ class KinoarhivViewSettings extends JViewLegacy {
 		parent::display($tpl);
 	}
 
-	protected function addToolbar() {
+	protected function addToolbar()
+	{
 		JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_SETTINGS_TITLE')), 'options');
 		JToolbarHelper::apply('apply');
 		JToolbarHelper::save('save');

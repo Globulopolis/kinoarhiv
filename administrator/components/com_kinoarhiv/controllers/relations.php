@@ -1,11 +1,18 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+/**
+ * Class KinoarhivControllerRelations
+ *
+ * @since  3.0
  */
 class KinoarhivControllerRelations extends JControllerLegacy
 {
@@ -19,7 +26,8 @@ class KinoarhivControllerRelations extends JControllerLegacy
 
 		$document->setName('response');
 
-		switch ($action) {
+		switch ($action)
+		{
 			case 'getList':
 				$result = $model->getDataList($task);
 
@@ -47,9 +55,12 @@ class KinoarhivControllerRelations extends JControllerLegacy
 		$model = $this->getModel('relations');
 		$view->setModel($model, true);
 
-		if ($isNew === true) {
+		if ($isNew === true)
+		{
 			$tpl = 'relations_add';
-		} elseif ($isNew === false) {
+		}
+		elseif ($isNew === false)
+		{
 			$tpl = 'relations_edit';
 		}
 
@@ -83,9 +94,12 @@ class KinoarhivControllerRelations extends JControllerLegacy
 	{
 		$document = JFactory::getDocument();
 
-		if ($document->getType() == 'html') {
+		if ($document->getType() == 'html')
+		{
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		} else {
+		}
+		else
+		{
 			JSession::checkToken() or jexit(
 				json_encode(
 					array(
@@ -96,12 +110,16 @@ class KinoarhivControllerRelations extends JControllerLegacy
 			);
 		}
 
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
-			if ($document->getType() == 'html') {
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		{
+			if ($document->getType() == 'html')
+			{
 				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 				return;
-			} else {
+			}
+			else
+			{
 				echo json_encode(
 					array(
 						'success' => false,
@@ -115,9 +133,12 @@ class KinoarhivControllerRelations extends JControllerLegacy
 
 		$model = $this->getModel('relations');
 
-		if ($document->getType() == 'json') {
+		if ($document->getType() == 'json')
+		{
 			$document->setName('response');
-		} elseif ($document->getType() == 'raw') {
+		}
+		elseif ($document->getType() == 'raw')
+		{
 			$document->setMimeEncoding('application/json');
 		}
 
@@ -130,9 +151,12 @@ class KinoarhivControllerRelations extends JControllerLegacy
 	{
 		$document = JFactory::getDocument();
 
-		if ($document->getType() == 'html') {
+		if ($document->getType() == 'html')
+		{
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		} else {
+		}
+		else
+		{
 			JSession::checkToken() or jexit(
 				json_encode(
 					array(
@@ -143,12 +167,16 @@ class KinoarhivControllerRelations extends JControllerLegacy
 			);
 		}
 
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
-			if ($document->getType() == 'html') {
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		{
+			if ($document->getType() == 'html')
+			{
 				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 				return;
-			} else {
+			}
+			else
+			{
 				echo json_encode(
 					array(
 						'success' => false,
@@ -162,9 +190,12 @@ class KinoarhivControllerRelations extends JControllerLegacy
 
 		$model = $this->getModel('relations');
 
-		if ($document->getType() == 'json') {
+		if ($document->getType() == 'json')
+		{
 			$document->setName('response');
-		} elseif ($document->getType() == 'raw') {
+		}
+		elseif ($document->getType() == 'raw')
+		{
 			$document->setMimeEncoding('application/json');
 		}
 

@@ -1,11 +1,18 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+/**
+ * Music controller class
+ *
+ * @since  3.0
  */
 class KinoarhivControllerMusic extends JControllerLegacy
 {
@@ -22,9 +29,12 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$model = $this->getModel('album');
 		$view->setModel($model, true);
 
-		if ($isNew === true) {
+		if ($isNew === true)
+		{
 			$tpl = 'add';
-		} elseif ($isNew === false) {
+		}
+		elseif ($isNew === false)
+		{
 			$tpl = 'edit';
 		}
 
@@ -158,7 +168,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv'))
+		{
 			return array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
@@ -179,7 +190,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit.state', 'com_kinoarhiv.album')) {
+		if (!JFactory::getUser()->authorise('core.edit.state', 'com_kinoarhiv.album'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -189,7 +201,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$model = $this->getModel('album');
 		$result = $model->publish($isUnpublish);
 
-		if ($result === false) {
+		if ($result === false)
+		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
 			return false;
@@ -199,7 +212,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.music.global.data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED'));
+		$message = $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED');
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), $message);
 	}
 
 	/*public function remove() {
@@ -232,7 +246,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.admin', 'com_kinoarhiv'))
+		{
 			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -274,7 +289,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.music')) {
+		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.music'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -308,7 +324,10 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create', 'com_kinoarhiv.album') && !$user->authorise('core.edit', 'com_kinoarhiv.album') && !$user->authorise('core.edit.state', 'com_kinoarhiv.album')) {
+		if (!$user->authorise('core.create', 'com_kinoarhiv.album')
+			&& !$user->authorise('core.edit', 'com_kinoarhiv.album')
+			&& !$user->authorise('core.edit.state', 'com_kinoarhiv.album'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return false;
@@ -317,11 +336,13 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$app = JFactory::getApplication();
 		$ids = $app->input->post->get('id', array(), 'array');
 
-		if (count($ids) != 0) {
+		if (count($ids) != 0)
+		{
 			$model = $this->getModel('music');
 			$result = $model->batch();
 
-			if ($result === false) {
+			if ($result === false)
+			{
 				GlobalHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
 

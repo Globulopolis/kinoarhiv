@@ -1,11 +1,18 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+/**
+ * Settings controller class
+ *
+ * @since  3.0
  */
 class KinoarhivControllerSettings extends JControllerLegacy
 {
@@ -20,24 +27,33 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		$doctype = $document->getType();
 
 		// Check for request forgeries.
-		if ($doctype != 'html') {
-			JSession::checkToken() or jexit(json_encode(
-				array(
-					'success' => false,
-					'message' => JText::_('JINVALID_TOKEN')
+		if ($doctype != 'html')
+		{
+			JSession::checkToken() or jexit(
+				json_encode(
+					array(
+						'success' => false,
+						'message' => JText::_('JINVALID_TOKEN')
+					)
 				)
-			));
-		} else {
+			);
+		}
+		else
+		{
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		}
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin')) {
-			if ($doctype != 'html') {
+		if (!JFactory::getUser()->authorise('core.admin'))
+		{
+			if ($doctype != 'html')
+			{
 				echo json_encode(
 					array('success' => false, 'message' => JText::_('COM_KA_NO_ACCESS_RIGHTS'))
 				);
-			} else {
+			}
+			else
+			{
 				JFactory::getApplication()->redirect('index.php', JText::_('COM_KA_NO_ACCESS_RIGHTS'));
 			}
 
@@ -49,17 +65,22 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		$result = $model->save($this->input->post->get('jform', array(), 'array'));
 
 		// Check the return value.
-		if ($result === false) {
+		if ($result === false)
+		{
 			// Save the data in the session.
 			$app->setUserState('com_kinoarhiv.settings.global.data', $this->input->post->get('jform', array(), 'array'));
 
 			// Save failed, go back to the screen and display a notice.
 			$message = JText::sprintf('JERROR_SAVE_FAILED', $model->getError());
-			if ($doctype != 'html') {
+
+			if ($doctype != 'html')
+			{
 				echo json_encode(
 					array('success' => false, 'message' => $message)
 				);
-			} else {
+			}
+			else
+			{
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=settings', $message, 'error');
 			}
 
@@ -69,13 +90,17 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		// Set the success message.
 		$message = JText::_('COM_CONFIG_SAVE_SUCCESS');
 
-		if ($doctype != 'html') {
+		if ($doctype != 'html')
+		{
 			echo json_encode(
 				array('success' => true, 'message' => $message)
 			);
-		} else {
+		}
+		else
+		{
 			// Set the redirect based on the task.
-			switch ($this->getTask()) {
+			switch ($this->getTask())
+			{
 				case 'apply':
 					$this->setRedirect('index.php?option=com_kinoarhiv&view=settings', $message);
 					break;
@@ -93,7 +118,8 @@ class KinoarhivControllerSettings extends JControllerLegacy
 	public function cancel()
 	{
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -109,7 +135,8 @@ class KinoarhivControllerSettings extends JControllerLegacy
 	public function saveConfig()
 	{
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JLIB_RULES_NOT_ALLOWED'), 'error');
 
 			return;
@@ -133,7 +160,8 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		{
 			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -148,27 +176,37 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		$file['name'] = JFile::makeSafe($file['name']);
 		$url = 'index.php?option=com_kinoarhiv&view=settings';
 
-		if ($media->detectMime($file['tmp_name']) != 'text/plain' || JFile::getExt($file['name']) != 'json') {
+		if ($media->detectMime($file['tmp_name']) != 'text/plain' || JFile::getExt($file['name']) != 'json')
+		{
 			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
 
 			return;
 		}
 
-		if (isset($file['name'])) {
+		if (isset($file['name']))
+		{
 			$fc = file_get_contents($file['tmp_name']);
 			$data = json_decode($fc);
 			$errors = json_last_error();
 
-			if ($errors === JSON_ERROR_NONE) {
-				if ($model->restoreConfig($data)) {
+			if ($errors === JSON_ERROR_NONE)
+			{
+				if ($model->restoreConfig($data))
+				{
 					$app->redirect($url, JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_SUCCESS'));
-				} else {
+				}
+				else
+				{
 					$app->redirect($url, JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_ERROR'), 'error');
 				}
-			} else {
+			}
+			else
+			{
 				$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_FILE'), 'error');
 			}
-		} else {
+		}
+		else
+		{
 			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
 		}
 	}

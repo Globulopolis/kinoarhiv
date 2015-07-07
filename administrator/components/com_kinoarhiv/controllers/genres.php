@@ -1,11 +1,19 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+
+/**
+ * Genres list controller class.
+ *
+ * @since  3.0
  */
 class KinoarhivControllerGenres extends JControllerLegacy
 {
@@ -20,9 +28,12 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$model = $this->getModel('genre');
 		$view->setModel($model, true);
 
-		if ($isNew === true) {
+		if ($isNew === true)
+		{
 			$tpl = 'add';
-		} elseif ($isNew === false) {
+		}
+		elseif ($isNew === false)
+		{
 			$tpl = 'edit';
 		}
 
@@ -48,12 +59,16 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create.genre', 'com_kinoarhiv') && !$user->authorise('core.edit.genre', 'com_kinoarhiv')) {
-			if ($document->getType() == 'html') {
+		if (!$user->authorise('core.create.genre', 'com_kinoarhiv') && !$user->authorise('core.edit.genre', 'com_kinoarhiv'))
+		{
+			if ($document->getType() == 'html')
+			{
 				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 				return;
-			} else {
+			}
+			else
+			{
 				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
@@ -66,12 +81,16 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
 
-		if (!$form) {
-			if ($document->getType() == 'html') {
+		if (!$form)
+		{
+			if ($document->getType() == 'html')
+			{
 				$app->enqueueMessage($model->getError(), 'error');
 
 				return false;
-			} else {
+			}
+			else
+			{
 				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $model->getError()));
 
@@ -83,14 +102,18 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', $data);
 		$validData = $model->validate($form, $data);
 
-		if ($validData === false) {
+		if ($validData === false)
+		{
 			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
 
-			if ($document->getType() == 'html') {
+			if ($document->getType() == 'html')
+			{
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type=' . $app->input->get('type', 'movie', 'word') . '&task=edit&id[]=' . $data['id']);
 
 				return false;
-			} else {
+			}
+			else
+			{
 				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $errors));
 
@@ -101,15 +124,19 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$result = $model->save($validData);
 		$session_data = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.data');
 
-		if (!$result) {
-			if ($document->getType() == 'html') {
+		if (!$result)
+		{
+			if ($document->getType() == 'html')
+			{
 				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 				$this->setMessage($this->getError(), 'error');
 
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type=' . $app->input->get('type', 'movie', 'word') . '&task=edit&id[]=' . $data['id']);
 
 				return false;
-			} else {
+			}
+			else
+			{
 				$document->setName('response');
 				echo json_encode($session_data);
 
@@ -119,15 +146,18 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', null);
 
-		if ($document->getType() == 'html') {
+		if ($document->getType() == 'html')
+		{
 			$id = $session_data['data']['id'];
 
 			// Set the redirect based on the task.
-			switch ($this->getTask()) {
+			switch ($this->getTask())
+			{
 				case 'save2new':
 					$this->setRedirect('index.php?option=com_kinoarhiv&controller=genres&type=' . $app->input->get('type', 'movie', 'word') . '&task=add', $message);
 					break;
@@ -140,7 +170,9 @@ class KinoarhivControllerGenres extends JControllerLegacy
 					$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), $message);
 					break;
 			}
-		} else {
+		}
+		else
+		{
 			$document->setName('response');
 			echo json_encode($session_data);
 		}
@@ -158,26 +190,29 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit.state.genre', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.edit.state.genre', 'com_kinoarhiv'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('genre');
 		$result = $model->publish($isUnpublish);
 
-		if ($result === false) {
+		if ($result === false)
+		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
 			return false;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.genres.global.data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED'));
+		$message = $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED');
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), $message);
 	}
 
 	public function remove()
@@ -185,23 +220,25 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.delete.genre', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.delete.genre', 'com_kinoarhiv'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
+		$app = JFactory::getApplication();
 		$model = $this->getModel('genre');
 		$result = $model->remove();
 
-		if ($result === false) {
+		if ($result === false)
+		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
 			return false;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.genres.global.data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
@@ -213,7 +250,8 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.delete.genre', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.delete.genre', 'com_kinoarhiv'))
+		{
 			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -229,7 +267,8 @@ class KinoarhivControllerGenres extends JControllerLegacy
 	public function updateStat()
 	{
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.recount.genre', 'com_kinoarhiv')) {
+		if (!JFactory::getUser()->authorise('core.recount.genre', 'com_kinoarhiv'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
@@ -238,20 +277,26 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
 
-		if ($document->getType() == 'html') {
+		if ($document->getType() == 'html')
+		{
 			JSession::checkToken('post') or jexit(JText::_('JINVALID_TOKEN'));
 
 			$model = $this->getModel('genre');
 			$result = $model->updateStat();
 
-			if ($result['success']) {
+			if ($result['success'])
+			{
 				$message = JText::_('COM_KA_GENRES_STATS_UPDATED');
-			} else {
+			}
+			else
+			{
 				$message = JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR');
 			}
 
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'), $message);
-		} else {
+		}
+		else
+		{
 			JSession::checkToken('get') or jexit(json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN'))));
 
 			$model = $this->getModel('genre');
@@ -268,7 +313,10 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create.genre', 'com_kinoarhiv') && !$user->authorise('core.edit.genre', 'com_kinoarhiv') && !$user->authorise('core.edit.state.genre', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.create.genre', 'com_kinoarhiv')
+			&& !$user->authorise('core.edit.genre', 'com_kinoarhiv')
+			&& !$user->authorise('core.edit.state.genre', 'com_kinoarhiv'))
+		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return false;
@@ -277,11 +325,13 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		$app = JFactory::getApplication();
 		$ids = $app->input->post->get('id', array(), 'array');
 
-		if (count($ids) != 0) {
+		if (count($ids) != 0)
+		{
 			$model = $this->getModel('genres');
 			$result = $model->batch();
 
-			if ($result === false) {
+			if ($result === false)
+			{
 				GlobalHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'));
 

@@ -1,5 +1,4 @@
-<?php defined('JPATH_PLATFORM') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,17 +6,27 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('JPATH_PLATFORM') or die;
+
+/**
+ * Kinoarhiv conent class for batch process filters
+ *
+ * @since  3.0
+ */
 abstract class KAHtmlContent
 {
 	protected static $items = null;
 
 	/**
 	 * Get a list of the available content country items.
+	 *
 	 * @return  string
 	 */
 	public static function country()
 	{
-		if (empty(static::$items[__METHOD__])) {
+		if (empty(static::$items[__METHOD__]))
+		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -35,11 +44,13 @@ abstract class KAHtmlContent
 
 	/**
 	 * Get a list of the available content vendor items.
+	 *
 	 * @return  string
 	 */
 	public static function vendor()
 	{
-		if (empty(static::$items[__METHOD__])) {
+		if (empty(static::$items[__METHOD__]))
+		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -51,7 +62,8 @@ abstract class KAHtmlContent
 			$rows = $db->loadObjectList();
 			$data = array();
 
-			foreach ($rows as $row) {
+			foreach ($rows as $row)
+			{
 				$vendor = ($row->company_name_intl != '') ? $row->company_name . ' / ' . $row->company_name_intl : $row->company_name;
 
 				$data[] = array(

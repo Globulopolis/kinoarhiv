@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,11 +6,20 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+/**
+ * Class KALanguage
+ *
+ * @since  3.0
+ */
 class KALanguage extends JLanguage
 {
 	/**
 	 * Method return list of languages for subtitles for video files.
 	 * List of languages according to http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+	 *
 	 * @return    array
 	 */
 	public static function listOfLanguages()
@@ -72,35 +80,53 @@ class KALanguage extends JLanguage
 	/**
 	 * Load language files for JS scripts
 	 *
-	 * @param   string $file        Part of the filename w/o language tag and extension
-	 * @param   string $jhtml       Use JHTML::script() to load
-	 * @param   string $script_type Type of the script(folder name in assets/js/i8n/)
-	 * @param   bool   $frontend    Load language file from the frontend if set to true
+	 * @param   string  $file         Part of the filename w/o language tag and extension
+	 * @param   string  $jhtml        Use JHTML::script() to load
+	 * @param   string  $script_type  Type of the script(folder name in assets/js/i8n/)
+	 * @param   bool    $frontend     Load language file from the frontend if set to true
+	 *
+	 * @return mixed String or void
 	 */
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend)
 	{
 		$lang = JFactory::getLanguage()->getTag();
 		$filename = $file . $lang . '.js';
 
-		if ($frontend) {
+		if ($frontend)
+		{
 			$basepath = JPATH_ROOT . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_kinoarhiv' . DIRECTORY_SEPARATOR;
 			$url = JURI::root();
-		} else {
+		}
+		else
+		{
 			$basepath = JPATH_COMPONENT . DIRECTORY_SEPARATOR;
 			$url = JURI::base();
 		}
 
-		if (file_exists($basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type . DIRECTORY_SEPARATOR . $filename)) {
-			if ($jhtml) {
+		$path = $basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type;
+
+		if (file_exists($path . DIRECTORY_SEPARATOR . $filename))
+		{
+			if ($jhtml)
+			{
 				JHtml::_('script', $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $filename);
-			} else {
+			}
+			else
+			{
 				echo '<script src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $filename . '" type="text/javascript"></script>';
 			}
-		} elseif (file_exists($basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type . DIRECTORY_SEPARATOR . $file . substr($lang, 0, 2) . '.js')) {
-			if ($jhtml) {
+		}
+		elseif (file_exists($path . DIRECTORY_SEPARATOR . $file . substr($lang, 0, 2) . '.js'))
+		{
+			if ($jhtml)
+			{
 				JHtml::_('script', $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file . substr($lang, 0, 2) . '.js');
-			} else {
-				echo '<script src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file . substr($lang, 0, 2) . '.js" type="text/javascript"></script>';
+			}
+			else
+			{
+				echo '<script
+				src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file . substr($lang, 0, 2) . '.js"
+				type="text/javascript"></script>';
 			}
 		}
 	}

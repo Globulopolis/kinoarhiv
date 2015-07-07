@@ -1,5 +1,4 @@
-<?php defined('JPATH_PLATFORM') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,10 +6,19 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('JPATH_PLATFORM') or die;
+
+/**
+ * Batch filters class
+ *
+ * @since  3.0
+ */
 abstract class KAHtmlBatch
 {
 	/**
 	 * Display a batch widget for the country selector.
+	 *
 	 * @return  string  The necessary HTML for the widget.
 	 */
 	public static function country()
@@ -32,6 +40,7 @@ abstract class KAHtmlBatch
 
 	/**
 	 * Display a batch widget for the mediatype selector.
+	 *
 	 * @return  string  The necessary HTML for the widget.
 	 */
 	public static function mediatype()
@@ -41,7 +50,8 @@ abstract class KAHtmlBatch
 
 		$mediatypes = array();
 
-		for ($i = 0, $n = 20; $i < $n; $i++) {
+		for ($i = 0, $n = 20; $i < $n; $i++)
+		{
 			$mediatypes[] = array('value' => $i, 'text' => JText::_('COM_KA_RELEASES_MEDIATYPE_' . $i));
 		}
 
@@ -59,6 +69,7 @@ abstract class KAHtmlBatch
 
 	/**
 	 * Display a batch widget for the vendor selector.
+	 *
 	 * @return  string  The necessary HTML for the widget.
 	 */
 	public static function vendor()

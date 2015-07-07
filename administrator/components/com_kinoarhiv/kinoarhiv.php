@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,7 +7,10 @@
  * @url            http://киноархив.com/
  */
 
-if (!JFactory::getUser()->authorise('core.manage', 'com_kinoarhiv')) {
+defined('_JEXEC') or die;
+
+if (!JFactory::getUser()->authorise('core.manage', 'com_kinoarhiv'))
+{
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
@@ -19,16 +22,21 @@ GlobalHelper::setHeadTags();
 require_once(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'controller.php');
 $input = JFactory::getApplication()->input;
 
-if ($controller = $input->get('controller', null, 'word')) {
+if ($controller = $input->get('controller', null, 'word'))
+{
 	$path = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . $controller . '.php';
-	if (file_exists($path)) {
+
+	if (file_exists($path))
+	{
 		require_once $path;
-	} else {
+	}
+	else
+	{
 		$controller = '';
 	}
 }
 
 $classname = 'KinoarhivController' . $controller;
-$controller = new $classname();
+$controller = new $classname;
 $controller->execute($input->get('task', 'display', 'CMD'));
 $controller->redirect();

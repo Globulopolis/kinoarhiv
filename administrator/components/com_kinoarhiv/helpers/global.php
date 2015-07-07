@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,21 +7,30 @@
  * @url            http://киноархив.com/
  */
 
+defined('_JEXEC') or die;
+
 use Joomla\Registry\Registry;
 
+/**
+ * Class GlobalHelper
+ *
+ * @since  3.0
+ */
 class GlobalHelper
 {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
+	 *
 	 * @return  void
 	 */
-	static function setHeadTags()
+	public static function setHeadTags()
 	{
 		$document = JFactory::getDocument();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Return nothing because JHtml::script doesn't work for JDocumentRaw
-		if ($document->getType() != 'html') {
+		if ($document->getType() != 'html')
+		{
 			return;
 		}
 
@@ -49,10 +58,12 @@ class GlobalHelper
 	/**
 	 * Just proxy for KALanguage::getScriptLanguage()
 	 *
-	 * @param   string $file        Part of the filename w/o language tag and extension
-	 * @param   string $jhtml       Use JHTML::script() to load
-	 * @param   string $script_type Type of the script(folder name in assets/js/i8n/)
-	 * @param   bool   $frontend    Load language file from the frontend if set to true
+	 * @param   string  $file         Part of the filename w/o language tag and extension
+	 * @param   string  $jhtml        Use JHTML::script() to load
+	 * @param   string  $script_type  Type of the script(folder name in assets/js/i8n/)
+	 * @param   bool    $frontend     Load language file from the frontend if set to true
+	 *
+	 * @return void
 	 */
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend)
 	{
@@ -64,9 +75,9 @@ class GlobalHelper
 	/**
 	 * Method to get an errors from $errors and enqueue or directly display them.
 	 *
-	 * @param   mixed  $errors An Exception object or array.
-	 * @param   string $format Document type format.
-	 * @param   int    $count  Number of errors to process.
+	 * @param   mixed   $errors  An Exception object or array.
+	 * @param   string  $format  Document type format.
+	 * @param   int     $count   Number of errors to process.
 	 *
 	 * @return  string
 	 */
@@ -75,23 +86,34 @@ class GlobalHelper
 		$app = JFactory::getApplication();
 		$_errors = array();
 
-		for ($i = 0, $n = count($errors); $i < $n && $i < $count; $i++) {
-			if ($errors[$i] instanceof Exception) {
-				if ($format == 'html') {
+		for ($i = 0, $n = count($errors); $i < $n && $i < $count; $i++)
+		{
+			if ($errors[$i] instanceof Exception)
+			{
+				if ($format == 'html')
+				{
 					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				} else {
+				}
+				else
+				{
 					$_errors[] = $errors[$i]->getMessage();
 				}
-			} else {
-				if ($format == 'html') {
+			}
+			else
+			{
+				if ($format == 'html')
+				{
 					$app->enqueueMessage($errors[$i], 'warning');
-				} else {
+				}
+				else
+				{
 					$_errors[] = $errors[$i];
 				}
 			}
 		}
 
-		if ($format != 'html') {
+		if ($format != 'html')
+		{
 			return implode('<br />', $_errors);
 		}
 

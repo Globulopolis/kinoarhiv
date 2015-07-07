@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,20 +6,29 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+/**
+ * Class DatabaseHelper
+ *
+ * @since  3.0
+ */
 class DatabaseHelper
 {
 	/**
 	 * Converts the operand of the query grid in operand for mySQL query
 	 *
-	 * @param   string $field   Name of field to look for data.
-	 * @param   string $operand The operand from the request.
-	 * @param   string $data    Data for search.
+	 * @param   string  $field    Name of field to look for data.
+	 * @param   string  $operand  The operand from the request.
+	 * @param   string  $data     Data for search.
 	 *
 	 * @return  string
 	 */
-	static function transformOperands($field, $operand = 'eq', $data)
+	public static function transformOperands($field, $operand, $data)
 	{
-		switch ($operand) {
+		switch ($operand)
+		{
 			case 'ne':
 				$request = $field . " <> '" . $data . "'";
 				break;

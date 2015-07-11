@@ -11,13 +11,13 @@ defined('_JEXEC') or die;
 
 if (!JFactory::getUser()->authorise('core.manage', 'com_kinoarhiv'))
 {
-	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 
 @ini_set('zend.ze1_compatibility_mode', 'Off');
 
-JLoader::register('GlobalHelper', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'global.php');
-GlobalHelper::setHeadTags();
+JLoader::register('KAComponentHelper', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'component.php');
+KAComponentHelper::setHeadTags();
 
 require_once(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'controller.php');
 $input = JFactory::getApplication()->input;

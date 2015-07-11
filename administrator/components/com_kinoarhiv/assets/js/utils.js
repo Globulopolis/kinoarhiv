@@ -88,7 +88,7 @@ jQuery(document).ready(function($){
 
 			if (parts.length == 2) {
 				if (parts[0] != '') {
-					title += '<div style="text-align: center; border-bottom: 1px solid #EEEEEE;">' + parts[0] + '</div>' + parts[1];
+					title += '<div style="text-align: center; border-bottom: 1px solid #eee;">' + parts[0] + '</div>' + parts[1];
 				} else {
 					title += parts[1];
 				}

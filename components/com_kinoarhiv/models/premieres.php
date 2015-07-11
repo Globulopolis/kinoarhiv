@@ -167,7 +167,7 @@ class KinoarhivModelPremieres extends JModelList
 					$result['countries'] = array_merge($result['countries'], $countries);
 				}
 			} catch (Exception $e) {
-				GlobalHelper::eventLog($e->getMessage());
+				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
@@ -190,7 +190,7 @@ class KinoarhivModelPremieres extends JModelList
 					$result['years'] = array_merge($result['years'], $years);
 				}
 			} catch (Exception $e) {
-				GlobalHelper::eventLog($e->getMessage());
+				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
@@ -225,7 +225,7 @@ class KinoarhivModelPremieres extends JModelList
 					$result['months'] = array_merge($result['months'], $months);
 				}
 			} catch (Exception $e) {
-				GlobalHelper::eventLog($e->getMessage());
+				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
@@ -241,7 +241,7 @@ class KinoarhivModelPremieres extends JModelList
 					$result['vendors'] = array_merge($result['vendors'], $vendors);
 				}
 			} catch (Exception $e) {
-				GlobalHelper::eventLog($e->getMessage());
+				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 

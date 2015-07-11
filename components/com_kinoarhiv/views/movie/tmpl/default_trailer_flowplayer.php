@@ -9,7 +9,7 @@ $sfw = $this->params->get('player_swf');
 	<title><?php echo $this->escape($this->item->title); ?></title>
 	<link href="components/com_kinoarhiv/assets/themes/ui/<?php echo $this->params->get('ui_theme'); ?>/jquery-ui.css" rel="stylesheet" type="text/css" />
 	<link href="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/css/style.css" rel="stylesheet" type="text/css" />
-	<?php GlobalHelper::loadPlayerAssets($this->params->get('player_type')); ?>
+	<?php KAComponentHelper::loadPlayerAssets($this->params->get('player_type')); ?>
 	<script type="text/javascript">
 		jQuery(document).ready(function($){
 			$('#trailer').flowplayer({

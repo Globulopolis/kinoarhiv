@@ -93,7 +93,7 @@ endif; ?>
 		<?php echo $this->item->event->beforeDisplayContent; ?>
 		<?php if (isset($this->item->trailers) && count($this->item->trailers) > 0):
 			if ($this->params->get('player_type') != '-1') {
-				GlobalHelper::loadPlayerAssets($this->params->get('player_type'));
+				KAComponentHelper::loadPlayerAssets($this->params->get('player_type'));
 			}
 
 			$trailers_obj = $this->item->trailers; ?>
@@ -200,7 +200,7 @@ endif; ?>
 			<?php endforeach; ?>
 		</div>
 		<?php else: ?>
-		<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 		<?php endif; ?>
 	</article>
 	<?php echo $this->item->event->afterDisplayContent; ?>

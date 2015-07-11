@@ -81,6 +81,6 @@
 			<?php endif; ?>
 		</form>
 	<?php else: ?>
-		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_RATE_NORATE')); ?></div>
+		<br /><div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_RATE_NORATE')); ?></div>
 	<?php endif; ?>
 </div>

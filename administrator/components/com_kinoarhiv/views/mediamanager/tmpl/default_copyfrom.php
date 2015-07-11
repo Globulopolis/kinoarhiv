@@ -16,7 +16,7 @@ $params = JComponentHelper::getParams('com_kinoarhiv');
 	@import url("<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $params->get('ka_theme'); ?>/css/select.css");
 </style>
 <script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('select2_locale_', false, 'select', true); ?>
+<?php KAComponentHelper::getScriptLanguage('select2_locale_', false, 'select', true); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[

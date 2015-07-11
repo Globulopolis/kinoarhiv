@@ -1,8 +1,8 @@
 <?php defined('_JEXEC') or die;
 $uid_hash = md5(crc32($this->user->get('id')).md5($this->task)).crc32($this->task); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jqGrid.min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js" type="text/javascript"></script>
 <script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js" type="text/javascript"></script>

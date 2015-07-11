@@ -245,7 +245,7 @@ class KinoarhivModelMovie extends JModelForm
 			try {
 				$result->slides = $db->loadObjectList();
 			} catch (Exception $e) {
-				GlobalHelper::eventLog($e->getMessage());
+				KAComponentHelper::eventLog($e->getMessage());
 				$result->slides = (object)array();
 			}
 		}
@@ -275,7 +275,7 @@ class KinoarhivModelMovie extends JModelForm
 			}
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-			GlobalHelper::eventLog($e->getMessage());
+			KAComponentHelper::eventLog($e->getMessage());
 		}
 
 		$result->attribs = isset($result->attribs) ? json_decode($result->attribs) : "{}";

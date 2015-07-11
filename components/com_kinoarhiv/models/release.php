@@ -60,14 +60,14 @@ class KinoarhivModelRelease extends JModelItem
 				$data->items = $db->loadObjectList();
 
 				if (empty($data->items)) {
-					return JError::raiseError(404, JText::_('COM_CONTENT_ERROR_ARTICLE_NOT_FOUND'));
+					return JError::raiseError(404, JText::_('COM_CONTENT_ERROR_ARTICLE_NOT_FOUND')); // TODO Remove deprecated JError call
 				}
 
 				$this->_item[$pk] = $data;
 			} catch (Exception $e) {
 				if ($e->getCode() == 404) {
 					// Need to go thru the error handler to allow Redirect to work.
-					JError::raiseError(404, $e->getMessage());
+					JError::raiseError(404, $e->getMessage()); // TODO Remove deprecated JError call
 				} else {
 					$this->setError($e);
 					$this->_item[$pk] = false;

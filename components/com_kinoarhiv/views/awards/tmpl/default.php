@@ -25,7 +25,7 @@
 			</div>
 		<?php endif;
 	else: ?>
-		<br /><div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<br /><div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 	</div>
 </div>

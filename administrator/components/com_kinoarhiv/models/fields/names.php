@@ -1,5 +1,4 @@
-<?php defined('JPATH_PLATFORM') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,6 +6,9 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('JPATH_PLATFORM') or die;
+
 class JFormFieldNames extends JFormField
 {
 	protected $type = 'Names';
@@ -18,7 +20,7 @@ class JFormFieldNames extends JFormField
 		JHtml::_('jquery.framework');
 		JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/select.css');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
-		GlobalHelper::getScriptLanguage('select2_locale_', true, 'select', true);
+		KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 
 		parent::__construct();
 	}
@@ -26,10 +28,10 @@ class JFormFieldNames extends JFormField
 	/**
 	 * Build the HTML structure for the input label
 	 *
-	 * @param   string $name        The unique name of the input field.
-	 * @param   string $label       The label text.
-	 * @param   string $description The descriptive title of the label.
-	 * @param   string $class       CSS class name for the HTML form label.
+	 * @param   string  $name         The unique name of the input field.
+	 * @param   string  $label        The label text.
+	 * @param   string  $description  The descriptive title of the label.
+	 * @param   string  $class        CSS class name for the HTML form label.
 	 *
 	 * @return  string
 	 */
@@ -38,33 +40,48 @@ class JFormFieldNames extends JFormField
 		$name = $this->name ? $this->name : $name;
 		$id = $this->id ? $this->id : $name;
 
-		if (isset($this->element['class'])) {
-			$label = (string)$this->element['class'];
-		} elseif (!empty($class)) {
+		if (isset($this->element['class']))
+		{
+			$label = (string) $this->element['class'];
+		}
+		elseif (!empty($class))
+		{
 			$label = $class;
-		} else {
+		}
+		else
+		{
 			$label = '';
 		}
 
-		$text = $this->element['label'] ? (string)$this->element['label'] : (string)$label;
+		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $label;
 
-		if (isset($this->element['class'])) {
-			$class = (string)$this->element['class'];
-		} elseif (!empty($class)) {
+		if (isset($this->element['class']))
+		{
+			$class = (string) $this->element['class'];
+		}
+		elseif (!empty($class))
+		{
 			$class = $class;
-		} else {
+		}
+		else
+		{
 			$class = '';
 		}
 
-		if (!empty($this->description)) {
+		if (!empty($this->description))
+		{
 			JHtml::_('bootstrap.tooltip');
 			$title = ' title="' . JHTML::tooltipText($text, $this->$description) . '"';
 			$class .= ' hasTooltip';
-		} elseif (!empty($description)) {
+		}
+		elseif (!empty($description))
+		{
 			JHtml::_('bootstrap.tooltip');
 			$title = ' title="' . JHTML::tooltipText($text, $description) . '"';
 			$class .= ' hasTooltip';
-		} else {
+		}
+		else
+		{
 			$title = '';
 		}
 
@@ -74,19 +91,19 @@ class JFormFieldNames extends JFormField
 	/**
 	 * Build the HTML structure for the input field with autocomplete
 	 *
-	 * @param   string $name             The unique name of the field.
-	 * @param   mixed  $size             The width of the text box in characters. If omitted the width is determined by
-	 *                                   the browser.
-	 * @param   mixed  $maxlength        Limits the number of characters that may be entered.
-	 * @param   string $default          The default value.
-	 * @param   string $class            CSS class name for the HTML form field.
-	 * @param   string $readonly         The field cannot be changed and will automatically inherit the default value.
-	 * @param   string $disabled         The field cannot be changed and will automatically inherit the default value -
-	 *                                   it will also not submit.
-	 * @param   string $required         The field must be filled before submitting the form.
-	 * @param   string $multiple         Multiple items can be selected at the same time (true/false or empty value).
-	 * @param   string $data_type        Type of the data. Can be 'movies'.
-	 * @param   string $data_allow_clear Allow clear selected data.
+	 * @param   string  $name              The unique name of the field.
+	 * @param   mixed   $size              The width of the text box in characters. If omitted the width is determined by
+	 *                                     the browser.
+	 * @param   mixed   $maxlength         Limits the number of characters that may be entered.
+	 * @param   string  $default           The default value.
+	 * @param   string  $class             CSS class name for the HTML form field.
+	 * @param   string  $readonly          The field cannot be changed and will automatically inherit the default value.
+	 * @param   string  $disabled          The field cannot be changed and will automatically inherit the default value -
+	 *                                     it will also not submit.
+	 * @param   string  $required          The field must be filled before submitting the form.
+	 * @param   string  $multiple          Multiple items can be selected at the same time (true/false or empty value).
+	 * @param   string  $data_type         Type of the data. Can be 'movies'.
+	 * @param   string  $data_allow_clear  Allow clear selected data.
 	 *
 	 * @return  string
 	 */
@@ -98,98 +115,159 @@ class JFormFieldNames extends JFormField
 		$name = $this->name ? $this->name : $name;
 		$id = $this->id ? $this->id : $name;
 
-		if (isset($this->element['size'])) {
-			$size = ' size="' . (int)$this->element['size'] . '"';
-		} elseif (!empty($size)) {
-			$size = ' size="' . (int)$size . '"';
-		} else {
+		if (isset($this->element['size']))
+		{
+			$size = ' size="' . (int) $this->element['size'] . '"';
+		}
+		elseif (!empty($size))
+		{
+			$size = ' size="' . (int) $size . '"';
+		}
+		else
+		{
 			$size = '';
 		}
 
-		if (isset($this->element['maxlength'])) {
-			$maxlength = ' maxlength="' . (int)$this->element['maxlength'] . '"';
-		} elseif (!empty($maxlength)) {
-			$maxlength = ' maxlength="' . (int)$maxlength . '"';
-		} else {
+		if (isset($this->element['maxlength']))
+		{
+			$maxlength = ' maxlength="' . (int) $this->element['maxlength'] . '"';
+		}
+		elseif (!empty($maxlength))
+		{
+			$maxlength = ' maxlength="' . (int) $maxlength . '"';
+		}
+		else
+		{
 			$maxlength = '';
 		}
 
-		if (isset($this->element['class'])) {
-			$class = $_class . (string)$this->element['class'];
-		} elseif (!empty($class)) {
+		if (isset($this->element['class']))
+		{
+			$class = $_class . (string) $this->element['class'];
+		}
+		elseif (!empty($class))
+		{
 			$class = $_class . $class;
-		} else {
+		}
+		else
+		{
 			$class = '';
 		}
 
-		if (isset($this->element['readonly'])) {
-			if ((string)$this->element['readonly'] == 'true') {
+		if (isset($this->element['readonly']))
+		{
+			if ((string) $this->element['readonly'] == 'true')
+			{
 				$readonly = ' readonly="readonly"';
-			} else {
+			}
+			else
+			{
 				$readonly = '';
 			}
-		} elseif (!empty($readonly)) {
+		}
+		elseif (!empty($readonly))
+		{
 			$readonly = ' readonly="readonly"';
-		} else {
+		}
+		else
+		{
 			$readonly = '';
 		}
 
-		if (isset($this->element['multiple'])) {
-			if ((string)$this->element['multiple'] == 'true') {
+		if (isset($this->element['multiple']))
+		{
+			if ((string) $this->element['multiple'] == 'true')
+			{
 				$multiple = true;
-			} else {
+			}
+			else
+			{
 				$multiple = false;
 			}
-		} elseif (!empty($multiple)) {
+		}
+		elseif (!empty($multiple))
+		{
 			$multiple = true;
-		} else {
+		}
+		else
+		{
 			$multiple = false;
 		}
 
-		if (isset($this->element['disabled'])) {
-			if ((string)$this->element['disabled'] == 'true') {
+		if (isset($this->element['disabled']))
+		{
+			if ((string) $this->element['disabled'] == 'true')
+			{
 				$disabled = ' disabled="disabled"';
-			} else {
+			}
+			else
+			{
 				$disabled = false;
 			}
-		} elseif (!empty($disabled)) {
+		}
+		elseif (!empty($disabled))
+		{
 			$disabled = ' disabled="disabled"';
-		} else {
+		}
+		else
+		{
 			$disabled = '';
 		}
 
-		if ($this->required) {
+		if ($this->required)
+		{
 			$required = ' required aria-required="true"';
-		} elseif (!empty($required)) {
+		}
+		elseif (!empty($required))
+		{
 			$required = ' required aria-required="true"';
-		} else {
+		}
+		else
+		{
 			$required = '';
 		}
 
-		if (isset($this->element['data-ac-type'])) {
-			$data_type = ' data-ac-type="' . (string)$this->element['data-ac-type'] . '"';
-		} elseif (!empty($data_type)) {
-			$data_type = ' data-ac-type="' . (string)$data_type . '"';
-		} else {
+		if (isset($this->element['data-ac-type']))
+		{
+			$data_type = ' data-ac-type="' . (string) $this->element['data-ac-type'] . '"';
+		}
+		elseif (!empty($data_type))
+		{
+			$data_type = ' data-ac-type="' . (string) $data_type . '"';
+		}
+		else
+		{
 			$data_type = '';
 		}
 
-		if (isset($this->element['data-allow-clear'])) {
+		if (isset($this->element['data-allow-clear']))
+		{
 			$data_allow_clear = ' data-allow-clear="true"';
-		} elseif (!empty($data_allow_clear)) {
+		}
+		elseif (!empty($data_allow_clear))
+		{
 			$data_allow_clear = ' data-allow-clear="true"';
-		} else {
+		}
+		else
+		{
 			$data_allow_clear = '';
 		}
 
 		$this->value = $this->value ? $this->value : $default;
-		if (isset($this->value['ids']) && is_array($this->value['ids'])) {
+
+		if (isset($this->value['ids']) && is_array($this->value['ids']))
+		{
 			$value = implode(',', $this->value['ids']);
-		} else {
-			if ($multiple) {
+		}
+		else
+		{
+			if ($multiple)
+			{
 				$value = $this->value;
-			} else {
-				$value = (int)$this->value;
+			}
+			else
+			{
+				$value = (int) $this->value;
 			}
 		}
 

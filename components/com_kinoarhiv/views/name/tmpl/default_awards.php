@@ -20,7 +20,7 @@
 				</div>
 				<?php endforeach; ?>
 			<?php else: ?>
-			<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+			<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 			<?php endif; ?>
 		</div>
 	</article>

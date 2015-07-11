@@ -1,5 +1,5 @@
 <?php defined('_JEXEC') or die;
-GlobalHelper::loadPlayerAssets($this->params->get('player_type'));
+KAComponentHelper::loadPlayerAssets($this->params->get('player_type'));
 
 if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 $item_trailer = $this->item->trailer; ?>

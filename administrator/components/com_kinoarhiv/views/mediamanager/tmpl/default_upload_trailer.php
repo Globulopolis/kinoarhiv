@@ -14,11 +14,11 @@ $type = $input->get('type', '', 'word');
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js" type="text/javascript"></script>
 
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js" type="text/javascript"></script>
-	<?php GlobalHelper::getScriptLanguage('', false, 'mediamanager', false); ?>
+	<?php KAComponentHelper::getScriptLanguage('', false, 'mediamanager', false); ?>
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js" type="text/javascript"></script>
 	<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js" type="text/javascript"></script>
 	<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
-	<?php GlobalHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
+	<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
 	<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <?php endif; ?>
 <script type="text/javascript">

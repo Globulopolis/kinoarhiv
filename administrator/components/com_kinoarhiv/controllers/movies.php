@@ -103,7 +103,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
+			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html')
 			{
@@ -127,7 +127,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		{
 			if ($document->getType() == 'html')
 			{
-				GlobalHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $data['id']);
 
 				return false;
@@ -363,7 +363,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				'Referer'    => 'http://www.kinopoisk.ru/',
 				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
 			);
-			$response = GlobalHelper::getRemoteData('http://www.kinopoisk.ru/rating/' . (int) $id . '.xml', $headers, 30, array('curl', 'socket'));
+			$response = KAComponentHelper::getRemoteData('http://www.kinopoisk.ru/rating/' . (int) $id . '.xml', $headers, 30, array('curl', 'socket'));
 
 			$xml = new SimpleXMLElement($response->body);
 
@@ -386,7 +386,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				'Referer'    => 'http://www.rottentomatoes.com/',
 				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
 			);
-			$response = GlobalHelper::getRemoteData('http://www.rottentomatoes.com/m/' . $id . '/', $headers, 30, array('curl', 'socket'));
+			$response = KAComponentHelper::getRemoteData('http://www.rottentomatoes.com/m/' . $id . '/', $headers, 30, array('curl', 'socket'));
 
 			// Find div with the rating
 			if (preg_match('/<div class="col-xs-12">(.*?)<div class="col-xs-12/si', $response->body, $matches))
@@ -419,7 +419,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				'Referer'    => 'http://www.metacritic.com/',
 				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
 			);
-			$response = GlobalHelper::getRemoteData('http://www.metacritic.com/movie/' . $id, $headers, 30, array('curl', 'socket'));
+			$response = KAComponentHelper::getRemoteData('http://www.metacritic.com/movie/' . $id, $headers, 30, array('curl', 'socket'));
 
 			// Finding the div with rating
 			if (preg_match('/<div class="details main_details">(.*?)<div class="details side_details">/si', $response->body, $matches))
@@ -578,7 +578,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 			if ($result === false)
 			{
-				GlobalHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 
 				return false;

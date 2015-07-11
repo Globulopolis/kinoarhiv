@@ -28,7 +28,7 @@ class KinoarhivViewAwards extends JViewLegacy
 		$items = $this->get('Items');
 
 		if (count($errors = $this->get('Errors')) || is_null($items)) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
@@ -51,7 +51,7 @@ class KinoarhivViewAwards extends JViewLegacy
 		$item = $this->get('Item');
 
 		if (count($errors = $this->get('Errors')) || is_null($item)) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}

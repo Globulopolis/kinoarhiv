@@ -29,7 +29,7 @@ class KinoarhivModelReviews extends JModelForm
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
-		$strip_tag = GlobalHelper::cleanHTML($data['review'], null);
+		$strip_tag = KAComponentHelper::cleanHTML($data['review'], null);
 
 		if (String::strlen($strip_tag) < $params->get('reviews_length_min') || String::strlen($strip_tag) > $params->get('reviews_length_max')) {
 			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
@@ -37,7 +37,7 @@ class KinoarhivModelReviews extends JModelForm
 			return false;
 		}
 
-		$cleaned_text = GlobalHelper::cleanHTML($data['review']);
+		$cleaned_text = KAComponentHelper::cleanHTML($data['review']);
 		$datetime = date('Y-m-d H:i:s');
 		$state = $params->get('reviews_premod') == 1 ? 0 : 1;
 		$ip = '';
@@ -65,7 +65,7 @@ class KinoarhivModelReviews extends JModelForm
 
 			$insertid = $db->insertid();
 		} catch (Exception $e) {
-			GlobalHelper::eventLog($e->getMessage());
+			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
 		}
@@ -233,7 +233,7 @@ class KinoarhivModelReviews extends JModelForm
 				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
 			} catch (Exception $e) {
 				$this->setError(JText::_('JERROR_ERROR'));
-				GlobalHelper::eventLog(JText::_('JERROR_ERROR'));
+				KAComponentHelper::eventLog(JText::_('JERROR_ERROR'));
 
 				return false;
 			}

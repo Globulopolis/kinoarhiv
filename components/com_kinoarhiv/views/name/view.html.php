@@ -47,7 +47,7 @@ class KinoarhivViewName extends JViewLegacy
 		$item = $this->get('Data');
 
 		if (count($errors = $this->get('Errors')) || is_null($item)) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
@@ -139,14 +139,14 @@ class KinoarhivViewName extends JViewLegacy
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')) || is_null($items)) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
 		if (($item->attribs->tab_name_wallpp === '' && $params->get('tab_name_wallpp') === '0') || $item->attribs->tab_name_wallpp === '0') {
 			$id = $app->input->get('id', null, 'int');
-			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
 		// Build title string
@@ -217,14 +217,14 @@ class KinoarhivViewName extends JViewLegacy
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')) || is_null($items)) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
 		if (($item->attribs->tab_name_photos === '' && $params->get('tab_name_photos') === '0') || $item->attribs->tab_name_photos === '0') {
 			$id = $app->input->get('id', null, 'int');
-			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
 		// Build title string
@@ -300,14 +300,14 @@ class KinoarhivViewName extends JViewLegacy
 		$items = $this->get('Awards');
 
 		if (count($errors = $this->get('Errors')) || is_null($items)) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
 		if (($items->attribs->tab_name_awards === '' && $params->get('tab_name_awards') === '0') || $items->attribs->tab_name_awards === '0') {
 			$id = $app->input->get('id', null, 'int');
-			GlobalHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
 		// Prepare the data

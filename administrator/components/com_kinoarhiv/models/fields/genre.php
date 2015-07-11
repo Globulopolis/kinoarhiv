@@ -1,4 +1,4 @@
-<?php defined('JPATH_BASE') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,21 +7,20 @@
  * @url            http://киноархив.com/
  */
 
+defined('JPATH_BASE') or die;
+
 JFormHelper::loadFieldClass('list');
 
 class JFormFieldGenre extends JFormFieldList
 {
 	protected $type = 'Genre';
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
 	protected function getInput()
 	{
-		if (!is_array($this->value) && !empty($this->value)) {
-			if (is_string($this->value)) {
+		if (!is_array($this->value) && !empty($this->value))
+		{
+			if (is_string($this->value))
+			{
 				$this->value = explode(',', $this->value);
 			}
 		}
@@ -51,13 +50,16 @@ class JFormFieldGenre extends JFormFieldList
 		// Get the options.
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$options = $db->loadObjectList();
-		} catch (RuntimeException $e) {
+		}
+		catch (RuntimeException $e)
+		{
 			return false;
 		}
 
-		$options[] = (object)array(
+		$options[] = (object) array(
 			'value'     => 0,
 			'text'      => JText::_('JALL'),
 			'published' => 1

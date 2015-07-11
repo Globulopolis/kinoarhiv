@@ -166,7 +166,7 @@ class KinoarhivModelName extends JModelList
 			}
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-			GlobalHelper::eventLog($e->getMessage());
+			KAComponentHelper::eventLog($e->getMessage());
 		}
 
 		$result->attribs = json_decode($result->attribs);

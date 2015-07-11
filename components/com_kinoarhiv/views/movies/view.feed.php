@@ -19,7 +19,7 @@ class KinoarhivViewMovies extends JViewLegacy
 		$items = $this->get('Items');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors));
+			KAComponentHelper::eventLog(implode("\n", $errors));
 
 			return false;
 		}

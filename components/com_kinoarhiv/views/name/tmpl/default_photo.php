@@ -1,6 +1,6 @@
 <?php defined('_JEXEC') or die; ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
+<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -49,7 +49,7 @@
 				</form>
 				<div style="clear: both;">&nbsp;</div>
 			<?php else: ?>
-			<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+			<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 			<?php endif; ?>
 		</div>
 	</article>

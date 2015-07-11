@@ -16,7 +16,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 }
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
+<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
@@ -310,6 +310,6 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			</div>
 		<?php endif;
 	else: ?>
-		<br /><div><?php echo ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<br /><div><?php echo ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

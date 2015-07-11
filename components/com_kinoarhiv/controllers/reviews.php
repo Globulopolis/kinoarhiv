@@ -15,7 +15,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		$redir_url = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id, false);
 
 		if (JSession::checkToken() === false) {
-			GlobalHelper::eventLog(JText::_('JINVALID_TOKEN'));
+			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
 			$this->setRedirect($redir_url);
 
 			return false;
@@ -24,7 +24,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		$user = JFactory::getUser();
 
 		if ($user->guest) {
-			GlobalHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
+			KAComponentHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
 			$this->setRedirect($redir_url);
 
 			return false;

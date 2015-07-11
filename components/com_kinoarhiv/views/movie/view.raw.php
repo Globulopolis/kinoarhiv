@@ -25,7 +25,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($params->get('allow_guest_watch') == 0 && $user->get('guest') && $type == 'movie') {
-			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">' . GlobalHelper::showMsg(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'), array('icon' => 'alert', 'type' => 'error')) . '</div>';
+			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">' . KAComponentHelper::showMsg(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'), array('icon' => 'alert', 'type' => 'error')) . '</div>';
 
 			return;
 		}
@@ -43,7 +43,7 @@ class KinoarhivViewMovie extends JViewLegacy
 				parent::display('trailer_' . $params->get('player_type'));
 			}
 		} else {
-			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">' . GlobalHelper::showMsg(JText::_('ERROR'), array('icon' => 'alert', 'type' => 'error')) . '</div>';
+			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">' . KAComponentHelper::showMsg(JText::_('ERROR'), array('icon' => 'alert', 'type' => 'error')) . '</div>';
 		}
 	}
 }

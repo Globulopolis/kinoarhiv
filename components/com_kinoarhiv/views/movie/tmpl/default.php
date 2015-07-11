@@ -35,12 +35,12 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 }
 ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
+<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.plugin.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.countdown.min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('jquery.countdown-', false, 'countdown'); ?>
+<?php KAComponentHelper::getScriptLanguage('jquery.countdown-', false, 'countdown'); ?>
 
 <?php if (isset($this->item->slides) && !empty($this->item->slides)):
 	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
@@ -550,7 +550,7 @@ endif; ?>
 					<div class="rateit" data-rateit-value="<?php echo $this->item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>&nbsp;<?php echo $this->item->rate_loc_label; ?>
 
 					<?php if ($this->params->get('allow_votes') == 1): ?>
-					<div><?php echo GlobalHelper::showMsg(JText::sprintf(JText::_('COM_KA_VOTES_AUTHREQUIRED'), '<a href="'.JRoute::_('index.php?option=com_users&view=registration').'">'.JText::_('COM_KA_REGISTER').'</a>', '<a href="'.JRoute::_('index.php?option=com_users&view=login').'">'.JText::_('COM_KA_LOGIN').'</a>')); ?></div>
+					<div><?php echo KAComponentHelper::showMsg(JText::sprintf(JText::_('COM_KA_VOTES_AUTHREQUIRED'), '<a href="'.JRoute::_('index.php?option=com_users&view=registration').'">'.JText::_('COM_KA_REGISTER').'</a>', '<a href="'.JRoute::_('index.php?option=com_users&view=login').'">'.JText::_('COM_KA_LOGIN').'</a>')); ?></div>
 					<?php endif; ?>
 				</div>
 				<?php endif; ?>
@@ -589,7 +589,7 @@ endif; ?>
 					if (file_exists(JPATH_ROOT.'/components/com_kinoarhiv/assets/players/'.$this->params->get('player_type'))) {
 						echo $this->loadTemplate($player_layout);
 					} else {
-						GlobalHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+						KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
 						echo $this->loadTemplate('trailer');
 					}
 				}

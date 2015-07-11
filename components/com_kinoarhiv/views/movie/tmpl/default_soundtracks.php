@@ -1,6 +1,6 @@
 <?php defined('_JEXEC') or die;
 if (isset($this->item->soundtracks)):
-	//GlobalHelper::loadPlayerAssets();
+	//KAComponentHelper::loadPlayerAssets();
 endif; ?>
 <div class="content movie snd">
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -65,7 +65,7 @@ endif; ?>
 		<div class="snd-list">
 			<?php if (isset($this->item->soundtracks) && count($this->item->soundtracks) > 0): ?>
 			<?php else: ?>
-			<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+			<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 			<?php endif; ?>
 		</div>
 	</article>

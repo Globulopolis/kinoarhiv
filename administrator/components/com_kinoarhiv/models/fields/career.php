@@ -1,4 +1,4 @@
-<?php defined('JPATH_BASE') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,11 +7,14 @@
  * @url            http://киноархив.com/
  */
 
+defined('JPATH_BASE') or die;
+
 JFormHelper::loadFieldClass('list');
 
 class JFormFieldCareer extends JFormFieldList
 {
 	protected $type = 'Career';
+
 	protected $comParams = null;
 
 	public function __construct()
@@ -24,8 +27,10 @@ class JFormFieldCareer extends JFormFieldList
 
 	protected function getInput()
 	{
-		if (!is_array($this->value) && !empty($this->value)) {
-			if (is_string($this->value)) {
+		if (!is_array($this->value) && !empty($this->value))
+		{
+			if (is_string($this->value))
+			{
 				$this->value = explode(',', $this->value);
 			}
 		}
@@ -37,30 +42,31 @@ class JFormFieldCareer extends JFormFieldList
 
 	protected function getOptions()
 	{
-		$options = array();
-		$name = (string)$this->element['name'];
 		$lang = JFactory::getLanguage();
 
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true)
-			->select('`id` AS `value`, `title` AS `text`')
+			->select('id AS value, title AS text')
 			->from('#__ka_names_career');
 
 		// Filter language
-		$query->where('`language` IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+		$query->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
-		$query->order('`title` ASC');
+		$query->order('title ASC');
 
 		// Get the options.
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$options = $db->loadObjectList();
-		} catch (RuntimeException $e) {
+		}
+		catch (RuntimeException $e)
+		{
 			return false;
 		}
 
-		$options[] = (object)array(
+		$options[] = (object) array(
 			'value'     => 0,
 			'text'      => JText::_('JALL'),
 			'published' => 1

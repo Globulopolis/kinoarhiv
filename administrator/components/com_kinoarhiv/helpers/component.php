@@ -12,11 +12,11 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 /**
- * Class GlobalHelper
+ * Component helper class
  *
  * @since  3.0
  */
-class GlobalHelper
+class KAComponentHelper extends JComponentHelper
 {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
@@ -26,7 +26,7 @@ class GlobalHelper
 	public static function setHeadTags()
 	{
 		$document = JFactory::getDocument();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$params = self::getParams('com_kinoarhiv');
 
 		// Return nothing because JHtml::script doesn't work for JDocumentRaw
 		if ($document->getType() != 'html')
@@ -36,7 +36,12 @@ class GlobalHelper
 
 		$document->addHeadLink(JURI::base() . 'components/com_kinoarhiv/assets/css/style.css', 'stylesheet', 'rel', array('type' => 'text/css'));
 		$document->addHeadLink(JURI::base() . 'components/com_kinoarhiv/assets/css/plugins.css', 'stylesheet', 'rel', array('type' => 'text/css'));
-		$document->addHeadLink(JURI::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css', 'stylesheet', 'rel', array('type' => 'text/css'));
+		$document->addHeadLink(
+			JURI::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css',
+			'stylesheet',
+			'rel',
+			array('type' => 'text/css')
+		);
 		JHtml::_('jquery.framework');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
@@ -45,6 +50,16 @@ class GlobalHelper
 		JText::script('COM_KA_CLOSE', true);
 	}
 
+	/**
+	 * Get data from remote server
+	 *
+	 * @param   string  $url        URL
+	 * @param   null    $headers    Headers to send
+	 * @param   int     $timeout    Request timeout in seconds
+	 * @param   string  $transport  Transport type
+	 *
+	 * @return JHttpResponse
+	 */
 	public static function getRemoteData($url, $headers = null, $timeout = 30, $transport = 'curl')
 	{
 		$options = new Registry;

@@ -16,7 +16,7 @@
 			// Default review system
 			$cmd_insert_username = ' cmd-insert-username';
 
-			GlobalHelper::loadEditorAssets(); ?>
+			KAComponentHelper::loadEditorAssets(); ?>
 			<script type="text/javascript">
 			//<![CDATA[
 				jQuery(document).ready(function($){
@@ -110,7 +110,7 @@
 				</div>
 			</div>
 		<?php else: ?>
-			<div><?php echo GlobalHelper::showMsg(JText::_('COM_KA_REVIEWS_NO')); ?></div>
+			<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_NO')); ?></div>
 		<?php endif; ?>
 
 		<?php if (!$this->user->guest): // Show "Add review" form ?>
@@ -198,10 +198,10 @@
 					<input type="reset" class="btn btn-default uk-button cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
 				</form>
 			<?php else:
-				echo GlobalHelper::showMsg(JText::_('COM_KA_REVIEWS_DISABLED'));
+				echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_DISABLED'));
 			endif; ?>
 		<?php else: ?>
-		<br /><div><?php echo GlobalHelper::showMsg(JText::sprintf(JText::_('COM_KA_REVIEWS_AUTHREQUIRED'), '<a href="'.JRoute::_('index.php?option=com_users&view=registration').'">'.JText::_('COM_KA_REGISTER').'</a>', '<a href="'.JRoute::_('index.php?option=com_users&view=login').'">'.JText::_('COM_KA_LOGIN').'</a>')); ?></div>
+		<br /><div><?php echo KAComponentHelper::showMsg(JText::sprintf(JText::_('COM_KA_REVIEWS_AUTHREQUIRED'), '<a href="'.JRoute::_('index.php?option=com_users&view=registration').'">'.JText::_('COM_KA_REGISTER').'</a>', '<a href="'.JRoute::_('index.php?option=com_users&view=login').'">'.JText::_('COM_KA_LOGIN').'</a>')); ?></div>
 		<?php endif; ?>
 	<?php endif; ?>
 </div>

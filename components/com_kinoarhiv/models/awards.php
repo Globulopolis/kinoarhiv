@@ -75,7 +75,7 @@ class KinoarhivModelAwards extends JModelList
 			$result = $db->loadObject();
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
-			GlobalHelper::eventLog($e->getMessage());
+			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
 		}

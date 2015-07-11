@@ -1,4 +1,4 @@
-<?php defined('JPATH_PLATFORM') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,11 +7,14 @@
  * @url            http://киноархив.com/
  */
 
+defined('JPATH_PLATFORM') or die;
+
 JFormHelper::loadFieldClass('list');
 
 class JFormFieldCreator extends JFormFieldList
 {
 	public $type = 'Creator';
+
 	protected static $options = array();
 
 	protected function getOptions()
@@ -21,7 +24,8 @@ class JFormFieldCreator extends JFormFieldList
 		$table = $this->element['table'] ? $this->element['table'] : 'content';
 		$field = $this->element['field'] ? $this->element['field'] : 'created_by';
 
-		if (!isset(static::$options[$hash])) {
+		if (!isset(static::$options[$hash]))
+		{
 			static::$options[$hash] = parent::getOptions();
 			$db = JFactory::getDbo();
 
@@ -37,7 +41,8 @@ class JFormFieldCreator extends JFormFieldList
 			$db->setQuery($query);
 
 			// Return the result
-			if ($options = $db->loadObjectList()) {
+			if ($options = $db->loadObjectList())
+			{
 				static::$options[$hash] = array_merge(static::$options[$hash], $options);
 			}
 		}

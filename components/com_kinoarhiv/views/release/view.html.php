@@ -23,7 +23,7 @@ class KinoarhivViewRelease extends JViewLegacy
 		$item = $this->get('Item');
 
 		if (count($errors = $this->get('Errors')) || is_null($item)) {
-			GlobalHelper::eventLog(is_null($errors) ? $errors : implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(is_null($errors) ? $errors : implode("\n", $errors), 'ui');
 
 			return false;
 		}

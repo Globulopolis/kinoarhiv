@@ -1,6 +1,6 @@
 <?php defined('_JEXEC') or die; ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php GlobalHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
+<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -181,6 +181,6 @@
 			</div>
 		<?php endif;
 	else: ?>
-		<br /><div><?php echo ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : GlobalHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<br /><div><?php echo ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

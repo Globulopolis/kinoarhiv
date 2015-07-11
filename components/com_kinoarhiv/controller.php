@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,6 +6,9 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivController extends JControllerLegacy
 {
 	public function display($cachable = false, $urlparams = false)
@@ -19,7 +21,8 @@ class KinoarhivController extends JControllerLegacy
 
 		$user = JFactory::getUser();
 
-		if ($user->get('id') || ($this->input->getMethod() == 'POST')) {
+		if ($user->get('id') || ($this->input->getMethod() == 'POST'))
+		{
 			$cachable = false;
 		}
 
@@ -31,17 +34,28 @@ class KinoarhivController extends JControllerLegacy
 		return $this;
 	}
 
+	/**
+	 * Method mark movie as favorite
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 */
 	public function favorite()
 	{
 		$user = JFactory::getUser();
 		$document = JFactory::getDocument();
 
-		if ($user->guest) {
-			if ($document->getType() == 'raw' || $document->getType() == 'json') {
+		if ($user->guest)
+		{
+			if ($document->getType() == 'raw' || $document->getType() == 'json')
+			{
 				$document->setMimeEncoding('application/json');
 
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-			} else {
+			}
+			else
+			{
 				throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 			}
 
@@ -52,11 +66,14 @@ class KinoarhivController extends JControllerLegacy
 		$model = $this->getModel($view);
 		$result = $model->favorite();
 
-		if ($document->getType() == 'raw' || $document->getType() == 'json') {
+		if ($document->getType() == 'raw' || $document->getType() == 'json')
+		{
 			$document->setMimeEncoding('application/json');
 
 			echo json_encode($result);
-		} else {
+		}
+		else
+		{
 			$tab = $this->input->get('tab', '', 'cmd');
 
 			$page = $this->input->get('page', '', 'cmd');
@@ -65,7 +82,6 @@ class KinoarhivController extends JControllerLegacy
 			$tab = !empty($tab) ? '&tab=' . $tab : '';
 			$page = !empty($page) ? '&page=' . $page : '';
 			$return = $this->input->get('return', 'movies', 'cmd');
-
 			$url = JRoute::_('index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id . '&Itemid=' . $this->input->get('Itemid', 0, 'int'), false);
 
 			$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
@@ -74,17 +90,28 @@ class KinoarhivController extends JControllerLegacy
 		}
 	}
 
+	/**
+	 * Method mark movie as watched
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 */
 	public function watched()
 	{
 		$user = JFactory::getUser();
 		$document = JFactory::getDocument();
 
-		if ($user->guest) {
-			if ($document->getType() == 'raw' || $document->getType() == 'json') {
+		if ($user->guest)
+		{
+			if ($document->getType() == 'raw' || $document->getType() == 'json')
+			{
 				$document->setMimeEncoding('application/json');
 
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-			} else {
+			}
+			else
+			{
 				throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 			}
 
@@ -94,17 +121,23 @@ class KinoarhivController extends JControllerLegacy
 		$model = $this->getModel('movies');
 		$result = $model->watched();
 
-		if ($document->getType() == 'raw' || $document->getType() == 'json') {
+		if ($document->getType() == 'raw' || $document->getType() == 'json')
+		{
 			$document->setMimeEncoding('application/json');
 
 			echo json_encode($result);
-		} else {
+		}
+		else
+		{
 			$view = $this->input->get('view', 'movies', 'cmd');
 			$tab = $this->input->get('tab', '', 'cmd');
 
-			if ($view == 'movies') {
+			if ($view == 'movies')
+			{
 				$url = JRoute::_('index.php?option=com_kinoarhiv&Itemid=' . $this->input->get('Itemid', 0, 'int'), false);
-			} else {
+			}
+			else
+			{
 				$id = $this->input->get('id', 0, 'int');
 				$_id = ($id != 0) ? '&id=' . $id : '';
 				$tab = !empty($tab) ? '&tab=' . $tab : '';
@@ -118,6 +151,11 @@ class KinoarhivController extends JControllerLegacy
 		}
 	}
 
+	/**
+	 * Method process user votes
+	 *
+	 * @return string
+	 */
 	public function vote()
 	{
 		$user = JFactory::getUser();
@@ -125,7 +163,8 @@ class KinoarhivController extends JControllerLegacy
 
 		$document->setMimeEncoding('application/json');
 
-		if ($user->guest) {
+		if ($user->guest)
+		{
 			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
 			return false;
@@ -137,6 +176,11 @@ class KinoarhivController extends JControllerLegacy
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to get ajax data from component tables
+	 *
+	 * @return string
+	 */
 	public function ajaxData()
 	{
 		$document = JFactory::getDocument();

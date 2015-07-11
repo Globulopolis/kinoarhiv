@@ -21,7 +21,7 @@ class KinoarhivViewSearch extends JViewLegacy
 		$this->home_itemid = $this->get('HomeItemid');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}

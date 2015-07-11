@@ -20,7 +20,7 @@ class KinoarhivViewProfile extends JViewLegacy
 		if ($user->get('guest')) {
 			$err = JText::_('JGLOBAL_AUTH_ACCESS_DENIED') . '. ' . JText::_('JERROR_ALERTNOAUTHOR');
 			$app->enqueueMessage($err, 'error');
-			GlobalHelper::eventLog($err);
+			KAComponentHelper::eventLog($err);
 
 			return false;
 		}
@@ -57,7 +57,7 @@ class KinoarhivViewProfile extends JViewLegacy
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
@@ -122,7 +122,7 @@ class KinoarhivViewProfile extends JViewLegacy
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
@@ -154,7 +154,7 @@ class KinoarhivViewProfile extends JViewLegacy
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
@@ -193,7 +193,7 @@ class KinoarhivViewProfile extends JViewLegacy
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}

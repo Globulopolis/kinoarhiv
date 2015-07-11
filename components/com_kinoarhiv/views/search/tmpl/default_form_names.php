@@ -68,7 +68,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_name', 'COM_KA_SEARCH_ADV_NAMES_NAME_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_names_name', 'COM_KA_SEARCH_ADV_NAMES_NAME_LABEL'); ?></div>
 						<div class="controls uk-width-1-2"><input name="filters[names][name]" type="text" id="filters_names_name" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.name', ''); ?>" /></div>
 					</div>
 				</div>
@@ -79,7 +79,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo ($this->params->get('search_names_birthday') == 1) ? GlobalHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH') : ''; ?></div>
+						<div class="control-label uk-width-1-4"><?php echo ($this->params->get('search_names_birthday') == 1) ? KAComponentHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH') : ''; ?></div>
 						<div class="controls uk-width-1-1">
 							<?php if ($this->params->get('search_names_birthday') == 1): ?><input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-5" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" /><?php endif; ?><?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?><?php endif; ?>
 						</div>
@@ -92,7 +92,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_mtitle', 'COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_names_mtitle', 'COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL'); ?></div>
 						<div class="controls uk-width-1-2"><input name="filters[names][mtitle]" type="hidden" id="filters_names_mtitle" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.mtitle', 0); ?>" /></div>
 					</div>
 				</div>
@@ -103,7 +103,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo GlobalHelper::setLabel('filters_names_birthplace', 'COM_KA_NAMES_BIRTHPLACE_1'); ?></div>
+						<div class="control-label uk-width-1-4"><?php echo KAComponentHelper::setLabel('filters_names_birthplace', 'COM_KA_NAMES_BIRTHPLACE_1'); ?></div>
 						<div class="controls uk-width-1-2">
 							<input name="filters[names][birthplace]" type="text" id="filters_names_birthplace" class="span10 uk-width-1-1" value="<?php echo $this->activeFilters->def('filters.names.birthplace', ''); ?>" />
 						</div>
@@ -116,7 +116,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo GlobalHelper::setLabel('filters_names_birthcountry', 'COM_KA_COUNTRY'); ?></div>
+						<div class="control-label uk-width-1-4"><?php echo KAComponentHelper::setLabel('filters_names_birthcountry', 'COM_KA_COUNTRY'); ?></div>
 						<div class="controls uk-width-1-2">
 							<select name="filters[names][birthcountry]" id="filters_names_birthcountry" class="span10 uk-width-1-1">
 								<?php foreach ($this->items->names->birthcountry as $country):
@@ -134,7 +134,7 @@ if ($this->params->get('search_names_enable') == 0) {
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo GlobalHelper::setLabel('filters_names_amplua', 'COM_KA_SEARCH_ADV_NAMES_AMPLUA_LABEL'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_names_amplua', 'COM_KA_SEARCH_ADV_NAMES_AMPLUA_LABEL'); ?></div>
 						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->names->amplua, 'filters[names][amplua]', array('class'=>'span10 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.names.amplua', ''), 'filters_names_amplua'); ?></div>
 					</div>
 				</div>

@@ -68,7 +68,7 @@
 				</div>
 				<?php endforeach; ?>
 			<?php else: ?>
-			<div><?php echo GlobalHelper::showMsg(JText::sprintf('COM_KA_NO_AWARDS', JText::_('COM_KA_MOVIE'))); ?></div>
+			<div><?php echo KAComponentHelper::showMsg(JText::sprintf('COM_KA_NO_AWARDS', JText::_('COM_KA_MOVIE'))); ?></div>
 			<?php endif; ?>
 		</div>
 	</article>

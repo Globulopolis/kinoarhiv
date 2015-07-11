@@ -99,7 +99,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = GlobalHelper::renderErrors($model->getErrors(), $document->getType());
+			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html')
 			{
@@ -284,7 +284,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 
 			if ($result === false)
 			{
-				GlobalHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 
 				return false;

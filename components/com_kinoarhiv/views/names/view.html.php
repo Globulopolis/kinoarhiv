@@ -23,7 +23,7 @@ class KinoarhivViewNames extends JViewLegacy
 		$activeFilters = $this->get('FiltersData');
 
 		if (count($errors = $this->get('Errors'))) {
-			GlobalHelper::eventLog(implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}

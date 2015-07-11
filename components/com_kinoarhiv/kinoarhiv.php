@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,12 +7,14 @@
  * @url            http://киноархив.com/
  */
 
+defined('_JEXEC') or die;
 @ini_set('zend.ze1_compatibility_mode', 'Off');
 
 $params = JComponentHelper::getParams('com_kinoarhiv');
-JLoader::register('GlobalHelper', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'global.php');
+JLoader::register('KAComponentHelper', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'component.php');
 
-if ($params->get('offline') == 1) {
+if ($params->get('offline') == 1)
+{
 	$document = JFactory::getDocument();
 	$user = JFactory::getUser();
 
@@ -23,9 +25,12 @@ if ($params->get('offline') == 1) {
 		'params'    => array()
 	);
 
-	if ($user->get('isRoot')) {
-		echo GlobalHelper::showMsg(JText::_('COM_KA_OFFLINE_MESSAGE'), array('icon' => 'alert', 'type' => 'error')) . "<br />";
-	} else {
+	if ($user->get('isRoot'))
+	{
+		echo KAComponentHelper::showMsg(JText::_('COM_KA_OFFLINE_MESSAGE'), array('icon' => 'alert', 'type' => 'error')) . "<br />";
+	}
+	else
+	{
 		$document->parse($doc_params);
 		header('HTTP/1.1 503 Service Unavailable');
 
@@ -34,7 +39,7 @@ if ($params->get('offline') == 1) {
 	}
 }
 
-GlobalHelper::setHeadTags();
+KAComponentHelper::setHeadTags();
 
 $controller = JControllerLegacy::getInstance('Kinoarhiv');
 $controller->execute(JFactory::getApplication()->input->get('task'));

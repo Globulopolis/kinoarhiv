@@ -9,8 +9,23 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Kinoarhiv Component Controller
+ *
+ * @since  3.0
+ */
 class KinoarhivController extends JControllerLegacy
 {
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 *
+	 * @return  JController  This object to support chaining.
+	 *
+	 * @since   3.0
+	 */
 	public function display($cachable = false, $urlparams = false)
 	{
 		$cachable = true;
@@ -27,7 +42,8 @@ class KinoarhivController extends JControllerLegacy
 		}
 
 		$safeurlparams = array('id'      => 'INT', 'cid' => 'ARRAY', 'gid' => 'ARRAY', 'year' => 'INT', 'limit' => 'UINT', 'limitstart' => 'UINT',
-		                       'showall' => 'INT', 'return' => 'BASE64', 'filter' => 'STRING', 'filter_order' => 'CMD', 'filter_order_Dir' => 'CMD', 'filter-search' => 'STRING', 'print' => 'BOOLEAN', 'lang' => 'CMD', 'Itemid' => 'INT');
+								'showall' => 'INT', 'return' => 'BASE64', 'filter' => 'STRING', 'filter_order' => 'CMD', 'filter_order_Dir' => 'CMD',
+								'filter-search' => 'STRING', 'print' => 'BOOLEAN', 'lang' => 'CMD', 'Itemid' => 'INT');
 
 		parent::display($cachable, $safeurlparams);
 

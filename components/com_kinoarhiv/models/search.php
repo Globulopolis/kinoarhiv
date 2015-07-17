@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,12 +7,20 @@
  * @url            http://киноархив.com/
  */
 
+defined('_JEXEC') or die;
+
 use Joomla\Registry\Registry;
 
+/**
+ * Class KinoarhivModelSearch
+ *
+ * @since  3.0
+ */
 class KinoarhivModelSearch extends JModelLegacy
 {
 	/**
 	 * Get initial data for lists in search form
+	 *
 	 * @return   object
 	 */
 	public function getItems()
@@ -23,9 +31,9 @@ class KinoarhivModelSearch extends JModelLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$default_value = array(array('value' => '', 'text' => '-'));
-		$items = (object)array(
-			'movies' => (object)array(),
-			'names'  => (object)array(),
+		$items = (object) array(
+			'movies' => (object) array(),
+			'names'  => (object) array(),
 		);
 
 		// Get years for movies
@@ -38,12 +46,15 @@ class KinoarhivModelSearch extends JModelLegacy
 		$_from_year = $db->loadObjectList();
 		$new_years_arr = array();
 
-		foreach ($_from_year as $key => $years) {
+		foreach ($_from_year as $key => $years)
+		{
 			$y = explode('-', str_replace(' ', '', $years->year));
 
 			$new_years_arr[$key]['value'] = $y[0];
 			$new_years_arr[$key]['text'] = $y[0];
-			if (isset($y[1]) && !empty($y[1])) {
+
+			if (isset($y[1]) && !empty($y[1]))
+			{
 				$new_years_arr[$key]['value'] = $y[1];
 				$new_years_arr[$key]['text'] = $y[1];
 			}
@@ -63,7 +74,7 @@ class KinoarhivModelSearch extends JModelLegacy
 		$db->setQuery($query);
 		$countries = $db->loadObjectList();
 
-		$items->movies->countries = array_merge(array((object)array('id' => '', 'name' => '', 'code' => '')), $countries);
+		$items->movies->countries = array_merge(array((object) array('id' => '', 'name' => '', 'code' => '')), $countries);
 
 		// Get the list of names
 		$query = $db->getQuery(true)
@@ -75,7 +86,7 @@ class KinoarhivModelSearch extends JModelLegacy
 		$db->setQuery($query);
 		$cast = $db->loadObjectList();
 
-		$items->movies->cast = array_merge(array((object)array('id' => '', 'name' => '')), $cast);
+		$items->movies->cast = array_merge(array((object) array('id' => '', 'name' => '')), $cast);
 
 		// Get the list of vendors
 		$query = $db->getQuery(true)
@@ -85,19 +96,24 @@ class KinoarhivModelSearch extends JModelLegacy
 
 		$db->setQuery($query);
 		$_vendors = $db->loadObjectList();
+		$vendors = array();
 
-		foreach ($_vendors as $vendor) {
+		foreach ($_vendors as $vendor)
+		{
 			$text = '';
 
-			if ($vendor->company_name != '') {
+			if ($vendor->company_name != '')
+			{
 				$text .= $vendor->company_name;
 			}
 
-			if ($vendor->company_name != '' && $vendor->company_name_intl != '') {
+			if ($vendor->company_name != '' && $vendor->company_name_intl != '')
+			{
 				$text .= ' / ';
 			}
 
-			if ($vendor->company_name_intl != '') {
+			if ($vendor->company_name_intl != '')
+			{
 				$text .= $vendor->company_name_intl;
 			}
 
@@ -162,7 +178,7 @@ class KinoarhivModelSearch extends JModelLegacy
 		);
 		$items->movies->to_budget = &$items->movies->from_budget;
 
-		$items->movies->tags = (object)array();
+		$items->movies->tags = (object) array();
 
 		$items->names->gender = array(
 			array('value' => '', 'text' => '-'),
@@ -179,7 +195,9 @@ class KinoarhivModelSearch extends JModelLegacy
 			->where("(is_mainpage = 1 OR is_amplua = 1) AND language IN (" . $db->quote($lang->getTag()) . ",'*')");
 
 		$amplua_disabled = $params->get('search_names_amplua_disabled');
-		if (!empty($amplua_disabled)) {
+
+		if (!empty($amplua_disabled))
+		{
 			$query->where('id NOT IN (' . $amplua_disabled . ')');
 		}
 
@@ -197,9 +215,9 @@ class KinoarhivModelSearch extends JModelLegacy
 		return $items;
 	}
 
-
 	/**
 	 * Get the homepage Itemid for movies and names lists
+	 *
 	 * @return   array
 	 */
 	public function getHomeItemid()
@@ -235,6 +253,7 @@ class KinoarhivModelSearch extends JModelLegacy
 
 	/**
 	 * Get the values for inputs
+	 *
 	 * @return   object
 	 */
 	public function getActiveFilters()
@@ -243,9 +262,11 @@ class KinoarhivModelSearch extends JModelLegacy
 		$input = JFactory::getApplication()->input;
 		$items = new Registry;
 
-		if (array_key_exists('movies', $input->get('filters', array(), 'array'))) {
+		if (array_key_exists('movies', $input->get('filters', array(), 'array')))
+		{
 			$filters_arr = $input->get('filters', array(), 'array');
 			$filters = $filters_arr['movies'];
+
 			// Using input->getArray cause an error when subarrays with no data
 			$vars = array(
 				'filters' => array(
@@ -296,7 +317,8 @@ class KinoarhivModelSearch extends JModelLegacy
 			$items->loadArray($vars);
 		}
 
-		if (array_key_exists('names', $input->get('filters', array(), 'array'))) {
+		if (array_key_exists('names', $input->get('filters', array(), 'array')))
+		{
 			$filters_arr = $input->get('filters', array(), 'array');
 			$filters = $filters_arr['names'];
 			$vars = array(

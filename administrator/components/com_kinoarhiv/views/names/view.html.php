@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -6,6 +6,8 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 

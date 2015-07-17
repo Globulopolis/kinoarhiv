@@ -7,6 +7,9 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+use Joomla\String\String;
+
 class KinoarhivModelPremieres extends JModelList
 {
 	protected $context = null;
@@ -123,7 +126,7 @@ class KinoarhivModelPremieres extends JModelList
 			} elseif (stripos($search, 'country:') === 0) {
 				$search = trim(substr($search, 8));
 
-				if (JString::strtolower($search) == JString::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
+				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
 					$query->where('p.country_id = 0');
 				} else {
 					$search = $db->quote('%' . $db->escape($search, true) . '%');

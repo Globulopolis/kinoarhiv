@@ -426,29 +426,29 @@ class KAComponentHelper extends JComponentHelper
 		$lang = JFactory::getLanguage()->getTag();
 		$filename = $file . $lang . '.js';
 		$basepath = JPATH_COMPONENT . DIRECTORY_SEPARATOR;
-		$url = JURI::base();
+		$url = JURI::base() . 'components/com_kinoarhiv/assets/js/i18n/';
 		$path = $basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type;
 
 		if (file_exists($path . DIRECTORY_SEPARATOR . $filename))
 		{
 			if ($jhtml)
 			{
-				JHtml::_('script', $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $filename);
+				JHtml::_('script', $url . $script_type . '/' . $filename);
 			}
 			else
 			{
-				echo '<script src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $filename . '" type="text/javascript"></script>';
+				echo '<script src="' . $url . $script_type . '/' . $filename . '" type="text/javascript"></script>';
 			}
 		}
 		elseif (file_exists($path . DIRECTORY_SEPARATOR . $file . substr($lang, 0, 2) . '.js'))
 		{
 			if ($jhtml)
 			{
-				JHtml::_('script', $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file . substr($lang, 0, 2) . '.js');
+				JHtml::_('script', $url . $script_type . '/' . $file . substr($lang, 0, 2) . '.js');
 			}
 			else
 			{
-				echo '<script src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file . substr($lang, 0, 2) . '.js" type="text/javascript"></script>';
+				echo '<script src="' . $url . $script_type . '/' . $file . substr($lang, 0, 2) . '.js" type="text/javascript"></script>';
 			}
 		}
 	}

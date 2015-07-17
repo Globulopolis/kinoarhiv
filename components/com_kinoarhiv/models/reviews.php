@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,21 +7,49 @@
  * @url            http://киноархив.com/
  */
 
+defined('_JEXEC') or die;
+
 use Joomla\String\String;
 
+/**
+ * Class KinoarhivModelReviews
+ *
+ * @since  3.0
+ */
 class KinoarhivModelReviews extends JModelForm
 {
+	/**
+	 * Method to get the record form.
+	 *
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since   3.0
+	 */
 	public function getForm($data = array(), $loadData = true)
 	{
 		$form = $this->loadForm('com_kinoarhiv.reviews', 'reviews', array('control' => 'form', 'load_data' => $loadData));
 
-		if (empty($form)) {
+		if (empty($form))
+		{
 			return false;
 		}
 
 		return $form;
 	}
 
+
+	/**
+	 * Method to save review into DB
+	 *
+	 * @param   string  $data  A raw string from POST
+	 *
+	 * @return boolean
+	 *
+	 * @throws Exception
+	 */
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
@@ -31,7 +59,8 @@ class KinoarhivModelReviews extends JModelForm
 		$movie_id = $app->input->get('id', 0, 'int');
 		$strip_tag = KAComponentHelper::cleanHTML($data['review'], null);
 
-		if (String::strlen($strip_tag) < $params->get('reviews_length_min') || String::strlen($strip_tag) > $params->get('reviews_length_max')) {
+		if (String::strlen($strip_tag) < $params->get('reviews_length_min') || String::strlen($strip_tag) > $params->get('reviews_length_max'))
+		{
 			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
 
 			return false;
@@ -42,41 +71,51 @@ class KinoarhivModelReviews extends JModelForm
 		$state = $params->get('reviews_premod') == 1 ? 0 : 1;
 		$ip = '';
 
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+		if (!empty($_SERVER['HTTP_CLIENT_IP']))
+		{
 			$ip .= $_SERVER['HTTP_CLIENT_IP'] . ' ';
 		}
-		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+
+		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+		{
 			$ip .= $_SERVER['HTTP_X_FORWARDED_FOR'] . ' ';
 		}
-		if (!empty($_SERVER['REMOTE_ADDR'])) {
+
+		if (!empty($_SERVER['REMOTE_ADDR']))
+		{
 			$ip .= $_SERVER['REMOTE_ADDR'];
 		}
 
 		$query = $db->getQuery(true)
 			->insert($db->quoteName('#__ka_reviews'))
 			->columns($db->quoteName(array('id', 'uid', 'movie_id', 'review', 'created', 'type', 'ip', 'state')))
-			->values("'', '" . (int)$user->get('id') . "', '" . (int)$movie_id . "', '" . $db->escape($cleaned_text) . "', '" . $datetime . "', '" . (int)$data['type'] . "', '" . $ip . "', '" . (int)$state . "'");
+			->values("'', '" . (int) $user->get('id') . "', '" . (int) $movie_id . "', '" . $db->escape($cleaned_text) . "', '" . $datetime . "', '" . (int) $data['type'] . "', '" . $ip . "', '" . (int) $state . "'");
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$db->execute();
 			$app->enqueueMessage($params->get('reviews_premod') == 1 ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED'));
 
 			$insertid = $db->insertid();
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
 		}
 
-		$this->sendEmails(array(
-			'review'   => $cleaned_text,
-			'id'       => (int)$movie_id,
-			'ip'       => $ip,
-			'datetime' => $datetime,
-			'insertid' => $insertid
-		));
+		$this->sendEmails(
+			array(
+				'review'   => $cleaned_text,
+				'id'       => (int) $movie_id,
+				'ip'       => $ip,
+				'datetime' => $datetime,
+				'insertid' => $insertid
+			)
+		);
 
 		return true;
 	}
@@ -84,7 +123,7 @@ class KinoarhivModelReviews extends JModelForm
 	/**
 	 * Send an email to specified users
 	 *
-	 * @param   array $data An array of form array('review'=>$review, 'id'=>$id, 'ip'=>$ip, 'datetime'=>$datetime)
+	 * @param   array  $data  An array of form array('review'=>$review, 'id'=>$id, 'ip'=>$ip, 'datetime'=>$datetime)
 	 *
 	 * @return  boolean
 	 */
@@ -96,12 +135,16 @@ class KinoarhivModelReviews extends JModelForm
 		$config = JFactory::getConfig();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		if ($params->get('reviews_send_email') == 1) {
+		if ($params->get('reviews_send_email') == 1)
+		{
 			$_recipients = $params->get('reviews_emails');
 
-			if (empty($_recipients)) {
+			if (empty($_recipients))
+			{
 				$recipients = $config->get('mailfrom');
-			} else {
+			}
+			else
+			{
 				$_recipients = str_replace(' ', '', $params->get('reviews_emails'));
 				$recipients = explode(',', $_recipients);
 			}
@@ -122,7 +165,8 @@ class KinoarhivModelReviews extends JModelForm
 			);
 		}
 
-		if ($params->get('reviews_send_email_touser') == 1) {
+		if ($params->get('reviews_send_email_touser') == 1)
+		{
 			// Get Itemid for menu
 			$db = $this->getDBO();
 			$query = $db->getQuery(true);
@@ -136,8 +180,8 @@ class KinoarhivModelReviews extends JModelForm
 			$menu_itemid = $db->loadResult();
 
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $app->input->post->get('movie_name', 'N/A', 'string'));
-			$uprofile_url = JURI::base() . 'index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid=' . (int)$menu_itemid;
-			$movie_url = JRoute::_(JURI::getInstance() . '&review=' . (int)$data['insertid']) . '#review-' . (int)$data['insertid'];
+			$uprofile_url = JURI::base() . 'index.php?option=com_kinoarhiv&view=profile&tab=reviews&Itemid=' . (int) $menu_itemid;
+			$movie_url = JRoute::_(JURI::getInstance() . '&review=' . (int) $data['insertid']) . '#review-' . (int) $data['insertid'];
 
 			$body = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', '<a href="' . $movie_url . '" target="_blank">' . $app->input->post->get('movie_name', 'N/A', 'string') . '</a>') . '<br />' . JText::sprintf('COM_KA_REVIEWS_MAIL_INFO', $user->get('name'), $data['datetime'], $data['ip']) . '<p>' . $data['review'] . '</p>' . JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY') . '<a href="' . $uprofile_url . '" target="_blank">' . $uprofile_url . '</a>';
 
@@ -152,6 +196,14 @@ class KinoarhivModelReviews extends JModelForm
 		}
 	}
 
+
+	/**
+	 * Method to delete review(s)
+	 *
+	 * @return boolean
+	 *
+	 * @throws Exception
+	 */
 	public function delete()
 	{
 		$app = JFactory::getApplication();
@@ -160,12 +212,15 @@ class KinoarhivModelReviews extends JModelForm
 		$review_id = $app->input->get('review_id', null, 'int');
 		$review_ids = $app->input->get('review_ids', array(), 'array');
 
-		if (!empty($review_ids)) {
+		if (!empty($review_ids))
+		{
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		}
 
-		if (!empty($review_ids)) {
-			if (empty($review_ids)) {
+		if (!empty($review_ids))
+		{
+			if (empty($review_ids))
+			{
 				return false;
 			}
 
@@ -174,33 +229,43 @@ class KinoarhivModelReviews extends JModelForm
 			$db->lockTable('#__ka_reviews');
 			$db->transactionStart();
 
-			foreach ($review_ids as $id) {
+			foreach ($review_ids as $id)
+			{
 				$query = $db->getQuery(true);
 
 				$query->delete($db->quoteName('#__ka_reviews'));
 
-				if (!$user->get('isRoot')) {
+				if (!$user->get('isRoot'))
+				{
 					$query->where('uid = ' . $user->get('id'));
 				}
 
-				$query->where('id = ' . (int)$id);
+				$query->where('id = ' . (int) $id);
 
 				$db->setQuery($query . ';');
 
-				if ($db->execute() === false) {
+				if ($db->execute() === false)
+				{
 					$query_result = false;
 					break;
 				}
 			}
 
-			if ($query_result === true) {
+			if ($query_result === true)
+			{
 				$db->transactionCommit();
-				if (count($review_ids) > 1) {
+
+				if (count($review_ids) > 1)
+				{
 					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED_MANY'));
-				} else {
+				}
+				else
+				{
 					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
 				}
-			} else {
+			}
+			else
+			{
 				$db->transactionRollback();
 				$this->setError(JText::_('JERROR_ERROR'));
 			}
@@ -208,11 +273,15 @@ class KinoarhivModelReviews extends JModelForm
 			$db->unlockTables();
 			$db->setDebug(false);
 
-			if ($query_result === false) {
+			if ($query_result === false)
+			{
 				return false;
 			}
-		} else {
-			if (empty($review_id)) {
+		}
+		else
+		{
+			if (empty($review_id))
+			{
 				return false;
 			}
 
@@ -220,18 +289,22 @@ class KinoarhivModelReviews extends JModelForm
 
 			$query->delete($db->quoteName('#__ka_reviews'));
 
-			if (!$user->get('isRoot')) {
+			if (!$user->get('isRoot'))
+			{
 				$query->where('uid = ' . $user->get('id'));
 			}
 
-			$query->where('id = ' . (int)$review_id);
+			$query->where('id = ' . (int) $review_id);
 
 			$db->setQuery($query);
 
-			try {
+			try
+			{
 				$db->execute();
 				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				$this->setError(JText::_('JERROR_ERROR'));
 				KAComponentHelper::eventLog(JText::_('JERROR_ERROR'));
 
@@ -245,11 +318,12 @@ class KinoarhivModelReviews extends JModelForm
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm  $form  The form to validate against.
-	 * @param   array  $data  The data to validate.
-	 * @param   string $group The name of the field group to validate.
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
 	 * @since   12.2
@@ -261,16 +335,19 @@ class KinoarhivModelReviews extends JModelForm
 		$return = $form->validate($data, $group);
 
 		// Check for an error.
-		if ($return instanceof Exception) {
+		if ($return instanceof Exception)
+		{
 			$this->setError($return->getMessage());
 
 			return false;
 		}
 
 		// Check the validation results.
-		if ($return === false) {
+		if ($return === false)
+		{
 			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message) {
+			foreach ($form->getErrors() as $message)
+			{
 				$this->setError($message);
 			}
 

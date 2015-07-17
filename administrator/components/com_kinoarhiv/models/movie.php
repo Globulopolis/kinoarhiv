@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die;
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,12 +7,24 @@
  * @url            http://киноархив.com/
  */
 
+defined('_JEXEC') or die;
+
 use Joomla\String\String;
 
 JLoader::register('DatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
 class KinoarhivModelMovie extends JModelForm
 {
+	/**
+	 * Method for getting the form from the model.
+	 *
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since   3.0
+	 */
 	public function getForm($data = array(), $loadData = true)
 	{
 		$form = $this->loadForm('com_kinoarhiv.movie', 'movie', array('control' => 'form', 'load_data' => $loadData));
@@ -36,6 +48,13 @@ class KinoarhivModelMovie extends JModelForm
 		return $form;
 	}
 
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  array    The default data is an empty array.
+	 *
+	 * @since   3.0
+	 */
 	protected function loadFormData()
 	{
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());

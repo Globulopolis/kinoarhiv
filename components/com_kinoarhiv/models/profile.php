@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,8 +6,23 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+/**
+ * Class KinoarhivModelProfile
+ *
+ * @since  3.0
+ */
 class KinoarhivModelProfile extends JModelList
 {
+	/**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @return  JDatabaseQuery
+	 *
+	 * @since   3.0
+	 */
 	protected function getListQuery()
 	{
 		$db = $this->getDBO();
@@ -17,11 +31,13 @@ class KinoarhivModelProfile extends JModelList
 		$app = JFactory::getApplication();
 		$page = $app->input->get('page', '', 'cmd');
 
-		if ($page == 'favorite') {
+		if ($page == 'favorite')
+		{
 			$tab = $app->input->get('tab', '', 'cmd');
 			$query = $db->getQuery(true);
 
-			if ($tab == '' || $tab == 'movies') {
+			if ($tab == '' || $tab == 'movies')
+			{
 				$query->select($db->quoteName(array('id', 'title', 'alias', 'year')))
 					->from($db->quoteName('#__ka_movies'));
 
@@ -32,7 +48,9 @@ class KinoarhivModelProfile extends JModelList
 
 				$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
 					->order($db->quoteName('created') . ' DESC');
-			} elseif ($tab == 'names') {
+			}
+			elseif ($tab == 'names')
+			{
 				$query->select($db->quoteName(array('id', 'name', 'latin_name', 'alias', 'date_of_birth')))
 					->from($db->quoteName('#__ka_names'));
 
@@ -44,7 +62,9 @@ class KinoarhivModelProfile extends JModelList
 				$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
 					->order($db->quoteName('ordering') . ' DESC');
 			}
-		} elseif ($page == 'watched') {
+		}
+		elseif ($page == 'watched')
+		{
 			$query = $db->getQuery(true);
 
 			$query->select($db->quoteName(array('id', 'title', 'alias', 'year')))
@@ -57,7 +77,9 @@ class KinoarhivModelProfile extends JModelList
 
 			$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
 				->order($db->quoteName('created') . ' DESC');
-		} elseif ($page == 'votes') {
+		}
+		elseif ($page == 'votes')
+		{
 			$query = $db->getQuery(true);
 
 			$sel_subquery = $db->getQuery(true)
@@ -71,7 +93,7 @@ class KinoarhivModelProfile extends JModelList
 
 			// Join over user votes
 			$query->select('v.vote AS my_vote, v._datetime')
-				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v') . ' ON v.uid = ' . (int)$user->get('id') . ' AND v.movie_id = m.id');
+				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v') . ' ON v.uid = ' . (int) $user->get('id') . ' AND v.movie_id = m.id');
 
 			$subquery = $db->getQuery(true)
 				->select('movie_id')
@@ -80,32 +102,44 @@ class KinoarhivModelProfile extends JModelList
 
 			$query->where('state = 1 AND id IN (' . $subquery . ') AND `access` IN (' . $groups . ')')
 				->order($db->quoteName('_datetime') . ' DESC');
-		} elseif ($page == 'reviews') {
+		}
+		elseif ($page == 'reviews')
+		{
 			$query = $db->getQuery(true);
 
 			$query->select($db->quoteName(array('r.id', 'r.movie_id', 'r.review', 'r.created', 'r.type', 'r.ip', 'r.state', 'm.title', 'm.year')))
 				->from($db->quoteName('#__ka_reviews', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = r.movie_id')
-				->where('r.uid = ' . (int)$user->get('id') . ' AND m.state = 1')
+				->where('r.uid = ' . (int) $user->get('id') . ' AND m.state = 1')
 				->order($db->quoteName('created') . ' DESC');
-		} else {
+		}
+		else
+		{
 			$query = null;
 		}
 
 		return $query;
 	}
 
+	/**
+	 * Method to get a KAPagination object for the data set.
+	 *
+	 * @return  KAPagination  A KAPagination object for the data set.
+	 *
+	 * @since   3.0
+	 */
 	public function getPagination()
 	{
 		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
 
 		$store = $this->getStoreId('getPagination');
 
-		if (isset($this->cache[$store])) {
+		if (isset($this->cache[$store]))
+		{
 			return $this->cache[$store];
 		}
 
-		$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
+		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
 		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
 
 		$this->cache[$store] = $page;

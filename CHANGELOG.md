@@ -1,12 +1,15 @@
 ## HEAD (Unreleased)
+* Change JString into String in classes(templates still using JString).
+* Removed unnecessary overrides in KAPagination class.
+* Fixed wrong redirects from filters in Releases, Premieres.
 * Fixed bug with tags in advanced search.
 * Fixed bugs in global model.
 * Fixed problem with date/time picker, when user cannot change value because input was overlapped in some situations.
-* Change JRegistry into Registry in some classes.
+* Change JRegistry into Registry in all classes.
 * Remove unused variables.
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
-* Update VideoJS to 4.12.7
+* Update VideoJS to 4.12.11
 * Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".
 * Added posibility to edit a music genres.

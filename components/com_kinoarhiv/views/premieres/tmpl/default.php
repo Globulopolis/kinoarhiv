@@ -103,6 +103,8 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 			<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
 				<input type="hidden" name="option" value="com_kinoarhiv" />
 				<input type="hidden" name="view" value="premieres" />
+				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
+				<input type="hidden" name="lang" value="<?php echo JString::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>" />
 
 				<?php if ($this->params->get('filter_premieres_country') == 1): ?>
 				<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class'=>'inputbox'), 'code', 'name', $this->sel_country); ?>
@@ -120,7 +122,6 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 				<?php echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['vendors'], 'vendor', array('class'=>'inputbox'), 'value', 'name', $this->sel_vendor); ?>
 				<?php endif; ?>
 
-				<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>" />
 				<div class="btn-group uk-button-group">
 					<button type="submit" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-search"></span></button>
 					<button type="reset" class="btn btn-default uk-button uk-button-small"><span class="ui-icon ui-icon-close"></span></button>

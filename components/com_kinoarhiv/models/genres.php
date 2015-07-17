@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,8 +6,23 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+/**
+ * Class KinoarhivModelGenres
+ *
+ * @since  3.0
+ */
 class KinoarhivModelGenres extends JModelList
 {
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
 	protected function getListQuery()
 	{
 		$db = $this->getDBO();

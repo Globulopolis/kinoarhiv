@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,22 +6,58 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+use Joomla\String\String;
+
+/**
+ * Premieres list class
+ *
+ * @since  3.0
+ */
 class KinoarhivModelPremieres extends JModelList
 {
 	protected $context = null;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JModelLegacy
+	 * @since   3.0
+	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		if (empty($this->context)) {
+		if (empty($this->context))
+		{
 			$this->context = $this->context = strtolower('com_kinoarhiv.premieres');
 		}
 	}
 
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * This method should only be called once per instantiation and is designed
+	 * to be called on the first call to the getState() method unless the model
+	 * configuration flag to ignore the request is set.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   An optional ordering field.
+	 * @param   string  $direction  An optional direction (asc|desc).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		if ($this->context) {
+		if ($this->context)
+		{
 			$app = JFactory::getApplication();
 			$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -33,12 +68,27 @@ class KinoarhivModelPremieres extends JModelList
 			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
 			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
 			$this->setState('list.start', $limitstart);
-		} else {
+		}
+		else
+		{
 			$this->setState('list.start', 0);
 			$this->state->set('list.limit', 0);
 		}
 	}
 
+	/**
+	 * Method to get a store id based on the model configuration state.
+	 *
+	 * This is necessary because the model is used by the component and
+	 * different modules that might need different sets of data or different
+	 * ordering requirements.
+	 *
+	 * @param   string  $id  An identifier string to generate the store id.
+	 *
+	 * @return  string  A store id.
+	 *
+	 * @since   3.0
+	 */
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
@@ -47,6 +97,13 @@ class KinoarhivModelPremieres extends JModelList
 		return parent::getStoreId($id);
 	}
 
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
 	protected function getListQuery()
 	{
 		$db = $this->getDBO();
@@ -55,71 +112,132 @@ class KinoarhivModelPremieres extends JModelList
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 - world premiere
+
+		// It's a string because country_id == 0 - world premiere
+		$country = $app->input->get('country', '', 'word');
 		$year = $app->input->get('year', 0, 'int');
 		$vendor = $app->input->get('vendor', 0, 'int');
 		$month = $app->input->get('month', '', 'string');
+		$null_date = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);
 
-		$query->select("`m`.`id`, `m`.`parent_id`, `m`.`title`, `m`.`alias`, `m`.`introtext` AS `text`, `m`.`plot`, `m`.`rate_loc`, `m`.`rate_sum_loc`, `m`.`imdb_votesum`, `m`.`imdb_votes`, `m`.`imdb_id`, `m`.`kp_votesum`, `m`.`kp_votes`, `m`.`kp_id`, `m`.`rate_fc`, `m`.`rottentm_id`, `m`.`metacritics`, `m`.`metacritics_id`, `m`.`rate_custom`, `m`.`year`, DATE_FORMAT(`m`.`created`, '%Y-%m-%d') AS `created`, DATE_FORMAT(`m`.`modified`, '%Y-%m-%d') AS `modified`, `m`.`created_by`, `m`.`attribs`, `m`.`state`, `g`.`filename`, `g`.`dimension`")
-			->from($db->quoteName('#__ka_movies') . ' AS `m`')
-			->leftJoin($db->quoteName('#__ka_movies_gallery') . ' AS `g` ON `g`.`movie_id` = `m`.`id` AND `g`.`type` = 2 AND `g`.`poster_frontpage` = 1 AND `g`.`state` = 1');
+		$query->select(
+			$this->getState(
+				'list.select',
+				'm.id, m.parent_id, m.title, m.alias, ' . $db->quoteName('m.introtext', 'text') . ', m.plot, ' .
+				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, ' .
+				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, ' .
+				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
+				'CASE WHEN m.modified = ' . $null_date . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
+				'CASE WHEN m.publish_up = ' . $null_date . ' THEN m.created ELSE m.publish_up END AS publish_up, ' .
+				'm.publish_down, m.attribs, m.state'
+			)
+		);
+		$query->from($db->quoteName('#__ka_movies', 'm'));
 
-		if ($country != '') {
-			$query->select(' `p`.`premiere_date`, `p`.`vendor_id`')
-				->leftJoin($db->quoteName('#__ka_premieres') . ' AS `p` ON `p`.`movie_id` = `m`.`id` AND `p`.`country_id` = (SELECT `id` FROM ' . $db->quoteName('#__ka_countries') . ' WHERE `code` = "' . $db->escape($country) . '" AND `language` IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . '))');
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1');
 
-			$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
-				->leftJoin($db->quoteName('#__ka_vendors') . ' AS `v` ON `v`.`id` = `p`.`vendor_id` AND `v`.`state` = 1');
-		} else {
-			$query->select(' `p`.`premiere_date`, `p`.`vendor_id`')
-				->leftJoin($db->quoteName('#__ka_premieres') . ' AS `p` ON `p`.`movie_id` = `m`.`id` AND `p`.`country_id` != 0');
+		if ($country != '')
+		{
+			$subquery = $db->getQuery(true)
+				->select('id')
+				->from($db->quoteName('#__ka_countries'))
+				->where("code = '" . $db->escape($country) . "' AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 
-			$query->select(' `v`.`company_name`, `v`.`company_name_intl`, `v`.`company_name_alias`')
-				->leftJoin($db->quoteName('#__ka_vendors') . ' AS `v` ON `v`.`id` = `p`.`vendor_id` AND `v`.`state` = 1 AND `v`.`language` IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+			$query->select('p.premiere_date, p.vendor_id')
+				->join('LEFT', $db->quoteName('#__ka_premieres', 'p') . ' ON p.movie_id = m.id AND p.country_id = (' . $subquery . ')');
+
+			$query->select('v.company_name, v.company_name_intl, v.company_name_alias')
+				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = p.vendor_id AND v.state = 1');
+		}
+		else
+		{
+			$query->select('p.premiere_date, p.vendor_id')
+				->join('LEFT', $db->quoteName('#__ka_premieres', 'p') . ' ON p.movie_id = m.id AND p.country_id != 0');
+
+			$query->select('v.company_name, v.company_name_intl, v.company_name_alias')
+				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = p.vendor_id AND v.state = 1 AND v.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 		}
 
-		if (!$user->get('guest')) {
-			$query->select(' `u`.`favorite`')
-				->leftJoin($db->quoteName('#__ka_user_marked_movies') . ' AS `u` ON `u`.`uid` = ' . $user->get('id') . ' AND `u`.`movie_id` = `m`.`id`');
+		if (!$user->get('guest'))
+		{
+			$query->select('u.favorite')
+				->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
 		}
 
-		$where = '`m`.`state` = 1 AND `m`.`language` IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND `parent_id` = 0 AND `m`.`access` IN (' . $groups . ')';
+		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND parent_id = 0 AND m.access IN (' . $groups . ')');
 
-		if ($params->get('use_alphabet') == 1) {
+		if ($params->get('use_alphabet') == 1)
+		{
 			$letter = $app->input->get('letter', '', 'string');
 
-			if ($letter != '') {
-				if ($letter == '0-1') {
-					$where .= ' AND (`m`.`title` LIKE "0%" AND `m`.`title` LIKE "1%" AND `m`.`title` LIKE "2%" AND `m`.`title` LIKE "3%" AND `m`.`title` LIKE "4%" AND `m`.`title` LIKE "5%" AND `m`.`title` LIKE "6%" AND `m`.`title` LIKE "7%" AND `m`.`title` LIKE "8%" AND `m`.`title` LIKE "9%")';
-				} else {
-					if (preg_match('#\p{L}#u', $letter, $matches)) { // only any kind of letter from any language.
-						$where .= ' AND `m`.`title` LIKE "' . $db->escape(JString::strtoupper($matches[0])) . '%"';
+			if ($letter !== '')
+			{
+				if ($letter == '0-1')
+				{
+					$range = range(0, 9);
+					$query->where('(m.title LIKE "' . implode('%" OR m.title LIKE "', $range) . '%")');
+				}
+				else
+				{
+					if (preg_match('#\p{L}#u', $letter, $matches))
+					{
+						// Only any kind of letter from any language.
+						$query->where('m.title LIKE "' . $db->escape(String::strtoupper($matches[0])) . '%"');
 					}
 				}
 			}
 		}
 
-		if ($params->get('filter_premieres_country') == 1 && $country != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM ' . $db->quoteName('#__ka_premieres') . ' WHERE `country_id` = (SELECT `id` FROM ' . $db->quoteName('#__ka_countries') . ' WHERE `code` = "' . $db->escape($country) . '" AND `language` IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')))';
+		if ($params->get('filter_premieres_country') == 1 && $country != '')
+		{
+			$subquery0 = $db->getQuery(true)
+				->select('id')
+				->from($db->quoteName('#__ka_countries'))
+				->where('code = "' . $db->escape($country) . '" AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+			$subquery1 = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_premieres'))
+				->where('country_id = (' . $subquery0 . ')');
+
+			$query->where('m.id IN (' . $subquery1 . ')');
 		}
 
-		if ($params->get('filter_premieres_year') == 1 && !empty($year)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM ' . $db->quoteName('#__ka_premieres') . ' WHERE `premiere_date` LIKE "%' . $year . '%")';
+		if ($params->get('filter_premieres_year') == 1 && !empty($year))
+		{
+			$subquery = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_premieres'))
+				->where('premiere_date LIKE "%' . $year . '%"');
+
+			$query->where('m.id IN (' . $subquery . ')');
 		}
 
-		if ($params->get('filter_premieres_month') == 1 && $month != '') {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM ' . $db->quoteName('#__ka_premieres') . ' WHERE `premiere_date` LIKE "%' . $month . '%")';
+		if ($params->get('filter_premieres_month') == 1 && $month != '')
+		{
+			$subquery = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_premieres'))
+				->where('premiere_date LIKE "%' . $month . '%"');
+
+			$query->where('m.id IN (' . $subquery . ')');
 		}
 
-		if ($params->get('filter_release_vendor') == 1 && !empty($vendor)) {
-			$where .= ' AND `m`.`id` IN (SELECT `movie_id` FROM ' . $db->quoteName('#__ka_premieres') . ' WHERE `vendor_id` = "' . (int)$vendor . '")';
+		if ($params->get('filter_release_vendor') == 1 && !empty($vendor))
+		{
+			$subquery = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_premieres'))
+				->where('vendor_id = "' . (int) $vendor . '"');
+
+			$query->where('m.id IN (' . $subquery . ')');
 		}
 
-		$where .= " AND `p`.`premiere_date` != '" . $db->nullDate() . "'";
-
-		$query->where($where);
+		$query->where('p.premiere_date != "' . $null_date . '"');
 		$query->group($db->quoteName('m.id'));
 
 		$orderCol = $this->state->get('list.ordering', $db->quoteName('p.premiere_date'));
@@ -129,16 +247,23 @@ class KinoarhivModelPremieres extends JModelList
 		return $query;
 	}
 
+	/**
+	 * Premieres filter
+	 *
+	 * @return  array
+	 *
+	 * @since   3.0
+	 */
 	public function getSelectList()
 	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$country = $app->input->get('country', '', 'word'); // It's a string because country_id == 0 it'a world premiere
+
+		// It's a string because country_id == 0 it'a world premiere
+		$country = $app->input->get('country', '', 'word');
 		$year = $app->input->get('year', 0, 'int');
-		$month = $app->input->get('month', '', 'string');
-		$vendor = $app->input->get('vendor', 0, 'int');
 		$result = array(
 			'countries' => array(
 				array('name' => JText::_('JALL'), 'code' => '')
@@ -155,92 +280,149 @@ class KinoarhivModelPremieres extends JModelList
 		);
 
 		// Countries list
-		if ($params->get('filter_premieres_country') == 1) {
-			$db->setQuery("SELECT `name`, `code`"
-				. "\n FROM " . $db->quoteName('#__ka_countries')
-				. "\n WHERE `id` IN (SELECT `country_id` FROM " . $db->quoteName('#__ka_premieres') . " WHERE `country_id` != 0) AND `state` = 1"
-				. "\n GROUP BY `code`");
-			try {
+		if ($params->get('filter_premieres_country') == 1)
+		{
+			$subquery = $db->getQuery(true)
+				->select('country_id')
+				->from($db->quoteName('#__ka_premieres'))
+				->where('country_id != 0');
+
+			$query = $db->getQuery(true)
+				->select('name, code')
+				->from($db->quoteName('#__ka_countries'))
+				->where('id IN (' . $subquery . ') AND state = 1')
+				->group('code');
+
+			$db->setQuery($query);
+
+			try
+			{
 				$countries = $db->loadAssocList();
 
-				if (count($countries) > 0) {
+				if (count($countries) > 0)
+				{
 					$result['countries'] = array_merge($result['countries'], $countries);
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
 		// Years list
-		if ($params->get('filter_premieres_year') == 1) {
-			if ($country !== '') {
-				$year_where = " WHERE `country_id` = (SELECT `id` FROM " . $db->quoteName('#__ka_countries') . " WHERE `code` = '" . $db->escape($country) . "' AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . "))";
-			} else {
-				$year_where = "";
+		if ($params->get('filter_premieres_year') == 1)
+		{
+			$query = $db->getQuery(true)
+				->select("DATE_FORMAT(premiere_date, '%Y') AS value, DATE_FORMAT(premiere_date, '%Y') AS name")
+				->from($db->quoteName('#__ka_premieres'));
+
+			if ($country !== '')
+			{
+				$subquery = $db->getQuery(true)
+					->select('id')
+					->from($db->quoteName('#__ka_countries'))
+					->where("code = '" . $db->escape($country) . "' AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+
+				$query->where('country_id = (' . $subquery . ')');
 			}
 
-			$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y') AS `value`, DATE_FORMAT(`premiere_date`, '%Y') AS `name`"
-				. "\n FROM " . $db->quoteName('#__ka_premieres')
-				. $year_where
-				. "\n GROUP BY `value`");
-			try {
+			$query->group('value');
+			$db->setQuery($query);
+
+			try
+			{
 				$years = $db->loadAssocList();
 
-				if (count($years) > 0) {
+				if (count($years) > 0)
+				{
 					$result['years'] = array_merge($result['years'], $years);
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
 		// Months list
-		if ($params->get('filter_premieres_month') == 1) {
-			if ($country != '') {
-				$month_where = " WHERE `country_id` = (SELECT `id` FROM " . $db->quoteName('#__ka_countries') . " WHERE `code` = '" . $db->escape($country) . "' AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . "))";
+		if ($params->get('filter_premieres_month') == 1)
+		{
+			$query = $db->getQuery(true)
+				->select("DATE_FORMAT(premiere_date, '%Y-%m') AS value, premiere_date")
+				->from($db->quoteName('#__ka_premieres'));
 
-				if (!empty($year)) {
-					$month_where .= " AND `premiere_date` LIKE '%" . $year . "%'";
+			if ($country !== '')
+			{
+				$subquery = $db->getQuery(true)
+					->select('id')
+					->from($db->quoteName('#__ka_countries'))
+					->where("code = '" . $db->escape($country) . "' AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+
+				$query->where('country_id = (' . $subquery . ')');
+
+				if (!empty($year))
+				{
+					$query->where("premiere_date LIKE '%" . $year . "%'");
 				}
-			} else {
-				if (!empty($year)) {
-					$month_where = " WHERE `premiere_date` LIKE '%" . $year . "%'";
-				} else {
-					$month_where = "";
+			}
+			else
+			{
+				if (!empty($year))
+				{
+					$query->where("premiere_date LIKE '%" . $year . "%'");
 				}
 			}
 
-			$db->setQuery("SELECT DATE_FORMAT(`premiere_date`, '%Y-%m') AS `value`, `premiere_date`"
-				. "\n FROM " . $db->quoteName('#__ka_premieres')
-				. $month_where
-				. "\n GROUP BY `value`");
-			try {
+			$query->group('value');
+			$db->setQuery($query);
+
+			try
+			{
 				$months = $db->loadAssocList();
 
-				if (count($months) > 0) {
-					foreach ($months as $key => $month) {
+				if (count($months) > 0)
+				{
+					foreach ($months as $key => $month)
+					{
 						$months[$key]['name'] = JHTML::_('date', strtotime($month['premiere_date']), 'F Y');
 					}
 
 					$result['months'] = array_merge($result['months'], $months);
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
 		// Distributors list
-		if ($params->get('filter_release_vendor') == 1) {
-			$db->setQuery("SELECT `id` AS `value`, `company_name` AS `name`, `company_name_intl`"
-				. "\n FROM " . $db->quoteName('#__ka_vendors')
-				. "\n WHERE `id` IN (SELECT `vendor_id` FROM " . $db->quoteName('#__ka_premieres') . " WHERE `vendor_id` != 0 AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")) AND `state` = 1");
-			try {
+		if ($params->get('filter_release_vendor') == 1)
+		{
+			$subquery = $db->getQuery(true)
+				->select('vendor_id')
+				->from($db->quoteName('#__ka_premieres'))
+				->where("vendor_id != 0 AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+
+			$query = $db->getQuery(true)
+				->select('id AS value, company_name AS name, company_name_intl')
+				->from($db->quoteName('#__ka_vendors'))
+				->where('id IN (' . $subquery . ') AND state = 1');
+
+			$db->setQuery($query);
+
+			try
+			{
 				$vendors = $db->loadAssocList();
 
-				if (count($vendors) > 0) {
+				if (count($vendors) > 0)
+				{
 					$result['vendors'] = array_merge($result['vendors'], $vendors);
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
@@ -248,17 +430,25 @@ class KinoarhivModelPremieres extends JModelList
 		return $result;
 	}
 
+	/**
+	 * Method to get a KAPagination object for the data set.
+	 *
+	 * @return  KAPagination  A KAPagination object for the data set.
+	 *
+	 * @since   3.0
+	 */
 	public function getPagination()
 	{
 		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
 
 		$store = $this->getStoreId('getPagination');
 
-		if (isset($this->cache[$store])) {
+		if (isset($this->cache[$store]))
+		{
 			return $this->cache[$store];
 		}
 
-		$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
+		$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
 		$page = new KAPagination($this->getTotal(), $this->getStart(), $limit);
 
 		$this->cache[$store] = $page;

@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
@@ -7,6 +6,11 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+use Joomla\String\String;
+
 class KinoarhivModelReleases extends JModelList
 {
 	protected $context = null;
@@ -134,7 +138,7 @@ class KinoarhivModelReleases extends JModelList
 			} elseif (stripos($search, 'country:') === 0) {
 				$search = trim(substr($search, 8));
 
-				if (JString::strtolower($search) == JString::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
+				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
 					$query->where('r.country_id = 0');
 				} else {
 					$search = $db->quote('%' . $db->escape($search, true) . '%');

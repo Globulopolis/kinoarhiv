@@ -1,5 +1,4 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
@@ -7,8 +6,25 @@
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
+/**
+ * Global model class to provide ajax data from some tables
+ *
+ * @since  3.0
+ */
 class KinoarhivModelGlobal extends JModelLegacy
 {
+	/**
+	 * Method to get ajax data from some tables
+	 *
+	 * @param   string  $element  Data type. Can be 'countries', 'genres', 'movies', 'awards', 'names', 'tags', 'careers', 'vendors'
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception
+	 */
 	public function getAjaxData($element = '')
 	{
 		$app = JFactory::getApplication();
@@ -21,124 +37,200 @@ class KinoarhivModelGlobal extends JModelLegacy
 		$user = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 
-		if ($element == 'countries') {
+		if ($element == 'countries')
+		{
 			// Do not remove `code` field from the query. It's necessary for flagging row in select
-			if (empty($all)) {
-				if (empty($id)) {
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					if (empty($term))
+					{
 						return array();
+					}
+
 					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `name` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 				$result = $db->loadObjectList();
 			}
-		} elseif ($element == 'genres') {
-			if (empty($all)) {
-				if (empty($id)) {
+		}
+		elseif ($element == 'genres')
+		{
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					if (empty($term))
+					{
 						return array();
+					}
+
 					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `name` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 				$result = $db->loadObjectList();
 			}
-		} elseif ($element == 'movies') {
-			if (empty($all)) {
-				if (empty($id)) {
+		}
+		elseif ($element == 'movies')
+		{
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `title` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 				$result = $db->loadObjectList();
 			}
-		} elseif ($element == 'awards') {
+		}
+		elseif ($element == 'awards')
+		{
 			$type = $app->input->get('type', -1, 'int');
 
-			if ($type == 0) {
+			if ($type == 0)
+			{
 				$result = $this->getAjaxData('movies');
-			} elseif ($type == 1) {
+			}
+			elseif ($type == 1)
+			{
 				$result = $this->getAjaxData('names');
-			} else {
-				if (empty($all)) {
-					if (empty($id)) {
+			}
+			else
+			{
+				if (empty($all))
+				{
+					if (empty($id))
+					{
 						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `title` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 						$result = $db->loadObjectList();
-					} else {
-						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+					}
+					else
+					{
+						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 						$result = $db->loadObject();
 					}
-				} else {
+				}
+				else
+				{
 					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 					$result = $db->loadObjectList();
 				}
 			}
-		} elseif ($element == 'names') {
-			if (empty($all)) {
-				if (empty($id)) {
+		}
+		elseif ($element == 'names')
+		{
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE (`name` LIKE '" . $db->escape($term) . "%' OR `latin_name` LIKE '" . $db->escape($term) . "%')" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
 				$result = $db->loadObjectList();
 			}
-		} elseif ($element == 'tags') {
-			if (empty($all)) {
-				if (empty($id)) {
+		}
+		elseif ($element == 'tags')
+		{
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `title` LIKE '" . $db->escape($term) . "%' AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
 				$result = $db->loadObjectList();
 			}
-		} elseif ($element == 'career' || $element == 'careers') {
-			if (empty($all)) {
-				if (empty($id)) {
+		}
+		elseif ($element == 'career' || $element == 'careers')
+		{
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `title` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 				$result = $db->loadObjectList();
 			}
-		} elseif ($element == 'vendors') {
-			if (empty($all)) {
-				if (empty($id)) {
+		}
+		elseif ($element == 'vendors')
+		{
+			if (empty($all))
+			{
+				if (empty($id))
+				{
 					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `company_name` LIKE '" . $db->escape($term) . "%' OR `company_name_intl` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 					$result = $db->loadObjectList();
-				} else {
-					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `id` = " . (int)$id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 					$result = $db->loadObject();
 				}
-			} else {
+			}
+			else
+			{
 				$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
 				$result = $db->loadObjectList();
 			}
-		} else {
+		}
+		else
+		{
 			$result = array();
 		}
 

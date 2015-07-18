@@ -43,7 +43,7 @@
 </script>
 <div class="content name">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo $this->loadTemplate('alphabet');
+		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article">

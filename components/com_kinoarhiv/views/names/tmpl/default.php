@@ -86,7 +86,7 @@
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo $this->loadTemplate('alphabet');
+		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>

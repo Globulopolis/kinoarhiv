@@ -35,7 +35,7 @@ if (JString::substr($this->params->get('media_rating_image_root_www'), 0, 1) == 
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo $this->loadTemplate('alphabet');
+		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article item">

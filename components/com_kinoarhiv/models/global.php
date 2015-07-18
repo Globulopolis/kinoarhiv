@@ -36,6 +36,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 		$lang = JFactory::getLanguage();
 		$user = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$language_in = "language IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")";
 
 		if ($element == 'countries')
 		{
@@ -49,18 +50,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 						return array();
 					}
 
-					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `name` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+					$query = $db->getQuery(true)
+						->select('id, name AS title, code')
+						->from($db->quoteName('#__ka_countries'))
+						->where('name LIKE "' . $db->escape($term) . '%" AND ' . $language_in . ' AND state = 1');
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+					$query = $db->getQuery(true)
+						->select('id, name AS title, code')
+						->from($db->quoteName('#__ka_countries'))
+						->where('id = ' . (int) $id . ' AND ' . $language_in . ' AND state = 1');
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+				$query = $db->getQuery(true)
+					->select('id, name AS title, code')
+					->from($db->quoteName('#__ka_countries'))
+					->where($language_in . ' AND state = 1');
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}
@@ -75,18 +91,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 						return array();
 					}
 
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `name` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, name AS title')
+						->from($db->quoteName('#__ka_genres'))
+						->where("name LIKE '" . $db->escape($term) . "%'" . " AND " . $language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, name AS title')
+						->from($db->quoteName('#__ka_genres'))
+						->where("id = " . (int) $id . " AND " . $language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName('#__ka_genres') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+				$query = $db->getQuery(true)
+					->select('id, name AS title')
+					->from($db->quoteName('#__ka_genres'))
+					->where("language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND state = 1 AND access IN (" . $groups . ")");
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}
@@ -96,18 +127,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 			{
 				if (empty($id))
 				{
-					$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `title` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, title, year')
+						->from($db->quoteName('#__ka_movies'))
+						->where("title LIKE '" . $db->escape($term) . "%'" . " AND " . $language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, title, year')
+						->from($db->quoteName('#__ka_movies'))
+						->where("id = " . (int) $id . " AND " . $language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `title`, `year` FROM " . $db->quoteName('#__ka_movies') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+				$query = $db->getQuery(true)
+					->select('id, title, year')
+					->from($db->quoteName('#__ka_movies'))
+					->where($language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}
@@ -129,18 +175,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 				{
 					if (empty($id))
 					{
-						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `title` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+						$query = $db->getQuery(true)
+							->select('id, title')
+							->from($db->quoteName('#__ka_awards'))
+							->where("title LIKE '" . $db->escape($term) . "%'" . " AND " . $language_in . " AND state = 1");
+
+						$db->setQuery($query);
 						$result = $db->loadObjectList();
 					}
 					else
 					{
-						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+						$query = $db->getQuery(true)
+							->select('id, title')
+							->from($db->quoteName('#__ka_awards'))
+							->where("id = " . (int) $id . " AND " . $language_in . " AND state = 1");
+
+						$db->setQuery($query);
 						$result = $db->loadObject();
 					}
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_awards') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+					$query = $db->getQuery(true)
+						->select('id, title')
+						->from($db->quoteName('#__ka_awards'))
+						->where($language_in . " AND state = 1");
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 			}
@@ -151,18 +212,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 			{
 				if (empty($id))
 				{
-					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE (`name` LIKE '" . $db->escape($term) . "%' OR `latin_name` LIKE '" . $db->escape($term) . "%')" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, name, latin_name, date_of_birth')
+						->from($db->quoteName('#__ka_names'))
+						->where("(name LIKE '" . $db->escape($term) . "%' OR latin_name LIKE '" . $db->escape($term) . "%')" . " AND " . $language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, name, latin_name, date_of_birth')
+						->from($db->quoteName('#__ka_names'))
+						->where("id = " . (int) $id . " AND " . $language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `name`, `latin_name`, `date_of_birth` FROM " . $db->quoteName('#__ka_names') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1 AND `access` IN (" . $groups . ")");
+				$query = $db->getQuery(true)
+					->select('id, name, latin_name, date_of_birth')
+					->from($db->quoteName('#__ka_names'))
+					->where($language_in . " AND state = 1 AND access IN (" . $groups . ")");
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}
@@ -172,18 +248,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 			{
 				if (empty($id))
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `title` LIKE '" . $db->escape($term) . "%' AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, title')
+						->from($db->quoteName('#__tags'))
+						->where("title LIKE '" . $db->escape($term) . "%' AND " . $language_in . " AND published = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
+					$query = $db->getQuery(true)
+						->select('id, title')
+						->from($db->quoteName('#__tags'))
+						->where("id = " . (int) $id . " AND " . $language_in . " AND published = 1 AND access IN (" . $groups . ")");
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `published` = 1 AND `access` IN (" . $groups . ")");
+				$query = $db->getQuery(true)
+					->select('id, title')
+					->from($db->quoteName('#__tags'))
+					->where($language_in . " AND published = 1 AND access IN (" . $groups . ")");
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}
@@ -193,18 +284,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 			{
 				if (empty($id))
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `title` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+					$query = $db->getQuery(true)
+						->select('id, title')
+						->from($db->quoteName('#__ka_names_career'))
+						->where("title LIKE '" . $db->escape($term) . "%'" . " AND " . $language_in);
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+					$query = $db->getQuery(true)
+						->select('id, title')
+						->from($db->quoteName('#__ka_names_career'))
+						->where("id = " . (int) $id . " AND " . $language_in);
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+				$query = $db->getQuery(true)
+					->select('id, title')
+					->from($db->quoteName('#__ka_names_career'))
+					->where($language_in);
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}
@@ -214,18 +320,33 @@ class KinoarhivModelGlobal extends JModelLegacy
 			{
 				if (empty($id))
 				{
-					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `company_name` LIKE '" . $db->escape($term) . "%' OR `company_name_intl` LIKE '" . $db->escape($term) . "%'" . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+					$query = $db->getQuery(true)
+						->select('id, company_name, company_name_intl')
+						->from($db->quoteName('#__ka_vendors'))
+						->where("company_name LIKE '" . $db->escape($term) . "%' OR company_name_intl LIKE '" . $db->escape($term) . "%'" . " AND " . $language_in . " AND state = 1");
+
+					$db->setQuery($query);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `id` = " . (int) $id . " AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+					$query = $db->getQuery(true)
+						->select('id, company_name, company_name_intl')
+						->from($db->quoteName('#__ka_vendors'))
+						->where("id = " . (int) $id . " AND " . $language_in . " AND state = 1");
+
+					$db->setQuery($query);
 					$result = $db->loadObject();
 				}
 			}
 			else
 			{
-				$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . " WHERE `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `state` = 1");
+				$query = $db->getQuery(true)
+					->select('id, company_name, company_name_intl')
+					->from($db->quoteName('#__ka_vendors'))
+					->where($language_in . " AND state = 1");
+
+				$db->setQuery($query);
 				$result = $db->loadObjectList();
 			}
 		}

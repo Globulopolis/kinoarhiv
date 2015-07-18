@@ -200,6 +200,7 @@ class KinoarhivController extends JControllerLegacy
 	public function ajaxData()
 	{
 		$document = JFactory::getDocument();
+		$document->setMimeEncoding('application/json', false);
 		$document->setName('response');
 
 		$model = $this->getModel('global');

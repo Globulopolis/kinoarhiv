@@ -81,10 +81,16 @@
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_BIRTH'); ?></span>
 						<span class="s-col">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]='.$this->item->date_of_birth_raw.'&Itemid='.$this->itemid); ?>"><?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>, <img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0" /> <?php echo JText::_('COM_KA_NAMES_ZODIAC_'.JString::strtoupper($this->item->zodiac)); ?>, <?php echo $this->item->date_of_birth_interval_str; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]='.$this->item->date_of_birth_raw.'&Itemid='.$this->itemid); ?>">
+							<?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>,
+							<?php if ($this->item->zodiac !== ''): ?>
+								<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0" /> <?php echo JText::_('COM_KA_NAMES_ZODIAC_'.JString::strtoupper($this->item->zodiac)); ?>,
+							<?php endif; ?>
+							<?php echo $this->item->date_of_birth_interval_str; ?>
 						</span>
 					</div>
 					<?php endif; ?>
+
 					<?php if ($this->item->date_of_death_raw != '0000-00-00'): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_DEATH'); ?></span>
@@ -138,7 +144,8 @@
 		</div>
 		<?php endif; ?>
 		<div class="clear"></div>
-		<?php if (!empty($this->item->movies)): ?>
+
+		<?php if (count($this->item->movies) > 0): ?>
 		<div class="movies-list">
 			<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_NAMES_FILMOGRAPHY'); ?></div>
 			<div class="content">
@@ -157,5 +164,6 @@
 			</div>
 		</div>
 		<?php endif; ?>
+
 	</article>
 </div>

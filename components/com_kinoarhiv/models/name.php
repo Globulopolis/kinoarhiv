@@ -40,6 +40,11 @@ class KinoarhivModelName extends JModelList
 		}
 	}
 
+	/**
+	 * Get an item data
+	 *
+	 * @return object
+	 */
 	public function getData()
 	{
 		$db = $this->getDBO();
@@ -49,21 +54,24 @@ class KinoarhivModelName extends JModelList
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$id = $app->input->get('id', 0, 'int');
 
-		$query = $db->getQuery(true);
+		$query = $db->getQuery(true)
+			->select("n.id, n.name, n.latin_name, n.alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
+					"n.date_of_birth AS date_of_birth_raw, DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, " .
+					"n.date_of_death AS date_of_death_raw, n.birthplace, n.birthcountry, n.gender, n.height, n.desc, " .
+					"n.attribs, n.metakey, n.metadesc, n.metadata, cn.name AS country, cn.code, g.filename")
+			->from($db->quoteName('#__ka_names', 'n'));
 
-		$query->select("`n`.`id`, `n`.`name`, `n`.`latin_name`, `n`.`alias`, DATE_FORMAT(`n`.`date_of_birth`, '%Y') AS `date_of_birth`, `n`.`date_of_birth` AS `date_of_birth_raw`, DATE_FORMAT(`n`.`date_of_death`, '%Y') AS `date_of_death`, `n`.`date_of_death` AS `date_of_death_raw`, `n`.`birthplace`, `n`.`birthcountry`, `n`.`gender`, `n`.`height`, `n`.`desc`, `n`.`attribs`, `n`.`metakey`, `n`.`metadesc`, `n`.`metadata`, `cn`.`name` AS `country`, `cn`.`code`, `g`.`filename`")
-			->from($db->quoteName('#__ka_names') . ' AS `n`');
-
-		$query->leftJoin($db->quoteName('#__ka_names_gallery') . ' AS `g` ON `g`.`name_id` = `n`.`id` AND `g`.`type` = 3 AND `g`.`photo_frontpage` = 1 AND `g`.`state` = 1');
-		$query->leftJoin($db->quoteName('#__ka_countries') . ' AS `cn` ON `cn`.`id` = `n`.`birthcountry` AND `cn`.`state` = 1');
+		$query->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.photo_frontpage = 1 AND g.state = 1');
+		$query->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON `cn`.`id` = n.birthcountry AND cn.state = 1');
 
 		if (!$user->get('guest'))
 		{
-			$query->select('`u`.`favorite`');
-			$query->leftJoin($db->quoteName('#__ka_user_marked_names') . ' AS `u` ON `u`.`uid` = ' . $user->get('id') . ' AND `u`.`name_id` = `n`.`id`');
+			$query->select('u.favorite');
+			$query->join('LEFT', $db->quoteName('#__ka_user_marked_names', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.name_id = n.id');
 		}
 
-		$query->where('`n`.`id` = ' . (int) $id . ' AND `n`.`state` = 1 AND `access` IN (' . $groups . ') AND `n`.`language` IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+		$query->where('n.id = ' . (int) $id . ' AND n.state = 1 AND access IN (' . $groups . ')')
+			->where('n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 		$db->setQuery($query);
 
@@ -78,13 +86,21 @@ class KinoarhivModelName extends JModelList
 			}
 			else
 			{
-				$result->zodiac = ($result->date_of_birth_raw != '0000-00-00') ? $this->getZodiacSign(substr($result->date_of_birth_raw, 5, 2), substr($result->date_of_birth_raw, 8, 2)) : '';
+				if ($result->date_of_birth_raw != '0000-00-00')
+				{
+					$result->zodiac = $this->getZodiacSign(substr($result->date_of_birth_raw, 5, 2), substr($result->date_of_birth_raw, 8, 2));
+				}
+				else
+				{
+					$result->zodiac = '';
+				}
 			}
 		}
 		catch (Exception $e)
 		{
 			$result = (object) array();
-			$this->setError($e->getMessage());
+			$this->setError('Error');
+			KAComponentHelper::eventLog($e->getMessage());
 		}
 
 		if (isset($result->attribs))
@@ -93,31 +109,93 @@ class KinoarhivModelName extends JModelList
 		}
 
 		// Select career
-		$db->setQuery("SELECT `id`, `title`"
-			. "\n FROM " . $db->quoteName('#__ka_names_career')
-			. "\n WHERE `id` IN (SELECT `career_id` FROM " . $db->quoteName('#__ka_rel_names_career') . " WHERE `name_id` = " . (int) $id . ") AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")"
-			. "\n ORDER BY `title` ASC");
-		$result->career = $db->loadObjectList();
+		$query_career = $db->getQuery(true)
+			->select('id, title')
+			->from($db->quoteName('#__ka_names_career'));
+
+			$subquery_career = $db->getQuery(true)
+				->select('career_id')
+				->from($db->quoteName('#__ka_rel_names_career'))
+				->where('name_id = ' . (int) $id);
+
+		$query_career->where('id IN (' . $subquery_career . ') AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->order('title ASC');
+
+		$db->setQuery($query_career);
+
+		try
+		{
+			$result->career = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			$result->career = array();
+			KAComponentHelper::eventLog($e->getMessage());
+		}
 
 		// Select genres
-		$db->setQuery("SELECT `id`, `name`, `alias`"
-			. "\n FROM " . $db->quoteName('#__ka_genres')
-			. "\n WHERE `id` IN (SELECT `genre_id` FROM " . $db->quoteName('#__ka_rel_names_genres') . " WHERE `name_id` = " . (int) $id . ") AND `state` = 1 AND `access` IN (" . $groups . ") AND `language` IN (" . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ")"
-			. "\n ORDER BY `name` ASC");
-		$result->genres = $db->loadObjectList();
+		$query_genres = $db->getQuery(true)
+			->select('id, name, alias')
+			->from($db->quoteName('#__ka_genres'));
+
+			$subquery_genres = $db->getQuery(true)
+				->select('genre_id')
+				->from($db->quoteName('#__ka_rel_names_genres'))
+				->where('name_id = ' . (int) $id);
+
+		$query_genres->where('id IN (' . $subquery_genres . ') AND state = 1 AND access IN (' . $groups . ')')
+			->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->order('name ASC');
+
+		$db->setQuery($query_genres);
+
+		try
+		{
+			$result->genres = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			$result->genres = array();
+			KAComponentHelper::eventLog($e->getMessage());
+		}
 
 		// Select movies
-		$db->setQuery("SELECT `m`.`id`, `m`.`title`, `m`.`alias`, `m`.`year`, `r`.`role`"
-			. "\n FROM " . $db->quoteName('#__ka_movies') . " AS `m`"
-			. "\n LEFT JOIN " . $db->quoteName('#__ka_rel_names') . " AS `r` ON `r`.`name_id` = " . (int) $id . " AND `r`.`movie_id` = `m`.`id`"
-			. "\n WHERE `id` IN (SELECT `movie_id` FROM " . $db->quoteName('#__ka_rel_names') . " WHERE `name_id` = " . (int) $id . ") AND `m`.`state` = 1 AND `m`.`access` IN (" . $groups . ") AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")"
-			. "\n ORDER BY `year` ASC");
-		$result->movies = $db->loadObjectList();
+		$query_movies = $db->getQuery(true)
+			->select('m.id, m.title, m.alias, m.year, r.role')
+			->from($db->quoteName('#__ka_movies', 'm'))
+			->join('LEFT', $db->quoteName('#__ka_rel_names', 'r') . ' ON r.name_id = ' . (int) $id . ' AND r.movie_id = m.id');
+
+			$subquery_movies = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_names'))
+				->where('name_id = ' . (int) $id);
+
+		$query_movies->where('m.id IN (' . $subquery_movies . ') AND m.state = 1 AND m.access IN (' . $groups . ')')
+			->where('m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->order('m.year ASC');
+
+		$db->setQuery($query_movies);
+
+		try
+		{
+			$result->movies = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			$result->movies = array();
+			KAComponentHelper::eventLog($e->getMessage());
+		}
 
 		// Get proper Itemid for movies list
 		if (count($result->movies) > 0)
 		{
-			$db->setQuery("SELECT `id` FROM " . $db->quoteName('#__menu') . " WHERE `link` = 'index.php?option=com_kinoarhiv&view=movies' AND `type` = 'component' AND `parent_id` = 1 AND `language` = " . $db->quote($lang->getTag()) . "");
+			$query_itemid = $db->getQuery(true)
+				->select('id')
+				->from($db->quoteName('#__menu'))
+				->where("link = 'index.php?option=com_kinoarhiv&view=movies'")
+				->where("type = 'component' AND parent_id = 1 AND language = " . $db->quote($lang->getTag()));
+
+			$db->setQuery($query_itemid);
 			$result->itemid = $db->loadResult();
 		}
 		else
@@ -128,16 +206,24 @@ class KinoarhivModelName extends JModelList
 		return $result;
 	}
 
+	/**
+	 * Get the zodiac sign
+	 *
+	 * @param   integer  $month  Month number
+	 * @param   integer  $day    Day number
+	 *
+	 * @return string
+	 */
 	public function getZodiacSign($month, $day)
 	{
 		if ($day > 31 || $day < 0)
 		{
-			return;
+			return '';
 		}
 
 		if ($month > 12 || $month < 0)
 		{
-			return;
+			return '';
 		}
 
 		if ($month == 1)
@@ -148,7 +234,7 @@ class KinoarhivModelName extends JModelList
 		{
 			if ($day > 29)
 			{
-				return;
+				return '';
 			}
 
 			$zodiac = ($day <= 18) ? 'aquarius' : 'pisces';
@@ -161,7 +247,7 @@ class KinoarhivModelName extends JModelList
 		{
 			if ($day > 30)
 			{
-				return;
+				return '';
 			}
 
 			$zodiac = ($day <= 20) ? 'aries' : 'taurus';
@@ -174,7 +260,7 @@ class KinoarhivModelName extends JModelList
 		{
 			if ($day > 30)
 			{
-				return;
+				return '';
 			}
 
 			$zodiac = ($day <= 22) ? 'gemini' : 'cancer';
@@ -191,7 +277,7 @@ class KinoarhivModelName extends JModelList
 		{
 			if ($day > 30)
 			{
-				return;
+				return '';
 			}
 
 			$zodiac = ($day <= 23) ? 'virgo' : 'libra';
@@ -204,7 +290,7 @@ class KinoarhivModelName extends JModelList
 		{
 			if ($day > 30)
 			{
-				return;
+				return '';
 			}
 
 			$zodiac = ($day <= 21) ? 'scorpio' : 'sagittarius';
@@ -217,6 +303,11 @@ class KinoarhivModelName extends JModelList
 		return $zodiac;
 	}
 
+	/**
+	 * Method to get person data
+	 *
+	 * @return object
+	 */
 	public function getNameData()
 	{
 		$db = $this->getDBO();
@@ -227,9 +318,13 @@ class KinoarhivModelName extends JModelList
 		$id = $app->input->get('id', 0, 'int');
 		$result = (object) array();
 
-		$db->setQuery("SELECT `id`, `name`, `latin_name`, `alias`, `attribs`, `metakey`, `metadesc`, `metadata`"
-			. "\n FROM " . $db->quoteName('#__ka_names')
-			. "\n WHERE `id` = " . (int) $id . " AND `state` = 1 AND `access` IN (" . $groups . ") AND `language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+		$query = $db->getQuery(true)
+			->select('id, name, latin_name, alias, attribs, metakey, metadesc, metadata')
+			->from($db->quoteName('#__ka_names'))
+			->where('id = ' . (int) $id . ' AND state = 1 AND access IN (' . $groups . ')')
+			->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+		$db->setQuery($query);
 
 		try
 		{
@@ -251,6 +346,11 @@ class KinoarhivModelName extends JModelList
 		return $result;
 	}
 
+	/**
+	 * Method to get awards for person
+	 *
+	 * @return object
+	 */
 	public function getAwards()
 	{
 		$db = $this->getDBO();
@@ -259,11 +359,14 @@ class KinoarhivModelName extends JModelList
 
 		$result = $this->getNameData();
 
-		$db->setQuery("SELECT `a`.`desc`, `a`.`year`, `aw`.`id`, `aw`.`title` AS `aw_title`, `aw`.`desc` AS `aw_desc`"
-			. "\n FROM " . $db->quoteName('#__ka_rel_awards') . " AS `a`"
-			. "\n LEFT JOIN " . $db->quoteName('#__ka_awards') . " AS `aw` ON `aw`.`id` = `a`.`award_id`"
-			. "\n WHERE `type` = 1 AND `item_id` = " . (int) $id
-			. "\n ORDER BY `year` ASC");
+		$query = $db->getQuery(true)
+			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
+			->from($db->quoteName('#__ka_rel_awards', 'a'))
+			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON aw.id = a.award_id')
+			->where('type = 1 AND item_id = ' . (int) $id)
+			->order('year DESC');
+
+		$db->setQuery($query);
 		$result->awards = $db->loadObjectList();
 
 		return $result;
@@ -278,16 +381,20 @@ class KinoarhivModelName extends JModelList
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDBO();
+		$id = $app->input->get('id', 0, 'int');
 		$page = $app->input->get('page', null, 'cmd');
 		$result = array();
 
 		if ($page == 'wallpapers')
 		{
-			$db->setQuery("SELECT `dimension` AS `value`, `dimension` AS `title`, SUBSTRING_INDEX(`dimension`, 'x', 1) AS `width`"
-				. "\n FROM " . $db->quoteName('#__ka_names_gallery')
-				. "\n WHERE `type` = 1"
-				. "\n GROUP BY `width`"
-				. "\n ORDER BY `width` DESC");
+			$query = $db->getQuery(true)
+				->select("dimension AS value, dimension AS title, SUBSTRING_INDEX(dimension, 'x', 1) AS width")
+				->from($db->quoteName('#__ka_names_gallery'))
+				->where('name_id = ' . (int) $id . ' AND type = 1 AND state = 1')
+				->group('width')
+				->order('width DESC');
+
+			$db->setQuery($query);
 			$result = $db->loadAssocList();
 		}
 
@@ -308,42 +415,34 @@ class KinoarhivModelName extends JModelList
 		$id = $app->input->get('id', 0, 'int');
 		$page = $app->input->get('page', '', 'cmd');
 		$filter = $app->input->get('dim_filter', '0', 'string');
-
-		$query = $db->getQuery(true);
+		$query = null;
 
 		if ($page == 'wallpapers')
 		{
-			$query->select('`id`, `filename`, `dimension`');
-			$query->from($db->quoteName('#__ka_names_gallery'));
+			$query = $db->getQuery(true)
+				->select('id, filename, dimension')
+				->from($db->quoteName('#__ka_names_gallery'))
+				->where('name_id = ' . (int) $id . ' AND state = 1 AND type = 1');
 
-			if ($filter != '0')
+			if ($filter !== '0')
 			{
-				$where = " AND `dimension` LIKE " . $db->quote($db->escape($filter, true) . "%", false);
+				$query->where('dimension LIKE ' . $db->quote($db->escape($filter, true) . '%', false));
 			}
-			else
-			{
-				$where = "";
-			}
-
-			$query->where('`name_id` = ' . (int) $id . ' AND `state` = 1 AND `type` = 1' . $where);
 		}
 		elseif ($page == 'posters')
 		{
-			$query->select('`id`, `filename`, `dimension`');
-			$query->from($db->quoteName('#__ka_names_gallery'));
-			$query->where('`name_id` = ' . (int) $id . ' AND `state` = 1 AND `type` = 2');
+			$query = $db->getQuery(true)
+				->select('id, filename, dimension')
+				->from($db->quoteName('#__ka_names_gallery'))
+				->where('name_id = ' . (int) $id . ' AND state = 1 AND type = 2');
 		}
 		elseif ($page == 'photos')
 		{
-			$query->select('`g`.`id`, `g`.`filename`, `g`.`dimension`');
-			$query->from($db->quoteName('#__ka_names_gallery') . ' AS `g`');
-			$query->select(' `n`.`gender`');
-			$query->leftJoin($db->quoteName('#__ka_names') . ' AS `n` ON `n`.`id` = `g`.`name_id`');
-			$query->where('`name_id` = ' . (int) $id . ' AND `g`.`state` = 1 AND `type` = 3');
-		}
-		else
-		{
-			$query = null;
+			$query = $db->getQuery(true)
+				->select('g.id, g.filename, g.dimension, n.gender')
+				->from($db->quoteName('#__ka_names_gallery', 'g'))
+				->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id = g.name_id')
+				->where('g.name_id = ' . (int) $id . ' AND g.state = 1 AND g.type = 3');
 		}
 
 		return $query;

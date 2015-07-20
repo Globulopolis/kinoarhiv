@@ -337,7 +337,8 @@ CREATE TABLE IF NOT EXISTS `#__ka_rel_names` (
   `is_directors` tinyint(1) NOT NULL DEFAULT '0',
   `ordering` int(11) NOT NULL DEFAULT '0',
   `desc` mediumtext NOT NULL,
-  PRIMARY KEY (`name_id`,`movie_id`,`dub_id`)
+  PRIMARY KEY (`name_id`,`movie_id`),
+  KEY `idx_dub_id` (`dub_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_rel_names_career` (

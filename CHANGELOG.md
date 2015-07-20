@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* New layout for alphabet navigation.
 * Change JString into String in classes(templates still using JString).
 * Removed unnecessary overrides in KAPagination class.
 * Fixed wrong redirects from filters in Releases, Premieres.

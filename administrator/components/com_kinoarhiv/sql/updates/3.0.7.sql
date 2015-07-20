@@ -51,3 +51,8 @@ CREATE TABLE `#__ka_music_rel_composers` (
   `desc` mediumtext NOT NULL,
   PRIMARY KEY (`name_id`,`album_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `#__ka_rel_names`
+  ADD INDEX `idx_dub_id` (`dub_id`);
+
+ALTER TABLE `#__ka_rel_names` DROP PRIMARY KEY, ADD PRIMARY KEY (`name_id`, `movie_id`);

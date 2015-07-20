@@ -534,7 +534,7 @@ class KinoarhivModelMovies extends JModelList
 	}
 
 	/**
-	 * Method to add a movie into favorite list
+	 * Method to add a movie into favorites
 	 *
 	 * @return array
 	 *

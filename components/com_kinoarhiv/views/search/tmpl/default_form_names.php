@@ -1,5 +1,17 @@
-<?php defined('_JEXEC') or die;
-if ($this->params->get('search_names_enable') == 0) {
+<?php
+/**
+ * @package     Kinoarhiv.Site
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+if ($this->params->get('search_names_enable') == 0)
+{
 	return;
 }
 ?>
@@ -148,5 +160,6 @@ if ($this->params->get('search_names_enable') == 0) {
 		<input type="hidden" name="Itemid" value="<?php echo $this->home_itemid['names']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 		<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
+		<input type="reset" class="btn uk-button" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="jQuery('#filters_names_birthcountry, #filters_names_mtitle').select2('val', ''); return true;" />
 	</form>
 </div>

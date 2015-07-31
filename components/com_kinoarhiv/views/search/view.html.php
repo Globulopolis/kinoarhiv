@@ -1,17 +1,28 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivViewSearch extends JViewLegacy
 {
 	protected $items;
+
 	protected $params;
 
+	/**
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -20,7 +31,8 @@ class KinoarhivViewSearch extends JViewLegacy
 		$activeFilters = $this->get('ActiveFilters');
 		$this->home_itemid = $this->get('HomeItemid');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
@@ -29,8 +41,8 @@ class KinoarhivViewSearch extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$this->items = &$items;
-		$this->activeFilters = &$activeFilters;
+		$this->items = $items;
+		$this->activeFilters = $activeFilters;
 		$this->params = &$params;
 
 		$this->_prepareDocument();
@@ -40,6 +52,8 @@ class KinoarhivViewSearch extends JViewLegacy
 
 	/**
 	 * Prepares the document
+	 *
+	 * @return  void
 	 */
 	protected function _prepareDocument()
 	{
@@ -49,8 +63,9 @@ class KinoarhivViewSearch extends JViewLegacy
 		$pathway = $app->getPathway();
 
 		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_SEARCH_ADV');
+
 		// Create a new pathway object
-		$path = (object)array(
+		$path = (object) array(
 			'name' => $title,
 			'link' => 'index.php?option=com_kinoarhiv&view=search&Itemid=' . $this->itemid
 		);
@@ -58,29 +73,43 @@ class KinoarhivViewSearch extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '') {
+		if ($menu && $menu->params->get('menu-meta_description') != '')
+		{
 			$this->document->setDescription($menu->params->get('menu-meta_description'));
-		} else {
+		}
+		else
+		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '') {
+		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		{
 			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
-		} else {
+		}
+		else
+		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '') {
+		if ($menu && $menu->params->get('robots') != '')
+		{
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
-		} else {
+		}
+		else
+		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}
 
-		if ($this->params->get('generator') == 'none') {
+		if ($this->params->get('generator') == 'none')
+		{
 			$this->document->setGenerator('');
-		} elseif ($this->params->get('generator') == 'site') {
+		}
+		elseif ($this->params->get('generator') == 'site')
+		{
 			$this->document->setGenerator($this->document->getGenerator());
-		} else {
+		}
+		else
+		{
 			$this->document->setGenerator($this->params->get('generator'));
 		}
 	}

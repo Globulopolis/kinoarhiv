@@ -1,5 +1,7 @@
 /* Default style */
-
+.loading {
+	background: url("../images/icons/select/select2-spinner.gif") no-repeat center center;
+}
 .ka-content form {
 	margin: 0;
 }
@@ -1113,4 +1115,8 @@ div.rating {
 
 #search_form .advsearch-movies {
 	margin: 0;
+}
+
+#filters_movies .search-rate-slider {
+	margin-top: 4px;
 }

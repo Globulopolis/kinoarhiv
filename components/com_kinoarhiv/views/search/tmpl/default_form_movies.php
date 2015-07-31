@@ -156,10 +156,10 @@ if ($this->params->get('search_movies_enable') == 0)
 			}
 		}).trigger('change');
 
-		$('.cmd-reset').click(function(e){
+		$('.cmd-reset-movies').click(function(){
 			$('#filters_movies_country, #filters_movies_vendor, #filters_movies_genre, #filters_movies_cast, #filters_movies_tags').select2('val', '');
 			$('.search-rate-slider').slider('disable');
-
+			$('.rate-input input').attr('disabled', 'disabled');
 		});
 	});
 </script>
@@ -479,6 +479,6 @@ if ($this->params->get('search_movies_enable') == 0)
 		<input type="hidden" name="Itemid" value="<?php echo $this->home_itemid['movies']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 		<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
-		<input type="reset" class="btn uk-button" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
+		<input type="reset" class="btn uk-button cmd-reset-movies" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />
 	</form>
 </div>

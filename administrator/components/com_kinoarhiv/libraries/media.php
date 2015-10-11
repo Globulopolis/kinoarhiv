@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -18,8 +17,6 @@ defined('_JEXEC') or die;
 class KAMedia
 {
 	protected static $instance;
-
-	protected $params;
 
 	/**
 	 * Class constructor.
@@ -62,26 +59,26 @@ class KAMedia
 
 		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path'));
 
-		if ($ffmpeg_path !== '')
+		if ($ffmpeg_path != '')
 		{
-			if (!KAComponentHelper::functionExists('shell_exec'))
+			if (!function_exists('shell_exec'))
 			{
-				die('shell_exec() function not exists or safe mode or suhosin is on!');
+				die('Function is not exists or safe mode is on!');
 			}
 
 			$check_lib = $this->checkLibrary($this->params->get('ffmpeg_path'));
 
 			if ($check_lib !== true)
 			{
-				return false;
+				return $check_lib;
 			}
 
-			$result_filename = $data['filename'] . '.png';
+			$result_filename = pathinfo($data['filename'], PATHINFO_FILENAME) . '.png';
 			$video_info = $this->getVideoInfo($data['folder'] . $data['filename']);
 
-			if ($video_info === false)
+			if ($video_info[0] === false)
 			{
-				return false;
+				return array(false, $video_info[1]);
 			}
 
 			$video_info = json_decode($video_info);
@@ -89,21 +86,23 @@ class KAMedia
 			$scr_h = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;
 
 			@set_time_limit(0);
-			$cmd = $ffmpeg_path . ' -hide_banner -nostats -i ' . $data['folder'] . $data['filename'] . ' -ss ' . $data['time'] .
-				' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $data['folder'] . $result_filename . ' -y';
 
 			if (IS_WIN)
 			{
-				$cmd .= ' 2>&1';
+				$output = shell_exec(
+					escapeshellcmd($ffmpeg_path) . ' -hide_banner -nostats -i '
+					. escapeshellcmd($data['folder'] . $data['filename']) . ' -ss ' . $data['time']
+					. ' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $data['folder'] . $result_filename . " 2>&1");
 			}
 			else
 			{
-				$cmd .= ' 2>%1';
+				$output = shell_exec(
+					escapeshellcmd($ffmpeg_path) . ' -hide_banner -nostats -i '
+					. escapeshellcmd($data['folder'] . $data['filename']) . ' -ss ' . $data['time']
+					. ' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $data['folder'] . $result_filename . " 2>%1");
 			}
 
-			$output = shell_exec($cmd);
-
-			return array($result_filename, '<pre>' . $cmd . '<br />' . $output . '</pre>');
+			return array($result_filename, '<pre>' . $output . '</pre>');
 		}
 		else
 		{
@@ -112,7 +111,7 @@ class KAMedia
 	}
 
 	/**
-	 * Get MIME-type of the file
+	 * Create screenshot from videofile
 	 *
 	 * @param   string  $path  Path to a file.
 	 *
@@ -122,15 +121,15 @@ class KAMedia
 	{
 		$mime = 'text/plain';
 
-		if (!empty($path) && is_file($path))
+		if (!empty($path) && file_exists($path))
 		{
-			if (KAComponentHelper::functionExists('finfo_open'))
+			if (function_exists('finfo_open'))
 			{
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$mime = finfo_file($finfo, $path);
 				finfo_close($finfo);
 			}
-			elseif (KAComponentHelper::functionExists('mime_content_type'))
+			elseif (function_exists('mime_content_type'))
 			{
 				$mime = mime_content_type($path);
 			}
@@ -150,36 +149,30 @@ class KAMedia
 	 */
 	public function getVideoInfo($path, $stream = 'v:0', $format = 'json')
 	{
-		if (!KAComponentHelper::functionExists('shell_exec'))
+		if (!function_exists('shell_exec'))
 		{
-			die('shell_exec() function not exists or safe mode or suhosin is on!');
-		}
-
-		if (!is_file($path))
-		{
-			return false;
+			die('Function is not exists or safe mode is on!');
 		}
 
 		$check_lib = $this->checkLibrary($this->params->get('ffprobe_path'));
 
 		if ($check_lib !== true)
 		{
-			return false;
+			return $check_lib;
 		}
-
-		$cmd = $this->params->get('ffprobe_path') . ' -v quiet -print_format ' . (string) $format .
-			' -show_streams -select_streams ' . $stream . ' ' . $path;
 
 		if (IS_WIN)
 		{
-			$cmd .= ' 2>&1';
+			$output = shell_exec(
+				escapeshellcmd($this->params->get('ffprobe_path')) . ' -v quiet -print_format ' . (string) $format
+				. ' -show_streams -select_streams ' . $stream . ' ' . escapeshellcmd($path) . ' 2>&1');
 		}
 		else
 		{
-			$cmd .= ' 2>%1';
+			$output = shell_exec(
+				escapeshellcmd($this->params->get('ffprobe_path')) . ' -v quiet -print_format ' . (string) $format
+				. ' -show_streams -select_streams ' . $stream . ' ' . escapeshellcmd($path) . ' 2>%1');
 		}
-
-		$output = shell_exec($cmd);
 
 		return $output;
 	}
@@ -194,14 +187,9 @@ class KAMedia
 	 */
 	public function getVideoDuration($path, $format = false)
 	{
-		if (!KAComponentHelper::functionExists('shell_exec'))
+		if (!function_exists('shell_exec'))
 		{
-			die('shell_exec() function not exists or safe mode or suhosin is on!');
-		}
-
-		if (!is_file($path))
-		{
-			return array(false, 'Video file not found at path ' . $path);
+			die('Function is not exists or safe mode is on!');
 		}
 
 		$check_lib = $this->checkLibrary($this->params->get('ffprobe_path'));
@@ -211,18 +199,19 @@ class KAMedia
 			return $check_lib;
 		}
 
-		$cmd = $this->params->get('ffprobe_path') . ' -loglevel error -show_format -show_streams ' . $path . ' -print_format json';
-
 		if (IS_WIN)
 		{
-			$cmd .= ' 2>&1';
+			$output = shell_exec(
+				escapeshellcmd($this->params->get('ffprobe_path'))
+				. ' -loglevel error -show_format -show_streams ' . escapeshellcmd($path) . ' -print_format json 2>&1');
 		}
 		else
 		{
-			$cmd .= ' 2>%1';
+			$output = shell_exec(
+				escapeshellcmd($this->params->get('ffprobe_path'))
+				. ' -loglevel error -show_format -show_streams ' . escapeshellcmd($path) . ' -print_format json 2>%1');
 		}
 
-		$output = shell_exec($cmd);
 		$object = json_decode($output);
 
 		if ($format)
@@ -255,56 +244,6 @@ class KAMedia
 			JLog::add($error . ' in ' . __METHOD__, JLog::CRITICAL);
 
 			return array(false, $error);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Normalize some strings in WEBVTT file and save
-	 *
-	 * @param   string   $path          Path to a file.
-	 * @param   string   $filename      Filename.
-	 * @param   boolean  $replace       Overwrite existing file or not.
-	 * @param   string   $new_filename  New filename.
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @throws  Exception
-	 */
-	public function normalizeVTT($path, $filename, $replace=true, $new_filename='')
-	{
-		$filepath = JPath::clean($path . $filename);
-
-		if (!is_file($filepath))
-		{
-			throw new Exception('File not found or inaccessible!');
-		}
-		else
-		{
-			$content = file_get_contents($filepath);
-
-			if (!mb_detect_encoding($content, 'UTF-8', true) || strpos($content, "\xEF\xBB\xBF") !== false)
-			{
-				throw new Exception('Wrong file encoding! UTF-8 without BOM required!');
-			}
-
-			// Check file header
-			if (strstr($content, 'WEBVTT') === false)
-			{
-				throw new Exception('\'WEBVTT\' reqired at file start!');
-			}
-
-			$content = preg_replace('#\d+[\s+]+(\d{2}):(\d{2}):(\d{2}),(\d{3})#sm', '$1:$2:$3.$4', $content);
-
-			if ($replace)
-			{
-				file_put_contents($filepath, $content);
-			}
-			else
-			{
-				file_put_contents($path . $new_filename, $content);
-			}
 		}
 
 		return true;

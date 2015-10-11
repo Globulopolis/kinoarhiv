@@ -1,15 +1,4 @@
-<?php
-/**
- * @package     Kinoarhiv.Administrator
- * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
- * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
- */
-
-defined('_JEXEC') or die;
-
+<?php defined('_JEXEC') or die;
 JHtml::_('bootstrap.modal', 'collapseModal');
 ?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
@@ -200,7 +189,6 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 			<div id="settings_tabs">
 				<ul>
 					<li><a href="#page-global"><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></a></li>
-					<li><a href="#page-updl"><?php echo JText::_('COM_KA_UPLOAD_DOWNLOAD_TAB'); ?></a></li>
 					<li><a href="#page-music"><?php echo JText::_('COM_KA_MUSIC_TAB'); ?></a></li>
 					<li><a href="#page-appearance"><?php echo JText::_('COM_KA_APPEARANCE_TAB'); ?></a></li>
 					<li><a href="#page-reviews"><?php echo JText::_('COM_KA_REVIEWS_TAB'); ?></a></li>
@@ -223,11 +211,10 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 							<?php echo $this->loadTemplate('paths'); ?>
 						</div>
 					</div>
-				</div>
-
-				<div id="page-updl">
 					<div class="row-fluid">
-						<?php echo $this->loadTemplate('updl'); ?>
+						<div class="span12">
+							<?php echo $this->loadTemplate('gallery'); ?>
+						</div>
 					</div>
 				</div>
 

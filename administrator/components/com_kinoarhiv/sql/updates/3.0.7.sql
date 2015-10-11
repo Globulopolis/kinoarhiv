@@ -1,13 +1,4 @@
 
-/*!40101 SET NAMES utf8 */;
-
-/*!40101 SET SQL_MODE=''*/;
-
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
 ALTER TABLE `#__ka_music_genres` 
   CHANGE `title` `name` VARCHAR (255) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL,
   ADD COLUMN `stats` INT (6) DEFAULT 0 NOT NULL AFTER `alias`,
@@ -22,7 +13,7 @@ UPDATE `#__ka_music_genres` SET `access` = '1';
 ALTER TABLE `#__ka_music_albums` 
   ADD COLUMN `asset_id` INT (10) UNSIGNED NOT NULL AFTER `id`,
   ADD COLUMN `buy_url` VARCHAR (255) NOT NULL AFTER `tracks_preview_path`,
-  ADD COLUMN `fs_alias` VARCHAR (3) NOT NULL COMMENT 'Is the same as alias but only in latin charset' AFTER `alias`,
+  ADD COLUMN `fs_alias` VARCHAR (255) NOT NULL COMMENT 'Is the same as alias but only in latin charset' AFTER `alias`,
   ADD COLUMN `composer` VARCHAR (255) NOT NULL AFTER `fs_alias`,
   ADD COLUMN `attribs` VARCHAR (5120) NOT NULL AFTER `buy_url`,
   ADD COLUMN `created` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `attribs`,
@@ -49,8 +40,7 @@ ALTER TABLE `#__ka_movies`
   ADD COLUMN `buy_urls` TEXT NOT NULL AFTER `urls`,
   ADD COLUMN `modified_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `modified`,
   ADD COLUMN `publish_up` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `modified_by`,
-  ADD COLUMN `publish_down` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `publish_up`,
-  ADD COLUMN `fs_alias` VARCHAR(3) DEFAULT '' NOT NULL AFTER `alias`;
+  ADD COLUMN `publish_down` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `publish_up`;
 
 CREATE TABLE `#__ka_music_rel_composers` (
   `name_id` int(11) NOT NULL DEFAULT '0',
@@ -66,19 +56,3 @@ ALTER TABLE `#__ka_rel_names`
   ADD INDEX `idx_dub_id` (`dub_id`);
 
 ALTER TABLE `#__ka_rel_names` DROP PRIMARY KEY, ADD PRIMARY KEY (`name_id`, `movie_id`);
-
-ALTER TABLE `#__ka_names`
-  ADD COLUMN `fs_alias` VARCHAR(3) DEFAULT '' NOT NULL AFTER `alias`;
-
-CREATE TABLE IF NOT EXISTS `#__ka_media_types` (
-  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(128) NOT NULL DEFAULT '',
-  `language` CHAR(7) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `idx_language` (`language`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

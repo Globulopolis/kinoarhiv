@@ -116,7 +116,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		$query = $db->getQuery(true);
 
-		$query->select("m.id, m.parent_id, m.title, m.alias, m.fs_alias, m.plot, m.desc, m.known, m.slogan, m.budget, m.age_restrict, " .
+		$query->select("m.id, m.parent_id, m.title, m.alias, m.plot, m.desc, m.known, m.slogan, m.budget, m.age_restrict, " .
 					"m.ua_rate, m.mpaa, m.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, " .
 					"m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, m.rate_custom, m.urls, " .
 					"m.buy_urls, m.length, m.year, m.created_by, m.metakey, m.metadesc, m.attribs, m.state, m.metadata, " .
@@ -420,7 +420,7 @@ class KinoarhivModelMovie extends JModelForm
 		$id = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
-			->select("m.id, m.title, m.alias, m.fs_alias, m.year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .
+			->select("m.id, m.title, m.alias, m.year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .
 					"DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified, m.metakey, m.metadesc, m.metadata, m.attribs, user.name AS username")
 			->from($db->quoteName('#__ka_movies', 'm'))
 			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by')
@@ -504,8 +504,6 @@ class KinoarhivModelMovie extends JModelForm
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		$result = $this->getMovieData();
 
@@ -524,8 +522,8 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		$query_crew = $db->getQuery(true)
-			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, n.gender, t.type, t.role, t.is_actors, t.voice_artists, " .
-					"d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, d.alias AS dub_alias, d.fs_alias AS dub_fs_alias, " .
+			->select("n.id, n.name, n.latin_name, n.alias, n.gender, t.type, t.role, t.is_actors, t.voice_artists, " .
+					"d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, d.alias AS dub_alias, " .
 					"d.gender AS dub_gender, GROUP_CONCAT(r.role SEPARATOR ', ') AS dub_role, ac.desc, " .
 					"g.filename AS url_photo, dg.filename AS dub_url_photo")
 			->from($db->quoteName('#__ka_names', 'n'))
@@ -556,97 +554,39 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			foreach (explode(',', $value->type) as $k => $type)
 			{
-				// Process posters
-				if ($throttle_enable == 0)
-				{
-					// Cast and crew photo
-					$checking_path = JPath::clean(
-						$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $value->fs_alias .
-						DIRECTORY_SEPARATOR . $value->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $value->url_photo
-					);
-					$no_cover = ($value->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-					if (!is_file($checking_path))
-					{
-						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
-							. '/images/' . $no_cover . '.png';
-					}
-					else
-					{
-						$value->fs_alias = rawurlencode($value->fs_alias);
-
-						if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-						{
-							$value->poster = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-								. $value->fs_alias . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
-						}
-						else
-						{
-							$value->poster = $params->get('media_actor_photo_root_www') . '/' . $value->fs_alias . '/'
-								. $value->id . '/photo/thumb_' . $value->url_photo;
-						}
-					}
-
-					// Dub actors photo
-					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
-					{
-						$checking_path1 = JPath::clean(
-							$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $value->dub_fs_alias .
-							DIRECTORY_SEPARATOR . $value->dub_id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $value->dub_url_photo
-						);
-						$no_cover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-						if (!is_file($checking_path1))
-						{
-							$value->dub_url_photo = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
-								. '/images/' . $no_cover1 . '.png';
-						}
-						else
-						{
-							$value->dub_fs_alias = rawurlencode($value->dub_fs_alias);
-
-							if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-							{
-								$value->dub_url_photo = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-									. $value->dub_fs_alias . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
-							}
-							else
-							{
-								$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . $value->dub_fs_alias . '/'
-									. $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
-							}
-						}
-					}
-				}
-				else
-				{
-					$value->poster = JRoute::_(
-						'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $value->id .
-						'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->url_photo . '&format=raw&Itemid=' . $itemid .
-						'&thumbnail=1&gender=' . $value->gender
-					);
-
-					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
-					{
-						$value->dub_url_photo = JRoute::_(
-							'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $value->dub_id .
-							'&fa=' . urlencode($value->dub_fs_alias) . '&fn=' . $value->dub_url_photo . '&format=raw&Itemid=' . $itemid .
-							'&thumbnail=1&gender=' . $value->dub_gender
-						);
-					}
-				}
-
 				// Crew
 				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
 				{
 					$_result['crew'][$type]['career'] = $careers[$type];
 					$_careers_crew[] = $careers[$type];
+
+					if (empty($value->url_photo))
+					{
+						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
+						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
+						$value->y_poster = '';
+					}
+					else
+					{
+						if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+						{
+							$value->poster = JUri::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . String::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+						else
+						{
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . String::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+
+						$value->y_poster = ' y-poster';
+					}
+
 					$_result['crew'][$type]['items'][] = array(
 						'id'         => $value->id,
 						'name'       => $value->name,
 						'latin_name' => $value->latin_name,
 						'alias'      => $value->alias,
 						'poster'     => $value->poster,
+						'y_poster'   => $value->y_poster,
 						'gender'     => $value->gender,
 						'role'       => $value->role,
 						'desc'       => $value->desc
@@ -658,14 +598,56 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$_result['cast'][$type]['career'] = $careers[$type];
 
-					// Only one value for actors. So we don't need to build an array of items
+					// Only one value for actors. So we don't need build an array of items
 					$_careers_cast = $careers[$type];
+
+					if (empty($value->url_photo))
+					{
+						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
+						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
+						$value->y_poster = '';
+					}
+					else
+					{
+						if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+						{
+							$value->poster = JUri::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . String::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+						else
+						{
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . String::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+
+						$value->y_poster = ' y-poster';
+					}
+
+					if (empty($value->dub_url_photo))
+					{
+						$ftype = $value->dub_gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
+						$value->dub_url_photo = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
+						$value->dub_y_poster = '';
+					}
+					else
+					{
+						if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+						{
+							$value->dub_url_photo = JUri::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . String::substr($value->dub_alias, 0, 1) . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
+						}
+						else
+						{
+							$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . String::substr($value->dub_alias, 0, 1) . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
+						}
+
+						$value->dub_y_poster = ' y-poster';
+					}
+
 					$_result['cast'][$type]['items'][] = array(
 						'id'             => $value->id,
 						'name'           => $value->name,
 						'latin_name'     => $value->latin_name,
 						'alias'          => $value->alias,
 						'poster'         => $value->poster,
+						'y_poster'       => $value->y_poster,
 						'gender'         => $value->gender,
 						'role'           => $value->role,
 						'dub_id'         => $value->dub_id,
@@ -673,6 +655,7 @@ class KinoarhivModelMovie extends JModelForm
 						'dub_latin_name' => $value->dub_latin_name,
 						'dub_alias'      => $value->dub_alias,
 						'dub_url_photo'  => $value->dub_url_photo,
+						'dub_y_poster'   => $value->dub_y_poster,
 						'dub_gender'     => $value->dub_gender,
 						'dub_role'       => $value->dub_role,
 						'desc'           => $value->desc
@@ -684,12 +667,34 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$_result['dub'][$type]['career'] = $careers[$type];
 					$_careers_dub = $careers[$type];
+
+					if (empty($value->url_photo))
+					{
+						$ftype = $value->gender == 1 ? 'no_name_cover_small_m.png' : 'no_name_cover_small_f.png';
+						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $ftype;
+						$value->y_poster = '';
+					}
+					else
+					{
+						if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+						{
+							$value->poster = JUri::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . String::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+						else
+						{
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . String::substr($value->alias, 0, 1) . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+
+						$value->y_poster = ' y-poster';
+					}
+
 					$_result['dub'][$type]['items'][] = array(
 						'id'         => $value->id,
 						'name'       => $value->name,
 						'latin_name' => $value->latin_name,
 						'alias'      => $value->alias,
 						'poster'     => $value->poster,
+						'y_poster'   => $value->y_poster,
 						'gender'     => $value->gender,
 						'role'       => $value->dub_role,
 						'desc'       => $value->desc
@@ -703,7 +708,7 @@ class KinoarhivModelMovie extends JModelForm
 		$result->cast = $_result['cast'];
 		$result->dub = $_result['dub'];
 
-		// Create a new array with name career, remove duplicate items and sort it
+		// Creating new array with name career, remove duplicate items and sort it
 		$new_careers = array_unique($_careers_crew, SORT_STRING);
 
 		foreach ($new_careers as $row)
@@ -736,27 +741,14 @@ class KinoarhivModelMovie extends JModelForm
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
-		$itemid = $app->input->get('Itemid', 0, 'int');
+		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
 		$result = $this->getMovieData();
 		$result->player_width = $params->get('player_width');
-		$throttle_img_enable = $params->get('throttle_image_enable', 0);
-		$throttle_video_enable = $params->get('throttle_video_enable', 0);
-		$allowed_formats = array('mp4', 'webm', 'ogv', 'flv');
 
-		$query = $db->getQuery(true)
-			->select(
-				$db->quoteName(
-					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.filename', 'tr.resolution',
-						'tr.dar', 'tr.duration', 'tr._subtitles', 'tr._chapters', 'tr.is_movie', 'm.alias', 'm.fs_alias'
-					)
-				)
-			)
-			->from($db->quoteName('#__ka_trailers', 'tr'))
-			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = tr.movie_id')
-			->where('tr.movie_id = ' . (int) $id . ' AND tr.state = 1 AND tr.access IN (' . $groups . ')')
-			->where('tr.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
-
-		$db->setQuery($query);
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`resolution`, `tr`.`dar`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `tr`.`is_movie`, `m`.`alias`"
+			. "\n FROM " . $db->quoteName('#__ka_trailers') . " AS `tr`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_movies') . " AS `m` ON `m`.`id` = `tr`.`movie_id`"
+			. "\n WHERE `tr`.`movie_id` = " . (int) $id . " AND `tr`.`state` = 1 AND `tr`.`access` IN (" . $groups . ") AND `tr`.`language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
 		$result->trailers = $db->loadObjectList();
 
 		if (count($result->trailers) < 1)
@@ -776,39 +768,20 @@ class KinoarhivModelMovie extends JModelForm
 
 				if (count($urls_arr) > 0)
 				{
-					if ($throttle_img_enable == 0)
+					if (file_exists($params->get('media_trailers_root') . '/' . String::substr($value->alias, 0, 1) . '/' . $id . '/' . $value->screenshot))
 					{
-						$checking_path = JPath::clean(
-							$params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $value->fs_alias
-							. DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $value->screenshot
-						);
-
-						if (!is_file($checking_path))
+						if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 						{
-							$value->screenshot = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
-								. $params->get('ka_theme') . '/images/video_off.png';
+							$value->screenshot = JUri::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/' . String::substr($value->alias, 0, 1) . '/' . $id . '/' . $value->screenshot;
 						}
 						else
 						{
-							$value->fs_alias = rawurlencode($value->fs_alias);
-
-							if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
-							{
-								$value->screenshot = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
-									. $value->fs_alias . '/' . $id . '/' . $value->screenshot;
-							}
-							else
-							{
-								$value->screenshot = $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot;
-							}
+							$value->screenshot = $params->get('media_trailers_root_www') . '/' . String::substr($value->alias, 0, 1) . '/' . $id . '/' . $value->screenshot;
 						}
 					}
 					else
 					{
-						$value->screenshot = JRoute::_(
-							'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-							'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot . '&format=raw&Itemid=' . $itemid
-						);
+						$value->screenshot = '';
 					}
 
 					$value->files['video'] = array();
@@ -914,89 +887,29 @@ class KinoarhivModelMovie extends JModelForm
 			}
 			else
 			{
-				if ($throttle_img_enable == 0)
+				if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 				{
-					$checking_path = JPath::clean(
-						$params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $value->fs_alias
-						. DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $value->screenshot
-					);
-
-					if (!is_file($checking_path))
-					{
-						$value->screenshot = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
-							. $params->get('ka_theme') . '/images/video_off.png';
-					}
-					else
-					{
-						$value->fs_alias = rawurlencode($value->fs_alias);
-
-						if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
-						{
-							$value->screenshot = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
-								. $value->fs_alias . '/' . $id . '/' . $value->screenshot;
-						}
-						else
-						{
-							$value->screenshot = $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot;
-						}
-					}
+					$value->path = JUri::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/' . String::substr($value->alias, 0, 1) . '/' . $id . '/';
+					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . String::substr($params->get('media_trailers_root_www'), 1) . DIRECTORY_SEPARATOR . String::substr($value->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 				}
 				else
 				{
-					$value->screenshot = JRoute::_(
-						'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-						'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot . '&format=raw&Itemid=' . $itemid
-					);
-				}
-
-				if ($throttle_video_enable == 0)
-				{
-					$_fs_alias = rawurlencode($value->fs_alias);
-
-					if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
-					{
-						// $value->path is an URL, $path is a root path to the files
-						$value->path = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
-							. $_fs_alias . '/' . $id . '/';
-						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . String::substr($params->get('media_trailers_root_www'), 1)
-							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
-					}
-					else
-					{
-						$value->path = $params->get('media_trailers_root_www') . '/' . $_fs_alias . '/' . $id . '/';
-						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
-					}
-				}
-				else
-				{
-					$value->path = 'index.php?option=com_kinoarhiv&task=media.view&element=trailer&id=' . $id .
-						'&fa=' . urlencode($value->fs_alias) . '&format=raw&Itemid=' . $itemid;
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+					$value->path = $params->get('media_trailers_root_www') . '/' . String::substr($value->alias, 0, 1) . '/' . $id . '/';
+					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www') . DIRECTORY_SEPARATOR . String::substr($value->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 				}
 
 				$value->files['video'] = json_decode($value->filename, true);
 				$value->files['video_links'] = array();
 
+				// Checking video extentions
 				if (count($value->files['video']) > 0)
 				{
 					foreach ($value->files['video'] as $i => $val)
 					{
-						if ($throttle_video_enable == 0)
+						if (!in_array(strtolower(JFile::getExt($val['src'])), array('mp4', 'webm', 'ogv')))
 						{
-							$value->files['video'][$i]['src'] = $value->path . $val['src'];
-
-							// Check video extentions
-							if (!in_array(strtolower(JFile::getExt($val['src'])), $allowed_formats))
-							{
-								$value->files['video_links'][] = $value->files['video'][$i];
-								unset($value->files['video'][$i]);
-							}
-						}
-						else
-						{
-							$value->files['video'][$i]['src'] = JRoute::_($value->path . '&content=video&fn=' . $val['src'] . '&' . JSession::getFormToken() . '=1');
+							$value->files['video_links'][] = $value->files['video'][$i];
+							unset($value->files['video'][$i]);
 						}
 					}
 				}
@@ -1041,20 +954,9 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					foreach ($_subtitles as $i => $subtitle)
 					{
-						if (!is_file(JPath::clean($path . $subtitle['file'])))
+						if (!file_exists(JPath::clean($path . $subtitle['file'])))
 						{
 							unset($_subtitles[$i]);
-						}
-						else
-						{
-							if ($throttle_video_enable == 0)
-							{
-								$_subtitles[$i]['file'] = $value->path . $subtitle['file'];
-							}
-							else
-							{
-								$_subtitles[$i]['file'] = JRoute::_($value->path . '&content=subtitles&fn=' . $subtitle['file']);
-							}
 						}
 					}
 				}
@@ -1071,17 +973,6 @@ class KinoarhivModelMovie extends JModelForm
 						if (!file_exists(JPath::clean($path . $chapter)))
 						{
 							unset($_chapters[$i]);
-						}
-						else
-						{
-							if ($throttle_video_enable == 0)
-							{
-								$_chapters[$i] = $value->path . $chapter;
-							}
-							else
-							{
-								$_chapters[$i] = JRoute::_($value->path . '&content=chapters&fn=' . $chapter);
-							}
 						}
 					}
 				}
@@ -1114,10 +1005,6 @@ class KinoarhivModelMovie extends JModelForm
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
 		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_img_enable = $params->get('throttle_image_enable', 0);
-		$throttle_video_enable = $params->get('throttle_video_enable', 0);
-		$allowed_formats = array('mp4', 'webm', 'ogv', 'flv');
 
 		if ($type == 'movie')
 		{
@@ -1133,22 +1020,11 @@ class KinoarhivModelMovie extends JModelForm
 			$is_movie = 0;
 		}
 
-		$query = $db->getQuery(true)
-			->select(
-				$db->quoteName(
-					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.filename', 'tr.resolution',
-						'tr.dar', 'tr.duration', 'tr._subtitles', 'tr._chapters', 'm.title', 'm.alias', 'm.fs_alias'
-					)
-				)
-			)
-			->from($db->quoteName('#__ka_trailers', 'tr'))
-			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = tr.movie_id')
-			->where('tr.movie_id = ' . (int) $id . ' AND tr.state = 1 AND tr.access IN (' . $groups . ')')
-			->where('tr.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND tr.is_movie = ' . $is_movie)
-			->where('tr.frontpage = 1')
-			->setLimit(1, 0);
-
-		$db->setQuery($query);
+		$db->setQuery("SELECT `tr`.`id`, `tr`.`title`, `tr`.`embed_code`, `tr`.`screenshot`, `tr`.`urls`, `tr`.`filename`, `tr`.`resolution`, `tr`.`dar`, `tr`.`duration`, `tr`.`_subtitles`, `tr`.`_chapters`, `m`.`title`, `m`.`alias`"
+			. "\n FROM " . $db->quoteName('#__ka_trailers') . " AS `tr`"
+			. "\n LEFT JOIN " . $db->quoteName('#__ka_movies') . " AS `m` ON `m`.`id` = `tr`.`movie_id`"
+			. "\n WHERE `tr`.`movie_id` = " . (int) $id . " AND `tr`.`state` = 1 AND `tr`.`access` IN (" . $groups . ") AND `tr`.`language` IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ") AND `tr`.`is_movie` = " . $is_movie . " AND `tr`.`frontpage` = 1"
+			. "\n LIMIT 1");
 		$result = $db->loadObject();
 
 		if (count($result) < 1)
@@ -1167,15 +1043,15 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (count($urls_arr) > 0)
 			{
-				if (file_exists($params->get('media_trailers_root') . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot))
+				if (file_exists($params->get('media_trailers_root') . '/' . String::substr($result->alias, 0, 1) . '/' . $id . '/' . $result->screenshot))
 				{
 					if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
-						$result->screenshot = JUri::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot;
+						$result->screenshot = JUri::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/' . String::substr($result->alias, 0, 1) . '/' . $id . '/' . $result->screenshot;
 					}
 					else
 					{
-						$result->screenshot = $params->get('media_trailers_root_www') . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot;
+						$result->screenshot = $params->get('media_trailers_root_www') . '/' . String::substr($result->alias, 0, 1) . '/' . $id . '/' . $result->screenshot;
 					}
 				}
 				else
@@ -1286,66 +1162,15 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		else
 		{
-			if ($throttle_img_enable == 0)
+			if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 			{
-				$checking_path = JPath::clean(
-					$params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $result->fs_alias
-					. DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $result->screenshot
-				);
-
-				if (!is_file($checking_path))
-				{
-					$result->screenshot = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
-						. $params->get('ka_theme') . '/images/video_off.png';
-				}
-				else
-				{
-					$img_fs_alias = rawurlencode($result->fs_alias);
-
-					if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
-					{
-						$result->screenshot = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
-							. $img_fs_alias . '/' . $id . '/' . $result->screenshot;
-					}
-					else
-					{
-						$result->screenshot = $params->get('media_trailers_root_www') . '/' . $img_fs_alias . '/' . $id . '/' . $result->screenshot;
-					}
-				}
+				$result->path = JUri::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/' . String::substr($result->alias, 0, 1) . '/' . $id . '/';
+				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . String::substr($params->get('media_trailers_root_www'), 1) . DIRECTORY_SEPARATOR . String::substr($result->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 			}
 			else
 			{
-				$result->screenshot = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-					'&fa=' . urlencode($result->fs_alias) . '&fn=' . $result->screenshot . '&format=raw&Itemid=' . $itemid
-				);
-			}
-
-			if ($throttle_video_enable == 0)
-			{
-				$video_fs_alias = rawurlencode($result->fs_alias);
-
-				if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
-				{
-					// $result->path is an URL, $path is a root path to the files
-					$result->path = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
-						. $video_fs_alias . '/' . $id . '/';
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . String::substr($params->get('media_trailers_root_www'), 1)
-						. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
-				}
-				else
-				{
-					$result->path = $params->get('media_trailers_root_www') . '/' . $video_fs_alias . '/' . $id . '/';
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-						. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
-				}
-			}
-			else
-			{
-				$result->path = 'index.php?option=com_kinoarhiv&task=media.view&element=trailer&id=' . $id .
-					'&fa=' . urlencode($result->fs_alias) . '&format=raw&Itemid=' . $itemid;
-				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-					. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+				$result->path = $params->get('media_trailers_root_www') . '/' . String::substr($result->alias, 0, 1) . '/' . $id . '/';
+				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www') . DIRECTORY_SEPARATOR . String::substr($result->alias, 0, 1) . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 			}
 
 			$result->files['video'] = json_decode($result->filename, true);
@@ -1354,22 +1179,12 @@ class KinoarhivModelMovie extends JModelForm
 			// Checking video extentions
 			if (count($result->files['video']) > 0)
 			{
-				foreach ($result->files['video'] as $i => $val)
+				foreach ($result->files['video'] as $key => $value)
 				{
-					if ($throttle_video_enable == 0)
+					if (!in_array(strtolower(JFile::getExt($value['src'])), array('mp4', 'webm', 'ogv')))
 					{
-						$result->files['video'][$i]['src'] = $result->path . $val['src'];
-
-						// Check video extentions
-						if (!in_array(strtolower(JFile::getExt($val['src'])), $allowed_formats))
-						{
-							$result->files['video_links'][] = $result->files['video'][$i];
-							unset($result->files['video'][$i]);
-						}
-					}
-					else
-					{
-						$result->files['video'][$i]['src'] = JRoute::_($result->path . '&content=video&fn=' . $val['src'] . '&' . JSession::getFormToken() . '=1');
+						$result->files['video_links'][] = $result->files['video'][$key];
+						unset($result->files['video'][$key]);
 					}
 				}
 			}
@@ -1414,20 +1229,9 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				foreach ($_subtitles as $i => $subtitle)
 				{
-					if (!is_file(JPath::clean($path . $subtitle['file'])))
+					if (!file_exists(JPath::clean($path . $subtitle['file'])))
 					{
 						unset($_subtitles[$i]);
-					}
-					else
-					{
-						if ($throttle_video_enable == 0)
-						{
-							$_subtitles[$i]['file'] = $result->path . $subtitle['file'];
-						}
-						else
-						{
-							$_subtitles[$i]['file'] = JRoute::_($result->path . '&content=subtitles&fn=' . $subtitle['file']);
-						}
 					}
 				}
 			}
@@ -1444,17 +1248,6 @@ class KinoarhivModelMovie extends JModelForm
 					if (!file_exists(JPath::clean($path . $chapter)))
 					{
 						unset($_chapters[$i]);
-					}
-					else
-					{
-						if ($throttle_video_enable == 0)
-						{
-							$_chapters[$i] = $result->path . $chapter;
-						}
-						else
-						{
-							$_chapters[$i] = JRoute::_($result->path . '&content=chapters&fn=' . $chapter);
-						}
 					}
 				}
 			}

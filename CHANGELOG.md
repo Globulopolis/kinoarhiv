@@ -1,18 +1,6 @@
 ## HEAD (Unreleased)
-* FIxed wrong string build for search in database in KADatabaseHelper::transformOperands()
-* Media content(like images, video, etc.) now can be restricted to numberof user sessions and speed.
-* Update plupload to 2.1.8
-* Update Select2 to 3.5.4
-* Update BxSlider to 4.2.5
-* Update jquery countdown to 2.0.2
-* Update jquery more to 2.0.1
-* Fixed search in grids for awards, premieres, releases in backend.
-* Added 'Clear' button for search forms.
-* Improve usability of updater for ratings from remote sites.
-* Fixed errors when parsin ratings from remote sites(e.g. rottentomatoes).
-* Fixed 'Save and create' task in 'country edit' template.
-* New layouts.
-* Change JString into String in classes.
+* New layout for alphabet navigation.
+* Change JString into String in classes(templates still using JString).
 * Removed unnecessary overrides in KAPagination class.
 * Fixed wrong redirects from filters in Releases, Premieres.
 * Fixed bug with tags in advanced search.
@@ -22,8 +10,7 @@
 * Remove unused variables.
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
-* Update VideoJS to 4.12.15
-* Update Mediaelement.js to 2.18.1
+* Update VideoJS to 4.12.11
 * Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".
 * Added posibility to edit a music genres.

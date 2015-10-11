@@ -44,6 +44,5 @@
 		   size="10" default="0" readonly="true"/>
 	<field name="movie_id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
 		   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
-	<field name="alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
-	<field name="fs_alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+	<field name="movie_alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
 </form>

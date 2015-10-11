@@ -2,7 +2,6 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -143,6 +142,7 @@ class KinoarhivModelMovies extends JModelList
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$searches = $this->getFiltersData();
 		$where_id = array();
 
 		// Define null and now dates
@@ -154,7 +154,7 @@ class KinoarhivModelMovies extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'm.id, m.parent_id, m.title, m.alias, m.fs_alias, ' . $db->quoteName('m.introtext', 'text') . ', m.plot, ' .
+				'm.id, m.parent_id, m.title, m.alias, ' . $db->quoteName('m.introtext', 'text') . ', m.plot, ' .
 				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, ' .
 				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, ' .
 				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
@@ -210,245 +210,240 @@ class KinoarhivModelMovies extends JModelList
 				->where('(m.publish_down = ' . $null_date . ' OR m.publish_down >= ' . $now_date . ')');
 		}
 
-		if ($app->input->get('task', '', 'cmd') == 'search' && KAComponentHelper::checkToken() === true)
+		// Filter by title
+		$title = $searches->get('filters.movies.title');
+
+		if ($params->get('search_movies_title') == 1 && !empty($title))
 		{
-			$searches = $this->getFiltersData();
-
-			// Filter by title
-			$title = $searches->get('filters.movies.title');
-
-			if ($params->get('search_movies_title') == 1 && !empty($title))
+			if (String::strlen($title) < $params->get('search_movies_length_min') || String::strlen($title) > $params->get('search_movies_length_max'))
 			{
-				if (String::strlen($title) < $params->get('search_movies_length_min') || String::strlen($title) > $params->get('search_movies_length_max'))
-				{
-					echo KAComponentHelper::showMsg(
-						JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')),
-						array('icon' => 'alert'),
-						true
-					);
-				}
-				else
-				{
-					$query->where("m.title LIKE '" . $db->escape($title) . "%'");
-				}
-			}
-
-			// Filter by year
-			$year = $searches->get('filters.movies.year');
-
-			if ($params->get('search_movies_year') == 1 && !empty($year))
-			{
-				$query->where("m.year LIKE '" . $db->escape($year) . "%'");
+				echo KAComponentHelper::showMsg(
+					JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')),
+					array('icon' => 'alert'),
+					true
+				);
 			}
 			else
 			{
-				// Filter by years range
-				$from_year = $searches->get('filters.movies.from_year');
-				$to_year = $searches->get('filters.movies.to_year');
+				$query->where("m.title LIKE '" . $db->escape($title) . "%'");
+			}
+		}
 
-				if ($params->get('search_movies_year_range') == 1)
+		// Filter by year
+		$year = $searches->get('filters.movies.year');
+
+		if ($params->get('search_movies_year') == 1 && !empty($year))
+		{
+			$query->where("m.year LIKE '" . $db->escape($year) . "%'");
+		}
+		else
+		{
+			// Filter by years range
+			$from_year = $searches->get('filters.movies.from_year');
+			$to_year = $searches->get('filters.movies.to_year');
+
+			if ($params->get('search_movies_year_range') == 1)
+			{
+				if (!empty($from_year) && !empty($to_year))
 				{
-					if (!empty($from_year) && !empty($to_year))
-					{
-						$query->where("m.year BETWEEN '" . $db->escape($from_year) . "' AND '" . $db->escape($to_year) . "'");
-					}
-					else
-					{
-						if (!empty($from_year))
-						{
-							$query->where("m.year REGEXP '^" . $db->escape($from_year) . "'");
-						}
-						elseif (!empty($to_year))
-						{
-							$query->where("m.year REGEXP '" . $db->escape($to_year) . "$'");
-						}
-					}
-				}
-			}
-
-			// Filter by country
-			$country = $searches->get('filters.movies.country');
-
-			if ($params->get('search_movies_country') == 1 && !empty($country))
-			{
-				$subquery_cn = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_rel_countries'))
-					->where('country_id = ' . (int) $country);
-
-				$db->setQuery($subquery_cn);
-				$movie_ids = $db->loadColumn();
-
-				$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
-			}
-
-			// Filter by person name
-			$cast = $searches->get('filters.movies.cast');
-
-			if ($params->get('search_movies_cast') == 1 && !empty($cast))
-			{
-				$subquery_cast = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_rel_names'))
-					->where('name_id = ' . (int) $cast);
-
-				$db->setQuery($subquery_cast);
-				$movie_ids = $db->loadColumn();
-
-				$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
-			}
-
-			// Filter by vendor
-			$vendor = $searches->get('filters.movies.vendor');
-
-			if ($params->get('search_movies_vendor') == 1 && !empty($vendor))
-			{
-				$subquery_vnd = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_releases'))
-					->where('vendor_id = ' . (int) $vendor)
-					->group('movie_id');
-
-				$db->setQuery($subquery_vnd);
-				$movie_ids = $db->loadColumn();
-
-				$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
-			}
-
-			// Filter by genres
-			$genres = $searches->get('filters.movies.genre');
-
-			if ($params->get('search_movies_genre') == 1 && !empty($genres))
-			{
-				$subquery_genre = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_rel_genres'))
-					->where('genre_id IN (' . implode(',', $genres) . ')')
-					->group('movie_id');
-
-				$db->setQuery($subquery_genre);
-				$movie_ids = $db->loadColumn();
-
-				$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
-			}
-
-			// Filter by MPAA
-			$mpaa = $searches->get('filters.movies.mpaa');
-
-			if ($params->get('search_movies_mpaa') == 1 && !empty($mpaa))
-			{
-				$query->where("m.mpaa = '" . $db->escape($mpaa) . "'");
-			}
-
-			// Filter by age
-			$age_restrict = $searches->get('filters.movies.age_restrict');
-
-			if ($params->get('search_movies_age_restrict') == 1 && (!empty($age_restrict) && $age_restrict != '-1'))
-			{
-				$query->where("m.age_restrict = '" . $db->escape($age_restrict) . "'");
-			}
-
-			// Filter by UA rating
-			$ua_rate = $searches->get('filters.movies.ua_rate');
-
-			if ($params->get('search_movies_ua_rate') == 1 && (!empty($ua_rate) && $ua_rate != '-1'))
-			{
-				$query->where("m.ua_rate = '" . $db->escape($ua_rate) . "'");
-			}
-
-			// Filter by site rating
-			$rate = $searches->def('filters.movies.rate.enable', 0);
-
-			if ($params->get('search_movies_rate') == 1 && $rate === 1)
-			{
-				$rate_min = $searches->def('filters.movies.rate.min', 0);
-				$rate_max = $searches->def('filters.movies.rate.max', 10);
-				$query->where("m.rate_loc_rounded BETWEEN " . (int) $rate_min . " AND " . (int) $rate_max);
-			}
-
-			// Filter by imdb rating
-			$imdbrate = $searches->def('filters.movies.imdbrate.enable', 0);
-
-			if ($params->get('search_movies_imdbrate') == 1 && $imdbrate === 1)
-			{
-				$imdbrate_min = $searches->def('filters.movies.imdbrate.min', 6);
-				$imdbrate_max = $searches->def('filters.movies.imdbrate.max', 10);
-				$query->where("m.rate_imdb_rounded BETWEEN " . (int) $imdbrate_min . " AND " . (int) $imdbrate_max);
-			}
-
-			// Filter by kinopoisk rating
-			$kprate = $searches->def('filters.movies.kprate.enable', 0);
-
-			if ($params->get('search_movies_kprate') == 1 && $kprate === 1)
-			{
-				$kprate_min = $searches->def('filters.movies.kprate.min', 6);
-				$kprate_max = $searches->def('filters.movies.kprate.max', 10);
-				$query->where("m.rate_kp_rounded BETWEEN " . (int) $kprate_min . " AND " . (int) $kprate_max);
-			}
-
-			// Filter by rotten tomatoes rating
-			$rtrate = $searches->def('filters.movies.rtrate.enable', 0);
-
-			if ($params->get('search_movies_rtrate') == 1 && $rtrate === 1)
-			{
-				$rtrate_min = $searches->def('filters.movies.rtrate.min', 0);
-				$rtrate_max = $searches->def('filters.movies.rtrate.max', 100);
-				$query->where("m.rate_fc BETWEEN " . (int) $rtrate_min . " AND " . (int) $rtrate_max);
-			}
-
-			// Filter by metacritic rating
-			$metacritic = $searches->def('filters.movies.metacritic.enable', 0);
-
-			if ($params->get('search_movies_metacritic') == 1 && $metacritic === 1)
-			{
-				$metacritic_min = $searches->def('filters.movies.metacritic.min', 0);
-				$metacritic_max = $searches->def('filters.movies.metacritic.max', 100);
-				$query->where("m.metacritics BETWEEN " . (int) $metacritic_min . " AND " . (int) $metacritic_max);
-			}
-
-			// Filter by budget
-			$from_budget = $searches->get('filters.movies.from_budget');
-			$to_budget = $searches->get('filters.movies.to_budget');
-
-			if ($params->get('search_movies_budget') == 1)
-			{
-				if (!empty($from_budget) && !empty($to_budget))
-				{
-					$query->where("m.budget BETWEEN '" . $db->escape($from_budget) . "' AND '" . $db->escape($to_budget) . "'");
+					$query->where("m.year BETWEEN '" . $db->escape($from_year) . "' AND '" . $db->escape($to_year) . "'");
 				}
 				else
 				{
-					if (!empty($from_budget))
+					if (!empty($from_year))
 					{
-						$query->where("m.budget = '" . $db->escape($from_budget) . "'");
+						$query->where("m.year REGEXP '^" . $db->escape($from_year) . "'");
 					}
-					elseif (!empty($to_budget))
+					elseif (!empty($to_year))
 					{
-						$query->where("m.budget = '" . $db->escape($to_budget) . "'");
+						$query->where("m.year REGEXP '" . $db->escape($to_year) . "$'");
 					}
 				}
 			}
+		}
 
-			// Filter by tags
-			$tags = $searches->get('filters.movies.tags');
+		// Filter by country
+		$country = $searches->get('filters.movies.country');
 
-			if ($params->get('search_movies_tags') == 1 && !empty($tags))
+		if ($params->get('search_movies_country') == 1 && !empty($country))
+		{
+			$subquery_cn = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_countries'))
+				->where('country_id = ' . (int) $country);
+
+			$db->setQuery($subquery_cn);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
+		}
+
+		// Filter by person name
+		$cast = $searches->get('filters.movies.cast');
+
+		if ($params->get('search_movies_cast') == 1 && !empty($cast))
+		{
+			$subquery_cast = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_names'))
+				->where('name_id = ' . (int) $cast);
+
+			$db->setQuery($subquery_cast);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
+		}
+
+		// Filter by vendor
+		$vendor = $searches->get('filters.movies.vendor');
+
+		if ($params->get('search_movies_vendor') == 1 && !empty($vendor))
+		{
+			$subquery_vnd = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_releases'))
+				->where('vendor_id = ' . (int) $vendor)
+				->group('movie_id');
+
+			$db->setQuery($subquery_vnd);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
+		}
+
+		// Filter by genres
+		$genres = $searches->get('filters.movies.genre');
+
+		if ($params->get('search_movies_genre') == 1 && !empty($genres))
+		{
+			$subquery_genre = $db->getQuery(true)
+				->select('movie_id')
+				->from($db->quoteName('#__ka_rel_genres'))
+				->where('genre_id IN (' . implode(',', $genres) . ')')
+				->group('movie_id');
+
+			$db->setQuery($subquery_genre);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
+		}
+
+		// Filter by MPAA
+		$mpaa = $searches->get('filters.movies.mpaa');
+
+		if ($params->get('search_movies_mpaa') == 1 && !empty($mpaa))
+		{
+			$query->where("m.mpaa = '" . $db->escape($mpaa) . "'");
+		}
+
+		// Filter by age
+		$age_restrict = $searches->get('filters.movies.age_restrict');
+
+		if ($params->get('search_movies_age_restrict') == 1 && (!empty($age_restrict) && $age_restrict != '-1'))
+		{
+			$query->where("m.age_restrict = '" . $db->escape($age_restrict) . "'");
+		}
+
+		// Filter by UA rating
+		$ua_rate = $searches->get('filters.movies.ua_rate');
+
+		if ($params->get('search_movies_ua_rate') == 1 && (!empty($ua_rate) && $ua_rate != '-1'))
+		{
+			$query->where("m.ua_rate = '" . $db->escape($ua_rate) . "'");
+		}
+
+		// Filter by site rating
+		$rate = $searches->def('filters.movies.rate.enable', 0);
+
+		if ($params->get('search_movies_rate') == 1 && $rate === 1)
+		{
+			$rate_min = $searches->def('filters.movies.rate.min', 0);
+			$rate_max = $searches->def('filters.movies.rate.max', 10);
+			$query->where("m.rate_loc_rounded BETWEEN " . (int) $rate_min . " AND " . (int) $rate_max);
+		}
+
+		// Filter by imdb rating
+		$imdbrate = $searches->def('filters.movies.imdbrate.enable', 0);
+
+		if ($params->get('search_movies_imdbrate') == 1 && $imdbrate === 1)
+		{
+			$imdbrate_min = $searches->def('filters.movies.imdbrate.min', 6);
+			$imdbrate_max = $searches->def('filters.movies.imdbrate.max', 10);
+			$query->where("m.rate_imdb_rounded BETWEEN " . (int) $imdbrate_min . " AND " . (int) $imdbrate_max);
+		}
+
+		// Filter by kinopoisk rating
+		$kprate = $searches->def('filters.movies.kprate.enable', 0);
+
+		if ($params->get('search_movies_kprate') == 1 && $kprate === 1)
+		{
+			$kprate_min = $searches->def('filters.movies.kprate.min', 6);
+			$kprate_max = $searches->def('filters.movies.kprate.max', 10);
+			$query->where("m.rate_kp_rounded BETWEEN " . (int) $kprate_min . " AND " . (int) $kprate_max);
+		}
+
+		// Filter by rotten tomatoes rating
+		$rtrate = $searches->def('filters.movies.rtrate.enable', 0);
+
+		if ($params->get('search_movies_rtrate') == 1 && $rtrate === 1)
+		{
+			$rtrate_min = $searches->def('filters.movies.rtrate.min', 0);
+			$rtrate_max = $searches->def('filters.movies.rtrate.max', 100);
+			$query->where("m.rate_fc BETWEEN " . (int) $rtrate_min . " AND " . (int) $rtrate_max);
+		}
+
+		// Filter by metacritic rating
+		$metacritic = $searches->def('filters.movies.metacritic.enable', 0);
+
+		if ($params->get('search_movies_metacritic') == 1 && $metacritic === 1)
+		{
+			$metacritic_min = $searches->def('filters.movies.metacritic.min', 0);
+			$metacritic_max = $searches->def('filters.movies.metacritic.max', 100);
+			$query->where("m.metacritics BETWEEN " . (int) $metacritic_min . " AND " . (int) $metacritic_max);
+		}
+
+		// Filter by budget
+		$from_budget = $searches->get('filters.movies.from_budget');
+		$to_budget = $searches->get('filters.movies.to_budget');
+
+		if ($params->get('search_movies_budget') == 1)
+		{
+			if (!empty($from_budget) && !empty($to_budget))
 			{
-				$subquery_tags = $db->getQuery(true)
-					->select('content_item_id')
-					->from($db->quoteName('#__contentitem_tag_map'))
-					->where("type_alias = 'com_kinoarhiv.movie' AND tag_id IN (" . $tags . ")");
-
-				$db->setQuery($subquery_tags);
-				$movie_ids = $db->loadColumn();
-
-				$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
+				$query->where("m.budget BETWEEN '" . $db->escape($from_budget) . "' AND '" . $db->escape($to_budget) . "'");
 			}
-
-			if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres) || !empty($tags) && !empty($where_id))
+			else
 			{
-				$query->where('m.id IN (' . implode(',', ArrayHelper::arrayUnique($where_id)) . ')');
+				if (!empty($from_budget))
+				{
+					$query->where("m.budget = '" . $db->escape($from_budget) . "'");
+				}
+				elseif (!empty($to_budget))
+				{
+					$query->where("m.budget = '" . $db->escape($to_budget) . "'");
+				}
 			}
+		}
+
+		// Filter by tags
+		$tags = $searches->get('filters.movies.tags');
+
+		if ($params->get('search_movies_tags') == 1 && !empty($tags))
+		{
+			$subquery_tags = $db->getQuery(true)
+				->select('content_item_id')
+				->from($db->quoteName('#__contentitem_tag_map'))
+				->where("type_alias = 'com_kinoarhiv.movie' AND tag_id IN (" . $tags . ")");
+
+			$db->setQuery($subquery_tags);
+			$movie_ids = $db->loadColumn();
+
+			$where_id = (!empty($movie_ids)) ? array_merge($where_id, $movie_ids) : array(0);
+		}
+
+		if (!empty($country) || !empty($cast) || !empty($vendor) || !empty($genres) || !empty($tags) && !empty($where_id))
+		{
+			$query->where('m.id IN (' . implode(',', ArrayHelper::arrayUnique($where_id)) . ')');
 		}
 
 		// Prevent duplicate records if accidentally have a more than one poster for frontpage.

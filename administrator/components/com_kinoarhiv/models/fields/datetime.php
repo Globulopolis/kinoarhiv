@@ -2,7 +2,6 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -10,40 +9,15 @@
 
 defined('JPATH_PLATFORM') or die;
 
-/**
- * Form Field class for the Joomla Platform.
- *
- * Provides a pop up date picker linked to a button.
- * Optionally may be filtered to use user's or server's time zone.
- *
- * @since  3.0
- */
 class JFormFieldDatetime extends JFormField
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.0
-	 */
 	protected $type = 'Datetime';
 
-	/**
-	 * The allowable maxlength of the field.
-	 *
-	 * @var    integer
-	 * @since  3.0
-	 */
 	protected $maxLength;
 
-	/**
-	 * Method to instantiate the form field object.
-	 *
-	 * @param   JForm  $form  The form to attach to the form field object.
-	 *
-	 * @since   3.0
-	 */
-	public function __construct($form = null)
+	protected $script = null;
+
+	public function __construct()
 	{
 		JHtml::_('jquery.framework');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
@@ -55,13 +29,6 @@ class JFormFieldDatetime extends JFormField
 		parent::__construct();
 	}
 
-	/**
-	 * Method to get the field input.
-	 *
-	 * @return  string  The field input.
-	 *
-	 * @since   3.0
-	 */
 	protected function getInput()
 	{
 		$attributes = ' ';

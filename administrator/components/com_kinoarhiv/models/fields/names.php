@@ -2,7 +2,6 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -10,29 +9,11 @@
 
 defined('JPATH_PLATFORM') or die;
 
-/**
- * Form Field to load a person or list of persons
- *
- * @since  3.0
- */
 class JFormFieldNames extends JFormField
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var    string
-	 * @since  3.0
-	 */
 	protected $type = 'Names';
 
-	/**
-	 * Method to instantiate the form field object.
-	 *
-	 * @param   JForm  $form  The form to attach to the form field object.
-	 *
-	 * @since   3.0
-	 */
-	public function __construct($form = null)
+	public function __construct()
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -58,6 +39,19 @@ class JFormFieldNames extends JFormField
 	{
 		$name = $this->name ? $this->name : $name;
 		$id = $this->id ? $this->id : $name;
+
+		if (isset($this->element['class']))
+		{
+			$label = (string) $this->element['class'];
+		}
+		elseif (!empty($class))
+		{
+			$label = $class;
+		}
+		else
+		{
+			$label = '';
+		}
 
 		$text = $this->element['label'] ? (string) $this->element['label'] : (string) $label;
 

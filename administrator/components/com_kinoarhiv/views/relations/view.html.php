@@ -1,21 +1,16 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
-
-defined('_JEXEC') or die;
-
 class KinoarhivViewRelations extends JViewLegacy
 {
 	protected $form;
-
 	protected $task = null;
-
 	protected $user;
 
 	public function display($tpl = null)
@@ -29,8 +24,7 @@ class KinoarhivViewRelations extends JViewLegacy
 		$this->element = $app->input->get('element', 'movies', 'word');
 		$this->user = &$user;
 
-		switch ($this->task)
-		{
+		switch ($this->task) {
 			case 'countries':
 				JToolbarHelper::custom('menu', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 				$this->countries($tpl);
@@ -65,12 +59,9 @@ class KinoarhivViewRelations extends JViewLegacy
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
-		if (!empty($id))
-		{
+		if (!empty($id)) {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS') . ': ' . JText::_('COM_KA_COUNTRIES_TITLE') . ': ID ' . $id), 'link');
-		}
-		else
-		{
+		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS') . ': ' . JText::_('COM_KA_COUNTRIES_TITLE')), 'link');
 		}
 
@@ -89,32 +80,19 @@ class KinoarhivViewRelations extends JViewLegacy
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
-		if (!empty($id))
-		{
+		if (!empty($id)) {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS') . ': ' . JText::_('COM_KA_GENRES_TITLE') . ': ID ' . $id), 'link');
-		}
-		else
-		{
-			if ($app->input->get('mid', 0, 'int') != 0)
-			{
+		} else {
+			if ($app->input->get('mid', 0, 'int') != 0) {
 				$title = ' - ' . JText::_('COM_KA_MOVIES_TITLE');
-			}
-			elseif ($app->input->get('nid', 0, 'int') != 0)
-			{
+			} elseif ($app->input->get('nid', 0, 'int') != 0) {
 				$title = ' - ' . JText::_('COM_KA_NAMES_TITLE');
-			}
-			else
-			{
-				if ($app->input->get('element', 'movies', 'word') == 'movies')
-				{
+			} else {
+				if ($app->input->get('element', 'movies', 'word') == 'movies') {
 					$title = ' - ' . JText::_('COM_KA_MOVIES_TITLE');
-				}
-				elseif ($app->input->get('element', 'movies', 'word') == 'names')
-				{
+				} elseif ($app->input->get('element', 'movies', 'word') == 'names') {
 					$title = ' - ' . JText::_('COM_KA_NAMES_TITLE');
-				}
-				else
-				{
+				} else {
 					$title = '';
 				}
 			}
@@ -138,25 +116,17 @@ class KinoarhivViewRelations extends JViewLegacy
 		$id = $app->input->get('id', 0, 'int');
 		$award_type = $app->input->get('award_type', 0, 'int');
 
-		if ($award_type == 0)
-		{
+		if ($award_type == 0) {
 			$award_type_title = JText::_('COM_KA_AW_RELATION_TO_MOVIES');
-		}
-		elseif ($award_type == 1)
-		{
+		} elseif ($award_type == 1) {
 			$award_type_title = JText::_('COM_KA_AW_RELATION_TO_NAMES');
-		}
-		else
-		{
+		} else {
 			$award_type_title = '';
 		}
 
-		if (!empty($id))
-		{
+		if (!empty($id)) {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE') . ': ' . JText::_('COM_KA_TABLES_RELATIONS') . $award_type_title . ': ID ' . $id), 'link');
-		}
-		else
-		{
+		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE') . ': ' . JText::_('COM_KA_TABLES_RELATIONS') . $award_type_title), 'link');
 		}
 
@@ -177,12 +147,9 @@ class KinoarhivViewRelations extends JViewLegacy
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
-		if (!empty($id))
-		{
+		if (!empty($id)) {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS') . ': ' . JText::_('COM_KA_CAREERS_TITLE')) . ': ID ' . $id, 'link');
-		}
-		else
-		{
+		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_TABLES_RELATIONS') . ': ' . JText::_('COM_KA_CAREERS_TITLE')), 'link');
 		}
 
@@ -213,16 +180,13 @@ class KinoarhivViewRelations extends JViewLegacy
 		$this->param = $param;
 
 		// We need a custom edit template for awards
-		if ($param == 'awards')
-		{
+		if ($param == 'awards') {
 			$award_type = $app->input->get('award_type', 0, 'int');
 			$this->award_type = $award_type;
 
 			parent::display('relations_edit_awards');
 			$app->input->set('hidemainmenu', true);
-		}
-		else
-		{
+		} else {
 			parent::display('relations_edit');
 			$app->input->set('hidemainmenu', true);
 		}

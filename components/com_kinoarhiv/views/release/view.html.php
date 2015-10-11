@@ -1,35 +1,17 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
-
-defined('_JEXEC') or die;
-
-use Joomla\String\String;
-
-/**
- * Release View class
- *
- * @since  3.0
- */
 class KinoarhivViewRelease extends JViewLegacy
 {
 	protected $item;
-
 	protected $user;
 
-	/**
-	 * Execute and display a template script.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  mixed
-	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -40,8 +22,7 @@ class KinoarhivViewRelease extends JViewLegacy
 
 		$item = $this->get('Item');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
-		{
+		if (count($errors = $this->get('Errors')) || is_null($item)) {
 			KAComponentHelper::eventLog(is_null($errors) ? $errors : implode("\n", $errors), 'ui');
 
 			return false;
@@ -54,92 +35,63 @@ class KinoarhivViewRelease extends JViewLegacy
 		$itemid = $this->itemid;
 
 		// Replace country BB-code
-		$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme)
-		{
+		$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme) {
 			$html = JText::_($matches[1]);
 
 			$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="' . JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $ka_theme . '/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 			return $html . $cn;
-		},
-		$item->text
-		);
+		}, $item->text);
 
 		// Replace genres BB-code
-		$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
-		{
+		$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches) {
 			return JText::_($matches[1]) . $matches[2];
-		},
-		$item->text
-		);
+		}, $item->text);
 
 		// Replace person BB-code
-		$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid)
-		{
+		$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid) {
 			$html = JText::_($matches[1]);
 
 			$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid, false) . '" title="$2">$2</a>', $matches[2]);
 
 			return $html . $name;
-		},
-		$item->text
-		);
+		}, $item->text);
 
-		if ($params->get('throttle_image_enable', 0) == 0)
-		{
-			$checking_path = JPath::clean(
-				$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-				DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $item->filename
-			);
-
-			if (!is_file($checking_path))
-			{
-				$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+		if (empty($item->filename)) {
+			$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+			$item->y_poster = '';
+		} else {
+			if (JString::substr($params->get('media_posters_root_www'), 0, 1) == '/') {
+				$item->poster = JUri::base() . JString::substr($params->get('media_posters_root_www'), 1) . '/' . JString::substr($item->alias, 0, 1) . '/' . $item->id . '/posters/thumb_' . $item->filename;
+			} else {
+				$item->poster = $params->get('media_posters_root_www') . '/' . JString::substr($item->alias, 0, 1) . '/' . $item->id . '/posters/thumb_' . $item->filename;
 			}
-			else
-			{
-				$item->fs_alias = rawurlencode($item->fs_alias);
-
-				if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
-				{
-					$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-				}
-				else
-				{
-					$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-				}
-			}
-		}
-		else
-		{
-			$item->poster = JRoute::_(
-				'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-			);
+			$item->y_poster = ' y-poster';
 		}
 
 		$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
 
-		if ($params->get('ratings_show_frontpage') == 1)
-		{
-			if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
-			{
+		if ($params->get('ratings_show_frontpage') == 1) {
+			if (!empty($item->rate_sum_loc) && !empty($item->rate_loc)) {
 				$plural = $lang->getPluralSuffixes($item->rate_loc);
-				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-				$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
+				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int)$params->get('vote_summ_precision'));
+				$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int)$params->get('vote_summ_num'), $item->rate_loc);
 				$item->rate_loc_label_class = ' has-rating';
-			}
-			else
-			{
+			} else {
 				$item->rate_loc_c = 0;
 				$item->rate_loc_label = '<br />' . JText::_('COM_KA_RATE_NO');
 				$item->rate_loc_label_class = ' no-rating';
 			}
 		}
 
+		/*if (!empty($item->desc)) {
+			$item->desc = str_replace("\n", "<br />", $item->desc);
+			$item->desc = str_replace(array('[code]', '[/code]'), array('<pre>', '</pre>'), $item->desc);
+		}*/
+
 		$item->event = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $item->id . '&Itemid=' . $this->itemid, false));
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $item->id . '&Itemid=' . $this->itemid), false);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
@@ -155,8 +107,8 @@ class KinoarhivViewRelease extends JViewLegacy
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		$this->item = $item;
-		$this->params = $params;
-		$this->user = $user;
+		$this->params = &$params;
+		$this->user = &$user;
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();
@@ -167,8 +119,6 @@ class KinoarhivViewRelease extends JViewLegacy
 
 	/**
 	 * Prepares the document
-	 *
-	 * @return  void
 	 */
 	protected function _prepareDocument()
 	{
@@ -178,9 +128,8 @@ class KinoarhivViewRelease extends JViewLegacy
 		$pathway = $app->getPathway();
 
 		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=release') ? $menu->title : JText::_('COM_KA_RELEASES');
-
 		// Create a new pathway object
-		$path = (object) array(
+		$path = (object)array(
 			'name' => $title,
 			'link' => 'index.php?option=com_kinoarhiv&view=releases&Itemid=' . $this->itemid
 		);
@@ -188,43 +137,29 @@ class KinoarhivViewRelease extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($this->item->title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
-		{
+		if ($menu && $menu->params->get('menu-meta_description') != '') {
 			$this->document->setDescription($menu->params->get('menu-meta_description'));
-		}
-		else
-		{
+		} else {
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
-		{
+		if ($menu && $menu->params->get('menu-meta_keywords') != '') {
 			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
-		}
-		else
-		{
+		} else {
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
-		{
+		if ($menu && $menu->params->get('robots') != '') {
 			$this->document->setMetadata('robots', $menu->params->get('robots'));
-		}
-		else
-		{
+		} else {
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}
 
-		if ($this->params->get('generator') == 'none')
-		{
+		if ($this->params->get('generator') == 'none') {
 			$this->document->setGenerator('');
-		}
-		elseif ($this->params->get('generator') == 'site')
-		{
+		} elseif ($this->params->get('generator') == 'site') {
 			$this->document->setGenerator($this->document->getGenerator());
-		}
-		else
-		{
+		} else {
 			$this->document->setGenerator($this->params->get('generator'));
 		}
 	}

@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -11,19 +10,12 @@
 defined('_JEXEC') or die;
 
 /**
- * Class KAImageHelper
+ * Class ImageHelper
  *
  * @since  3.0
  */
-class KAImageHelper
+class ImageHelper
 {
-	/**
-	 * Convert HEX color code into rgb.
-	 *
-	 * @param   string  $rgb  HEX color code.
-	 *
-	 * @return  array
-	 */
 	private static function rgb2array($rgb)
 	{
 		$rgb = str_replace('#', '', $rgb);
@@ -35,13 +27,6 @@ class KAImageHelper
 		);
 	}
 
-	/**
-	 * Method to update rating images.
-	 *
-	 * @param   array  $data  Array with the ratings and votes.
-	 *
-	 * @return  array
-	 */
 	public static function createRateImage($data)
 	{
 		jimport('joomla.filesystem.folder');
@@ -56,35 +41,27 @@ class KAImageHelper
 		if ($cmd == 'rt_vote')
 		{
 			$file = $path . DIRECTORY_SEPARATOR . 'rottentomatoes_blank.png';
-			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'rottentomatoes' . DIRECTORY_SEPARATOR;
 		}
 		elseif ($cmd == 'mc_vote')
 		{
 			$file = $path . DIRECTORY_SEPARATOR . 'metacritic_blank.png';
-			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'metacritic' . DIRECTORY_SEPARATOR;
 		}
 		elseif ($cmd == 'kp_vote')
 		{
 			$file = $path . DIRECTORY_SEPARATOR . 'kinopoisk_blank.png';
-			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'kinopoisk' . DIRECTORY_SEPARATOR;
 		}
 		elseif ($cmd == 'imdb_vote')
 		{
 			$file = $path . DIRECTORY_SEPARATOR . 'imdb_blank.png';
-			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'imdb' . DIRECTORY_SEPARATOR;
-		}
-		else
-		{
-			return array('success' => false, 'message' => 'Unknown type!');
 		}
 
 		$font = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'OpenSans-Regular.ttf';
 
 		if (file_exists($file))
 		{
-			list($width, $height) = @getimagesize($file);
+			list($w, $h) = getimagesize($file);
 
-			$dst_im = imagecreatetruecolor($width, $height);
+			$dst_im = imagecreatetruecolor($w, $h);
 			$src_im = imagecreatefrompng($file);
 			imagealphablending($src_im, true);
 			imagesavealpha($src_im, true);
@@ -125,10 +102,27 @@ class KAImageHelper
 				}
 			}
 
-			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $width, $height, $width, $height);
+			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $w, $h, $w, $h);
 
 			$document->setMimeEncoding('image/png');
 			JResponse::allowCache(false);
+
+			if ($cmd == 'rt_vote')
+			{
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'rottentomatoes' . DIRECTORY_SEPARATOR;
+			}
+			elseif ($cmd == 'mc_vote')
+			{
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'metacritic' . DIRECTORY_SEPARATOR;
+			}
+			elseif ($cmd == 'kp_vote')
+			{
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'kinopoisk' . DIRECTORY_SEPARATOR;
+			}
+			elseif ($cmd == 'imdb_vote')
+			{
+				$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'imdb' . DIRECTORY_SEPARATOR;
+			}
 
 			if (!file_exists($dst_dir))
 			{
@@ -138,16 +132,9 @@ class KAImageHelper
 			$result = imagepng($src_im, $dst_dir . $id . '_big.png', 1);
 			imagedestroy($src_im);
 
-			if ($result === true)
-			{
-				return array('success' => true, 'message' => 'Success');
-			}
-			else
-			{
-				return array('success' => false, 'message' => 'Failed to create an image!');
-			}
+			return $result;
 		}
 
-		return array('success' => false, 'message' => 'File with the blank rating image not found at path ' . $file);
+		return false;
 	}
 }

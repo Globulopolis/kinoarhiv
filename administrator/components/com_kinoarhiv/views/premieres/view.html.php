@@ -1,31 +1,24 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
-
-defined('_JEXEC') or die;
-
 class KinoarhivViewPremieres extends JViewLegacy
 {
 	protected $items;
-
 	protected $pagination;
-
 	protected $state;
-
 	protected $form;
 
 	public function display($tpl = null)
 	{
 		$user = JFactory::getUser();
 
-		if ($tpl == 'add' || $tpl == 'edit')
-		{
+		if ($tpl == 'add' || $tpl == 'edit') {
 			$this->edit($tpl);
 
 			return;
@@ -35,8 +28,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$this->pagination = $this->get('Pagination');
 		$this->state = $this->get('State');
 
-		if (count($errors = $this->get('Errors')))
-		{
+		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
@@ -55,8 +47,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv'))
-		{
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 		}
 
@@ -73,14 +64,10 @@ class KinoarhivViewPremieres extends JViewLegacy
 	{
 		$user = JFactory::getUser();
 
-		if ($task == 'add' || $task == 'edit')
-		{
-			if ($task == 'edit')
-			{
+		if ($task == 'add' || $task == 'edit') {
+			if ($task == 'edit') {
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE') . ': ' . JText::_('COM_KA_EDIT')), 'calendar');
-			}
-			else
-			{
+			} else {
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'calendar');
 			}
 
@@ -89,29 +76,22 @@ class KinoarhivViewPremieres extends JViewLegacy
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
-		}
-		else
-		{
+		} else {
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE')), 'calendar');
-
-			if ($user->authorise('core.create', 'com_kinoarhiv'))
-			{
+			if ($user->authorise('core.create', 'com_kinoarhiv')) {
 				JToolbarHelper::addNew('add');
 			}
 
-			if ($user->authorise('core.edit', 'com_kinoarhiv'))
-			{
+			if ($user->authorise('core.edit', 'com_kinoarhiv')) {
 				JToolbarHelper::editList('edit');
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.delete', 'com_kinoarhiv'))
-			{
+			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			}
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
-			{
+			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
 				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');

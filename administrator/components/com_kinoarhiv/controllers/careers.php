@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -17,27 +16,11 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerCareers extends JControllerLegacy
 {
-	/**
-	 * Method to add a new record.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function add()
 	{
 		$this->edit(true);
 	}
 
-	/**
-	 * Method to edit an existing record or add a new record.
-	 *
-	 * @param   boolean  $isNew  Variable to check if it's new item or not.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function edit($isNew = false)
 	{
 		$view = $this->getView('careers', 'html');
@@ -54,39 +37,20 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		}
 
 		$view->display($tpl);
+
+		return $this;
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerCareers::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function apply()
 	{
 		$this->save();
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerCareers::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save2new()
 	{
 		$this->save();
 	}
 
-	/**
-	 * Method to save a record.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -104,6 +68,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
 				return;
@@ -121,10 +86,11 @@ class KinoarhivControllerCareers extends JControllerLegacy
 			{
 				$app->enqueueMessage($model->getError(), 'error');
 
-				return;
+				return false;
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $model->getError()));
 
 				return;
@@ -154,10 +120,11 @@ class KinoarhivControllerCareers extends JControllerLegacy
 			{
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]=' . $data['id']);
 
-				return;
+				return false;
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $errors));
 
 				return;
@@ -176,10 +143,11 @@ class KinoarhivControllerCareers extends JControllerLegacy
 
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]=' . $data['id']);
 
-				return;
+				return false;
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode($session_data);
 
 				return;
@@ -215,8 +183,11 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		}
 		else
 		{
+			$document->setName('response');
 			echo json_encode($session_data);
 		}
+
+		return true;
 	}
 
 	public function offmainpage()
@@ -254,13 +225,6 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', $message);
 	}
 
-	/**
-	 * Method to remove an item(s).
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function remove()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -280,7 +244,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return;
+			return false;
 		}
 
 		// Clean the session data.
@@ -290,13 +254,6 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 
-	/**
-	 * Method to cancel an edit.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function cancel()
 	{
 		$user = JFactory::getUser();
@@ -317,30 +274,18 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers');
 	}
 
-	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
 	public function saveOrder()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$document = JFactory::getDocument();
 
 		$model = $this->getModel('careers');
 		$result = $model->saveOrder();
 
+		$document->setName('response');
 		echo json_encode($result);
 	}
 
-	/**
-	 * Method to run batch operations.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function batch()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -353,7 +298,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return;
+			return false;
 		}
 
 		$app = JFactory::getApplication();
@@ -369,7 +314,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=careers');
 
-				return;
+				return false;
 			}
 		}
 

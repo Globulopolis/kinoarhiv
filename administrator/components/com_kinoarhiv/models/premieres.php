@@ -1,14 +1,12 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
-
-defined('_JEXEC') or die;
 
 use Joomla\String\String;
 
@@ -18,8 +16,7 @@ class KinoarhivModelPremieres extends JModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
-		{
+		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'p.id',
 				'title', 'm.title',
@@ -40,8 +37,7 @@ class KinoarhivModelPremieres extends JModelList
 		$app = JFactory::getApplication();
 
 		// Adjust the context to support modal layouts.
-		if ($layout = $app->input->get('layout'))
-		{
+		if ($layout = $app->input->get('layout')) {
 			$this->context .= '.' . $layout;
 		}
 
@@ -61,9 +57,7 @@ class KinoarhivModelPremieres extends JModelList
 		parent::populateState('p.premiere_date', 'desc');
 
 		$forcedLanguage = $app->input->get('forcedLanguage');
-
-		if (!empty($forcedLanguage))
-		{
+		if (!empty($forcedLanguage)) {
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
@@ -106,56 +100,39 @@ class KinoarhivModelPremieres extends JModelList
 
 		// Filter by country
 		$country = $this->getState('filter.country');
-
-		if (is_numeric($country))
-		{
-			$query->where($db->quoteName('p.country_id') . ' = ' . (int) $country);
+		if (is_numeric($country)) {
+			$query->where($db->quoteName('p.country_id') . ' = ' . (int)$country);
 		}
 
 		// Filter by vendor
 		$vendor = $this->getState('filter.vendor');
-
-		if (is_numeric($vendor))
-		{
-			$query->where($db->quoteName('p.vendor_id') . ' = ' . (int) $vendor);
+		if (is_numeric($vendor)) {
+			$query->where($db->quoteName('p.vendor_id') . ' = ' . (int)$vendor);
 		}
 
 		// Filter on the language.
-		if ($language = $this->getState('filter.language'))
-		{
+		if ($language = $this->getState('filter.language')) {
 			$query->where('p.language = ' . $db->quote($language));
 		}
 
 		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			if (stripos($search, 'id:') === 0)
-			{
-				$query->where('p.id = ' . (int) substr($search, 3));
-			}
-			elseif (stripos($search, 'title:') === 0)
-			{
+		if (!empty($search)) {
+			if (stripos($search, 'id:') === 0) {
+				$query->where('p.id = ' . (int)substr($search, 3));
+			} elseif (stripos($search, 'title:') === 0) {
 				$search = trim(substr($search, 6));
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
 				$query->where('m.title LIKE ' . $search);
-			}
-			elseif (stripos($search, 'country:') === 0)
-			{
+			} elseif (stripos($search, 'country:') === 0) {
 				$search = trim(substr($search, 8));
 
-				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0)
-				{
+				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0) {
 					$query->where('p.country_id = 0');
-				}
-				else
-				{
+				} else {
 					$search = $db->quote('%' . $db->escape($search, true) . '%');
 					$query->where('c.name LIKE ' . $search);
 				}
-			}
-			else
-			{
+			} else {
 				$search = trim(substr($search, 5));
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
 				$query->where('p.premiere_date LIKE ' . $search);
@@ -164,15 +141,12 @@ class KinoarhivModelPremieres extends JModelList
 
 		$orderCol = $this->state->get('list.ordering', 'p.premiere_date');
 		$orderDirn = $this->state->get('list.direction', 'desc');
-
-		if ($orderCol == 'p.ordering')
-		{
+		if ($orderCol == 'p.ordering') {
 			$orderCol = 'p.ordering ' . $orderDirn . ', p.premiere_date';
 		}
 
 		// SQL server change
-		if ($orderCol == 'language')
-		{
+		if ($orderCol == 'language') {
 			$orderCol = 'l.title';
 		}
 
@@ -184,25 +158,20 @@ class KinoarhivModelPremieres extends JModelList
 	/**
 	 * Method to get a list of articles.
 	 * Overridden to add a check for access levels.
-	 *
 	 * @return  mixed  An array of data items on success, false on failure.
-	 *
 	 * @since   1.6.1
 	 */
 	public function getItems()
 	{
 		$items = parent::getItems();
 
-		if (JFactory::getApplication()->isSite())
-		{
+		if (JFactory::getApplication()->isSite()) {
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
-			for ($x = 0, $count = count($items); $x < $count; $x++)
-			{
+			for ($x = 0, $count = count($items); $x < $count; $x++) {
 				// Check the access level. Remove articles the user shouldn't see
-				if (!in_array($items[$x]->access, $groups))
-				{
+				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}
 			}
@@ -218,8 +187,7 @@ class KinoarhivModelPremieres extends JModelList
 		$data = $app->input->post->get('ord', array(), 'array');
 		$movie_id = $app->input->post->get('movie_id', null, 'int');
 
-		if (count($data) < 2)
-		{
+		if (count($data) < 2) {
 			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
 		}
 
@@ -228,42 +196,34 @@ class KinoarhivModelPremieres extends JModelList
 		$db->lockTable('#__ka_premieres');
 		$db->transactionStart();
 
-		foreach ($data as $key => $value)
-		{
+		foreach ($data as $key => $value) {
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_premieres'))
-				->set($db->quoteName('ordering') . " = '" . (int) $key . "'")
-				->where(array($db->quoteName('ordering') . ' = ' . (int) $value, $db->quoteName('movie_id') . ' = ' . (int) $movie_id));
+				->set($db->quoteName('ordering') . " = '" . (int)$key . "'")
+				->where(array($db->quoteName('ordering') . ' = ' . (int)$value, $db->quoteName('movie_id') . ' = ' . (int)$movie_id));
 
 			$db->setQuery($query . ';');
 
-			if ($db->execute() === false)
-			{
+			if ($db->execute() === false) {
 				$query_result = false;
 				break;
 			}
 		}
 
-		if ($query_result === false)
-		{
+		if ($query_result === false) {
 			$db->transactionRollback();
-		}
-		else
-		{
+		} else {
 			$db->transactionCommit();
 		}
 
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query_result)
-		{
+		if ($query_result) {
 			$success = true;
 			$message = JText::_('COM_KA_SAVED');
-		}
-		else
-		{
+		} else {
 			$success = false;
 			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
 		}
@@ -278,30 +238,23 @@ class KinoarhivModelPremieres extends JModelList
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
-		{
+		if (empty($batch_data)) {
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['vendor_id']))
-		{
-			$fields[] = $db->quoteName('vendor_id') . " = '" . (int) $batch_data['vendor_id'] . "'";
+		if (!empty($batch_data['vendor_id'])) {
+			$fields[] = $db->quoteName('vendor_id') . " = '" . (int)$batch_data['vendor_id'] . "'";
+		}
+		if (!empty($batch_data['country_id'])) {
+			$fields[] = $db->quoteName('country_id') . " = '" . (int)$batch_data['country_id'] . "'";
+		}
+		if (!empty($batch_data['language_id'])) {
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string)$batch_data['language_id']) . "'";
 		}
 
-		if (!empty($batch_data['country_id']))
-		{
-			$fields[] = $db->quoteName('country_id') . " = '" . (int) $batch_data['country_id'] . "'";
-		}
-
-		if (!empty($batch_data['language_id']))
-		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
-		}
-
-		if (empty($fields))
-		{
+		if (empty($fields)) {
 			return false;
 		}
 
@@ -313,12 +266,9 @@ class KinoarhivModelPremieres extends JModelList
 
 		$db->setQuery($query);
 
-		try
-		{
+		try {
 			$db->execute();
-		}
-		catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 
 			return false;

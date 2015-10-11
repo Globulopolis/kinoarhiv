@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -11,41 +10,39 @@
 defined('_JEXEC') or die;
 
 /**
- * Class KADatabaseHelper
+ * Class DatabaseHelper
  *
  * @since  3.0
  */
-class KADatabaseHelper
+class DatabaseHelper
 {
 	/**
 	 * Converts the operand of the query grid in operand for mySQL query
 	 *
-	 * @param   string  $field    Field name to look for data.
+	 * @param   string  $field    Name of field to look for data.
 	 * @param   string  $operand  The operand from the request.
-	 * @param   string  $data     String to search.
+	 * @param   string  $data     Data for search.
 	 *
 	 * @return  string
 	 */
 	public static function transformOperands($field, $operand, $data)
 	{
-		$data_string = (is_numeric($data)) ? $data : "'" . $data . "'";
-
 		switch ($operand)
 		{
 			case 'ne':
-				$request = $field . " <> " . $data_string;
+				$request = $field . " <> '" . $data . "'";
 				break;
 			case 'lt':
-				$request = $field . " < " . $data_string;
+				$request = $field . " < '" . $data . "'";
 				break;
 			case 'le':
-				$request = $field . " <= " . $data_string;
+				$request = $field . " <= '" . $data . "'";
 				break;
 			case 'gt':
-				$request = $field . " > " . $data_string;
+				$request = $field . " > '" . $data . "'";
 				break;
 			case 'ge':
-				$request = $field . " >= " . $data_string;
+				$request = $field . " >= '" . $data . "'";
 				break;
 			case 'bw':
 				$request = $field . " LIKE '" . $data . "%'";
@@ -73,7 +70,7 @@ class KADatabaseHelper
 				break;
 			case 'eq':
 			default:
-				$request = $field . " = " . $data_string;
+				$request = $field . " = '" . $data . "'";
 				break;
 		}
 

@@ -2,7 +2,6 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -141,16 +140,16 @@ class KinoarhivModelNames extends JModelList
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$where_id = array();
+		$searches = $this->getFiltersData();
 
 		$query = $db->getQuery(true);
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				"n.id, n.name, n.latin_name, n.alias, n.fs_alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
+				"n.id, n.name, n.latin_name, n.alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
 				"DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, n.birthplace, n.gender, n.attribs, " .
 				"cn.name AS country, cn.code, GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, " .
 				"GROUP_CONCAT(DISTINCT cr.title SEPARATOR ', ') AS career"
@@ -174,96 +173,91 @@ class KinoarhivModelNames extends JModelList
 
 		$query->where('n.state = 1 AND n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND n.access IN (' . $groups . ')');
 
-		if ($app->input->get('task', '', 'cmd') == 'search' && KAComponentHelper::checkToken() === true)
+		// Filter by name
+		$name = $searches->get('filters.names.name');
+
+		if ($params->get('search_names_name') == 1 && !empty($name))
 		{
-			$searches = $this->getFiltersData();
+			$query->where("(n.name LIKE '%" . $db->escape($name) . "%' OR n.latin_name LIKE '%" . $db->escape($name) . "%')");
+		}
 
-			// Filter by name
-			$name = $searches->get('filters.names.name');
+		// Filter by birthday
+		$birthday = $searches->get('filters.names.birthday');
 
-			if ($params->get('search_names_name') == 1 && !empty($name))
+		if ($params->get('search_names_birthday') == 1 && !empty($birthday))
+		{
+			$query->where("n.date_of_birth LIKE '%" . $db->escape($birthday) . "%'");
+		}
+
+		// Filter by gender
+		$gender = $searches->get('filters.names.gender');
+
+		if ($params->get('search_names_gender') == 1 && ($gender === 0 || $gender === 1))
+		{
+			$query->where("n.gender = " . (int) $gender);
+		}
+
+		// Filter by movie title
+		$mtitle = $searches->get('filters.names.mtitle');
+
+		if ($params->get('search_names_mtitle') == 1 && !empty($mtitle))
+		{
+			$subquery_title = $db->getQuery(true)
+				->select('name_id')
+				->from($db->quoteName('#__ka_rel_names'))
+				->where('movie_id = ' . (int) $mtitle)
+				->group('name_id');
+
+			$db->setQuery($subquery_title);
+			$name_ids = $db->loadColumn();
+
+			$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
+		}
+
+		// Filter by birthplace
+		$birthplace = trim($searches->get('filters.names.birthplace'));
+
+		if ($params->get('search_names_birthplace') == 1 && !empty($birthplace))
+		{
+			$query->where("n.birthplace LIKE '%" . $db->escape($birthplace) . "%'");
+		}
+
+		// Filter by country
+		$country = $searches->get('filters.names.birthcountry');
+
+		if ($params->get('search_names_birthcountry') == 1 && !empty($country))
+		{
+			$query->where("n.birthcountry = " . (int) $country);
+		}
+
+		// Filter by amplua
+		$amplua = $searches->get('filters.names.amplua');
+
+		if ($params->get('search_names_amplua') == 1 && !empty($amplua))
+		{
+			$subquery_amplua = $db->getQuery(true)
+				->select('name_id')
+				->from($db->quoteName('#__ka_rel_names_career'))
+				->where('career_id = ' . (int) $amplua)
+				->group('name_id');
+
+			$db->setQuery($subquery_amplua);
+			$name_ids = $db->loadColumn();
+
+			$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
+		}
+
+		if ((!empty($mtitle) || !empty($amplua)) && !empty($where_id))
+		{
+			// Remove 0 in array
+			$ids_keys = array_keys($where_id, 0);
+
+			foreach ($ids_keys as $k)
 			{
-				$query->where("(n.name LIKE '%" . $db->escape($name) . "%' OR n.latin_name LIKE '%" . $db->escape($name) . "%')");
+				unset($where_id[$k]);
 			}
 
-			// Filter by birthday
-			$birthday = $searches->get('filters.names.birthday');
-
-			if ($params->get('search_names_birthday') == 1 && !empty($birthday))
-			{
-				$query->where("n.date_of_birth LIKE '%" . $db->escape($birthday) . "%'");
-			}
-
-			// Filter by gender
-			$gender = $searches->get('filters.names.gender');
-
-			if ($params->get('search_names_gender') == 1 && ($gender === 0 || $gender === 1))
-			{
-				$query->where("n.gender = " . (int) $gender);
-			}
-
-			// Filter by movie title
-			$mtitle = $searches->get('filters.names.mtitle');
-
-			if ($params->get('search_names_mtitle') == 1 && !empty($mtitle))
-			{
-				$subquery_title = $db->getQuery(true)
-					->select('name_id')
-					->from($db->quoteName('#__ka_rel_names'))
-					->where('movie_id = ' . (int) $mtitle)
-					->group('name_id');
-
-				$db->setQuery($subquery_title);
-				$name_ids = $db->loadColumn();
-
-				$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
-			}
-
-			// Filter by birthplace
-			$birthplace = trim($searches->get('filters.names.birthplace'));
-
-			if ($params->get('search_names_birthplace') == 1 && !empty($birthplace))
-			{
-				$query->where("n.birthplace LIKE '%" . $db->escape($birthplace) . "%'");
-			}
-
-			// Filter by country
-			$country = $searches->get('filters.names.birthcountry');
-
-			if ($params->get('search_names_birthcountry') == 1 && !empty($country))
-			{
-				$query->where("n.birthcountry = " . (int) $country);
-			}
-
-			// Filter by amplua
-			$amplua = $searches->get('filters.names.amplua');
-
-			if ($params->get('search_names_amplua') == 1 && !empty($amplua))
-			{
-				$subquery_amplua = $db->getQuery(true)
-					->select('name_id')
-					->from($db->quoteName('#__ka_rel_names_career'))
-					->where('career_id = ' . (int) $amplua)
-					->group('name_id');
-
-				$db->setQuery($subquery_amplua);
-				$name_ids = $db->loadColumn();
-
-				$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
-			}
-
-			if ((!empty($mtitle) || !empty($amplua)) && !empty($where_id))
-			{
-				// Remove 0 in array
-				$ids_keys = array_keys($where_id, 0);
-
-				foreach ($ids_keys as $k)
-				{
-					unset($where_id[$k]);
-				}
-
-				$query->where("n.id IN (" . implode(',', ArrayHelper::arrayUnique($where_id)) . ")");
-			}
+			$query->where("n.id IN (" . implode(',', ArrayHelper::arrayUnique($where_id)) . ")");
 		}
 
 		$query->group($db->quoteName('n.id'));

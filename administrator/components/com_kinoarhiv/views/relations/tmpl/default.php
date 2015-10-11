@@ -1,15 +1,4 @@
-<?php
-/**
- * @package     Kinoarhiv.Administrator
- * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
- * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
- */
-
-defined('_JEXEC') or die;
-?>
+<?php defined('_JEXEC') or die; ?>
 <style type="text/css">
 	.container-main { padding-left: 5px; padding-right: 15px; }
 </style>

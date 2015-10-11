@@ -1,14 +1,14 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
 
 defined('_JEXEC') or die;
+
 
 /**
  * Countries list controller class.
@@ -17,27 +17,11 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerCountries extends JControllerLegacy
 {
-	/**
-	 * Method to add a new record.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function add()
 	{
 		$this->edit(true);
 	}
 
-	/**
-	 * Method to edit an existing record or add a new record.
-	 *
-	 * @param   boolean  $isNew  Variable to check if it's new item or not.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function edit($isNew = false)
 	{
 		$view = $this->getView('countries', 'html');
@@ -54,39 +38,15 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		}
 
 		$view->display($tpl);
+
+		return $this;
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerCountries::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
-	public function save2new()
-	{
-		$this->save();
-	}
-
-	/**
-	 * Proxy to KinoarhivControllerCountries::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function apply()
 	{
 		$this->save();
 	}
 
-	/**
-	 * Method to save a record.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -104,6 +64,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
 				return;
@@ -121,10 +82,11 @@ class KinoarhivControllerCountries extends JControllerLegacy
 			{
 				$app->enqueueMessage($model->getError(), 'error');
 
-				return;
+				return false;
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $model->getError()));
 
 				return;
@@ -143,10 +105,11 @@ class KinoarhivControllerCountries extends JControllerLegacy
 			{
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]=' . $data['id']);
 
-				return;
+				return false;
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $errors));
 
 				return;
@@ -165,10 +128,11 @@ class KinoarhivControllerCountries extends JControllerLegacy
 
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]=' . $data['id']);
 
-				return;
+				return false;
 			}
 			else
 			{
+				$document->setName('response');
 				echo json_encode($session_data);
 
 				return;
@@ -204,31 +168,18 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		}
 		else
 		{
+			$document->setName('response');
 			echo json_encode($session_data);
 		}
+
+		return true;
 	}
 
-	/**
-	 * Method to unpublish a list of items
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function unpublish()
 	{
 		$this->publish(true);
 	}
 
-	/**
-	 * Method to publish a list of items
-	 *
-	 * @param   boolean  $isUnpublish  Action state
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function publish($isUnpublish = false)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -248,7 +199,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return;
+			return false;
 		}
 
 		// Clean the session data.
@@ -259,13 +210,6 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', $message);
 	}
 
-	/**
-	 * Method to remove an item(s).
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function remove()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -285,7 +229,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return;
+			return false;
 		}
 
 		// Clean the session data.
@@ -295,13 +239,6 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=countries', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 
-	/**
-	 * Method to cancel an edit.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function cancel()
 	{
 		$user = JFactory::getUser();
@@ -322,13 +259,6 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 	}
 
-	/**
-	 * Method to run batch operations.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function batch()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -341,7 +271,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return;
+			return false;
 		}
 
 		$app = JFactory::getApplication();
@@ -357,7 +287,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=countries');
 
-				return;
+				return false;
 			}
 		}
 

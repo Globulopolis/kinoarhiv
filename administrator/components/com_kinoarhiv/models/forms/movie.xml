@@ -13,12 +13,8 @@
 				   filter="string"/>
 			<field name="length" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6"
 				   datatype="time" timeformat="HH:mm:ss"/>
-			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC"
-				   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12" size="45"/>
+			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45"/>
 			<field name="alias_orig" type="hidden"/>
-			<field name="fs_alias" type="text" label="COM_KA_FIELD_MOVIE_FS_ALIAS"
-				   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9" size="45"/>
-			<field name="fs_alias_orig" type="hidden"/>
 			<field name="plot" type="editor" label="COM_KA_FIELD_MOVIE_PLOT" filter="raw" buttons="true"
 				   hide="readmore,pagebreak"/>
 			<field name="known" type="editor" label="COM_KA_FIELD_MOVIE_KNOWN" filter="raw" buttons="true"

@@ -1,14 +1,14 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
 
 defined('_JEXEC') or die;
+
 
 /**
  * Mediamanager controller class.
@@ -17,25 +17,9 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerMediamanager extends JControllerLegacy
 {
-	/**
-	 * Method to upload media content and proccess some media items, like images.
-	 *
-	 * @return string  JSON string with result
-	 *
-	 * @since  3.0
-	 */
 	public function upload()
 	{
-		JResponse::setHeader('Content-type', 'application/json');
-
-		if (JSession::checkToken() === false)
-		{
-			JResponse::setHeader('HTTP/1.0', '500 Server error');
-			JResponse::sendHeaders();
-
-			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			jexit();
-		}
+		JSession::checkToken() or jexit('{"jsonrpc" : "2.0", "result" : "' . JText::_('JINVALID_TOKEN') . '"}');
 
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
@@ -60,11 +44,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			if (!in_array($original_extension, $allowed_ext))
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
-
-				KAComponentHelper::eventLog('Incorrected file extension');
-				jexit();
+				die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
 			}
 		}
 		elseif ($app->input->get('type') == 'trailers')
@@ -75,11 +55,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
-
-					KAComponentHelper::eventLog('Incorrected file extension');
-					jexit();
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
 				}
 			}
 			elseif ($app->input->get('upload') == 'subtitles')
@@ -88,11 +64,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
-
-					KAComponentHelper::eventLog('Incorrected file extension');
-					jexit();
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
 				}
 			}
 			elseif ($app->input->get('upload') == 'chapters')
@@ -101,11 +73,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
-
-					KAComponentHelper::eventLog('Incorrected file extension');
-					jexit();
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
 				}
 			}
 			elseif ($app->input->get('upload') == 'images')
@@ -114,11 +82,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
-
-					KAComponentHelper::eventLog('Incorrected file extension');
-					jexit();
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Incorrected file extension"}, "id" : "id"}');
 				}
 			}
 		}
@@ -127,17 +91,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		JResponse::setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
 		JResponse::setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
 		JResponse::setHeader('Pragma', 'no-cache', true);
-
-		// CORS
-		JResponse::setHeader('Access-Control-Allow-Origin', '*', true);
-
-		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-		{
-			JResponse::setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-			JResponse::setHeader('Access-Control-Max-Age', 10000);
-			JResponse::setHeader('Access-Control-Allow-Headers', 'origin, x-csrftoken, content-type, accept');
-		}
-
 		JResponse::sendHeaders();
 
 		$cleanup_dir = true;
@@ -186,11 +139,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
-
-				KAComponentHelper::eventLog('Failed to open temp directory.');
-				jexit();
+				die('{"jsonrpc" : "2.0", "error" : {"code": 100, "message": "Failed to open temp directory."}, "id" : "id"}');
 			}
 		}
 
@@ -223,11 +172,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					}
 					else
 					{
-						JResponse::setHeader('HTTP/1.0', '500 Server error');
-						JResponse::sendHeaders();
-
-						KAComponentHelper::eventLog('Failed to open input stream.');
-						jexit();
+						die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
 					}
 
 					@fclose($in);
@@ -236,20 +181,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				else
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
-
-					KAComponentHelper::eventLog('Failed to open output stream.');
-					jexit();
+					die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
 				}
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
-
-				KAComponentHelper::eventLog('Failed to move uploaded file.');
-				jexit();
+				die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
 			}
 		}
 		else
@@ -269,11 +206,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				else
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
-
-					KAComponentHelper::eventLog('Failed to open input stream.');
-					jexit();
+					die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
 				}
 
 				@fclose($in);
@@ -281,11 +214,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
-
-				KAComponentHelper::eventLog('Failed to open output stream.');
-				jexit();
+				die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
 			}
 		}
 
@@ -340,8 +269,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				elseif ($app->input->get('type') == 'trailers')
 				{
-					// Get the movie transliterated alias
-					$fs_alias = $model->getFilesystemAlias($section, $item_id, true);
+					$alias = $model->getAlias($section, $item_id);
 
 					if ($app->input->get('upload') == 'video')
 					{
@@ -353,7 +281,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$ext = JFile::getExt($old_filename);
 						$video_info = json_decode($media->getVideoInfo($rn_dest_dir . $filename));
 						$video_height = $video_info->streams[0]->height;
-						$rn_filename = $fs_alias . '-' . $trailer_id . '-' . $item_id . '.' . $video_height . 'p.' . $ext;
+						$rn_filename = $alias . '-' . $trailer_id . '-' . $item_id . '.' . $video_height . 'p.' . $ext;
 						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						$model->saveVideo($rn_filename, $trailer_id, $item_id);
@@ -364,15 +292,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						{
 							$lang_code = strtolower($matches[1]);
 						}
-						else
-						{
-							$lang_code = 'en';
-						}
 
 						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$rn_filename = $fs_alias . '-' . $trailer_id . '.subtitles.' . $lang_code . '.' . $ext;
+						$rn_filename = $alias . '-' . $trailer_id . '.subtitles.' . $lang_code . '.' . $ext;
 						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						$model->saveSubtitles(false, $rn_filename, $trailer_id, $item_id);
@@ -382,7 +306,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$rn_filename = $fs_alias . '-' . $trailer_id . '.chapters.' . $ext;
+						$rn_filename = $alias . '-' . $trailer_id . '.chapters.' . $ext;
 						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						$result = $model->saveChapters($rn_filename, $trailer_id, $item_id);
@@ -397,7 +321,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
 						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
-						$rn_filename = $fs_alias . '-' . $trailer_id . '.' . $ext;
+						$rn_filename = $alias . '-' . $trailer_id . '.' . $ext;
 						rename($old_filename, $rn_dest_dir . $rn_filename);
 
 						if ($params->get('upload_gallery_watermark_image_on') == 1)
@@ -460,7 +384,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 		}
 
-		// Success response. Don't change the ID format, because it's require for proper handling of some items in templates.
+		// Success
 		$response = json_encode(
 			array(
 				'jsonrpc' => '2.0',
@@ -486,8 +410,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 * Proxy for $this->fp_on() method
 	 *
 	 * @return void
-	 *
-	 * @since  3.0
 	 */
 	public function fpOff()
 	{
@@ -498,10 +420,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 * Method to publish or unpublish posters(photo) on movie(person) info page(not on posters page)
 	 *
 	 * @param   int  $action  0 - unpublish from frontpage, 1 - publish poster(photo) on frontpage
-	 *
-	 * @return  void
-	 *
-	 * @since  3.0
 	 */
 	public function fpOn($action = 0)
 	{
@@ -549,27 +467,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 	}
 
-	/**
-	 * Method to unpublish a list of items
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function unpublish()
 	{
 		$this->publish(0);
 	}
 
-	/**
-	 * Method to publish a list of items
-	 *
-	 * @param   integer  $action  Action state
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function publish($action = 1)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -611,13 +513,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$this->setRedirect(JURI::getInstance()->toString());
 	}
 
-	/**
-	 * Method to remove an item(s).
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function remove()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -702,38 +597,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		echo $result;
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerMediamanager::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
-	public function apply()
+	public function save()
 	{
-		$this->save();
+		$this->apply();
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerMediamanager::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save2new()
 	{
-		$this->save();
+		$this->apply();
 	}
 
-	/**
-	 * Method to save a record.
-	 *
-	 * @return  boolean  True if successful, false otherwise.
-	 *
-	 * @since   3.0
-	 */
-	public function save()
+	public function apply()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -812,13 +686,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		return true;
 	}
 
-	/**
-	 * Method to cancel an edit.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function cancel()
 	{
 		$app = JFactory::getApplication();

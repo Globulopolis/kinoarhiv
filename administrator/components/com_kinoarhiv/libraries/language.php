@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -81,16 +80,14 @@ class KALanguage extends JLanguage
 	/**
 	 * Load language files for JS scripts
 	 *
-	 * @param   string   $file         Part of the filename w/o language tag and extension
-	 * @param   string   $jhtml        Use JHTML::script() to load
-	 * @param   string   $script_type  Type of the script(folder name in assets/js/i8n/)
-	 * @param   boolean  $frontend     Load language file from the frontend if set to true
-	 * @param   string   $separator    Separator, which is used for split two-letter language code and two-letter country
-	 *                                 code. Usually separated by hyphens('-'). E.g. en-US, ru-RU
+	 * @param   string  $file         Part of the filename w/o language tag and extension
+	 * @param   string  $jhtml        Use JHTML::script() to load
+	 * @param   string  $script_type  Type of the script(folder name in assets/js/i8n/)
+	 * @param   bool    $frontend     Load language file from the frontend if set to true
 	 *
 	 * @return mixed String or void
 	 */
-	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend, $separator='-')
+	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend)
 	{
 		$lang = JFactory::getLanguage()->getTag();
 		$filename = $file . $lang . '.js';
@@ -108,7 +105,7 @@ class KALanguage extends JLanguage
 
 		$path = $basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type;
 
-		if (is_file($path . DIRECTORY_SEPARATOR . $filename))
+		if (file_exists($path . DIRECTORY_SEPARATOR . $filename))
 		{
 			if ($jhtml)
 			{
@@ -119,7 +116,7 @@ class KALanguage extends JLanguage
 				echo '<script src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $filename . '" type="text/javascript"></script>';
 			}
 		}
-		elseif (is_file($path . DIRECTORY_SEPARATOR . $file . substr($lang, 0, 2) . '.js'))
+		elseif (file_exists($path . DIRECTORY_SEPARATOR . $file . substr($lang, 0, 2) . '.js'))
 		{
 			if ($jhtml)
 			{
@@ -129,21 +126,6 @@ class KALanguage extends JLanguage
 			{
 				echo '<script
 				src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file . substr($lang, 0, 2) . '.js"
-				type="text/javascript"></script>';
-			}
-		}
-		else
-		{
-			if ($jhtml)
-			{
-				JHtml::_('script', $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file
-					. str_replace('-', $separator, substr($lang, 0, 2)) . '.js');
-			}
-			else
-			{
-				echo '<script
-				src="' . $url . 'components/com_kinoarhiv/assets/js/i18n/' . $script_type . '/' . $file
-					. str_replace('-', $separator, substr($lang, 0, 2)) . '.js"
 				type="text/javascript"></script>';
 			}
 		}

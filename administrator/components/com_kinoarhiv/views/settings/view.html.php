@@ -1,27 +1,22 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
-
-defined('_JEXEC') or die;
-
 class KinoarhivViewSettings extends JViewLegacy
 {
 	protected $form;
-
 	protected $data;
 
 	public function display($tpl = null)
 	{
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.admin', 'com_kinoarhiv'))
-		{
+		if (!$user->authorise('core.admin', 'com_kinoarhiv')) {
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 		}
 
@@ -31,13 +26,11 @@ class KinoarhivViewSettings extends JViewLegacy
 		$this->form = $this->get('Form');
 		$this->data = $this->get('Settings');
 
-		if (count($errors = $this->get('Errors')))
-		{
+		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		if ($this->form && $this->data->params)
-		{
+		if ($this->form && $this->data->params) {
 			$this->form->bind($this->data->params);
 		}
 

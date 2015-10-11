@@ -1,15 +1,4 @@
-<?php
-/**
- * @package     Kinoarhiv.Administrator
- * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
- * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
- */
-
-defined('_JEXEC') or die;
-?>
+<?php defined('_JEXEC') or die; ?>
 <div id="j-main-container" class="control-panel">
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=movies"><span class="icon-play"> </span> <?php echo JText::_('COM_KA_MOVIES_TITLE'); ?></a>
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=names"><span class="icon-users"> </span> <?php echo JText::_('COM_KA_NAMES_TITLE'); ?></a>

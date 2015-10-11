@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -17,25 +16,15 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerRelations extends JControllerLegacy
 {
-	/**
-	 * Typical view method for MVC based architecture
-	 *
-	 * This function is provide as a default implementation, in most cases
-	 * you will need to override it in your own controllers.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached
-	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return  JControllerLegacy  A JControllerLegacy object to support chaining.
-	 *
-	 * @since   3.0
-	 */
 	public function display($cachable = false, $urlparams = array())
 	{
 		$app = JFactory::getApplication();
+		$document = JFactory::getDocument();
 		$action = $app->input->get('action', '', 'cmd');
 		$task = $app->input->get('task', '', 'cmd');
 		$model = $this->getModel('relations');
+
+		$document->setName('response');
 
 		switch ($action)
 		{
@@ -55,27 +44,11 @@ class KinoarhivControllerRelations extends JControllerLegacy
 		}
 	}
 
-	/**
-	 * Method to add a new record.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function add()
 	{
 		$this->edit(true);
 	}
 
-	/**
-	 * Method to edit an existing record or add a new record.
-	 *
-	 * @param   boolean  $isNew  Variable to check if it's new item or not.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	public function edit($isNew = false)
 	{
 		$view = $this->getView('relations', 'html');
@@ -92,55 +65,32 @@ class KinoarhivControllerRelations extends JControllerLegacy
 		}
 
 		$view->display($tpl);
+
+		return $this;
 	}
 
-	/**
-	 * Method to remove an item(s).
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
 	public function delete()
 	{
+		$document = JFactory::getDocument();
 		$model = $this->getModel('relations');
+
+		$document->setName('response');
 		$result = $model->relations_remove();
 
 		echo json_encode($result);
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerRelations::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save2new()
 	{
-		$this->save();
+		$this->apply();
 	}
 
-	/**
-	 * Proxy to KinoarhivControllerRelations::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
-	public function apply()
-	{
-		$this->save();
-	}
-
-	/**
-	 * Method to save a record.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save()
+	{
+		$this->apply();
+	}
+
+	public function apply()
 	{
 		$document = JFactory::getDocument();
 
@@ -182,20 +132,21 @@ class KinoarhivControllerRelations extends JControllerLegacy
 		}
 
 		$model = $this->getModel('relations');
-		$result = $model->apply();
 
-		$document->setMimeEncoding('application/json');
+		if ($document->getType() == 'json')
+		{
+			$document->setName('response');
+		}
+		elseif ($document->getType() == 'raw')
+		{
+			$document->setMimeEncoding('application/json');
+		}
+
+		$result = $model->apply();
 
 		echo json_encode($result);
 	}
 
-	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
 	public function saveOrder()
 	{
 		$document = JFactory::getDocument();
@@ -238,9 +189,17 @@ class KinoarhivControllerRelations extends JControllerLegacy
 		}
 
 		$model = $this->getModel('relations');
-		$result = $model->saveOrder();
 
-		$document->setMimeEncoding('application/json');
+		if ($document->getType() == 'json')
+		{
+			$document->setName('response');
+		}
+		elseif ($document->getType() == 'raw')
+		{
+			$document->setMimeEncoding('application/json');
+		}
+
+		$result = $model->saveOrder();
 
 		echo json_encode($result);
 	}

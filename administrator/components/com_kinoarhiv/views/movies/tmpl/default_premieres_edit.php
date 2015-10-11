@@ -1,15 +1,4 @@
-<?php
-/**
- * @package     Kinoarhiv.Administrator
- * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
- * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
- */
-
-defined('_JEXEC') or die;
-?>
+<?php defined('_JEXEC') or die; ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){

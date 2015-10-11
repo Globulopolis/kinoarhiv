@@ -1,4 +1,3 @@
-
 /*!40101 SET NAMES utf8 */;
 
 /*!40101 SET SQL_MODE=''*/;
@@ -51,21 +50,12 @@ CREATE TABLE IF NOT EXISTS `#__ka_genres` (
 
 INSERT IGNORE INTO `#__ka_genres`(`id`,`name`,`alias`,`stats`,`state`,`access`,`language`) VALUES (1,'анимация','анимация',2,1,1,'ru-RU'),(2,'боевик','боевик',2,1,1,'ru-RU'),(3,'вестерн','вестерн',0,1,1,'ru-RU'),(4,'криминал','криминал',0,1,1,'ru-RU'),(5,'истерн','истерн',0,1,1,'ru-RU'),(6,'каратэ','каратэ',0,1,1,'ru-RU'),(7,'экстрим','экстрим',0,1,1,'ru-RU'),(8,'детектив','детектив',0,1,1,'ru-RU'),(9,'триллер','триллер',2,1,1,'ru-RU'),(10,'саспенс','саспенс',0,1,1,'ru-RU'),(11,'приключения','приключения',3,1,1,'ru-RU'),(12,'ужасы','ужасы',0,1,1,'ru-RU'),(13,'комедия','комедия',2,1,1,'ru-RU'),(14,'черная комедия','черная-комедия',0,1,1,'ru-RU'),(15,'пародия','пародия',0,1,1,'ru-RU'),(16,'драма','драма',0,1,1,'ru-RU'),(17,'мелодрама','мелодрама',2,1,1,'ru-RU'),(18,'трагедия','трагедия',0,1,1,'ru-RU'),(19,'трагикомедия','трагикомедия',0,1,1,'ru-RU'),(20,'катастрофа','катастрофа',0,1,1,'ru-RU'),(21,'фантастика','фантастика',2,1,1,'ru-RU'),(22,'мистика','мистика',1,1,1,'ru-RU'),(23,'фэнтези','фэнтези',1,1,1,'ru-RU'),(24,'антиутопия','антиутопия',1,1,1,'ru-RU'),(25,'киберпанк','киберпанк',0,1,1,'ru-RU'),(26,'мьюзикл','мьюзикл',0,1,1,'ru-RU'),(27,'спектакль','спектакль',0,1,1,'ru-RU'),(28,'биография','биография',0,1,1,'ru-RU'),(29,'исторический','исторический',0,1,1,'ru-RU'),(30,'военный','военный',0,1,1,'ru-RU'),(31,'документальный','документальный',0,1,1,'ru-RU'),(32,'семейный','семейный',1,1,1,'ru-RU'),(33,'сказка','сказка',0,1,1,'ru-RU'),(34,'спорт','спорт',0,1,1,'ru-RU'),(35,'эротика','эротика',0,1,2,'ru-RU'),(40,'animation','animation',0,1,1,'en-GB'),(41,'action','action',0,1,1,'en-GB'),(42,'adventures','adventures',0,1,1,'en-GB'),(43,'biography','biography',0,1,1,'en-GB'),(44,'black comedy','black-comedy',0,1,1,'en-GB'),(45,'catastrophe','catastrophe',0,1,1,'en-GB'),(46,'comedy','comedy',0,1,1,'en-GB'),(47,'crime','crime',0,1,1,'en-GB'),(48,'cuberpunk','cuberpunk',0,1,1,'en-GB'),(49,'detective','detective',0,1,1,'en-GB'),(50,'documentary','documentary',0,1,1,'en-GB'),(51,'drama','drama',0,1,1,'en-GB'),(52,'dystopia','dystopia',0,1,1,'en-GB'),(53,'eastern','eastern',0,1,1,'en-GB'),(54,'erotica','erotica',0,1,2,'en-GB'),(55,'extreme','extreme',0,1,1,'en-GB'),(56,'fairy tale','fairy-tale',0,1,1,'en-GB'),(57,'family','family',0,1,1,'en-GB'),(58,'fantasy','fantasy',0,1,1,'en-GB'),(59,'historical','historical',0,1,1,'en-GB'),(60,'horror','horror',0,1,1,'en-GB'),(61,'karate','karate',0,1,1,'en-GB'),(62,'melodrama','melodrama',0,1,1,'en-GB'),(63,'military','military',0,1,1,'en-GB'),(64,'musicals','musicals',0,1,1,'en-GB'),(65,'mysticism','mysticism',0,1,1,'en-GB'),(66,'parody','parody',0,1,1,'en-GB'),(67,'performance','performance',0,1,1,'en-GB'),(68,'sport','sport',0,1,1,'en-GB'),(69,'suspense','suspense',0,1,1,'en-GB'),(70,'thriller','thriller',0,1,1,'en-GB'),(71,'tragedy','tragedy',0,1,1,'en-GB'),(72,'tragicomedy','tragicomedy',0,1,1,'en-GB'),(73,'western','western',0,1,1,'en-GB');
 
-CREATE TABLE IF NOT EXISTS `#__ka_media_types` (
-  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(128) NOT NULL DEFAULT '',
-  `language` CHAR(7) NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `idx_language` (`language`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE IF NOT EXISTS `#__ka_movies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `asset_id` int(10) unsigned NOT NULL,
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `title` varchar(255) NOT NULL DEFAULT '',
   `alias` varchar(255) NOT NULL DEFAULT '',
-  `fs_alias` varchar(3) NOT NULL DEFAULT '',
   `introtext` mediumtext NOT NULL COMMENT 'Use only in frontpage',
   `plot` text NOT NULL,
   `desc` text NOT NULL,
@@ -159,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   `asset_id` int(10) unsigned NOT NULL,
   `title` varchar(255) NOT NULL,
   `alias` varchar(255) NOT NULL,
-  `fs_alias` varchar(3) NOT NULL COMMENT 'Is the same as alias but only in latin charset',
+  `fs_alias` varchar(255) NOT NULL COMMENT 'Is the same as alias but only in latin charset',
   `composer` varchar(255) NOT NULL,
   `year` date NOT NULL DEFAULT '0000-00-00',
   `length` varchar(16) NOT NULL DEFAULT '',
@@ -240,7 +230,6 @@ CREATE TABLE IF NOT EXISTS `#__ka_names` (
   `name` varchar(128) NOT NULL DEFAULT '',
   `latin_name` varchar(128) NOT NULL DEFAULT '',
   `alias` varchar(255) NOT NULL DEFAULT '',
-  `fs_alias` varchar(3) NOT NULL DEFAULT '',
   `date_of_birth` date NOT NULL DEFAULT '0000-00-00',
   `date_of_death` date NOT NULL DEFAULT '0000-00-00',
   `birthplace` varchar(255) NOT NULL DEFAULT '',

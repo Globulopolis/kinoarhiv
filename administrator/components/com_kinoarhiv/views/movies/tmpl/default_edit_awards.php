@@ -1,15 +1,4 @@
-<?php
-/**
- * @package     Kinoarhiv.Administrator
- * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
- * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
- */
-
-defined('_JEXEC') or die;
-
+<?php defined('_JEXEC') or die;
 if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
 	return;
@@ -42,7 +31,7 @@ endif; ?>
 				{name:'id', index:'rel.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
 				{name:'award_id', index:'rel.award_id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
 				{name:'title', index:'title', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'year', index:'rel.year', width:150, sorttype:"date", datefmt:'Y', searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'year', index:'rel.year', width:150, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
 				{name:'desc', index:'rel.desc', width:350, sortable: false, searchoptions: {sopt: ['cn','eq','bw','ew']}}
 			],
 			multiselect: true,

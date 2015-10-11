@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -54,10 +53,10 @@ class KAComponentHelper extends JComponentHelper
 	/**
 	 * Get data from remote server
 	 *
-	 * @param   string   $url        URL
-	 * @param   null     $headers    Headers to send
-	 * @param   integer  $timeout    Request timeout in seconds
-	 * @param   string   $transport  Transport type
+	 * @param   string  $url        URL
+	 * @param   null    $headers    Headers to send
+	 * @param   int     $timeout    Request timeout in seconds
+	 * @param   string  $transport  Transport type
 	 *
 	 * @return JHttpResponse
 	 */
@@ -72,43 +71,28 @@ class KAComponentHelper extends JComponentHelper
 	}
 
 	/**
-	 * Load mediamanager assets
-	 *
-	 * @return void
-	 */
-	public static function loadMediamanagerAssets()
-	{
-		JHtml::_('stylesheet', JURI::base() . 'components/com_kinoarhiv/assets/css/mediamanager.css');
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/mediamanager/plupload.full.min.js');
-		self::getScriptLanguage('', true, 'mediamanager', false, '_');
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.min.js');
-	}
-
-	/**
 	 * Just proxy for KALanguage::getScriptLanguage()
 	 *
-	 * @param   string   $file         Part of the filename w/o language tag and extension
-	 * @param   string   $jhtml        Use JHTML::script() to load
-	 * @param   string   $script_type  Type of the script(folder name in assets/js/i8n/)
-	 * @param   boolean  $frontend     Load language file from the frontend if set to true
-	 * @param   string   $separator    Separator, which is used for split two-letter language code and two-letter country
-	 *                                 code. Usually separated by hyphens('-'). E.g. en-US, ru-RU
+	 * @param   string  $file         Part of the filename w/o language tag and extension
+	 * @param   string  $jhtml        Use JHTML::script() to load
+	 * @param   string  $script_type  Type of the script(folder name in assets/js/i8n/)
+	 * @param   bool    $frontend     Load language file from the frontend if set to true
 	 *
 	 * @return void
 	 */
-	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend, $separator='-')
+	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend)
 	{
 		JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
 
-		KALanguage::getScriptLanguage($file, $jhtml, $script_type, $frontend, $separator);
+		KALanguage::getScriptLanguage($file, $jhtml, $script_type, $frontend);
 	}
 
 	/**
 	 * Method to get an errors from $errors and enqueue or directly display them.
 	 *
-	 * @param   mixed    $errors  An Exception object or array.
-	 * @param   string   $format  Document type format.
-	 * @param   integer  $count   Number of errors to process.
+	 * @param   mixed   $errors  An Exception object or array.
+	 * @param   string  $format  Document type format.
+	 * @param   int     $count   Number of errors to process.
 	 *
 	 * @return  string
 	 */
@@ -149,101 +133,5 @@ class KAComponentHelper extends JComponentHelper
 		}
 
 		return true;
-	}
-
-	/**
-	 * Logger
-	 *
-	 * @param   string  $message  Text to log.
-	 * @param   mixed   $silent   Throw exception or not. True - throw, false - not.
-	 *
-	 * @return  mixed
-	 *
-	 * @throws  Exception
-	 */
-	public static function eventLog($message, $silent = true)
-	{
-		$params = self::getParams('com_kinoarhiv');
-		$uri = JURI::getInstance();
-
-		$message = $message . "\t" . $uri->current() . '?' . $uri->getQuery();
-
-		if ($params->get('logger') == 'syslog')
-		{
-			$backtrace = debug_backtrace();
-			$stack = '';
-
-			for ($i = 0, $n = count($backtrace); $i < $n; $i++)
-			{
-				$trace = $backtrace[$i];
-				$class = isset($trace['class']) ? $trace['class'] : '';
-				$type = isset($trace['type']) ? $trace['type'] : '';
-				$stack .= "#" . $i . " " . $trace['file'] . "#" . $trace['line'] . " " . $class . $type . $trace['function'] . "\n";
-			}
-
-			openlog('com_kinoarhiv_log', LOG_PID, LOG_DAEMON);
-			syslog(LOG_CRIT, $message . "\nBacktrace:\n" . $stack);
-			closelog();
-
-			if (!$silent || is_string($silent))
-			{
-				throw new Exception($message, 500);
-			}
-		}
-		else
-		{
-			jimport('joomla.log.log');
-
-			JLog::addLogger(
-				array(
-					'text_file' => 'com_kinoarhiv.errors.php'
-				),
-				JLog::ALL, 'com_kinoarhiv'
-			);
-
-			JLog::add($message, JLog::WARNING, 'com_kinoarhiv');
-
-			if (!$silent || is_string($silent))
-			{
-				throw new Exception($message, 500);
-			}
-		}
-	}
-
-	/**
-	 * Tests if a function exists. Also handles the case where a function is disabled via Suhosin.
-	 *
-	 * @param   string  $function  Function name to check.
-	 *
-	 * @return  boolean
-	 */
-	public static function functionExists($function)
-	{
-		if ($function == 'eval')
-		{
-			// Does not check suhosin.executor.eval.whitelist (or blacklist)
-			if (extension_loaded('suhosin'))
-			{
-				return @ini_get("suhosin.executor.disable_eval") != "1";
-			}
-
-			return true;
-		}
-
-		$exists = function_exists($function);
-
-		if (extension_loaded('suhosin'))
-		{
-			$blacklist = @ini_get("suhosin.executor.func.blacklist");
-
-			if (!empty($blacklist))
-			{
-				$blacklistFunctions = array_map('strtolower', array_map('trim', explode(',', $blacklist)));
-
-				return $exists && !in_array($function, $blacklistFunctions);
-			}
-		}
-
-		return $exists;
 	}
 }

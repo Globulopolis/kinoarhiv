@@ -1,8 +1,7 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -17,25 +16,11 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerSettings extends JControllerLegacy
 {
-	/**
-	 * Proxy to KinoarhivControllerSettings::save()
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function apply()
 	{
 		$this->save();
 	}
 
-	/**
-	 * Method to save a config object.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
 	public function save()
 	{
 		$document = JFactory::getDocument();
@@ -130,13 +115,6 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		return true;
 	}
 
-	/**
-	 * Method to cancel an edit.
-	 *
-	 * @return  boolean  True if access level checks pass, false otherwise.
-	 *
-	 * @since   3.0
-	 */
 	public function cancel()
 	{
 		// Check if the user is authorized to do this.
@@ -154,13 +132,6 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv');
 	}
 
-	/**
-	 * Method to save component configuration into json file.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
 	public function saveConfig()
 	{
 		// Check if the user is authorized to do this.
@@ -182,13 +153,6 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		echo json_encode(JComponentHelper::getParams('com_kinoarhiv'));
 	}
 
-	/**
-	 * Method to restore component configuration from json file.
-	 *
-	 * @return  void
-	 *
-	 * @since  3.0
-	 */
 	public function restoreConfig()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));

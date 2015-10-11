@@ -1,5 +1,17 @@
-<?php defined('_JEXEC') or die;
+<?php
+/**
+ * @package     Kinoarhiv.Administrator
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
 JHtml::_('behavior.keepalive');
+KAComponentHelper::loadMediamanagerAssets();
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
@@ -8,16 +20,6 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
-
-<!-- Uncomment line below to load Browser+ from YDN -->
-<!-- <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script> -->
-<!-- Comment line below if load Browser+ from YDN -->
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js"></script>
-
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js"></script>
-<?php KAComponentHelper::getScriptLanguage('', false, 'mediamanager', false); ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js"></script>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js"></script>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {

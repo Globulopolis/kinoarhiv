@@ -1,7 +1,8 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -16,11 +17,27 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerAwards extends JControllerLegacy
 {
+	/**
+	 * Method to add a new record.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function add()
 	{
 		$this->edit(true);
 	}
 
+	/**
+	 * Method to edit an existing record or add a new record.
+	 *
+	 * @param   boolean  $isNew  Variable to check if it's new item or not.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function edit($isNew = false)
 	{
 		$view = $this->getView('awards', 'html');
@@ -37,20 +54,39 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		}
 
 		$view->display($tpl);
-
-		return $this;
 	}
 
+	/**
+	 * Proxy to KinoarhivControllerAwards::save()
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function save2new()
 	{
 		$this->save();
 	}
 
+	/**
+	 * Proxy to KinoarhivControllerAwards::save()
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function apply()
 	{
 		$this->save();
 	}
 
+	/**
+	 * Method to save a record.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -68,7 +104,6 @@ class KinoarhivControllerAwards extends JControllerLegacy
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
 				return;
@@ -86,11 +121,10 @@ class KinoarhivControllerAwards extends JControllerLegacy
 			{
 				$app->enqueueMessage($model->getError(), 'error');
 
-				return false;
+				return;
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $model->getError()));
 
 				return;
@@ -120,11 +154,10 @@ class KinoarhivControllerAwards extends JControllerLegacy
 			{
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]=' . $data['id']);
 
-				return false;
+				return;
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $errors));
 
 				return;
@@ -143,11 +176,10 @@ class KinoarhivControllerAwards extends JControllerLegacy
 
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]=' . $data['id']);
 
-				return false;
+				return;
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode($session_data);
 
 				return;
@@ -183,18 +215,31 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		}
 		else
 		{
-			$document->setName('response');
 			echo json_encode($session_data);
 		}
-
-		return true;
 	}
 
+	/**
+	 * Method to unpublish a list of items
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function unpublish()
 	{
 		$this->publish(true);
 	}
 
+	/**
+	 * Method to publish a list of items
+	 *
+	 * @param   boolean  $isUnpublish  Action state
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function publish($isUnpublish = false)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -214,7 +259,7 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return false;
+			return;
 		}
 
 		// Clean the session data.
@@ -225,6 +270,13 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', $message);
 	}
 
+	/**
+	 * Method to remove an item(s).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -234,7 +286,7 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return false;
+			return;
 		}
 
 		$model = $this->getModel('award');
@@ -244,7 +296,7 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return false;
+			return;
 		}
 
 		// Clean the session data.
@@ -254,6 +306,13 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 
+	/**
+	 * Method to cancel an edit.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function cancel()
 	{
 		$user = JFactory::getUser();
@@ -274,6 +333,13 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
 	}
 
+	/**
+	 * Method to run batch operations.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function batch()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -286,7 +352,7 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return false;
+			return;
 		}
 
 		$app = JFactory::getApplication();
@@ -302,7 +368,7 @@ class KinoarhivControllerAwards extends JControllerLegacy
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=awards');
 
-				return false;
+				return;
 			}
 		}
 

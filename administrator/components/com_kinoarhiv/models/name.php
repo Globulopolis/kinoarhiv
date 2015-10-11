@@ -2,6 +2,7 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -11,7 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\String\String;
 
-JLoader::register('DatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
+JLoader::register('KADatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
 class KinoarhivModelName extends JModelForm
 {
@@ -69,6 +70,7 @@ class KinoarhivModelName extends JModelForm
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
+		$lang = JFactory::getLanguage();
 		$db = $this->getDBO();
 		$tmpl = $app->input->get('template', '', 'string');
 		$id = $app->input->get('id', array(), 'array');
@@ -96,9 +98,16 @@ class KinoarhivModelName extends JModelForm
 
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName(array('n.id', 'n.asset_id', 'n.name', 'n.latin_name', 'n.alias', 'n.date_of_birth', 'n.date_of_death', 'n.birthplace', 'n.birthcountry', 'n.gender', 'n.height', 'n.desc', 'n.attribs', 'n.ordering', 'n.state', 'n.access', 'n.metakey', 'n.metadesc', 'n.metadata', 'n.language')))
-				->from($db->quoteName('#__ka_names', 'n'))
-				->where($db->quoteName('n.id') . ' = ' . (int) $id[0]);
+			$query->select(
+				$db->quoteName(
+					array('n.id', 'n.asset_id', 'n.name', 'n.latin_name', 'n.alias', 'n.fs_alias', 'n.date_of_birth',
+						'n.date_of_death', 'n.birthplace', 'n.birthcountry', 'n.gender', 'n.height', 'n.desc', 'n.attribs',
+						'n.ordering', 'n.state', 'n.access', 'n.metakey', 'n.metadesc', 'n.metadata', 'n.language'
+					)
+				)
+			)
+			->from($db->quoteName('#__ka_names', 'n'))
+			->where($db->quoteName('n.id') . ' = ' . (int) $id[0]);
 
 			// Join over the language
 			$query->select($db->quoteName('l.title', 'language_title'))
@@ -123,6 +132,11 @@ class KinoarhivModelName extends JModelForm
 			if (!empty($result['name']->attribs))
 			{
 				$result['attribs'] = json_decode($result['name']->attribs);
+			}
+
+			if (empty($result['name']->fs_alias))
+			{
+				$result['name']->fs_alias = strtolower($lang->transliterate(String::substr($result['name']->alias, 0, 1)));
 			}
 		}
 
@@ -234,7 +248,7 @@ class KinoarhivModelName extends JModelForm
 
 		if (!empty($search_string))
 		{
-			$where .= " AND " . DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+			$where .= " AND " . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
 		}
 
 		$query = $db->getQuery(true);
@@ -367,7 +381,14 @@ class KinoarhivModelName extends JModelForm
 		if (empty($id))
 		{
 			$query->insert($db->quoteName('#__ka_names'))
-				->columns($db->quoteName(array('id', 'asset_id', 'name', 'latin_name', 'alias', 'date_of_birth', 'date_of_death', 'birthplace', 'birthcountry', 'gender', 'height', 'desc', 'attribs', 'ordering', 'state', 'access', 'metakey', 'metadesc', 'metadata', 'language')))
+				->columns(
+					$db->quoteName(
+						array('id', 'asset_id', 'name', 'latin_name', 'alias', 'date_of_birth', 'date_of_death', 'birthplace',
+							'birthcountry', 'gender', 'height', 'desc', 'attribs', 'ordering', 'state', 'access', 'metakey',
+							'metadesc', 'metadata', 'language'
+						)
+					)
+				)
 				->values("'','0','" . $db->escape(trim($data['name']['name'])) . "','" . $db->escape(trim($data['name']['latin_name'])) . "','" . $alias . "','" . $data['name']['date_of_birth'] . "','" . $data['name']['date_of_death'] . "','" . $db->escape(trim($data['name']['birthplace'])) . "','" . (int) $data['name']['birthcountry'] . "','" . (int) $data['name']['gender'] . "','" . $db->escape($data['name']['height']) . "','" . $db->escape($data['name']['desc']) . "','" . $attribs . "','" . (int) $data['name']['ordering'] . "','" . $data['name']['state'] . "','" . (int) $data['name']['access'] . "','" . $db->escape($data['name']['metakey']) . "','" . $db->escape($data['name']['metadesc']) . "','" . json_encode($metadata) . "','" . $db->escape($data['name']['language']) . "'");
 		}
 		else

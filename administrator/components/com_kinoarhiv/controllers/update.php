@@ -1,7 +1,8 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -17,6 +18,19 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerUpdate extends JControllerLegacy
 {
+	/**
+	 * Typical view method for MVC based architecture
+	 *
+	 * This function is provide as a default implementation, in most cases
+	 * you will need to override it in your own controllers.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached
+	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+	 *
+	 * @return  JControllerLegacy  A JControllerLegacy object to support chaining.
+	 *
+	 * @since   3.0
+	 */
 	public function display($cachable = false, $urlparams = array())
 	{
 		$app = JFactory::getApplication();

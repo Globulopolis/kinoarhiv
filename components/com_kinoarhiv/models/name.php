@@ -2,6 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -55,10 +56,10 @@ class KinoarhivModelName extends JModelList
 		$id = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
-			->select("n.id, n.name, n.latin_name, n.alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
+			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
 					"n.date_of_birth AS date_of_birth_raw, DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, " .
 					"n.date_of_death AS date_of_death_raw, n.birthplace, n.birthcountry, n.gender, n.height, n.desc, " .
-					"n.attribs, n.metakey, n.metadesc, n.metadata, cn.name AS country, cn.code, g.filename")
+					"n.attribs, n.metakey, n.metadesc, n.metadata, cn.name AS country, cn.code, g.filename, g.dimension")
 			->from($db->quoteName('#__ka_names', 'n'));
 
 		$query->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.photo_frontpage = 1 AND g.state = 1');
@@ -319,7 +320,7 @@ class KinoarhivModelName extends JModelList
 		$result = (object) array();
 
 		$query = $db->getQuery(true)
-			->select('id, name, latin_name, alias, attribs, metakey, metadesc, metadata')
+			->select('id, name, latin_name, alias, fs_alias, gender, attribs, metakey, metadesc, metadata')
 			->from($db->quoteName('#__ka_names'))
 			->where('id = ' . (int) $id . ' AND state = 1 AND access IN (' . $groups . ')')
 			->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');

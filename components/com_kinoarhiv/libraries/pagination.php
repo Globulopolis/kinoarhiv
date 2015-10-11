@@ -1,9 +1,11 @@
 <?php
 /**
- * @package     Joomla.Libraries
- * @subpackage  Pagination
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @package     Kinoarhiv.Site
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
  */
 
 defined('JPATH_PLATFORM') or die;

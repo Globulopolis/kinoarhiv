@@ -1,4 +1,28 @@
-<?php defined('_JEXEC') or die; ?>
+<?php
+/**
+ * @package     Kinoarhiv.Administrator
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+use Joomla\String\String;
+
+if (String::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
+{
+	$poster_url = JURI::root() . String::substr($this->params->get('media_music_images_root_www'), 1) . '/'
+		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->form->getValue('id', $this->form_edit_group);
+}
+else
+{
+	$poster_url = $this->params->get('media_music_images_root_www') . '/' . urlencode($this->form->getValue('fs_alias', $this->form_edit_group))
+		. '/' . $this->form->getValue('id', $this->form_edit_group);
+}
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('#form_album_genres').select2({
@@ -50,63 +74,71 @@
 			});
 		});
 
-		$('#image_uploader').pluploadQueue({
-			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
-			multipart_params: {
-				'<?php echo JSession::getFormToken(); ?>': 1
-			},
-			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
-			unique_names: false,
-			filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
-			preinit: {
-				init: function(up, info){
-					$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-					$('#image_uploader .plupload_clear_all').click(function(e){
-						e.preventDefault();
-						up.splice();
-						$.each(up.files, function(i, file){
-							up.removeFile(file);
-						});
-					});
-				},
-				UploadComplete: function(up, files){
-					$('#image_uploader').find('.plupload_buttons').show();
-				}
-			},
-			init: {
-				FileUploaded: function(up, file, info){
-					var obj = $.parseJSON(info.response);
-					var file = $.parseJSON(obj.id);
-					var url = '<?php echo (JString::substr($this->params->get('media_posters_root_www'), 0, 1) == '/') ? JURI::root().JString::substr($this->params->get('media_posters_root_www'), 1).'/'.JString::substr($this->form->getValue('alias', $this->form_edit_group), 0, 1).'/'.$this->form->getValue('id', $this->form_edit_group).'/posters/' : $this->params->get('media_posters_root_www').'/'.JString::substr($this->form->getValue('alias', $this->form_edit_group), 0, 1).'/'.$this->form->getValue('id', $this->form_edit_group).'/posters/'; ?>';
-
-					blockUI('show');
-					$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
-						{ '_id[]': file.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
-					).done(function(response){
-						var cover_preview = $('img.album-cover-preview');
-						cover_preview.attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
-						cover_preview.parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
-						$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');
-						blockUI();
-						$('.layout_img_upload').dialog('close');
-					}).fail(function(xhr, status, error){
-						showMsg('#system-message-container', error);
-						blockUI();
-					});
-				}
-			}
-		});
-
 		$('a.file-upload-scr').click(function(e){
 			e.preventDefault();
 
-			$('.layout_img_upload').dialog({
-				modal: true,
-				width: 700
+			$('#image_uploader').pluploadQueue({
+				runtimes: 'html5,flash,silverlight,html4',
+				url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
+				multipart_params: {
+					'<?php echo JSession::getFormToken(); ?>': 1
+				},
+				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+				unique_names: false,
+				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
+				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				preinit: {
+					init: function(up, info){
+						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+						$('#image_uploader .plupload_clear_all').click(function(e){
+							e.preventDefault();
+							up.splice();
+							$.each(up.files, function(i, file){
+								up.removeFile(file);
+							});
+						});
+					},
+					UploadComplete: function(up, files){
+						$('#image_uploader').find('.plupload_buttons').show();
+					}
+				},
+				init: {
+					PostInit: function () {
+						$('#image_uploader_container').removeAttr('title', '');
+					},
+					FileUploaded: function(up, file, info){
+						var response = $.parseJSON(info.response),
+							response_obj = $.parseJSON(response.id),
+							url = '<?php echo $poster_url; ?>';
+
+						blockUI('show');
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
+							{ '_id[]': response_obj.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
+						).done(function(response){
+							var cover_preview = $('img.album-cover-preview');
+
+							/*cover_preview.attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
+							cover_preview.parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
+							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');*/
+							blockUI();
+							$('#imgModalUpload').modal('hide');
+						}).fail(function(xhr, status, error){
+							showMsg('#system-message-container', error);
+							blockUI();
+						});
+					},
+					FilesAdded: function(up, files) {
+						if (up.files.length === 1) {
+							$('#image_uploader a.plupload_add').hide();
+						}
+					},
+					QueueChanged: function(up) {
+						$('#image_uploader a.plupload_add').show();
+					}
+				}
 			});
+			$('#imgModalUpload').modal();
 		});
 
 		$('a.cmd-scr-delete').click(function(e){
@@ -238,7 +270,7 @@
 		</div>
 		<div class="span3">
 			<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
-			<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="album-cover-preview <?php echo $this->items->get('y_poster'); ?>" height="110" /></a>
+			<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="album-cover-preview" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
 			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 			<?php endif; ?>
@@ -260,8 +292,4 @@
 	</div>
 </div>
 
-<div class="layout_img_upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>">
-	<!-- At this first hidden input we will remove autofocus -->
-	<input type="hidden" autofocus="autofocus" />
-	<div id="image_uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
-</div>
+<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT); ?>

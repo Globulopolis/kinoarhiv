@@ -2,6 +2,7 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -9,11 +10,29 @@
 
 defined('JPATH_PLATFORM') or die;
 
+/**
+ * Form Field to load a career or list of careers
+ *
+ * @since  3.0
+ */
 class JFormFieldCareers extends JFormField
 {
+	/**
+	 * The form field type.
+	 *
+	 * @var    string
+	 * @since  3.0
+	 */
 	protected $type = 'Careers';
 
-	public function __construct()
+	/**
+	 * Method to instantiate the form field object.
+	 *
+	 * @param   JForm  $form  The form to attach to the form field object.
+	 *
+	 * @since   3.0
+	 */
+	public function __construct($form = null)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -25,6 +44,13 @@ class JFormFieldCareers extends JFormField
 		parent::__construct();
 	}
 
+	/**
+	 * Method to get the field input.
+	 *
+	 * @return  string  The field input.
+	 *
+	 * @since   3.0
+	 */
 	protected function getInput()
 	{
 		$class = 'hasAutocomplete ';

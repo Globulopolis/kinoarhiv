@@ -1,12 +1,15 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivViewMediamanager extends JViewLegacy
 {
 	protected $form;
@@ -15,13 +18,17 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	{
 		$input = JFactory::getApplication()->input;
 
-		if ($input->get('type', '', 'word') == 'trailers') {
+		if ($input->get('type', '', 'word') == 'trailers')
+		{
 			$this->form = $this->get('Form');
 		}
 
-		if ($tpl == 'upload_subtitles_lang_edit') {
+		if ($tpl == 'upload_subtitles_lang_edit')
+		{
 			$this->data = $this->get('SubtitleEdit');
-		} elseif ($tpl == 'upload_videodata_edit') {
+		}
+		elseif ($tpl == 'upload_videodata_edit')
+		{
 			$this->data = $this->get('VideoDataEdit');
 		}
 

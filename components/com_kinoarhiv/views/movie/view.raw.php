@@ -1,16 +1,31 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
+/**
+ * Movie View class
+ *
+ * @since  3.0
  */
 class KinoarhivViewMovie extends JViewLegacy
 {
 	protected $item = null;
 
+	/**
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -21,28 +36,34 @@ class KinoarhivViewMovie extends JViewLegacy
 	protected function watch($type)
 	{
 		$user = JFactory::getUser();
-		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		if ($params->get('allow_guest_watch') == 0 && $user->get('guest') && $type == 'movie') {
+		if ($params->get('allow_guest_watch') == 0 && $user->get('guest') && $type == 'movie')
+		{
 			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">' . KAComponentHelper::showMsg(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'), array('icon' => 'alert', 'type' => 'error')) . '</div>';
 
 			return;
 		}
 
-		if ($type == 'trailer' || $type == 'movie') {
+		if ($type == 'trailer' || $type == 'movie')
+		{
 			$item = $this->get('Trailer');
 
-			$this->item = &$item;
-			$this->params = &$params;
-			$this->user = &$user;
+			$this->item = $item;
+			$this->params = $params;
+			$this->user = $user;
 
-			if ($params->get('player_type') == '-1') {
+			if ($params->get('player_type') == '-1')
+			{
 				parent::display('trailer');
-			} else {
+			}
+			else
+			{
 				parent::display('trailer_' . $params->get('player_type'));
 			}
-		} else {
+		}
+		else
+		{
 			echo '<div style="width: 200px; margin: 20px 5px 5px 5px;">' . KAComponentHelper::showMsg(JText::_('ERROR'), array('icon' => 'alert', 'type' => 'error')) . '</div>';
 		}
 	}

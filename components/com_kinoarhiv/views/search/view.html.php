@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Search View class
+ *
+ * @since  3.0
+ */
 class KinoarhivViewSearch extends JViewLegacy
 {
 	protected $items;
@@ -27,8 +32,8 @@ class KinoarhivViewSearch extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 
-		$items = $this->get('Items');
-		$activeFilters = $this->get('ActiveFilters');
+		$this->items = $this->get('Items');
+		$this->activeFilters = $this->get('ActiveFilters');
 		$this->home_itemid = $this->get('HomeItemid');
 
 		if (count($errors = $this->get('Errors')))
@@ -38,12 +43,8 @@ class KinoarhivViewSearch extends JViewLegacy
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$this->items = $items;
-		$this->activeFilters = $activeFilters;
-		$this->params = &$params;
 
 		$this->_prepareDocument();
 

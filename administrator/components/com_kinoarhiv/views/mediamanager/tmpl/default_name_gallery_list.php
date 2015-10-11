@@ -1,21 +1,22 @@
-<?php defined('_JEXEC') or die;
+<?php
+/**
+ * @package     Kinoarhiv.Administrator
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
 $user		= JFactory::getUser();
 $input 		= JFactory::getApplication()->input;
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
+KAComponentHelper::loadMediamanagerAssets();
 ?>
-<link type="text/css" rel="stylesheet" href="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
-
-<!-- Uncomment line below to load Browser+ from YDN -->
-<!-- <script src="http://bp.yahooapis.com/2.4.21/browserplus-min.js" type="text/javascript"></script> -->
-<!-- Comment line below if load Browser+ from YDN -->
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/browserplus-min.js" type="text/javascript"></script>
-
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.full.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('', false, 'mediamanager', false); ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/jquery.ui.plupload.js" type="text/javascript"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -23,10 +24,11 @@ $sortFields = $this->getSortFields();
 		var table = document.getElementById("sortTable");
 		var direction = document.getElementById("directionTable");
 		var order = table.options[table.selectedIndex].value;
+		var dir;
 		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
+			dirn = 'asc';
 		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
+			dirn = direction.options[direction.selectedIndex].value;
 		}
 		Joomla.tableOrdering(order, dirn, '');
 	};
@@ -266,8 +268,4 @@ $sortFields = $this->getSortFields();
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
-<div class="layout_img_upload" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>">
-	<!-- At this first hidden input we will remove autofocus -->
-	<input type="hidden" autofocus="autofocus" />
-	<div id="image_uploader"><p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p></div>
-</div>
+<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT); ?>

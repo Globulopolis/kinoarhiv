@@ -279,7 +279,7 @@ img.movie-poster-preview, img.album-cover-preview {
 	display: block;
 }
 
-img.movie-poster-preview.y-poster, img.album-cover-preview.y-poster {
+img.movie-poster-preview, img.album-cover-preview {
 	background-color: #FFFFFF;
 	border: 1px solid #CCCCCC;
 }
@@ -301,14 +301,6 @@ img.movie-poster-preview.y-poster, img.album-cover-preview.y-poster {
 .layout_img_upload {
 	display: none;
 	padding: 0.2em !important;
-}
-
-.trailer-image-upload .plupload_scroll .plupload_filelist {
-	height: 185px;
-}
-
-.trailer-image-upload li.plupload_droptext {
-	line-height: 165px;
 }
 
 #list_awards a {

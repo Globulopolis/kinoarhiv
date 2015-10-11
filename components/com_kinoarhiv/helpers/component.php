@@ -2,6 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -286,7 +287,7 @@ class KAComponentHelper extends JComponentHelper
 	 * Logger
 	 *
 	 * @param   string  $message  Text to log.
-	 * @param   mixed   $silent   Throw exception error or not. True - throw, false - not, 'ui' - show message.
+	 * @param   mixed   $silent   Throw exception or not. True - throw, false - not, 'ui' - show message.
 	 *
 	 * @return  mixed
 	 *
@@ -451,5 +452,61 @@ class KAComponentHelper extends JComponentHelper
 				echo '<script src="' . $url . $script_type . '/' . $file . substr($lang, 0, 2) . '.js" type="text/javascript"></script>';
 			}
 		}
+	}
+
+	/**
+	 * Tests if a function exists. Also handles the case where a function is disabled via Suhosin.
+	 *
+	 * @param   string  $function  Function name to check.
+	 *
+	 * @return  boolean
+	 */
+	public static function functionExists($function)
+	{
+		if ($function == 'eval')
+		{
+			// Does not check suhosin.executor.eval.whitelist (or blacklist)
+			if (extension_loaded('suhosin'))
+			{
+				return @ini_get("suhosin.executor.disable_eval") != "1";
+			}
+
+			return true;
+		}
+
+		$exists = function_exists($function);
+
+		if (extension_loaded('suhosin'))
+		{
+			$blacklist = @ini_get("suhosin.executor.func.blacklist");
+
+			if (!empty($blacklist))
+			{
+				$blacklistFunctions = array_map('strtolower', array_map('trim', explode(',', $blacklist)));
+
+				return $exists && !in_array($function, $blacklistFunctions);
+			}
+		}
+
+		return $exists;
+	}
+
+	/**
+	 * Checks for a form token in the request.
+	 *
+	 * Use in conjunction with JHtml::_('form.token') or JSession::getFormToken.
+	 *
+	 * @param   string  $method  The request method in which to look for the token key.
+	 *
+	 * @return  boolean  True if found and valid, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	public static function checkToken($method = 'post')
+	{
+		$token = JSession::getFormToken();
+		$app = JFactory::getApplication();
+
+		return (bool) $app->input->$method->get($token, '', 'alnum');
 	}
 }

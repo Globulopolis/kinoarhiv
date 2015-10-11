@@ -1,17 +1,21 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivModelReviews extends JModelList
 {
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields'])) {
+		if (empty($config['filter_fields']))
+		{
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'username', 'u.username',
@@ -30,7 +34,8 @@ class KinoarhivModelReviews extends JModelList
 		$app = JFactory::getApplication();
 
 		// Adjust the context to support modal layouts.
-		if ($layout = $app->input->get('layout')) {
+		if ($layout = $app->input->get('layout'))
+		{
 			$this->context .= '.' . $layout;
 		}
 
@@ -85,57 +90,84 @@ class KinoarhivModelReviews extends JModelList
 
 		// Filter by author ID
 		$author_id = $this->getState('filter.author_id');
-		if (is_numeric($author_id)) {
-			$query->where('a.uid = ' . (int)$author_id);
+
+		if (is_numeric($author_id))
+		{
+			$query->where('a.uid = ' . (int) $author_id);
 		}
 
 		// Filter by type
 		$type = $this->getState('filter.type');
-		if (is_numeric($type)) {
-			$query->where('a.type = ' . (int)$type);
-		} elseif ($type === '') {
+
+		if (is_numeric($type))
+		{
+			$query->where('a.type = ' . (int) $type);
+		}
+		elseif ($type === '')
+		{
 			$query->where('(a.type = 0 OR a.type = 1 OR a.type = 2 OR a.type = 3)');
 		}
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
-			$query->where('a.state = ' . (int)$published);
-		} elseif ($published === '') {
+
+		if (is_numeric($published))
+		{
+			$query->where('a.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
 		// Filter by search string.
 		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = ' . (int)substr($search, 3));
-			} elseif (stripos($search, 'movie:') === 0) {
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('a.id = ' . (int) substr($search, 3));
+			}
+			elseif (stripos($search, 'movie:') === 0)
+			{
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 6)), true) . '%');
 				$query->where('m.title LIKE ' . $search);
-			} elseif (stripos($search, 'user:') === 0) {
+			}
+			elseif (stripos($search, 'user:') === 0)
+			{
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 5)), true) . '%');
 				$query->where('u.username LIKE ' . $search);
-			} elseif (stripos($search, 'ip:') === 0) {
+			}
+			elseif (stripos($search, 'ip:') === 0)
+			{
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 3)), true) . '%');
 				$query->where('a.ip LIKE ' . $search);
-			} elseif (stripos($search, 'type:') === 0) {
-				$query->where('a.type = ' . (int)substr($search, 5));
-			} elseif (stripos($search, 'date:') === 0) {
+			}
+			elseif (stripos($search, 'type:') === 0)
+			{
+				$query->where('a.type = ' . (int) substr($search, 5));
+			}
+			elseif (stripos($search, 'date:') === 0)
+			{
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 5)), true) . '%');
 				$query->where('a.created LIKE ' . $search);
-			} else {
+			}
+			else
+			{
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
 				$query->where('(a.review LIKE ' . $search . ')');
 			}
 		}
 
-		if (!empty($uid) && is_numeric($uid)) {
-			$query->where('u.id = ' . (int)$uid);
+		if (!empty($uid) && is_numeric($uid))
+		{
+			$query->where('u.id = ' . (int) $uid);
 		}
 
-		if (!empty($mid) && is_numeric($mid)) {
-			$query->where('m.id = ' . (int)$mid);
+		if (!empty($mid) && is_numeric($mid))
+		{
+			$query->where('m.id = ' . (int) $mid);
 		}
 
 		// Add the list ordering clause.
@@ -150,20 +182,25 @@ class KinoarhivModelReviews extends JModelList
 	/**
 	 * Method to get a list of articles.
 	 * Overridden to add a check for access levels.
+	 *
 	 * @return  mixed  An array of data items on success, false on failure.
+	 *
 	 * @since   1.6.1
 	 */
 	public function getItems()
 	{
 		$items = parent::getItems();
 
-		if (JFactory::getApplication()->isSite()) {
+		if (JFactory::getApplication()->isSite())
+		{
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
 
-			for ($x = 0, $count = count($items); $x < $count; $x++) {
+			for ($x = 0, $count = count($items); $x < $count; $x++)
+			{
 				// Check the access level. Remove articles the user shouldn't see
-				if (!in_array($items[$x]->access, $groups)) {
+				if (!in_array($items[$x]->access, $groups))
+				{
 					unset($items[$x]);
 				}
 			}
@@ -179,20 +216,25 @@ class KinoarhivModelReviews extends JModelList
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data)) {
+		if (empty($batch_data))
+		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['type'])) {
-			$fields[] = $db->quoteName('type') . " = '" . (int)$batch_data['type'] . "'";
-		}
-		if (!empty($batch_data['user_id'])) {
-			$fields[] = $db->quoteName('uid') . " = '" . (int)$batch_data['user_id'] . "'";
+		if (!empty($batch_data['type']))
+		{
+			$fields[] = $db->quoteName('type') . " = '" . (int) $batch_data['type'] . "'";
 		}
 
-		if (empty($fields)) {
+		if (!empty($batch_data['user_id']))
+		{
+			$fields[] = $db->quoteName('uid') . " = '" . (int) $batch_data['user_id'] . "'";
+		}
+
+		if (empty($fields))
+		{
 			return false;
 		}
 
@@ -204,9 +246,12 @@ class KinoarhivModelReviews extends JModelList
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$db->execute();
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			$this->setError($e->getMessage());
 
 			return false;

@@ -1,7 +1,8 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -142,7 +143,7 @@ class KAImage extends JImage
 
 		if ($wtProperties->mime == 'image/gif')
 		{
-			if (function_exists('imagecreatefromgif'))
+			if (KAComponentHelper::functionExists('imagecreatefromgif'))
 			{
 				$filter = @imagecreatefromgif($watermark->getPath());
 
@@ -158,7 +159,7 @@ class KAImage extends JImage
 		}
 		elseif ($wtProperties->mime == 'image/jpeg')
 		{
-			if (function_exists('imagecreatefromjpeg'))
+			if (KAComponentHelper::functionExists('imagecreatefromjpeg'))
 			{
 				$filter = imagecreatefromjpeg($watermark->getPath());
 
@@ -174,7 +175,7 @@ class KAImage extends JImage
 		}
 		elseif ($wtProperties->mime == 'image/png')
 		{
-			if (function_exists('imagecreatefrompng'))
+			if (KAComponentHelper::functionExists('imagecreatefrompng'))
 			{
 				$filter = @imagecreatefrompng($watermark->getPath());
 

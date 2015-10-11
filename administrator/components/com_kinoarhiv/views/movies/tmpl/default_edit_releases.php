@@ -1,4 +1,15 @@
-<?php defined('_JEXEC') or die;
+<?php
+/**
+ * @package     Kinoarhiv.Administrator
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
+ */
+
+defined('_JEXEC') or die;
+
 if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
 	return;
@@ -28,13 +39,13 @@ endif; ?>
 			shrinkToFit: true,
 			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_VENDOR').' - '.JText::_('COM_KA_VENDORS_FIELD_TITLE'); ?>', '<?php echo JText::_('COM_KA_VENDORS_FIELD_TITLE_INTL'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_DATE_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASES_MEDIATYPE_DESC'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_COUNTRY'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
 			colModel:[
-				{name:'id', index:'id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'company_name', index:'company_name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'company_name_intl', index:'company_name_intl', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'release_date', index:'release_date', width:150, sorttype:"text", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'media_type', index:'media_type', width:250, sorttype:"text", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'country', index:'name', width:250, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'ordering', index:'ordering', width:60, align:"right", sortable: false, search: false}
+				{name:'id', index:'r.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'company_name', index:'v.company_name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'company_name_intl', index:'v.company_name_intl', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'release_date', index:'r.release_date', width:150, sorttype:"date", datefmt:'Y-m-d', searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'media_type', index:'m.title', width:250, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'country', index:'c.name', width:250, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'ordering', index:'r.ordering', width:60, align:"right", sortable: false, search: false}
 			],
 			multiselect: true,
 			caption: '',

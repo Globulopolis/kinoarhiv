@@ -1,17 +1,23 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivViewCareers extends JViewLegacy
 {
 	protected $items;
+
 	protected $pagination;
+
 	protected $state;
+
 	protected $form;
 
 	public function display($tpl = null)
@@ -19,7 +25,8 @@ class KinoarhivViewCareers extends JViewLegacy
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
 
-		switch ($task) {
+		switch ($task)
+		{
 			case 'add':
 				$this->edit($tpl);
 				break;
@@ -42,11 +49,13 @@ class KinoarhivViewCareers extends JViewLegacy
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		if ($this->getLayout() !== 'modal') {
+		if ($this->getLayout() !== 'modal')
+		{
 			$this->addToolbar();
 		}
 
@@ -60,13 +69,15 @@ class KinoarhivViewCareers extends JViewLegacy
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create.career', 'com_kinoarhiv') && !$user->authorise('core.edit.career', 'com_kinoarhiv')) {
+		if (!$user->authorise('core.create.career', 'com_kinoarhiv') && !$user->authorise('core.edit.career', 'com_kinoarhiv'))
+		{
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 		}
 
 		$this->form = $this->get('Form');
 
-		if ($this->getLayout() !== 'modal') {
+		if ($this->getLayout() !== 'modal')
+		{
 			$this->addToolbar($tpl);
 		}
 
@@ -78,36 +89,46 @@ class KinoarhivViewCareers extends JViewLegacy
 	{
 		$user = JFactory::getUser();
 
-		if ($task == 'add') {
+		if ($task == 'add')
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'address');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
-		} elseif ($task == 'edit') {
+		}
+		elseif ($task == 'edit')
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE') . ': ' . $this->form->getValue('title')), 'address');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
-			if ($this->form->getValue('id') != 0) {
+
+			if ($this->form->getValue('id') != 0)
+			{
 				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
-		} else {
+		}
+		else
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE')), 'address');
 
-			if ($user->authorise('core.create.career', 'com_kinoarhiv')) {
+			if ($user->authorise('core.create.career', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::addNew('add');
 			}
 
-			if ($user->authorise('core.edit.career', 'com_kinoarhiv')) {
+			if ($user->authorise('core.edit.career', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::editList('edit');
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.delete.career', 'com_kinoarhiv')) {
+			if ($user->authorise('core.delete.career', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 				JToolbarHelper::divider();
 			}
@@ -115,7 +136,8 @@ class KinoarhivViewCareers extends JViewLegacy
 			JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create.career', 'com_kinoarhiv') && $user->authorise('core.edit.career', 'com_kinoarhiv') && $user->authorise('core.edit.state.career', 'com_kinoarhiv')) {
+			if ($user->authorise('core.create.career', 'com_kinoarhiv') && $user->authorise('core.edit.career', 'com_kinoarhiv') && $user->authorise('core.edit.state.career', 'com_kinoarhiv'))
+			{
 				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');

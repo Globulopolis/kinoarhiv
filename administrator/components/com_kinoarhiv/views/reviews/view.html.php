@@ -1,17 +1,23 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivViewReviews extends JViewLegacy
 {
 	protected $items;
+
 	protected $pagination;
+
 	protected $state;
+
 	protected $form;
 
 	public function display($tpl = null)
@@ -19,7 +25,8 @@ class KinoarhivViewReviews extends JViewLegacy
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
 
-		switch ($task) {
+		switch ($task)
+		{
 			case 'edit':
 				$this->edit($tpl);
 				break;
@@ -39,11 +46,13 @@ class KinoarhivViewReviews extends JViewLegacy
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		if ($this->getLayout() !== 'modal') {
+		if ($this->getLayout() !== 'modal')
+		{
 			$this->addToolbar();
 		}
 
@@ -58,7 +67,8 @@ class KinoarhivViewReviews extends JViewLegacy
 		$app = JFactory::getApplication();
 		$this->form = $this->get('Form');
 
-		if ($this->getLayout() !== 'modal') {
+		if ($this->getLayout() !== 'modal')
+		{
 			$this->addToolbar($tpl);
 		}
 
@@ -70,13 +80,16 @@ class KinoarhivViewReviews extends JViewLegacy
 	{
 		$user = JFactory::getUser();
 
-		if ($task == 'edit') {
+		if ($task == 'edit')
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_FIELD_REVIEW') . ': ' . JText::_('COM_KA_EDIT')), 'comments-2');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
-		} else {
+		}
+		else
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_TITLE')), 'comments-2');
 			JToolbarHelper::editList('edit');
 			JToolbarHelper::divider();
@@ -85,7 +98,8 @@ class KinoarhivViewReviews extends JViewLegacy
 			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
+			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
+			{
 				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');

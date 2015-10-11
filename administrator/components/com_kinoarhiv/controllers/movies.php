@@ -1,13 +1,16 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
 
 defined('_JEXEC') or die;
+
+use Joomla\String\String;
 
 /**
  * Movies list controller class
@@ -16,11 +19,27 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerMovies extends JControllerLegacy
 {
+	/**
+	 * Method to add a new record.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function add()
 	{
 		$this->edit(true);
 	}
 
+	/**
+	 * Method to edit an existing record or add a new record.
+	 *
+	 * @param   boolean  $isNew  Variable to check if it's new item or not.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function edit($isNew = false)
 	{
 		$view = $this->getView('movies', 'html');
@@ -37,20 +56,39 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		$view->display($tpl);
-
-		return $this;
 	}
 
+	/**
+	 * Proxy to KinoarhivControllerMovies::save()
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function save2new()
 	{
 		$this->save();
 	}
 
+	/**
+	 * Proxy to KinoarhivControllerMovies::save()
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function apply()
 	{
 		$this->save();
 	}
 
+	/**
+	 * Method to save a record.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -68,7 +106,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
 				return;
@@ -86,11 +123,10 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			{
 				$app->enqueueMessage($model->getError(), 'error');
 
-				return false;
+				return;
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $model->getError()));
 
 				return;
@@ -109,11 +145,10 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			{
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $data['id']);
 
-				return false;
+				return;
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode(array('success' => false, 'message' => $errors));
 
 				return;
@@ -128,13 +163,14 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			if ($document->getType() == 'html')
 			{
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+
+				// TODO id key should be changed to avoid a notice about undefined index
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $data['id']);
 
-				return false;
+				return;
 			}
 			else
 			{
-				$document->setName('response');
 				echo json_encode($session_data);
 
 				return;
@@ -170,13 +206,17 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 		else
 		{
-			$document->setName('response');
 			echo json_encode($session_data);
 		}
-
-		return true;
 	}
 
+	/**
+	 * Method to save access rules for an item.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function saveAccessRules()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -191,13 +231,31 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$result = $model->saveAccessRules();
 
 		echo json_encode($result);
+
+		return true;
 	}
 
+	/**
+	 * Method to unpublish a list of items
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function unpublish()
 	{
 		$this->publish(true);
 	}
 
+	/**
+	 * Method to publish a list of items
+	 *
+	 * @param   boolean  $isUnpublish  Action state
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function publish($isUnpublish = false)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -217,7 +275,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return false;
+			return;
 		}
 
 		// Clean the session data.
@@ -228,6 +286,13 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', $message);
 	}
 
+	/**
+	 * Method to remove an item(s).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -247,7 +312,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return false;
+			return;
 		}
 
 		// Clean the session data.
@@ -257,10 +322,16 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 
+	/**
+	 * Method to cancel an edit.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function cancel()
 	{
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.movie'))
@@ -278,78 +349,114 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 	}
 
+	/**
+	 * Method to get cast and crew list.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function getCast()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('movie');
 		$result = $model->getCast();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to delete an item from cast and crew list.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function deleteCast()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('movie');
 		$result = $model->deleteCast();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to get awards list.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function getAwards()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('movie');
 		$result = $model->getAwards();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to get premieres list.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function getPremieres()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('movie');
 		$result = $model->getPremieres();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to get releases list.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function getReleases()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('movie');
 		$result = $model->getReleases();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to delete an award from awards list.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function deleteRelAwards()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('movie');
 		$result = $model->deleteRelAwards();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to update ratings from movies sites.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function getRates()
 	{
-		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
 		$param = $app->input->get('param', '', 'string');
+
+		// Movie ID from Kinopoisk, Rottentomatoes or Metacritic
 		$id = $app->input->get('id', '', 'string');
+
+		// Movie ID from DB
+		$movie_id = $app->input->get('movie_id', 0, 'int');
+
 		$success = true;
 		$message = '';
 		$votesum = 0;
@@ -358,7 +465,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if ($param == 'imdb_vote' || $param == 'kp_vote')
 		{
 			$headers = array(
-				'Cookie'     => 'PHPSESSID=2fe68b9818bf8339f46d4fb5eb4cd613; user_country=ru; noflash=false; mobile=no; mobile=no',
+				'Cookie'     => 'PHPSESSID=2fe68b9818bf8339f46d4fb5eb4cd613; user_country=ru; noflash=false; mobile=no;',
 				'Host'       => 'www.kinopoisk.ru',
 				'Referer'    => 'http://www.kinopoisk.ru/',
 				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
@@ -388,26 +495,21 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			);
 			$response = KAComponentHelper::getRemoteData('http://www.rottentomatoes.com/m/' . $id . '/', $headers, 30, array('curl', 'socket'));
 
-			// Find div with the rating
-			if (preg_match('/<div class="col-xs-12">(.*?)<div class="col-xs-12/si', $response->body, $matches))
-			{
-				preg_match('#<span itemprop="ratingValue">(.*?)<\/span>#si', $matches[1], $_votesum);
-				preg_match('#<span itemprop="reviewCount ratingCount">(.*)<\/span>#si', $matches[1], $_votes);
+			$dom = new DOMDocument('1.0', 'utf-8');
+			@$dom->loadHTML($response->body);
 
-				if (!isset($_votesum[1]))
-				{
-					$message = JText::_('ERROR') . ': ' . JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
-					$success = false;
-				}
-				else
-				{
-					$votesum = (int) $_votesum[1];
-					$votes = (int) $_votes[1];
-				}
+			$xpath = new DOMXPath($dom);
+			$rating = @$xpath->query('//span[@itemprop="ratingValue"]')->item(1)->nodeValue;
+			$score = @$xpath->query('//span[@itemprop="reviewCount ratingCount"]')->item(0)->nodeValue;
+
+			if (is_numeric($rating) && is_numeric($score))
+			{
+				$votesum = (int) $rating;
+				$votes = (int) $score;
 			}
 			else
 			{
-				$message = JText::_('ERROR') . '! Someting wrong with a parser!';
+				$message = JText::_('ERROR') . ': ' . JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
 				$success = false;
 			}
 		}
@@ -421,7 +523,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			);
 			$response = KAComponentHelper::getRemoteData('http://www.metacritic.com/movie/' . $id, $headers, 30, array('curl', 'socket'));
 
-			// Finding the div with rating
+			// Find the div with rating
 			if (preg_match('/<div class="details main_details">(.*?)<div class="details side_details">/si', $response->body, $matches))
 			{
 				preg_match('%<span itemprop="ratingValue">(.*?)<\/span>%si', $matches[1], $_votesum);
@@ -445,10 +547,24 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			}
 		}
 
-		$document->setName('response');
-		echo json_encode(array('success' => $success, 'votesum' => $votesum, 'votes' => $votes, 'message' => $message));
+		echo json_encode(
+			array(
+				'success' => $success,
+				'votesum' => $votesum,
+				'votes' => $votes,
+				'message' => $message,
+				'movie_id' => $movie_id
+			)
+		);
 	}
 
+	/**
+	 * Method to update images with rating from movies sites.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function updateRateImg()
 	{
 		// Check if the user is authorized to do this.
@@ -462,10 +578,14 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		// Movie ID from DB
+		$id = $app->input->get('id', 0, 'int');
 		$votes = $app->input->get('votes', 0, 'int');
 		$votesum = $app->input->get('votesum', '', 'string');
 		$cmd = $app->input->get('elem', '', 'string');
-		$message = '';
+		$text = array();
+		$folder = '';
 
 		if ($cmd == 'rt_vote')
 		{
@@ -474,6 +594,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				0 => array('fontsize' => 10, 'text' => $votesum . '%', 'color' => '#333333'),
 				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
 			);
+			$folder = 'rottentomatoes';
 		}
 		elseif ($cmd == 'mc_vote')
 		{
@@ -482,23 +603,48 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				0 => array('fontsize' => 10, 'text' => $votesum, 'color' => '#333333'),
 				1 => array('fontsize' => 7, 'text' => $votes . ' Critics', 'color' => '#555555'),
 			);
+			$folder = 'metacritic';
 		}
-		else
+		elseif ($cmd == 'kp_vote')
 		{
+			// Kinopoisk
 			$text = array(
 				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
 				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
 			);
+			$folder = 'kinopoisk';
+		}
+		elseif ($cmd == 'imdb_vote')
+		{
+			// IMDb
+			$text = array(
+				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
+				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
+			);
+			$folder = 'imdb';
 		}
 
-		JLoader::register('ImageHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'image.php');
-		$result = ImageHelper::createRateImage($text);
+		JLoader::register('KAImageHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'image.php');
+		$result = KAImageHelper::createRateImage($text);
 
 		$document->setMimeEncoding('application/json');
-		$document->setName('response');
-		echo json_encode(array('success' => $result, 'message' => $message));
+
+		echo json_encode(
+			array(
+				'success' => $result['success'],
+				'message' => $result['message'],
+				'image' => JURI::root() . $params->get('media_rating_image_root_www') . '/' . $folder . '/' . $id . '_big.png?' . time()
+			)
+		);
 	}
 
+	/**
+	 * Method to save a person for cast and crew list.
+	 *
+	 * @return  mixed
+	 *
+	 * @since  3.0
+	 */
 	public function saveRelNames()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -511,15 +657,19 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('relations');
 		$result = $model->saveRelNames();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to save an award for awards list.
+	 *
+	 * @return  mixed
+	 *
+	 * @since  3.0
+	 */
 	public function saveRelAwards()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -532,27 +682,36 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('relations');
 		$result = $model->saveRelAwards();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to save the submitted ordering values for records.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function saveOrder()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
 
 		$model = $this->getModel('movies');
 		$result = $model->saveOrder();
 
-		$document->setName('response');
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to run batch operations.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function batch()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -565,7 +724,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return false;
+			return;
 		}
 
 		$app = JFactory::getApplication();
@@ -581,19 +740,23 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 
-				return false;
+				return;
 			}
 		}
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 	}
 
+	/**
+	 * Method to delete premiere(s) from premieres list.
+	 *
+	 * @return  mixed
+	 *
+	 * @since  3.0
+	 */
 	public function deletePremieres()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$document = JFactory::getDocument();
-		$document->setName('response');
 
 		$model = $this->getModel('premiere');
 		$result = $model->deletePremieres();
@@ -601,16 +764,38 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to delete release(s) from releases list.
+	 *
+	 * @return  mixed
+	 *
+	 * @since  3.0
+	 */
 	public function deleteReleases()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$document = JFactory::getDocument();
-		$document->setName('response');
 
 		$model = $this->getModel('release');
 		$result = $model->deleteReleases();
 
 		echo json_encode($result);
+	}
+
+	/**
+	 * Method to encode item alias for using in filesystem paths and url.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
+	public function getFilesystemAlias()
+	{
+		echo rawurlencode(
+			String::substr(
+				String::strtolower(
+					JFactory::getApplication()->input->get('alias', '', 'string')
+				), 0, 1
+			)
+		);
 	}
 }

@@ -1,19 +1,23 @@
-<?php defined('_JEXEC') or die;
-
+<?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
  */
+
+defined('_JEXEC') or die;
+
 class KinoarhivModelAlbum extends JModelForm
 {
 	public function getForm($data = array(), $loadData = true)
 	{
 		$form = $this->loadForm('com_kinoarhiv.album', 'album', array('control' => 'form', 'load_data' => $loadData));
 
-		if (empty($form)) {
+		if (empty($form))
+		{
 			return false;
 		}
 
@@ -24,7 +28,8 @@ class KinoarhivModelAlbum extends JModelForm
 	{
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.music.albums.' . JFactory::getUser()->id . '.edit_data', array());
 
-		if (empty($data)) {
+		if (empty($data))
+		{
 			$data = $this->getItem();
 		}
 
@@ -38,7 +43,8 @@ class KinoarhivModelAlbum extends JModelForm
 		$tmpl = $app->input->get('template', '', 'string');
 		$id = $app->input->get('id', array(), 'array');
 
-		if ($tmpl == 'names_edit') {
+		if ($tmpl == 'names_edit')
+		{
 			$album_id = $app->input->get('album_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
 			$query = $db->getQuery(true);
@@ -46,25 +52,42 @@ class KinoarhivModelAlbum extends JModelForm
 			$query->select($db->quoteName(array('name_id', 'role')))
 				->select($db->quoteName('ordering', 'r_ordering') . ',' . $db->quoteName('desc', 'r_desc'))
 				->from($db->quoteName('#__ka_music_rel_composers'))
-				->where($db->quoteName('name_id') . ' = ' . (int)$name_id . ' AND ' . $db->quoteName('album_id') . ' = ' . (int)$album_id);
+				->where($db->quoteName('name_id') . ' = ' . (int) $name_id . ' AND ' . $db->quoteName('album_id') . ' = ' . (int) $album_id);
 
 			$db->setQuery($query);
 			$result = $db->loadObject();
 
-			if (!empty($result)) {
+			if (!empty($result))
+			{
 				$result->type = $app->input->get('career_id', 0, 'int');
 			}
-		} else {
-			$result = array('album' => (object)array());
-			if (count($id) == 0 || empty($id) || empty($id[0])) {
+		}
+		else
+		{
+			$result = array('album' => (object) array());
+
+			if (count($id) == 0 || empty($id) || empty($id[0]))
+			{
 				return $result;
 			}
 
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName(array('a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.year', 'a.length', 'a.isrc', 'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.tracks_path', 'a.tracks_preview_path', 'a.buy_url', 'a.attribs', 'a.created', 'a.created_by', 'a.modified', 'a.ordering', 'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state')))->select($db->quoteName('a.cover_filename', 'filename'))
-				->from($db->quoteName('#__ka_music_albums', 'a'))
-				->where($db->quoteName('a.id') . ' = ' . (int)$id[0]);
+			$query->select(
+				$db->quoteName(
+					array('a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.year', 'a.length',
+						'a.isrc', 'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.tracks_path',
+						'a.tracks_preview_path', 'a.buy_url', 'a.attribs', 'a.created', 'a.created_by', 'a.modified',
+						'a.ordering', 'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state', 'a.cover_filename'
+					)
+				)
+			)
+			->from($db->quoteName('#__ka_music_albums', 'a'))
+			->where($db->quoteName('a.id') . ' = ' . (int) $id[0]);
+
+			// Join over gallery item
+			$query->select($db->quoteName('g.filename'))
+				->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g') . ' ON ' . $db->quoteName('g.item_id') . ' = ' . $db->quoteName('a.id') . ' AND ' . $db->quoteName('g.poster_frontpage') . ' = 1');
 
 			// Join over the language
 			$query->select($db->quoteName('l.title', 'language_title'))
@@ -72,9 +95,12 @@ class KinoarhivModelAlbum extends JModelForm
 
 			$db->setQuery($query);
 
-			try {
+			try
+			{
 				$result['album'] = $db->loadObject();
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				$this->setError($e->getMessage());
 
 				return array();
@@ -84,7 +110,8 @@ class KinoarhivModelAlbum extends JModelForm
 			$result['album']->genres_orig = implode(',', $result['album']->genres['ids']);
 			$result['album']->tags = $this->getTags();
 
-			if (!empty($result['album']->attribs)) {
+			if (!empty($result['album']->attribs))
+			{
 				$result['attribs'] = json_decode($result['album']->attribs);
 			}
 		}
@@ -101,16 +128,19 @@ class KinoarhivModelAlbum extends JModelForm
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__ka_music_albums'))
-			->set($db->quoteName('state') . ' = ' . (int)$state)
+			->set($db->quoteName('state') . ' = ' . (int) $state)
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$db->execute();
 
 			return true;
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			$this->setError($e->getMessage());
 
 			return false;
@@ -127,19 +157,20 @@ class KinoarhivModelAlbum extends JModelForm
 
 		$query->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
 			->from($db->quoteName('#__ka_music_genres', 'g'))
-			->join('LEFT', $db->quoteName('#__ka_music_rel_genres', 'rel') . ' ON ' . $db->quoteName('rel.genre_id') . ' = ' . $db->quoteName('g.id') . ' AND ' . $db->quoteName('rel.item_id') . ' = ' . (int)$id[0] . ' AND ' . $db->quoteName('rel.type') . ' = 0');
+			->join('LEFT', $db->quoteName('#__ka_music_rel_genres', 'rel') . ' ON ' . $db->quoteName('rel.genre_id') . ' = ' . $db->quoteName('g.id') . ' AND ' . $db->quoteName('rel.item_id') . ' = ' . (int) $id[0] . ' AND ' . $db->quoteName('rel.type') . ' = 0');
 
 		$subquery = $db->getQuery(true)
 			->select($db->quoteName('genre_id'))
 			->from($db->quoteName('#__ka_music_rel_genres'))
-			->where($db->quoteName('item_id') . ' = ' . (int)$id[0]);
+			->where($db->quoteName('item_id') . ' = ' . (int) $id[0]);
 
 		$query->where($db->quoteName('g.id') . ' IN (' . $subquery . ')');
 
 		$db->setQuery($query);
 		$result['data'] = $db->loadObjectList();
 
-		foreach ($result['data'] as $value) {
+		foreach ($result['data'] as $value)
+		{
 			$result['ids'][] = $value->id;
 		}
 
@@ -152,18 +183,20 @@ class KinoarhivModelAlbum extends JModelForm
 		$db = $this->getDBO();
 		$id = $app->input->get('id', array(), 'array');
 
-		if (!empty($id[0])) {
+		if (!empty($id[0]))
+		{
 			$query = $db->getQuery(true);
 
 			$query->select($db->quoteName('metadata'))
 				->from($db->quoteName('#__ka_music_albums'))
-				->where($db->quoteName('id') . ' = ' . (int)$id[0]);
+				->where($db->quoteName('id') . ' = ' . (int) $id[0]);
 
 			$db->setQuery($query);
 			$metadata = $db->loadResult();
 			$meta_arr = json_decode($metadata);
 
-			if (is_null($meta_arr) || count($meta_arr->tags) == 0) {
+			if (is_null($meta_arr) || count($meta_arr->tags) == 0)
+			{
 				return array('data' => array(), 'ids' => '');
 			}
 
@@ -177,10 +210,13 @@ class KinoarhivModelAlbum extends JModelForm
 			$db->setQuery($query);
 			$result['data'] = $db->loadObjectList();
 
-			foreach ($result['data'] as $value) {
+			foreach ($result['data'] as $value)
+			{
 				$result['ids'][] = $value->id;
 			}
-		} else {
+		}
+		else
+		{
 			$result = array('data' => array(), 'ids' => '');
 		}
 
@@ -198,7 +234,7 @@ class KinoarhivModelAlbum extends JModelForm
 		$search_field = $app->input->get('searchField', '', 'string');
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = $app->input->get('searchString', '', 'string');
-		$result = (object)array();
+		$result = (object) array();
 		$result->rows = array();
 
 		$query = $db->getQuery(true)
@@ -210,7 +246,8 @@ class KinoarhivModelAlbum extends JModelForm
 		$_careers = $db->loadObjectList();
 		$careers = array();
 
-		foreach ($_careers as $career) {
+		foreach ($_careers as $career)
+		{
 			$careers[$career->id] = $career->title;
 		}
 
@@ -219,19 +256,24 @@ class KinoarhivModelAlbum extends JModelForm
 		$query->select($db->quoteName('n.id', 'name_id') . ',' . $db->quoteName('n.name') . ',' . $db->quoteName('n.latin_name'))
 			->select($db->quoteName(array('t.type', 't.role', 't.ordering')))
 			->from($db->quoteName('#__ka_names', 'n'))
-			->join('LEFT', $db->quoteName('#__ka_music_rel_composers', 't') . ' ON ' . $db->quoteName('t.name_id') . ' = ' . $db->quoteName('n.id') . ' AND ' . $db->quoteName('t.album_id') . ' = ' . (int)$id);
+			->join('LEFT', $db->quoteName('#__ka_music_rel_composers', 't') . ' ON ' . $db->quoteName('t.name_id') . ' = ' . $db->quoteName('n.id') . ' AND ' . $db->quoteName('t.album_id') . ' = ' . (int) $id);
 
 		$where_subquery = $db->getQuery(true)
 			->select($db->quoteName('name_id'))
 			->from($db->quoteName('#__ka_music_rel_composers'))
-			->where($db->quoteName('album_id') . ' = ' . (int)$id);
+			->where($db->quoteName('album_id') . ' = ' . (int) $id);
 
 		$where = "";
-		if (!empty($search_string)) {
-			if ($search_field == 'n.name') {
-				$where .= " AND (" . DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)) . " OR " . DatabaseHelper::transformOperands($db->quoteName('n.latin_name'), $search_operand, $db->escape($search_string)) . ")";
-			} else {
-				$where .= " AND " . DatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+
+		if (!empty($search_string))
+		{
+			if ($search_field == 'n.name')
+			{
+				$where .= " AND (" . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)) . " OR " . KADatabaseHelper::transformOperands($db->quoteName('n.latin_name'), $search_operand, $db->escape($search_string)) . ")";
+			}
+			else
+			{
+				$where .= " AND " . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
 			}
 		}
 
@@ -239,14 +281,21 @@ class KinoarhivModelAlbum extends JModelForm
 		$query->group($db->quoteName('n.id'));
 
 		// Preventing 'ordering asc/desc, ordering asc/desc' duplication
-		if (strpos($orderby, 'ordering') !== false) {
+		if (strpos($orderby, 'ordering') !== false)
+		{
 			$query->order($db->quoteName('t.ordering') . ' ASC');
-		} else {
+		}
+		else
+		{
 			// We need this if grid grouping is used. At the first(0) index - grouping field
 			$ord_request = explode(',', $orderby);
-			if (count($ord_request) > 1) {
+
+			if (count($ord_request) > 1)
+			{
 				$query->order($db->quoteName(trim($ord_request[1])) . ' ' . strtoupper($order) . ', ' . $db->quoteName('t.ordering') . ' ASC');
-			} else {
+			}
+			else
+			{
 				$query->order($db->quoteName(trim($orderby)) . ' ' . strtoupper($order) . ', ' . $db->quoteName('t.ordering') . ' ASC');
 			}
 		}
@@ -257,16 +306,28 @@ class KinoarhivModelAlbum extends JModelForm
 		// Presorting based on the type of career person
 		$i = 0;
 		$_result = array();
-		foreach ($names as $value) {
-			$name = '';
-			if (!empty($value->name))
-				$name .= $value->name;
-			if (!empty($value->name) && !empty($value->latin_name))
-				$name .= ' / ';
-			if (!empty($value->latin_name))
-				$name .= $value->latin_name;
 
-			foreach (explode(',', $value->type) as $k => $type) {
+		foreach ($names as $value)
+		{
+			$name = '';
+
+			if (!empty($value->name))
+			{
+				$name .= $value->name;
+			}
+
+			if (!empty($value->name) && !empty($value->latin_name))
+			{
+				$name .= ' / ';
+			}
+
+			if (!empty($value->latin_name))
+			{
+				$name .= $value->latin_name;
+			}
+
+			foreach (explode(',', $value->type) as $k => $type)
+			{
 				$_result[$type][$i] = array(
 					'name'     => $name,
 					'name_id'  => $value->name_id,
@@ -282,8 +343,11 @@ class KinoarhivModelAlbum extends JModelForm
 
 		// The final sorting of the array for the grid
 		$k = 0;
-		foreach ($_result as $row) {
-			foreach ($row as $elem) {
+
+		foreach ($_result as $row)
+		{
+			foreach ($row as $elem)
+			{
 				$result->rows[$k]['id'] = $elem['name_id'] . '_' . $id . '_' . $elem['type_id'];
 				$result->rows[$k]['cell'] = array(
 					'name'     => $elem['name'],
@@ -311,7 +375,8 @@ class KinoarhivModelAlbum extends JModelForm
 		$data = $app->input->post->get('data', array(), 'array');
 		$query_result = true;
 
-		if (count($data) <= 0) {
+		if (count($data) <= 0)
+		{
 			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
 		}
 
@@ -319,25 +384,30 @@ class KinoarhivModelAlbum extends JModelForm
 		$db->lockTable('#__ka_music_rel_composers');
 		$db->transactionStart();
 
-		foreach ($data as $key => $value) {
+		foreach ($data as $key => $value)
+		{
 			$ids = explode('_', $value['name']);
 			$query = $db->getQuery(true);
 
 			$query->delete($db->quoteName('#__ka_music_rel_composers'))
-				->where($db->quoteName('name_id') . ' = ' . (int)$ids[3] . ' AND ' . $db->quoteName('album_id') . ' = ' . (int)$ids[4] . ' AND FIND_IN_SET("' . (int)$ids[5] . '", ' . $db->quoteName('type') . ')');
+				->where($db->quoteName('name_id') . ' = ' . (int) $ids[3] . ' AND ' . $db->quoteName('album_id') . ' = ' . (int) $ids[4] . ' AND FIND_IN_SET("' . (int) $ids[5] . '", ' . $db->quoteName('type') . ')');
 			$db->setQuery($query . ';');
 
-			if ($db->execute() === false) {
+			if ($db->execute() === false)
+			{
 				$query_result = false;
 				break;
 			}
 		}
 
-		if ($query_result === false) {
+		if ($query_result === false)
+		{
 			$db->transactionRollback();
 			$success = false;
 			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
-		} else {
+		}
+		else
+		{
 			$db->transactionCommit();
 			$success = true;
 			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
@@ -357,15 +427,21 @@ class KinoarhivModelAlbum extends JModelForm
 		$id = $app->input->get('id', null, 'int');
 		$rules = array();
 
-		if (empty($id)) {
+		if (empty($id))
+		{
 			return array('success' => false, 'message' => 'Error');
 		}
 
-		foreach ($data['album']['rules'] as $rule => $groups) {
-			foreach ($groups as $group => $value) {
-				if ($value != '') {
-					$rules[$rule][$group] = (int)$value;
-				} else {
+		foreach ($data['album']['rules'] as $rule => $groups)
+		{
+			foreach ($groups as $group => $value)
+			{
+				if ($value != '')
+				{
+					$rules[$rule][$group] = (int) $value;
+				}
+				else
+				{
 					unset($data['rules'][$rule][$group]);
 				}
 			}
@@ -387,15 +463,18 @@ class KinoarhivModelAlbum extends JModelForm
 
 		$query->update($db->quoteName('#__assets'))
 			->set($db->quoteName('rules') . " = '" . $rules . "'")
-			->where($db->quoteName('#__assets') . " = 'com_kinoarhiv.album." . (int)$id . "' AND " . $db->quoteName('level') . " = 2 AND " . $db->quoteName('parent_id') . " = " . (int)$parent_id);
+			->where($db->quoteName('#__assets') . " = 'com_kinoarhiv.album." . (int) $id . "' AND " . $db->quoteName('level') . " = 2 AND " . $db->quoteName('parent_id') . " = " . (int) $parent_id);
 
 		$db->setQuery($query);
 
-		try {
+		try
+		{
 			$db->execute();
 
 			return array('success' => true);
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			return array('success' => false, 'message' => $e->getMessage());
 		}
 	}
@@ -403,11 +482,12 @@ class KinoarhivModelAlbum extends JModelForm
 	/**
 	 * Method to validate the form data.
 	 *
-	 * @param   JForm  $form  The form to validate against.
-	 * @param   array  $data  The data to validate.
-	 * @param   string $group The name of the field group to validate.
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
 	 *
 	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
 	 * @since   12.2
@@ -419,16 +499,19 @@ class KinoarhivModelAlbum extends JModelForm
 		$return = $form->validate($data, $group);
 
 		// Check for an error.
-		if ($return instanceof Exception) {
+		if ($return instanceof Exception)
+		{
 			$this->setError($return->getMessage());
 
 			return false;
 		}
 
 		// Check the validation results.
-		if ($return === false) {
+		if ($return === false)
+		{
 			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message) {
+			foreach ($form->getErrors() as $message)
+			{
 				$this->setError($message);
 			}
 

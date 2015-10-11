@@ -1,7 +1,8 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -16,11 +17,27 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerMusic extends JControllerLegacy
 {
+	/**
+	 * Method to add a new record.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function add()
 	{
 		$this->edit(true);
 	}
 
+	/**
+	 * Method to edit an existing record or add a new record.
+	 *
+	 * @param   boolean  $isNew  Variable to check if it's new item or not.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function edit($isNew = false)
 	{
 		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
@@ -39,20 +56,39 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		}
 
 		$view->display($tpl);
-
-		return $this;
 	}
 
+	/**
+	 * Proxy to KinoarhivControllerMusic::save()
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function save2new()
 	{
 		$this->save();
 	}
 
+	/**
+	 * Proxy to KinoarhivControllerMusic::save()
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function apply()
 	{
 		$this->save();
 	}
 
+	/**
+	 * Method to save a record.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	/*public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		$document = JFactory::getDocument();
@@ -180,11 +216,27 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to unpublish a list of items
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function unpublish()
 	{
 		$this->publish(true);
 	}
 
+	/**
+	 * Method to publish a list of items
+	 *
+	 * @param   boolean  $isUnpublish  Action state
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function publish($isUnpublish = false)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -205,7 +257,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return false;
+			return;
 		}
 
 		// Clean the session data.
@@ -216,12 +268,20 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), $message);
 	}
 
+	/**
+	 * Method to remove an item(s).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	/*public function remove() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.delete.award', 'com_kinoarhiv')) {
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
 			return;
 		}
 
@@ -230,7 +290,8 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 		if ($result === false) {
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
-			return false;
+
+			return;
 		}
 
 		// Clean the session data.
@@ -240,6 +301,13 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}*/
 
+	/**
+	 * Method to cancel an edit.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function cancel()
 	{
 		$user = JFactory::getUser();
@@ -262,9 +330,6 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 	public function getComposers()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
 		$model = $this->getModel('album');
 		$result = $model->getComposers();
@@ -274,9 +339,6 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 	public function deleteComposers()
 	{
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
 		$model = $this->getModel('album');
 		$result = $model->deleteComposers();
@@ -296,28 +358,37 @@ class KinoarhivControllerMusic extends JControllerLegacy
 			return;
 		}
 
-		$document = JFactory::getDocument();
-		$document->setName('response');
-
 		$model = $this->getModel('relations');
 		$result = $model->saveRelNames();
 
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to save the submitted ordering values for records.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function saveOrder()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
 
 		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
 		$model = $this->getModel('album');
 		$result = $model->saveOrder();
 
-		$document->setName('response');
 		echo json_encode($result);
 	}
 
+	/**
+	 * Method to run batch operations.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function batch()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -330,7 +401,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-			return false;
+			return;
 		}
 
 		$app = JFactory::getApplication();
@@ -346,7 +417,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
 
-				return false;
+				return;
 			}
 		}
 

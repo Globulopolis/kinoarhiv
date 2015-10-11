@@ -2,6 +2,7 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
+ *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url            http://киноархив.com/
@@ -14,11 +15,17 @@ use Joomla\Registry\Registry;
 class KinoarhivViewNames extends JViewLegacy
 {
 	protected $items;
+
 	protected $pagination;
+
 	protected $state;
+
 	protected $form;
+
 	protected $params;
+
 	protected $form_edit_group;
+
 	protected $form_attribs_group;
 
 	public function display($tpl = null)
@@ -26,7 +33,8 @@ class KinoarhivViewNames extends JViewLegacy
 		$app = JFactory::getApplication();
 		$task = $app->input->get('task', '', 'cmd');
 
-		switch ($task) {
+		switch ($task)
+		{
 			case 'add':
 				$this->edit($tpl);
 				break;
@@ -47,11 +55,13 @@ class KinoarhivViewNames extends JViewLegacy
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		if ($this->getLayout() !== 'modal') {
+		if ($this->getLayout() !== 'modal')
+		{
 			$this->addToolbar();
 		}
 
@@ -66,24 +76,33 @@ class KinoarhivViewNames extends JViewLegacy
 		$form = $this->get('Form');
 		$items = new Registry;
 
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
 		// Build title
 		$title = '';
-		if ($form->getValue('name', 'name') != '') {
+
+		if ($form->getValue('name', 'name') != '')
+		{
 			$title .= $form->getValue('name', 'name');
 		}
-		if ($form->getValue('name', 'name') != '' && $form->getValue('latin_name', 'name') != '') {
+
+		if ($form->getValue('name', 'name') != '' && $form->getValue('latin_name', 'name') != '')
+		{
 			$title .= ' / ';
 		}
-		if ($form->getValue('latin_name', 'name') != '') {
+
+		if ($form->getValue('latin_name', 'name') != '')
+		{
 			$title .= $form->getValue('latin_name', 'name');
 		}
+
 		$items->set('title', $title);
 
-		if ($form->getValue('filename', 'name') == '') {
+		if ($form->getValue('filename', 'name') == '')
+		{
 			$items->set(
 				'poster',
 				JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
@@ -92,32 +111,31 @@ class KinoarhivViewNames extends JViewLegacy
 				'th_poster',
 				JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
 			);
-			$items->set('y_poster', '');
-		} else {
-			$alias = substr($form->getValue('alias', 'name'), 0, 1);
-			$item_id = $form->getValue('id', 'name');
-			$poster = $form->getValue('filename', 'name');
-
-			if (substr($params->get('media_actor_photo_root_www'), 0, 1) == '/') {
+		}
+		else
+		{
+			if (substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+			{
 				$items->set(
 					'poster',
-					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . $alias . '/' . $item_id . '/photo/' . $poster
+					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/' . $form->getValue('filename', 'name')
 				);
 				$items->set(
 					'th_poster',
-					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . $alias . '/' . $item_id . '/photo/thumb_' . $poster
-				);
-			} else {
-				$items->set(
-					'poster',
-					$params->get('media_actor_photo_root_www') . '/' . $alias . '/' . $item_id . '/photo/' . $poster
-				);
-				$items->set(
-					'th_poster',
-					$params->get('media_actor_photo_root_www') . '/' . $alias . '/' . $item_id . '/photo/thumb_' . $poster
+					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/thumb_' . $form->getValue('filename', 'name')
 				);
 			}
-			$items->set('y_poster', 'y-poster');
+			else
+			{
+				$items->set(
+					'poster',
+					$params->get('media_actor_photo_root_www') . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/' . $form->getValue('filename', 'name')
+				);
+				$items->set(
+					'th_poster',
+					$params->get('media_actor_photo_root_www') . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/thumb_' . $form->getValue('filename', 'name')
+				);
+			}
 		}
 
 		$this->items = $items;
@@ -126,7 +144,8 @@ class KinoarhivViewNames extends JViewLegacy
 		$this->form_attribs_group = 'attribs';
 		$this->params = $params;
 
-		if ($this->getLayout() !== 'modal') {
+		if ($this->getLayout() !== 'modal')
+		{
 			$this->addToolbar($tpl);
 		}
 
@@ -138,19 +157,26 @@ class KinoarhivViewNames extends JViewLegacy
 	{
 		$user = JFactory::getUser();
 
-		if ($task == 'add') {
+		if ($task == 'add')
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel();
-		} elseif ($task == 'edit') {
-			if ($this->form->getValue('id', $this->form_edit_group) != 0) {
+		}
+		elseif ($task == 'edit')
+		{
+			if ($this->form->getValue('id', $this->form_edit_group) != 0)
+			{
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . $this->items->get('title')), 'play');
-			} else {
+			}
+			else
+			{
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			}
+
 			JToolbarHelper::apply('apply');
 			JToolbarHelper::save('save');
 			JToolbarHelper::save2new('save2new');
@@ -158,23 +184,30 @@ class KinoarhivViewNames extends JViewLegacy
 			JToolbarHelper::cancel();
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
-		} else {
+		}
+		else
+		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE')), 'users');
-			if ($user->authorise('core.create', 'com_kinoarhiv')) {
+
+			if ($user->authorise('core.create', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::addNew('add');
 			}
 
-			if ($user->authorise('core.edit', 'com_kinoarhiv')) {
+			if ($user->authorise('core.edit', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::editList('edit');
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.edit.state', 'com_kinoarhiv')) {
+			if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::publishList();
 				JToolbarHelper::unpublishList();
 			}
 
-			if ($user->authorise('core.delete', 'com_kinoarhiv')) {
+			if ($user->authorise('core.delete', 'com_kinoarhiv'))
+			{
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			}
 
@@ -182,7 +215,8 @@ class KinoarhivViewNames extends JViewLegacy
 			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv')) {
+			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
+			{
 				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');

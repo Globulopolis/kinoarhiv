@@ -12,13 +12,15 @@ defined('_JEXEC') or die;
 
 if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
+
 	return;
 endif; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
+		var body = $('body');
 		var c_grid_cfg = {
-			grid_form_left: Math.round((($(document).width()/2)-($(document).width()/3))),
-			grid_form_top: Math.round((($('body').height()/2)-($('body').height()/4))),
+			grid_form_left: Math.round((($(document).width() / 2) - ($(document).width() / 3))),
+			grid_form_top: Math.round(((body.height() / 2) - (body.height() / 4))),
 			grid_form_width: 780,
 			grid_nav_config: {
 				edit:false, add:false, del:false,
@@ -31,7 +33,9 @@ endif; ?>
 
 		c_grid_cfg.grid_height = (c_grid_cfg.grid_height < 100) ? 200 : c_grid_cfg.grid_height;
 
-		$('#list_actors').jqGrid({
+		var crew_grid = $('#list_actors');
+
+		crew_grid.jqGrid({
 			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: c_grid_cfg.grid_height,
@@ -69,12 +73,12 @@ endif; ?>
 				$(this).find('.jqgroup').addClass('ui-widget-header');
 			}
 		});
-		$('#list_actors').jqGrid('navGrid', '#pager_actors', c_grid_cfg.grid_nav_config, {}, {}, {}, {
+		crew_grid.jqGrid('navGrid', '#pager_actors', c_grid_cfg.grid_nav_config, {}, {}, {}, {
 			// Search form config
 			width: c_grid_cfg.grid_form_width, left: c_grid_cfg.grid_form_left, top: c_grid_cfg.grid_form_top,
 			closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 		});
-		$('#list_actors').jqGrid('sortableRows', {
+		crew_grid.jqGrid('sortableRows', {
 			connectWith: '#list_actors',
 			update: function(e, ui){
 				$.post('index.php?option=com_kinoarhiv&controller=relations&task=saveOrder&param=names&format=json', {
@@ -93,7 +97,7 @@ endif; ?>
 				});
 			}
 		});
-		$('#list_actors').jqGrid('gridResize', {});
+		crew_grid.jqGrid('gridResize', {});
 
 		$('.actors-container a.a, .actors-container a.e, .actors-container a.d').click(function(e){
 			e.preventDefault();
@@ -115,12 +119,16 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true, $this = $(this);
-								if ($('#form_type').select2('val') == '' || $('#form_type').select2('val') == 0) {
+								var valid = true,
+									$this = $(this),
+									form_type = $('#form_type'),
+									form_name_id = $('#form_name_id');
+
+								if (form_type.select2('val') == '' || form_type.select2('val') == 0) {
 									$('#form_type-lbl').addClass('red-label');
 									valid = false;
 								}
-								if ($('#form_name_id').select2('val') == '' || $('#form_name_id').select2('val') == 0) {
+								if (form_name_id.select2('val') == '' || form_name_id.select2('val') == 0) {
 									$('#form_name_id-lbl').addClass('red-label');
 									valid = false;
 								}
@@ -134,8 +142,8 @@ endif; ?>
 									url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelNames&format=json&id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
-										'form[type]':			$('#form_type').select2('val'),
-										'form[name_id]':		$('#form_name_id').select2('val'),
+										'form[type]':			form_type.select2('val'),
+										'form[name_id]':		form_name_id.select2('val'),
 										'form[dub_id]':			$('#form_dub_id').select2('val'),
 										'form[role]':			$('#form_role').val(),
 										'form[is_directors]':	$('#form_is_directors').val(),
@@ -189,12 +197,16 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true, $this = $(this);
-									if ($('#form_type').select2('val') == '' || $('#form_type').select2('val') == 0) {
+									var valid = true,
+										$this = $(this),
+										form_type = $('#form_type'),
+										form_name_id = $('#form_name_id');
+
+									if (form_type.select2('val') == '' || form_type.select2('val') == 0) {
 										$('#form_type-lbl').addClass('red-label');
 										valid = false;
 									}
-									if ($('#form_name_id').select2('val') == '' || $('#form_name_id').select2('val') == 0) {
+									if (form_name_id.select2('val') == '' || form_name_id.select2('val') == 0) {
 										$('#form_name_id-lbl').addClass('red-label');
 										valid = false;
 									}
@@ -208,8 +220,8 @@ endif; ?>
 										url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelNames&format=json&id=' + $('#id').val(),
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
-											'form[type]':			$('#form_type').select2('val'),
-											'form[name_id]':		$('#form_name_id').select2('val'),
+											'form[type]':			form_type.select2('val'),
+											'form[name_id]':		form_name_id.select2('val'),
 											'form[dub_id]':			$('#form_dub_id').select2('val'),
 											'form[role]':			$('#form_role').val(),
 											'form[is_directors]':	$('#form_is_directors').val(),

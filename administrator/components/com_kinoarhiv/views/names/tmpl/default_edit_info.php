@@ -269,14 +269,12 @@ else
 				blockUI();
 			});
 		});
-
-		$('#form_name_alias').attr('readonly', true);
 		<?php endif; ?>
 
-		$('.cmd-alias').click(function (e) {
+		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC', true); ?></p></div>');
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->form->getValue('id', $this->form_edit_group) . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
 
 			if ($(this).hasClass('info')) {
 				$(dialog).dialog({
@@ -284,40 +282,17 @@ else
 					width: 800,
 					height: $(window).height() - 100,
 					draggable: false,
-					close: function (event, ui) {
+					close: function(event, ui){
 						dialog.remove();
 					}
 				});
-			} else {
-				if (!$('#form_name_alias').is('[readonly]')) {
-					return;
-				}
-
-				$(dialog).dialog({
-					modal: true,
-					width: 800,
-					height: $(window).height() - 100,
-					draggable: false,
-					close: function (event, ui) {
-						dialog.remove();
-					},
-					buttons: [
-						{
-							text: '<?php echo JText::_('JMODIFY'); ?>',
-							id: 'alias-modify',
-							click: function () {
-								$('#form_name_alias').removeAttr('readonly').trigger('focus');
-								$(this).dialog('close');
-								$('#form_name_alias').focus();
-							}
-						},
-						{
-							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
-							click: function () {
-								$(this).dialog('close');
-							}
-						}
-					]
+			} else if ($(this).hasClass('get-alias')) {
+				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=names&task=getFilesystemAlias&form_name_alias=' + $('#form_name_alias').val() + '&form_name_title=' + $('#form_name_title').val() + '&format=json', function(response){
+					if (response.success) {
+						$('#form_name_fs_alias').val(response.data);
+					} else {
+						showMsg('#system-message-container', response.message);
+					}
 				});
 			}
 		});
@@ -335,18 +310,23 @@ else
 				<div class="controls"><?php echo $this->form->getInput('latin_name', $this->form_edit_group); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_edit_group); ?></div>
-				<div class="controls">
-					<?php echo $this->form->getInput('fs_alias', $this->form_edit_group); ?>
-					<div class="input-append">
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_edit_group); ?></div>
+					<div class="controls">
 						<?php echo $this->form->getInput('alias', $this->form_edit_group); ?>
-						<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
-							<button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i>
-							</button><?php endif; ?>
-						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>
-				<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('fs_alias', $this->form_edit_group); ?></div>
+					<div class="controls">
+						<div class="input-append">
+							<?php echo $this->form->getInput('fs_alias', $this->form_edit_group); ?>
+							<?php echo $this->form->getInput('fs_alias_orig', $this->form_edit_group); ?>
+							<button class="btn btn-default cmd-alias get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
+							<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('careers', $this->form_edit_group); ?></div>

@@ -12,13 +12,15 @@ defined('_JEXEC') or die;
 
 if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
+
 	return;
 endif; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
+		var body = $('body');
 		var r_grid_cfg = {
-			grid_form_left: Math.round((($(document).width()/2)-($(document).width()/3))),
-			grid_form_top: Math.round((($('body').height()/2)-($('body').height()/4))),
+			grid_form_left: Math.round((($(document).width() / 2) - ($(document).width() / 3))),
+			grid_form_top: Math.round(((body.height() / 2) - (body.height() / 4))),
 			grid_form_width: 780,
 			grid_nav_config: {
 				edit:false, add:false, del:false,
@@ -31,7 +33,9 @@ endif; ?>
 
 		r_grid_cfg.grid_height = (r_grid_cfg.grid_height < 100) ? 200 : r_grid_cfg.grid_height;
 
-		$('#list_releases').jqGrid({
+		var releases_grid = $('#list_releases');
+
+		releases_grid.jqGrid({
 			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getReleases&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: r_grid_cfg.grid_height,
@@ -55,12 +59,12 @@ endif; ?>
 			viewrecords: true,
 			rowNum: 50
 		});
-		$('#list_releases').jqGrid('navGrid', '#pager_releases', r_grid_cfg.grid_nav_config, {}, {}, {}, {
+		releases_grid.jqGrid('navGrid', '#pager_releases', r_grid_cfg.grid_nav_config, {}, {}, {}, {
 			// Search form config
 			width: r_grid_cfg.grid_form_width, left: r_grid_cfg.grid_form_left, top: r_grid_cfg.grid_form_top,
 			closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 		});
-		$('#list_releases').jqGrid('gridResize', {});
+		releases_grid.jqGrid('gridResize', {});
 
 		$('.releases-container a.a, .releases-container a.e, .releases-container a.d').click(function(e){
 			e.preventDefault();
@@ -82,13 +86,16 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true, $this = $(this);
+								var valid = true,
+									$this = $(this),
+									form_r_vendor_id = $('#form_r_vendor_id'),
+									form_r_country_id = $('#form_r_country_id');
 
-								if ($('#form_r_vendor_id').select2('val') == '') {
+								if (form_r_vendor_id.select2('val') == '') {
 									$('#form_r_vendor_id-lbl-lbl').addClass('red-label');
 									valid = false;
 								}
-								if ($('#form_r_country_id').select2('val') == '') {
+								if (form_r_country_id.select2('val') == '') {
 									$('#form_r_country_id-lbl-lbl').addClass('red-label');
 									valid = false;
 								}
@@ -103,8 +110,8 @@ endif; ?>
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
 										'form[r_movie_id]':	    $('#id').val(),
-										'form[r_vendor_id]':    $('#form_r_vendor_id').select2('val'),
-										'form[r_country_id]':   $('#form_r_country_id').select2('val'),
+										'form[r_vendor_id]':    form_r_vendor_id.select2('val'),
+										'form[r_country_id]':   form_r_country_id.select2('val'),
 										'form[r_release_date]': $('#form_r_release_date').val(),
 										'form[r_media_type]':   $('#form_r_media_type').select2('val'),
 										'form[r_desc]':         $('#form_r_desc').val(),
@@ -156,13 +163,16 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true, $this = $(this);
+									var valid = true,
+										$this = $(this),
+										form_r_vendor_id = $('#form_r_vendor_id'),
+										form_r_country_id = $('#form_r_country_id');
 
-									if ($('#form_r_vendor_id').select2('val') == '') {
+									if (form_r_vendor_id.select2('val') == '') {
 										$('#form_r_vendor_id-lbl-lbl').addClass('red-label');
 										valid = false;
 									}
-									if ($('#form_r_country_id').select2('val') == '') {
+									if (form_r_country_id.select2('val') == '') {
 										$('#form_r_country_id-lbl-lbl').addClass('red-label');
 										valid = false;
 									}
@@ -177,8 +187,8 @@ endif; ?>
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
 											'form[r_movie_id]':	    $('#id').val(),
-											'form[r_vendor_id]':    $('#form_r_vendor_id').select2('val'),
-											'form[r_country_id]':   $('#form_r_country_id').select2('val'),
+											'form[r_vendor_id]':    form_r_vendor_id.select2('val'),
+											'form[r_country_id]':   form_r_country_id.select2('val'),
 											'form[r_release_date]': $('#form_r_release_date').val(),
 											'form[r_media_type]':   $('#form_r_media_type').select2('val'),
 											'form[r_desc]':         $('#form_r_desc').val(),

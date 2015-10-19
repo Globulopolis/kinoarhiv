@@ -36,6 +36,13 @@ class KinoarhivController extends JControllerLegacy
 		parent::display();
 	}
 
+	/**
+	 * Get some data from DB
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function ajaxData()
 	{
 		$document = JFactory::getDocument();
@@ -47,6 +54,14 @@ class KinoarhivController extends JControllerLegacy
 		echo json_encode($result);
 	}
 
+	/**
+	 * Load a template file.
+	 *
+	 * @return  string  The output of the the template script.
+	 *
+	 * @since   3.0
+	 * @throws  Exception
+	 */
 	public function loadTemplate()
 	{
 		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);

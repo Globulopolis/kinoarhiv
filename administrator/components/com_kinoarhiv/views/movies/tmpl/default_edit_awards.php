@@ -12,13 +12,15 @@ defined('_JEXEC') or die;
 
 if ($this->form->getValue('id', $this->form_edit_group) == 0):
 	echo JText::_('COM_KA_NO_ID');
+
 	return;
 endif; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
+		var body = $('body');
 		var aw_grid_cfg = {
-			grid_form_left: Math.round((($(document).width()/2)-($(document).width()/3))),
-			grid_form_top: Math.round((($('body').height()/2)-($('body').height()/4))),
+			grid_form_left: Math.round((($(document).width() / 2) - ($(document).width() / 3))),
+			grid_form_top: Math.round(((body.height() / 2) - (body.height() / 4))),
 			grid_form_width: 780,
 			grid_nav_config: {
 				edit:false, add:false, del:false,
@@ -31,7 +33,9 @@ endif; ?>
 
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
 
-		$('#list_awards').jqGrid({
+		var aw_grid = $('#list_awards');
+
+		aw_grid.jqGrid({
 			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
@@ -53,12 +57,12 @@ endif; ?>
 			viewrecords: true,
 			rowNum: 50
 		});
-		$('#list_awards').jqGrid('navGrid', '#pager_awards', aw_grid_cfg.grid_nav_config, {}, {}, {}, {
+		aw_grid.jqGrid('navGrid', '#pager_awards', aw_grid_cfg.grid_nav_config, {}, {}, {}, {
 			// Search form config
 			width: aw_grid_cfg.grid_form_width, left: aw_grid_cfg.grid_form_left, top: aw_grid_cfg.grid_form_top,
 			closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 		});
-		$('#list_awards').jqGrid('gridResize', {});
+		aw_grid.jqGrid('gridResize', {});
 
 		$('.awards-container a.a, .awards-container a.e, .awards-container a.d').click(function(e){
 			e.preventDefault();
@@ -80,13 +84,16 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true, $this = $(this);
+								var valid = true,
+									$this = $(this),
+									form_award_id = $('#form_award_id'),
+									form_aw_year = $('#form_aw_year');
 
-								if ($('#form_award_id').select2('val') == '') {
+								if (form_award_id.select2('val') == '') {
 									$('#form_award_id-lbl').addClass('red-label');
 									valid = false;
 								}
-								if ($('#form_aw_year').val() == '') {
+								if (form_aw_year.val() == '') {
 									$('#form_aw_year-lbl').addClass('red-label');
 									valid = false;
 								}
@@ -100,9 +107,9 @@ endif; ?>
 									url: 'index.php?option=com_kinoarhiv&controller=movies&task=saveRelAwards&format=json&id=' + $('#id').val(),
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
-										'form[award_id]':	$('#form_award_id').select2('val'),
+										'form[award_id]':	form_award_id.select2('val'),
 										'form[desc]':		$('#form_aw_desc').val(),
-										'form[year]':		$('#form_aw_year').val(),
+										'form[year]':		form_aw_year.val(),
 										'new': 1
 									}
 								}).done(function(response){
@@ -149,13 +156,16 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true, $this = $(this);
+									var valid = true,
+										$this = $(this),
+										form_award_id = $('#form_award_id'),
+										form_aw_year = $('#form_aw_year');
 
-									if ($('#form_award_id').select2('val') == '') {
+									if (form_award_id.select2('val') == '') {
 										$('#form_award_id-lbl').addClass('red-label');
 										valid = false;
 									}
-									if ($('#form_aw_year').val() == '') {
+									if (form_aw_year.val() == '') {
 										$('#form_aw_year-lbl').addClass('red-label');
 										valid = false;
 									}
@@ -170,9 +180,9 @@ endif; ?>
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
 											'form[id]':			$('#form_rel_aw_id').val(),
-											'form[award_id]':	$('#form_award_id').select2('val'),
+											'form[award_id]':	form_award_id.select2('val'),
 											'form[desc]':		$('#form_aw_desc').val(),
-											'form[year]':		$('#form_aw_year').val(),
+											'form[year]':		form_aw_year.val(),
 											'new': 0
 										}
 									}).done(function(response){

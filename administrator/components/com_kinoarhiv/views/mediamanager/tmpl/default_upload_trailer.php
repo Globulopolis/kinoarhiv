@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\String;
+
 JHtml::_('behavior.keepalive');
 
 $input = JFactory::getApplication()->input;
@@ -32,144 +34,6 @@ endif; ?>
 		$.fn.bootstrapBtn = bootstrapButton;
 
 		<?php if ($this->form->getValue('id') != 0): ?>
-		$('#accordion').accordion({
-			collapsible: true,
-			heightStyle: 'content',
-			active: <?php echo ($this->form->getValue('embed_code') != '') ? 'false' : 0; ?>
-		});
-
-		$('#video_uploader').pluploadQueue({
-			runtimes: 'html5,flash,silverlight,html4',
-			url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=video&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
-			multipart_params: {
-				'<?php echo JSession::getFormToken(); ?>': 1
-			},
-			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
-			<?php if ($this->params->get('upload_chunk') == 1): ?>chunk_size: '<?php echo $this->params->get('upload_chunk_size'); ?>', <?php endif; ?>
-			unique_names: false,
-			filters: [
-				{title: 'Video files', extensions: '<?php echo $this->params->get('upload_mime_video'); ?>'}
-			],
-			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
-			preinit: {
-				init: function (up, info) {
-					$('#video_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-					$('#video_uploader .plupload_clear_all').click(function (e) {
-						e.preventDefault();
-						up.splice();
-						$.each(up.files, function (i, file) {
-							up.removeFile(file);
-						});
-					});
-				},
-				UploadComplete: function (up, files) {
-					$('#video_uploader').find('.plupload_buttons').show();
-					$('.t-video').trigger('click');
-				}
-			},
-			init: {
-				PostInit: function () {
-					$('#video_uploader_container').removeAttr('title', '');
-				},
-				StateChanged: function (up) {
-					if (up.state == plupload.STARTED) {
-						// Block 'Save' and 'Close' buttons
-						$('#toolbar button').prop('disabled', 'disabled');
-					} else if (up.state == plupload.STOPPED) {
-						// Unblock 'Save' and 'Close' buttons
-						$('#toolbar button').removeProp('disabled');
-					}
-				}
-			}
-		});
-
-		$('#subtl_uploader').pluploadQueue({
-			runtimes: 'html5,flash,silverlight,html4',
-			url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=subtitles&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
-			multipart_params: {
-				'<?php echo JSession::getFormToken(); ?>': 1
-			},
-			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
-			filters: [{title: 'Subtitle files', extensions: '<?php echo $this->params->get('upload_mime_subtitles'); ?>'}],
-			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
-			unique_names: false,
-			preinit: {
-				init: function (up, info) {
-					$('#subtl_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-					$('#subtl_uploader .plupload_clear_all').click(function (e) {
-						e.preventDefault();
-						up.splice();
-						$.each(up.files, function (i, file) {
-							up.removeFile(file);
-						});
-					});
-				},
-				UploadComplete: function (up, files) {
-					$('#subtl_uploader').find('.plupload_buttons').show();
-					$('.t-subtitles').trigger('click');
-				}
-			},
-			init: {
-				PostInit: function () {
-					$('#subtl_uploader_container').removeAttr('title', '');
-				},
-				StateChanged: function (up) {
-					if (up.state == plupload.STARTED) {
-						// Block 'Save' and 'Close' buttons
-						$('#toolbar button').prop('disabled', 'disabled');
-					} else if (up.state == plupload.STOPPED) {
-						// Unblock 'Save' and 'Close' buttons
-						$('#toolbar button').removeProp('disabled');
-					}
-				}
-			}
-		});
-
-		$('#chap_uploader').pluploadQueue({
-			runtimes: 'html5,flash,silverlight,html4',
-			url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
-			multipart_params: {
-				'<?php echo JSession::getFormToken(); ?>': 1
-			},
-			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
-			unique_names: false,
-			filters: [{title: 'Chapter files', extensions: '<?php echo $this->params->get('upload_mime_chapters'); ?>'}],
-			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
-			preinit: {
-				init: function (up, info) {
-					$('#chap_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-					$('#chap_uploader .plupload_clear_all').click(function (e) {
-						e.preventDefault();
-						up.splice();
-						$.each(up.files, function (i, file) {
-							up.removeFile(file);
-						});
-					});
-				},
-				UploadComplete: function (up, files) {
-					$('#chap_uploader').find('.plupload_buttons').show();
-					$('.t-chapters').trigger('click');
-				}
-			},
-			init: {
-				PostInit: function () {
-					$('#chap_uploader_container').removeAttr('title', '');
-				},
-				StateChanged: function (up) {
-					if (up.state == plupload.STARTED) {
-						// Block 'Save' and 'Close' buttons
-						$('#toolbar button').prop('disabled', 'disabled');
-					} else if (up.state == plupload.STOPPED) {
-						// Unblock 'Save' and 'Close' buttons
-						$('#toolbar button').removeProp('disabled');
-					}
-				}
-			}
-		});
-
 		$('#v_sortable').sortable({
 			placeholder: 'ui-state-highlight',
 			cursor: 'move',
@@ -361,7 +225,7 @@ endif; ?>
 						return false;
 					}
 
-					_this.closest('h3').next('ul').children('li').remove();
+					_this.closest('h3').next('.files').find('li').remove();
 
 					$.each(response, function (k, object) {
 						html += '<li>'
@@ -380,7 +244,7 @@ endif; ?>
 						return false;
 					}
 
-					_this.closest('h3').next('ul').children('li').remove();
+					_this.closest('h3').next('.files').find('li').remove();
 
 					$.each(response, function (i, obj) {
 						var checked = obj.default ? ' checked="checked"' : '';
@@ -403,7 +267,7 @@ endif; ?>
 						return false;
 					}
 
-					_this.closest('h3').next('ul').children('li').remove();
+					_this.closest('h3').next('.files').find('li').remove();
 
 					html = '<li>'
 						+ '<div style="float: left;">' + response.file + '</div>'
@@ -569,7 +433,7 @@ endif; ?>
 			if ($(this).hasClass('video')) {
 				$('p', dlg).html($('#urls_layout_video'));
 				dlg.dialog({
-					title: '<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>',
+					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>',
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function () {
 							var input = $('.dialog #urls_url_video');
@@ -596,7 +460,7 @@ endif; ?>
 			} else if ($(this).hasClass('subtitles')) {
 				$('p', dlg).html($('#urls_layout_subtitles'));
 				dlg.dialog({
-					title: '<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>',
+					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES')); ?>',
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function () {
 							var input = $('.dialog #urls_url_subtitles');
@@ -623,7 +487,7 @@ endif; ?>
 			} else if ($(this).hasClass('chapters')) {
 				$('p', dlg).html('<label for="urls_url_chp"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_CHAPTERS'); ?></label><input id="urls_url_chp" class="span6" type="text" size="35" value="" name="urls_url_chp" /><div class="err_msg"></div>');
 				dlg.dialog({
-					title: '<?php echo JText::_('JTOOLBAR_ADD').' '.mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>',
+					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS')); ?>',
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function () {
 							var input = $('.dialog #urls_url_chp');
@@ -664,11 +528,131 @@ endif; ?>
 				});
 			}
 		});
+
+		$('.file-upload-video').click(function(e){
+			e.preventDefault();
+
+			$('#video_uploader').pluploadQueue({
+				runtimes: 'html5,flash,silverlight,html4',
+				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=video&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+				multipart_params: {
+					'<?php echo JSession::getFormToken(); ?>': 1
+				},
+				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+				<?php if ($this->params->get('upload_chunk') == 1): ?>chunk_size: '<?php echo $this->params->get('upload_chunk_size'); ?>', <?php endif; ?>
+				unique_names: false,
+				filters: [
+					{title: 'Video files', extensions: '<?php echo $this->params->get('upload_mime_video'); ?>'}
+				],
+				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				preinit: {
+					init: function (up, info) {
+						$('#video_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+						$('#video_uploader .plupload_clear_all').click(function(e){
+							e.preventDefault();
+							up.splice();
+							$.each(up.files, function(i, file){
+								up.removeFile(file);
+							});
+						});
+					},
+					UploadComplete: function(up, files){
+						$('#video_uploader').find('.plupload_buttons').show();
+						$('.t-video').trigger('click');
+					}
+				},
+				init: {
+					PostInit: function () {
+						$('#video_uploader_container').removeAttr('title', '');
+					}
+				}
+			});
+			$('#videoModalUpload').modal();
+		});
+
+		$('.file-upload-subtitles').click(function(e) {
+			e.preventDefault();
+
+			$('#subtitles_uploader').pluploadQueue({
+				runtimes: 'html5,flash,silverlight,html4',
+				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=subtitles&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+				multipart_params: {
+					'<?php echo JSession::getFormToken(); ?>': 1
+				},
+				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+				filters: [{title: 'Subtitle files', extensions: '<?php echo $this->params->get('upload_mime_subtitles'); ?>'}],
+				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				unique_names: false,
+				preinit: {
+					init: function (up, info) {
+						$('#subtitles_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+						$('#subtitles_uploader .plupload_clear_all').click(function (e) {
+							e.preventDefault();
+							up.splice();
+							$.each(up.files, function (i, file) {
+								up.removeFile(file);
+							});
+						});
+					},
+					UploadComplete: function (up, files) {
+						$('#subtitles_uploader').find('.plupload_buttons').show();
+						$('.t-subtitles').trigger('click');
+					}
+				},
+				init: {
+					PostInit: function () {
+						$('#subtitles_uploader_container').removeAttr('title', '');
+					}
+				}
+			});
+			$('#subtitlesModalUpload').modal();
+		});
+
+		$('.file-upload-chapters').click(function(e) {
+			e.preventDefault();
+
+			$('#chapters_uploader').pluploadQueue({
+				runtimes: 'html5,flash,silverlight,html4',
+				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=chapters&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
+				multipart_params: {
+					'<?php echo JSession::getFormToken(); ?>': 1
+				},
+				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+				unique_names: false,
+				filters: [{title: 'Chapter files', extensions: '<?php echo $this->params->get('upload_mime_chapters'); ?>'}],
+				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				preinit: {
+					init: function (up, info) {
+						$('#chapters_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+						$('#chapters_uploader .plupload_clear_all').click(function (e) {
+							e.preventDefault();
+							up.splice();
+							$.each(up.files, function (i, file) {
+								up.removeFile(file);
+							});
+						});
+					},
+					UploadComplete: function (up, files) {
+						$('#chapters_uploader').find('.plupload_buttons').show();
+						$('.t-chapters').trigger('click');
+					}
+				},
+				init: {
+					PostInit: function () {
+						$('#chapters_uploader_container').removeAttr('title', '');
+					}
+				}
+			});
+			$('#chaptersModalUpload').modal();
+		});
 	});
 	//]]>
 </script>
 
-<form action="index.php" method="post" style="margin: 0;" name="adminForm" id="adminForm" class="admform-upload-trailers">
+<form action="<?php echo JUri::base(); ?>index.php" method="post" style="margin: 0;" name="adminForm" id="adminForm" class="admform-upload-trailers">
 	<!-- At this first hidden input we will remove autofocus -->
 	<input type="hidden" autofocus="autofocus"/>
 
@@ -686,130 +670,127 @@ endif; ?>
 						<div class="control-group">
 							<?php echo $this->form->getLabel('urls'); ?>
 							<div class="urls_form_toolbar">
-								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="components/com_kinoarhiv/assets/images/icons/film.png" border="0"/></a>
-								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0"/></a>
-								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . mb_strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0"/></a>
-								<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="components/com_kinoarhiv/assets/images/icons/help.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/film.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/help.png" border="0"/></a>
 							</div>
 							<?php echo $this->form->getInput('urls'); ?>
 						</div>
 					</fieldset>
-
-					<?php if ($this->form->getValue('id') != 0): ?>
-						<div class="small red"><?php echo JText::_('COM_KA_TRAILERS_EDIT_UPLOAD_ONLY_ONE'); ?></div>
-						<div class="small"><?php echo JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT', $this->params->get('upload_mime_video'), $this->params->get('upload_mime_subtitles'), $this->params->get('upload_mime_chapters')); ?></div>
-						<div id="accordion" class="uploader">
-							<h3><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO'); ?></h3>
-
-							<div>
-								<div id="video_uploader" class="tr-uploader">
-									<p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5
-										support.</p>
-								</div>
-							</div>
-
-							<h3><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL'); ?></h3>
-
-							<div>
-								<span class="small red" style="margin: 0 5px;"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_WARN'); ?></span>
-
-								<div id="subtl_uploader" class="tr-uploader">
-									<p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5
-										support.</p>
-								</div>
-							</div>
-
-							<h3><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS'); ?></h3>
-
-							<div id="chap_uploader" class="tr-uploader">
-								<p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p>
-							</div>
-						</div>
-					<?php endif; ?>
 				</div>
 
 				<?php if ($this->form->getValue('id') != 0): ?>
 					<div class="span6" id="filelist">
-						<h3 class="ui-widget ui-widget-content" style="margin-top: 0;"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO'); ?>
+						<h3 class="ui-widget ui-widget-content"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO'); ?>
 							<span class="btn-small hasTooltip icon-help" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SORT_VIDEOFILES_DESC'); ?>"></span>
-							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=video&format=json" class="cmd-refresh-filelist t-video" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0"/></a>
+							<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=video&format=json" class="cmd-refresh-filelist t-video hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0"/></a>
 						</h3>
-						<ul id="v_sortable">
-							<?php $files = json_decode($this->form->getValue('filename'));
-							if (count($files) > 0):
-								foreach ($files as $key => $item): ?>
-									<li>
-										<input type="hidden" name="ord[]" value="<?php echo (int) $key; ?>"/>
 
-										<div style="float: left;">
-											<span class="ord_numbering"><?php echo (int) $key; ?></span>. <?php echo $item->src; ?>
-											<a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_videodata_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&video_id=<?php echo (int) $key; ?>" class="video-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0"/></a>
-										</div>
-										<div style="float: right;">
-											<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $item->src; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a>
-										</div>
-									</li>
-								<?php endforeach;
-							endif; ?>
-						</ul>
-						<div class="video_screenshot">
-							<div style="float: left;">
-								<?php if (is_file($this->item->get('screenshot_path'))): ?>
-									<a href="<?php echo $this->item->get('screenshot_path_www'); ?>?_=<?php echo time(); ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->form->getValue('screenshot'); ?></a>
-								<?php else: ?>
-									&nbsp;
-								<?php endif; ?>
+						<div class="files">
+							<ul id="v_sortable">
+								<?php $files = json_decode($this->form->getValue('filename'));
+								if (count($files) > 0):
+									foreach ($files as $key => $item): ?>
+										<li>
+											<input type="hidden" name="ord[]" value="<?php echo (int) $key; ?>"/>
+
+											<div style="float: left;">
+												<span class="ord_numbering"><?php echo (int) $key; ?></span>. <?php echo $item->src; ?>
+												<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_videodata_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&video_id=<?php echo (int) $key; ?>" class="video-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0"/></a>
+											</div>
+											<div style="float: right;">
+												<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=video&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $item->src; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove video"><span class="icon-delete"></span></a>
+											</div>
+										</li>
+									<?php endforeach;
+								endif; ?>
+							</ul>
+							<div>
+								<div class="video_screenshot">
+									<div style="float: left;">
+										<?php if (is_file($this->item->get('screenshot_path'))): ?>
+											<a href="<?php echo $this->item->get('screenshot_path_www'); ?>?_=<?php echo time(); ?>" class="tooltip-img" id="screenshot_file"><?php echo $this->form->getValue('screenshot'); ?></a>
+										<?php else: ?>
+											&nbsp;
+										<?php endif; ?>
+									</div>
+									<div style="float: right;">
+										<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_UPLOAD_TITLE'); ?>"><span class="icon-upload"></span></a>
+										<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw" class="file-create-scr hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
+										<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->form->getValue('screenshot'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
+									</div>
+								</div>
+								<div class="video_upload_files">
+									<span class="divider">&nbsp;</span>
+									<a href="#" class="file-upload-video hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_UPLOAD_TITLE'); ?>"><span class="icon-upload"></span></a>
+								</div>
 							</div>
-							<div style="float: right;">
-								<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_UPLOAD_TITLE'); ?>"><span class="icon-upload"></span></a>
-								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=create_screenshot&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=raw" class="file-create-scr hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TITLE'); ?>"><span class="icon-refresh"></span></a>
-								<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $this->form->getValue('screenshot'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove scrimage"><span class="icon-delete"></span></a>
+						</div>
+						<br />
+
+						<h3 class="ui-widget ui-widget-content"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES'); ?>
+							<span class="btn-small hasTooltip icon-help" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SORT_VIDEOFILES_DESC'); ?>"></span>
+							<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitles&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&all=1&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove all subtitle hasTooltip" title="<?php echo JText::_('COM_KA_DELETE_ALL'); ?>"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/mediamanager/delete.png" border="0"/></a>
+							<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=subtitles&format=json" class="cmd-refresh-filelist t-subtitles hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0"/></a>
+						</h3>
+
+						<div class="files">
+							<ul id="sub_sortable">
+								<?php $subtitles = json_decode($this->form->getValue('_subtitles'));
+								if (count($subtitles) > 0):
+									foreach ($subtitles as $k => $sub_data): ?>
+										<li>
+											<input type="hidden" name="cord[]" value="<?php echo (int) $k; ?>"/>
+
+											<div style="float: left;">
+												<span class="ord_numbering"><?php echo $k; ?></span>. <?php echo $sub_data->file; ?>
+												(<?php echo $sub_data->lang_code; ?>, <?php echo $sub_data->lang; ?>
+												<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&subtitle_id=<?php echo (int) $k; ?>" class="lang-edit"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0"/></a>)
+											</div>
+											<div style="float: right;">
+												<input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0 4px 4px 0;" autocomplete="off"<?php echo $sub_data->default ? ' checked="checked"' : ''; ?> />
+												<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitle&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $sub_data->file; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove subtitle"><span class="icon-delete"></span></a>
+											</div>
+										</li>
+									<?php endforeach;
+								endif; ?>
+							</ul>
+							<div>
+								<div class="video_upload_files">
+									<span class="divider">&nbsp;</span>
+									<a href="#" class="file-upload-subtitles hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL'); ?>"><span class="icon-upload"></span></a>
+								</div>
 							</div>
 						</div>
 						<br/>
 
-						<h3 class="ui-widget ui-widget-content"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES'); ?>
-							<span class="btn-small hasTooltip icon-help" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_SORT_VIDEOFILES_DESC'); ?>"></span>
-							<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitles&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&all=1&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove all subtitle" title="<?php echo JText::_('COM_KA_DELETE_ALL'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/mediamanager/delete.png" border="0"/></a>
-							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=subtitles&format=json" class="cmd-refresh-filelist t-subtitles" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0"/></a>
-						</h3>
-						<ul id="sub_sortable">
-							<?php $subtitles = json_decode($this->form->getValue('_subtitles'));
-							if (count($subtitles) > 0):
-								foreach ($subtitles as $k => $sub_data): ?>
-									<li>
-										<input type="hidden" name="cord[]" value="<?php echo (int) $k; ?>"/>
-
-										<div style="float: left;">
-											<span class="ord_numbering"><?php echo $k; ?></span>. <?php echo $sub_data->file; ?>
-											(<?php echo $sub_data->lang_code; ?>, <?php echo $sub_data->lang; ?>
-											<a href="index.php?option=com_kinoarhiv&task=loadTemplate&template=upload_subtitles_lang_edit&model=mediamanager&view=mediamanager&format=raw&trailer_id=<?php echo $input->get('item_id', 0, 'int'); ?>&subtitle_id=<?php echo (int) $k; ?>" class="lang-edit"><img src="components/com_kinoarhiv/assets/images/icons/table_edit.png" border="0"/></a>)
-										</div>
-										<div style="float: right;">
-											<input type="radio" name="sub_default" title="<?php echo JText::_('JDEFAULT'); ?>" class="hasTooltip" style="margin: 0px 4px 4px 0px;" autocomplete="off"<?php echo $sub_data->default ? ' checked="checked"' : ''; ?> />
-											<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=subtitle&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $sub_data->file; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove subtitle"><span class="icon-delete"></span></a>
-										</div>
-									</li>
-								<?php endforeach;
-							endif; ?>
-						</ul>
-
 						<h3 class="ui-widget ui-widget-content"><?php echo JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS'); ?>
-							<a href="index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=chapters&format=json" class="cmd-refresh-filelist t-chapters" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0"/></a>
+							<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=ajaxData&element=trailer_files&id=<?php echo $input->get('item_id', 0, 'int'); ?>&type=chapters&format=json" class="cmd-refresh-filelist t-chapters hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0"/></a>
 						</h3>
-						<ul id="chap_sortable">
-							<?php $chapters = json_decode($this->form->getValue('_chapters'));
-							if (count($chapters) > 0):
-								foreach ($chapters as $chapter): ?>
-									<li>
-										<div style="float: left;"><?php echo $chapter; ?></div>
-										<div style="float: right;">
-											<a href="index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $chapter; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a>
-										</div>
-									</li>
-								<?php endforeach;
-							endif; ?>
-						</ul>
+
+						<div class="files">
+							<ul id="chap_sortable">
+								<?php $chapters = json_decode($this->form->getValue('_chapters'));
+								if (count($chapters) > 0):
+									foreach ($chapters as $chapter): ?>
+										<li>
+											<div style="float: left;"><?php echo $chapter; ?></div>
+											<div style="float: right;">
+												<a href="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=chapter&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=<?php echo $chapter; ?>&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json" class="cmd-file-remove chapter"><span class="icon-delete"></span></a>
+											</div>
+										</li>
+									<?php endforeach;
+								endif; ?>
+							</ul>
+							<div>
+								<div class="video_upload_files">
+									<span class="divider">&nbsp;</span>
+									<a href="#" class="file-upload-chapters hasTip" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS'); ?>"><span class="icon-upload"></span></a>
+								</div>
+							</div>
+						</div>
+						<br/>
 					</div>
 				<?php else: ?>
 					<div class="span6" id="filelist"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_NOTSAVED'); ?></div>
@@ -884,4 +865,6 @@ endif; ?>
 	</form>
 </div>
 
-<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT); ?>
+<?php
+echo JLayoutHelper::render('layouts/edit/upload_video', array('params' => $this->params), JPATH_COMPONENT);
+echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT);

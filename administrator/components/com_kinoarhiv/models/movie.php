@@ -182,7 +182,7 @@ class KinoarhivModelMovie extends JModelForm
 					)
 				)
 			)
-			->select($db->quoteName('m.alias', 'alias_orig'))
+			->select($db->quoteName('m.fs_alias', 'fs_alias_orig'))
 			->from($db->quoteName('#__ka_movies', 'm'))
 			->where('m.id = ' . (int) $id[0]);
 
@@ -464,7 +464,6 @@ class KinoarhivModelMovie extends JModelForm
 			}
 		}
 
-		$data['fs_alias'] = String::strtolower(String::substr(JFilterOutput::stringURLSafe($data['alias']), 0, 1));
 		$created_by = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
 		$modified_by = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
 		$metadata = array(
@@ -950,9 +949,6 @@ class KinoarhivModelMovie extends JModelForm
 			jimport('joomla.filesystem.folder');
 			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'filesystem.php');
 
-			//$old_alias = substr($old_alias, 0, 1);
-			//$new_alias = substr($new_alias, 0, 1);
-
 			// Move gallery items
 			$path_poster = $params->get('media_posters_root');
 			$path_wallpp = $params->get('media_wallpapers_root');
@@ -1130,21 +1126,20 @@ class KinoarhivModelMovie extends JModelForm
 			->from($db->quoteName('#__ka_rel_names'))
 			->where($db->quoteName('movie_id') . ' = ' . (int) $id);
 
-		$where = "";
+		$query->where($db->quoteName('n.id') . ' IN (' . $where_subquery . ')');
 
 		if (!empty($search_string))
 		{
 			if ($search_field == 'n.name' || $search_field == 'd.name')
 			{
-				$where .= " AND (" . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)) . " OR " . KADatabaseHelper::transformOperands($db->quoteName('n.latin_name'), $search_operand, $db->escape($search_string)) . ")";
+				$query->where("(" . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)) . " OR " . KADatabaseHelper::transformOperands($db->quoteName('n.latin_name'), $search_operand, $db->escape($search_string)) . ")");
 			}
 			else
 			{
-				$where .= " AND " . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
+				$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
 			}
 		}
 
-		$query->where($db->quoteName('n.id') . ' IN (' . $where_subquery . ')' . $where);
 		$query->group($db->quoteName('n.id'));
 
 		// Preventing 'ordering asc/desc, ordering asc/desc' duplication

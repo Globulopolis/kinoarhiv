@@ -13,9 +13,10 @@
 
 /* override joomla styles */
 select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus {
-    outline: none !important;
-    outline-offset: -2px;
+	outline: none !important;
+	outline-offset: -2px;
 }
+
 /* */
 
 /* override jqueryUI styles: .ui-widget button */
@@ -33,14 +34,6 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 
 #page-cast-crew, #page-awards, #page-premieres, #page-releases, #page-composer {
 	padding: .5em 0 !important;
-}
-
-.uploader .ui-accordion-content {
-	padding: 0 !important;
-}
-
-.uploader .ui-accordion-content #uploader_container {
-	padding: 0 !important;
 }
 
 .control-panel a.btn, #toolbar .btn {
@@ -131,9 +124,9 @@ label.hasTip {
 .dd-relations-menu {
 	list-style: none outside none;
 	font-size: 1.2em !important;
-    margin: 0;
-    outline: 0 none;
-    padding: 2px 6px;
+	margin: 0;
+	outline: 0 none;
+	padding: 2px 6px;
 	display: none;
 	position: absolute;
 }
@@ -159,10 +152,23 @@ label.hasTip {
 	margin-bottom: 8px !important;
 }
 
-table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
-#articleList .ui-sortable td { background: #fff; }
-.sortable-handler { display: inline-block; padding-top: 4px; }
-.sortable-handler:hover { cursor: move;}
+table .ui-state-highlight {
+	height: 1.5em;
+	line-height: 1.2em;
+}
+
+#articleList .ui-sortable td {
+	background: #fff;
+}
+
+.sortable-handler {
+	display: inline-block;
+	padding-top: 4px;
+}
+
+.sortable-handler:hover {
+	cursor: move;
+}
 
 .ui-message a {
 	text-decoration: underline;
@@ -177,10 +183,6 @@ table .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 #form_is_actors label, #form_voice_artists label {
 	display: inline-block;
 	margin-right: 50px;
-}
-
-#uploader a:focus {
-	outline: none !important;
 }
 
 .table.gallery-list th, .table.gallery-list td,
@@ -236,11 +238,14 @@ span.icon {
 }
 
 #v_sortable, #sub_sortable, #cap_sortable, #chap_sortable {
-	list-style-type: none; margin: 0; padding: 0;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
 }
 
 #v_sortable li, #sub_sortable li, #cap_sortable li, #chap_sortable li {
-	margin: 0 3px 3px 3px; padding: 0.2em; height: 14px; cursor: default;
+	height: 1.8em;
+	cursor: pointer;
 }
 
 .cmd-refresh-filelist, .cmd-file-remove.all.subtitle {
@@ -248,12 +253,37 @@ span.icon {
 	float: right;
 }
 
+#filelist h3.ui-widget {
+	margin: 0;
+}
+
+#filelist .files {
+	margin-top: 0.5em;
+	margin-bottom: 1em;
+	padding: 0.2em 0.4em;
+}
+
+.t-subtitles {
+	margin-right: 0.5em;
+}
+
 .admform-upload-trailers h3 {
 	padding: 3px 4px;
 }
 
+.video_upload_files {
+	margin: 0 3px;
+	padding: 0.2em;
+	height: 14px;
+	cursor: default;
+}
+
 .video_screenshot {
-	margin: 0 3px; padding: 0.2em; height: 14px; cursor: default;
+	display: inline;
+	margin: 0 3px;
+	padding: 0.2em;
+	height: 14px;
+	cursor: default;
 }
 
 .dialog .err_msg {
@@ -305,6 +335,17 @@ img.movie-poster-preview, img.album-cover-preview {
 
 #list_awards a {
 	text-decoration: underline;
+}
+
+.divider {
+	*width: 100%;
+	height: 1px;
+	margin: 9px 1px;
+	*margin: -5px 0 5px;
+	overflow: hidden;
+	background-color: #e5e5e5;
+	border-bottom: 1px solid #ffffff;
+	display: block;
 }
 
 .separator label {

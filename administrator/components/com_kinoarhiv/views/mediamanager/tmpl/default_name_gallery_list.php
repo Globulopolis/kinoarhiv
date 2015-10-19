@@ -24,7 +24,7 @@ KAComponentHelper::loadMediamanagerAssets();
 		var table = document.getElementById("sortTable");
 		var direction = document.getElementById("directionTable");
 		var order = table.options[table.selectedIndex].value;
-		var dir;
+		var dirn;
 		if (order != '<?php echo $listOrder; ?>') {
 			dirn = 'asc';
 		} else {
@@ -39,12 +39,14 @@ KAComponentHelper::loadMediamanagerAssets();
 		var bootstrapButton = $.fn.button.noConflict();
 		$.fn.bootstrapBtn = bootstrapButton;
 
-		$('a.tooltip-img').hover(function(e){
+		var tooltip_img = $('a.tooltip-img');
+
+		tooltip_img.hover(function(e){
 			$(this).next('img').stop().hide().fadeIn();
 		}, function(e){
 			$(this).next('img').stop().fadeOut();
 		});
-		$('a.tooltip-img').colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
+		tooltip_img.colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,gears,flash,silverlight,browserplus,html4',
@@ -75,10 +77,19 @@ KAComponentHelper::loadMediamanagerAssets();
 			}
 		});
 
+		// Reload page if files was uploaded
+		$('.layout_img_upload').on('hidden', function() {
+			if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
+				document.location.reload();
+			}
+		});
+
 		<?php if ($input->get('tab', 0, 'int') == 3): ?>
 		$('.cmd-fp_off, .cmd-fp_on').click(function(){
+			var boxchecked = $('input[name="boxchecked"]');
+
 			$(this).closest('tr').find(':checkbox').prop('checked', true);
-			$('input[name="boxchecked"]').val(parseInt($('input[name="boxchecked"]').val(), 10) + 1);
+			boxchecked.val(parseInt(boxchecked.val(), 10) + 1);
 
 			if ($(this).hasClass('cmd-fp_off')) {
 				$('input[name="task"]').val('fpOff');
@@ -92,15 +103,7 @@ KAComponentHelper::loadMediamanagerAssets();
 
 		Joomla.submitbutton = function(task) {
 			if (task == 'upload') {
-				$('.layout_img_upload').dialog({
-					modal: true,
-					width: 700,
-					close: function(event, ui){
-						if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
-							document.location.reload();
-						}
-					}
-				});
+				$('#imgModalUpload').modal();
 
 				return false;
 			} else if (task == 'copyfrom') {

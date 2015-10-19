@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
@@ -484,5 +484,21 @@ class KinoarhivControllerNames extends JControllerLegacy
 		$result = $model->check_name();
 
 		echo json_encode($result);
+	}
+
+	/**
+	 * Method to encode item alias for using in filesystem paths and url.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
+	public function getFilesystemAlias()
+	{
+		JLoader::register('KAContentHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php');
+
+		$input = JFactory::getApplication()->input;
+
+		echo KAContentHelper::getFilesystemAlias($input->get('form_name_alias', '', 'string'), $input->get('form_name_title', '', 'string'));
 	}
 }

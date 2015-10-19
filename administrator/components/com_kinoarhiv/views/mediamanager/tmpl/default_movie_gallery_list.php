@@ -39,12 +39,14 @@ KAComponentHelper::loadMediamanagerAssets();
 		var bootstrapButton = $.fn.button.noConflict();
 		$.fn.bootstrapBtn = bootstrapButton;
 
-		$('a.tooltip-img').hover(function(e){
+		var tooltip_img = $('a.tooltip-img');
+
+		tooltip_img.hover(function(e){
 			$(this).next('img').stop().hide().fadeIn();
 		}, function(e){
 			$(this).next('img').stop().fadeOut();
 		});
-		$('a.tooltip-img').colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
+		tooltip_img.colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
 
 		$('#image_uploader').pluploadQueue({
 			runtimes: 'html5,flash,silverlight,html4',
@@ -84,8 +86,10 @@ KAComponentHelper::loadMediamanagerAssets();
 
 		<?php if ($input->get('tab', 0, 'int') == 2): ?>
 		$('.cmd-fp_off, .cmd-fp_on').click(function(){
+			var boxchecked = $('input[name="boxchecked"]');
+
 			$(this).closest('tr').find(':checkbox').prop('checked', true);
-			$('input[name="boxchecked"]').val(parseInt($('input[name="boxchecked"]').val(), 10) + 1);
+			boxchecked.val(parseInt(boxchecked.val(), 10) + 1);
 
 			if ($(this).hasClass('cmd-fp_off')) {
 				$('input[name="task"]').val('fpOff');

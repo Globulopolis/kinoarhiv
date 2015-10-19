@@ -106,6 +106,7 @@ class KinoarhivModelName extends JModelForm
 					)
 				)
 			)
+			->select($db->quoteName('n.fs_alias', 'fs_alias_orig'))
 			->from($db->quoteName('#__ka_names', 'n'))
 			->where($db->quoteName('n.id') . ' = ' . (int) $id[0]);
 
@@ -253,9 +254,10 @@ class KinoarhivModelName extends JModelForm
 
 		$query = $db->getQuery(true);
 
-		$query->select('COUNT(id)')
-			->from($db->quoteName('#__ka_rel_awards'))
-			->where($db->quoteName('item_id') . ' = ' . (int) $id . ' AND ' . $db->quoteName('type') . ' = 1' . $where);
+		$query->select('COUNT(rel.id)')
+			->from($db->quoteName('#__ka_rel_awards', 'rel'))
+			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id . ' AND ' . $db->quoteName('rel.type') . ' = 1' . $where)
+			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON ' . $db->quoteName('aw.id') . ' = ' . $db->quoteName('rel.award_id'));
 
 		$db->setQuery($query);
 		$total = $db->loadResult();
@@ -306,6 +308,7 @@ class KinoarhivModelName extends JModelForm
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->post->get('id', null, 'int');
+		$data = $data['name'];
 		$quick_save = $app->input->get('quick_save', 0, 'int');
 
 		// Check if person with this name allready exists
@@ -315,7 +318,7 @@ class KinoarhivModelName extends JModelForm
 
 			$query->select('COUNT(id)')
 				->from($db->quoteName('#__ka_names'))
-				->where($db->quoteName('name') . " LIKE '" . $db->escape(trim($data['name']['name'])) . "%' OR " . $db->quoteName('latin_name') . " LIKE '" . $db->escape(trim($data['name']['latin_name'])) . "%'");
+				->where($db->quoteName('name') . " LIKE '" . $db->escape(trim($data['name'])) . "%' OR " . $db->quoteName('latin_name') . " LIKE '" . $db->escape(trim($data['latin_name'])) . "%'");
 
 			$db->setQuery($query);
 			$count = $db->loadResult();
@@ -335,20 +338,20 @@ class KinoarhivModelName extends JModelForm
 			}
 		}
 
-		if (empty($data['name']['alias']))
+		// Automatic handling of alias for empty fields
+		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new')) && (!isset($data['id']) || (int) $data['id'] == 0))
 		{
-			if (!empty($data['name']['latin_name']))
+			if ($data['alias'] == null)
 			{
-				$alias = JFilterOutput::stringURLSafe($data['name']['latin_name']);
+				if (JFactory::getConfig()->get('unicodeslugs') == 1)
+				{
+					$data['alias'] = JFilterOutput::stringURLUnicodeSlug($data['title']);
+				}
+				else
+				{
+					$data['alias'] = JFilterOutput::stringURLSafe($data['title']);
+				}
 			}
-			else
-			{
-				$alias = JFilterOutput::stringURLSafe($data['name']['name']);
-			}
-		}
-		else
-		{
-			$alias = JFilterOutput::stringURLSafe($data['name']['alias']);
 		}
 
 		if (empty($id))
@@ -365,14 +368,14 @@ class KinoarhivModelName extends JModelForm
 			}
 
 			$attribs = json_encode($attribs);
-			$data['name']['state'] = 1;
-			$data['name']['access'] = 1;
-			$data['name']['metakey'] = '';
-			$data['name']['metadesc'] = '';
+			$data['state'] = 1;
+			$data['access'] = 1;
+			$data['metakey'] = '';
+			$data['metadesc'] = '';
 		}
 		else
 		{
-			$metadata = array('robots' => $data['name']['robots']);
+			$metadata = array('robots' => $data['robots']);
 			$attribs = json_encode($data['attribs']);
 		}
 
@@ -383,35 +386,36 @@ class KinoarhivModelName extends JModelForm
 			$query->insert($db->quoteName('#__ka_names'))
 				->columns(
 					$db->quoteName(
-						array('id', 'asset_id', 'name', 'latin_name', 'alias', 'date_of_birth', 'date_of_death', 'birthplace',
+						array('id', 'asset_id', 'name', 'latin_name', 'alias', 'fs_alias', 'date_of_birth', 'date_of_death', 'birthplace',
 							'birthcountry', 'gender', 'height', 'desc', 'attribs', 'ordering', 'state', 'access', 'metakey',
 							'metadesc', 'metadata', 'language'
 						)
 					)
 				)
-				->values("'','0','" . $db->escape(trim($data['name']['name'])) . "','" . $db->escape(trim($data['name']['latin_name'])) . "','" . $alias . "','" . $data['name']['date_of_birth'] . "','" . $data['name']['date_of_death'] . "','" . $db->escape(trim($data['name']['birthplace'])) . "','" . (int) $data['name']['birthcountry'] . "','" . (int) $data['name']['gender'] . "','" . $db->escape($data['name']['height']) . "','" . $db->escape($data['name']['desc']) . "','" . $attribs . "','" . (int) $data['name']['ordering'] . "','" . $data['name']['state'] . "','" . (int) $data['name']['access'] . "','" . $db->escape($data['name']['metakey']) . "','" . $db->escape($data['name']['metadesc']) . "','" . json_encode($metadata) . "','" . $db->escape($data['name']['language']) . "'");
+				->values("'','0','" . $db->escape(trim($data['name'])) . "','" . $db->escape(trim($data['latin_name'])) . "','" . $data['alias'] . "',''" . $data['fs_alias'] . ",'" . $data['date_of_birth'] . "','" . $data['date_of_death'] . "','" . $db->escape(trim($data['birthplace'])) . "','" . (int) $data['birthcountry'] . "','" . (int) $data['gender'] . "','" . $db->escape($data['height']) . "','" . $db->escape($data['desc']) . "','" . $attribs . "','" . (int) $data['ordering'] . "','" . $data['state'] . "','" . (int) $data['access'] . "','" . $db->escape($data['metakey']) . "','" . $db->escape($data['metadesc']) . "','" . json_encode($metadata) . "','" . $db->escape($data['language']) . "'");
 		}
 		else
 		{
 			$query->update($db->quoteName('#__ka_names'))
-				->set($db->quoteName('name') . " = '" . $db->escape(trim($data['name']['name'])) . "'")
-				->set($db->quoteName('latin_name') . " = '" . $db->escape(trim($data['name']['latin_name'])) . "'")
-				->set($db->quoteName('alias') . " = '" . $alias . "'")
-				->set($db->quoteName('date_of_birth') . " = '" . $data['name']['date_of_birth'] . "'")
-				->set($db->quoteName('date_of_death') . " = '" . $data['name']['date_of_death'] . "'")
-				->set($db->quoteName('birthplace') . " = '" . $db->escape($data['name']['birthplace']) . "'")
-				->set($db->quoteName('birthcountry') . " = '" . (int) $data['name']['birthcountry'] . "'")
-				->set($db->quoteName('gender') . " = '" . (int) $data['name']['gender'] . "'")
-				->set($db->quoteName('height') . " = '" . $db->escape($data['name']['height']) . "'")
-				->set($db->quoteName('desc') . " = '" . $db->escape($data['name']['desc']) . "'")
+				->set($db->quoteName('name') . " = '" . $db->escape(trim($data['name'])) . "'")
+				->set($db->quoteName('latin_name') . " = '" . $db->escape(trim($data['latin_name'])) . "'")
+				->set($db->quoteName('alias') . " = '" . $data['alias'] . "'")
+				->set($db->quoteName('fs_alias') . " = '" . $data['fs_alias'] . "'")
+				->set($db->quoteName('date_of_birth') . " = '" . $data['date_of_birth'] . "'")
+				->set($db->quoteName('date_of_death') . " = '" . $data['date_of_death'] . "'")
+				->set($db->quoteName('birthplace') . " = '" . $db->escape($data['birthplace']) . "'")
+				->set($db->quoteName('birthcountry') . " = '" . (int) $data['birthcountry'] . "'")
+				->set($db->quoteName('gender') . " = '" . (int) $data['gender'] . "'")
+				->set($db->quoteName('height') . " = '" . $db->escape($data['height']) . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
 				->set($db->quoteName('attribs') . " = '" . $attribs . "'")
-				->set($db->quoteName('ordering') . " = '" . (int) $data['name']['ordering'] . "'")
-				->set($db->quoteName('state') . " = '" . $data['name']['state'] . "'")
-				->set($db->quoteName('access') . " = '" . (int) $data['name']['access'] . "'")
-				->set($db->quoteName('metakey') . " = '" . $db->escape($data['name']['metakey']) . "'")
-				->set($db->quoteName('metadesc') . " = '" . $db->escape($data['name']['metadesc']) . "'")
+				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
+				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
+				->set($db->quoteName('access') . " = '" . (int) $data['access'] . "'")
+				->set($db->quoteName('metakey') . " = '" . $db->escape($data['metakey']) . "'")
+				->set($db->quoteName('metadesc') . " = '" . $db->escape($data['metadesc']) . "'")
 				->set($db->quoteName('metadata') . " = '" . json_encode($metadata) . "'")
-				->set($db->quoteName('language') . " = '" . $db->escape($data['name']['language']) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $id);
 		}
 
@@ -442,7 +446,7 @@ class KinoarhivModelName extends JModelForm
 				$db->setQuery($query);
 				$lft_rgt = $db->loadObject();
 
-				$asset_title = !empty($data['name']['latin_name']) ? $data['name']['latin_name'] : $data['name']['name'];
+				$asset_title = !empty($data['latin_name']) ? $data['latin_name'] : $data['name'];
 				$query = $db->getQuery(true);
 
 				$query->insert($db->quoteName('#__assets'))
@@ -465,9 +469,9 @@ class KinoarhivModelName extends JModelForm
 			else
 			{
 				// Alias was changed? Move all linked items into new filesystem location.
-				if (String::substr($alias, 0, 1) != String::substr($data['name']['alias_orig'], 0, 1))
+				if ($data['fs_alias'] != $data['fs_alias_orig'])
 				{
-					$this->moveMediaItems($id, $data['name']['alias_orig'], $alias, $params);
+					$this->moveMediaItems($id, $data['fs_alias_orig'], $data['fs_alias'], $params);
 				}
 			}
 
@@ -475,7 +479,7 @@ class KinoarhivModelName extends JModelForm
 				array(
 					'success' => true,
 					'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-					'data'    => array('id' => $id, 'name' => trim($data['name']['name']), 'latin_name' => trim($data['name']['latin_name']))
+					'data'    => array('id' => $id, 'name' => trim($data['name']), 'latin_name' => trim($data['latin_name']))
 				)
 			);
 		}
@@ -489,9 +493,9 @@ class KinoarhivModelName extends JModelForm
 		if ($quick_save == 0)
 		{
 			// Proccess genres IDs and store in relation table
-			if (!empty($data['name']['genres']) && ($data['name']['genres_orig'] != $data['name']['genres']))
+			if (!empty($data['genres']) && ($data['genres_orig'] != $data['genres']))
 			{
-				$genres_arr = explode(',', $data['name']['genres']);
+				$genres_arr = explode(',', $data['genres']);
 
 				$query_result_g = true;
 				$query = $db->getQuery(true);
@@ -537,9 +541,9 @@ class KinoarhivModelName extends JModelForm
 			}
 
 			// Proccess careers IDs and store in relation table
-			if (!empty($data['name']['careers']) && ($data['name']['careers_orig'] != $data['name']['careers']))
+			if (!empty($data['careers']) && ($data['careers_orig'] != $data['careers']))
 			{
-				$careers_arr = explode(',', $data['name']['careers']);
+				$careers_arr = explode(',', $data['careers']);
 
 				$query_result_c = true;
 				$query = $db->getQuery(true);
@@ -611,10 +615,6 @@ class KinoarhivModelName extends JModelForm
 			jimport('joomla.filesystem.folder');
 			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'filesystem.php');
 
-			$error = false;
-			$old_alias = String::substr($old_alias, 0, 1);
-			$new_alias = String::substr($new_alias, 0, 1);
-
 			// Move gallery items
 			$path_poster = $params->get('media_actor_posters_root');
 			$path_wallpp = $params->get('media_actor_wallpapers_root');
@@ -627,8 +627,8 @@ class KinoarhivModelName extends JModelForm
 			$new_folder_photo = $path_photo . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'photo';
 
 			if (!KAFilesystemHelper::move(
-				array($old_folder_poster, $old_folder_wallpp, $old_folder_photo),
-				array($new_folder_poster, $new_folder_wallpp, $new_folder_photo)
+				array(JPath::clean($old_folder_poster), JPath::clean($old_folder_wallpp), JPath::clean($old_folder_photo)),
+				array(JPath::clean($new_folder_poster), JPath::clean($new_folder_wallpp), JPath::clean($new_folder_photo))
 				))
 			{
 				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
@@ -860,7 +860,7 @@ class KinoarhivModelName extends JModelForm
 
 		// Remove media items
 		$query = $db->getQuery(true);
-		$query->select($db->quoteName('id') . ',SUBSTRING(' . $db->quoteName('alias') . ', 1, 1) AS ' . $db->quoteName('alias'))
+		$query->select('id, fs_alias')
 			->from($db->quoteName('#__ka_names'))
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
@@ -870,19 +870,19 @@ class KinoarhivModelName extends JModelForm
 		foreach ($items as $item)
 		{
 			// Delete root folders
-			if (file_exists($params->get('media_actor_posters_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id))
+			if (file_exists($params->get('media_actor_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
 			{
-				JFolder::delete($params->get('media_actor_posters_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id);
+				JFolder::delete($params->get('media_actor_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
 			}
 
-			if (file_exists($params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id))
+			if (file_exists($params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
 			{
-				JFolder::delete($params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id);
+				JFolder::delete($params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
 			}
 
-			if (file_exists($params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id))
+			if (file_exists($params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
 			{
-				JFolder::delete($params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->alias . DIRECTORY_SEPARATOR . $item->id);
+				JFolder::delete($params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
 			}
 		}
 

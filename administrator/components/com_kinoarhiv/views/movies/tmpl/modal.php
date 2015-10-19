@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
@@ -17,7 +17,7 @@ if ($app->isSite())
 	JSession::checkToken('get') or die(JText::_('JINVALID_TOKEN'));
 }
 
-require_once JPATH_ROOT . '/components/com_content/helpers/route.php';
+//require_once JPATH_ROOT . '/components/com_content/helpers/route.php';
 
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.framework', true);

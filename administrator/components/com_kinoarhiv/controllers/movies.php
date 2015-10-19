@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
@@ -9,8 +9,6 @@
  */
 
 defined('_JEXEC') or die;
-
-use Joomla\String\String;
 
 /**
  * Movies list controller class
@@ -499,7 +497,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			@$dom->loadHTML($response->body);
 
 			$xpath = new DOMXPath($dom);
-			$rating = @$xpath->query('//span[@itemprop="ratingValue"]')->item(1)->nodeValue;
+			$rating = @$xpath->query('//span[@class="meter-value superPageFontColor"]/span[@itemprop="ratingValue"]')->item(0)->nodeValue;
 			$score = @$xpath->query('//span[@itemprop="reviewCount ratingCount"]')->item(0)->nodeValue;
 
 			if (is_numeric($rating) && is_numeric($score))
@@ -790,12 +788,10 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 */
 	public function getFilesystemAlias()
 	{
-		echo rawurlencode(
-			String::substr(
-				String::strtolower(
-					JFactory::getApplication()->input->get('alias', '', 'string')
-				), 0, 1
-			)
-		);
+		JLoader::register('KAContentHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php');
+
+		$input = JFactory::getApplication()->input;
+
+		echo KAContentHelper::getFilesystemAlias($input->get('form_movie_alias', '', 'string'), $input->get('form_movie_title', '', 'string'));
 	}
 }

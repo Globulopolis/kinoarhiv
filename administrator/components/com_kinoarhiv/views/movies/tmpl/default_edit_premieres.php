@@ -16,9 +16,10 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0):
 endif; ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
+		var body = $('body');
 		var p_grid_cfg = {
-			grid_form_left: Math.round((($(document).width()/2)-($(document).width()/3))),
-			grid_form_top: Math.round((($('body').height()/2)-($('body').height()/4))),
+			grid_form_left: Math.round((($(document).width() / 2) - ($(document).width() / 3))),
+			grid_form_top: Math.round(((body.height() / 2) - (body.height() / 4))),
 			grid_form_width: 780,
 			grid_nav_config: {
 				edit:false, add:false, del:false,
@@ -31,7 +32,9 @@ endif; ?>
 
 		p_grid_cfg.grid_height = (p_grid_cfg.grid_height < 100) ? 200 : p_grid_cfg.grid_height;
 
-		$('#list_premieres').jqGrid({
+		var premieres_grid = $('#list_premieres');
+
+		premieres_grid.jqGrid({
 			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getPremieres&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: p_grid_cfg.grid_height,
@@ -54,12 +57,12 @@ endif; ?>
 			viewrecords: true,
 			rowNum: 50
 		});
-		$('#list_premieres').jqGrid('navGrid', '#pager_premieres', p_grid_cfg.grid_nav_config, {}, {}, {}, {
+		premieres_grid.jqGrid('navGrid', '#pager_premieres', p_grid_cfg.grid_nav_config, {}, {}, {}, {
 			// Search form config
 			width: p_grid_cfg.grid_form_width, left: p_grid_cfg.grid_form_left, top: p_grid_cfg.grid_form_top,
 			closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 		});
-		$('#list_premieres').jqGrid('gridResize', {});
+		premieres_grid.jqGrid('gridResize', {});
 
 		$('.premieres-container a.a, .premieres-container a.e, .premieres-container a.d').click(function(e){
 			e.preventDefault();
@@ -81,9 +84,11 @@ endif; ?>
 							text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 							id: 'rel-add-apply',
 							click: function(){
-								var valid = true, $this = $(this);
+								var valid = true,
+									$this = $(this),
+									form_p_vendor_id = $('#form_p_vendor_id');
 
-								if ($('#form_p_vendor_id').select2('val') == '') {
+								if (form_p_vendor_id.select2('val') == '') {
 									$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
 									valid = false;
 								}
@@ -98,7 +103,7 @@ endif; ?>
 									data: {
 										'<?php echo JSession::getFormToken(); ?>': 1,
 										'form[p_movie_id]':	    $('#id').val(),
-										'form[p_vendor_id]':	$('#form_p_vendor_id').select2('val'),
+										'form[p_vendor_id]':	form_p_vendor_id.select2('val'),
 										'form[p_country_id]':	$('#form_p_country_id').select2('val'),
 										'form[p_premiere_date]':$('#form_p_premiere_date').val(),
 										'form[p_info]':			$('#form_p_info').val(),
@@ -150,9 +155,11 @@ endif; ?>
 								text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
 								id: 'rel-add-apply',
 								click: function(){
-									var valid = true, $this = $(this);
+									var valid = true,
+										$this = $(this),
+										form_p_vendor_id = $('#form_p_vendor_id');
 
-									if ($('#form_p_vendor_id').select2('val') == '') {
+									if (form_p_vendor_id.select2('val') == '') {
 										$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
 										valid = false;
 									}
@@ -167,7 +174,7 @@ endif; ?>
 										data: {
 											'<?php echo JSession::getFormToken(); ?>': 1,
 											'form[p_movie_id]':	    $('#id').val(),
-											'form[p_vendor_id]':	$('#form_p_vendor_id').select2('val'),
+											'form[p_vendor_id]':	form_p_vendor_id.select2('val'),
 											'form[p_country_id]':	$('#form_p_country_id').select2('val'),
 											'form[p_premiere_date]':$('#form_p_premiere_date').val(),
 											'form[p_info]':			$('#form_p_info').val(),

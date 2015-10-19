@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Kinoarhiv.Site
+ * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
  *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
@@ -410,13 +410,13 @@ else
 					}
 				});
 			} else if ($(this).hasClass('get-alias')) {
-				if ($('#form_movie_alias').val() == "") {
-					showMsg('#system-message-container', 'Alias cannot be empty!');
-				} else {
-					$.get('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=movies&task=getFilesystemAlias&alias=' + $('#form_movie_alias').val() + '&format=raw', function(response){
-						$('#form_movie_fs_alias').val(response);
-					});
-				}
+				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=movies&task=getFilesystemAlias&form_movie_alias=' + $('#form_movie_alias').val() + '&form_movie_title=' + $('#form_movie_title').val() + '&format=json', function(response){
+					if (response.success) {
+						$('#form_movie_fs_alias').val(response.data);
+					} else {
+						showMsg('#system-message-container', response.message);
+					}
+				});
 			}
 		});
 	});
@@ -442,7 +442,6 @@ else
 				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('alias', $this->form_edit_group); ?>
-					<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
 				</div>
 			</div>
 			<div class="control-group">
@@ -451,7 +450,7 @@ else
 					<div class="input-append">
 						<?php echo $this->form->getInput('fs_alias', $this->form_edit_group); ?>
 						<?php echo $this->form->getInput('fs_alias_orig', $this->form_edit_group); ?>
-						<button class="btn btn-default cmd-alias get-alias"><i class="icon-refresh"></i></button>
+						<button class="btn btn-default cmd-alias get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
 						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>

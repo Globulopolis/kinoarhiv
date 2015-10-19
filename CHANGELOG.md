@@ -1,12 +1,17 @@
 ## HEAD (Unreleased)
-* FIxed wrong string build for search in database in KADatabaseHelper::transformOperands()
+* Improve 'Edit trailer' layout.
+* Fixed error in batch modal layout for movies.
+* Update language files
+* Added support for SEF urls.
+* Fixed rottentomatoes rating parser.
+* Fixed wrong string build for search in database in KADatabaseHelper::transformOperands()
 * Media content(like images, video, etc.) now can be restricted to numberof user sessions and speed.
 * Update plupload to 2.1.8
 * Update Select2 to 3.5.4
 * Update BxSlider to 4.2.5
 * Update jquery countdown to 2.0.2
 * Update jquery more to 2.0.1
-* Fixed search in grids for awards, premieres, releases in backend.
+* Fixed search in grids for awards, premieres, releases in backend for movies and persons.
 * Added 'Clear' button for search forms.
 * Improve usability of updater for ratings from remote sites.
 * Fixed errors when parsin ratings from remote sites(e.g. rottentomatoes).

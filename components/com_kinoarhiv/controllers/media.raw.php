@@ -151,11 +151,21 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
+		$item_id = $app->input->get('item_id', 0, 'int');
 		$fs_alias = $app->input->get('fa', '', 'string');
 		$filename = $app->input->get('fn', '', 'string');
 
 		if ($id == 0)
 		{
+			jexit();
+		}
+
+		$model = $this->getModel('movie');
+
+		if (!$model->getTrailerAccessLevel($item_id))
+		{
+			JResponse::setHeader('HTTP/1.0', '403 Forbidden');
+			JResponse::sendHeaders();
 			jexit();
 		}
 
@@ -259,6 +269,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	private function getImagePath($content, $type, $fs_alias, $item_id, $filename)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$path = '';
 
 		if ($content === 'movie')
 		{

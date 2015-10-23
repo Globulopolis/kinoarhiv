@@ -1,7 +1,7 @@
 ## HEAD (Unreleased)
 * Improve 'Edit trailer' layout.
 * Fixed error in batch modal layout for movies.
-* Update language files
+* Update language files.
 * Added support for SEF urls.
 * Fixed rottentomatoes rating parser.
 * Fixed wrong string build for search in database in KADatabaseHelper::transformOperands()

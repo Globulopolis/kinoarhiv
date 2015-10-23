@@ -17,11 +17,11 @@ JHtml::_('behavior.keepalive');
 $input = JFactory::getApplication()->input;
 $section = $input->get('section', '', 'word');
 $type = $input->get('type', '', 'word');
-?>
 
-<?php if ($this->form->getValue('id') != 0):
+if ($this->form->getValue('id') != 0):
 	KAComponentHelper::loadMediamanagerAssets();
-endif; ?>
+endif;
+?>
 <script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
 <?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
@@ -84,7 +84,7 @@ endif; ?>
 			});
 		});
 
-		$('#filelist').on('click', 'a.cmd-file-remove', function (e, all) {
+		$('#filelist').on('click', 'a.cmd-file-remove', function(e, all){
 			e.preventDefault();
 			var _this = $(this);
 
@@ -210,7 +210,7 @@ endif; ?>
 			dlg.load(_this.attr('href'));
 		});
 
-		$('.cmd-refresh-filelist').click(function (e) {
+		$('.cmd-refresh-filelist').click(function(e){
 			e.preventDefault();
 			var _this = $(this),
 				html = '';
@@ -547,7 +547,7 @@ endif; ?>
 				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
 				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
-					init: function (up, info) {
+					init: function(up, info){
 						$('#video_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
 						$('#video_uploader .plupload_clear_all').click(function(e){
 							e.preventDefault();
@@ -563,7 +563,7 @@ endif; ?>
 					}
 				},
 				init: {
-					PostInit: function () {
+					PostInit: function(){
 						$('#video_uploader_container').removeAttr('title', '');
 					}
 				}
@@ -586,23 +586,23 @@ endif; ?>
 				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				unique_names: false,
 				preinit: {
-					init: function (up, info) {
+					init: function(up, info){
 						$('#subtitles_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-						$('#subtitles_uploader .plupload_clear_all').click(function (e) {
+						$('#subtitles_uploader .plupload_clear_all').click(function(e){
 							e.preventDefault();
 							up.splice();
-							$.each(up.files, function (i, file) {
+							$.each(up.files, function(i, file){
 								up.removeFile(file);
 							});
 						});
 					},
-					UploadComplete: function (up, files) {
+					UploadComplete: function(up, files){
 						$('#subtitles_uploader').find('.plupload_buttons').show();
 						$('.t-subtitles').trigger('click');
 					}
 				},
 				init: {
-					PostInit: function () {
+					PostInit: function(){
 						$('#subtitles_uploader_container').removeAttr('title', '');
 					}
 				}
@@ -610,7 +610,7 @@ endif; ?>
 			$('#subtitlesModalUpload').modal();
 		});
 
-		$('.file-upload-chapters').click(function(e) {
+		$('.file-upload-chapters').click(function(e){
 			e.preventDefault();
 
 			$('#chapters_uploader').pluploadQueue({
@@ -621,28 +621,41 @@ endif; ?>
 				},
 				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 				unique_names: false,
+				multi_selection: false,
+				max_files: 1,
 				filters: [{title: 'Chapter files', extensions: '<?php echo $this->params->get('upload_mime_chapters'); ?>'}],
 				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
 				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
-					init: function (up, info) {
+					init: function(up, info){
 						$('#chapters_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-						$('#chapters_uploader .plupload_clear_all').click(function (e) {
+						$('#chapters_uploader .plupload_clear_all').click(function(e){
 							e.preventDefault();
 							up.splice();
-							$.each(up.files, function (i, file) {
+							$.each(up.files, function(i, file){
 								up.removeFile(file);
 							});
 						});
 					},
-					UploadComplete: function (up, files) {
+					UploadComplete: function(up, files){
 						$('#chapters_uploader').find('.plupload_buttons').show();
 						$('.t-chapters').trigger('click');
 					}
 				},
 				init: {
-					PostInit: function () {
+					PostInit: function(){
 						$('#chapters_uploader_container').removeAttr('title', '');
+					},
+					FilesAdded: function(up, files){
+						var max_files = up.getOption('max_files');
+
+						if (up.files.length > max_files) {
+							up.splice(max_files);
+							showMsg(
+								'#imgModalUpload .modal-body',
+								mOxie.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), max_files)
+							);
+						}
 					}
 				}
 			});

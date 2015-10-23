@@ -26,6 +26,8 @@ class KinoarhivViewMovies extends JViewLegacy
 
 	protected $params;
 
+	protected $itemid;
+
 	/**
 	 * Execute and display a template script.
 	 *
@@ -67,7 +69,7 @@ class KinoarhivViewMovies extends JViewLegacy
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
-		foreach ($items as &$item)
+		foreach ($items as $item)
 		{
 			$item->attribs = json_decode($item->attribs);
 			$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';

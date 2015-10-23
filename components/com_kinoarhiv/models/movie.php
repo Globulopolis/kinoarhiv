@@ -721,11 +721,10 @@ class KinoarhivModelMovie extends JModelForm
 	 * Method to get trailers for movie
 	 *
 	 * @param   integer  $id    Movie ID
-	 * @param   string   $type  Trailer type. If set to 'movie' when it's full length movie, trailer otherwise.
 	 *
 	 * @return object
 	 */
-	public function getTrailers($id = null, $type = null)
+	public function getTrailers($id = null)
 	{
 		jimport('joomla.filesystem.file');
 
@@ -807,7 +806,8 @@ class KinoarhivModelMovie extends JModelForm
 					{
 						$value->screenshot = JRoute::_(
 							'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-							'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot . '&format=raw&Itemid=' . $itemid
+							'&item_id=' . $value->id . '&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot .
+							'&format=raw&Itemid=' . $itemid
 						);
 					}
 
@@ -945,7 +945,7 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$value->screenshot = JRoute::_(
 						'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-						'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot . '&format=raw&Itemid=' . $itemid
+						'&item_id=' . $value->id . '&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot . '&format=raw&Itemid=' . $itemid
 					);
 				}
 
@@ -971,7 +971,7 @@ class KinoarhivModelMovie extends JModelForm
 				else
 				{
 					$value->path = 'index.php?option=com_kinoarhiv&task=media.view&element=trailer&id=' . $id .
-						'&fa=' . urlencode($value->fs_alias) . '&format=raw&Itemid=' . $itemid;
+						'&item_id=' . $value->id . '&fa=' . urlencode($value->fs_alias) . '&format=raw&Itemid=' . $itemid;
 					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
 							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 				}
@@ -1317,7 +1317,7 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				$result->screenshot = JRoute::_(
 					'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-					'&fa=' . urlencode($result->fs_alias) . '&fn=' . $result->screenshot . '&format=raw&Itemid=' . $itemid
+					'&item_id=' . $result->id . '&fa=' . urlencode($result->fs_alias) . '&fn=' . $result->screenshot . '&format=raw&Itemid=' . $itemid
 				);
 			}
 
@@ -1343,7 +1343,7 @@ class KinoarhivModelMovie extends JModelForm
 			else
 			{
 				$result->path = 'index.php?option=com_kinoarhiv&task=media.view&element=trailer&id=' . $id .
-					'&fa=' . urlencode($result->fs_alias) . '&format=raw&Itemid=' . $itemid;
+					'&item_id=' . $result->id . '&fa=' . urlencode($result->fs_alias) . '&format=raw&Itemid=' . $itemid;
 				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
 					. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 			}
@@ -1463,6 +1463,30 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Check access for trailer.
+	 *
+	 * @param   integer  $id  Trailer ID.
+	 *
+	 * @return boolean
+	 */
+	public function getTrailerAccessLevel($id)
+	{
+		$db = $this->getDBO();
+		$user = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+
+		$query = $db->getQuery(true)
+			->select('COUNT(id)')
+			->from($db->quoteName('#__ka_trailers'))
+			->where('id = ' . (int) $id . ' AND state = 1 AND access IN (' . $groups . ')');
+
+		$db->setQuery($query);
+		$result = $db->loadResult();
+
+		return $result < 1 ? false : true;
 	}
 
 	/**

@@ -85,6 +85,8 @@ else
 				},
 				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 				unique_names: false,
+				multi_selection: false,
+				max_files: 1,
 				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
 				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
 				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
@@ -104,7 +106,7 @@ else
 					}
 				},
 				init: {
-					PostInit: function () {
+					PostInit: function(){
 						$('#image_uploader_container').removeAttr('title', '');
 					},
 					FileUploaded: function(up, file, info){
@@ -118,9 +120,9 @@ else
 						).done(function(response){
 							var cover_preview = $('img.album-cover-preview');
 
-							/*cover_preview.attr('src', url + 'thumb_'+ file.filename +'?_='+ new Date().getTime()).addClass('y-poster');
-							cover_preview.parent('a').attr('href', url + file.filename +'?_='+ new Date().getTime());
-							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]='+ file.id +'&format=raw');*/
+							cover_preview.attr('src', url + 'thumb_' + response_obj.filename + '?_=' + new Date().getTime());
+							cover_preview.parent('a').attr('href', url + response_obj.filename + '?_=' + new Date().getTime());
+							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]=' + response_obj.id + '&format=raw');
 							blockUI();
 							$('#imgModalUpload').modal('hide');
 						}).fail(function(xhr, status, error){
@@ -128,13 +130,16 @@ else
 							blockUI();
 						});
 					},
-					FilesAdded: function(up, files) {
-						if (up.files.length === 1) {
-							$('#image_uploader a.plupload_add').hide();
+					FilesAdded: function(up, files){
+						var max_files = up.getOption('max_files');
+
+						if (up.files.length > max_files) {
+							up.splice(max_files);
+							showMsg(
+								'#imgModalUpload .modal-body',
+								mOxie.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), max_files)
+							);
 						}
-					},
-					QueueChanged: function(up) {
-						$('#image_uploader a.plupload_add').show();
 					}
 				}
 			});
@@ -155,7 +160,7 @@ else
 					showMsg('#system-message-container', response);
 				} else {
 					var cover_preview = $('img.album-cover-preview');
-					cover_preview.attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png').removeClass('y-poster');
+					cover_preview.attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
 					cover_preview.parent('a').attr('href', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
 				}
 				blockUI();
@@ -164,56 +169,30 @@ else
 				blockUI();
 			});
 		});
-
-		$('#form_album_alias').attr('readonly', true);
 		<?php endif; ?>
 
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo JText::_('COM_KA_FIELD_ALBUMS_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('JFIELD_ALIAS_DESC', true); ?></p></div>');
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_posters_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->form->getValue('id', $this->form_edit_group) . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_ALBUMS_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
 
 			if ($(this).hasClass('info')) {
 				$(dialog).dialog({
 					modal: true,
 					width: 800,
-					height: $(window).height()-100,
+					height: $(window).height() - 100,
 					draggable: false,
 					close: function(event, ui){
 						dialog.remove();
 					}
 				});
-			} else {
-				if (!$('#form_album_alias').is('[readonly]')) {
-					return;
-				}
-
-				$(dialog).dialog({
-					modal: true,
-					width: 800,
-					height: $(window).height()-100,
-					draggable: false,
-					close: function(event, ui){
-						dialog.remove();
-					},
-					buttons: [
-						{
-							text: '<?php echo JText::_('JMODIFY'); ?>',
-							id: 'alias-modify',
-							click: function(){
-								var album_alias = $('#form_album_alias');
-								album_alias.removeAttr('readonly').trigger('focus');
-								$(this).dialog('close');
-								album_alias.focus();
-							}
-						},
-						{
-							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
-							click: function(){
-								$(this).dialog('close');
-							}
-						}
-					]
+			} else if ($(this).hasClass('get-alias')) {
+				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=music&task=getFilesystemAlias&form_album_alias=' + $('#form_album_alias').val() + '&form_album_title=' + $('#form_album_title').val() + '&format=json', function(response){
+					if (response.success) {
+						$('#form_album_fs_alias').val(response.data);
+					} else {
+						showMsg('#system-message-container', response.message);
+					}
 				});
 			}
 		});
@@ -229,13 +208,19 @@ else
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_edit_group); ?></div>
 				<div class="controls">
+					<?php echo $this->form->getInput('alias', $this->form_edit_group); ?>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('fs_alias', $this->form_edit_group); ?></div>
+				<div class="controls">
 					<div class="input-append">
-						<?php echo $this->form->getInput('alias', $this->form_edit_group); ?>
-						<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?><button class="btn btn-default cmd-alias unblock"><i class="icon-pencil-2"></i></button><?php endif; ?>
+						<?php echo $this->form->getInput('fs_alias', $this->form_edit_group); ?>
+						<?php echo $this->form->getInput('fs_alias_orig', $this->form_edit_group); ?>
+						<button class="btn btn-default cmd-alias get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
 						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>
-				<?php echo $this->form->getInput('alias_orig', $this->form_edit_group); ?>
 			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('composer', $this->form_edit_group); ?></div>

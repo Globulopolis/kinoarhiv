@@ -82,6 +82,7 @@ class KinoarhivModelAlbum extends JModelForm
 					)
 				)
 			)
+			->select($db->quoteName('a.fs_alias', 'fs_alias_orig'))
 			->from($db->quoteName('#__ka_music_albums', 'a'))
 			->where($db->quoteName('a.id') . ' = ' . (int) $id[0]);
 

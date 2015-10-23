@@ -314,29 +314,31 @@ else
 				},
 				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 				unique_names: false,
+				multi_selection: false,
+				max_files: 1,
 				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
 				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
 				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
 					init: function (up, info) {
 						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-						$('#image_uploader .plupload_clear_all').click(function (e) {
+						$('#image_uploader .plupload_clear_all').click(function(e){
 							e.preventDefault();
 							up.splice();
-							$.each(up.files, function (i, file) {
+							$.each(up.files, function(i, file){
 								up.removeFile(file);
 							});
 						});
 					},
-					UploadComplete: function (up, files) {
+					UploadComplete: function(up, files){
 						$('#image_uploader').find('.plupload_buttons').show();
 					}
 				},
 				init: {
-					PostInit: function () {
+					PostInit: function(){
 						$('#image_uploader_container').removeAttr('title', '');
 					},
-					FileUploaded: function (up, file, info) {
+					FileUploaded: function(up, file, info){
 						var response = $.parseJSON(info.response),
 							response_obj = $.parseJSON(response.id),
 							url = '<?php echo $poster_url; ?>';
@@ -357,13 +359,16 @@ else
 							blockUI();
 						});
 					},
-					FilesAdded: function(up, files) {
-						if (up.files.length === 1) {
-							$('#image_uploader a.plupload_add').hide();
+					FilesAdded: function(up, files){
+						var max_files = up.getOption('max_files');
+
+						if (up.files.length > max_files) {
+							up.splice(max_files);
+							showMsg(
+								'#imgModalUpload .modal-body',
+								mOxie.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), max_files)
+							);
 						}
-					},
-					QueueChanged: function(up) {
-						$('#image_uploader a.plupload_add').show();
 					}
 				}
 			});
@@ -383,7 +388,7 @@ else
 				if (typeof response !== 'object' && response != "") {
 					showMsg('#system-message-container', response);
 				} else {
-					$('img.movie-poster-preview').attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png').removeClass('y-poster');
+					$('img.movie-poster-preview').attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
 					$('img.movie-poster-preview').parent('a').attr('href', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
 				}
 				blockUI();

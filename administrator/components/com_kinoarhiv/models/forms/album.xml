@@ -6,10 +6,11 @@
 				   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
 			<field name="title" type="text" default="" label="COM_KA_MUSIC_ALBUMS_HEADING" class="span12"
 				   required="true" filter="string" size="45"/>
-			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45"/>
-			<!-- // TODO Need to be removed? -->
-			<field name="alias_orig" type="hidden"/>
-			<field name="fs_alias" type="hidden" label="JFIELD_ALIAS_LABEL" default="" readonly="true"/>
+			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC"
+				   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12" size="45"/>
+			<field name="fs_alias" type="text" label="COM_KA_FIELD_MOVIE_FS_ALIAS"
+				   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9" size="45"/>
+			<field name="fs_alias_orig" type="hidden"/>
 			<field name="composer" type="text" default="" label="COM_KA_FIELD_ALBUMS_COMPOSER" class="span12"
 				   filter="string" size="45"/>
 			<field name="year" type="datetime" default="NOW" label="COM_KA_MUSIC_ALBUMS_FIELD_DATETIME" class="span6"

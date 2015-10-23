@@ -423,4 +423,20 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
 	}
+
+	/**
+	 * Method to encode item alias for using in filesystem paths and url.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
+	public function getFilesystemAlias()
+	{
+		JLoader::register('KAContentHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php');
+
+		$input = JFactory::getApplication()->input;
+
+		echo KAContentHelper::getFilesystemAlias($input->get('form_album_alias', '', 'string'), $input->get('form_album_title', '', 'string'));
+	}
 }

@@ -19,6 +19,19 @@ ALTER TABLE `#__ka_music_genres`
 
 UPDATE `#__ka_music_genres` SET `access` = '1';
 
+CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `filename` varchar(128) NOT NULL DEFAULT '',
+  `dimension` varchar(10) NOT NULL DEFAULT '',
+  `item_id` bigint(19) NOT NULL DEFAULT '0',
+  `poster_frontpage` tinyint(1) unsigned DEFAULT '0',
+  `state` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_itemid` (`item_id`),
+  KEY `idx_poster` (`poster_frontpage`),
+  KEY `idx_state` (`state`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ALTER TABLE `#__ka_music_albums` 
   ADD COLUMN `asset_id` INT (10) UNSIGNED NOT NULL AFTER `id`,
   ADD COLUMN `buy_url` VARCHAR (255) NOT NULL AFTER `tracks_preview_path`,
@@ -52,7 +65,7 @@ ALTER TABLE `#__ka_movies`
   ADD COLUMN `publish_down` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `publish_up`,
   ADD COLUMN `fs_alias` VARCHAR(3) DEFAULT '' NOT NULL AFTER `alias`;
 
-CREATE TABLE `#__ka_music_rel_composers` (
+CREATE TABLE IF NOT EXISTS `#__ka_music_rel_composers` (
   `name_id` int(11) NOT NULL DEFAULT '0',
   `album_id` int(11) NOT NULL DEFAULT '0',
   `type` varchar(16) NOT NULL DEFAULT '0',
@@ -77,6 +90,8 @@ CREATE TABLE IF NOT EXISTS `#__ka_media_types` (
   PRIMARY KEY (`id`),
   INDEX `idx_language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT IGNORE INTO `#__ka_media_types`(`id`,`title`,`language`) VALUES (1,'CAMRip (CAM)','*'),(2,'Telesync (TS)','*'),(3,'Super Telesync (SuperTS, Super-TS, Оцифровка)','*'),(4,'Telecine (TC)','*'),(5,'VHS-Rip (VHSRip)','*'),(6,'DVD-Screener (DVDScr) (SCR)','*'),(7,'SCREENER (SCR), VHS-SCREENER (VHSScr)','*'),(8,'TV-Rip (TVRip)','*'),(9,'SAT-Rip (SATRip)','*'),(10,'DVD-Rip (DVDRip)','*'),(11,'DVD5 (DVD-5)','*'),(12,'DVD9 (DVD-9)','*'),(13,'HDTV-Rip (HDTVRip)','*'),(14,'BD-Rip (BDRip)','*'),(15,'Blu-Ray','*'),(16,'HDDVD','*'),(17,'Workprint (WP)','*'),(18,'Laserdisc-RIP (LDRip)','*'),(19,'HDDVD-Rip (HDDVDRip)','*'),(20,'Другое','*');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

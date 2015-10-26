@@ -16,7 +16,7 @@ JHtml::_('behavior.keepalive');
 	Joomla.submitbutton = function(task) {
 		var _$ = jQuery;
 		if (task == 'cancel') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=<?php echo $this->param; ?>&award_type=<?php echo (int)$this->award_type; ?>';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=<?php echo $this->param; ?>&award_type=<?php echo (int) $this->award_type; ?>';
 		} else if (task == 'save' || task == 'apply' || task == 'save2new') {
 			var state_required = true;
 
@@ -36,7 +36,7 @@ JHtml::_('behavior.keepalive');
 				_$.post('index.php?option=com_kinoarhiv&controller=relations&task='+task+'&format=json', _$('form').serialize(), function(response){
 					if (response.success) {
 						if (task == 'apply') {
-							if (_$('#form_r_type').val() != <?php echo (int)$this->award_type; ?>) {
+							if (_$('#form_r_type').val() != <?php echo (int) $this->award_type; ?>) {
 								_$('.ui-widget-overlay').show();
 								document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param=awards&award_id='+response.ids[0]+'&item_id='+response.ids[1]+'&award_type='+_$('#form_r_type').val();
 							}
@@ -60,112 +60,6 @@ JHtml::_('behavior.keepalive');
 	};
 
 	jQuery(document).ready(function($){
-		$('#form_r_award_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 200,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json',
-				data: function(term, page){
-					return {
-						term: term,
-						showAll: 0
-					}
-				},
-				results: function(data, page){
-					return {results: data};
-				}
-			},
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data){
-						callback(data);
-					});
-				}
-			},
-			formatResult: function(data){
-				return data.title;
-			},
-			formatSelection: function(data){
-				return data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		});
-
-		$('#form_r_item_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 200,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json',
-				data: function(term, page){
-					return {
-						term: term,
-						showAll: 0,
-						type: $('#form_r_type').val()
-					}
-				},
-				results: function(data, page){
-					return {results: data};
-				}
-			},
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json', {
-						data: {
-							id: id,
-							type: $('#form_r_type').val()
-						}
-					}).done(function(data){
-						callback(data);
-					});
-				}
-			},
-			formatResult: function(data){
-				if ($('#form_r_type').val() == 0) {
-					if (data.year == '0000') return data.title;
-					return data.title+' ('+data.year+')';
-				} else if ($('#form_r_type').val() == 1) {
-					var title = '';
-					if (data.name != '') title += data.name;
-					if (data.name != '' && data.latin_name != '')  title += ' / ';
-					if (data.latin_name != '') title += data.latin_name;
-					if (data.date_of_birth != '0000-00-00') title += ' ('+data.date_of_birth+')';
-
-					return title;
-				}
-			},
-			formatSelection: function(data){
-				if ($('#form_r_type').val() == 0) {
-					if (data.year == '0000') return data.title;
-					return data.title+' ('+data.year+')';
-				} else if ($('#form_r_type').val() == 1) {
-					var title = '';
-					if (data.name != '') title += data.name;
-					if (data.name != '' && data.latin_name != '')  title += ' / ';
-					if (data.latin_name != '') title += data.latin_name;
-					if (data.date_of_birth != '0000-00-00') title += ' ('+data.date_of_birth+')';
-
-					return title;
-				}
-			},
-			escapeMarkup: function(m) { return m; }
-		});
-
-		$('#form_r_type').select2({ minimumResultsForSearch: -1 });
-
 		$('#form_r_type').change(function(){
 			if ($(this).val() == 0) {
 				$('#form_r_item_id-lbl').html('<?php echo JText::_('COM_KA_FIELD_MOVIE_LABEL'); ?><span class="star"> *</span>');

@@ -94,16 +94,15 @@ class KinoarhivModelReleases extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				$db->quoteName(array('r.id', 'r.movie_id', 'r.media_type', 'r.release_date', 'r.language', 'r.ordering'))
+				'r.id, r.movie_id, r.release_date, r.language, r.ordering, m.title, m.year, v.company_name, ' .
+				'v.company_name_intl, c.name, c.code, media.title AS media_type'
 			)
 		);
 		$query->from($db->quoteName('#__ka_releases', 'r'))
-			->select($db->quoteName(array('m.title', 'm.year')))
 			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('r.movie_id'))
-			->select($db->quoteName(array('v.company_name', 'v.company_name_intl')))
 			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('r.vendor_id'))
-			->select($db->quoteName(array('c.name', 'c.code')))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'));
+			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
+			->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'));
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))

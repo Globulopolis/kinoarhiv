@@ -12,12 +12,22 @@ defined('_JEXEC') or die;
 
 if ($this->award_type == 0)
 {
-	$colNames = array('"' . JText::_('COM_KA_FIELD_AW_LABEL') . '"', '"' . JText::_('COM_KA_FIELD_AW_ID') . '"', '"' . JText::_('COM_KA_FIELD_MOVIE_LABEL') . '"', '"' . JText::_('COM_KA_FIELD_MOVIE_ID') . '"');
+	$colNames = array(
+		'"' . JText::_('COM_KA_FIELD_AW_LABEL') . '"',
+		'"' . JText::_('COM_KA_FIELD_AW_ID') . '"',
+		'"' . JText::_('COM_KA_FIELD_MOVIE_LABEL') . '"',
+		'"' . JText::_('COM_KA_FIELD_MOVIE_ID') . '"'
+	);
 	$colModel = array('item_title' => 'movie', 'item_id' => 'movie_id');
 }
 elseif ($this->award_type == 1)
 {
-	$colNames = array('"' . JText::_('COM_KA_FIELD_AW_LABEL') . '"', '"' . JText::_('COM_KA_FIELD_AW_ID') . '"', '"' . JText::_('COM_KA_FIELD_NAME') . '"', '"' . JText::_('COM_KA_FIELD_NAME_ID') . '"');
+	$colNames = array(
+		'"' . JText::_('COM_KA_FIELD_AW_LABEL') . '"',
+		'"' . JText::_('COM_KA_FIELD_AW_ID') . '"',
+		'"' . JText::_('COM_KA_FIELD_NAME') . '"',
+		'"' . JText::_('COM_KA_FIELD_NAME_ID') . '"'
+	);
 	$colModel = array('item_title' => 'title', 'item_id' => 'name_id');
 }
 
@@ -31,7 +41,9 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 <script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		var col_sort = '';
+		var col_sort = '',
+			list = $('#list');
+
 		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
 			$.cookie('<?php echo $uid_hash; ?>', '<?php echo $colModel['item_title']; ?>.3.asc', {expires: 365});
 			col_sort = '<?php echo $colModel['item_title']; ?>.3.asc'.split('.');
@@ -39,8 +51,8 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
 		}
 
-		$('#list').jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=relations&task=awards&action=getList&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?>&award_type=<?php echo $this->award_type; ?><?php echo ($this->movie_id != 0) ? '&mid='.$this->movie_id : ''; ?>',
+		list.jqGrid({
+			url: 'index.php?option=com_kinoarhiv&controller=relations&task=awards&action=getList&format=json<?php echo $this->id != 0 ? '&id=' . $this->id : ''; ?>&award_type=<?php echo $this->award_type; ?><?php echo $this->movie_id != 0 ? '&mid=' . $this->movie_id : ''; ?>',
 			datatype: 'json',
 			loadui: 'block',
 			height: Math.round($(window).height() - ($('.container-main').offset().top * 1.8)),
@@ -94,7 +106,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 				$.cookie('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
 			}
 		});
-		$('#list').jqGrid('navGrid', '#pager', {
+		list.jqGrid('navGrid', '#pager', {
 			edit: false,
 			add: false,
 			del: false,
@@ -107,7 +119,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 			searchOnEnter: true,
 			closeOnEscape: true
 		});
-		$('#list').jqGrid('gridResize', {});
+		list.jqGrid('gridResize', {});
 	});
 </script>
 <table id="list"></table>

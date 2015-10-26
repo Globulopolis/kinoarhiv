@@ -20,7 +20,8 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 <script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		var col_sort = '';
+		var col_sort = '',
+			list = $('#list');
 		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
 			$.cookie('<?php echo $uid_hash; ?>', 'name.3.asc', {expires: 365});
 			col_sort = 'name.3.asc'.split('.');
@@ -28,14 +29,19 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
 		}
 
-		$('#list').jqGrid({
+		list.jqGrid({
 			url: 'index.php?option=com_kinoarhiv&controller=relations&task=careers&action=getList&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?><?php echo ($this->name_id != 0) ? '&nid='.$this->name_id : ''; ?>',
 			datatype: 'json',
 			loadui: 'block',
 			height: Math.round($(window).height() - ($('.container-main').offset().top * 1.8)),
 			shrinkToFit: true,
 			width: $('#j-main-container').innerWidth(),
-			colNames: ['<?php echo JText::_('COM_KA_CAREER_FIELD_TITLE'); ?>', '<?php echo JText::_('COM_KA_FIELD_CAREER_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_NAME'); ?>', '<?php echo JText::_('COM_KA_FIELD_NAME_ID'); ?>'],
+			colNames: [
+				'<?php echo JText::_('COM_KA_CAREER_FIELD_TITLE'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_CAREER_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_NAME'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_NAME_ID'); ?>'
+			],
 			colModel: [
 				{
 					name: 'career',
@@ -82,7 +88,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 				$.cookie('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
 			}
 		});
-		$('#list').jqGrid('navGrid', '#pager', {
+		list.jqGrid('navGrid', '#pager', {
 			edit: false,
 			add: false,
 			del: false,
@@ -95,7 +101,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 			searchOnEnter: true,
 			closeOnEscape: true
 		});
-		$('#list').jqGrid('sortableRows', {
+		list.jqGrid('sortableRows', {
 			connectWith: '#list',
 			update: function (e, ui) {
 				$.post('index.php?option=com_kinoarhiv&controller=relations&task=saveOrder&param=careers&format=json', {
@@ -113,7 +119,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 				});
 			}
 		});
-		$('#list').jqGrid('gridResize', {});
+		list.jqGrid('gridResize', {});
 	});
 </script>
 <table id="list"></table>

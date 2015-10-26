@@ -11,33 +11,9 @@
 			   class="span5" filter="intval" size="11" data-ac-type="vendors"/>
 		<field name="release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox" size="22"
 			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="date" filter="user_utc" required="true"/>
-		<field name="media_type" type="groupedlist" class="span5" default="11" label="COM_KA_RELEASES_MEDIATYPE_TITLE"
-			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval">
-			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
-				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>
-				<option value="1">COM_KA_RELEASES_MEDIATYPE_1</option>
-				<option value="2">COM_KA_RELEASES_MEDIATYPE_2</option>
-				<option value="3">COM_KA_RELEASES_MEDIATYPE_3</option>
-				<option value="4">COM_KA_RELEASES_MEDIATYPE_4</option>
-				<option value="5">COM_KA_RELEASES_MEDIATYPE_5</option>
-				<option value="6">COM_KA_RELEASES_MEDIATYPE_6</option>
-				<option value="7">COM_KA_RELEASES_MEDIATYPE_7</option>
-				<option value="8">COM_KA_RELEASES_MEDIATYPE_8</option>
-				<option value="9">COM_KA_RELEASES_MEDIATYPE_9</option>
-				<option value="12">COM_KA_RELEASES_MEDIATYPE_12</option>
-				<option value="13">COM_KA_RELEASES_MEDIATYPE_13</option>
-				<option value="18">COM_KA_RELEASES_MEDIATYPE_18</option>
-				<option value="17">COM_KA_RELEASES_MEDIATYPE_17</option>
-			</group>
-			<group label="COM_KA_RELEASES_MEDIATYPE_SRC">
-				<option value="10">COM_KA_RELEASES_MEDIATYPE_10</option>
-				<option value="11">COM_KA_RELEASES_MEDIATYPE_11</option>
-				<option value="14">COM_KA_RELEASES_MEDIATYPE_14</option>
-				<option value="15">COM_KA_RELEASES_MEDIATYPE_15</option>
-				<option value="16">COM_KA_RELEASES_MEDIATYPE_16</option>
-			</group>
-			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
-		</field>
+		<field name="media_type" type="mediatypes" label="COM_KA_RELEASES_MEDIATYPE_TITLE"
+			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" class="span5" filter="intval" size="11"
+			   data-ac-type="mediatypes" data-allow-clear="true"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

@@ -286,13 +286,13 @@ class KAMedia
 
 			if (!mb_detect_encoding($content, 'UTF-8', true) || strpos($content, "\xEF\xBB\xBF") !== false)
 			{
-				throw new Exception('Wrong file encoding! UTF-8 without BOM required!');
+				throw new Exception('Wrong file encoding! UTF-8 encoding required! See https://w3c.github.io/webvtt/#file-structure');
 			}
 
 			// Check file header
 			if (strstr($content, 'WEBVTT') === false)
 			{
-				throw new Exception('\'WEBVTT\' reqired at file start!');
+				throw new Exception('\'WEBVTT\' reqired at file start! See https://w3c.github.io/webvtt/#webvtt-file-body');
 			}
 
 			$content = preg_replace('#\d+[\s+]+(\d{2}):(\d{2}):(\d{2}),(\d{3})#sm', '$1:$2:$3.$4', $content);

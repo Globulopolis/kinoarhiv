@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Fixed error with kahtml not found when filter applied.
 * Improve 'Edit trailer' layout.
 * Fixed error in batch modal layout for movies.
 * Update language files.

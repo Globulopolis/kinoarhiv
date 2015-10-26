@@ -49,6 +49,10 @@ class KAComponentHelper extends JComponentHelper
 		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/utils.js');
 
 		JText::script('COM_KA_CLOSE', true);
+
+		// Add some variables into the global scope for autocomplete
+		JText::script('COM_KA_SEARCH_AJAX', true);
+		$document->addScriptDeclaration("var ka_theme = '" . $params->get('ka_theme') . "', uri_root = '" . JURI::root() . "';");
 	}
 
 	/**

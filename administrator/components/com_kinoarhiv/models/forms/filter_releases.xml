@@ -13,33 +13,10 @@
 			   label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_VENDOR</option>
 		</field>
-		<field name="media_type" type="groupedlist" default="" label="COM_KA_RELEASES_MEDIATYPE_TITLE"
-			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval" onchange="this.form.submit();">
+		<field name="media_type" type="sql"
+			   query="SELECT r.media_type AS value, media.title AS media_type FROM #__ka_releases AS r LEFT JOIN #__ka_media_types AS media ON media.id = r.media_type GROUP BY r.media_type"
+			   label="COM_KA_RELEASES_MEDIATYPE_TITLE" onchange="this.form.submit();">
 			<option value="">COM_KA_FIELD_SORT_BY_MEDIATYPE</option>
-			<group label="COM_KA_RELEASES_MEDIATYPE_RIPS">
-				<option value="0">COM_KA_RELEASES_MEDIATYPE_0</option>
-				<option value="1">COM_KA_RELEASES_MEDIATYPE_1</option>
-				<option value="2">COM_KA_RELEASES_MEDIATYPE_2</option>
-				<option value="3">COM_KA_RELEASES_MEDIATYPE_3</option>
-				<option value="4">COM_KA_RELEASES_MEDIATYPE_4</option>
-				<option value="5">COM_KA_RELEASES_MEDIATYPE_5</option>
-				<option value="6">COM_KA_RELEASES_MEDIATYPE_6</option>
-				<option value="7">COM_KA_RELEASES_MEDIATYPE_7</option>
-				<option value="8">COM_KA_RELEASES_MEDIATYPE_8</option>
-				<option value="9">COM_KA_RELEASES_MEDIATYPE_9</option>
-				<option value="12">COM_KA_RELEASES_MEDIATYPE_12</option>
-				<option value="13">COM_KA_RELEASES_MEDIATYPE_13</option>
-				<option value="18">COM_KA_RELEASES_MEDIATYPE_18</option>
-				<option value="17">COM_KA_RELEASES_MEDIATYPE_17</option>
-			</group>
-			<group label="COM_KA_RELEASES_MEDIATYPE_SRC">
-				<option value="10">COM_KA_RELEASES_MEDIATYPE_10</option>
-				<option value="11">COM_KA_RELEASES_MEDIATYPE_11</option>
-				<option value="14">COM_KA_RELEASES_MEDIATYPE_14</option>
-				<option value="15">COM_KA_RELEASES_MEDIATYPE_15</option>
-				<option value="16">COM_KA_RELEASES_MEDIATYPE_16</option>
-			</group>
-			<option value="19">COM_KA_RELEASES_MEDIATYPE_19</option>
 		</field>
 		<field name="language" type="contentlanguage" label="JOPTION_FILTER_LANGUAGE"
 			   description="JOPTION_FILTER_LANGUAGE_DESC" onchange="this.form.submit();">

@@ -16,7 +16,13 @@ if ($this->element == 'movies')
 {
 	$cookie = 'movie.3.asc';
 	$cols = array(
-		'colnames' => array(JText::_('COM_KA_FIELD_GENRE_LABEL'), JText::_('COM_KA_FIELD_GENRE_ID'), JText::_('COM_KA_FIELD_MOVIE_LABEL'), JText::_('COM_KA_FIELD_MOVIE_ID'), JText::_('JFIELD_ORDERING_LABEL')),
+		'colnames' => array(
+			JText::_('COM_KA_FIELD_GENRE_LABEL'),
+			JText::_('COM_KA_FIELD_GENRE_ID'),
+			JText::_('COM_KA_FIELD_MOVIE_LABEL'),
+			JText::_('COM_KA_FIELD_MOVIE_ID'),
+			JText::_('JFIELD_ORDERING_LABEL')
+		),
 		'colmodel' => array(
 			(object) array('name' => 'genre', 'index' => 'genre', 'width' => 300, 'sorttype' => 'text', 'searchoptions' => (object) array(
 				'sopt' => array('eq', 'bw', 'ew', 'cn'))
@@ -38,16 +44,21 @@ elseif ($this->element == 'names')
 {
 	$cookie = 'name.3.asc';
 	$cols = array(
-		'colnames' => array(JText::_('COM_KA_FIELD_GENRE_LABEL'), JText::_('COM_KA_FIELD_GENRE_ID'), JText::_('COM_KA_FIELD_NAME'), JText::_('COM_KA_FIELD_NAME_ID')),
+		'colnames' => array(
+			JText::_('COM_KA_FIELD_GENRE_LABEL'),
+			JText::_('COM_KA_FIELD_GENRE_ID'),
+			JText::_('COM_KA_FIELD_NAME'),
+			JText::_('COM_KA_FIELD_NAME_ID')
+		),
 		'colmodel' => array(
-			(object) array('name'          => 'genre', 'index' => 'genre', 'width' => 300, 'sorttype' => 'text',
-						   'searchoptions' => (object) array('sopt' => array('eq', 'bw', 'ew', 'cn'))),
-			(object) array('name'          => 'genre_id', 'index' => 'genre_id', 'width' => 70, 'sorttype' => 'int',
-						   'searchoptions' => (object) array('sopt' => array('eq', 'le', 'ge'))),
-			(object) array('name'          => 'name', 'index' => 'name', 'width' => 350, 'sorttype' => 'text',
-						   'searchoptions' => (object) array('sopt' => array('eq', 'bw', 'ew', 'cn'))),
-			(object) array('name'          => 'name_id', 'index' => 'name_id', 'width' => 70, 'sorttype' => 'int',
-						   'searchoptions' => (object) array('sopt' => array('eq', 'le', 'ge')))
+			(object) array('name'   => 'genre', 'index' => 'genre', 'width' => 300, 'sorttype' => 'text',
+					'searchoptions' => (object) array('sopt' => array('eq', 'bw', 'ew', 'cn'))),
+			(object) array('name'   => 'genre_id', 'index' => 'genre_id', 'width' => 70, 'sorttype' => 'int',
+					'searchoptions' => (object) array('sopt' => array('eq', 'le', 'ge'))),
+			(object) array('name'   => 'name', 'index' => 'name', 'width' => 350, 'sorttype' => 'text',
+					'searchoptions' => (object) array('sopt' => array('eq', 'bw', 'ew', 'cn'))),
+			(object) array('name'   => 'name_id', 'index' => 'name_id', 'width' => 70, 'sorttype' => 'int',
+					'searchoptions' => (object) array('sopt' => array('eq', 'le', 'ge')))
 		)
 	);
 }
@@ -60,7 +71,9 @@ elseif ($this->element == 'names')
 <script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		var col_sort = '';
+		var col_sort = '',
+			list = $('#list');
+
 		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
 			$.cookie('<?php echo $uid_hash; ?>', '<?php echo $cookie; ?>', {expires: 365});
 			col_sort = '<?php echo $cookie; ?>'.split('.');
@@ -68,11 +81,11 @@ elseif ($this->element == 'names')
 			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
 		}
 
-		$('#list').jqGrid({
+		list.jqGrid({
 			<?php if ($this->element == 'movies'): ?>
-			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&element=movies&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?><?php echo ($this->movie_id != 0) ? '&mid='.$this->movie_id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&element=movies&format=json<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?><?php echo ($this->movie_id != 0) ? '&mid=' . $this->movie_id : ''; ?>',
 			<?php elseif ($this->element == 'names'): ?>
-			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&element=names&format=json<?php echo ($this->id != 0) ? '&id='.$this->id : ''; ?><?php echo ($this->name_id != 0) ? '&nid='.$this->name_id : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=relations&task=genres&action=getList&element=names&format=json<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?><?php echo ($this->name_id != 0) ? '&nid=' . $this->name_id : ''; ?>',
 			<?php endif; ?>
 			datatype: 'json',
 			loadui: 'block',
@@ -93,7 +106,7 @@ elseif ($this->element == 'names')
 				$.cookie('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
 			}
 		});
-		$('#list').jqGrid('navGrid', '#pager', {
+		list.jqGrid('navGrid', '#pager', {
 			edit: false,
 			add: false,
 			del: false,
@@ -107,7 +120,7 @@ elseif ($this->element == 'names')
 			closeOnEscape: true
 		});
 		<?php if ($this->element == 'movies'): ?>
-		$('#list').jqGrid('sortableRows', {
+		list.jqGrid('sortableRows', {
 			connectWith: '#list',
 			update: function (e, ui) {
 				$.post('index.php?option=com_kinoarhiv&controller=relations&task=saveOrder&param=genres&format=json', {
@@ -126,7 +139,7 @@ elseif ($this->element == 'names')
 			}
 		});
 		<?php endif; ?>
-		$('#list').jqGrid('gridResize', {});
+		list.jqGrid('gridResize', {});
 	});
 </script>
 <table id="list"></table>

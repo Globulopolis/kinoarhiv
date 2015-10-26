@@ -364,12 +364,13 @@ endif;
 			$('#image_uploader').pluploadQueue({
 				runtimes: 'html5,flash,silverlight,html4',
 				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $section; ?>&type=<?php echo $type; ?>&upload=images&id=<?php echo $input->get('id', 0, 'int'); ?>&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>',
-				multi_selection: false,
 				multipart_params: {
 					'<?php echo JSession::getFormToken(); ?>': 1
 				},
 				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 				unique_names: false,
+				multi_selection: false,
+				max_files: 1,
 				filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
 				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
 				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
@@ -411,13 +412,16 @@ endif;
 						$('#screenshot_file').show();
 						$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&task=removeTrailerFiles&type=image&item_id=<?php echo $input->get('item_id', 0, 'int'); ?>&file=' + obj.id + '&id=<?php echo $input->get('id', 0, 'int'); ?>&format=json');
 					},
-					FilesAdded: function(up, files) {
-						if (up.files.length === 1) {
-							$('#image_uploader a.plupload_add').hide();
+					FilesAdded: function(up, files){
+						var max_files = up.getOption('max_files');
+
+						if (up.files.length > max_files) {
+							up.splice(max_files);
+							showMsg(
+								'#imgModalUpload .modal-body',
+								mOxie.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), max_files)
+							);
 						}
-					},
-					QueueChanged: function(up) {
-						$('#image_uploader a.plupload_add').show();
 					}
 				}
 			});
@@ -652,7 +656,7 @@ endif;
 						if (up.files.length > max_files) {
 							up.splice(max_files);
 							showMsg(
-								'#imgModalUpload .modal-body',
+								'#chaptersModalUpload .modal-body',
 								mOxie.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), max_files)
 							);
 						}

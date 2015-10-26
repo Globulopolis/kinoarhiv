@@ -22,58 +22,9 @@ JHtml::_('behavior.keepalive');
 		}
 		Joomla.submitform(task);
 	};
-
-	jQuery(document).ready(function($){
-		$('.hasAutocomplete').each(function(){
-			var datatype = $(this).data('ac-type'),
-				allow_clear = $(this).data('allow-clear');
-
-			$(this).select2({
-				placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-				allowClear: allow_clear ? true : false,
-				quietMillis: 200,
-				minimumInputLength: 1,
-				maximumSelectionSize: 1,
-				ajax: {
-					cache: true,
-					url: 'index.php?option=com_kinoarhiv&task=ajaxData&element='+datatype+'&format=json',
-					data: function(term, page){
-						return {
-							term: term,
-							showAll: 0
-						}
-					},
-					results: function(data, page){
-						return {results: data};
-					}
-				},
-				initSelection: function(element, callback){
-					var id = $(element).val();
-
-					if (!empty(id)) {
-						$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element='+datatype+'&format=json', {
-							data: {
-								id: id
-							}
-						}).done(function(data){
-							callback(data);
-						});
-					}
-				},
-				formatResult: function(data){
-					if (data.year == '0000') return data.title;
-					return data.title+' ('+data.year+')';
-				},
-				formatSelection: function(data){
-					if (data.year == '0000') return data.title;
-					return data.title+' ('+data.year+')';
-				},
-				escapeMarkup: function(m) { return m; }
-			});
-		});
-	});
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm"
+	class="form-validate" autocomplete="off">
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<fieldset class="form-horizontal">
@@ -115,6 +66,6 @@ JHtml::_('behavior.keepalive');
 
 	<input type="hidden" name="controller" value="reviews" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
+	<input type="hidden" name="id" value="<?php echo $this->form->getValue('id') != 0 ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

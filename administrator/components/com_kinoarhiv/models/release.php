@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Class KinoarhivModelRelease
+ *
+ * @since  3.0
+ */
 class KinoarhivModelRelease extends JModelForm
 {
 	/**
@@ -53,6 +58,11 @@ class KinoarhivModelRelease extends JModelForm
 		return $data;
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
@@ -61,7 +71,11 @@ class KinoarhivModelRelease extends JModelForm
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('r.id', 'r.country_id', 'r.vendor_id', 'r.movie_id', 'r.media_type', 'r.release_date', 'r.desc', 'r.language', 'r.ordering')))
+		$query->select(
+			$db->quoteName(
+				array('r.id', 'r.country_id', 'r.vendor_id', 'r.movie_id', 'r.media_type', 'r.release_date', 'r.desc', 'r.language', 'r.ordering')
+			)
+		)
 			->select($db->quoteName('c.code') . ',' . $db->quoteName('c.name', 'title'))
 			->from($db->quoteName('#__ka_releases', 'r'))
 			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
@@ -73,6 +87,15 @@ class KinoarhivModelRelease extends JModelForm
 		return $result;
 	}
 
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function save($data)
 	{
 		$app = JFactory::getApplication();

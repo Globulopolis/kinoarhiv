@@ -243,6 +243,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 		elseif ($element == 'trailer_files')
 		{
 			$type = $app->input->get('type', '', 'string');
+
 			if (empty($type))
 			{
 				$result = array();
@@ -297,6 +298,35 @@ class KinoarhivModelGlobal extends JModelLegacy
 				$where_lang = !empty($lang) ? " WHERE `language` = '" . $db->escape($lang) . "'" : "";
 
 				$db->setQuery("SELECT `id`, `company_name`, `company_name_intl` FROM " . $db->quoteName('#__ka_vendors') . $where_lang);
+				$result = $db->loadObjectList();
+			}
+		}
+		elseif ($element == 'mediatypes')
+		{
+			if (empty($all))
+			{
+				$where_lang = !empty($lang) ? " AND `language` = '" . $db->escape($lang) . "'" : "";
+
+				if (empty($id))
+				{
+					if (empty($term))
+					{
+						return array();
+					}
+					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_media_types') . " WHERE `title` LIKE '%" . $db->escape($term) . "%'" . $where_lang);
+					$result = $db->loadObjectList();
+				}
+				else
+				{
+					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_media_types') . " WHERE `id` = " . (int) $id . $where_lang);
+					$result = $db->loadObject();
+				}
+			}
+			else
+			{
+				$where_lang = !empty($lang) ? " WHERE `language` = '" . $db->escape($lang) . "'" : "";
+
+				$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_media_types') . $where_lang);
 				$result = $db->loadObjectList();
 			}
 		}

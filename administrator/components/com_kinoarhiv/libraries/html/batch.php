@@ -49,12 +49,9 @@ abstract class KAHtmlBatch
 		JHtml::_('bootstrap.tooltip', '.modalTooltip', array('container' => '.modal-body'));
 		JHtml::_('formbehavior.chosen', '.modal-batch select');
 
-		$mediatypes = array();
-
-		for ($i = 0, $n = 20; $i < $n; $i++)
-		{
-			$mediatypes[] = array('value' => $i, 'text' => JText::_('COM_KA_RELEASES_MEDIATYPE_' . $i));
-		}
+		$db = JFactory::getDbo();
+		$db->setQuery("SELECT id AS value, title AS text FROM `#__ka_media_types`");
+		$mediatypes = $db->loadObjectList();
 
 		// Create the batch selector to change the media type on a selection list.
 		return

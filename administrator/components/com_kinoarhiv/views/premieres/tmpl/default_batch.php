@@ -9,6 +9,8 @@
  */
 
 defined('_JEXEC') or die;
+
+JHtml::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR . '/libraries/html/');
 ?>
 <div class="modal hide fade" id="collapseModal">
 	<div class="modal-header">

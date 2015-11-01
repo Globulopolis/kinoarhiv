@@ -12,8 +12,23 @@ defined('_JEXEC') or die;
 
 JLoader::register('KADatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
+/**
+ * Relations model class
+ *
+ * @since  3.0
+ */
 class KinoarhivModelRelations extends JModelForm
 {
+	/**
+	 * Method for getting the form from the model.
+	 *
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since   3.0
+	 */
 	public function getForm($data = array(), $loadData = true)
 	{
 		$form = $this->loadForm('com_kinoarhiv.relations', 'relations', array('control' => 'form_r', 'load_data' => $loadData));
@@ -26,11 +41,25 @@ class KinoarhivModelRelations extends JModelForm
 		return $form;
 	}
 
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  array    The default data is an empty array.
+	 *
+	 * @since   3.0
+	 */
 	protected function loadFormData()
 	{
 		return $this->getItem();
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @return  mixed    Object on success, false on failure.
+	 *
+	 * @since   3.0
+	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
@@ -52,7 +81,8 @@ class KinoarhivModelRelations extends JModelForm
 
 			$db->setQuery("SELECT `country_id`, `movie_id`, `ordering`"
 				. "\n FROM " . $db->quoteName('#__ka_rel_countries')
-				. "\n WHERE `country_id` = " . (int) $country_id . " AND `movie_id` = " . (int) $movie_id);
+				. "\n WHERE `country_id` = " . (int) $country_id . " AND `movie_id` = " . (int) $movie_id
+			);
 			$result = $db->loadObject();
 		}
 		elseif ($task == 'genres')
@@ -70,13 +100,15 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$db->setQuery("SELECT `genre_id`, `movie_id`, `ordering`"
 					. "\n FROM " . $db->quoteName('#__ka_rel_genres')
-					. "\n WHERE `genre_id` = " . (int) $genre_id . " AND `movie_id` = " . (int) $movie_id);
+					. "\n WHERE `genre_id` = " . (int) $genre_id . " AND `movie_id` = " . (int) $movie_id
+				);
 			}
 			elseif ($element == 'names')
 			{
 				$db->setQuery("SELECT `genre_id`, `name_id`"
 					. "\n FROM " . $db->quoteName('#__ka_rel_names_genres')
-					. "\n WHERE `genre_id` = " . (int) $genre_id . " AND `name_id` = " . (int) $name_id);
+					. "\n WHERE `genre_id` = " . (int) $genre_id . " AND `name_id` = " . (int) $name_id
+				);
 			}
 
 			$result = $db->loadObject();
@@ -94,7 +126,8 @@ class KinoarhivModelRelations extends JModelForm
 
 			$db->setQuery("SELECT `id`, `item_id`, `award_id`, `desc`, `year`, `type`"
 				. "\n FROM " . $db->quoteName('#__ka_rel_awards')
-				. "\n WHERE `award_id` = " . (int) $award_id . " AND `item_id` = " . (int) $item_id . " AND `type` = " . (int) $award_type);
+				. "\n WHERE `award_id` = " . (int) $award_id . " AND `item_id` = " . (int) $item_id . " AND `type` = " . (int) $award_type
+			);
 			$result = $db->loadObject();
 		}
 		elseif ($task == 'careers')
@@ -109,7 +142,8 @@ class KinoarhivModelRelations extends JModelForm
 
 			$db->setQuery("SELECT `career_id`, `name_id`"
 				. "\n FROM " . $db->quoteName('#__ka_rel_names_career')
-				. "\n WHERE `career_id` = " . (int) $career_id . " AND `name_id` = " . (int) $name_id);
+				. "\n WHERE `career_id` = " . (int) $career_id . " AND `name_id` = " . (int) $name_id
+			);
 			$result = $db->loadObject();
 		}
 
@@ -125,6 +159,7 @@ class KinoarhivModelRelations extends JModelForm
 		$limit = $app->input->get('rows', 25, 'int');
 		$page = $app->input->get('page', 0, 'int');
 		$limitstart = $limit * $page - $limit;
+		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$result = (object) array();
 
 		$query = $this->buildQuery($task);
@@ -269,7 +304,7 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$search_field = 'name';
 			}
-			else if ($search_field == 'movie')
+			elseif ($search_field == 'movie')
 			{
 				$search_field = 'title';
 			}
@@ -375,7 +410,7 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$search_field = 'a.title';
 			}
-			else if ($search_field == 'movie' || $search_field == 'title')
+			elseif ($search_field == 'movie' || $search_field == 'title')
 			{
 				$search_field = 'm.title';
 			}
@@ -417,7 +452,7 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$search_field = 'title';
 			}
-			else if ($search_field == 'name')
+			elseif ($search_field == 'name')
 			{
 				$search_field[] = 'name';
 				$search_field[] = 'latin_name';
@@ -707,7 +742,9 @@ class KinoarhivModelRelations extends JModelForm
 		$new = $app->input->get('new', '', 'int');
 		$element = $app->input->get('element', 'movies', 'word');
 		$control_id = $app->input->post->get('control_id', array(), 'array');
-		$control = array(); // Array holding a new control ids
+
+		// Array which contain a new control IDs
+		$control = array();
 
 		// Checking if we need insert new data instead of update
 		if ($new == 1)
@@ -763,6 +800,7 @@ class KinoarhivModelRelations extends JModelForm
 					$cols .= ', ';
 					$values .= ', ';
 				}
+
 				$i++;
 			}
 
@@ -777,7 +815,8 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$db->setQuery("UPDATE " . $db->quoteName('#__ka_rel_countries')
 					. "\n SET `country_id` = '" . (int) $data['country_id'] . "', `movie_id` = '" . (int) $data['movie_id'] . "', `ordering` = '" . (int) $data['ordering'] . "'"
-					. "\n WHERE `country_id` = " . (int) $control_id[0] . " AND `movie_id` = " . (int) $control_id[1]);
+					. "\n WHERE `country_id` = " . (int) $control_id[0] . " AND `movie_id` = " . (int) $control_id[1]
+				);
 				$query = $db->execute();
 
 				$control = array(0 => $data['country_id'], 1 => $data['movie_id']);
@@ -788,7 +827,8 @@ class KinoarhivModelRelations extends JModelForm
 				{
 					$db->setQuery("UPDATE " . $db->quoteName('#__ka_rel_genres')
 						. "\n SET `genre_id` = '" . (int) $data['genre_id'] . "', `movie_id` = '" . (int) $data['movie_id'] . "', `ordering` = '" . (int) $data['ordering'] . "'"
-						. "\n WHERE `genre_id` = " . (int) $control_id[0] . " AND `movie_id` = " . (int) $control_id[1]);
+						. "\n WHERE `genre_id` = " . (int) $control_id[0] . " AND `movie_id` = " . (int) $control_id[1]
+					);
 					$query = $db->execute();
 
 					$control = array(0 => $data['genre_id'], 1 => $data['movie_id']);
@@ -797,7 +837,8 @@ class KinoarhivModelRelations extends JModelForm
 				{
 					$db->setQuery("UPDATE " . $db->quoteName('#__ka_rel_names_genres')
 						. "\n SET `genre_id` = '" . (int) $data['genre_id'] . "', `name_id` = '" . (int) $data['name_id'] . "'"
-						. "\n WHERE `genre_id` = " . (int) $control_id[0] . " AND `name_id` = " . (int) $control_id[1]);
+						. "\n WHERE `genre_id` = " . (int) $control_id[0] . " AND `name_id` = " . (int) $control_id[1]
+					);
 					$query = $db->execute();
 
 					$control = array(0 => $data['genre_id'], 1 => $data['name_id']);
@@ -807,7 +848,8 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$db->setQuery("UPDATE " . $db->quoteName('#__ka_rel_awards')
 					. "\n SET `award_id` = '" . (int) $data['award_id'] . "', `item_id` = '" . (int) $data['item_id'] . "', `desc` = '" . $db->escape($data['desc']) . "', `year` = '" . (int) $data['year'] . "', `type` = '" . (int) $data['type'] . "'"
-					. "\n WHERE `award_id` = " . (int) $control_id[0] . " AND `item_id` = " . (int) $control_id[1]);
+					. "\n WHERE `award_id` = " . (int) $control_id[0] . " AND `item_id` = " . (int) $control_id[1]
+				);
 				$query = $db->execute();
 
 				$control = array(0 => $data['award_id'], 1 => $data['item_id']);
@@ -816,7 +858,8 @@ class KinoarhivModelRelations extends JModelForm
 			{
 				$db->setQuery("UPDATE " . $db->quoteName('#__ka_rel_names_career')
 					. "\n SET `career_id` = '" . (int) $data['career_id'] . "', `name_id` = '" . (int) $data['name_id'] . "'"
-					. "\n WHERE `career_id` = " . (int) $control_id[0] . " AND `name_id` = " . (int) $control_id[1]);
+					. "\n WHERE `career_id` = " . (int) $control_id[0] . " AND `name_id` = " . (int) $control_id[1]
+				);
 				$query = $db->execute();
 
 				$control = array(0 => $data['career_id'], 1 => $data['name_id']);
@@ -836,10 +879,15 @@ class KinoarhivModelRelations extends JModelForm
 		$app = JFactory::getApplication();
 		$param = $app->input->get('param', '', 'cmd');
 
-		// The ID of the element that we drag. It's important: this ID controlling the group of the elements. E.g. if we drag the row with id 1_4(where 1 item ID and 4 the movie ID) we need to update the rows with the item ID 1 not 2 or 3, even if in the grid they exists.
+		/**
+		 * The ID of the element that we drag. It's important: this ID controlling the group of the elements.
+		 * E.g. if we drag the row with id 1_4(where 1 item ID and 4 the movie ID) we need to update the rows with the
+		 * item ID 1 not 2 or 3, even if in the grid they exists.
+		 */
 		$_id = $app->input->get('id', '', 'string');
 		$id = explode('_', $_id);
-		// The IDs of the elements that we need to re-sort
+
+		// The IDs of the elements that we need to resort
 		$_ids = $app->input->get('ids', '', 'string');
 		$ids = explode(',', $_ids);
 		$query = true;
@@ -1035,15 +1083,17 @@ class KinoarhivModelRelations extends JModelForm
 
 		if ($type == 'composers')
 		{
-			$data = $app->input->getArray(array(
-				'form' => array(
-					'type'     => 'array',
-					'name_id'  => 'array',
-					'role'     => 'string',
-					'ordering' => 'int',
-					'desc'     => 'string'
-				)
-			), $_POST);
+			$data = $app->input->getArray(
+				array(
+					'form' => array(
+						'type'     => 'array',
+						'name_id'  => 'array',
+						'role'     => 'string',
+						'ordering' => 'int',
+						'desc'     => 'string'
+					)
+				), $_POST
+			);
 			$isNew = $app->input->post->get('new', 1, 'int');
 			$album_id = $app->input->get('id', 0, 'int');
 			$data = $data['form'];
@@ -1142,19 +1192,21 @@ class KinoarhivModelRelations extends JModelForm
 		}
 		else
 		{
-			$data = $app->input->getArray(array(
-				'form' => array(
-					'type'          => 'array',
-					'name_id'       => 'array',
-					'dub_id'        => 'array',
-					'role'          => 'string',
-					'is_directors'  => 'int',
-					'is_actors'     => 'int',
-					'voice_artists' => 'int',
-					'ordering'      => 'int',
-					'desc'          => 'string'
-				)
-			), $_POST);
+			$data = $app->input->getArray(
+				array(
+					'form' => array(
+						'type'          => 'array',
+						'name_id'       => 'array',
+						'dub_id'        => 'array',
+						'role'          => 'string',
+						'is_directors'  => 'int',
+						'is_actors'     => 'int',
+						'voice_artists' => 'int',
+						'ordering'      => 'int',
+						'desc'          => 'string'
+					)
+				), $_POST
+			);
 			$isNew = $app->input->post->get('new', 1, 'int');
 			$movie_id = $app->input->get('id', 0, 'int');
 			$data = $data['form'];
@@ -1266,14 +1318,16 @@ class KinoarhivModelRelations extends JModelForm
 	{
 		$db = $this->getDBO();
 		$app = JFactory::getApplication();
-		$data = $app->input->getArray(array(
-			'form' => array(
-				'id'       => 'int',
-				'award_id' => 'array',
-				'desc'     => 'raw',
-				'year'     => 'int'
-			)
-		), $_POST);
+		$data = $app->input->getArray(
+			array(
+				'form' => array(
+					'id'       => 'int',
+					'award_id' => 'array',
+					'desc'     => 'raw',
+					'year'     => 'int'
+				)
+			), $_POST
+		);
 		$isNew = $app->input->post->get('new', 1, 'int');
 		$item_id = $app->input->get('id', 0, 'int');
 		$type = $app->input->get('type', 0, 'int');

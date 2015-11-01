@@ -10,11 +10,13 @@
 
 defined('_JEXEC') or die;
 
-if ($this->form->getValue('id', $this->form_edit_group) == 0):
+if ($this->form->getValue('id', $this->form_edit_group) == 0)
+{
 	echo JText::_('COM_KA_NO_ID');
 
 	return;
-endif; ?>
+}
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var body = $('body');
@@ -41,15 +43,25 @@ endif; ?>
 			height: r_grid_cfg.grid_height,
 			width: r_grid_cfg.grid_width,
 			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_VENDOR').' - '.JText::_('COM_KA_VENDORS_FIELD_TITLE'); ?>', '<?php echo JText::_('COM_KA_VENDORS_FIELD_TITLE_INTL'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_DATE_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASES_MEDIATYPE_DESC'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_COUNTRY'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
+			colNames: [
+				'<?php echo JText::_('JGRID_HEADING_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_RELEASE_VENDOR') . ' - ' . JText::_('COM_KA_VENDORS_FIELD_TITLE'); ?>',
+				'<?php echo JText::_('COM_KA_VENDORS_FIELD_TITLE_INTL'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_RELEASE_DATE_LABEL'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_RELEASES_MEDIATYPE_DESC'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_RELEASE_COUNTRY'); ?>',
+				'<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'
+			],
 			colModel:[
-				{name:'id', index:'r.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'company_name', index:'v.company_name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'company_name_intl', index:'v.company_name_intl', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'release_date', index:'r.release_date', width:150, sorttype:"date", datefmt:'Y-m-d', searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'media_type', index:'m.title', width:250, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'country', index:'c.name', width:250, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'ordering', index:'r.ordering', width:60, align:"right", sortable: false, search: false}
+				{name:'id', index:'r.id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'company_name', index:'v.company_name', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'company_name_intl', index:'v.company_name_intl', title:false, width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'release_date', index:'r.release_date', width:150, title:false, sorttype:"date", datefmt:'Y-m-d', searchoptions: {
+					sopt: ['cn','eq','le','ge']}
+				},
+				{name:'media_type', index:'m.title', width:250, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'country', index:'c.name', width:250, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'ordering', index:'r.ordering', width:60, title:false, align:"right", sortable: false, search: false}
 			],
 			multiselect: true,
 			caption: '',
@@ -68,6 +80,7 @@ endif; ?>
 
 		$('.releases-container a.a, .releases-container a.e, .releases-container a.d').click(function(e){
 			e.preventDefault();
+
 			if ($(this).hasClass('a')) {
 				// Load 'Add item' layout
 				var dialog = $('<div id="dialog-release-add" title="<?php echo JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -92,11 +105,11 @@ endif; ?>
 									form_r_country_id = $('#form_r_country_id');
 
 								if (form_r_vendor_id.select2('val') == '') {
-									$('#form_r_vendor_id-lbl-lbl').addClass('red-label');
+									$('#form_r_vendor_id-lbl').addClass('red-label');
 									valid = false;
 								}
 								if (form_r_country_id.select2('val') == '') {
-									$('#form_r_country_id-lbl-lbl').addClass('red-label');
+									$('#form_r_country_id-lbl').addClass('red-label');
 									valid = false;
 								}
 								if (!valid) {
@@ -122,7 +135,7 @@ endif; ?>
 								}).done(function(response){
 									if (response.success) {
 										$this.dialog('close');
-										$('#list_releases').trigger('reloadGrid');
+										releases_grid.trigger('reloadGrid');
 									} else {
 										showMsg('.releases-dlg .placeholder', response.message);
 									}
@@ -169,11 +182,11 @@ endif; ?>
 										form_r_country_id = $('#form_r_country_id');
 
 									if (form_r_vendor_id.select2('val') == '') {
-										$('#form_r_vendor_id-lbl-lbl').addClass('red-label');
+										$('#form_r_vendor_id-lbl').addClass('red-label');
 										valid = false;
 									}
 									if (form_r_country_id.select2('val') == '') {
-										$('#form_r_country_id-lbl-lbl').addClass('red-label');
+										$('#form_r_country_id-lbl').addClass('red-label');
 										valid = false;
 									}
 									if (!valid) {
@@ -200,7 +213,7 @@ endif; ?>
 									}).done(function(response){
 										if (response.success) {
 											$this.dialog('close');
-											$('#list_releases').trigger('reloadGrid');
+											releases_grid.trigger('reloadGrid');
 										} else {
 											showMsg('.releases-dlg .placeholder', response.message);
 										}
@@ -234,7 +247,7 @@ endif; ?>
 				}
 
 				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteReleases&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
-					$('#list_releases').trigger('reloadGrid');
+					releases_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);
 				});

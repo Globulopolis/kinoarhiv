@@ -10,8 +10,23 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Class KinoarhivModelAlbum
+ *
+ * @since  3.0
+ */
 class KinoarhivModelAlbum extends JModelForm
 {
+	/**
+	 * Method for getting the form from the model.
+	 *
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since   3.0
+	 */
 	public function getForm($data = array(), $loadData = true)
 	{
 		$form = $this->loadForm('com_kinoarhiv.album', 'album', array('control' => 'form', 'load_data' => $loadData));
@@ -24,6 +39,13 @@ class KinoarhivModelAlbum extends JModelForm
 		return $form;
 	}
 
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  array    The default data is an empty array.
+	 *
+	 * @since   3.0
+	 */
 	protected function loadFormData()
 	{
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.music.albums.' . JFactory::getUser()->id . '.edit_data', array());
@@ -36,6 +58,11 @@ class KinoarhivModelAlbum extends JModelForm
 		return $data;
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();

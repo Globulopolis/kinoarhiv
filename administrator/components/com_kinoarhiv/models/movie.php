@@ -47,8 +47,8 @@ class KinoarhivModelMovie extends JModelForm
 		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_kinoarhiv.movie.' . (int) $id))
 			|| ($id == 0 && !$user->authorise('core.edit.state', 'com_kinoarhiv')))
 		{
-			$form->setFieldAttribute('ordering', 'disabled', 'true');
-			$form->setFieldAttribute('state', 'disabled', 'true');
+			$form->setFieldAttribute('ordering', 'disabled', 'true', 'movie');
+			$form->setFieldAttribute('state', 'disabled', 'true', 'movie');
 		}
 
 		return $form;
@@ -63,8 +63,8 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function loadFormData()
 	{
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());
-
+		//$data = JFactory::getApplication()->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());
+$data = array();
 		if (empty($data))
 		{
 			$data = $this->getItem();
@@ -88,7 +88,7 @@ class KinoarhivModelMovie extends JModelForm
 		$tmpl = $app->input->get('template', '', 'string');
 		$id = $app->input->get('id', array(), 'array');
 
-		if ($tmpl == 'names_edit')
+		if ($tmpl == 'crew_edit')
 		{
 			$movie_id = $app->input->get('movie_id', 0, 'int');
 			$name_id = $app->input->get('name_id', 0, 'int');
@@ -1387,6 +1387,7 @@ class KinoarhivModelMovie extends JModelForm
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = $app->input->get('searchString', '', 'string');
 		$limitstart = $limit * $page - $limit;
+		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$result = (object) array('rows' => array());
 
 		$query = $db->getQuery(true)
@@ -1467,6 +1468,7 @@ class KinoarhivModelMovie extends JModelForm
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = trim($app->input->get('searchString', '', 'string'));
 		$limitstart = $limit * $page - $limit;
+		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$result = (object) array('rows' => array());
 
 		$query = $db->getQuery(true)
@@ -1566,6 +1568,7 @@ class KinoarhivModelMovie extends JModelForm
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = $app->input->get('searchString', '', 'string');
 		$limitstart = $limit * $page - $limit;
+		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$result = (object) array('rows' => array());
 
 		$query = $db->getQuery(true)

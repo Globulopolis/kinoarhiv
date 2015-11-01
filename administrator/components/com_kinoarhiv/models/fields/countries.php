@@ -65,6 +65,9 @@ class JFormFieldCountries extends JFormField
 		$required = $this->required ? ' required aria-required="true"' : '';
 		$data_type = $this->element['data-ac-type'] ? ' data-ac-type="' . (string) $this->element['data-ac-type'] . '"' : '';
 		$data_allow_clear = $this->element['data-allow-clear'] ? ' data-allow-clear="true"' : '';
+		$data_multiple = (bool) $this->element['data-multiple'] ? ' data-multiple="true"' : '';
+		$data_sel_size = isset($this->element['data-sel-size']) ? ' data-sel-size="' . $this->element['data-sel-size'] . '"' : '';
+		$data_sortable = (bool) $this->element['data-sortable'] ? ' data-sortable="true"' : '';
 
 		if (isset($this->value['ids']) && is_array($this->value['ids']))
 		{
@@ -85,6 +88,6 @@ class JFormFieldCountries extends JFormField
 		// Initialize JavaScript field attributes.
 		$onchange = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
-		return '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" class="' . $class . '"' . $size . $disabled . $readonly . $onchange . $maxLength . $required . $data_type . $data_allow_clear . ' />';
+		return '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" class="' . $class . '"' . $size . $disabled . $readonly . $onchange . $maxLength . $required . $data_type . $data_allow_clear . $data_multiple . $data_sel_size . $data_sortable . ' />';
 	}
 }

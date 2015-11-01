@@ -15,88 +15,49 @@ JFormHelper::addFieldPath(JPATH_COMPONENT . '/models/fields');
 
 if ($input->get('section', '', 'word') == 'movie')
 {
-	$movies_field = JFormHelper::loadFieldType('movies');
+	$field = JFormHelper::loadFieldType('movies');
 	$element = 'movies';
+	$title = 'COM_KA_MOVIES_GALLERY_COPYFROM_LABEL';
+	$desc = 'COM_KA_MOVIES_GALLERY_COPYFROM_DESC';
 }
 elseif ($input->get('section', '', 'word') == 'name')
 {
-	$names_field = JFormHelper::loadFieldType('names');
+	$field = JFormHelper::loadFieldType('names');
 	$element = 'names';
+	$title = 'COM_KA_NAMES_GALLERY_COPYFROM_LABEL';
+	$desc = 'COM_KA_NAMES_GALLERY_COPYFROM_DESC';
 }
+else
+{
+	echo 'Wrong \'section\' variable in request!';
 
-$params = JComponentHelper::getParams('com_kinoarhiv');
+	return;
+}
 ?>
-<style type="text/css">
-	@import url("<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $params->get('ka_theme'); ?>/css/select.css");
-</style>
-<script src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/select2.min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('select2_locale_', false, 'select', true); ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js" type="text/javascript"></script>
-<script type="text/javascript">
-	//<![CDATA[
-	jQuery(document).ready(function ($) {
-		function format(data) {
-			<?php if ($input->get('section', '', 'word') == 'movie'): ?>
-			if (data.year == '0000') return data.title;
-			return data.title + ' (' + data.year + ')';
-			<?php elseif ($input->get('section', '', 'word') == 'name'): ?>
-			var title = '';
-
-			if (data.name != '') title += data.name;
-			if (data.name != '' && data.latin_name != '') title += ' / ';
-			if (data.latin_name != '') title += data.latin_name;
-
-			return title;
-			<?php endif; ?>
-		}
-
-		$('#item_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 200,
-			allowClear: true,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=ajaxData&element=<?php echo $element; ?>&format=json&ignore[]=<?php echo $input->get('id', 0, 'int'); ?>',
-				data: function (term, page) {
-					return {
-						term: term,
-						showAll: 0
-					}
-				},
-				results: function (data, page) {
-					return {results: data};
-				}
-			},
-			formatResult: format,
-			formatSelection: format,
-			escapeMarkup: function (m) {
-				return m;
-			}
-		});
-	});
-	//]]>
-</script>
+<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <div class="row-fluid">
 	<div class="span12">
-		<form action="index.php?option=com_kinoarhiv&controller=mediamanager&task=copyfrom&format=json" id="form_copyfrom">
+		<form action="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=copyfrom&format=json" id="form_copyfrom">
 			<fieldset class="form-horizontal copy">
 				<div class="control-group">
 					<div class="control-label">
-						<?php if ($input->get('section', '', 'word') == 'movie'):
-							echo $movies_field->getLabel('item_id', 'COM_KA_MOVIES_GALLERY_COPYFROM_LABEL', 'COM_KA_MOVIES_GALLERY_COPYFROM_DESC', 'required');
-						elseif ($input->get('section', '', 'word') == 'name'):
-							echo $names_field->getLabel('item_id', 'COM_KA_NAMES_GALLERY_COPYFROM_LABEL', 'COM_KA_NAMES_GALLERY_COPYFROM_DESC', 'required');
-						endif;
+						<?php
+						echo $field->getLabel(
+							'item_id', $title, $desc, array('required' => true)
+						);
 						?>
 					</div>
 					<div class="controls copy-from">
-						<?php if ($input->get('section', '', 'word') == 'movie'):
-							echo $movies_field->getInput('item_id', 100, '', 0, 'span12 required');
-						elseif ($input->get('section', '', 'word') == 'name'):
-							echo $names_field->getInput('item_id', 100, '', 0, 'span12 required');
-						endif;
+						<?php
+						echo $field->getInput(
+							'item_id', '', array(
+								'class'            => 'span12 required',
+								'data-ac-type'     => $element,
+								'data-allow-clear' => true,
+								'data-sel-size'    => 1,
+								'data-ignore-ids'  => $input->get('id', 0, 'int')
+							)
+						);
 						?>
 					</div>
 				</div>

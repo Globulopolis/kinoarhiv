@@ -156,7 +156,7 @@ class KinoarhivModelReleases extends JModelList
 			{
 				$search = trim(substr($search, 8));
 
-				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0)
+				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_RELEASES_WORLD')) || $search == 0)
 				{
 					$query->where('r.country_id = 0');
 				}

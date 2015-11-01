@@ -20,10 +20,11 @@ $sortFields = $this->getSortFields();
 		var table = document.getElementById("sortTable");
 		var direction = document.getElementById("directionTable");
 		var order = table.options[table.selectedIndex].value;
+		var dirn;
 		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
+			dirn = 'asc';
 		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
+			dirn = direction.options[direction.selectedIndex].value;
 		}
 		Joomla.tableOrdering(order, dirn, '');
 	};
@@ -116,7 +117,7 @@ $sortFields = $this->getSortFields();
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
 						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv')) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
-						<span class="i"><?php echo (int)$item->ordering; ?></span>
+						<span class="i"><?php echo (int) $item->ordering; ?></span>
 						<input type="hidden" name="ord[]" class="ord" value="<?php echo $item->id; ?>" />
 						<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
 					</td>
@@ -127,13 +128,13 @@ $sortFields = $this->getSortFields();
 						<a href="index.php?option=com_kinoarhiv&view=releases&controller=releases&task=edit&id[]=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->release_date; ?></a>
 					</td>
 					<td>
-						<?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' ('.$item->year.')' : ''; ?>
+						<?php echo $this->escape($item->title); ?><?php echo $item->year != '0000' ? ' (' . $item->year . ')' : ''; ?>
 					</td>
 					<td class="nowrap hidden-phone">
 						<?php $vendor_0 = !empty($item->company_name) ? $item->company_name : '';
 						$vendor_1 = !empty($item->company_name) && !empty($item->company_name_intl) ? ' / ' : '';
 						$vendor_2 = !empty($item->company_name_intl) ? $item->company_name_intl : '';
-						echo $vendor_0.$vendor_1.$vendor_2;
+						echo $vendor_0 . $vendor_1 . $vendor_2;
 						?>
 					</td>
 					<td class="nowrap hidden-phone">
@@ -145,7 +146,7 @@ $sortFields = $this->getSortFields();
 						endif; ?>
 					</td>
 					<td class="hidden-phone">
-						<?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_'.$item->media_type); ?>
+						<?php echo $item->media_type; ?>
 					</td>
 					<td class="small hidden-phone">
 						<?php if ($item->language == '*'):?>
@@ -155,7 +156,7 @@ $sortFields = $this->getSortFields();
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<?php echo (int)$item->id; ?>
+						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>
 				<?php endforeach;

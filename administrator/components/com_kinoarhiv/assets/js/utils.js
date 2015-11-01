@@ -84,53 +84,68 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	$('.hasDatetime').each(function(i, el){
-		if ($(el).attr('readonly')) {
+	$('.hasDatetime').each(function(index, element){
+		var $this = $(element);
+
+		if ($this.attr('readonly')) {
 			return;
 		}
 
-		if ($(el).val() === 'NOW') {
-			$(el).val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+		if ($this.val() === 'NOW') {
+			$this.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
 		}
 
-		if ($(el).data('type') == 'time') {
-			$(el).timepicker({
-				timeFormat: $(el).data('time-format'),
+		if ($this.data('type') == 'time') {
+			$this.timepicker({
+				timeFormat: $this.data('time-format'),
 				showOn: 'button'
 			});
-		} else if ($(el).data('type') == 'date') {
-			$(el).datepicker({
-				dateFormat: $(el).data('date-format'),
+		} else if ($this.data('type') == 'date') {
+			$this.datepicker({
+				dateFormat: $this.data('date-format'),
 				showButtonPanel: true,
 				showOn: 'button'
 			});
-		} else if ($(el).data('type') == 'datetime') {
-			$(el).datetimepicker({
-				dateFormat: $(el).data('date-format'),
-				timeFormat: $(el).data('time-format'),
+		} else if ($this.data('type') == 'datetime') {
+			$this.datetimepicker({
+				dateFormat: $this.data('date-format'),
+				timeFormat: $this.data('time-format'),
 				showButtonPanel: true,
 				showOn: 'button'
 			});
 		}
 
-		$(el).next('.ui-datepicker-trigger').addClass('btn btn-default').html('<i class="icon-calendar"></i>');
+		$this.next('.ui-datepicker-trigger').addClass('btn btn-default').html('<i class="icon-calendar"></i>');
 	});
 
-	$('.hasAutocomplete').each(function(){
-		var $this = $(this),
+	$('.hasAutocomplete').each(function(index, element){
+		var $this = $(element),
 			datatype = $this.data('ac-type'),
 			allow_clear = $this.data('allow-clear'),
-			min_input = $this.data('min-input');
+			min_input = $this.data('min-input'),
+			multiple = $this.data('multiple'),
+			max_sel_size = $this.data('sel-size'),
+			sortable = $this.data('sortable'),
+			ignore_ids = $this.data('ignore-ids');
 
-		$this.select2({
+		if (!empty(ignore_ids)) {
+			ignore_ids = '&ignore[]=' + [ignore_ids].join('&ignore[]=');
+		} else {
+			ignore_ids = '';
+		}
+
+		var data_url = 'index.php?option=com_kinoarhiv&task=ajaxData&element=' + datatype + '&format=json' + ignore_ids;
+
+		var select = $this.select2({
 			placeholder: Joomla.JText._('COM_KA_SEARCH_AJAX'),
 			allowClear: allow_clear ? true : false,
 			quietMillis: 200,
 			minimumInputLength: min_input ? min_input : 1,
-			maximumSelectionSize: 1,
+			maximumSelectionSize: parseInt(max_sel_size),
+			multiple: multiple ? true : false,
 			ajax: {
 				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=' + datatype + '&format=json',
+				url: data_url,
 				data: function(term, page){
 					return {
 						term: term,
@@ -145,9 +160,10 @@ jQuery(document).ready(function($){
 				var id = $(element).val();
 
 				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=' + datatype + '&format=json', {
+					$.ajax(data_url, {
 						data: {
-							id: id
+							id: id,
+							multiple: multiple ? 1 : 0
 						}
 					}).done(function(data){
 						callback(data);
@@ -155,6 +171,8 @@ jQuery(document).ready(function($){
 				}
 			},
 			formatResult: function(data){
+				var title = '';
+
 				if (datatype == 'countries') {
 					if (data.length < 1) {
 						return '';
@@ -162,8 +180,6 @@ jQuery(document).ready(function($){
 						return "<img class='flag-dd' src='" + uri_root + "components/com_kinoarhiv/assets/themes/component/" + ka_theme + "/images/icons/countries/" + data.code + ".png'/>" + data.title;
 					}
 				} else if (datatype == 'names') {
-					var title = '';
-
 					if (data.name != '') title += data.name;
 					if (data.name != '' && data.latin_name != '') title += ' / ';
 					if (data.latin_name != '') title += data.latin_name;
@@ -175,7 +191,6 @@ jQuery(document).ready(function($){
 
 					return data.title + ' (' + data.year + ')';
 				} else if (datatype == 'vendors') {
-					var title = '';
 					if (data.company_name != '') title += data.company_name;
 					if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
 					if (data.company_name_intl != '') title += data.company_name_intl;
@@ -186,6 +201,8 @@ jQuery(document).ready(function($){
 				}
 			},
 			formatSelection: function(data){
+				var title = '';
+
 				if (datatype == 'countries') {
 					if (data.length < 1) {
 						return '';
@@ -193,21 +210,17 @@ jQuery(document).ready(function($){
 						return "<img class='flag-dd' src='" + uri_root + "components/com_kinoarhiv/assets/themes/component/" + ka_theme + "/images/icons/countries/" + data.code + ".png'/>" + data.title;
 					}
 				} else if (datatype == 'names') {
-					var title = '';
+					if (data.name != '') title += data.name;
+					if (data.name != '' && data.latin_name != '') title += ' / ';
+					if (data.latin_name != '') title += data.latin_name;
+					if (data.date_of_birth != '0000-00-00') title += ' (' + data.date_of_birth + ')';
 
-					if (data.name != '') title1 += data.name;
-					if (data.name != '' && data.latin_name != '') title1 += ' / ';
-					if (data.latin_name != '') title1 += data.latin_name;
-					if (data.date_of_birth != '0000-00-00') title1 += ' (' + data.date_of_birth + ')';
-
-					return title1;
+					return title;
 				} else if (datatype == 'movies') {
 					if (data.year == '0000') return data.title;
 
 					return data.title + ' (' + data.year + ')';
 				} else if (datatype == 'vendors') {
-					var title = '';
-
 					if (data.company_name != '') title += data.company_name;
 					if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
 					if (data.company_name_intl != '') title += data.company_name_intl;
@@ -219,5 +232,17 @@ jQuery(document).ready(function($){
 			},
 			escapeMarkup: function(m) { return m; }
 		});
+
+		if (sortable == true) {
+			select.select2('container').find('ul.select2-choices').sortable({
+				containment: 'parent',
+				start: function () {
+					$this.select2('onSortStart');
+				},
+				update: function () {
+					$this.select2('onSortEnd');
+				}
+			});
+		}
 	});
 });

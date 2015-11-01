@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
 KAComponentHelper::loadMediamanagerAssets();
+$movie_id = $this->form->getValue('id', $this->form_edit_group);
 ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js"></script>
@@ -29,18 +30,24 @@ KAComponentHelper::loadMediamanagerAssets();
 			}
 		} else if (task == 'gallery' || task == 'trailers') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type='+ task + tab +'<?php echo $movie_id != 0 ? '&id=' . $movie_id : ''; ?>';
 			handler = window.open(url);
 			if (!handler) {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
+				showMsg(
+					'#j-main-container',
+					'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>' + url + '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>'
+				);
 			}
 
 			return false;
 		} else if (task == 'sounds') {
-			url = 'index.php?option=com_kinoarhiv&view=music&type=albums<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&movie_id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			url = 'index.php?option=com_kinoarhiv&view=music&type=albums<?php echo $movie_id != 0 ? '&movie_id=' . $movie_id : ''; ?>';
 			handler = window.open(url);
 			if (!handler) {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
+				showMsg(
+					'#j-main-container',
+					'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>' + url + '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>'
+				);
 			}
 
 			return false;
@@ -71,7 +78,7 @@ KAComponentHelper::loadMediamanagerAssets();
 			}
 		});
 
-		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+		<?php if ($movie_id != 0): ?>
 		$('.cmd-rules').click(function(e){
 			e.preventDefault();
 			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -244,7 +251,7 @@ KAComponentHelper::loadMediamanagerAssets();
 									<div class="control-group">
 										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
 										<div class="controls">
-										<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+										<?php if ($movie_id != 0): ?>
 											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php else: ?>
 											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
@@ -296,9 +303,9 @@ KAComponentHelper::loadMediamanagerAssets();
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
+	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group) . "\n"; ?>
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group): 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo ($movie_id != 0) ? $movie_id : 0; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

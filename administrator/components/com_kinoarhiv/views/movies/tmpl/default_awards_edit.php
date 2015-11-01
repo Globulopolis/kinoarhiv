@@ -57,44 +57,6 @@ $award_id = $input->get('award_id', 0, 'int');
 				showMsg('.form_award .control-group:last', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 			}
 		});
-
-		$('#form_award_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: true,
-			<?php if ($award_id != 0): ?>
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			<?php endif; ?>
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: function(data){
-				return data.title;
-			},
-			formatSelection: function(data, container){
-				return data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		});
 	});
 </script>
 <div class="row-fluid">
@@ -102,15 +64,20 @@ $award_id = $input->get('award_id', 0, 'int');
 	<input type="hidden" autofocus="autofocus" />
 	<div class="span12 rel-form_award">
 		<fieldset class="form-horizontal">
-			<legend><?php echo JText::_('COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE'); ?></legend>
+			<legend><?php if ($award_id == 0):
+					echo JText::_('COM_KA_MOVIES_AW_LAYOUT_ADD_TITLE');
+				else:
+					echo JText::_('COM_KA_MOVIES_AW_LAYOUT_EDIT_TITLE');
+				endif; ?>
+			</legend>
 			<div class="group">
 				<div class="control-group">
 					<div class="control-label">
-						<label id="form_award_id-lbl" class="hasTip" for="form_award_id"><?php echo JText::_('COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE'); ?> <span class="star">*</span></label>
+						<label id="form_award_id-lbl" class="hasTooltip" for="form_award_id"><?php echo JText::_('COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE'); ?> <span class="star">*</span></label>
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('award_id'); ?>&nbsp;
-						<a class="btn btn-small quick-add hasTip" id="form_award" href="#" title="::<?php echo JText::_('COM_KA_AW_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
+						<a class="btn btn-small quick-add hasTooltip" id="form_award" href="#" title="::<?php echo JText::_('COM_KA_AW_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
 				</div>
 				<div class="control-group">

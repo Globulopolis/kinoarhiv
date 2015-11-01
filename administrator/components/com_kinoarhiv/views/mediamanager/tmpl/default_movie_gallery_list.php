@@ -15,11 +15,14 @@ $input 		= JFactory::getApplication()->input;
 $listOrder	= $this->escape($this->state->get('list.ordering'));
 $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
+
 KAComponentHelper::loadMediamanagerAssets();
+JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/select.css');
+JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
+KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 ?>
 <script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
-//<![CDATA[
 	Joomla.orderTable = function() {
 		var table = document.getElementById("sortTable");
 		var direction = document.getElementById("directionTable");
@@ -77,7 +80,7 @@ KAComponentHelper::loadMediamanagerAssets();
 			}
 		});
 
-		// Reload page if files was uploaded
+		// Reload page if files uploaded
 		$('.layout_img_upload').on('hidden', function() {
 			if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
 				document.location.reload();
@@ -154,6 +157,7 @@ KAComponentHelper::loadMediamanagerAssets();
 						{
 							text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
 							click: function(){
+								$('#item_id').select2('destroy');
 								$(this).dialog('close');
 							}
 						}
@@ -167,7 +171,6 @@ KAComponentHelper::loadMediamanagerAssets();
 			Joomla.submitform(task);
 		}
 	});
-//]]>
 </script>
 <form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="filter-bar" class="btn-toolbar">
@@ -218,8 +221,8 @@ KAComponentHelper::loadMediamanagerAssets();
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item):
-					$canEdit    = $user->authorise('core.edit',			'com_kinoarhiv.movie.'.$item->id);
-					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.movie.'.$item->id);
+					$canEdit    = $user->authorise('core.edit',			'com_kinoarhiv.movie.' . $item->id);
+					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.movie.' . $item->id);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center">
@@ -249,7 +252,7 @@ KAComponentHelper::loadMediamanagerAssets();
 						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
 					</td>
 					<td class="center">
-						<?php echo (int)$item->id; ?>
+						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>
 				<?php endforeach;
@@ -273,4 +276,4 @@ KAComponentHelper::loadMediamanagerAssets();
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
-<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT); ?>
+<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT);

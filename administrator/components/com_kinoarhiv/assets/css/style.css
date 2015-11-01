@@ -353,8 +353,8 @@ img.movie-poster-preview, img.album-cover-preview {
 	font-size: 1.1em;
 }
 
-#dialog-award-add .rel-form_award, #dialog-award-add .form_award,
-#dialog-premiere-add .rel-form_vendor, #dialog-premiere-add .form_vendor,
-#dialog-release-add .rel-form_release, #dialog-release-add .form_vendor {
-	margin-left: 5px;
+.ui-dialog-content .rel-form_award, .ui-dialog-content .form_award,
+.ui-dialog-content .rel-form_vendor, .ui-dialog-content .form_vendor,
+.ui-dialog-content .rel-form_release, .ui-dialog-content .form_vendor {
+	margin-left: 5px !important;
 }

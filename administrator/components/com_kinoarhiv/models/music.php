@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Class KinoarhivModelMusic
+ *
+ * @since  3.0
+ */
 class KinoarhivModelMusic extends JModelList
 {
 	/**

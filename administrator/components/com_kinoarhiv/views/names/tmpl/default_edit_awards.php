@@ -10,11 +10,13 @@
 
 defined('_JEXEC') or die;
 
-if ($this->form->getValue('id', $this->form_edit_group) == 0):
+if ($this->form->getValue('id', $this->form_edit_group) == 0)
+{
 	echo JText::_('COM_KA_NO_ID');
 
 	return;
-endif; ?>
+}
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var body = $('body');
@@ -36,18 +38,24 @@ endif; ?>
 		var aw_grid = $('#list_awards');
 
 		aw_grid.jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=names&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=names&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
 			width: aw_grid_cfg.grid_width,
 			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_YEAR'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_DESC'); ?>'],
+			colNames: [
+				'<?php echo JText::_('JGRID_HEADING_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_LABEL'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_YEAR'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_DESC'); ?>'
+			],
 			colModel:[
-				{name:'id', index:'rel.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'award_id', index:'rel.award_id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'title', index:'aw.title', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'year', index:'rel.year', width:150, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'desc', index:'rel.desc', width:350, sortable: false, searchoptions: {sopt: ['cn','eq','bw','ew']}}
+				{name:'id', index:'rel.id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'award_id', index:'rel.award_id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'title', index:'aw.title', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'year', index:'rel.year', width:150, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'desc', index:'rel.desc', width:350, title:false, sortable: false, searchoptions: {sopt: ['cn','eq','bw','ew']}}
 			],
 			multiselect: true,
 			caption: '',
@@ -66,6 +74,8 @@ endif; ?>
 
 		$('.awards-container a.a, .awards-container a.e, .awards-container a.d').click(function(e){
 			e.preventDefault();
+			var items = $('#list_awards .cbox').filter(':checked');
+
 			if ($(this).hasClass('a')) {
 				// Load 'Add item' layout
 				var dialog = $('<div id="dialog-award-add" title="<?php echo JText::_('COM_KA_MOVIES_AW_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -135,11 +145,10 @@ endif; ?>
 				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=name&view=names&format=raw');
 			} else if ($(this).hasClass('e')) {
 				// Load 'Edit item' layout
-				var items = $('#list_awards .cbox').filter(':checked');
 				if (items.length > 1) {
 					showMsg('.awards-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
-					var ids = items.attr('id').substr(16).split('_');
+					var ids = items.attr('id').split('_');
 					var dialog = $('<div id="dialog-award-edit" title="<?php echo JText::_('COM_KA_MOVIES_AWARDS_LAYOUT_EDIT_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
 
 					$(dialog).dialog({
@@ -205,13 +214,11 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=name&view=names&format=raw&award_id='+ids[0]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=awards_edit&model=name&view=names&format=raw&award_id='+ids[3]+'#edit');
 				} else {
 					showMsg('.awards-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}
 			} else if ($(this).hasClass('d')) {
-				var items = $('#list_awards .cbox').filter(':checked');
-
 				if (items.length <= 0) {
 					showMsg('.awards-container', '<?php echo JText::_('JWARNING_TRASH_MUST_SELECT'); ?>');
 					return;
@@ -221,7 +228,7 @@ endif; ?>
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=names&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=names&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.awards-container', response.message);
 					$('#list_awards').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){

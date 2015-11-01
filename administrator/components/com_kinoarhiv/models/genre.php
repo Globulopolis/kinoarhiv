@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Class KinoarhivModelGenre
+ *
+ * @since  3.0
+ */
 class KinoarhivModelGenre extends JModelForm
 {
 	/**
@@ -53,6 +58,11 @@ class KinoarhivModelGenre extends JModelForm
 		return $data;
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
@@ -155,6 +165,15 @@ class KinoarhivModelGenre extends JModelForm
 		}
 	}
 
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function save($data)
 	{
 		$app = JFactory::getApplication();

@@ -12,15 +12,20 @@ defined('_JEXEC') or die;
 
 use Joomla\String\String;
 
+$movie_id = $this->form->getValue('id', $this->form_edit_group);
+
+// Set values to ignore in autocomplete for parent_id field.
+$this->form->setFieldAttribute('parent_id', 'data-ignore-ids', $movie_id, $this->form_edit_group);
+
 if (String::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 {
 	$poster_url = JURI::root() . String::substr($this->params->get('media_posters_root_www'), 1) . '/'
-		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->form->getValue('id', $this->form_edit_group) . '/posters/';
+		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $movie_id . '/posters/';
 }
 else
 {
 	$poster_url = $this->params->get('media_posters_root_www') . '/' . urlencode($this->form->getValue('fs_alias', $this->form_edit_group))
-		. '/' . $this->form->getValue('id', $this->form_edit_group) . '/posters/';
+		. '/' . $movie_id . '/posters/';
 }
 ?>
 <script type="text/javascript">
@@ -33,135 +38,6 @@ else
 				$('#vote').text(vote);
 			}
 		}).trigger('blur');
-
-		$('#form_movie_parent_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 200,
-			allowClear: true,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&ignore[]=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>',
-				data: function (term, page) {
-					return {
-						term: term,
-						showAll: 0
-					}
-				},
-				results: function (data, page) {
-					return {results: data};
-				}
-			},
-			initSelection: function (element, callback) {
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function (data) {
-						callback(data);
-					});
-				}
-			},
-			formatResult: function (data) {
-				if (data.year == '0000') return data.title;
-				return data.title + ' (' + data.year + ')';
-			},
-			formatSelection: function (data) {
-				if (data.year == '0000') return data.title;
-				return data.title + ' (' + data.year + ')';
-			},
-			escapeMarkup: function (m) {
-				return m;
-			}
-		});
-
-		$('#form_movie_countries').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 10,
-			multiple: true,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json',
-				data: function (term, page) {
-					return {term: term, showAll: 0}
-				},
-				results: function (data, page) {
-					return {results: data};
-				}
-			},
-			<?php $countries = $this->form->getValue('countries', $this->form_edit_group);
-			if (!empty($countries) && is_array($countries)): ?>
-			initSelection: function (element, callback) {
-				var data = <?php echo json_encode($countries['data']); ?>;
-				callback(data);
-			},
-			<?php endif; ?>
-			formatResult: function (data) {
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
-			},
-			formatSelection: function (data, container) {
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
-			},
-			escapeMarkup: function (m) {
-				return m;
-			}
-		}).select2('container').find('ul.select2-choices').sortable({
-			containment: 'parent',
-			start: function () {
-				$("#form_movie_countries").select2('onSortStart');
-			},
-			update: function () {
-				$("#form_movie_countries").select2('onSortEnd');
-			}
-		});
-
-		$('#form_movie_genres').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 5,
-			multiple: true,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=genres&format=json',
-				data: function (term, page) {
-					return {term: term, showAll: 0}
-				},
-				results: function (data, page) {
-					return {results: data};
-				}
-			},
-			<?php $genres = $this->form->getValue('genres', $this->form_edit_group);
-			if (!empty($genres) && is_array($genres)): ?>
-			initSelection: function (element, callback) {
-				var data = <?php echo json_encode($genres['data']); ?>;
-				callback(data);
-			},
-			<?php endif; ?>
-			formatResult: function (data) {
-				return data.title;
-			},
-			formatSelection: function (data, container) {
-				return data.title;
-			},
-			escapeMarkup: function (m) {
-				return m;
-			}
-		}).select2('container').find('ul.select2-choices').sortable({
-			containment: 'parent',
-			start: function () {
-				$("#form_movie_genres").select2('onSortStart');
-			},
-			update: function () {
-				$("#form_movie_genres").select2('onSortEnd');
-			}
-		});
 
 		$('a.update-vote').click(function (e) {
 			e.preventDefault();
@@ -176,7 +52,7 @@ else
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val() + '&movie_id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : ''; ?>'
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val() + '&movie_id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>'
 				}).done(function (response) {
 					if (response.success) {
 						$('#form_movie_imdb_votesum').val(response.votesum);
@@ -199,7 +75,7 @@ else
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val() + '&movie_id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : ''; ?>'
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_kp_id').val() + '&movie_id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>'
 				}).done(function (response) {
 					if (response.success) {
 						$('#form_movie_kp_votesum').val(response.votesum);
@@ -222,7 +98,7 @@ else
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_rottentm_id').val() + '&movie_id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : ''; ?>'
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_rottentm_id').val() + '&movie_id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>'
 				}).done(function (response) {
 					if (response.success) {
 						$('#form_movie_rate_fc').val(response.votesum);
@@ -244,7 +120,7 @@ else
 
 				blockUI('show');
 				$.ajax({
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_metacritics_id').val() + '&movie_id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : ''; ?>'
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=getRates&format=json&param=' + cmd + '&id=' + $('#form_movie_metacritics_id').val() + '&movie_id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>'
 				}).done(function (response) {
 					if (response.success) {
 						$('#form_movie_metacritics').val(response.votesum);
@@ -268,7 +144,7 @@ else
 
 				$.ajax({
 					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : ''; ?>&elem=' + elem,
+					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>&elem=' + elem,
 					data: data
 				}).done(function (response) {
 					if (response.success) {
@@ -290,7 +166,7 @@ else
 			}
 		}
 
-		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+		<?php if ($movie_id != 0): ?>
 		$('.movie-poster-preview').parent().click(function (e) {
 			e.preventDefault();
 
@@ -308,7 +184,7 @@ else
 
 			$('#image_uploader').pluploadQueue({
 				runtimes: 'html5,flash,silverlight,html4',
-				url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
+				url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($movie_id != 0) ? $movie_id : 0; ?>&frontpage=1',
 				multipart_params: {
 					'<?php echo JSession::getFormToken(); ?>': 1
 				},
@@ -344,14 +220,14 @@ else
 							url = '<?php echo $poster_url; ?>';
 
 						blockUI('show');
-						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($movie_id != 0) ? $movie_id : 0; ?>&format=raw',
 							{'_id[]': response_obj.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0}
 						).done(function (response) {
 							var cover_preview = $('img.movie-poster-preview');
 
 							cover_preview.attr('src', url + 'thumb_' + response_obj.filename + '?_=' + new Date().getTime());
 							cover_preview.parent('a').attr('href', url + response_obj.filename + '?_=' + new Date().getTime());
-							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]=' + response_obj.id + '&format=raw');
+							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo ($movie_id != 0) ? $movie_id : 0; ?>&_id[]=' + response_obj.id + '&format=raw');
 							blockUI();
 							$('#imgModalUpload').modal('hide');
 						}).fail(function (xhr, status, error) {
@@ -402,7 +278,7 @@ else
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_posters_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->form->getValue('id', $this->form_edit_group) . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_posters_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $movie_id . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
 
 			if ($(this).hasClass('info')) {
 				$(dialog).dialog({
@@ -469,7 +345,7 @@ else
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
 					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=genres&task=add" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/add.png" border="0" /></a></span>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&mid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&mid=<?php echo ($movie_id != 0) ? $movie_id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>
@@ -492,10 +368,10 @@ else
 			</fieldset>
 		</div>
 		<div class="span3">
-			<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+			<?php if ($movie_id != 0): ?>
 			<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="movie-poster-preview" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=movie&type=gallery&tab=2&id=<?php echo $movie_id; ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 			<?php endif; ?>
 		</div>
 		<fieldset class="form-horizontal">
@@ -504,7 +380,7 @@ else
 				<div class="controls">
 					<?php echo $this->form->getInput('countries', $this->form_edit_group); ?>
 					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=countries&task=add" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/add.png" border="0" /></a></span>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo ($movie_id != 0) ? $movie_id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a></span>
 				</div>
 			</div>
 		</fieldset>

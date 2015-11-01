@@ -77,11 +77,17 @@ class KinoarhivViewReleases extends JViewLegacy
 		{
 			if ($task == 'edit')
 			{
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')), 'calendar');
+				JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
+				'calendar'
+				);
 			}
 			else
 			{
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE')), 'calendar');
+				JToolbarHelper::title(
+					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_RELEASES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE')),
+					'calendar'
+				);
 			}
 
 			JToolbarHelper::apply('apply');
@@ -110,7 +116,9 @@ class KinoarhivViewReleases extends JViewLegacy
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
 			}
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv')
+				&& $user->authorise('core.edit', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
 				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');

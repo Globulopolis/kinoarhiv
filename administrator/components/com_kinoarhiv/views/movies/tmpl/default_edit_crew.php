@@ -10,11 +10,13 @@
 
 defined('_JEXEC') or die;
 
-if ($this->form->getValue('id', $this->form_edit_group) == 0):
+if ($this->form->getValue('id', $this->form_edit_group) == 0)
+{
 	echo JText::_('COM_KA_NO_ID');
 
 	return;
-endif; ?>
+}
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var body = $('body');
@@ -36,19 +38,27 @@ endif; ?>
 		var crew_grid = $('#list_actors');
 
 		crew_grid.jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: c_grid_cfg.grid_height,
 			width: c_grid_cfg.grid_width,
 			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('COM_KA_FIELD_NAME'); ?>', '<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_NAME_ROLE'); ?>', '<?php echo JText::_('COM_KA_FIELD_NAME_DUB'); ?>', '<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>', ''],
+			colNames: [
+				'<?php echo JText::_('COM_KA_FIELD_NAME'); ?>',
+				'<?php echo JText::_('JGRID_HEADING_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_NAME_ROLE'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_NAME_DUB'); ?>',
+				'<?php echo JText::_('JGRID_HEADING_ID'); ?>',
+				'<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>',
+				''
+			],
 			colModel:[
-				{name:'name', index:'n.name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'name_id', index:'n.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'role', index:'t.role', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'dub_name', index:'d.name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'dub_id', index:'d.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'ordering', index:'t.ordering', width:60, align:"right", sortable: false, search: false},
+				{name:'name', index:'n.name', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'name_id', index:'n.id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'role', index:'t.role', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'dub_name', index:'d.name', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'dub_id', index:'d.id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'ordering', index:'t.ordering', width:60, title:false, align:"right", sortable: false, search: false},
 				{name:'type', width:1, sortable: false, search: false}
 			],
 			multiselect: true,
@@ -83,12 +93,12 @@ endif; ?>
 			update: function(e, ui){
 				$.post('index.php?option=com_kinoarhiv&controller=relations&task=saveOrder&param=names&format=json', {
 					'<?php echo JSession::getFormToken(); ?>': 1,
-					'ids': $('#list_actors').jqGrid('getDataIDs').join(','),
+					'ids': crew_grid.jqGrid('getDataIDs').join(','),
 					'id': ui.item.attr('id'),
 					'item_id': <?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>
 				}, function(response){
 					if (response.success) {
-						$('#list_actors').trigger('reloadGrid');
+						crew_grid.trigger('reloadGrid');
 					} else {
 						showMsg('#j-main-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
 					}
@@ -101,6 +111,8 @@ endif; ?>
 
 		$('.actors-container a.a, .actors-container a.e, .actors-container a.d').click(function(e){
 			e.preventDefault();
+			var items = $('#list_actors .cbox').filter(':checked');
+
 			if ($(this).hasClass('a')) {
 				// Load 'Add item' layout
 				var dialog = $('<div id="dialog-name-add" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -156,7 +168,7 @@ endif; ?>
 								}).done(function(response){
 									if (response.success) {
 										$this.dialog('close');
-										$('#list_actors').trigger('reloadGrid');
+										crew_grid.trigger('reloadGrid');
 									} else {
 										showMsg('.rel-names-dlg .placeholder', response.message);
 									}
@@ -173,10 +185,9 @@ endif; ?>
 						}
 					]
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=names_edit&model=movie&view=movies&format=raw');
+				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=crew_edit&model=movie&view=movies&format=raw');
 			} else if ($(this).hasClass('e')) {
 				// Load 'Edit item' layout
-				var items = $('#list_actors .cbox').filter(':checked');
 				if (items.length > 1) {
 					showMsg('.actors-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
@@ -234,7 +245,7 @@ endif; ?>
 									}).done(function(response){
 										if (response.success) {
 											$this.dialog('close');
-											$('#list_actors').trigger('reloadGrid');
+											crew_grid.trigger('reloadGrid');
 										} else {
 											showMsg('.rel-names-dlg .placeholder', response.message);
 										}
@@ -251,13 +262,11 @@ endif; ?>
 							}
 						]
 					});
-					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=names_edit&model=movie&view=movies&format=raw&movie_id='+ids[4]+'&name_id='+ids[3]+'&career_id='+ids[5]+'#edit');
+					dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=crew_edit&model=movie&view=movies&format=raw&movie_id='+ids[4]+'&name_id='+ids[3]+'&career_id='+ids[5]+'#edit');
 				} else {
 					showMsg('.actors-container', '<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
 				}
 			} else if ($(this).hasClass('d')) {
-				var items = $('#list_actors .cbox').filter(':checked');
-
 				if (items.length <= 0) {
 					showMsg('.actors-container', '<?php echo JText::_('JWARNING_TRASH_MUST_SELECT'); ?>');
 					return;
@@ -267,9 +276,8 @@ endif; ?>
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
-					showMsg('.actors-container', response.message);
-					$('#list_actors').trigger('reloadGrid');
+				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
+					crew_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);
 				});

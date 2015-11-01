@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
  * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.

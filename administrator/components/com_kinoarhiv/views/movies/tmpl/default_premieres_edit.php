@@ -54,84 +54,6 @@ defined('_JEXEC') or die;
 				showMsg('.form_vendor .control-group:last', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 			}
 		});
-
-		function formatVendor(data) {
-			var title = '';
-
-			if (data.company_name != '') title += data.company_name;
-			if (data.company_name != '' && data.company_name_intl != '') title += ' / ';
-			if (data.company_name_intl != '') title += data.company_name_intl;
-
-			return title;
-		}
-
-		$('#form_p_vendor_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: false,
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=vendors&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=vendors&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: formatVendor,
-			formatSelection: formatVendor,
-			escapeMarkup: function(m) { return m; }
-		});
-
-		$('#form_p_country_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: false,
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: function(data){
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
-			},
-			formatSelection: function(data, container){
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		});
 	});
 </script>
 <div class="row-fluid">
@@ -139,15 +61,20 @@ defined('_JEXEC') or die;
 	<input type="hidden" autofocus="autofocus" />
 	<div class="span12 rel-form_premiere">
 		<fieldset class="form-horizontal">
-			<legend><?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_ADD_TITLE'); ?></legend>
+			<legend><?php if (JFactory::getApplication()->input->get('premiere_id', 0, 'int') == 0):
+				echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_ADD_TITLE');
+			else:
+				echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_EDIT_TITLE');
+			endif; ?>
+			</legend>
 			<div class="group">
 				<div class="control-group">
 					<div class="control-label">
-						<label id="form_p_vendor_id_id-lbl" class="hasTip" for="form_p_vendor_id"><?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?> <span class="star">*</span></label>
+						<label id="form_p_vendor_id-lbl" class="hasTooltip" for="form_p_vendor_id"><?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?> <span class="star">*</span></label>
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('p_vendor_id'); ?>&nbsp;
-						<a class="btn btn-small quick-add hasTip" id="form_vendor" href="#" title="::<?php echo JText::_('COM_KA_PREMIERE_LAYOUT_QUICK_ADD_VENDOR_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
+						<a class="btn btn-small quick-add hasTooltip" id="form_vendor" href="#" title="::<?php echo JText::_('COM_KA_PREMIERE_LAYOUT_QUICK_ADD_VENDOR_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
 				</div>
 				<div class="control-group">

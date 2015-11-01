@@ -725,7 +725,8 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="search_names_amplua_disabled" type="careers" default="" class="span12"
-			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string"/>
+			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string" data-ac-type="careers"
+			   data-multiple="true" data-sel-size="-1"/>
 	</fieldset>
 	<fieldset name="filter_premieres" label="COM_KA_SEARCH_SETTINGS_PREMIERES">
 		<field name="filter_premieres_enable" type="radio" class="btn-group" default="1"

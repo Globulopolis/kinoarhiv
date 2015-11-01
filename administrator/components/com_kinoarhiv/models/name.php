@@ -14,6 +14,11 @@ use Joomla\String\String;
 
 JLoader::register('KADatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
+/**
+ * Class KinoarhivModelName
+ *
+ * @since  3.0
+ */
 class KinoarhivModelName extends JModelForm
 {
 	/**
@@ -67,6 +72,11 @@ class KinoarhivModelName extends JModelForm
 		return $data;
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
@@ -80,9 +90,12 @@ class KinoarhivModelName extends JModelForm
 			$award_id = $app->input->get('award_id', 0, 'int');
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName('id', 'rel_aw_id') . ',' . $db->quoteName('item_id') . ',' . $db->quoteName('award_id') . ',' . $db->quoteName('desc', 'aw_desc') . ',' . $db->quoteName('year', 'aw_year'))
-				->from($db->quoteName('#__ka_rel_awards'))
-				->where($db->quoteName('id') . ' = ' . (int) $award_id);
+			$query->select(
+				$db->quoteName('id', 'rel_aw_id') . ',' . $db->quoteName('item_id') . ',' . $db->quoteName('award_id')
+					. ',' . $db->quoteName('desc', 'aw_desc') . ',' . $db->quoteName('year', 'aw_year')
+			)
+			->from($db->quoteName('#__ka_rel_awards'))
+			->where($db->quoteName('id') . ' = ' . (int) $award_id);
 
 			$db->setQuery($query);
 			$result = $db->loadObject();
@@ -116,7 +129,9 @@ class KinoarhivModelName extends JModelForm
 
 			// Join over the gallery item
 			$query->select($db->quoteName('g.id', 'gid') . ',' . $db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON ' . $db->quoteName('g.name_id') . ' = ' . $db->quoteName('n.id') . ' AND ' . $db->quoteName('g.type') . ' = 3 AND ' . $db->quoteName('g.photo_frontpage') . ' = 1');
+				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON ' . $db->quoteName('g.name_id') . ' = ' . $db->quoteName('n.id')
+					. ' AND ' . $db->quoteName('g.type') . ' = 3'
+					. ' AND ' . $db->quoteName('g.photo_frontpage') . ' = 1');
 
 			// Join over countries
 			$query->select($db->quoteName('c.name', 'country') . ',' . $db->quoteName('c.code', 'country_code'))
@@ -244,6 +259,7 @@ class KinoarhivModelName extends JModelForm
 		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
 		$search_string = $app->input->get('searchString', '', 'string');
 		$limitstart = $limit * $page - $limit;
+		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$result = (object) array('rows' => array());
 		$where = "";
 
@@ -300,7 +316,15 @@ class KinoarhivModelName extends JModelForm
 		return $result;
 	}
 
-
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function save($data)
 	{
 		$app = JFactory::getApplication();

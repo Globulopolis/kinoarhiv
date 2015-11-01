@@ -57,44 +57,6 @@ $award_id = $input->get('award_id', 0, 'int');
 				showMsg('.form_award .control-group:last', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 			}
 		});
-
-		$('#form_award_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: true,
-			<?php if ($award_id != 0): ?>
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			<?php endif; ?>
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=awards&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: function(data){
-				return data.title;
-			},
-			formatSelection: function(data, container){
-				return data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		});
 	});
 </script>
 <div class="row-fluid">

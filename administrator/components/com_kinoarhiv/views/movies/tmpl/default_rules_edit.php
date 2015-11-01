@@ -10,7 +10,8 @@
 
 defined('_JEXEC') or die;
 ?>
-<form action="index.php?option=com_kinoarhiv&controller=movies&task=saveAccessRules&format=json" id="rulesForm" autocomplete="off">
+<form action="<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=movies&task=saveAccessRules&format=json"
+	id="rulesForm" autocomplete="off">
 	<fieldset class="form-horizontal">
 		<div class="control-group">
 			<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules', 'movie'); ?></div>

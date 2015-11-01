@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Class KinoarhivModelGlobal to get items or list of items from DB
+ *
+ * @since  3.0
+ */
 class KinoarhivModelGlobal extends JModelLegacy
 {
 	public function getAjaxData($element = '')
@@ -19,7 +24,8 @@ class KinoarhivModelGlobal extends JModelLegacy
 		$element = !empty($element) ? $element : $app->input->get('element', '', 'string');
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
-		$id = $app->input->get('id', 0, 'int');
+		$multiple = $app->input->get('multiple', 0, 'int');
+		$id = ($multiple == 1) ? $app->input->get('id', '', 'string') : $app->input->get('id', 0, 'int');
 		$lang = $app->input->get('lang', '', 'string');
 		$ignore = $app->input->get('ignore', array(), 'array');
 
@@ -36,13 +42,22 @@ class KinoarhivModelGlobal extends JModelLegacy
 					{
 						return array();
 					}
+
 					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `name` LIKE '%" . $db->escape($term) . "%'" . $where_lang);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `id` = " . (int) $id . $where_lang);
-					$result = $db->loadObject();
+					if ($multiple == 1)
+					{
+						$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `id` IN (" . $id . ") " . $where_lang);
+						$result = $db->loadObjectList();
+					}
+					else
+					{
+						$db->setQuery("SELECT `id`, `name` AS `title`, `code` FROM " . $db->quoteName('#__ka_countries') . " WHERE `id` = " . (int) $id . $where_lang);
+						$result = $db->loadObject();
+					}
 				}
 			}
 			else
@@ -67,13 +82,22 @@ class KinoarhivModelGlobal extends JModelLegacy
 					{
 						return array();
 					}
+
 					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName($table) . " WHERE `name` LIKE '%" . $db->escape($term) . "%'" . $where_lang);
 					$result = $db->loadObjectList();
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName($table) . " WHERE `id` = " . (int) $id . $where_lang);
-					$result = $db->loadObject();
+					if ($multiple == 1)
+					{
+						$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName($table) . " WHERE `id` IN (" . $id . ") " . $where_lang);
+						$result = $db->loadObjectList();
+					}
+					else
+					{
+						$db->setQuery("SELECT `id`, `name` AS `title` FROM " . $db->quoteName($table) . " WHERE `id` = " . (int) $id . $where_lang);
+						$result = $db->loadObject();
+					}
 				}
 			}
 			else
@@ -203,8 +227,16 @@ class KinoarhivModelGlobal extends JModelLegacy
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `id` = " . (int) $id . $where_lang);
-					$result = $db->loadObject();
+					if ($multiple == 1)
+					{
+						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `id` IN (" . $id . ") " . $where_lang);
+						$result = $db->loadObjectList();
+					}
+					else
+					{
+						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__tags') . " WHERE `id` = " . (int) $id . $where_lang);
+						$result = $db->loadObject();
+					}
 				}
 			}
 			else
@@ -313,6 +345,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 					{
 						return array();
 					}
+
 					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_media_types') . " WHERE `title` LIKE '%" . $db->escape($term) . "%'" . $where_lang);
 					$result = $db->loadObjectList();
 				}

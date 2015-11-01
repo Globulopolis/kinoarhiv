@@ -10,11 +10,13 @@
 
 defined('_JEXEC') or die;
 
-if ($this->form->getValue('id', $this->form_edit_group) == 0):
+if ($this->form->getValue('id', $this->form_edit_group) == 0)
+{
 	echo JText::_('COM_KA_NO_ID');
 
 	return;
-endif; ?>
+}
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var body = $('body');
@@ -36,18 +38,24 @@ endif; ?>
 		var aw_grid = $('#list_awards');
 
 		aw_grid.jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
 			width: aw_grid_cfg.grid_width,
 			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_LABEL'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_YEAR'); ?>', '<?php echo JText::_('COM_KA_FIELD_AW_DESC'); ?>'],
+			colNames: [
+				'<?php echo JText::_('JGRID_HEADING_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_LABEL'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_YEAR'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_AW_DESC'); ?>'
+			],
 			colModel:[
-				{name:'id', index:'rel.id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'award_id', index:'rel.award_id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'title', index:'title', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'year', index:'rel.year', width:150, sorttype:"date", datefmt:'Y', searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'desc', index:'rel.desc', width:350, sortable: false, searchoptions: {sopt: ['cn','eq','bw','ew']}}
+				{name:'id', index:'rel.id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'award_id', index:'rel.award_id', title:false, width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'title', index:'title', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'year', index:'rel.year', width:150, title:false, sorttype:"date", datefmt:'Y', searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'desc', index:'rel.desc', width:350, title:false, sortable: false, searchoptions: {sopt: ['cn','eq','bw','ew']}}
 			],
 			multiselect: true,
 			caption: '',
@@ -115,7 +123,7 @@ endif; ?>
 								}).done(function(response){
 									if (response.success) {
 										$this.dialog('close');
-										$('#list_awards').trigger('reloadGrid');
+										aw_grid.trigger('reloadGrid');
 									} else {
 										showMsg('.rel-awards-dlg .placeholder', response.message);
 									}
@@ -183,12 +191,13 @@ endif; ?>
 											'form[award_id]':	form_award_id.select2('val'),
 											'form[desc]':		$('#form_aw_desc').val(),
 											'form[year]':		form_aw_year.val(),
+											'id':  ids[3],
 											'new': 0
 										}
 									}).done(function(response){
 										if (response.success) {
 											$this.dialog('close');
-											$('#list_awards').trigger('reloadGrid');
+											aw_grid.trigger('reloadGrid');
 										} else {
 											showMsg('.rel-awards-dlg .placeholder', response.message);
 										}
@@ -222,8 +231,7 @@ endif; ?>
 				}
 
 				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
-					showMsg('.awards-container', response.message);
-					$('#list_awards').trigger('reloadGrid');
+					aw_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);
 				});

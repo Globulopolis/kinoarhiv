@@ -21,12 +21,14 @@ $name_id = $input->get('name_id', 0, 'int');
 		$('a.quick-add').click(function(e){
 			e.preventDefault();
 
-			$('.' + $(this).attr('id')).slideToggle();
+			var class_id = $('.' + $(this).attr('id'));
+
+			class_id.slideToggle();
 
 			if ($(this).hasClass('name')) {
-				$('.' + $(this).attr('id')).addClass('name');
+				class_id.addClass('name');
 			} else if ($(this).hasClass('dub')) {
-				$('.' + $(this).attr('id')).addClass('dub');
+				class_id.addClass('dub');
 			}
 
 			$('.rel-form_name .group').slideToggle();
@@ -41,7 +43,9 @@ $name_id = $input->get('name_id', 0, 'int');
 		});
 		$('#form_career_apply, #form_name_apply').click(function(e){
 			e.preventDefault();
-			var _this = $(this), cmd = $(this).attr('id');
+
+			var _this = $(this),
+				cmd = $(this).attr('id');
 
 			if (cmd == 'form_career_apply') {
 				if ($('#form_c_title').val() != '') {
@@ -95,151 +99,6 @@ $name_id = $input->get('name_id', 0, 'int');
 			}
 		});
 
-		$('#form_type').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: true,
-			<?php if ($movie_id != 0 && $name_id != 0): ?>
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=career&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			<?php endif; ?>
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=career&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: function(data){
-				return data.title;
-			},
-			formatSelection: function(data, container){
-				return data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		});
-
-		function formatNames(data) {
-			var title = '';
-
-			if (data.name != '') title += data.name;
-			if (data.name != '' && data.latin_name != '') title += ' / ';
-			if (data.latin_name != '') title += data.latin_name;
-
-			return title;
-		}
-
-		$('#form_name_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: true,
-			<?php if ($movie_id != 0 && $name_id != 0): ?>
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			<?php endif; ?>
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: formatNames,
-			formatSelection: formatNames,
-			escapeMarkup: function(m) { return m; }
-		});
-
-		$('#form_dub_id').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			multiple: true,
-			<?php if ($movie_id != 0 && $name_id != 0): ?>
-			initSelection: function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json', {
-						data: {
-							id: id
-						}
-					}).done(function(data) { callback(data); });
-				}
-			},
-			<?php endif; ?>
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: formatNames,
-			formatSelection: formatNames,
-			escapeMarkup: function(m) { return m; }
-		});
-
-		$('#form_n_birthcountry').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 200,
-			allowClear: true,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=countries&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			formatResult: function(data){
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
-			},
-			formatSelection: function(data, container){
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		}).select2('container').find('ul.select2-choices').sortable({
-			containment: 'parent',
-			start: function() { $("#form_n_birthcountry").select2('onSortStart'); },
-			update: function() { $("#form_n_birthcountry").select2('onSortEnd'); }
-		});
-
 		$('#form_is_directors').change(function(){
 			if (this.value == 1) {
 				$('#form_is_actors').val(0);
@@ -252,15 +111,20 @@ $name_id = $input->get('name_id', 0, 'int');
 	<input type="hidden" autofocus="autofocus" />
 	<div class="span12 rel-form_name">
 		<fieldset class="form-horizontal">
-			<legend><?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME'); ?></legend>
+			<legend><?php if ($name_id == 0):
+				echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_TITLE');
+			else:
+				echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_EDIT_TITLE');
+			endif; ?>
+			</legend>
 			<div class="group">
 				<div class="control-group">
 					<div class="control-label">
-						<label id="form_type-lbl" class="hasTip" for="form_type" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC'); ?>"><?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE'); ?> <span class="star">*</span></label>
+						<label id="form_type-lbl" class="hasTooltip" for="form_type" title="<?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC'); ?>"><?php echo JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE'); ?> <span class="star">*</span></label>
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('type'); ?>&nbsp;
-						<a class="btn btn-small quick-add hasTip" id="form_career" href="#" title="::<?php echo JText::_('COM_KA_CAREER_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
+						<a class="btn btn-small quick-add hasTooltip" id="form_career" href="#" title="::<?php echo JText::_('COM_KA_CAREER_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
 				</div>
 				<div class="control-group">
@@ -269,7 +133,7 @@ $name_id = $input->get('name_id', 0, 'int');
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('name_id'); ?>&nbsp;
-						<a class="btn btn-small quick-add name hasTip" id="form_name" href="#" title="::<?php echo JText::_('COM_KA_NAMES_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
+						<a class="btn btn-small quick-add name hasTooltip" id="form_name" href="#" title="::<?php echo JText::_('COM_KA_NAMES_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
 				</div>
 				<div class="control-group">
@@ -290,7 +154,7 @@ $name_id = $input->get('name_id', 0, 'int');
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('dub_id'); ?>&nbsp;
-						<a class="btn btn-small quick-add dub hasTip" id="form_name" href="#" title="::<?php echo JText::_('COM_KA_NAMES_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
+						<a class="btn btn-small quick-add dub hasTooltip" id="form_name" href="#" title="::<?php echo JText::_('COM_KA_NAMES_LAYOUT_QUICK_ADD_DESC'); ?>"><i class="icon-new"> </i> <?php echo JText::_('JTOOLBAR_NEW'); ?></a>
 					</div>
 				</div>
 				<div class="control-group">

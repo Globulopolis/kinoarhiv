@@ -10,10 +10,13 @@
 
 defined('_JEXEC') or die;
 
-if ($this->form->getValue('id', $this->form_edit_group) == 0):
+if ($this->form->getValue('id', $this->form_edit_group) == 0)
+{
 	echo JText::_('COM_KA_NO_ID');
+
 	return;
-endif; ?>
+}
+?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		var body = $('body');
@@ -35,19 +38,28 @@ endif; ?>
 		var premieres_grid = $('#list_premieres');
 
 		premieres_grid.jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getPremieres&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=movies&task=getPremieres&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>',
 			datatype: 'json',
 			height: p_grid_cfg.grid_height,
 			width: p_grid_cfg.grid_width,
 			shrinkToFit: true,
-			colNames: ['<?php echo JText::_('JGRID_HEADING_ID'); ?>', '<?php echo JText::_('COM_KA_FIELD_RELEASE_VENDOR').' - '.JText::_('COM_KA_VENDORS_FIELD_TITLE'); ?>', '<?php echo JText::_('COM_KA_VENDORS_FIELD_TITLE_INTL'); ?>', '<?php echo JText::_('COM_KA_FIELD_PREMIERE_DATE'); ?>', '<?php echo JText::_('COM_KA_FIELD_COUNTRY_LABEL'); ?>', '<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'],
+			colNames: [
+				'<?php echo JText::_('JGRID_HEADING_ID'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_RELEASE_VENDOR') . ' - ' . JText::_('COM_KA_VENDORS_FIELD_TITLE'); ?>',
+				'<?php echo JText::_('COM_KA_VENDORS_FIELD_TITLE_INTL'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_PREMIERE_DATE'); ?>',
+				'<?php echo JText::_('COM_KA_FIELD_COUNTRY_LABEL'); ?>',
+				'<?php echo JText::_('JFIELD_ORDERING_LABEL'); ?>'
+			],
 			colModel:[
-				{name:'id', index:'id', width:50, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'company_name', index:'company_name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'company_name_intl', index:'company_name_intl', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'premiere_date', index:'premiere_date', width:150, sorttype:"date", datefmt:'Y-m-d', searchoptions: {sopt: ['cn','eq','le','ge']}},
-				{name:'country', index:'c.name', width:350, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
-				{name:'ordering', index:'ordering', width:60, align:"right", sortable: false, search: false}
+				{name:'id', index:'id', width:50, title:false, sorttype:"int", searchoptions: {sopt: ['cn','eq','le','ge']}},
+				{name:'company_name', index:'company_name', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'company_name_intl', index:'company_name_intl', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'premiere_date', index:'premiere_date', width:150, title:false, sorttype:"date", datefmt:'Y-m-d', searchoptions: {
+					sopt: ['cn','eq','le','ge']}
+				},
+				{name:'country', index:'c.name', width:350, title:false, sorttype:"text", searchoptions: {sopt: ['cn','eq','bw','ew']}},
+				{name:'ordering', index:'ordering', width:60, title:false, align:"right", sortable: false, search: false}
 			],
 			multiselect: true,
 			caption: '',
@@ -66,6 +78,7 @@ endif; ?>
 
 		$('.premieres-container a.a, .premieres-container a.e, .premieres-container a.d').click(function(e){
 			e.preventDefault();
+
 			if ($(this).hasClass('a')) {
 				// Load 'Add item' layout
 				var dialog = $('<div id="dialog-premiere-add" title="<?php echo JText::_('COM_KA_MOVIES_PREMIERE_LAYOUT_ADD_TITLE'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -89,7 +102,7 @@ endif; ?>
 									form_p_vendor_id = $('#form_p_vendor_id');
 
 								if (form_p_vendor_id.select2('val') == '') {
-									$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
+									$('#form_p_vendor_id-lbl').addClass('red-label');
 									valid = false;
 								}
 								if (!valid) {
@@ -113,8 +126,9 @@ endif; ?>
 									}
 								}).done(function(response){
 									if (response.success) {
+
+										premieres_grid.trigger('reloadGrid');
 										$this.dialog('close');
-										$('#list_premieres').trigger('reloadGrid');
 									} else {
 										showMsg('.premieres-dlg .placeholder', response.message);
 									}
@@ -160,7 +174,7 @@ endif; ?>
 										form_p_vendor_id = $('#form_p_vendor_id');
 
 									if (form_p_vendor_id.select2('val') == '') {
-										$('#form_p_vendor_id-lbl-lbl').addClass('red-label');
+										$('#form_p_vendor_id-lbl').addClass('red-label');
 										valid = false;
 									}
 									if (!valid) {
@@ -180,13 +194,13 @@ endif; ?>
 											'form[p_info]':			$('#form_p_info').val(),
 											'form[p_language]':     $('#form_p_language').val(),
 											'form[p_ordering]':		$('#form_p_ordering').val(),
-											'id':  ids[0],
+											'id':  ids[3],
 											'new': 0
 										}
 									}).done(function(response){
 										if (response.success) {
 											$this.dialog('close');
-											$('#list_premieres').trigger('reloadGrid');
+											premieres_grid.trigger('reloadGrid');
 										} else {
 											showMsg('.premieres-dlg .placeholder', response.message);
 										}
@@ -220,7 +234,7 @@ endif; ?>
 				}
 
 				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deletePremieres&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
-					$('#list_premieres').trigger('reloadGrid');
+					premieres_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
 					showMsg('#j-main-container', error);
 				});

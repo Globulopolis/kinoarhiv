@@ -38,9 +38,10 @@ else
 
 		<?php if ($this->params->get('vegas_enable') == 1):
 		$src = explode(',', $this->params->get('vegas_bg'));
+
 			if (count($src) > 0): ?>
 		$.vegas('slideshow', {
-			delay: <?php echo (int)$this->params->get('vegas_slideshow_delay'); ?>,
+			delay: <?php echo (int) $this->params->get('vegas_slideshow_delay'); ?>,
 			backgrounds: [
 				<?php foreach ($src as $image): ?>
 				{src: '<?php echo trim($image); ?>', fade: 500},
@@ -103,26 +104,51 @@ else
 					<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
 					<input type="hidden" name="lang" value="<?php echo String::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
 
-					<?php if ($this->params->get('filter_release_country') == 1): ?>
-						<?php echo JText::_('COM_KA_RELEASES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class' => 'inputbox hasTooltip', 'title' => JText::_('COM_KA_COUNTRY')), 'code', 'name', $this->sel_country); ?>
-					<?php endif; ?>
+					<?php
+					if ($this->params->get('filter_release_country') == 1):
+						echo JText::_('COM_KA_RELEASES') . ': ' . JHtml::_(
+							'select.genericlist', $this->selectlist['countries'], 'country',
+							array('class' => 'inputbox hasTooltip', 'title' => JText::_('COM_KA_COUNTRY')),
+							'code', 'name', $this->selectlist_val['country']
+						);
+					endif;
+					?>
 
-					<?php if ($this->params->get('filter_release_year') == 1): ?>
-						<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class' => 'inputbox span2'), 'value', 'name', $this->sel_year); ?>
-					<?php endif; ?>
+					<?php
+					if ($this->params->get('filter_release_year') == 1):
+						echo JHtml::_(
+							'select.genericlist', $this->selectlist['years'], 'year',
+							array('class' => 'inputbox span2'), 'value', 'name', $this->selectlist_val['year']
+						);
+					endif;
+					?>
 
-					<?php if ($this->params->get('filter_release_month') == 1): ?>
-						<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class' => 'inputbox span3'), 'value', 'name', $this->sel_month); ?>
-						<br/>
-					<?php endif; ?>
+					<?php
+					if ($this->params->get('filter_release_month') == 1):
+						echo JHtml::_(
+							'select.genericlist', $this->selectlist['months'], 'month',
+							array('class' => 'inputbox span3'), 'value', 'name', $this->selectlist_val['month']
+						) . '<br/>';
+					endif;
+					?>
 
-					<?php if ($this->params->get('filter_release_vendor') == 1): ?>
-						<?php echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['vendors'], 'vendor', array('class' => 'inputbox'), 'value', 'name', $this->sel_vendor); ?>
-					<?php endif; ?>
+					<?php
+					if ($this->params->get('filter_release_vendor') == 1):
+						echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR') . ': ' . JHtml::_(
+							'select.genericlist', $this->selectlist['vendors'], 'vendor',
+							array('class' => 'inputbox'), 'value', 'name', $this->selectlist_val['vendor']
+						);
+					endif;
+					?>
 
-					<?php if ($this->params->get('filter_release_mediatype') == 1): ?>
-						<?php echo JHtml::_('select.genericlist', $this->selectlist['mediatype'], 'mediatype', array('class' => 'inputbox'), 'value', 'name', $this->sel_mediatype); ?>
-					<?php endif; ?>
+					<?php
+					if ($this->params->get('filter_release_mediatype') == 1):
+						echo JHtml::_(
+							'select.genericlist', $this->selectlist['mediatype'], 'mediatype',
+							array('class' => 'inputbox'), 'value', 'name', $this->selectlist_val['mediatype']
+						);
+					endif;
+					?>
 
 					<div class="btn-group uk-button-group">
 						<button type="submit" class="btn btn-default uk-button uk-button-small">

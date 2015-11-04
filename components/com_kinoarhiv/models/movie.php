@@ -352,10 +352,11 @@ class KinoarhivModelMovie extends JModelForm
 		if ($params->get('releases_list_limit') > 0)
 		{
 			$query_r = $db->getQuery(true)
-				->select('r.id, r.movie_id, r.media_type, r.release_date, c.name AS country, v.company_name, v.company_name_intl')
+				->select('r.id, r.movie_id, r.release_date, c.name AS country, v.company_name, v.company_name_intl, media.title AS media_type')
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
 				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
+				->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON media.id = r.media_type')
 				->where('movie_id = ' . (int) $id . ' AND r.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 				->order('r.ordering ASC')
 				->setLimit((int) $params->get('releases_list_limit'), 0);

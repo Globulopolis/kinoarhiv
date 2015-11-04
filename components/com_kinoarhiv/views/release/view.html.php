@@ -102,7 +102,8 @@ class KinoarhivViewRelease extends JViewLegacy
 
 				if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+					$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+						. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else
 				{
@@ -126,7 +127,11 @@ class KinoarhivViewRelease extends JViewLegacy
 			{
 				$plural = $lang->getPluralSuffixes($item->rate_loc);
 				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-				$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
+				$item->rate_loc_label = JText::sprintf(
+					'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
+					(int) $params->get('vote_summ_num'),
+					$item->rate_loc
+				);
 				$item->rate_loc_label_class = ' has-rating';
 			}
 			else

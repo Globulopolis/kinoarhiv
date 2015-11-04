@@ -103,7 +103,10 @@ endif; ?>
 
 			$.ajax({
 				type: 'POST',
-				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=vote&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>',
+				url: '<?php echo JRoute::_(
+					'index.php?option=com_kinoarhiv&view=movie&task=vote&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw',
+					false
+				); ?>',
 				data: {'value': value}
 			}).done(function (response) {
 				var my_votes = $('.rate .my_votes'),
@@ -229,17 +232,19 @@ endif; ?>
 			collapsible: true,
 			heightStyle: 'content'
 		});
-		<?php if (($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer') && ($total_trailers > 0 || $total_movies > 0)): ?>
+		<?php
+		if (($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer')
+			&& ($total_trailers > 0 || $total_movies > 0)): ?>
 		$('.watch-buttons a').click(function (e) {
 			e.preventDefault();
 
 			if ($(this).hasClass('watch-trailer')) {
-				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
-					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false); ?>')) {
+					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false))?>');
 				}
 			} else if ($(this).hasClass('watch-movie')) {
-				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false); ?>')) {
-					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id='.$this->item->id.'&Itemid='.$this->itemid.'&format=raw', false))?>');
+				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false); ?>')) {
+					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false))?>');
 				}
 			}
 		});
@@ -259,7 +264,7 @@ endif; ?>
 			<?php endif;
 		endif; ?>
 
-		$('.countdown-premiere').each(function () {
+		$('.countdown-premiere').each(function(){
 			var el = $(this);
 			var el_datetime = el.data('premiere-datetime');
 
@@ -288,7 +293,11 @@ endif; ?>
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/movie_item_header', array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts/navigation/movie_item_header',
+			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			JPATH_COMPONENT
+		);
 		echo $this->item->event->afterDisplayTitle;
 		echo $this->loadTemplate('tabs');
 		echo $this->item->event->beforeDisplayContent; ?>
@@ -505,7 +514,7 @@ endif; ?>
 					<?php if (count($this->item->releases) > 0):
 						foreach ($this->item->releases as $release): ?>
 							<div>
-								<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JText::_('COM_KA_RELEASES_MEDIATYPE_' . $release->media_type)); ?></span>
+								<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JHtml::_('string.truncate', $release->media_type, 14)); ?></span>
 							<span class="s-col">
 								<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if ($release->company_name != '' || $release->company_name_intl != ''): ?>, <?php echo ($release->company_name_intl != '') ? $release->company_name . ' / ' . $release->company_name_intl : $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', ' . $release->country : ''; ?>
 								,&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $release->movie_id . '&Itemid=' . $this->itemid); ?>#row-<?php echo $release->id; ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>

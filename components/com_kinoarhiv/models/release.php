@@ -65,7 +65,6 @@ class KinoarhivModelRelease extends JModelItem
 		{
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
-			$data = (object) array('rows' => array());
 
 			try
 			{
@@ -84,7 +83,8 @@ class KinoarhivModelRelease extends JModelItem
 					->select($db->quoteName('m.introtext', 'text'))
 					->from($db->quoteName('#__ka_movies', 'm'))
 					->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1')
-					->where($db->quoteName('m.id') . ' = ' . $pk . ' AND ' . $db->quoteName('m.state') . ' = 1 AND ' . $db->quoteName('m.access') . ' IN (' . implode(',', $groups) . ')');
+					->where($db->quoteName('m.id') . ' = ' . $pk . ' AND ' . $db->quoteName('m.state') . ' = 1')
+					->where($db->quoteName('m.access') . ' IN (' . implode(',', $groups) . ')');
 				$db->setQuery($query);
 
 				$data = $db->loadObject();
@@ -96,14 +96,19 @@ class KinoarhivModelRelease extends JModelItem
 
 				$query = $db->getQuery(true)
 					->select(
-						$this->getState('item.select', $db->quoteName(array('r.id', 'r.media_type', 'r.release_date', 'r.desc', 'cn.name', 'cn.code')))
-					);
-				$query->from($db->quoteName('#__ka_releases', 'r'))
-					->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
-					->where($db->quoteName('r.language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
-					->order($db->quoteName('r.release_date') . ' DESC');
-				$db->setQuery($query);
+						$this->getState(
+						'item.select',
+						'r.id, r.release_date, r.desc, cn.name, cn.code, media.title AS media_type'
+					)
+				)
+				->from($db->quoteName('#__ka_releases', 'r'))
+				->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
+				->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'))
+				->where($db->quoteName('r.movie_id') . ' = ' . $pk)
+				->where($db->quoteName('r.language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
+				->order($db->quoteName('r.release_date') . ' DESC');
 
+				$db->setQuery($query);
 				$data->items = $db->loadObjectList();
 
 				if (empty($data->items))

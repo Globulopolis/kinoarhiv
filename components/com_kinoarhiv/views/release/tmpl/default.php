@@ -21,21 +21,12 @@ else
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
-
+<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/sortable.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	//<![CDATA[
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	jQuery(document).ready(function ($) {
 		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
+
 		$('.hasDesc').click(function () {
 			$(this).next('tr').toggle();
 			if ($(this).next('tr').is(':hidden')) {
@@ -45,7 +36,6 @@ else
 			}
 		});
 	});
-	//]]>
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -54,7 +44,11 @@ else
 
 	<article class="uk-article item">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/movie_item_header', array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts/navigation/movie_item_header',
+			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			JPATH_COMPONENT
+		);
 		echo $this->item->event->afterDisplayTitle;
 		echo $this->item->event->beforeDisplayContent; ?>
 
@@ -160,13 +154,13 @@ else
 			<?php if (count($this->item->items) > 0): ?>
 				<div class="clear"></div>
 				<div>
-					<table class="table table-striped table-hover uk-table uk-table-striped uk-table-hover" style="table-layout: fixed;">
+					<table class="table table-striped table-hover uk-table uk-table-striped uk-table-hover release-table" data-sortable>
 						<thead>
 						<tr>
-							<th><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_DATE_TITLE'); ?></th>
-							<th><?php echo JText::_('COM_KA_COUNTRY'); ?></th>
-							<th><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'); ?></th>
-							<th width="2%">&nbsp;</th>
+							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_DATE_TITLE'); ?></th>
+							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"><?php echo JText::_('COM_KA_COUNTRY'); ?></th>
+							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'); ?></th>
+							<th width="2%" data-sortable="false">&nbsp;</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -181,7 +175,7 @@ else
 								<td>
 									<img class="flag-dd" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>
 								</td>
-								<td><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_' . $row->media_type); ?></td>
+								<td><?php echo $row->media_type; ?></td>
 								<td><?php if ($row->desc != ''): ?>
 										<span class="icon icon-chevron-down uk-icon-caret-down"></span><?php endif; ?>
 								</td>
@@ -189,7 +183,7 @@ else
 							<?php if ($row->desc != ''): ?>
 							<tr style="display: none;">
 								<td colspan="4">
-									<div><?php echo $row->desc; ?></div>
+									<div><?php echo str_replace(array("\r\n", "\r", "\n"), '<br/>', $row->desc); ?></div>
 									<div class="pull-right">
 										<a href="#row-<?php echo $row->id; ?>"><?php echo JText::_('COM_KA_TO_TOP'); ?></a>
 									</div>

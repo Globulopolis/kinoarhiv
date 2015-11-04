@@ -170,7 +170,8 @@ class KinoarhivModelReleases extends JModelList
 				->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
 		}
 
-		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND parent_id = 0 AND m.access IN (' . $groups . ')');
+		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->where('parent_id = 0 AND m.access IN (' . $groups . ')');
 
 		if ($params->get('use_alphabet') == 1)
 		{
@@ -390,7 +391,7 @@ class KinoarhivModelReleases extends JModelList
 			$subquery = $db->getQuery(true)
 				->select('vendor_id')
 				->from($db->quoteName('#__ka_releases'))
-				->where("vendor_id != 0 AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
+				->where('vendor_id != 0 AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 			$query = $db->getQuery(true)
 				->select('id AS value, company_name AS name, company_name_intl')
@@ -417,12 +418,26 @@ class KinoarhivModelReleases extends JModelList
 		// Media types
 		if ($params->get('filter_release_mediatype') == 1)
 		{
-			for ($i = 0, $n = 20; $i < $n; $i++)
-			{
-				$mediatypes[] = array('value' => $i, 'name' => JText::_('COM_KA_RELEASES_MEDIATYPE_' . $i));
-			}
+			$query = $db->getQuery(true)
+				->select('id AS value, title AS name')
+				->from($db->quoteName('#__ka_media_types'))
+				->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
-			$result['mediatype'] = array_merge($result['mediatype'], $mediatypes);
+			$db->setQuery($query);
+
+			try
+			{
+				$mediatypes = $db->loadAssocList();
+
+				if (count($mediatypes) > 0)
+				{
+					$result['mediatype'] = array_merge($result['mediatype'], $mediatypes);
+				}
+			}
+			catch (Exception $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+			}
 		}
 
 		return $result;

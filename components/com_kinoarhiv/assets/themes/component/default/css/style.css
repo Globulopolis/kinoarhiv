@@ -1087,3 +1087,7 @@ div.rating {
 #filters_movies .search-rate-slider {
 	margin-top: 4px;
 }
+
+.release-table {
+	 table-layout: fixed;
+ }

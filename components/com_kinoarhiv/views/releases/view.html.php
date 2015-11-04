@@ -41,8 +41,8 @@ class KinoarhivViewReleases extends JViewLegacy
 		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
-		$list = $this->get('SelectList');
-		$pagination = $this->get('Pagination');
+		$this->selectlist = $this->get('SelectList');
+		$this->pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -56,13 +56,14 @@ class KinoarhivViewReleases extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->ka_theme = $params->get('ka_theme');
+		$this->selectlist_val = array(
+			'country'   => $app->input->get('country', '', 'word'), // It's a string because country_id == 0 it's a world premiere
+			'year'      => $app->input->get('year', 0, 'int'),
+			'month'     => $app->input->get('month', '', 'string'),
+			'vendor'    => $app->input->get('vendor', 0, 'int'),
+			'mediatype' => $app->input->get('mediatype', '', 'string')
+		);
 
-		// It's a string because country_id == 0 it'a world premiere
-		$this->sel_country = $app->input->get('country', '', 'word');
-		$this->sel_year = $app->input->get('year', 0, 'int');
-		$this->sel_month = $app->input->get('month', '', 'string');
-		$this->sel_vendor = $app->input->get('vendor', 0, 'int');
-		$this->sel_mediatype = $app->input->get('mediatype', '', 'string');
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 		$throttle_enable = $params->get('throttle_image_enable', 0);
@@ -136,7 +137,8 @@ class KinoarhivViewReleases extends JViewLegacy
 
 					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+						$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 					else
 					{
@@ -177,7 +179,11 @@ class KinoarhivViewReleases extends JViewLegacy
 				{
 					$plural = $lang->getPluralSuffixes($item->rate_loc);
 					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-					$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
+					$item->rate_loc_label = JText::sprintf(
+						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
+						(int) $params->get('vote_summ_num'),
+						$item->rate_loc
+					);
 					$item->rate_loc_label_class = ' has-rating';
 				}
 				else
@@ -208,8 +214,6 @@ class KinoarhivViewReleases extends JViewLegacy
 
 		$this->params = $params;
 		$this->items = $items;
-		$this->selectlist = $list;
-		$this->pagination = $pagination;
 		$this->user = $user;
 
 		$this->_prepareDocument();

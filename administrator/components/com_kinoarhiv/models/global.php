@@ -260,8 +260,16 @@ class KinoarhivModelGlobal extends JModelLegacy
 				}
 				else
 				{
-					$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `id` = " . (int) $id . $where_lang);
-					$result = $db->loadObject();
+					if ($multiple == 1)
+					{
+						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `id` IN (" . $id . ")" . $where_lang);
+						$result = $db->loadObjectList();
+					}
+					else
+					{
+						$db->setQuery("SELECT `id`, `title` FROM " . $db->quoteName('#__ka_names_career') . " WHERE `id` = " . (int) $id . $where_lang);
+						$result = $db->loadObject();
+					}
 				}
 			}
 			else

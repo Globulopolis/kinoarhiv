@@ -140,7 +140,8 @@ class KinoarhivViewName extends JViewLegacy
 
 				if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+					$item->poster = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+						. $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 				}
 				else
 				{

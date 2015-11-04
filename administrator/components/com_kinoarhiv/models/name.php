@@ -63,7 +63,7 @@ class KinoarhivModelName extends JModelForm
 	protected function loadFormData()
 	{
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.names.' . JFactory::getUser()->id . '.edit_data', array());
-
+//$data = array();
 		if (empty($data))
 		{
 			$data = $this->getItem();
@@ -332,6 +332,7 @@ class KinoarhivModelName extends JModelForm
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->post->get('id', null, 'int');
+		$attribs = $data['attribs'];
 		$data = $data['name'];
 		$quick_save = $app->input->get('quick_save', 0, 'int');
 
@@ -378,30 +379,8 @@ class KinoarhivModelName extends JModelForm
 			}
 		}
 
-		if (empty($id))
-		{
-			$metadata = array('robots' => '');
-
-			$form = $this->getForm();
-			$attribs = array();
-
-			foreach ($form->getGroup('attribs') as $key => $value)
-			{
-				// Array key start from form 'control' attribute + fields group name
-				$attribs[substr($key, strlen('form_attribs_'))] = '';
-			}
-
-			$attribs = json_encode($attribs);
-			$data['state'] = 1;
-			$data['access'] = 1;
-			$data['metakey'] = '';
-			$data['metadesc'] = '';
-		}
-		else
-		{
-			$metadata = array('robots' => $data['robots']);
-			$attribs = json_encode($data['attribs']);
-		}
+		$metadata = array('robots' => $data['robots']);
+		$attribs = json_encode($attribs);
 
 		$query = $db->getQuery(true);
 

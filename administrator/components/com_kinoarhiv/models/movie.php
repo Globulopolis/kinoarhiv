@@ -403,6 +403,7 @@ $data = array();
 		$date = JFactory::getDate();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
+		$attribs = $data['attribs'];
 		$data = $data['movie'];
 		$title = trim($data['title']);
 		$data['modified'] = $date->toSql();
@@ -470,8 +471,7 @@ $data = array();
 			'tags'   => json_decode('[' . $data['tags'] . ']', true),
 			'robots' => $data['robots']
 		);
-		$form_data = $app->input->post->get('form', array(), 'array');
-		$attribs = json_encode($form_data['attribs']);
+		$attribs = json_encode($attribs);
 		$year = str_replace(' ', '', $data['year']);
 		$rate_loc_rounded = ((int) $data['rate_loc'] > 0 && (int) $data['rate_sum_loc'] > 0) ? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
 		$rate_imdb_rounded = $data['imdb_votesum'] > 0 ? round($data['imdb_votesum'], 0) : 0;
@@ -485,15 +485,12 @@ $data = array();
 			$query->insert($db->quoteName('#__ka_movies'))
 				->columns(
 					$db->quoteName(
-						array('id', 'asset_id', 'parent_id', 'title', 'alias',
-							'fs_alias', 'introtext', 'plot', 'desc', 'known',
-							'year', 'slogan', 'budget', 'age_restrict', 'ua_rate',
-							'mpaa', 'length', 'rate_loc', 'rate_sum_loc', 'imdb_votesum',
-							'imdb_votes', 'imdb_id', 'kp_votesum', 'kp_votes', 'kp_id',
-							'rate_fc', 'rottentm_id', 'metacritics', 'metacritics_id', 'rate_custom',
-							'rate_loc_rounded', 'rate_imdb_rounded', 'rate_kp_rounded', 'urls', 'buy_urls',
-							'attribs', 'created', 'created_by', 'modified', 'modified_by',
-							'publish_up', 'publish_down', 'state', 'ordering', 'metakey',
+						array('id', 'asset_id', 'parent_id', 'title', 'alias', 'fs_alias', 'introtext', 'plot', 'desc',
+							'known', 'year', 'slogan', 'budget', 'age_restrict', 'ua_rate', 'mpaa', 'length', 'rate_loc',
+							'rate_sum_loc', 'imdb_votesum', 'imdb_votes', 'imdb_id', 'kp_votesum', 'kp_votes', 'kp_id',
+							'rate_fc', 'rottentm_id', 'metacritics', 'metacritics_id', 'rate_custom', 'rate_loc_rounded',
+							'rate_imdb_rounded', 'rate_kp_rounded', 'urls', 'buy_urls', 'attribs', 'created', 'created_by',
+							'modified', 'modified_by', 'publish_up', 'publish_down', 'state', 'ordering', 'metakey',
 							'metadesc', 'access', 'metadata', 'language'
 						)
 					)

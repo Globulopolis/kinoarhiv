@@ -11,8 +11,8 @@
 defined('_JEXEC') or die;
 
 $plural = $this->lang->getPluralSuffixes($this->pagination->total);
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	//<![CDATA[
 	jQuery(document).ready(function ($) {

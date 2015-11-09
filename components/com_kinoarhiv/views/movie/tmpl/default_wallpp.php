@@ -9,17 +9,16 @@
  */
 
 defined('_JEXEC') or die;
+
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', true, 'colorbox');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	//<![CDATA[
 	jQuery(document).ready(function ($) {
 		$('img.lazy').lazyload({threshold: 100});
 		$('.wp-list .item a').colorbox({maxHeight: '90%', maxWidth: '90%', photo: true});
 	});
-	//]]>
 </script>
 <div class="content movie wallpp">
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -28,7 +27,11 @@ defined('_JEXEC') or die;
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/movie_item_header', array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts/navigation/movie_item_header',
+			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			JPATH_COMPONENT
+		);
 		echo $this->item->event->afterDisplayTitle;
 		echo $this->loadTemplate('tabs');
 		echo $this->item->event->beforeDisplayContent; ?>

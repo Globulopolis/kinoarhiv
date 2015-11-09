@@ -20,8 +20,10 @@ else
 {
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
+
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
+<!-- Do not include script below into the head! -->
 <script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/sortable.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
@@ -177,7 +179,7 @@ else
 								</td>
 								<td><?php echo $row->media_type; ?></td>
 								<td><?php if ($row->desc != ''): ?>
-										<span class="icon icon-chevron-down uk-icon-caret-down"></span><?php endif; ?>
+										<span class="icon icon-chevron-down"></span><?php endif; ?>
 								</td>
 							</tr>
 							<?php if ($row->desc != ''): ?>

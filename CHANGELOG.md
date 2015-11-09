@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Move scripts from <body> to the <head> on frontend.
 * Removed JComments from movies and premieres list page.
 * Some improvements for reviews form and editors.
 * Fixed links in email send after add review.

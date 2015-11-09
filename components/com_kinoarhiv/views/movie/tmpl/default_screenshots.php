@@ -9,17 +9,16 @@
  */
 
 defined('_JEXEC') or die;
+
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', true, 'colorbox');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	//<![CDATA[
 	jQuery(document).ready(function ($) {
 		$('img.lazy').lazyload({threshold: 200});
 		$('.scr-list .item a').colorbox({maxHeight: '90%', maxWidth: '90%', photo: true});
 	});
-	//]]>
 </script>
 <div class="content movie screenshots">
 	<?php if ($this->params->get('use_alphabet') == 1):

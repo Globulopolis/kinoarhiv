@@ -65,23 +65,22 @@ else
 {
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
+
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', true, 'colorbox');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.plugin.min.js');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.countdown.min.js');
+KAComponentHelper::getScriptLanguage('jquery.countdown-', true, 'countdown');
+
+if (isset($this->item->slides) && !empty($this->item->slides)):
+	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1):
+		JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.bxslider.min.js');
+	endif;
+endif;
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox'); ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.plugin.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.countdown.min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('jquery.countdown-', false, 'countdown'); ?>
-
-<?php if (isset($this->item->slides) && !empty($this->item->slides)):
-	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
-		<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.bxslider.min.js" type="text/javascript"></script>
-	<?php endif;
-endif; ?>
-
 <script type="text/javascript">
-	//<![CDATA[
 	function showMsg(selector, text) {
 		jQuery(selector).aurora({
 			text: text,
@@ -284,7 +283,6 @@ endif; ?>
 			}
 		});
 	});
-	//]]>
 </script>
 <div class="content movie">
 	<?php if ($this->params->get('use_alphabet') == 1):

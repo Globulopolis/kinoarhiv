@@ -63,8 +63,8 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function loadFormData()
 	{
-		//$data = JFactory::getApplication()->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());
-$data = array();
+		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());
+
 		if (empty($data))
 		{
 			$data = $this->getItem();

@@ -1,5 +1,8 @@
 ## HEAD (Unreleased)
-* Fixed error with wrong release info about movie
+* Removed JComments from movies and premieres list page.
+* Some improvements for reviews form and editors.
+* Fixed links in email send after add review.
+* Fixed error with wrong release info about movie.
 * Fixed error with kahtml not found when filter applied.
 * Improve 'Edit trailer' layout.
 * Fixed error in batch modal layout for movies.

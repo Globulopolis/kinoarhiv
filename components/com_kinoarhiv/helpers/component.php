@@ -26,7 +26,6 @@ class KAComponentHelper extends JComponentHelper
 	 */
 	public static function setHeadTags()
 	{
-		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
 		$params = self::getParams('com_kinoarhiv');
 
@@ -43,34 +42,9 @@ class KAComponentHelper extends JComponentHelper
 			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.vegas.min.js');
 		}
 
-		$document->addHeadLink(
-			JURI::base() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css',
-			'stylesheet',
-			'rel',
-			array('type' => 'text/css')
-		);
-		$document->addHeadLink(
-			JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/plugin.css',
-			'stylesheet',
-			'rel',
-			array('type' => 'text/css')
-		);
-		$document->addHeadLink(
-			JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/style.css',
-			'stylesheet',
-			'rel',
-			array('type' => 'text/css')
-		);
-
-		if ($app->input->get('view', '', 'cmd') == 'movie')
-		{
-			$document->addHeadLink(
-				JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/editor.css',
-				'stylesheet',
-				'rel',
-				array('type' => 'text/css')
-			);
-		}
+		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
+		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/plugin.css');
+		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/style.css');
 	}
 
 	/**
@@ -121,9 +95,9 @@ class KAComponentHelper extends JComponentHelper
 	public static function cleanHTML($text, $tags = '', $extra = array())
 	{
 		$params = self::getParams('com_kinoarhiv');
-		$cache_path = JPATH_CACHE . DIRECTORY_SEPARATOR . 'kinoarhiv' . DIRECTORY_SEPARATOR . 'DefinitionCache' . DIRECTORY_SEPARATOR . 'Serializer';
+		$cache_path = JPath::clean(JPATH_CACHE . '/kinoarhiv/DefinitionCache/Serializer');
 
-		require_once(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'htmlpurifier' . DIRECTORY_SEPARATOR . 'HTMLPurifier.standalone.php');
+		require_once JPath::clean(JPATH_COMPONENT . '/libraries/htmlpurifier/HTMLPurifier.standalone.php');
 
 		$purifier_config = HTMLPurifier_Config::createDefault();
 
@@ -268,19 +242,6 @@ class KAComponentHelper extends JComponentHelper
 		}
 
 		return true;
-	}
-
-	/**
-	 * Load CSS and Javascript for HTML5 editor
-	 *
-	 * @return  void
-	 */
-	public static function loadEditorAssets()
-	{
-		$document = JFactory::getDocument();
-
-		$document->addScript(JURI::base() . 'components/com_kinoarhiv/assets/js/editor.rules.advanced.min.js');
-		$document->addScript(JURI::base() . 'components/com_kinoarhiv/assets/js/editor.min.js');
 	}
 
 	/**

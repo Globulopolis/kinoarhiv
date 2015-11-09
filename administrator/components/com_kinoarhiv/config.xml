@@ -206,24 +206,30 @@
 			   filter="string" size="100" class="span11"/>
 	</fieldset>
 	<fieldset name="content_dl" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_LABEL">
-		<field name="throttle_image_enable" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_IMG_LABEL"
+		<field name="throttle_image_enable" type="radio" class="btn-group" default="0"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_IMG_LABEL"
 			   description="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="throttle_image_bytes" type="text" default="524288" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL"
+		<field name="throttle_image_bytes" type="text" default="524288"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" filter="int" size="32"/>
-		<field name="throttle_image_sec" type="text" default="1" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL"
+		<field name="throttle_image_sec" type="text" default="1"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" filter="float" size="32"/>
 
-		<field name="throttle_video_enable" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_VIDEO_LABEL"
+		<field name="throttle_video_enable" type="radio" class="btn-group" default="0"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_VIDEO_LABEL"
 			   description="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="throttle_video_bytes" type="text" default="524288" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL"
+		<field name="throttle_video_bytes" type="text" default="524288"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" filter="int" size="32"/>
-		<field name="throttle_video_sec" type="text" default="1" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL"
+		<field name="throttle_video_sec" type="text" default="1"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" filter="float" size="32"/>
 	</fieldset>
 	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
@@ -542,6 +548,9 @@
 			<option value="jc">COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_JCM</option>
 			<option value="disqus">COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_DISQUS</option>
 		</field>
+		<field name="review_editor" type="folderlist" directory="components/com_kinoarhiv/assets/editors"
+			   default="wysihtml5" label="COM_KA_FIELD_REVIEWS_EDITOR_TYPE_LABEL"
+			   description="COM_KA_FIELD_REVIEWS_EDITOR_TYPE_DESC" hide_none="true" hide_default="true"/>
 		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL"
 			   description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>

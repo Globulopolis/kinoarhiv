@@ -12,18 +12,6 @@ defined('_JEXEC') or die;
 
 use Joomla\String\String;
 
-$custom_review_comp = false;
-
-if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') !== 'default')
-{
-	// JComments
-	if ($this->params->get('custom_review_component') == 'jc' && file_exists(JPATH_ROOT . '/components/com_jcomments/jcomments.php'))
-	{
-		include_once JPATH_ROOT . '/components/com_jcomments/jcomments.php';
-		$jc = new JComments;
-		$custom_review_comp = true;
-	}
-}
 if (String::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
 	$rating_image_www = JURI::base() . String::substr($this->params->get('media_rating_image_root_www'), 1);
@@ -32,12 +20,12 @@ else
 {
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
+
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/ui.aurora.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.rateit.min.js" type="text/javascript"></script>
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/jquery.lazyload.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-	//<![CDATA[
 	jQuery(document).ready(function ($) {
 		function showMsg(selector, text) {
 			$(selector).aurora({
@@ -49,7 +37,8 @@ else
 		}
 
 		<?php if ($this->params->get('vegas_enable') == 1):
-		$src = explode(',', $this->params->get('vegas_bg'));
+			$src = explode(',', $this->params->get('vegas_bg'));
+
 			if (count($src) > 0): ?>
 		$.vegas('slideshow', {
 			delay: <?php echo (int)$this->params->get('vegas_slideshow_delay'); ?>,
@@ -66,9 +55,9 @@ else
 			src: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
 			opacity: <?php echo $this->params->get('vegas_overlay_opacity'); ?>
 		})<?php endif; ?>;
-		<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');
-		<?php endif; ?>
-		<?php endif; ?>
+			<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');
+			<?php endif;
+		endif; ?>
 
 		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		$('img.lazy').lazyload({threshold: 200});
@@ -99,7 +88,6 @@ else
 		});
 		<?php endif; ?>
 	});
-	//]]>
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -339,9 +327,6 @@ else
 					<div class="links">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title . $item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
 							<span class="icon-chevron-right"></span></a>
-						<?php if ($custom_review_comp && $this->params->get('custom_review_component') == 'jc'): ?>
-							<span class="review-count"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>#reviews"><?php echo JText::sprintf('COM_KA_REVIEWS_COUNT', $jc::getCommentsCount($item->id, 'com_kinoarhiv')); ?></a></span>
-						<?php endif; ?>
 					</div>
 				</div>
 			</article>

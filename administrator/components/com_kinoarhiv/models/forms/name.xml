@@ -9,7 +9,7 @@
 			<field name="latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12"
 				   required="true" filter="string" size="45"/>
 			<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC"
-				   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12" size="45"/>
+				   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12" required="true" size="45"/>
 			<field name="fs_alias" type="text" label="COM_KA_FIELD_MOVIE_FS_ALIAS"
 				   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9" size="45"/>
 			<field name="fs_alias_orig" type="hidden"/>
@@ -32,9 +32,8 @@
 				   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span11" filter="string" data-ac-type="genres"
 				   data-multiple="true" data-sortable="true"/>
 			<field name="genres_orig" type="hidden"/>
-			<field name="careers" type="careers" default="" label="COM_KA_FIELD_NAME_CAREER"
-				   description="COM_KA_FIELD_NAME_CAREER_DESC" class="span10" filter="string" data-ac-type="careers"
-				   data-multiple="true"/>
+			<field name="careers" type="careers" default="" label="COM_KA_FIELD_NAME_CAREER" class="span10"
+				   filter="string" data-ac-type="careers" data-multiple="true"/>
 			<field name="careers_orig" type="hidden"/>
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL"
 				   description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30"

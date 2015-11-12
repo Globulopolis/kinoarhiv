@@ -63,7 +63,7 @@ class KinoarhivModelName extends JModelForm
 	protected function loadFormData()
 	{
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.names.' . JFactory::getUser()->id . '.edit_data', array());
-//$data = array();
+
 		if (empty($data))
 		{
 			$data = $this->getItem();
@@ -956,46 +956,6 @@ class KinoarhivModelName extends JModelForm
 		$db->setDebug(false);
 
 		return $query_result;
-	}
-
-	public function check_name()
-	{
-		$data = JFactory::getApplication()->input->post->get('data', '', 'string');
-		$message = '';
-
-		if (!empty($data))
-		{
-			$db = $this->getDBO();
-			$query = $db->getQuery(true);
-			$data = $db->escape($data);
-
-			$query->select('COUNT(id)')
-				->from($db->quoteName('#__ka_names'))
-				->where($db->quoteName('name') . " LIKE '" . $db->escape(trim($data)) . "%' OR " . $db->quoteName('latin_name') . " LIKE '" . $db->escape(trim($data)) . "%'");
-
-			$db->setQuery($query);
-			$count = $db->loadResult();
-
-			if ($count > 0)
-			{
-				$success = false;
-				$message = JText::_('COM_KA_NAMES_EXISTS');
-			}
-			else
-			{
-				$success = true;
-			}
-		}
-		else
-		{
-			$success = false;
-			$message = JText::_('COM_KA_REQUIRED');
-		}
-
-		return array(
-			'success' => $success,
-			'message' => $message
-		);
 	}
 
 	/**

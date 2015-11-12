@@ -472,21 +472,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 	}
 
 	/**
-	 * Check if person with such name already exists in DB.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function check_name()
-	{
-		$model = $this->getModel('name');
-		$result = $model->check_name();
-
-		echo json_encode($result);
-	}
-
-	/**
 	 * Method to encode item alias for using in filesystem paths and url.
 	 *
 	 * @return  string

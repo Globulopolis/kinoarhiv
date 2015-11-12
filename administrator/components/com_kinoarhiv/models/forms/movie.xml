@@ -302,6 +302,8 @@
 			   filter="string" size="45"/>
 		<field name="n_latin_name" type="text" default="" label="COM_KA_FIELD_NAME_LATIN" class="span12 required"
 			   required="true" filter="string" size="45"/>
+		<field name="n_alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span12"
+			   required="true" size="45"/>
 		<field name="n_date_of_birth" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_BIRTH" class="span12"
 			   datatype="date" size="12" dateformat="yy-mm-dd" filter="user_utc"/>
 		<field name="n_date_of_death" type="datetime" default="" label="COM_KA_FIELD_NAME_DATE_DEATH" class="span12"

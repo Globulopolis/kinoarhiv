@@ -150,7 +150,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		if (!array_key_exists('id', $data) || empty($data['id']))
 		{
-			$id = $app->input->get('id', array(), 'array');
+			$id = $app->input->get('id', array(0), 'array');
 			$id = $id[0];
 		}
 		else

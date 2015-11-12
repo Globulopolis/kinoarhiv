@@ -332,9 +332,24 @@ class KinoarhivModelName extends JModelForm
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->post->get('id', null, 'int');
-		$attribs = $data['attribs'];
-		$data = $data['name'];
 		$quick_save = $app->input->get('quick_save', 0, 'int');
+
+		if ($quick_save == 0)
+		{
+			$metadata = array('robots' => $data['robots']);
+			$attribs = json_encode($data['attribs']);
+		}
+		else
+		{
+			$metadata = array('robots' => array());
+			$attribs = json_encode(array());
+			$data['name']['state'] = 1;
+			$data['name']['access'] = 1;
+			$data['name']['metakey'] = '';
+			$data['name']['metadesc'] = '';
+		}
+
+		$data = $data['name'];
 
 		// Check if person with this name allready exists
 		if (empty($id))
@@ -386,9 +401,6 @@ class KinoarhivModelName extends JModelForm
 			}
 		}
 
-		$metadata = array('robots' => $data['robots']);
-		$attribs = json_encode($attribs);
-
 		$query = $db->getQuery(true);
 
 		if (empty($id))
@@ -402,7 +414,7 @@ class KinoarhivModelName extends JModelForm
 						)
 					)
 				)
-				->values("'','0','" . $db->escape(trim($data['name'])) . "','" . $db->escape(trim($data['latin_name'])) . "','" . $data['alias'] . "',''" . $data['fs_alias'] . ",'" . $data['date_of_birth'] . "','" . $data['date_of_death'] . "','" . $db->escape(trim($data['birthplace'])) . "','" . (int) $data['birthcountry'] . "','" . (int) $data['gender'] . "','" . $db->escape($data['height']) . "','" . $db->escape($data['desc']) . "','" . $attribs . "','" . (int) $data['ordering'] . "','" . $data['state'] . "','" . (int) $data['access'] . "','" . $db->escape($data['metakey']) . "','" . $db->escape($data['metadesc']) . "','" . json_encode($metadata) . "','" . $db->escape($data['language']) . "'");
+				->values("'','0','" . $db->escape(trim($data['name'])) . "','" . $db->escape(trim($data['latin_name'])) . "','" . $data['alias'] . "','" . $data['fs_alias'] . "','" . $data['date_of_birth'] . "','" . $data['date_of_death'] . "','" . $db->escape(trim($data['birthplace'])) . "','" . (int) $data['birthcountry'] . "','" . (int) $data['gender'] . "','" . $db->escape($data['height']) . "','" . $db->escape($data['desc']) . "','" . $attribs . "','" . (int) $data['ordering'] . "','" . $data['state'] . "','" . (int) $data['access'] . "','" . $db->escape($data['metakey']) . "','" . $db->escape($data['metadesc']) . "','" . json_encode($metadata) . "','" . $db->escape($data['language']) . "'");
 		}
 		else
 		{

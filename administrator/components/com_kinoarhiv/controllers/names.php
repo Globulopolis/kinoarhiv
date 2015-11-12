@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\String;
 
 /**
  * Names list controller class
@@ -147,13 +148,23 @@ class KinoarhivControllerNames extends JControllerLegacy
 		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', $data);
 		$validData = $model->validate($form, $data, 'name');
 
+		if (!array_key_exists('id', $data) || empty($data['id']))
+		{
+			$id = $app->input->get('id', array(), 'array');
+			$id = $id[0];
+		}
+		else
+		{
+			$id = $data['id'];
+		}
+
 		if ($validData === false)
 		{
 			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html')
 			{
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $data['id']);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $id);
 
 				return;
 			}
@@ -173,7 +184,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			if ($document->getType() == 'html')
 			{
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $data['id']);
+				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $id);
 
 				return;
 			}
@@ -480,10 +491,28 @@ class KinoarhivControllerNames extends JControllerLegacy
 	 */
 	public function getFilesystemAlias()
 	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php');
-
 		$input = JFactory::getApplication()->input;
+		$alias = $input->get('form_name_alias', '', 'string');
 
-		echo KAContentHelper::getFilesystemAlias($input->get('form_name_alias', '', 'string'), $input->get('form_name_title', '', 'string'));
+		if (empty($alias))
+		{
+			echo json_encode(
+				array(
+					'success' => false,
+					'message' => JText::_('COM_KA_FIELD_NAME_FS_ALIAS_GET_ERROR')
+				)
+			);
+
+			return;
+		}
+
+		$item_alias = String::substr(String::strtolower($alias), 0, 1);
+
+		echo json_encode(
+			array(
+				'success' => true,
+				'data'    => rawurlencode($item_alias)
+			)
+		);
 	}
 }

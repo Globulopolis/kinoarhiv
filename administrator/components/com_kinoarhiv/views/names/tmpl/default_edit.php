@@ -22,7 +22,7 @@ KAComponentHelper::loadMediamanagerAssets();
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_name_name').val() == '' || jQuery('#form_name_latin_name').val() == '') {
+			if (jQuery('#form_name_name').val() == '' || jQuery('#form_name_latin_name').val() == '' || jQuery('#form_name_alias').val() == '') {
 				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
@@ -197,6 +197,7 @@ KAComponentHelper::loadMediamanagerAssets();
 
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('careers_orig', $this->form_edit_group)."\n"; ?>
+	<?php echo $this->form->getInput('id', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="names" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" />

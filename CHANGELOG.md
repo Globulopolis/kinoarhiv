@@ -1,4 +1,6 @@
 ## HEAD (Unreleased)
+* Fixed alias processing for movies and persons.
+* Fixed wrong redirect while saving if some fields was empty.
 * Move scripts from <body> to the <head> on frontend.
 * Removed JComments from movies and premieres list page.
 * Some improvements for reviews form and editors.

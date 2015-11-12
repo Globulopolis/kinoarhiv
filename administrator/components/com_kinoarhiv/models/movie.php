@@ -463,6 +463,11 @@ class KinoarhivModelMovie extends JModelForm
 					$data['alias'] = JFilterOutput::stringURLSafe($data['title']);
 				}
 			}
+
+			if (empty($data['fs_alias']))
+			{
+				$data['fs_alias'] = rawurlencode(String::substr($data['alias'], 0, 1));
+			}
 		}
 
 		$created_by = empty($data['created_by']) ? $user->get('id') : $data['created_by'];

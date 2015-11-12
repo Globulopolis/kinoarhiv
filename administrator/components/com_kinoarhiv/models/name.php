@@ -368,14 +368,21 @@ class KinoarhivModelName extends JModelForm
 		{
 			if ($data['alias'] == null)
 			{
+				$name = empty($data['latin_name']) ? $data['name'] : $data['latin_name'];
+
 				if (JFactory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$data['alias'] = JFilterOutput::stringURLUnicodeSlug($data['title']);
+					$data['alias'] = JFilterOutput::stringURLUnicodeSlug($name);
 				}
 				else
 				{
-					$data['alias'] = JFilterOutput::stringURLSafe($data['title']);
+					$data['alias'] = JFilterOutput::stringURLSafe($name);
 				}
+			}
+
+			if (empty($data['fs_alias']))
+			{
+				$data['fs_alias'] = rawurlencode(String::substr($data['alias'], 0, 1));
 			}
 		}
 

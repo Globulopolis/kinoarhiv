@@ -172,7 +172,7 @@ else
 					}
 				});
 			} else if ($(this).hasClass('get-alias')) {
-				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=names&task=getFilesystemAlias&form_name_alias=' + $('#form_name_alias').val() + '&form_name_title=' + $('#form_name_title').val() + '&format=json', function(response){
+				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=names&task=getFilesystemAlias&form_name_alias=' + $('#form_name_alias').val() + '&format=json', function(response){
 					if (response.success) {
 						$('#form_name_fs_alias').val(response.data);
 					} else {
@@ -207,7 +207,7 @@ else
 						<div class="input-append">
 							<?php echo $this->form->getInput('fs_alias', $this->form_edit_group); ?>
 							<?php echo $this->form->getInput('fs_alias_orig', $this->form_edit_group); ?>
-							<button class="btn btn-default cmd-alias get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
+							<button class="btn btn-default cmd-alias get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_NAME_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
 							<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 						</div>
 					</div>

@@ -125,7 +125,8 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_FILTERS_NAMES_CAREER_PLACEHOLDER'); ?></span>
 						<span class="s-col">
-							<?php for ($i = 0, $n = count($this->item->career); $i < $n; $i++):
+							<?php $career_count = count($this->item->career);
+							for ($i = 0, $n = $career_count; $i < $n; $i++):
 								$career = $this->item->career[$i]; ?>
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][amplua]=' . $career->id); ?>"><?php echo JString::strtolower($career->title); ?></a><?php echo $i + 1 == $n ? '' : ', '; ?>
 							<?php endfor; ?>
@@ -136,7 +137,8 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_GENRES'); ?></span>
 						<span class="s-col">
-							<?php for ($i = 0, $n = count($this->item->genres); $i < $n; $i++):
+							<?php $genres_count = count($this->item->genres);
+							for ($i = 0, $n = $genres_count; $i < $n; $i++):
 								$genre = $this->item->genres[$i]; ?>
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][genre]=' . $genre->id); ?>"><?php echo JString::strtolower($genre->name); ?></a><?php echo $i + 1 == $n ? '' : ', '; ?>
 							<?php endfor; ?>

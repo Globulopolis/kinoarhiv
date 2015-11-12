@@ -116,11 +116,12 @@ class KinoarhivModelMovie extends JModelForm
 
 		$query = $db->getQuery(true);
 
-		$query->select("m.id, m.parent_id, m.title, m.alias, m.fs_alias, m.plot, m.desc, m.known, m.slogan, m.budget, m.age_restrict, " .
-					"m.ua_rate, m.mpaa, m.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, " .
-					"m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, m.rate_custom, m.urls, " .
-					"m.buy_urls, m.length, m.year, m.created_by, m.metakey, m.metadesc, m.attribs, m.state, m.metadata, " .
-					"DATE_FORMAT(m.created, '%Y-%m-%d') AS created, DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
+		$query->select("m.id, m.parent_id, m.title, m.alias, m.fs_alias, m.plot, m.desc, m.known, m.slogan, m.budget, "
+					. "m.age_restrict, m.ua_rate, m.mpaa, m.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, "
+					. "m.imdb_id, m.kp_votesum, m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, "
+					. "m.metacritics_id, m.rate_custom, m.urls, m.buy_urls, m.length, m.year, m.created_by, m.metakey, "
+					. "m.metadesc, m.attribs, m.state, m.metadata, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, "
+					. "DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
 		)
 		->from($db->quoteName('#__ka_movies', 'm'));
 
@@ -244,7 +245,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		$query_crew = $db->getQuery(true)
-			->select('n.id, n.name, n.latin_name, n.alias, t.type, t.is_actors, t.voice_artists')
+			->select('n.id, n.name, n.latin_name, n.alias, t.type, t.is_actors, t.is_directors, t.voice_artists')
 			->from($db->quoteName('#__ka_names', 'n'))
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id);
 
@@ -269,9 +270,10 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$_result['crew'][$type]['career'] = $careers[$type];
 					$_result['crew'][$type]['items'][] = array(
-						'id'    => $value->id,
-						'name'  => !empty($value->name) ? $value->name : $value->latin_name,
-						'alias' => $value->alias
+						'id'        => $value->id,
+						'name'      => !empty($value->name) ? $value->name : $value->latin_name,
+						'alias'     => $value->alias,
+						'directors' => $value->is_directors
 					);
 				}
 

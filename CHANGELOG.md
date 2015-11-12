@@ -1,4 +1,6 @@
 ## HEAD (Unreleased)
+* Improve page load speed.
+* Added microdata for movie info.
 * Fixed alias processing for movies and persons.
 * Fixed wrong redirect while saving if some fields was empty.
 * Move scripts from <body> to the <head> on frontend.

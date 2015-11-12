@@ -284,7 +284,11 @@ endif;
 		});
 	});
 </script>
-<div class="content movie">
+<div class="content movie" itemscope itemtype="http://schema.org/Movie">
+	<meta itemprop="contentRating" content="MPAA <?php echo strtoupper($this->item->mpaa); ?>">
+	<meta itemprop="duration" content="<?php echo $this->item->_length; ?>">
+	<meta itemprop="isFamilyFriendly" content="<?php echo ($this->item->mpaa == 'g' || $this->item->mpaa == 'pg') ? 'True' : 'False';?>">
+
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
@@ -304,7 +308,7 @@ endif;
 			<div class="left-col">
 				<div class="poster">
 					<div style="text-align: center;">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape($this->item->title . $this->item->year_str); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>"/></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape($this->item->title . $this->item->year_str); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
 					</div>
 				</div>
 				<div class="ratings">
@@ -426,7 +430,8 @@ endif;
 						<div>
 							<span class="f-col"><?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?></span>
 						<span class="s-col">
-							<?php for ($i = 0, $n = count($this->item->countries); $i < $n; $i++):
+							<?php $cn_count = count($this->item->countries);
+							for ($i = 0, $n = $cn_count; $i < $n; $i++):
 								$country = $this->item->countries[$i]; ?>
 								<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
@@ -447,9 +452,12 @@ endif;
 							<div>
 								<span class="f-col"><?php echo $person['career']; ?></span>
 							<span class="s-col">
-								<?php for ($i = 0, $n = count($person['items']); $i < $n; $i++):
-									$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
+								<?php $person_count = count($person['items']);
+								for ($i = 0, $n = $person_count; $i < $n; $i++):
+									$name = $person['items'][$i];
+									$itemprop = ($name['directors'] == 1) ? 'itemprop="director"' : '';
+								?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>" <?php echo $itemprop; ?>><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
@@ -464,9 +472,10 @@ endif;
 							<div>
 								<span class="f-col"><?php echo $person['career']; ?></span>
 							<span class="s-col">
-								<?php for ($i = 0, $n = count($person['items']); $i < $n; $i++):
+								<?php $person_count = count($person['items']);
+								for ($i = 0, $n = $person_count; $i < $n; $i++):
 									$name = $person['items'][$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>" itemprop="actor"><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
 								<?php else:
 									echo ', ';
@@ -480,9 +489,10 @@ endif;
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_GENRE'); ?></span>
 						<span class="s-col">
-							<?php for ($i = 0, $n = count($this->item->genres); $i < $n; $i++):
+							<?php $genre_count = count($this->item->genres);
+							for ($i = 0, $n = $genre_count; $i < $n; $i++):
 								$genre = $this->item->genres[$i]; ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 						</div>
@@ -555,8 +565,7 @@ endif;
 							| <?php echo $this->item->_length; ?></span>
 					</div>
 					<?php if ($this->item->attribs->show_tags == 1 && isset($this->item->tags)):
-						$c_tags = count($this->item->tags);
-						if ($c_tags > 0): ?>
+						if (count($this->item->tags) > 0): ?>
 							<div>
 								<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 							<span class="s-col">
@@ -669,7 +678,7 @@ endif;
 		<?php if (!empty($this->item->plot)): ?>
 			<div class="plot">
 				<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_PLOT'); ?></div>
-				<div class="content"><?php echo $this->item->plot; ?></div>
+				<div class="content" itemprop="description"><?php echo $this->item->plot; ?></div>
 			</div>
 		<?php endif; ?>
 

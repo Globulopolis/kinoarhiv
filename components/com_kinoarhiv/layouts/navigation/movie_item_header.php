@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 $data = $displayData;
 ?>
 <header>
-	<h1 class="uk-article-title title">
+	<h1 class="uk-article-title title" itemprop="name">
 		<?php if ($data['item']->attribs->link_titles === ''): ?>
 			<?php if ($data['params']->get('link_titles') == 1): ?>
 				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $data['item']->id . '&Itemid=' . $data['itemid']); ?>" class="brand" title="<?php echo $this->escape($data['item']->title . $data['item']->year_str); ?>"><?php echo $this->escape($data['item']->title . $data['item']->year_str); ?></a>

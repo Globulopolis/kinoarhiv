@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/trumbowyg/trumbowyg.min.js');
 JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/trumbowyg/ui/default.css');
-KAComponentHelper::getScriptLanguage('', true, 'editors/trumbowyg');
+KAComponentHelper::getScriptLanguage('', 'js/i18n/editors/trumbowyg');
 
 $params = $displayData->params;
 $form   = $displayData->form;

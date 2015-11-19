@@ -20,7 +20,11 @@ endif; ?>
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/movie_item_header', array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts/navigation/movie_item_header',
+			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			JPATH_COMPONENT
+		);
 		echo $this->item->event->afterDisplayTitle;
 		echo $this->loadTemplate('tabs');
 		echo $this->item->event->beforeDisplayContent; ?>

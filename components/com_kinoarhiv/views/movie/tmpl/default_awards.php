@@ -17,7 +17,11 @@ defined('_JEXEC') or die;
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/movie_item_header', array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts/navigation/movie_item_header',
+			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			JPATH_COMPONENT
+		);
 		echo $this->item->event->afterDisplayTitle;
 		echo $this->loadTemplate('tabs');
 		echo $this->item->event->beforeDisplayContent; ?>
@@ -27,7 +31,7 @@ defined('_JEXEC') or die;
 				foreach ($this->item->awards as $award): ?>
 					<div class="well uk-panel uk-panel-box">
 						<h5 class="uk-panel-title">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=awards&id=' . $award->id . '&Itemid=' . $this->itemid); ?>"><?php echo $this->escape($award->aw_title); ?></a><?php echo ($award->year != '0000') ? ', ' . $award->year : ''; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=awards&id=' . $award->id . '&Itemid=' . $this->itemid); ?>"><?php echo $this->escape($award->aw_title); ?></a><?php echo (!empty($award->year) && $award->year != '0000') ? ', ' . $award->year : ''; ?>
 						</h5>
 						<?php echo $award->desc; ?>
 					</div>

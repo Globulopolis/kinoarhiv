@@ -44,14 +44,17 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		// Check for request forgeries.
 		if ($doctype != 'html')
 		{
-			JSession::checkToken() or jexit(
-				json_encode(
+			if (!KAComponentHelper::checkToken())
+			{
+				echo json_encode(
 					array(
 						'success' => false,
 						'message' => JText::_('JINVALID_TOKEN')
 					)
-				)
-			);
+				);
+
+				return false;
+			}
 		}
 		else
 		{

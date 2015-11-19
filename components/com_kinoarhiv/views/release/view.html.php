@@ -32,6 +32,8 @@ class KinoarhivViewRelease extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -48,8 +50,6 @@ class KinoarhivViewRelease extends JViewLegacy
 		}
 
 		// Prepare the data
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
-
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 

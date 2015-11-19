@@ -10,8 +10,8 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
-KAComponentHelper::getScriptLanguage('jquery.colorbox-', true, 'colorbox');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox.min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'js/i18n/colorbox');
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">
@@ -46,7 +46,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 					<?php foreach ($this->items as $wp): ?>
 						<div class="thumb">
 							<div class="item">
-								<a href="<?php echo $wp->image; ?>" title="<?php echo $this->escape($this->item->title . $this->item->year_str); ?>" rel="wp">
+								<a href="<?php echo $wp->image; ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>" rel="wp">
 									<img data-original="<?php echo $wp->th_image; ?>" width="<?php echo $wp->th_image_width; ?>" height="<?php echo $wp->th_image_height; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_WP_ALT') . $this->escape($this->item->title); ?>"/>
 								</a>
 							</div>

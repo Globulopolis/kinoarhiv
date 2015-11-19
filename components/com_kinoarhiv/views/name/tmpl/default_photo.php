@@ -10,8 +10,8 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox-min.js');
-KAComponentHelper::getScriptLanguage('jquery.colorbox-', true, 'colorbox');
+JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox.min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'js/i18n/colorbox');
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">

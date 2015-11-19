@@ -68,7 +68,6 @@ class KinoarhivViewPremieres extends JViewLegacy
 		foreach ($items as &$item)
 		{
 			$item->attribs = json_decode($item->attribs);
-			$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 			$item->vendor = $item->company_name;
 
 			if (!empty($item->company_name) && !empty($item->company_name_intl))

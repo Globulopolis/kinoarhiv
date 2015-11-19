@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.framework');
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/wysihtml5/editor.rules.advanced.min.js');
-KAComponentHelper::getScriptLanguage('', true, 'editors/wysihtml5');
+KAComponentHelper::getScriptLanguage('', 'js/i18n/editors/wysihtml5');
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/wysihtml5/editor.min.js');
 JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/wysihtml5/ui/default.css');
 

@@ -16,7 +16,7 @@ $input = JFactory::getApplication()->input;
 $section = $input->get('section', '', 'word');
 $type = $input->get('type', '', 'word');
 ?>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox.min.js"></script>
 <?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
 <div id="j-main-container">
 <?php if ($section == 'movie')

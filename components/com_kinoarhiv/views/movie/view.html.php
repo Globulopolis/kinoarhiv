@@ -119,7 +119,6 @@ class KinoarhivViewMovie extends JViewLegacy
 		// Prepare the data
 		// Workaround for plugin interaction. Article must contain $text item.
 		$item->text = '';
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 
 		if ($throttle_enable == 0)
 		{
@@ -301,9 +300,7 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$item->event = new stdClass;
 		$item->params = new JObject;
 		$item->params->set(
@@ -365,9 +362,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		foreach ($items as $key => $_item)
@@ -504,9 +499,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		foreach ($items as $key => $_item)
@@ -639,9 +632,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		foreach ($items as $key => $_item)
@@ -776,9 +767,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 
 		// Prepare the data
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$item->event = new stdClass;
 		$item->params = new JObject;
 		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=awards&id=' . $item->id . '&Itemid=' . $this->itemid, false));
@@ -845,9 +834,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 
 		$user = JFactory::getUser();
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$item->event = new stdClass;
 		$item->params = new JObject;
 		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=trailers&id=' . $item->id . '&Itemid=' . $this->itemid, false));
@@ -900,9 +887,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
-		$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 		$item->text = '';
-
 		$item->event = new stdClass;
 		$item->params = new JObject;
 		$item->params->set(
@@ -986,7 +971,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		);
 
 		$pathway->setPathway(array($path));
-		$this->document->setTitle($this->item->title);
+		$this->document->setTitle(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year));
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

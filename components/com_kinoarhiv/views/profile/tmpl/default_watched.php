@@ -14,7 +14,6 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <script type="text/javascript">
-	//<![CDATA[
 	jQuery(document).ready(function ($) {
 		function showMsg(selector, text) {
 			$(selector).aurora({
@@ -61,7 +60,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 			}
 		});
 	});
-	//]]>
 </script>
 <div class="uk-article ka-content user-profile watched">
 	<?php echo $this->loadTemplate('tabs'); ?>
@@ -69,13 +67,14 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
 			<div class="total-watched"><?php echo JText::_('COM_KA_PROFILE_TOTAL_WATCHED') . $this->pagination->total . JText::_('COM_KA_PROFILE_TOTAL_MOVIES_' . $plural[0]); ?></div>
 			<div class="wt-list">
-				<?php foreach ($this->items as $i => $item): ?>
+				<?php foreach ($this->items as $i => $item):
+					$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year)); ?>
 					<div class="title-small">
-						<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $item->title . $item->year_str; ?></a></span>
+						<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a></span>
 						<span style="float: right;"><a class="cmd-wt-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0"/></a></span>
 					</div>
 				<?php endforeach; ?>
-				<input class="hasTooltip" type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
+				<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
 			</div>
 			<br/>
 			<input type="hidden" name="boxchecked" value="0"/>

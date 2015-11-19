@@ -1,5 +1,5 @@
 ## HEAD (Unreleased)
-* Improve page load speed.
+* Improve load speed for movie and person info page.
 * Added microdata for movie info.
 * Fixed alias processing for movies and persons.
 * Fixed wrong redirect while saving if some fields was empty.

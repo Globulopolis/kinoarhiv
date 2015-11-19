@@ -36,6 +36,8 @@ class KinoarhivViewReleases extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
@@ -50,8 +52,6 @@ class KinoarhivViewReleases extends JViewLegacy
 
 			return false;
 		}
-
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
@@ -72,7 +72,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		foreach ($items as &$item)
 		{
 			$item->attribs = json_decode($item->attribs);
-			$item->year_str = ($item->year != '0000') ? ' (' . $item->year . ')' : '';
 			$item->vendor = $item->company_name;
 
 			if (!empty($item->company_name) && !empty($item->company_name_intl))

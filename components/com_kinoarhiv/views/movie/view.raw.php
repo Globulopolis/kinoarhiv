@@ -28,9 +28,9 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
+		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
 
-		$this->watch($app->input->get->get('type', 'trailer'));
+		$this->watch(JFactory::getApplication()->input->get->get('type', 'trailer'));
 	}
 
 	protected function watch($type)
@@ -47,9 +47,7 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		if ($type == 'trailer' || $type == 'movie')
 		{
-			$item = $this->get('Trailer');
-
-			$this->item = $item;
+			$this->item = $this->get('Trailer');
 			$this->params = $params;
 			$this->user = $user;
 

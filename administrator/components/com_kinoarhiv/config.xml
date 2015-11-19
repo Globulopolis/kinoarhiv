@@ -213,11 +213,9 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="throttle_image_bytes" type="text" default="524288"
-			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL"
-			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" filter="int" size="32"/>
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL" filter="int" size="32"/>
 		<field name="throttle_image_sec" type="text" default="1"
-			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL"
-			   description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" filter="float" size="32"/>
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL" filter="float" size="32"/>
 
 		<field name="throttle_video_enable" type="radio" class="btn-group" default="0"
 			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_VIDEO_LABEL"
@@ -226,11 +224,9 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="throttle_video_bytes" type="text" default="524288"
-			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL"
-			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" filter="int" size="32"/>
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL" filter="int" size="32"/>
 		<field name="throttle_video_sec" type="text" default="1"
-			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL"
-			   description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" filter="float" size="32"/>
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL" filter="float" size="32"/>
 	</fieldset>
 	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
 		<field type="spacer" name="sp_music_global" class="separator" label="COM_KA_FIELD_MUSIC_GLOBAL_SPACER"/>
@@ -360,9 +356,9 @@
 		</field>
 		<field name="player_width" type="text" default="690" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true"
 			   filter="integer" size="6"/>
-		<field name="player_type" type="folderlist" default="mediaelement"
+		<field name="player_type" type="folderlist" default="videojs"
 			   directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL"
-			   description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC"/>
+			   description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" hide_default="true"/>
 		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL"
 			   description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12"/>
 		<field name="player_logo" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL"

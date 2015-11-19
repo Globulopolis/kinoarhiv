@@ -17,14 +17,14 @@ if (JFactory::getDocument()->getType() == 'html')
 {
 	JFactory::getDocument()->addHeadLink($css, 'stylesheet', 'rel', array('type' => 'text/css'));
 	JHtml::_('script', $script);
-	KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select');
+	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select');
 	KAComponentHelper::getScriptLanguage('datepicker-', true, 'ui');
 }
 else
 {
-	echo '<style type="text/css">@import url("' . $css . '");</style>';
-	echo '<script src="' . $script . '" type="text/javascript"></script>';
-	KAComponentHelper::getScriptLanguage('select2_locale_', false, 'select');
+	echo '<style type="text/css"> @import url("' . $css . '"); </style>'."\n";
+	echo '<script src="' . $script . '" type="text/javascript"></script>'."\n";
+	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select', false, false);
 }
 ?>
 <div class="uk-article ka-content">

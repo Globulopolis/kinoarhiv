@@ -17,6 +17,8 @@ defined('_JEXEC') or die;
  */
 class KinoarhivViewProfile extends JViewLegacy
 {
+	protected $itemid = null;
+
 	protected $items = null;
 
 	protected $pagination = null;
@@ -26,7 +28,7 @@ class KinoarhivViewProfile extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 */
 	public function display($tpl = null)
 	{
@@ -39,8 +41,10 @@ class KinoarhivViewProfile extends JViewLegacy
 			$app->enqueueMessage($err, 'error');
 			KAComponentHelper::eventLog($err);
 
-			return false;
+			return;
 		}
+
+		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
 
 		$this->page = $app->input->get('page', '', 'cmd');
 		$this->tab = $app->input->get('tab', 'movies', 'cmd');
@@ -69,8 +73,6 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function favorite()
 	{
 		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -82,43 +84,10 @@ class KinoarhivViewProfile extends JViewLegacy
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		if ($this->tab == '' || $this->tab == 'movies')
-		{
-			foreach ($items as &$item)
-			{
-				$item->year_str = ($item->year != '0000') ? '&nbsp;(' . $item->year . ')' : '';
-			}
-		}
-		elseif ($this->tab == 'names')
-		{
-			foreach ($items as &$item)
-			{
-				$item->title = '';
-
-				if ($item->name != '')
-				{
-					$item->title .= $item->name;
-				}
-
-				if ($item->name != '' && $item->latin_name != '')
-				{
-					$item->title .= ' / ';
-				}
-
-				if ($item->latin_name != '')
-				{
-					$item->title .= $item->latin_name;
-				}
-
-				$item->year_str = ($item->date_of_birth != '0000-00-00') ? '&nbsp;(' . JHTML::_('date', $item->date_of_birth) . ')' : '';
-			}
-		}
-
 		$this->params = $params;
 		$this->items = $items;
 		$this->pagination = $pagination;
-		$this->lang = $lang;
+		$this->lang = JFactory::getLanguage();
 
 		$pathway = $app->getPathway();
 
@@ -132,15 +101,27 @@ class KinoarhivViewProfile extends JViewLegacy
 		{
 			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_FAVORITE') . ' - ' . JText::_('COM_KA_MOVIES'));
 
-			$pathway->addItem(JText::_('COM_KA_FAVORITE'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&Itemid=' . $this->itemid));
-			$pathway->addItem(JText::_('COM_KA_MOVIES'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid));
+			$pathway->addItem(
+				JText::_('COM_KA_FAVORITE'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_MOVIES'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid)
+			);
 		}
 		elseif ($this->page == 'names')
 		{
 			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_FAVORITE') . ' - ' . JText::_('COM_KA_PERSONS'));
 
-			$pathway->addItem(JText::_('COM_KA_FAVORITE'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&Itemid=' . $this->itemid));
-			$pathway->addItem(JText::_('COM_KA_PERSONS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid));
+			$pathway->addItem(
+				JText::_('COM_KA_FAVORITE'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_PERSONS'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid)
+			);
 		}
 
 		parent::display('favorite');
@@ -149,8 +130,6 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function watched()
 	{
 		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -161,17 +140,10 @@ class KinoarhivViewProfile extends JViewLegacy
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		foreach ($items as &$item)
-		{
-			$item->year_str = ($item->year != '0000') ? '&nbsp;(' . $item->year . ')' : '';
-		}
-
-		$this->params = $params;
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items = $items;
 		$this->pagination = $pagination;
-		$this->lang = $lang;
+		$this->lang = JFactory::getLanguage();
 
 		$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_WATCHED'));
 		$pathway = $app->getPathway();
@@ -183,8 +155,6 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function votes()
 	{
 		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -195,26 +165,8 @@ class KinoarhivViewProfile extends JViewLegacy
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		foreach ($items as &$item)
-		{
-			$item->year_str = ($item->year != '0000') ? '&nbsp;(' . $item->year . ')' : '';
-
-			if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
-			{
-				$plural = $lang->getPluralSuffixes($item->rate_loc);
-				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-				$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
-			}
-			else
-			{
-				$item->rate_loc_c = 0;
-				$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
-			}
-		}
-
-		$this->params = $params;
+		$this->lang = JFactory::getLanguage();
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items = $items;
 		$this->pagination = $pagination;
 
@@ -228,7 +180,6 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function reviews()
 	{
 		$app = JFactory::getApplication();
-
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
@@ -239,15 +190,7 @@ class KinoarhivViewProfile extends JViewLegacy
 			return false;
 		}
 
-		foreach ($items as &$item)
-		{
-			$item->year_str = ($item->year != '0000') ? '&nbsp;(' . $item->year . ')' : '';
-			$item->ip = !empty($item->ip) ? $item->ip : JText::_('COM_KA_REVIEWS_IP_NULL');
-		}
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		$this->params = $params;
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items = $items;
 		$this->pagination = $pagination;
 

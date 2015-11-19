@@ -14,7 +14,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.plugin.min.js');
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 ?>
 <script type="text/javascript">
-	//<![CDATA[
 	jQuery(document).ready(function ($) {
 		$('.actor-desc').more({
 			length: <?php echo $this->params->get('limit_text'); ?>,
@@ -22,7 +21,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 			lessText: '<?php echo JText::_('COM_KA_READ_LESS'); ?>'
 		});
 	});
-	//]]>
 </script>
 <div class="content movie cast">
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -64,7 +62,8 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 						<a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?>
 					</div>
 					<div class="content">
-						<?php foreach ($row['items'] as $key => $name): ?>
+						<?php foreach ($row['items'] as $key => $name):
+							$actor_name = KAContentHelper::formatItemTitle($name['name'], $name['latin_name']); ?>
 							<div class="cast-row">
 								<div class="cast-row-col-left fullwidth">
 									<div class="actor-photo">
@@ -72,7 +71,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 										<span class="photo"><img src="<?php echo $name['poster']; ?>" width="64" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/></span>
 									</div>
 									<div class="actor-info">
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / ' . $name['latin_name'] : ''; ?></a><br/>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $actor_name; ?>"><?php echo $actor_name; ?></a><br/>
 										<span class="actor-role"><?php echo $name['role']; ?></span>
 
 										<div class="actor-desc"><?php echo $name['desc']; ?></div>
@@ -91,7 +90,9 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 						<a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?><?php if (!empty($this->item->dub)): ?>
 							<span class="dub"><?php echo JText::_('COM_KA_CAST_DUB'); ?></span><?php endif; ?></div>
 					<div class="content">
-						<?php foreach ($row['items'] as $key => $name): ?>
+						<?php foreach ($row['items'] as $key => $name):
+							$actor_name = KAContentHelper::formatItemTitle($name['name'], $name['latin_name']);
+							$dub_actor_name = KAContentHelper::formatItemTitle($name['dub_name'], $name['dub_latin_name']); ?>
 							<div class="cast-row">
 								<div class="cast-row-col-left">
 									<div class="actor-photo">
@@ -99,7 +100,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 										<span class="photo"><img src="<?php echo $name['poster']; ?>" width="64" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/></span>
 									</div>
 									<div class="actor-info">
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / ' . $name['latin_name'] : ''; ?></a><br/>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $actor_name; ?>"><?php echo $actor_name; ?></a><br/>
 										<span class="actor-role"><?php echo $name['role']; ?></span>
 
 										<div class="actor-desc"><?php echo $name['desc']; ?></div>
@@ -111,7 +112,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 											<span class="photo"><img src="<?php echo $name['dub_url_photo']; ?>" width="64" border="0" class="<?php echo $name['dub_gender'] ? 'm' : 'f'; ?>"/></span>
 										</div>
 										<div class="actor-dub-info">
-											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['dub_id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['dub_name']; ?>"><?php echo $name['dub_name']; ?><?php echo !empty($name['dub_latin_name']) ? ' / ' . $name['dub_latin_name'] : ''; ?></a>
+											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['dub_id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $dub_actor_name; ?>"><?php echo $dub_actor_name; ?></a>
 										</div>
 
 									<?php endif; ?>
@@ -129,7 +130,8 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 						<a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?>
 					</div>
 					<div class="content">
-						<?php foreach ($row['items'] as $key => $name): ?>
+						<?php foreach ($row['items'] as $key => $name):
+							$actor_name = KAContentHelper::formatItemTitle($name['name'], $name['latin_name']); ?>
 							<div class="cast-row">
 								<div class="cast-row-col-left fullwidth">
 									<div class="actor-photo">
@@ -137,7 +139,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
 										<span class="photo"><img src="<?php echo $name['poster']; ?>" width="64" border="0" class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/></span>
 									</div>
 									<div class="actor-info">
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?><?php echo !empty($name['latin_name']) ? ' / ' . $name['latin_name'] : ''; ?></a><br/>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $actor_name; ?>"><?php echo $actor_name; ?></a><br/>
 										<span class="actor-role"><?php echo $name['role']; ?></span>
 
 										<div class="actor-desc"><?php echo $name['desc']; ?></div>

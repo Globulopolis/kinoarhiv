@@ -9,11 +9,11 @@
  */
 
 defined('_JEXEC') or die;
+
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 ?>
 <script type="text/javascript">
-	//<![CDATA[
 	jQuery(document).ready(function ($) {
 		function showMsg(selector, text) {
 			$(selector).aurora({
@@ -34,7 +34,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 
 			$.ajax({
 				type: 'POST',
-				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=vote&Itemid='.$this->itemid.'&format=raw', false); ?>' + '&id=' + id,
+				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=vote&Itemid=' . $this->itemid . '&format=raw', false); ?>' + '&id=' + id,
 				data: {'value': value}
 			}).done(function (response) {
 				if (response.success) {
@@ -50,17 +50,35 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 			});
 		});
 	});
-	//]]>
 </script>
 <div class="uk-article ka-content user-profile votes">
 	<?php echo $this->loadTemplate('tabs'); ?>
 	<?php if (count($this->items) > 0): ?>
 		<div class="total-votes"><?php echo JText::sprintf('COM_KA_PROFILE_TOTAL_VOTES', $this->pagination->total); ?></div>
 		<div class="v-list">
-			<?php foreach ($this->items as $item): ?>
+			<?php foreach ($this->items as $item):
+				$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));
+
+				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
+				{
+					$plural = $this->lang->getPluralSuffixes($item->rate_loc);
+					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $this->params->get('vote_summ_precision'));
+					$item->rate_loc_label = JText::sprintf(
+						'COM_KA_RATE_LOCAL_' . $plural[0],
+						$item->rate_loc_c,
+						(int) $this->params->get('vote_summ_num'),
+						$item->rate_loc
+					);
+				}
+				else
+				{
+					$item->rate_loc_c = 0;
+					$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
+				}
+			?>
 				<div class="item-row">
 					<div>
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $item->title . $item->year_str; ?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a>
 					</div>
 					<div>
 						<div class="rate">

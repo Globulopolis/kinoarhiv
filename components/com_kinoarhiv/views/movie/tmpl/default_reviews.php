@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 		if ($this->params->get('custom_review_component') == 'jc' && file_exists(JPATH_ROOT . '/components/com_jcomments/jcomments.php')):
 			include_once JPATH_ROOT . '/components/com_jcomments/jcomments.php';
 			$jc = new JComments;
-			echo $jc::show($this->item->id, 'com_kinoarhiv', $this->escape($this->item->title . $this->item->year_str));
+			echo $jc::show($this->item->id, 'com_kinoarhiv', $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)));
 		endif;
 	elseif ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') == 'default'):
 		$review_number = $this->pagination->limitstart + 1;

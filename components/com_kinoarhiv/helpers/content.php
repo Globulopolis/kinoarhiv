@@ -53,4 +53,47 @@ class KAContentHelper
 
 		return $image;
 	}
+
+	/**
+	 * Format item title. If item have two fields for title, sometimes we need to properly process title if item
+	 * does not have one of these fields.
+	 *
+	 * @param   string  $first      First item title.
+	 * @param   string  $second     Second item title.
+	 * @param   string  $date       Show date.
+	 * @param   string  $separator  Separator to split titles.
+	 *
+	 * @return  string
+	 */
+	public static function formatItemTitle($first, $second, $date='', $separator=' / ')
+	{
+		if (empty($first) && empty($second))
+		{
+			return '';
+		}
+
+		$title = '';
+
+		if (!empty($first))
+		{
+			$title .= $first;
+		}
+
+		if (!empty($first) && !empty($second))
+		{
+			$title .= $separator;
+		}
+
+		if (!empty($second))
+		{
+			$title .= $second;
+		}
+
+		if (!empty($date) && $date != '0000')
+		{
+			$title .= ' (' . $date . ')';
+		}
+
+		return $title;
+	}
 }

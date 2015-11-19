@@ -250,4 +250,23 @@ class KAComponentHelper extends JComponentHelper
 
 		return $exists;
 	}
+
+	/**
+	 * Checks for a form token in the request.
+	 *
+	 * Use in conjunction with JHtml::_('form.token') or JSession::getFormToken.
+	 *
+	 * @param   string  $method  The request method in which to look for the token key.
+	 *
+	 * @return  boolean  True if found and valid, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	public static function checkToken($method = 'post')
+	{
+		$token = JSession::getFormToken();
+		$app = JFactory::getApplication();
+
+		return (bool) $app->input->$method->get($token, '', 'alnum');
+	}
 }

@@ -11,19 +11,20 @@
 defined('_JEXEC') or die;
 
 $data = $displayData;
+$title = $this->escape(KAContentHelper::formatItemTitle($data['item']->title, '', $data['item']->year));
 ?>
 <header>
 	<h1 class="uk-article-title title" itemprop="name">
 		<?php if ($data['item']->attribs->link_titles === ''): ?>
 			<?php if ($data['params']->get('link_titles') == 1): ?>
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $data['item']->id . '&Itemid=' . $data['itemid']); ?>" class="brand" title="<?php echo $this->escape($data['item']->title . $data['item']->year_str); ?>"><?php echo $this->escape($data['item']->title . $data['item']->year_str); ?></a>
+				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $data['item']->id . '&Itemid=' . $data['itemid']); ?>" class="brand" title="<?php echo $title; ?>"><?php echo $title; ?></a>
 			<?php else: ?>
-				<span class="brand"><?php echo $this->escape($data['item']->title . $data['item']->year_str); ?></span>
+				<span class="brand"><?php echo $title; ?></span>
 			<?php endif; ?>
 		<?php elseif ($data['item']->attribs->link_titles == 1): ?>
-			<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $data['item']->id . '&Itemid=' . $data['itemid']); ?>" class="brand" title="<?php echo $this->escape($data['item']->title . $data['item']->year_str); ?>"><?php echo $this->escape($data['item']->title . $data['item']->year_str); ?></a>
+			<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $data['item']->id . '&Itemid=' . $data['itemid']); ?>" class="brand" title="<?php echo $title; ?>"><?php echo $title; ?></a>
 		<?php elseif ($data['item']->attribs->link_titles == 0): ?>
-			<span class="brand"><?php echo $this->escape($data['item']->title . $data['item']->year_str); ?></span>
+			<span class="brand"><?php echo $title; ?></span>
 		<?php endif; ?>
 	</h1>
 </header>

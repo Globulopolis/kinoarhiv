@@ -10,7 +10,9 @@
 
 defined('_JEXEC') or die;
 
-if (isset($this->item->trailers) && count($this->item->trailers) > 0):
+$total_trailers = count($this->item->trailers);
+
+if (isset($this->item->trailers) && $total_trailers > 0):
 	if ($this->params->get('player_type') == 'mediaelement'): ?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
@@ -21,7 +23,7 @@ if (isset($this->item->trailers) && count($this->item->trailers) > 0):
 				});
 			});
 		</script>
-	<?php elseif ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer'): ?>
+	<?php elseif ($this->params->get('player_type') == 'flowplayer'): ?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
 				$('a.play').click(function (e) {
@@ -54,7 +56,7 @@ endif; ?>
 		echo $this->loadTemplate('tabs');
 		echo $this->item->event->beforeDisplayContent; ?>
 
-		<?php if (isset($this->item->trailers) && count($this->item->trailers) > 0):
+		<?php if (isset($this->item->trailers) && $total_trailers > 0):
 			if ($this->params->get('player_type') != '-1')
 			{
 				KAComponentHelper::loadPlayerAssets($this->params->get('player_type'));
@@ -129,7 +131,7 @@ endif; ?>
 												</object>
 											</video>
 
-										<?php elseif ($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer'):
+										<?php elseif ($this->params->get('player_type') == 'flowplayer'):
 											$watch = $item_trailer->is_movie ? 'watch-movie' : 'watch-trailer';
 											$ln_watch = $item_trailer->is_movie ? JText::_('COM_KA_WATCH_MOVIE') : JText::_('COM_KA_WATCH_TRAILER');
 											?>

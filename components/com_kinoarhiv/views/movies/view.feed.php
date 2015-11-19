@@ -30,8 +30,7 @@ class KinoarhivViewMovies extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
+		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
 
 		$items = $this->get('Items');
 
@@ -42,8 +41,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			return false;
 		}
 
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
-
+		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$feedEmail = $app->get('feed_email', 'author');
@@ -75,8 +73,7 @@ class KinoarhivViewMovies extends JViewLegacy
 		// Prepare the data
 		foreach ($items as $row)
 		{
-			$year_str = ($row->year != '0000') ? ' (' . $row->year . ')' : '';
-			$title = $this->escape($row->title . $year_str);
+			$title = $this->escape(KAContentHelper::formatItemTitle($row->title, '', $row->year));
 			$title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
 			$link = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $row->id . '&Itemid=' . $this->itemid);
 			$attribs = json_decode($row->attribs);
@@ -145,7 +142,8 @@ class KinoarhivViewMovies extends JViewLegacy
 
 					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$row->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/' . $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
+						$row->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+							. $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
 					}
 					else
 					{

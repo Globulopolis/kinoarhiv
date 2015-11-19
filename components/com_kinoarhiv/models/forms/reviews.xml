@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="review_add">
-		<field name="review" type="textarea" default="" label="COM_KA_REVIEWS" translate_label="false" class="span12"
-			   filter="JComponentHelper::filterText"/>
+		<field name="review" type="textarea" default="" label="COM_KA_REVIEWS" translate_label="false" class="span12"/>
 		<field name="type" type="list" default="0" class="span6" label="COM_KA_REVIEWS_TYPE_LABEL">
 			<option value="0">COM_KA_REVIEWS_TYPE_0</option>
 			<option value="1">COM_KA_REVIEWS_TYPE_1</option>

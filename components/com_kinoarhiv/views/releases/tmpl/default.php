@@ -171,20 +171,21 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 			</div>
 		<?php endif;
 
-		foreach ($this->items as $item): ?>
+		foreach ($this->items as $item):
+			$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year)); ?>
 			<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
 				<header>
 					<h1 class="uk-article-title title title-small">
 						<?php if ($item->attribs->link_titles === ''): ?>
 							<?php if ($this->params->get('link_titles') == 1): ?>
-								<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $this->escape($item->title . $item->year_str); ?>"><?php echo $this->escape($item->title . $item->year_str); ?></a>
+								<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $title; ?>"><?php echo $title; ?></a>
 							<?php else: ?>
-								<span class="brand"><?php echo $this->escape($item->title . $item->year_str); ?></span>
+								<span class="brand"><?php echo $title; ?></span>
 							<?php endif; ?>
 						<?php elseif ($item->attribs->link_titles == 1): ?>
-							<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $this->escape($item->title . $item->year_str); ?>"><?php echo $this->escape($item->title . $item->year_str); ?></a>
+							<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $title; ?>"><?php echo $title; ?></a>
 						<?php elseif ($item->attribs->link_titles == 0): ?>
-							<span class="brand"><?php echo $this->escape($item->title . $item->year_str); ?></span>
+							<span class="brand"><?php echo $title; ?></span>
 						<?php endif; ?>
 					</h1>
 
@@ -247,7 +248,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 				<div class="content clearfix ui-helper-clearfix">
 					<div>
 						<div class="poster">
-							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $this->escape($item->title . $item->year_str); ?>">
+							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $title; ?>">
 								<div>
 									<img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
 								</div>
@@ -330,7 +331,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 
 					</div>
 					<div class="links">
-						<a href="<?php echo $item->params->get('url'); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $item->title . $item->year_str; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
+						<a href="<?php echo $item->params->get('url'); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
 							<span class="icon-chevron-right"></span></a>
 					</div>
 				</div>

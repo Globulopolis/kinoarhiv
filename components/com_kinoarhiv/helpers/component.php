@@ -151,11 +151,6 @@ class KAComponentHelper extends JComponentHelper
 				),
 				'js'  => array()
 			),
-			'jwplayer'     => array(
-				'js' => array(
-					'components/com_kinoarhiv/assets/players/jwplayer/jwplayer.js'
-				)
-			),
 			'mediaelement' => array(
 				'css' => array(
 					'components/com_kinoarhiv/assets/players/mediaelement/mediaelementplayer.css'
@@ -167,7 +162,15 @@ class KAComponentHelper extends JComponentHelper
 					'components/com_kinoarhiv/assets/players/videojs/video-js.css'
 				),
 				'js'  => array(
-					'components/com_kinoarhiv/assets/players/videojs/video.js'
+					'components/com_kinoarhiv/assets/players/videojs/video.min.js'
+				)
+			),
+			'plyr'      => array(
+				'css' => array(
+						'components/com_kinoarhiv/assets/players/plyr/plyr.css'
+				),
+				'js'  => array(
+						'components/com_kinoarhiv/assets/players/plyr/plyr.min.js'
 				)
 			)
 		);
@@ -189,11 +192,7 @@ class KAComponentHelper extends JComponentHelper
 				}
 			}
 
-			if ($player == 'jwplayer')
-			{
-				$document->addScriptDeclaration("jwplayer.key='" . $key . "';");
-			}
-			elseif ($player == 'videojs')
+			if ($player == 'videojs')
 			{
 				$document->addScriptDeclaration("videojs.options.flash.swf = '" . JURI::base() . "components/com_kinoarhiv/assets/players/videojs/video-js.swf';");
 			}
@@ -223,11 +222,6 @@ class KAComponentHelper extends JComponentHelper
 					elseif ($k == 'js')
 					{
 						$html .= "\t" . '<script src="' . $url . '" type="text/javascript"></script>' . "\n";
-
-						if ($player == 'jwplayer')
-						{
-							$html .= "\t" . '<script type="text/javascript">jwplayer.key="' . $key . '";</script>' . "\n";
-						}
 					}
 				}
 			}
@@ -362,8 +356,8 @@ class KAComponentHelper extends JComponentHelper
 	 */
 	public static function setLabel($for, $text, $title = '', $class = '', $attribs = array())
 	{
-		$title = !empty($title) ? ' title="' . JText::_($title) . '"' : '';
-		$class = !empty($class) ? ' class="' . $class . '"' : '';
+		$title = !empty($title) ? ' title="' . JText::_($title) . '" ' : ' ';
+		$class = !empty($class) ? ' class="' . $class . '" ' : ' ';
 		$attrs = '';
 
 		if (is_array($attribs) && func_num_args() == 5)
@@ -371,46 +365,62 @@ class KAComponentHelper extends JComponentHelper
 			$attrs = ArrayHelper::toString($attribs);
 		}
 
-		return '<label id="' . $for . '-lbl"' . $class . ' for="' . $for . '"' . $title . $attrs . '>' . JText::_($text) . '</label>';
+		return '<label id="' . $for . '-lbl"' . $class . 'for="' . $for . '"' . $title . $attrs . '>' . JText::_($text) . '</label>';
 	}
 
 	/**
 	 * Load language files for JS scripts
 	 *
-	 * @param   string  $file         Part of the filename w/o language tag and extention
-	 * @param   string  $jhtml        Use JHTML::script() to load
-	 * @param   string  $script_type  Type of the script(folder name in assets/js/i8n/)
+	 * @param   string   $file   Part of the filename w/o language tag and extention. Filenames must follow by the
+	 *                           next rules - filename[lang code].js. Leave empty if filename contain only language code.
+	 *                           Example: en-US.js or select2_locale_da.js
+	 * @param   string   $path   Path to the folder. Default searching in 'components/com_kinoarhiv/assets/' folder.
+	 * @param   boolean  $root   Start search from root Joomla folder.
+	 * @param   boolean  $jhtml  Use JHTML::script() to load. Set this to false if need to load JS into raw document.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 */
-	public static function getScriptLanguage($file, $jhtml, $script_type)
+	public static function getScriptLanguage($file, $path, $root=false, $jhtml=true)
 	{
 		$lang = JFactory::getLanguage()->getTag();
 		$filename = $file . $lang . '.js';
-		$basepath = JPATH_COMPONENT . DIRECTORY_SEPARATOR;
-		$url = JURI::base() . 'components/com_kinoarhiv/assets/js/i18n/';
-		$path = $basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type;
 
-		if (file_exists($path . DIRECTORY_SEPARATOR . $filename))
+		if ($root)
+		{
+			$basepath = JPATH_ROOT . '/' . $path . '/';
+			$url = JPath::clean($path . '/', '/');
+		}
+		else
+		{
+			if (empty($path))
+			{
+				$path = 'js/i18n/';
+			}
+
+			$basepath = JPATH_COMPONENT . '/assets/' . $path . '/';
+			$url = JPath::clean('components/com_kinoarhiv/assets/' . $path . '/', '/');
+		}
+
+		if (is_file(JPath::clean($basepath . $filename)))
 		{
 			if ($jhtml)
 			{
-				JHtml::_('script', $url . $script_type . '/' . $filename);
+				JHtml::_('script', $url . $filename);
 			}
 			else
 			{
-				echo '<script src="' . $url . $script_type . '/' . $filename . '" type="text/javascript"></script>';
+				echo '<script src="' . $url . $filename . '" type="text/javascript"></script>' . "\n";
 			}
 		}
-		elseif (file_exists($path . DIRECTORY_SEPARATOR . $file . substr($lang, 0, 2) . '.js'))
+		elseif (is_file(JPath::clean($basepath . $file . substr($lang, 0, 2) . '.js')))
 		{
 			if ($jhtml)
 			{
-				JHtml::_('script', $url . $script_type . '/' . $file . substr($lang, 0, 2) . '.js');
+				JHtml::_('script', $url . $file . substr($lang, 0, 2) . '.js');
 			}
 			else
 			{
-				echo '<script src="' . $url . $script_type . '/' . $file . substr($lang, 0, 2) . '.js" type="text/javascript"></script>';
+				echo '<script src="' . $url . $file . substr($lang, 0, 2) . '.js" type="text/javascript"></script>' . "\n";
 			}
 		}
 	}

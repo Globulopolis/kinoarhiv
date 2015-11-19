@@ -1140,7 +1140,7 @@ class KinoarhivModelMovie extends JModelForm
 			->select(
 				$db->quoteName(
 					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.filename', 'tr.resolution',
-						'tr.dar', 'tr.duration', 'tr._subtitles', 'tr._chapters', 'm.title', 'm.alias', 'm.fs_alias'
+						'tr.dar', 'tr.duration', 'tr._subtitles', 'tr._chapters', 'm.title', 'm.year', 'm.alias', 'm.fs_alias'
 					)
 				)
 			)

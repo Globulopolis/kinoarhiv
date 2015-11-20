@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Remove Jwplayer as it's not support video sended via PHP script.
 * Improve load speed for movie and person info page.
 * Added microdata for movie info.
 * Fixed alias processing for movies and persons.

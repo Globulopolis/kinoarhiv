@@ -232,8 +232,7 @@ endif;
 			heightStyle: 'content'
 		});
 		<?php
-		if (($this->params->get('player_type') == 'flowplayer' || $this->params->get('player_type') == 'jwplayer')
-			&& ($total_trailers > 0 || $total_movies > 0)): ?>
+		if ($this->params->get('player_type') == 'flowplayer' && ($total_trailers > 0 || $total_movies > 0)): ?>
 		$('.watch-buttons a').click(function (e) {
 			e.preventDefault();
 
@@ -664,11 +663,11 @@ endif;
 			}
 			else
 			{
-				if (is_file(JPATH_ROOT . '/components/com_kinoarhiv/assets/players/' . $this->params->get('player_type')))
+				try
 				{
 					echo $this->loadTemplate($player_layout);
 				}
-				else
+				catch (Exception $e)
 				{
 					KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
 					echo $this->loadTemplate('trailer');

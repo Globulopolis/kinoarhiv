@@ -143,34 +143,27 @@ class KAComponentHelper extends JComponentHelper
 	public static function loadPlayerAssets($player, $key = '')
 	{
 		$document = JFactory::getDocument();
+		$player_path = 'components/com_kinoarhiv/assets/players/';
 
 		$paths = array(
 			'flowplayer'   => array(
 				'css' => array(
-					'components/com_kinoarhiv/assets/players/flowplayer/skin/all-skins.css'
+					$player_path . 'flowplayer/skin/all-skins.css'
 				),
 				'js'  => array()
 			),
 			'mediaelement' => array(
 				'css' => array(
-					'components/com_kinoarhiv/assets/players/mediaelement/mediaelementplayer.css'
+					$player_path . 'mediaelement/mediaelementplayer.css'
 				),
 				'js'  => array()
 			),
 			'videojs'      => array(
 				'css' => array(
-					'components/com_kinoarhiv/assets/players/videojs/video-js.css'
+					$player_path . 'videojs/video-js.css'
 				),
 				'js'  => array(
-					'components/com_kinoarhiv/assets/players/videojs/video.min.js'
-				)
-			),
-			'plyr'      => array(
-				'css' => array(
-						'components/com_kinoarhiv/assets/players/plyr/plyr.css'
-				),
-				'js'  => array(
-						'components/com_kinoarhiv/assets/players/plyr/plyr.min.js'
+					$player_path . 'videojs/video.min.js'
 				)
 			)
 		);
@@ -183,26 +176,26 @@ class KAComponentHelper extends JComponentHelper
 				{
 					if ($k == 'css')
 					{
-						$document->addHeadLink($url, 'stylesheet', 'rel', array('type' => 'text/css'));
+						JHtml::_('stylesheet', $url);
 					}
 					elseif ($k == 'js')
 					{
-						$document->addScript($url);
+						JHtml::_('script', $url);
 					}
 				}
 			}
 
 			if ($player == 'videojs')
 			{
-				$document->addScriptDeclaration("videojs.options.flash.swf = '" . JURI::base() . "components/com_kinoarhiv/assets/players/videojs/video-js.swf';");
+				$document->addScriptDeclaration("videojs.options.flash.swf='" . JURI::base() . $player_path . "videojs/video-js.swf';");
 			}
 			elseif ($player == 'mediaelement')
 			{
-				JHtml::script('components/com_kinoarhiv/assets/players/mediaelement/mediaelement-and-player.min.js');
+				JHtml::script($player_path . 'mediaelement/mediaelement-and-player.min.js');
 			}
 			elseif ($player == 'flowplayer')
 			{
-				JHtml::script('components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js');
+				JHtml::script($player_path . 'flowplayer/flowplayer.min.js');
 			}
 
 			return true;

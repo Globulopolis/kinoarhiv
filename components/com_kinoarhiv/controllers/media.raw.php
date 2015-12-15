@@ -216,7 +216,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 					$path,
 					$params->get('throttle_video_enable'),
 					array('seconds' => $params->get('throttle_video_sec'), 'bytes' => $params->get('throttle_video_bytes')),
-					true,
+					false,
 					false
 				);
 			}

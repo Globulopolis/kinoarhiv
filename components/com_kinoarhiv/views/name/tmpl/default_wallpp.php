@@ -22,12 +22,12 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="content name wallpp">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
 		echo $this->loadTemplate('tabs'); ?>
 
 		<div class="wp-list">
@@ -41,7 +41,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 						<div class="thumb">
 							<div class="item">
 								<a href="<?php echo $wp->image; ?>" title="<?php echo $this->item->title; ?>" rel="wp">
-									<img data-original="<?php echo $wp->th_image; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_WP_NAMES_ALT') . $this->item->title; ?>" width="<?php echo $wp->th_width; ?>" height="<?php echo $wp->th_height; ?>"/>
+									<img data-original="<?php echo $wp->th_image; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_WP_NAMES_ALT') . $this->item->title; ?>" width="<?php echo $wp->th_image_width; ?>" height="<?php echo $wp->th_image_height; ?>"/>
 								</a>
 							</div>
 							<ul>

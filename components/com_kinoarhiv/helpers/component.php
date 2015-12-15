@@ -469,8 +469,7 @@ class KAComponentHelper extends JComponentHelper
 	public static function checkToken($method = 'post')
 	{
 		$token = JSession::getFormToken();
-		$app = JFactory::getApplication();
 
-		return (bool) $app->input->$method->get($token, '', 'alnum');
+		return (bool) JFactory::getApplication()->input->$method->get($token, '', 'alnum');
 	}
 }

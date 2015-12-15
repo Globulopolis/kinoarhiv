@@ -190,6 +190,7 @@ else
 				},
 				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 				unique_names: false,
+				multiple_queues: true,
 				multi_selection: false,
 				max_files: 1,
 				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
@@ -205,9 +206,6 @@ else
 								up.removeFile(file);
 							});
 						});
-					},
-					UploadComplete: function(up, files){
-						$('#image_uploader').find('.plupload_buttons').show();
 					}
 				},
 				init: {
@@ -413,4 +411,4 @@ else
 	</div>
 </div>
 
-<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT); ?>
+<?php echo JLayoutHelper::render('layouts.edit.upload_image', array(), JPATH_COMPONENT); ?>

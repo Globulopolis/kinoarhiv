@@ -22,13 +22,13 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="content movie wallpp">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article">
 		<?php
 		echo JLayoutHelper::render(
-			'layouts/navigation/movie_item_header',
+			'layouts.navigation.movie_item_header',
 			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
 			JPATH_COMPONENT
 		);

@@ -289,13 +289,13 @@ endif;
 	<meta itemprop="isFamilyFriendly" content="<?php echo ($this->item->mpaa == 'g' || $this->item->mpaa == 'pg') ? 'True' : 'False';?>">
 
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article">
 		<?php
 		echo JLayoutHelper::render(
-			'layouts/navigation/movie_item_header',
+			'layouts.navigation.movie_item_header',
 			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
 			JPATH_COMPONENT
 		);
@@ -306,9 +306,7 @@ endif;
 		<div class="info">
 			<div class="left-col">
 				<div class="poster">
-					<div style="text-align: center;">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
-					</div>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
 				</div>
 				<div class="ratings">
 					<?php if (!empty($this->item->rate_custom)): ?>

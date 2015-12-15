@@ -21,7 +21,6 @@ JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/co
 JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
 KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	Joomla.orderTable = function() {
 		var table = document.getElementById("sortTable");
@@ -51,37 +50,8 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 		});
 		tooltip_img.colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
 
-		$('#image_uploader').pluploadQueue({
-			runtimes: 'html5,flash,silverlight,html4',
-			url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&tab=<?php echo $input->get('tab', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>',
-			multipart_params: {
-				'<?php echo JSession::getFormToken(); ?>': 1
-			},
-			max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
-			unique_names: false,
-			filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-			flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-			silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
-			preinit: {
-				init: function(up, info){
-					$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-					$('#image_uploader .plupload_clear_all').click(function(e){
-						e.preventDefault();
-						up.splice();
-						$.each(up.files, function(i, file){
-							up.removeFile(file);
-						});
-					});
-				},
-				UploadComplete: function(up, files){
-					$('#image_uploader').find('.plupload_buttons').show();
-					$('input[name="file_uploaded"]').val(1);
-				}
-			}
-		});
-
 		// Reload page if files uploaded
-		$('.layout_img_upload').on('hidden', function() {
+		$('#imgModalUpload').on('hidden', function() {
 			if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
 				document.location.reload();
 			}
@@ -106,6 +76,40 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 
 		Joomla.submitbutton = function(task) {
 			if (task == 'upload') {
+				$('#image_uploader').pluploadQueue({
+					runtimes: 'html5,flash,silverlight,html4',
+					url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&tab=<?php echo $input->get('tab', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>',
+					multipart_params: {
+						'<?php echo JSession::getFormToken(); ?>': 1
+					},
+					max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
+					unique_names: false,
+					multiple_queues: true,
+					filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
+					flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+					silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+					preinit: {
+						init: function(up, info){
+							$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
+							$('#image_uploader .plupload_clear_all').click(function(e){
+								e.preventDefault();
+								up.splice();
+								$.each(up.files, function(i, file){
+									up.removeFile(file);
+								});
+							});
+						},
+						UploadComplete: function(up, files){
+							$('input[name="file_uploaded"]').val(1);
+						}
+					},
+					init: {
+						PostInit: function () {
+							$('#image_uploader_container').removeAttr('title', '');
+						}
+					}
+				});
+
 				$('#imgModalUpload').modal();
 
 				return false;
@@ -276,4 +280,4 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
-<?php echo JLayoutHelper::render('layouts/edit/upload_image', array(), JPATH_COMPONENT);
+<?php echo JLayoutHelper::render('layouts.edit.upload_image', array(), JPATH_COMPONENT);

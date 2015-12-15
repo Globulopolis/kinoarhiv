@@ -34,7 +34,8 @@ class KinoarhivModelGenres extends JModelList
 
 		$query->select($db->quoteName(array('id', 'name', 'alias', 'stats')))
 			->from($db->quoteName('#__ka_genres'))
-			->where($db->quoteName('state') . ' = 1 AND ' . $db->quoteName('access') . ' IN (' . $groups . ') AND ' . $db->quoteName('language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
+			->where($db->quoteName('state') . ' = 1 AND ' . $db->quoteName('access') . ' IN (' . $groups . ')')
+			->where($db->quoteName('language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
 
 		return $query;
 	}

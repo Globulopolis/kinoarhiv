@@ -91,46 +91,26 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<?php if ($this->params->get('filter_premieres_enable') == 1): ?>
-		<div class="selectlist">
-			<div class="selectlist-premieres">
-				<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
-					<input type="hidden" name="option" value="com_kinoarhiv"/>
-					<input type="hidden" name="view" value="premieres"/>
-					<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
-					<input type="hidden" name="lang" value="<?php echo String::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
-
-					<?php if ($this->params->get('filter_premieres_country') == 1): ?>
-						<?php echo JText::_('COM_KA_PREMIERES'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['countries'], 'country', array('class' => 'inputbox'), 'code', 'name', $this->sel_country); ?>
-					<?php endif; ?>
-
-					<?php if ($this->params->get('filter_premieres_year') == 1): ?>
-						<?php echo JHtml::_('select.genericlist', $this->selectlist['years'], 'year', array('class' => 'inputbox span2'), 'value', 'name', $this->sel_year); ?>
-					<?php endif; ?>
-
-					<?php if ($this->params->get('filter_premieres_month') == 1): ?>
-						<?php echo JHtml::_('select.genericlist', $this->selectlist['months'], 'month', array('class' => 'inputbox span3'), 'value', 'name', $this->sel_month); ?>
-						<br/>
-					<?php endif; ?>
-
-					<?php if ($this->params->get('filter_release_vendor') == 1): ?>
-						<?php echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR'); ?>: <?php echo JHtml::_('select.genericlist', $this->selectlist['vendors'], 'vendor', array('class' => 'inputbox'), 'value', 'name', $this->sel_vendor); ?>
-					<?php endif; ?>
-
-					<div class="btn-group uk-button-group">
-						<button type="submit" class="btn btn-default uk-button uk-button-small">
-							<span class="ui-icon ui-icon-search"></span></button>
-						<button type="reset" class="btn btn-default uk-button uk-button-small">
-							<span class="ui-icon ui-icon-close"></span></button>
-						<button type="button" class="btn btn-default uk-button uk-button-small cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&Itemid=' . $this->itemid, false); ?>';">
-							<span class="ui-icon ui-icon-cancel"></span></button>
-					</div>
-				</form>
-			</div>
-		</div>
+		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" id="adminForm" method="post">
+			<input type="hidden" name="option" value="com_kinoarhiv"/>
+			<input type="hidden" name="view" value="premieres"/>
+			<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
+			<input type="hidden" name="lang" value="<?php echo String::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
+			<?php
+			echo JHtml::_('form.token');
+			echo JLayoutHelper::render(
+				'layouts.searchtools.default',
+				array(
+					'view' => $this,
+					'context' => 'premieres'
+				),
+				JPATH_COMPONENT);
+			?>
+		</form>
 	<?php endif; ?>
 
 	<?php if (count($this->items) > 0): ?>
@@ -173,11 +153,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php if ($item->attribs->show_create_date === ''): ?>
 								<?php if ($this->params->get('show_pubdate') == 1): ?>
 									<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-									<time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
+									<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $item->created, 'c'); ?>"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 								<?php endif; ?>
 							<?php elseif ($item->attribs->show_create_date == 1): ?>
 								<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-								<time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
+								<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $item->created, 'c'); ?>"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 							<?php endif; ?>
 
 							<?php
@@ -193,11 +173,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php if ($item->attribs->show_modify_date === ''): ?>
 								<?php if ($this->params->get('show_moddate') == 1): ?>
 									<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-									<time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
+									<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 								<?php endif; ?>
 							<?php elseif ($item->attribs->show_modify_date == 1): ?>
 								<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-								<time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
+								<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 							<?php endif; ?>
 						</p>
 						<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
@@ -214,14 +194,10 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 				<?php echo $item->event->afterDisplayTitle; ?>
 				<?php echo $item->event->beforeDisplayContent; ?>
 				<div class="clear"></div>
-				<div class="content clearfix ui-helper-clearfix">
+				<div class="content content-list clearfix ui-helper-clearfix">
 					<div>
 						<div class="poster">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>">
-								<div>
-									<img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
-								</div>
-							</a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>
 						</div>
 						<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
 							<div class="text"><?php echo $item->text; ?></div>
@@ -317,9 +293,9 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 						<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>
 							<div class="premiere-date">
 								<div class="date"><?php echo JHTML::_('date', $item->premiere_date, 'd'); ?></div>
-								<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?><?php echo JHTML::_('date', $item->premiere_date, 'Y'); ?></div>
+								<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?> <?php echo JHTML::_('date', $item->premiere_date, 'Y'); ?></div>
 								<div class="vendor">
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor=' . $item->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $item->vendor; ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor=' . $item->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $this->escape(KAContentHelper::formatItemTitle($item->company_name, $item->company_name_intl)); ?></a>
 								</div>
 							</div>
 						<?php endif; ?>

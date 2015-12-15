@@ -23,9 +23,13 @@ class KinoarhivViewName extends JViewLegacy
 
 	protected $items = null;
 
-	protected $filters = null;
+	protected $params;
+
+	protected $user;
 
 	protected $page;
+
+	protected $itemid;
 
 	/**
 	 * Execute and display a template script.
@@ -84,22 +88,7 @@ class KinoarhivViewName extends JViewLegacy
 
 		// Prepare the data
 		// Build title string
-		$item->title = '';
-
-		if ($item->name != '')
-		{
-			$item->title .= $item->name;
-		}
-
-		if ($item->name != '' && $item->latin_name != '')
-		{
-			$item->title .= ' / ';
-		}
-
-		if ($item->latin_name != '')
-		{
-			$item->title .= $item->latin_name;
-		}
+		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
 		// Build date string
 		$item->dates = '';
@@ -246,89 +235,77 @@ class KinoarhivViewName extends JViewLegacy
 		}
 
 		// Build title string
-		$item->title = '';
+		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
-		if ($item->name != '')
+		foreach ($items as $_item)
 		{
-			$item->title .= $item->name;
-		}
-
-		if ($item->name != '' && $item->latin_name != '')
-		{
-			$item->title .= ' / ';
-		}
-
-		if ($item->latin_name != '')
-		{
-			$item->title .= $item->latin_name;
-		}
-
-		$throttle_enable = $params->get('throttle_image_enable', 0);
-		$filepath = $params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR
-			. $item->id . DIRECTORY_SEPARATOR . 'wallpapers';
-
-		foreach ($items as $key => $_item)
-		{
-			if ($throttle_enable == 0)
+			if ($params->get('throttle_image_enable', 0) == 0)
 			{
-				$checking_path = JPath::clean($filepath . DIRECTORY_SEPARATOR . $_item->filename);
+				$checking_path = JPath::clean(
+					$params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias
+					. DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'wallpapers' . DIRECTORY_SEPARATOR . $_item->filename
+				);
 
 				if (!is_file($checking_path))
 				{
-					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_wp.png';
+					$_item->image = 'javascript:void(0);';
+					$_item->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_wp.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_wp.png',
 						false
 					);
-					$items[$key]->th_image_width = $dimension->width;
-					$items[$key]->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension->width;
+					$_item->th_image_height = $dimension->height;
 				}
 				else
 				{
-					$item->fs_alias = rawurlencode($item->fs_alias);
+					$_item->fs_alias = rawurlencode($item->fs_alias);
 
 					if (String::substr($params->get('media_actor_wallpapers_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
+						$_item->image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+							. $_item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
+						$_item->th_image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+							. $_item->fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 					else
 					{
-						$items[$key]->image = $params->get('media_actor_wallpapers_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
-						$items[$key]->th_image = $params->get('media_actor_wallpapers_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
+						$_item->image = $params->get('media_actor_wallpapers_root_www') . '/' . $_item->fs_alias . '/'
+							. $item->id . '/wallpapers/' . $_item->filename;
+						$_item->th_image = $params->get('media_actor_wallpapers_root_www') . '/' . $_item->fs_alias . '/'
+							. $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$items[$key]->image,
+							$_item->image,
 						true,
 						(int) $params->get('size_x_wallpp'),
 						$_item->dimension
 					);
-					$items[$key]->th_image_width = $dimension->width;
-					$items[$key]->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension->width;
+					$_item->th_image_height = $dimension->height;
 				}
 			}
 			else
 			{
-				$items[$key]->image = JRoute::_(
+				$_item->image = JRoute::_(
 					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=1&id=' . $item->id .
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid .
 					'&gender=' . $item->gender
 				);
-				$items[$key]->th_image = JRoute::_(
+				$_item->th_image = JRoute::_(
 					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=1&id=' . $item->id .
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid .
 					'&thumbnail=1&gender=' . $item->gender
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $items[$key]->image,
+					JUri::base() . $_item->image,
 					true,
 					(int) $params->get('size_x_wallpp'),
 					$_item->dimension
 				);
-				$items[$key]->th_image_width = $dimension->width;
-				$items[$key]->th_image_height = $dimension->height;
+				$_item->th_image_width = $dimension->width;
+				$_item->th_image_height = $dimension->height;
 			}
 		}
 
@@ -371,90 +348,78 @@ class KinoarhivViewName extends JViewLegacy
 		}
 
 		// Build title string
-		$item->title = '';
+		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
-		if ($item->name != '')
-		{
-			$item->title .= $item->name;
-		}
-
-		if ($item->name != '' && $item->latin_name != '')
-		{
-			$item->title .= ' / ';
-		}
-
-		if ($item->latin_name != '')
-		{
-			$item->title .= $item->latin_name;
-		}
-
-		$throttle_enable = $params->get('throttle_image_enable', 0);
-		$filepath = $params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR
-			. $item->id . DIRECTORY_SEPARATOR . 'photo';
 		$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
-		foreach ($items as $key => $_item)
+		foreach ($items as $_item)
 		{
-			if ($throttle_enable == 0)
+			if ($params->get('throttle_image_enable', 0) == 0)
 			{
-				$checking_path = JPath::clean($filepath . DIRECTORY_SEPARATOR . $_item->filename);
+				$checking_path = JPath::clean(
+					$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR
+					. $item->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $_item->filename
+				);
 
 				if (!is_file($checking_path))
 				{
-					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png';
+					$_item->image = 'javascript:void(0);';
+					$_item->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
+						. '/images/' . $no_cover . '.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png',
 						false
 					);
-					$items[$key]->th_image_width = $dimension->width;
-					$items[$key]->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension->width;
+					$_item->th_image_height = $dimension->height;
 				}
 				else
 				{
-					$item->fs_alias = rawurlencode($item->fs_alias);
+					$_item->fs_alias = rawurlencode($item->fs_alias);
 
 					if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
+						$_item->image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+							. $_item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
+						$_item->th_image = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+							. $_item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
 					}
 					else
 					{
-						$items[$key]->image = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
-						$items[$key]->th_image = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
+						$_item->image = $params->get('media_actor_photo_root_www') . '/' . $_item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
+						$_item->th_image = $params->get('media_actor_photo_root_www') . '/' . $_item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$items[$key]->image,
+							$_item->image,
 						true,
 						(int) $params->get('size_x_photo'),
 						$_item->dimension
 					);
-					$items[$key]->th_image_width = $dimension->width;
-					$items[$key]->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension->width;
+					$_item->th_image_height = $dimension->height;
 				}
 			}
 			else
 			{
-				$items[$key]->image = JRoute::_(
+				$_item->image = JRoute::_(
 					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid .
 					'&gender=' . $item->gender
 				);
-				$items[$key]->th_image = JRoute::_(
+				$_item->th_image = JRoute::_(
 					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid .
 					'&thumbnail=1&gender=' . $item->gender
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $items[$key]->image,
+					JUri::base() . $_item->image,
 					true,
 					(int) $params->get('size_x_photo'),
 					$_item->dimension
 				);
-				$items[$key]->th_image_width = $dimension->width;
-				$items[$key]->th_image_height = $dimension->height;
+				$_item->th_image_width = $dimension->width;
+				$_item->th_image_height = $dimension->height;
 			}
 		}
 
@@ -478,6 +443,7 @@ class KinoarhivViewName extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item = $this->get('NameData');
 		$items = $this->get('Awards');
 
 		if (count($errors = $this->get('Errors')) || is_null($items))
@@ -487,7 +453,7 @@ class KinoarhivViewName extends JViewLegacy
 			return false;
 		}
 
-		if (($items->attribs->tab_name_awards === '' && $params->get('tab_name_awards') === '0') || $items->attribs->tab_name_awards === '0')
+		if (($item->attribs->tab_name_awards === '' && $params->get('tab_name_awards') === '0') || $item->attribs->tab_name_awards === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
 			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
@@ -495,25 +461,11 @@ class KinoarhivViewName extends JViewLegacy
 
 		// Prepare the data
 		// Build title string
-		$items->title = '';
-
-		if ($items->name != '')
-		{
-			$items->title .= $items->name;
-		}
-
-		if ($items->name != '' && $items->latin_name != '')
-		{
-			$items->title .= ' / ';
-		}
-
-		if ($items->latin_name != '')
-		{
-			$items->title .= $items->latin_name;
-		}
+		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
 		$this->params = $params;
-		$this->item = $items;
+		$this->item = $item;
+		$this->items = $items;
 
 		$this->_prepareDocument();
 		$pathway = $app->getPathway();

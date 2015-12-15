@@ -13,6 +13,11 @@ defined('_JEXEC') or die;
 use Joomla\String\String;
 use Joomla\Utilities\ArrayHelper;
 
+/**
+ * Class KinoarhivModelMediamanager
+ *
+ * @since  3.0
+ */
 class KinoarhivModelMediamanager extends JModelList
 {
 	/**
@@ -53,7 +58,6 @@ class KinoarhivModelMediamanager extends JModelList
 	public function getPath($section = '', $type = '', $tab = 0, $id = 0)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$path = JPATH_ROOT . DIRECTORY_SEPARATOR . 'tmp';
 		$folder = '';
@@ -64,8 +68,6 @@ class KinoarhivModelMediamanager extends JModelList
 
 		if ($section == 'movie')
 		{
-			$table = '#__ka_movies';
-
 			if ($type == 'gallery')
 			{
 				if ($tab == 1)
@@ -92,8 +94,6 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 		elseif ($section == 'name')
 		{
-			$table = '#__ka_names';
-
 			if ($type == 'gallery')
 			{
 				if ($tab == 1)
@@ -118,13 +118,6 @@ class KinoarhivModelMediamanager extends JModelList
 			return false;
 		}
 
-		/*$query = $db->getQuery(true)
-			->select($db->quoteName('fs_alias'))
-			->from($db->quoteName($table))
-			->where($db->quoteName('id') . ' = ' . (int) $id);
-
-		$db->setQuery($query);
-		$fs_alias = $db->loadResult();*/
 		$fs_alias = $this->getFilesystemAlias($section, $id);
 
 		$result = JPath::clean($path . DIRECTORY_SEPARATOR . $fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $folder);
@@ -153,12 +146,14 @@ class KinoarhivModelMediamanager extends JModelList
 		{
 			$table = '#__ka_movies';
 		}
-		elseif ($section == 'names')
+		elseif ($section == 'name')
 		{
 			$table = '#__ka_names';
 		}
 		else
 		{
+			KAComponentHelper::eventLog('Wrong section type!');
+
 			return false;
 		}
 
@@ -183,7 +178,7 @@ class KinoarhivModelMediamanager extends JModelList
 				$db->setQuery($query);
 				$result = $db->loadResult();
 			}
-			elseif ($section == 'names')
+			elseif ($section == 'name')
 			{
 				$query = $db->getQuery(true)
 					->select($db->quoteName(array('name', 'latin_name')))
@@ -203,10 +198,11 @@ class KinoarhivModelMediamanager extends JModelList
 				}
 			}
 
-			$fs_alias = String::substr(JFilterOutput::stringURLSafe($result), 0, 1);
+			$result = JPath::clean($result);
+			$fs_alias = rawurlencode(String::substr($result, 0, 1));
 		}
 
-		return JFactory::getLanguage()->transliterate($fs_alias);
+		return $fs_alias;
 	}
 
 	/**
@@ -283,7 +279,9 @@ class KinoarhivModelMediamanager extends JModelList
 				);
 				$query->from($db->quoteName('#__ka_movies_gallery', 'g'))
 					->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'))
-					->where($db->quoteName('g.type') . ' = ' . $tab . ' AND (' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1) AND ' . $db->quoteName('g.movie_id') . ' = ' . (int) $id);
+					->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+					->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
+					->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
 
 				$orderCol = $this->state->get('list.ordering', 'g.id');
 				$orderDirn = $this->state->get('list.direction', 'desc');
@@ -315,7 +313,8 @@ class KinoarhivModelMediamanager extends JModelList
 				$query->select($db->quoteName('ag.title', 'access_level'))
 					->join('LEFT', $db->quoteName('#__viewlevels', 'ag') . ' ON ' . $db->quoteName('ag.id') . ' = ' . $db->quoteName('g.access'));
 
-				$query->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1) AND ' . $db->quoteName('g.movie_id') . ' = ' . (int) $id);
+				$query->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
+					->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
 
 				// Add the list ordering clause.
 				$orderCol = $this->state->get('list.ordering', 'g.id');
@@ -347,7 +346,9 @@ class KinoarhivModelMediamanager extends JModelList
 				);
 				$query->from($db->quoteName('#__ka_names_gallery', 'g'))
 					->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('g.name_id'))
-					->where($db->quoteName('g.type') . ' = ' . $tab . ' AND (' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1) AND ' . $db->quoteName('g.name_id') . ' = ' . (int) $id);
+					->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+					->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
+					->where($db->quoteName('g.name_id') . ' = ' . (int) $id);
 
 				$orderCol = $this->state->get('list.ordering', 'g.id');
 				$orderDirn = $this->state->get('list.direction', 'desc');
@@ -409,7 +410,8 @@ class KinoarhivModelMediamanager extends JModelList
 
 					$query->update($db->quoteName('#__ka_movies_gallery'))
 						->set($db->quoteName('poster_frontpage') . " = '0'")
-						->where($db->quoteName('movie_id') . " = " . (int) $item_id . " AND " . $db->quoteName('type') . " = 2 AND " . $db->quoteName('id') . " != " . $result['id']);
+						->where($db->quoteName('movie_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 2')
+						->where($db->quoteName('id') . ' != ' . $result['id']);
 					$db->setQuery($query);
 					$db->execute();
 				}
@@ -445,7 +447,8 @@ class KinoarhivModelMediamanager extends JModelList
 
 					$query->update($db->quoteName('#__ka_names_gallery'))
 						->set($db->quoteName('photo_frontpage') . " = '0'")
-						->where($db->quoteName('name_id') . " = " . (int) $item_id . " AND " . $db->quoteName('type') . " = 3 AND " . $db->quoteName('id') . " != " . $result['id']);
+						->where($db->quoteName('name_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 3')
+						->where($db->quoteName('id') . ' != ' . $result['id']);
 					$db->setQuery($query);
 					$db->execute();
 				}
@@ -693,6 +696,15 @@ class KinoarhivModelMediamanager extends JModelList
 		return true;
 	}
 
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on trailer save.
+	 *
+	 * @since   12.2
+	 */
 	public function apply($data)
 	{
 		$app = JFactory::getApplication();
@@ -1046,6 +1058,16 @@ class KinoarhivModelMediamanager extends JModelList
 		return true;
 	}
 
+	/**
+	 * Method for getting the form from the model.
+	 *
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since   3.0
+	 */
 	public function getForm($data = array(), $loadData = true)
 	{
 		$form = $this->loadForm('com_kinoarhiv.mediamanager', 'mediamanager', array('control' => 'form', 'load_data' => $loadData));
@@ -1058,6 +1080,13 @@ class KinoarhivModelMediamanager extends JModelList
 		return $form;
 	}
 
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  array    The default data is an empty array.
+	 *
+	 * @since   3.0
+	 */
 	protected function loadFormData()
 	{
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.trailers.' . JFactory::getUser()->id . '.edit_data', array());
@@ -1070,6 +1099,14 @@ class KinoarhivModelMediamanager extends JModelList
 		return $data;
 	}
 
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.6.1
+	 */
 	public function getItems()
 	{
 		$items = parent::getItems();
@@ -1093,6 +1130,11 @@ class KinoarhivModelMediamanager extends JModelList
 		return $items;
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
@@ -1127,6 +1169,13 @@ class KinoarhivModelMediamanager extends JModelList
 		return $result;
 	}
 
+	/**
+	 * Saves the manually set order of videofiles.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function saveOrderTrailerVideofile()
 	{
 		$app = JFactory::getApplication();
@@ -1173,6 +1222,13 @@ class KinoarhivModelMediamanager extends JModelList
 		return json_encode(array('success' => true, 'message' => ''));
 	}
 
+	/**
+	 * Save default subtitle for trailer.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function saveDefaultTrailerSubtitlefile()
 	{
 		$app = JFactory::getApplication();
@@ -1217,6 +1273,13 @@ class KinoarhivModelMediamanager extends JModelList
 		return json_encode(array('success' => true, 'message' => ''));
 	}
 
+	/**
+	 * Saves the manually set order of subtitles.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function saveOrderTrailerSubtitlefile()
 	{
 		$app = JFactory::getApplication();
@@ -1440,7 +1503,18 @@ class KinoarhivModelMediamanager extends JModelList
 		);
 	}
 
-	public function saveSubtitles($edit = false, $file = '', $trailer_id, $movie_id = 0, $subtitle_id = null)
+	/**
+	 * Save info about subtitles file into DB
+	 *
+	 * @param   string   $file         Filename
+	 * @param   integer  $trailer_id   ID of the trailer
+	 * @param   integer  $movie_id     ID of the movie
+	 * @param   integer  $subtitle_id  ID of the movie
+	 * @param   boolean  $edit         If set to true, we save info from subtitle information edit form.
+	 *
+	 * @return    mixed    Last insert ID on INSERT or true on UPDATE
+	 */
+	public function saveSubtitles($file, $trailer_id, $movie_id = 0, $subtitle_id = null, $edit = false)
 	{
 		jimport('joomla.filesystem.file');
 		JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
@@ -1513,7 +1587,7 @@ class KinoarhivModelMediamanager extends JModelList
 			$subtl_arr = json_decode($result, true);
 
 			/* On 'else' condition we do nothing because no information about trailer exists in DB.
-			   In this situation files will be successfully uploaded, but not saved in DB.
+			 * In this situation files will be successfully uploaded, but not saved in DB.
 			*/
 			if (!empty($trailer_id))
 			{
@@ -1622,13 +1696,23 @@ class KinoarhivModelMediamanager extends JModelList
 
 				$output = $media->createScreenshot($data);
 
-				if ($output[0])
+				if ($output)
 				{
-					return json_encode(array('file' => $output[0], 'output' => $output[1]));
+					if ($output[0])
+					{
+						return json_encode(array('file' => $output[0], 'output' => $output[1]));
+					}
+					else
+					{
+						return 'error:' . $output[1];
+					}
 				}
 				else
 				{
-					return 'error:' . $output[1];
+					return 'error:' . JText::sprintf(
+						'COM_KA_MEDIAMANAGER_FFMPEG_NOTFOUND',
+						JComponentHelper::getParams('com_kinoarhiv')->get('ffmpeg_path') . ', ' . JComponentHelper::getParams('com_kinoarhiv')->get('ffprobe_path')
+					);
 				}
 			}
 		}
@@ -1678,10 +1762,29 @@ class KinoarhivModelMediamanager extends JModelList
 			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $file);
 			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $file));
 			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $file, true);
+
+			if (is_array($duration))
+			{
+				$duration = '00:00:00:000';
+			}
+
+			if (is_object($video_info))
+			{
+				$stream_width  = !isset($video_info->streams[0]->width) ? 0 : $video_info->streams[0]->width;
+				$stream_height = !isset($video_info->streams[0]->height) ? 0 : $video_info->streams[0]->height;
+				$stream_dar    = !isset($video_info->streams[0]->display_aspect_ratio) ? '16x9' : $video_info->streams[0]->display_aspect_ratio;
+			}
+			else
+			{
+				$stream_width  = 0;
+				$stream_height = 0;
+				$stream_dar    = '16x9';
+			}
+
 			$files_arr[] = array(
 				'src'        => $file,
 				'type'       => $mime_type,
-				'resolution' => $video_info->streams[0]->width . 'x' . $video_info->streams[0]->height
+				'resolution' => $stream_width . 'x' . $stream_height
 			);
 
 			$new_obj = ArrayHelper::toObject($files_arr);
@@ -1689,8 +1792,8 @@ class KinoarhivModelMediamanager extends JModelList
 
 			$query->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('filename') . " = '" . json_encode($new_obj) . "'")
-				->set($db->quoteName('resolution') . " = '" . $video_info->streams[0]->width . 'x' . $video_info->streams[0]->height . "'")
-				->set($db->quoteName('dar') . " = '" . $video_info->streams[0]->display_aspect_ratio . "'")
+				->set($db->quoteName('resolution') . " = '" . $stream_width . 'x' . $stream_height . "'")
+				->set($db->quoteName('dar') . " = '" . $stream_dar . "'")
 				->set($db->quoteName('duration') . " = '" . $duration . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $trailer_id);
 
@@ -1712,28 +1815,50 @@ class KinoarhivModelMediamanager extends JModelList
 
 			if ($video_info === false)
 			{
-				return false;
+				KAComponentHelper::eventLog(
+					JText::sprintf(
+						'COM_KA_MEDIAMANAGER_FFMPEG_NOTFOUND',
+						JComponentHelper::getParams('com_kinoarhiv')->get('ffmpeg_path') . ', ' . JComponentHelper::getParams('com_kinoarhiv')->get('ffprobe_path')
+					)
+				);
 			}
 
 			$video_info = json_decode($video_info);
 			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $file, true);
 
+			if (is_array($duration))
+			{
+				$duration = '00:00:00:000';
+			}
+
+			if (is_object($video_info))
+			{
+				$stream_width  = !isset($video_info->streams[0]->width) ? 0 : $video_info->streams[0]->width;
+				$stream_height = !isset($video_info->streams[0]->height) ? 0 : $video_info->streams[0]->height;
+				$stream_dar    = !isset($video_info->streams[0]->display_aspect_ratio) ? '16x9' : $video_info->streams[0]->display_aspect_ratio;
+			}
+			else
+			{
+				$stream_width  = 0;
+				$stream_height = 0;
+				$stream_dar    = '16x9';
+			}
+
 			$files_arr = array(
 				0 => array(
 					'src'        => $file,
 					'type'       => $mime_type,
-					'resolution' => $video_info->streams[0]->width . 'x' . $video_info->streams[0]->height
+					'resolution' => $stream_width . 'x' . $stream_height
 				)
 			);
 
 			$new_obj = ArrayHelper::toObject($files_arr);
 			$query = $db->getQuery(true);
 
-			// TODO Wrong dar value
 			$query->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('filename') . " = '" . json_encode($new_obj) . "'")
-				->set($db->quoteName('resolution') . " = '" . $video_info->streams[0]->width . 'x' . $video_info->streams[0]->height . "'")
-				->set($db->quoteName('dar') . " = '" . $video_info->streams[0]->display_aspect_ratio . "'")
+				->set($db->quoteName('resolution') . " = '" . $stream_width . 'x' . $stream_height . "'")
+				->set($db->quoteName('dar') . " = '" . $stream_dar . "'")
 				->set($db->quoteName('duration') . " = '" . $duration . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $trailer_id);
 
@@ -1752,6 +1877,13 @@ class KinoarhivModelMediamanager extends JModelList
 		return true;
 	}
 
+	/**
+	 * Remove a file associated with trailer.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function removeTrailerFiles()
 	{
 		$app = JFactory::getApplication();

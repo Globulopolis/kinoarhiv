@@ -19,6 +19,8 @@ class KinoarhivViewGenres extends JViewLegacy
 {
 	protected $items = null;
 
+	protected $params;
+
 	/**
 	 * Execute and display a template script.
 	 *
@@ -28,20 +30,17 @@ class KinoarhivViewGenres extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$items = $this->get('Items');
+		$this->items = $this->get('Items');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($this->items))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
-
-		$this->params = $params;
-		$this->items = $items;
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$this->_prepareDocument();
 

@@ -22,12 +22,12 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="content name photo">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
 		echo $this->loadTemplate('tabs'); ?>
 
 		<div class="photos-list">
@@ -36,7 +36,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 					<div class="thumb">
 						<div class="item">
 							<a href="<?php echo $photo->image; ?>" title="<?php echo $this->item->title; ?>" rel="photos">
-								<img data-original="<?php echo $photo->th_image; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>" width="<?php echo $photo->th_width; ?>" height="<?php echo $photo->th_height; ?>"/>
+								<img data-original="<?php echo $photo->th_image; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>" width="<?php echo $photo->th_image_width; ?>" height="<?php echo $photo->th_image_height; ?>"/>
 							</a>
 						</div>
 						<ul>

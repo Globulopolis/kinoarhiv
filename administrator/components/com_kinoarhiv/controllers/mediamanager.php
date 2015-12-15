@@ -40,12 +40,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
-		$lang = JFactory::getLanguage();
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$model = $this->getModel('mediamanager');
 		$dest_dir = $model->getPath();
-		$filename = $lang->transliterate($app->input->get('name', '', 'string'));
+		$filename = rawurlencode($app->input->get('name', '', 'string'));
 		$id = 0;
 		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$item_id = $app->input->get('id', 0, 'int');
@@ -352,7 +351,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$old_filename = $rn_dest_dir . $filename;
 						$ext = JFile::getExt($old_filename);
 						$video_info = json_decode($media->getVideoInfo($rn_dest_dir . $filename));
-						$video_height = $video_info->streams[0]->height;
+						$video_height = isset($video_info->streams[0]) ? $video_info->streams[0]->height : 0;
 						$rn_filename = $fs_alias . '-' . $trailer_id . '-' . $item_id . '.' . $video_height . 'p.' . $ext;
 						rename($old_filename, $rn_dest_dir . $rn_filename);
 
@@ -375,7 +374,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$rn_filename = $fs_alias . '-' . $trailer_id . '.subtitles.' . $lang_code . '.' . $ext;
 						rename($old_filename, $rn_dest_dir . $rn_filename);
 
-						$model->saveSubtitles(false, $rn_filename, $trailer_id, $item_id);
+						$model->saveSubtitles($rn_filename, $trailer_id, $item_id, false);
 					}
 					elseif ($app->input->get('upload') == 'chapters')
 					{
@@ -851,7 +850,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$subtitle_id = $app->input->get('subtitle_id', 0, 'int');
 
 		$model = $this->getModel('mediamanager');
-		$result = $model->saveSubtitles(true, '', $trailer_id, $movie_id, $subtitle_id);
+		$result = $model->saveSubtitles('', $trailer_id, $movie_id, $subtitle_id, true);
 
 		echo $result;
 	}

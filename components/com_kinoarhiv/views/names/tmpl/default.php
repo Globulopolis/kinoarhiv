@@ -93,7 +93,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
@@ -104,7 +104,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		</div>
 	<?php endif; ?>
 
-	<?php if (count($this->items['names']) > 0):
+	<?php if (count($this->items) > 0):
 		if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')):
 			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			echo '<br />' . JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_' . $plural[0], $this->pagination->total);
@@ -116,14 +116,14 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		</div>
 	<?php endif;
 
-		foreach ($this->items['names'] as $item): ?>
+		foreach ($this->items as $item): ?>
 			<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>">
 				<header>
 					<h1 class="uk-article-title title title-small">
 						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="brand" title="<?php echo $this->escape($item->title); ?>"><?php echo $this->escape($item->title); ?><?php echo $item->date_range; ?></a>
 					</h1>
 				</header>
-				<div class="content clearfix ui-helper-clearfix">
+				<div class="content content-list clearfix ui-helper-clearfix">
 					<div>
 						<div class="poster">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape($item->title); ?>">

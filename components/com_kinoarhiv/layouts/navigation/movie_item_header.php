@@ -44,11 +44,11 @@ $title = $this->escape(KAContentHelper::formatItemTitle($data['item']->title, ''
 		<?php if ($data['item']->attribs->show_create_date === ''): ?>
 			<?php if ($data['params']->get('show_pubdate') == 1): ?>
 				<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-				<time pubdate="" datetime="<?php echo $data['item']->created; ?>"><?php echo date('j F Y', strtotime($data['item']->created)); ?></time>
+				<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $data['item']->created, 'c'); ?>"><?php echo JHtml::_('date', $data['item']->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 			<?php endif; ?>
 		<?php elseif ($data['item']->attribs->show_create_date == 1): ?>
 			<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-			<time pubdate="" datetime="<?php echo $data['item']->created; ?>"><?php echo date('j F Y', strtotime($data['item']->created)); ?></time>
+			<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $data['item']->created, 'c'); ?>"><?php echo JHtml::_('date', $data['item']->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 		<?php endif; ?>
 
 		<?php
@@ -64,11 +64,11 @@ $title = $this->escape(KAContentHelper::formatItemTitle($data['item']->title, ''
 		<?php if ($data['item']->attribs->show_modify_date === ''): ?>
 			<?php if ($data['params']->get('show_moddate') == 1): ?>
 				<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-				<time pubdate="" datetime="<?php echo $data['item']->modified; ?>"><?php echo date('j F Y', strtotime($data['item']->modified)); ?></time>
+				<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $data['item']->modified, 'c'); ?>"><?php echo JHtml::_('date', $data['item']->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 			<?php endif; ?>
 		<?php elseif ($data['item']->attribs->show_modify_date == 1): ?>
 			<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-			<time pubdate="" datetime="<?php echo $data['item']->modified; ?>"><?php echo date('j F Y', strtotime($data['item']->modified)); ?></time>
+			<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $data['item']->modified, 'c'); ?>"><?php echo JHtml::_('date', $data['item']->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 		<?php endif; ?>
 	</p>
 </div>

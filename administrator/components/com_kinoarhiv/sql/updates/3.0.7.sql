@@ -93,6 +93,8 @@ CREATE TABLE IF NOT EXISTS `#__ka_media_types` (
 
 INSERT IGNORE INTO `#__ka_media_types`(`id`,`title`,`language`) VALUES (1,'CAMRip (CAM)','*'),(2,'Telesync (TS)','*'),(3,'Super Telesync (SuperTS, Super-TS, Оцифровка)','*'),(4,'Telecine (TC)','*'),(5,'VHS-Rip (VHSRip)','*'),(6,'DVD-Screener (DVDScr) (SCR)','*'),(7,'SCREENER (SCR), VHS-SCREENER (VHSScr)','*'),(8,'TV-Rip (TVRip)','*'),(9,'SAT-Rip (SATRip)','*'),(10,'DVD-Rip (DVDRip)','*'),(11,'DVD5 (DVD-5)','*'),(12,'DVD9 (DVD-9)','*'),(13,'HDTV-Rip (HDTVRip)','*'),(14,'BD-Rip (BDRip)','*'),(15,'Blu-Ray','*'),(16,'HDDVD','*'),(17,'Workprint (WP)','*'),(18,'Laserdisc-RIP (LDRip)','*'),(19,'HDDVD-Rip (HDDVDRip)','*'),(20,'Другое','*');
 
+ALTER TABLE `#__ka_trailers` CHANGE `duration` `duration` VARCHAR(12) DEFAULT '00:00:00.000' NOT NULL;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

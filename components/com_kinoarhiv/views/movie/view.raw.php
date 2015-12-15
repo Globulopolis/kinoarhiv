@@ -19,6 +19,8 @@ class KinoarhivViewMovie extends JViewLegacy
 {
 	protected $item = null;
 
+	protected $params;
+
 	/**
 	 * Execute and display a template script.
 	 *

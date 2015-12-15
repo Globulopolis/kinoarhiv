@@ -53,20 +53,18 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 </script>
 <div class="content name">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts/navigation/name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
 		echo $this->loadTemplate('tabs'); ?>
 
 		<div class="info">
 			<div class="left-col">
 				<div class="poster">
-					<div style="text-align: center;">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=photo&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->item->title; ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/></a>
-					</div>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=photo&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->item->title; ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/></a>
 				</div>
 			</div>
 			<div class="right-col">

@@ -19,14 +19,23 @@ $data = $displayData;
 	</div>
 	<div class="modal-body">
 		<div>
-			<input type="hidden" autofocus="autofocus" />
-			<div class="small">
-				<?php echo JText::sprintf(
-					'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_VIDEO',
-					$data['params']->get('upload_mime_video')
-				);
-				?>
+			<div style="margin: 0.4em 0 0;">
+				<div class="ui-widget">
+					<div class="ui-state-default ui-corner-all small" style="padding: 0 0.5em;">
+						<div style="margin: 5px !important;">
+							<span class="ui-icon ui-icon-info" style="float: left; margin: 0 0.3em 0 0;"></span>
+					<span style="overflow: hidden; display: block; padding-left: 5px;">
+						<?php echo JText::sprintf(
+							'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_VIDEO',
+							$data['params']->get('upload_mime_video')
+						);
+						?>
+					</span>
+						</div>
+					</div>
+				</div>
 			</div>
+			<input type="hidden" autofocus="autofocus" />
 			<div id="video_uploader"><p>You browser doesn't have Flash, Silverlight or HTML5 support.</p></div>
 		</div>
 	</div>
@@ -42,15 +51,24 @@ $data = $displayData;
 	</div>
 	<div class="modal-body">
 		<div>
-			<input type="hidden" autofocus="autofocus" />
-			<div class="small">
-				<?php echo JText::sprintf(
-					'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_SUBTITLES',
-					$data['params']->get('upload_mime_subtitles')
-				);
-				?>
+			<div style="margin: 0.4em 0 0;">
+				<div class="ui-widget">
+					<div class="ui-state-default ui-corner-all small" style="padding: 0 0.5em;">
+						<div style="margin: 5px !important;">
+							<span class="ui-icon ui-icon-info" style="float: left; margin: 0 0.3em 0 0;"></span>
+					<span style="overflow: hidden; display: block; padding-left: 5px;">
+						<?php echo JText::sprintf(
+							'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_SUBTITLES',
+							$data['params']->get('upload_mime_subtitles')
+						);
+						?>
+						<span class="red"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_WARN'); ?></span>
+					</span>
+						</div>
+					</div>
+				</div>
 			</div>
-			<span class="small red" style="margin: 0 5px;"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_WARN'); ?></span>
+			<input type="hidden" autofocus="autofocus" />
 			<div id="subtitles_uploader"><p>You browser doesn't have Flash, Silverlight or HTML5 support.</p></div>
 		</div>
 	</div>
@@ -66,14 +84,23 @@ $data = $displayData;
 	</div>
 	<div class="modal-body">
 		<div>
-			<input type="hidden" autofocus="autofocus" />
-			<div class="small">
-				<?php echo JText::sprintf(
-					'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_CHAPTERS',
-					$data['params']->get('upload_mime_chapters')
-				);
-				?>
+			<div style="margin: 0.4em 0 0;">
+				<div class="ui-widget">
+					<div class="ui-state-default ui-corner-all small" style="padding: 0 0.5em;">
+						<div style="margin: 5px !important;">
+							<span class="ui-icon ui-icon-info" style="float: left; margin: 0 0.3em 0 0;"></span>
+					<span style="overflow: hidden; display: block; padding-left: 5px;">
+						<?php echo JText::sprintf(
+							'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_CHAPTERS',
+							$data['params']->get('upload_mime_chapters')
+						);
+						?>
+					</span>
+						</div>
+					</div>
+				</div>
 			</div>
+			<input type="hidden" autofocus="autofocus" />
 			<div id="chapters_uploader"><p>You browser doesn't have Flash, Silverlight or HTML5 support.</p></div>
 		</div>
 	</div>

@@ -72,22 +72,33 @@ div.clear {
 }
 
 .poster {
+	text-align: center;
+}
+
+.poster img {
 	border: 1px solid #ccc;
-	float: left;
+	padding: 2px;
+}
+
+.content .poster {
 	margin-top: .5em;
 	margin-bottom: 1em;
-	max-width: 134px;
-	min-height: 128px;
-	min-width: 128px;
-	padding: 2px;
-	position: relative;
-	text-align: center;
+}
+
+.content-list .poster {
+	float: left;
 }
 
 .content .introtext {
 	float: left;
 	margin: 0.3em 0.5em 1em 1em;
 	width: 78%;
+}
+
+@media (max-width: 979px) {
+	.content .poster {
+		float: none;
+	}
 }
 
 span.cn-list, span.gn-list, span.dc-list, span.cast-list {
@@ -329,6 +340,16 @@ h3.title {
 .info .right-col {
 	float: left;
 	width: 80%;
+}
+
+@media (max-width: 979px) {
+	.info .left-col {
+		width: 100%;
+	}
+
+	.info .right-col {
+		width: 100%;
+	}
 }
 
 .movie-info, .name-info {
@@ -1013,11 +1034,11 @@ div.rating {
 	margin-right: 5px;
 }
 
-.selectlist-premieres .inputbox, .selectlist-releases .inputbox {
+.selectlist-releases .inputbox {
 	margin: 0;
 }
 
-.selectlist-premieres .btn-group, .selectlist-releases .btn-group {
+.selectlist-releases .btn-group {
 	display: inline-block;
 }
 

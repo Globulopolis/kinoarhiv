@@ -93,7 +93,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<?php if ($this->params->get('filter_release_enable') == 1): ?>
@@ -204,11 +204,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php if ($item->attribs->show_create_date === ''): ?>
 								<?php if ($this->params->get('show_pubdate') == 1): ?>
 									<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-									<time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
+									<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $item->created, 'c'); ?>"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 								<?php endif; ?>
 							<?php elseif ($item->attribs->show_create_date == 1): ?>
 								<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-								<time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
+								<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $item->created, 'c'); ?>"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 							<?php endif; ?>
 
 							<?php
@@ -224,11 +224,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php if ($item->attribs->show_modify_date === ''): ?>
 								<?php if ($this->params->get('show_moddate') == 1): ?>
 									<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-									<time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
+									<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 								<?php endif; ?>
 							<?php elseif ($item->attribs->show_modify_date == 1): ?>
 								<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-								<time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
+								<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 							<?php endif; ?>
 						</p>
 						<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
@@ -245,14 +245,10 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 				<?php echo $item->event->afterDisplayTitle; ?>
 				<?php echo $item->event->beforeDisplayContent; ?>
 				<div class="clear"></div>
-				<div class="content clearfix ui-helper-clearfix">
+				<div class="content content-list clearfix ui-helper-clearfix">
 					<div>
 						<div class="poster">
-							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $title; ?>">
-								<div>
-									<img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
-								</div>
-							</a>
+							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>
 						</div>
 						<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
 							<div class="text"><?php echo $item->text; ?></div>

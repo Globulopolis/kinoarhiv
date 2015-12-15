@@ -411,7 +411,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_trailers` (
   `filename` mediumtext NOT NULL,
   `resolution` varchar(10) NOT NULL,
   `dar` varchar(5) NOT NULL DEFAULT '16:9',
-  `duration` time NOT NULL DEFAULT '00:00:00',
+  `duration` varchar(12) NOT NULL DEFAULT '00:00:00.000',
   `_subtitles` mediumtext NOT NULL,
   `_chapters` mediumtext NOT NULL,
   `frontpage` tinyint(1) NOT NULL DEFAULT '0',

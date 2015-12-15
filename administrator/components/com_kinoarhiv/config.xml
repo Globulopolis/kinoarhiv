@@ -739,8 +739,18 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="filter_premieres_search" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_SEARCH" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="filter_premieres_country" type="radio" class="btn-group" default="1"
 			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_COUNTRY" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="filter_premieres_vendor" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_VENDOR" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
@@ -751,11 +761,6 @@
 		</field>
 		<field name="filter_premieres_month" type="radio" class="btn-group" default="1"
 			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_MONTH" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="filter_release_vendor" type="radio" class="btn-group" default="1"
-			   label="COM_KA_SEARCH_SETTINGS_PREMIERES_FORM_VENDOR" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

@@ -51,7 +51,8 @@ class KAFilesystem
 	}
 
 	/**
-	 * Sets-up headers and starts transfering bytes
+	 * Sets-up headers and starts transfering bytes. This is fork from https://github.com/diversen/http-send-file
+	 * adapted for Joomla.
 	 *
 	 * @param   string   $file_path        Path to a file
 	 * @param   integer  $throttle         Use throttle mechanism

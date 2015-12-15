@@ -17,9 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivViewAwards extends JViewLegacy
 {
+	protected $item = null;
+
 	protected $items = null;
 
 	protected $pagination = null;
+
+	protected $params;
 
 	/**
 	 * Execute and display a template script.
@@ -44,22 +48,18 @@ class KinoarhivViewAwards extends JViewLegacy
 
 	protected function awards()
 	{
-		$items = $this->get('Items');
+		$this->items = $this->get('Items');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($this->items))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
-		$pagination = $this->get('Pagination');
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
-
-		$this->params = $params;
-		$this->items = $items;
-		$this->pagination = $pagination;
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->pagination = $this->get('Pagination');
 
 		$this->_prepareDocument();
 
@@ -68,21 +68,19 @@ class KinoarhivViewAwards extends JViewLegacy
 
 	protected function award()
 	{
-		$item = $this->get('Item');
+		$this->item = $this->get('Item');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($this->item))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$this->params = $params;
-		$this->item = $item;
-
+		// TODO Fix document title and pathway
 		$this->_prepareDocument();
 
 		parent::display('award');

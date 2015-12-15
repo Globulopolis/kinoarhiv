@@ -21,6 +21,8 @@ class KinoarhivViewRelease extends JViewLegacy
 {
 	protected $item;
 
+	protected $params;
+
 	protected $user;
 
 	/**
@@ -38,7 +40,7 @@ class KinoarhivViewRelease extends JViewLegacy
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$item = $this->get('Item');
 
@@ -50,7 +52,7 @@ class KinoarhivViewRelease extends JViewLegacy
 		}
 
 		// Prepare the data
-		$ka_theme = $params->get('ka_theme');
+		$ka_theme = $this->params->get('ka_theme');
 		$itemid = $this->itemid;
 
 		// Replace country BB-code
@@ -85,29 +87,30 @@ class KinoarhivViewRelease extends JViewLegacy
 		$item->text
 		);
 
-		if ($params->get('throttle_image_enable', 0) == 0)
+		if ($this->params->get('throttle_image_enable', 0) == 0)
 		{
 			$checking_path = JPath::clean(
-				$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
+				$this->params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
 				DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $item->filename
 			);
 
 			if (!is_file($checking_path))
 			{
-				$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+				$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme')
+					. '/images/no_movie_cover.png';
 			}
 			else
 			{
 				$item->fs_alias = rawurlencode($item->fs_alias);
 
-				if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+				if (String::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+					$item->poster = JURI::base() . String::substr($this->params->get('media_posters_root_www'), 1) . '/'
 						. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else
 				{
-					$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+					$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 			}
 		}
@@ -119,17 +122,17 @@ class KinoarhivViewRelease extends JViewLegacy
 			);
 		}
 
-		$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
+		$item->plot = JHtml::_('string.truncate', $item->plot, $this->params->get('limit_text'));
 
-		if ($params->get('ratings_show_frontpage') == 1)
+		if ($this->params->get('ratings_show_frontpage') == 1)
 		{
 			if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 			{
 				$plural = $lang->getPluralSuffixes($item->rate_loc);
-				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
+				$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $this->params->get('vote_summ_precision'));
 				$item->rate_loc_label = JText::sprintf(
 					'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
-					(int) $params->get('vote_summ_num'),
+					(int) $this->params->get('vote_summ_num'),
 					$item->rate_loc
 				);
 				$item->rate_loc_label_class = ' has-rating';
@@ -148,7 +151,7 @@ class KinoarhivViewRelease extends JViewLegacy
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
-		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.releases', &$item, &$params, 0));
+		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.releases', &$item, &$this->params, 0));
 
 		$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.release', &$item, &$item->params, 0));
 		$item->event->afterDisplayTitle = trim(implode("\n", $results));
@@ -160,7 +163,6 @@ class KinoarhivViewRelease extends JViewLegacy
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		$this->item = $item;
-		$this->params = $params;
 		$this->user = $user;
 
 		$this->_prepareDocument();

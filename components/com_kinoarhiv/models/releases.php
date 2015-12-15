@@ -35,7 +35,7 @@ class KinoarhivModelReleases extends JModelList
 
 		if (empty($this->context))
 		{
-			$this->context = $this->context = strtolower('com_kinoarhiv.releases');
+			$this->context = strtolower('com_kinoarhiv.releases');
 		}
 	}
 

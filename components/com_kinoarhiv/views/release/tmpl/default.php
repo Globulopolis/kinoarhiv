@@ -41,13 +41,13 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<article class="uk-article item">
 		<?php
 		echo JLayoutHelper::render(
-			'layouts/navigation/movie_item_header',
+			'layouts.navigation.movie_item_header',
 			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
 			JPATH_COMPONENT
 		);
@@ -55,12 +55,10 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 		echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="clear"></div>
-		<div class="content clearfix ui-helper-clearfix">
+		<div class="content content-list clearfix ui-helper-clearfix">
 			<div>
 				<div class="poster">
-					<div style="text-align: center;">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>"/></a>
-					</div>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
 				</div>
 				<div class="introtext">
 					<div class="text"><?php echo $this->item->text; ?></div>

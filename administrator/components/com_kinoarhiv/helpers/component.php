@@ -35,14 +35,10 @@ class KAComponentHelper extends JComponentHelper
 			return;
 		}
 
-		$document->addHeadLink(JURI::base() . 'components/com_kinoarhiv/assets/css/style.css', 'stylesheet', 'rel', array('type' => 'text/css'));
-		$document->addHeadLink(JURI::base() . 'components/com_kinoarhiv/assets/css/plugins.css', 'stylesheet', 'rel', array('type' => 'text/css'));
-		$document->addHeadLink(
-			JURI::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css',
-			'stylesheet',
-			'rel',
-			array('type' => 'text/css')
-		);
+		JHtml::_('stylesheet', JURI::base() . 'components/com_kinoarhiv/assets/css/style.css');
+		JHtml::_('stylesheet', JURI::base() . 'components/com_kinoarhiv/assets/css/plugins.css');
+		JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
+
 		JHtml::_('jquery.framework');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
@@ -159,7 +155,7 @@ class KAComponentHelper extends JComponentHelper
 	 * Logger
 	 *
 	 * @param   string  $message  Text to log.
-	 * @param   mixed   $silent   Throw exception or not. True - throw, false - not.
+	 * @param   mixed   $silent   Throw exception or not. Default do not throw.
 	 *
 	 * @return  mixed
 	 *

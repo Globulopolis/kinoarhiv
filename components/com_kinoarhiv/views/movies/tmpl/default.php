@@ -104,7 +104,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts/navigation/alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
 	<?php if ($this->params->get('show_feed_link', 1)):
@@ -123,7 +123,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		</div>
 	<?php endif; ?>
 
-	<?php if (count($this->items['movies']) > 0):
+	<?php if (count($this->items) > 0):
 		if ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')):
 			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			echo '<br />' . JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_' . $plural[0], $this->pagination->total);
@@ -135,7 +135,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		</div>
 		<?php endif;
 
-		foreach ($this->items['movies'] as $item):
+		foreach ($this->items as $item):
 			$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year)); ?>
 			<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
 				<header>
@@ -168,11 +168,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php if ($item->attribs->show_create_date === ''): ?>
 								<?php if ($this->params->get('show_pubdate') == 1): ?>
 									<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-									<time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
+									<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $item->created, 'c'); ?>"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 								<?php endif; ?>
 							<?php elseif ($item->attribs->show_create_date == 1): ?>
 								<span class="icon-calendar"></span> <?php echo JText::_('COM_KA_CREATED_DATE_ON'); ?>
-								<time pubdate="" datetime="<?php echo $item->created; ?>"><?php echo date('j F Y', strtotime($item->created)); ?></time>
+								<time itemprop="dateCreated" datetime="<?php echo JHtml::_('date', $item->created, 'c'); ?>"><?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC3')); ?></time>
 							<?php endif; ?>
 
 							<?php
@@ -188,11 +188,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php if ($item->attribs->show_modify_date === ''): ?>
 								<?php if ($this->params->get('show_moddate') == 1): ?>
 									<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-									<time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
+									<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 								<?php endif; ?>
 							<?php elseif ($item->attribs->show_modify_date == 1): ?>
 								<?php echo JText::_('COM_KA_LAST_UPDATED'); ?>
-								<time pubdate="" datetime="<?php echo $item->modified; ?>"><?php echo date('j F Y', strtotime($item->modified)); ?></time>
+								<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 							<?php endif; ?>
 						</p>
 						<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
@@ -209,7 +209,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 				<?php echo $item->event->afterDisplayTitle; ?>
 				<?php echo $item->event->beforeDisplayContent; ?>
 				<div class="clear"></div>
-				<div class="content clearfix ui-helper-clearfix">
+				<div class="content content-list clearfix ui-helper-clearfix">
 					<div>
 						<div class="poster">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>">

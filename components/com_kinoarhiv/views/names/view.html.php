@@ -24,6 +24,10 @@ class KinoarhivViewNames extends JViewLegacy
 
 	protected $pagination = null;
 
+	protected $params;
+
+	protected $user;
+
 	/**
 	 * Execute and display a template script.
 	 *
@@ -46,8 +50,8 @@ class KinoarhivViewNames extends JViewLegacy
 			$this->activeFilters = new Registry;
 		}
 
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -58,59 +62,46 @@ class KinoarhivViewNames extends JViewLegacy
 
 		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$throttle_enable = $this->params->get('throttle_image_enable', 0);
 
 		// Prepare the data
-		foreach ($items as $key => $item)
+		foreach ($this->items as $item)
 		{
 			$item->attribs = json_decode($item->attribs);
 
-			// Compose a date string
-			$date_range = '';
+			// Compose date string
+			$item->date_range = '';
 
 			if ($item->date_of_birth != '0000')
 			{
-				$date_range .= ' (' . $item->date_of_birth;
+				$item->date_range .= ' (' . $item->date_of_birth;
 
 				if ($item->date_of_death != '0000')
 				{
-					$date_range .= ' - ' . $item->date_of_death;
+					$item->date_range .= ' - ' . $item->date_of_death;
 				}
 
-				$date_range .= ')';
+				$item->date_range .= ')';
 			}
 
-			$items[$key]->date_range = $date_range;
-
-			// Compose a title
-			if (!empty($item->name) && !empty($item->latin_name))
-			{
-				$items[$key]->title = $item->name . ' / ' . $item->latin_name;
-			}
-			elseif (!empty($item->name))
-			{
-				$items[$key]->title = $item->name;
-			}
-			else
-			{
-				$items[$key]->title = $item->latin_name;
-			}
+			// Compose title
+			$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
+					$this->params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
 					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $item->filename
 				);
 				$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 				if (!is_file($checking_path))
 				{
-					$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png';
+					$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/images/' . $no_cover . '.png';
 					$dimension = KAContentHelper::getImageSize(
-						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png',
+						JPATH_COMPONENT . '/assets/themes/component/' . $this->params->get('ka_theme') . '/images/' . $no_cover . '.png',
 						false
 					);
 					$item->poster_width = $dimension->width;
@@ -120,19 +111,19 @@ class KinoarhivViewNames extends JViewLegacy
 				{
 					$item->fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+					if (String::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+						$item->poster = JURI::base() . String::substr($this->params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 					}
 					else
 					{
-						$item->poster = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+						$item->poster = $this->params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
 						$item->poster,
 						true,
-						(int) $params->get('size_x_posters'),
+						(int) $this->params->get('size_x_posters'),
 						$item->dimension
 					);
 					$item->poster_width = $dimension->width;
@@ -149,7 +140,7 @@ class KinoarhivViewNames extends JViewLegacy
 				$dimension = KAContentHelper::getImageSize(
 					JUri::base() . $item->poster,
 					true,
-					(int) $params->get('size_x_posters'),
+					(int) $this->params->get('size_x_posters'),
 					$item->dimension
 				);
 				$item->poster_width = $dimension->width;
@@ -157,9 +148,6 @@ class KinoarhivViewNames extends JViewLegacy
 			}
 		}
 
-		$this->params = $params;
-		$this->items['names'] = $items;
-		$this->pagination = $pagination;
 		$this->user = $user;
 		$this->lang = $lang;
 

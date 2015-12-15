@@ -358,8 +358,6 @@ class KinoarhivModelName extends JModelList
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
-		$result = $this->getNameData();
-
 		$query = $db->getQuery(true)
 			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
 			->from($db->quoteName('#__ka_rel_awards', 'a'))
@@ -368,7 +366,7 @@ class KinoarhivModelName extends JModelList
 			->order('year DESC');
 
 		$db->setQuery($query);
-		$result->awards = $db->loadObjectList();
+		$result = $db->loadObjectList();
 
 		return $result;
 	}

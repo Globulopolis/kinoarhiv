@@ -96,7 +96,7 @@ defined('_JEXEC') or die;
 	if (!$this->user->guest):
 		if ($this->item->attribs->allow_reviews == 1):
 			echo JLayoutHelper::render(
-				'layouts/editors/editor_' . $this->params->get('review_editor'),
+				'layouts.editors.editor_' . $this->params->get('review_editor'),
 				(object) array(
 					'params' => $this->params,
 					'form'   => $this->form,

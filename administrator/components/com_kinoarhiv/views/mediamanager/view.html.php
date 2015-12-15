@@ -30,7 +30,6 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		$type = $app->input->get('type', '', 'word');

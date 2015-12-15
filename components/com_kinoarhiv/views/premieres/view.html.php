@@ -23,7 +23,9 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 	protected $pagination = null;
 
-	private $ka_theme = null;
+	protected $user;
+
+	protected $itemid;
 
 	/**
 	 * Execute and display a template script.
@@ -41,6 +43,8 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$items = $this->get('Items');
 		$list = $this->get('SelectList');
 		$pagination = $this->get('Pagination');
+		$this->filterForm = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -53,13 +57,6 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$this->ka_theme = $params->get('ka_theme');
-
-		// It's a string because country_id == 0 it'a world premiere
-		$this->sel_country = $app->input->get('country', '', 'word');
-		$this->sel_year = $app->input->get('year', 0, 'int');
-		$this->sel_month = $app->input->get('month', '', 'string');
-		$this->sel_vendor = $app->input->get('vendor', 0, 'int');
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 		$throttle_enable = $params->get('throttle_image_enable', 0);
@@ -68,14 +65,6 @@ class KinoarhivViewPremieres extends JViewLegacy
 		foreach ($items as &$item)
 		{
 			$item->attribs = json_decode($item->attribs);
-			$item->vendor = $item->company_name;
-
-			if (!empty($item->company_name) && !empty($item->company_name_intl))
-			{
-				$item->vendor .= ' / ';
-			}
-
-			$item->vendor .= $item->company_name_intl;
 
 			// Replace country BB-code
 			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme)
@@ -132,7 +121,8 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+						$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 					else
 					{
@@ -173,7 +163,12 @@ class KinoarhivViewPremieres extends JViewLegacy
 				{
 					$plural = $lang->getPluralSuffixes($item->rate_loc);
 					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-					$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
+					$item->rate_loc_label = JText::sprintf(
+						'COM_KA_RATE_LOCAL_' . $plural[0],
+						$item->rate_loc_c,
+						(int) $params->get('vote_summ_num'),
+						$item->rate_loc
+					);
 					$item->rate_loc_label_class = ' has-rating';
 				}
 				else

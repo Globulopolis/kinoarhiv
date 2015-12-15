@@ -26,6 +26,8 @@ class KinoarhivViewMovies extends JViewLegacy
 
 	protected $params;
 
+	protected $user;
+
 	protected $itemid;
 
 	/**
@@ -50,7 +52,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			$this->activeFilters = new Registry;
 		}
 
-		$items = $this->get('Items');
+		$this->items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
@@ -62,14 +64,14 @@ class KinoarhivViewMovies extends JViewLegacy
 
 		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$ka_theme = $params->get('ka_theme');
+		$ka_theme = $this->params->get('ka_theme');
 		$itemid = $this->itemid;
-		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$throttle_enable = $this->params->get('throttle_image_enable', 0);
 
 		// Prepare the data
-		foreach ($items as $item)
+		foreach ($this->items as $item)
 		{
 			$item->attribs = json_decode($item->attribs);
 
@@ -108,15 +110,15 @@ class KinoarhivViewMovies extends JViewLegacy
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
+					$this->params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
 					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $item->filename
 				);
 
 				if (!is_file($checking_path))
 				{
-					$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+					$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/images/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
-						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png',
+						JPATH_COMPONENT . '/assets/themes/component/' . $this->params->get('ka_theme') . '/images/no_movie_cover.png',
 						false
 					);
 					$item->poster_width = $dimension->width;
@@ -126,20 +128,20 @@ class KinoarhivViewMovies extends JViewLegacy
 				{
 					$item->fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+					if (String::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+						$item->poster = JURI::base() . String::substr($this->params->get('media_posters_root_www'), 1) . '/'
 							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 					else
 					{
-						$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+						$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
 						$item->poster,
 						true,
-						(int) $params->get('size_x_posters'),
+						(int) $this->params->get('size_x_posters'),
 						$item->dimension
 					);
 					$item->poster_width = $dimension->width;
@@ -155,24 +157,24 @@ class KinoarhivViewMovies extends JViewLegacy
 				$dimension = KAContentHelper::getImageSize(
 					JUri::base() . $item->poster,
 					true,
-					(int) $params->get('size_x_posters'),
+					(int) $this->params->get('size_x_posters'),
 					$item->dimension
 				);
 				$item->poster_width = $dimension->width;
 				$item->poster_height = $dimension->height;
 			}
 
-			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
+			$item->plot = JHtml::_('string.truncate', $item->plot, $this->params->get('limit_text'));
 
-			if ($params->get('ratings_show_frontpage') == 1)
+			if ($this->params->get('ratings_show_frontpage') == 1)
 			{
 				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 				{
 					$plural = $lang->getPluralSuffixes($item->rate_loc);
-					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
+					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $this->params->get('vote_summ_precision'));
 					$item->rate_loc_label = JText::sprintf(
 						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
-						(int) $params->get('vote_summ_num'), $item->rate_loc
+						(int) $this->params->get('vote_summ_num'), $item->rate_loc
 					);
 					$item->rate_loc_label_class = ' has-rating';
 				}
@@ -190,7 +192,7 @@ class KinoarhivViewMovies extends JViewLegacy
 
 			$dispatcher = JEventDispatcher::getInstance();
 			JPluginHelper::importPlugin('content');
-			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.movies', &$item, &$params, 0));
+			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.movies', &$item, &$this->params, 0));
 
 			$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.movies', &$item, &$item->params, 0));
 			$item->event->afterDisplayTitle = trim(implode("\n", $results));
@@ -202,8 +204,6 @@ class KinoarhivViewMovies extends JViewLegacy
 			$item->event->afterDisplayContent = trim(implode("\n", $results));
 		}
 
-		$this->params = $params;
-		$this->items['movies'] = $items;
 		$this->pagination = $pagination;
 		$this->user = $user;
 		$this->lang = $lang;

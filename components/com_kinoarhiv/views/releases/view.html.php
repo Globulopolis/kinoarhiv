@@ -42,7 +42,7 @@ class KinoarhivViewReleases extends JViewLegacy
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 
-		$items = $this->get('Items');
+		$this->items = $this->get('Items');
 		$this->selectlist = $this->get('SelectList');
 		$this->pagination = $this->get('Pagination');
 
@@ -69,7 +69,7 @@ class KinoarhivViewReleases extends JViewLegacy
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
-		foreach ($items as &$item)
+		foreach ($this->items as $item)
 		{
 			$item->attribs = json_decode($item->attribs);
 			$item->vendor = $item->company_name;
@@ -212,7 +212,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		}
 
 		$this->params = $params;
-		$this->items = $items;
 		$this->user = $user;
 
 		$this->_prepareDocument();

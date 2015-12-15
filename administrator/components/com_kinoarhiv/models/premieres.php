@@ -12,10 +12,23 @@ defined('_JEXEC') or die;
 
 use Joomla\String\String;
 
+/**
+ * Class KinoarhivModelPremieres
+ *
+ * @since  3.0
+ */
 class KinoarhivModelPremieres extends JModelList
 {
 	protected $context = null;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JModelLegacy
+	 * @since   3.0
+	 */
 	public function __construct($config = array())
 	{
 		if (empty($config['filter_fields']))
@@ -35,6 +48,22 @@ class KinoarhivModelPremieres extends JModelList
 		$this->context = strtolower($this->option . '.' . $this->getName() . '.premieres');
 	}
 
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * This method should only be called once per instantiation and is designed
+	 * to be called on the first call to the getState() method unless the model
+	 * configuration flag to ignore the request is set.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   An optional ordering field.
+	 * @param   string  $direction  An optional direction (asc|desc).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
 		$app = JFactory::getApplication();
@@ -69,6 +98,19 @@ class KinoarhivModelPremieres extends JModelList
 		}
 	}
 
+	/**
+	 * Method to get a store id based on the model configuration state.
+	 *
+	 * This is necessary because the model is used by the component and
+	 * different modules that might need different sets of data or different
+	 * ordering requirements.
+	 *
+	 * @param   string  $id  An identifier string to generate the store id.
+	 *
+	 * @return  string  A store id.
+	 *
+	 * @since   3.0
+	 */
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
@@ -80,6 +122,13 @@ class KinoarhivModelPremieres extends JModelList
 		return parent::getStoreId($id);
 	}
 
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
 	protected function getListQuery()
 	{
 		$db = $this->getDBO();
@@ -211,6 +260,13 @@ class KinoarhivModelPremieres extends JModelList
 		return $items;
 	}
 
+	/**
+	 * Saves the manually set order of records.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.0
+	 */
 	public function saveOrder()
 	{
 		$app = JFactory::getApplication();
@@ -271,6 +327,13 @@ class KinoarhivModelPremieres extends JModelList
 		return array('success' => $success, 'message' => $message);
 	}
 
+	/**
+	 * Method to perform batch operations on an item or a set of items.
+	 *
+	 * @return  boolean  Returns true on success, false on failure.
+	 *
+	 * @since   3.0
+	 */
 	public function batch()
 	{
 		$app = JFactory::getApplication();

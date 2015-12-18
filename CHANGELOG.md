@@ -1,5 +1,5 @@
 ## HEAD (Unreleased)
-* Remove Jwplayer as it's not support video sended via PHP script.
+* Remove Jwplayer as it's not support video send via PHP script.
 * Improve load speed for movie and person info page.
 * Added microdata for movie info.
 * Fixed alias processing for movies and persons.
@@ -39,7 +39,7 @@
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
 * Update VideoJS to 4.12.15
-* Update Mediaelement.js to 2.18.1
+* Update Mediaelement.js to 2.19.0
 * Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".
 * Added posibility to edit a music genres.

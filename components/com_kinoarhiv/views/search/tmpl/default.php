@@ -15,25 +15,32 @@ $script = JURI::base() . 'components/com_kinoarhiv/assets/js/select2.min.js';
 
 if (JFactory::getDocument()->getType() == 'html')
 {
-	JFactory::getDocument()->addHeadLink($css, 'stylesheet', 'rel', array('type' => 'text/css'));
+	JHtml::_('stylesheet', $css);
 	JHtml::_('script', $script);
 	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select');
 	KAComponentHelper::getScriptLanguage('datepicker-', true, 'ui');
 }
 else
 {
-	echo '<style type="text/css"> @import url("' . $css . '"); </style>'."\n";
-	echo '<script src="' . $script . '" type="text/javascript"></script>'."\n";
+	echo '<style type="text/css"> @import url("' . $css . '"); </style>' . "\n";
+	echo '<script src="' . $script . '" type="text/javascript"></script>' . "\n";
 	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select', false, false);
 }
 ?>
 <div class="uk-article ka-content">
-	<?php if (JFactory::getApplication()->input->get('task', '', 'cmd') == 'movies'):
-		echo $this->loadTemplate('form_movies');
-	elseif (JFactory::getApplication()->input->get('task', '', 'cmd') == 'names'):
-		echo $this->loadTemplate('form_names');
-	else:
-		echo $this->loadTemplate('form_movies');
-		echo $this->loadTemplate('form_names');
-	endif; ?>
+<?php
+if (JFactory::getApplication()->input->get('task', '', 'cmd') == 'movies')
+{
+	echo $this->loadTemplate('form_movies');
+}
+elseif (JFactory::getApplication()->input->get('task', '', 'cmd') == 'names')
+{
+	echo $this->loadTemplate('form_names');
+}
+else
+{
+	echo $this->loadTemplate('form_movies');
+	echo $this->loadTemplate('form_names');
+}
+?>
 </div>

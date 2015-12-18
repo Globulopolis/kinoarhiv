@@ -320,8 +320,8 @@ endif;
 							}
 
 							dlg.dialog('option', {
-								height: parseInt($(window).height() - 100),
-								width: parseInt($(window).width() - 100)
+								height: parseInt($(window).height() - 100, 10),
+								width: parseInt($(window).width() - 100, 10)
 							});
 
 							$('p', dlg).html(obj.output);

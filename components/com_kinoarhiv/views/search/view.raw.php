@@ -37,9 +37,11 @@ class KinoarhivViewSearch extends JViewLegacy
 			return false;
 		}
 
-		$items = $this->get('Items');
-		$activeFilters = $this->get('ActiveFilters');
+		$this->items = $this->get('Items');
+		$this->activeFilters = $this->get('ActiveFilters');
+		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->home_itemid = $this->get('HomeItemid');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -47,13 +49,6 @@ class KinoarhivViewSearch extends JViewLegacy
 
 			return false;
 		}
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$this->items = $items;
-		$this->params = $params;
-		$this->activeFilters = $activeFilters;
 
 		parent::display($tpl);
 	}

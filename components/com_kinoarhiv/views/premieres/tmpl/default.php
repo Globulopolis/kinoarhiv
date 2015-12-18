@@ -60,7 +60,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		endif; ?>
 
 		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
-		$('img.lazy').lazyload({threshold: 200});
 
 		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function (e) {

@@ -35,6 +35,7 @@ class KAComponentHelper extends JComponentHelper
 		}
 
 		JHtml::_('jquery.framework');
+		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.js');
 		JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 
 		if ($params->get('vegas_enable') == 1)

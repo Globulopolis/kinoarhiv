@@ -52,7 +52,7 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 
 		// Reload page if files was uploaded
 		$('#imgModalUpload').on('hidden', function() {
-			if (parseInt($('input[name="file_uploaded"]').val()) == 1) {
+			if (parseInt($('input[name="file_uploaded"]').val(), 10) == 1) {
 				document.location.reload();
 			}
 		});

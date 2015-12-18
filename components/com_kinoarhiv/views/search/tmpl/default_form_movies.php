@@ -35,7 +35,7 @@ if ($this->params->get('search_movies_enable') == 0)
 			maximumSelectionSize: 1,
 			ajax: {
 				cache: true,
-				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json&Itemid='.$this->home_itemid['movies'], false); ?>',
+				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json&Itemid=' . $this->home_itemid['movies'], false); ?>',
 				data: function(term, page){
 					return {
 						term: term,
@@ -50,7 +50,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				var id = parseInt($(element).val(), 10);
 
 				if (id !== 0) {
-					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json&Itemid='.$this->home_itemid['names'], false); ?>', {
+					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=names&format=json&Itemid=' . $this->home_itemid['names'], false); ?>', {
 						data: {
 							id: id
 						}
@@ -88,7 +88,7 @@ if ($this->params->get('search_movies_enable') == 0)
 			multiple: true,
 			ajax: {
 				cache: true,
-				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid='.$this->home_itemid['movies'], false); ?>',
+				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid=' . $this->home_itemid['movies'], false); ?>',
 				data: function(term, page){
 					return {
 						term: term,
@@ -103,7 +103,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				var id = parseInt($(element).val(), 10);
 
 				if (id !== 0) {
-					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid='.$this->home_itemid['movies'], false); ?>', {
+					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=tags&format=json&Itemid=' . $this->home_itemid['movies'], false); ?>', {
 						data: {
 							id: id
 						}
@@ -124,7 +124,7 @@ if ($this->params->get('search_movies_enable') == 0)
 		$('.search-rate-slider').each(function(i, obj){
 			var $element = $(obj),
 				$values = $element.data('rate-values').split(',').map(function(el){
-					return parseInt(el.trim());
+					return parseInt(el.trim(), 10);
 				}),
 				$inputs = $element.closest('.controls').find('.rate-input input');
 
@@ -293,7 +293,7 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_rate', 'COM_KA_RATE'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
-							<input type="checkbox" name="filters[movies][rate][enable]" class="filters_movies_rate_chk" id="filters_movies_rate_enable" value="<?php echo (int)$this->activeFilters->def('filters.movies.rate.enable', 0); ?>"<?php echo (int)$this->activeFilters->def('filters.movies.rate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_rate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
+							<input type="checkbox" name="filters[movies][rate][enable]" class="filters_movies_rate_chk" id="filters_movies_rate_enable" value="<?php echo (int) $this->activeFilters->def('filters.movies.rate.enable', 0); ?>"<?php echo (int) $this->activeFilters->def('filters.movies.rate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_rate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
 						</div>
 					</div>
 				</div>
@@ -304,13 +304,13 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-label uk-width-1-6">&nbsp;</div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<input type="text" name="filters[movies][rate][min]" value="<?php echo (int)$this->activeFilters->def('filters.movies.rate.min', 0); ?>" id="filters_movies_rate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][rate][max]" value="<?php echo (int)$this->activeFilters->def('filters.movies.rate.max', $this->params->get('vote_summ_num')); ?>" id="filters_movies_rate_max" maxlength="2" size="3" />
+								<input type="text" name="filters[movies][rate][min]" value="<?php echo (int) $this->activeFilters->def('filters.movies.rate.min', 0); ?>" id="filters_movies_rate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][rate][max]" value="<?php echo (int) $this->activeFilters->def('filters.movies.rate.max', $this->params->get('vote_summ_num')); ?>" id="filters_movies_rate_max" maxlength="2" size="3" />
 							</div>
 							<div class="span6">
 								<div id="filters_movies_rate" class="search-rate-slider"
 									data-rate-min="0"
-									data-rate-max="<?php echo (int)$this->params->get('vote_summ_num'); ?>"
-									data-rate-values="<?php echo (int)$this->activeFilters->def('filters.movies.rate.min', 0); ?>,<?php echo (int)$this->activeFilters->def('filters.movies.rate.max', $this->params->get('vote_summ_num')); ?>">
+									data-rate-max="<?php echo (int) $this->params->get('vote_summ_num'); ?>"
+									data-rate-values="<?php echo (int) $this->activeFilters->def('filters.movies.rate.min', 0); ?>,<?php echo (int) $this->activeFilters->def('filters.movies.rate.max', $this->params->get('vote_summ_num')); ?>">
 								</div>
 							</div>
 						</div>
@@ -325,7 +325,7 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_imdbrate', 'COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
-							<input type="checkbox" name="filters[movies][imdbrate][enable]" class="filters_movies_rate_chk" id="filters_movies_imdbrate_enable" value="<?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.enable', 0); ?>"<?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_imdbrate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
+							<input type="checkbox" name="filters[movies][imdbrate][enable]" class="filters_movies_rate_chk" id="filters_movies_imdbrate_enable" value="<?php echo (int) $this->activeFilters->def('filters.movies.imdbrate.enable', 0); ?>"<?php echo (int) $this->activeFilters->def('filters.movies.imdbrate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_imdbrate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
 						</div>
 					</div>
 				</div>
@@ -336,13 +336,13 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-label uk-width-1-6">&nbsp;</div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<input type="text" name="filters[movies][imdbrate][min]" value="<?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.min', 6); ?>" id="filters_movies_imdbrate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][imdbrate][max]" value="<?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.max', 10); ?>" id="filters_movies_imdbrate_max" maxlength="2" size="3" />
+								<input type="text" name="filters[movies][imdbrate][min]" value="<?php echo (int) $this->activeFilters->def('filters.movies.imdbrate.min', 6); ?>" id="filters_movies_imdbrate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][imdbrate][max]" value="<?php echo (int) $this->activeFilters->def('filters.movies.imdbrate.max', 10); ?>" id="filters_movies_imdbrate_max" maxlength="2" size="3" />
 							</div>
 							<div class="span6">
 								<div id="filters_movies_imdbrate" class="search-rate-slider"
 									 data-rate-min="0"
 									 data-rate-max="10"
-									 data-rate-values="<?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.min', 6); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.imdbrate.max', 10); ?>">
+									 data-rate-values="<?php echo (int) $this->activeFilters->def('filters.movies.imdbrate.min', 6); ?>, <?php echo (int) $this->activeFilters->def('filters.movies.imdbrate.max', 10); ?>">
 								</div>
 							</div>
 						</div>
@@ -357,7 +357,7 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_kprate', 'COM_KA_SEARCH_ADV_MOVIES_KP_RATE'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
-							<input type="checkbox" name="filters[movies][kprate][enable]" class="filters_movies_rate_chk" id="filters_movies_kprate_enable" value="<?php echo (int)$this->activeFilters->def('filters.movies.kprate.enable', 0); ?>"<?php echo (int)$this->activeFilters->def('filters.movies.kprate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_kprate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
+							<input type="checkbox" name="filters[movies][kprate][enable]" class="filters_movies_rate_chk" id="filters_movies_kprate_enable" value="<?php echo (int) $this->activeFilters->def('filters.movies.kprate.enable', 0); ?>"<?php echo (int) $this->activeFilters->def('filters.movies.kprate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_kprate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
 						</div>
 					</div>
 				</div>
@@ -368,13 +368,13 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-label uk-width-1-6">&nbsp;</div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<input type="text" name="filters[movies][kprate][min]" value="<?php echo (int)$this->activeFilters->def('filters.movies.kprate.min', 6); ?>" id="filters_movies_kprate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][kprate][max]" value="<?php echo (int)$this->activeFilters->def('filters.movies.kprate.max', 10); ?>" id="filters_movies_kprate_max" maxlength="2" size="3" />
+								<input type="text" name="filters[movies][kprate][min]" value="<?php echo (int) $this->activeFilters->def('filters.movies.kprate.min', 6); ?>" id="filters_movies_kprate_min" maxlength="2" size="3" /> - <input type="text" name="filters[movies][kprate][max]" value="<?php echo (int) $this->activeFilters->def('filters.movies.kprate.max', 10); ?>" id="filters_movies_kprate_max" maxlength="2" size="3" />
 							</div>
 							<div class="span6">
 								<div id="filters_movies_kprate" class="search-rate-slider"
 									 data-rate-min="0"
 									 data-rate-max="10"
-									 data-rate-values="<?php echo (int)$this->activeFilters->def('filters.movies.kprate.min', 6); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.kprate.max', 10); ?>">
+									 data-rate-values="<?php echo (int) $this->activeFilters->def('filters.movies.kprate.min', 6); ?>, <?php echo (int) $this->activeFilters->def('filters.movies.kprate.max', 10); ?>">
 								</div>
 							</div>
 						</div>
@@ -389,7 +389,7 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_rtrate', 'COM_KA_SEARCH_ADV_MOVIES_RT_RATE'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
-							<input type="checkbox" name="filters[movies][rtrate][enable]" class="filters_movies_rate_chk" id="filters_movies_rtrate_enable" value="<?php echo (int)$this->activeFilters->def('filters.movies.rtrate.enable', 0); ?>"<?php echo (int)$this->activeFilters->def('filters.movies.rtrate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_rtrate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
+							<input type="checkbox" name="filters[movies][rtrate][enable]" class="filters_movies_rate_chk" id="filters_movies_rtrate_enable" value="<?php echo (int) $this->activeFilters->def('filters.movies.rtrate.enable', 0); ?>"<?php echo (int) $this->activeFilters->def('filters.movies.rtrate.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_rtrate_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
 						</div>
 					</div>
 				</div>
@@ -400,13 +400,13 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-label uk-width-1-6">&nbsp;</div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<input type="text" name="filters[movies][rtrate][min]" value="<?php echo (int)$this->activeFilters->def('filters.movies.rtrate.min', 0); ?>" id="filters_movies_rtrate_min" maxlength="3" size="3" /> - <input type="text" name="filters[movies][rtrate][max]" value="<?php echo (int)$this->activeFilters->def('filters.movies.rtrate.max', 100); ?>" id="filters_movies_rtrate_max" maxlength="3" size="3" />
+								<input type="text" name="filters[movies][rtrate][min]" value="<?php echo (int) $this->activeFilters->def('filters.movies.rtrate.min', 0); ?>" id="filters_movies_rtrate_min" maxlength="3" size="3" /> - <input type="text" name="filters[movies][rtrate][max]" value="<?php echo (int) $this->activeFilters->def('filters.movies.rtrate.max', 100); ?>" id="filters_movies_rtrate_max" maxlength="3" size="3" />
 							</div>
 							<div class="span6">
 								<div id="filters_movies_rtrate" class="search-rate-slider"
 									 data-rate-min="0"
 									 data-rate-max="100"
-									 data-rate-values="<?php echo (int)$this->activeFilters->def('filters.movies.rtrate.min', 0); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.rtrate.max', 100); ?>">
+									 data-rate-values="<?php echo (int) $this->activeFilters->def('filters.movies.rtrate.min', 0); ?>, <?php echo (int) $this->activeFilters->def('filters.movies.rtrate.max', 100); ?>">
 								</div>
 							</div>
 						</div>
@@ -421,7 +421,7 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1" style="margin-bottom: 5px;">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_metacritic', 'COM_KA_SEARCH_ADV_MOVIES_MTC_RATE'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
-							<input type="checkbox" name="filters[movies][metacritic][enable]" class="filters_movies_rate_chk" id="filters_movies_metacritic_enable" value="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.enable', 0); ?>"<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_metacritic_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
+							<input type="checkbox" name="filters[movies][metacritic][enable]" class="filters_movies_rate_chk" id="filters_movies_metacritic_enable" value="<?php echo (int) $this->activeFilters->def('filters.movies.metacritic.enable', 0); ?>"<?php echo (int) $this->activeFilters->def('filters.movies.metacritic.enable', 0) == 1 ? ' checked' : ''; ?> /><?php echo KAComponentHelper::setLabel('filters_movies_metacritic_enable', 'COM_KA_SEARCH_ADV_MOVIES_RATES_LABEL', '', '', array('style'=>'display: inline-block; padding-left: 8px;')); ?>
 						</div>
 					</div>
 				</div>
@@ -432,13 +432,13 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-label uk-width-1-6">&nbsp;</div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<input type="text" name="filters[movies][metacritic][min]" value="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.min', 0); ?>" id="filters_movies_metacritic_min" maxlength="3" size="3" /> - <input type="text" name="filters[movies][metacritic][max]" value="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.max', 100); ?>" id="filters_movies_metacritic_max" maxlength="3" size="3" />
+								<input type="text" name="filters[movies][metacritic][min]" value="<?php echo (int) $this->activeFilters->def('filters.movies.metacritic.min', 0); ?>" id="filters_movies_metacritic_min" maxlength="3" size="3" /> - <input type="text" name="filters[movies][metacritic][max]" value="<?php echo (int) $this->activeFilters->def('filters.movies.metacritic.max', 100); ?>" id="filters_movies_metacritic_max" maxlength="3" size="3" />
 							</div>
 							<div class="span6">
 								<div id="filters_movies_metacritic" class="search-rate-slider"
 									 data-rate-min="0"
 									 data-rate-max="100"
-									 data-rate-values="<?php echo (int)$this->activeFilters->def('filters.movies.metacritic.min', 0); ?>, <?php echo (int)$this->activeFilters->def('filters.movies.metacritic.max', 100); ?>">
+									 data-rate-values="<?php echo (int) $this->activeFilters->def('filters.movies.metacritic.min', 0); ?>, <?php echo (int) $this->activeFilters->def('filters.movies.metacritic.max', 100); ?>">
 								</div>
 							</div>
 						</div>

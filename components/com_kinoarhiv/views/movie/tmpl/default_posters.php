@@ -14,12 +14,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'js/i18n/colorbox');
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
-<script type="text/javascript">
-	jQuery(document).ready(function ($) {
-		$('img.lazy').lazyload({threshold: 200});
-		$('.posters-list .item a').colorbox({maxHeight: '90%', maxWidth: '90%', photo: true});
-	});
-</script>
 <div class="content movie posters">
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);

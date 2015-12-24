@@ -249,4 +249,34 @@ class KinoarhivControllerSettings extends JControllerLegacy
 			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
 		}
 	}
+
+	public function validatePaths()
+	{
+		$paths = JFactory::getApplication()->input->get('jform', array(), 'array');
+		$result = array();
+
+		foreach ($paths as $key => $path)
+		{
+			$path = JPath::clean($path);
+			$files_keys = array('ffmpeg_path', 'ffprobe_path', 'gnuplot_path', 'upload_gallery_watermark_image');
+
+			// Check if checked value not a file
+			if (!in_array($key, $files_keys))
+			{
+				if (!is_dir($path) || !is_writable($path))
+				{
+					$result[$key] = JText::_('COM_KA_FIELD_PATHS_DIR_NOT_FOUND');
+				}
+			}
+			else
+			{
+				if (!is_file($path) || !is_executable($path))
+				{
+					$result[$key] = JText::_('COM_KA_FIELD_PATHS_FILE_NOT_FOUND');
+				}
+			}
+		}
+
+		echo json_encode($result);
+	}
 }

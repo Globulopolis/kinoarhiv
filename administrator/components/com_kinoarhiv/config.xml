@@ -75,97 +75,97 @@
 		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red"/>
 		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="ffprobe_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFPROBE_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="gnuplot_path" type="text" default="bin/gnuplot/" label="COM_KA_FIELD_PATHS_GNUPLOT_LABEL"
 			   description="COM_KA_FIELD_PATHS_GNUPLOT_LABEL_DEDC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/"
 			   label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
-			   filter="string" size="100" class="span11"/>
+			   filter="string" size="100" class="span11 validate-path"/>
 
 		<field name="media_posters_root" type="text" default="" label="COM_KA_FIELD_PATHS_PO_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_posters_root_www" type="text" default="/images/movies"
 			   label="COM_KA_FIELD_PATHS_PO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_wallpapers_root" type="text" default="" label="COM_KA_FIELD_PATHS_WP_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_wallpapers_root_www" type="text" default="/images/movies"
 			   label="COM_KA_FIELD_PATHS_WP_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_scr_root" type="text" default="" label="COM_KA_FIELD_PATHS_SCR_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_scr_root_www" type="text" default="/images/movies" label="COM_KA_FIELD_PATHS_SCR_WWW_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" required="true" filter="string" size="100"
 			   class="span11"/>
 
 		<field name="media_actor_photo_root" type="text" default="" label="COM_KA_FIELD_PATHS_PHOTO_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_actor_photo_root_www" type="text" default="/images/names"
 			   label="COM_KA_FIELD_PATHS_PHOTO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_actor_posters_root" type="text" default="" label="COM_KA_FIELD_PATHS_POSTER_NAMES_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_actor_posters_root_www" type="text" default="/images/names"
 			   label="COM_KA_FIELD_PATHS_POSTER_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_actor_wallpapers_root" type="text" default="" label="COM_KA_FIELD_PATHS_WP_NAMES_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_actor_wallpapers_root_www" type="text" default="/images/names"
 			   label="COM_KA_FIELD_PATHS_WP_NAMES_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_trailers_root" type="text" default="" label="COM_KA_FIELD_PATHS_TR_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_trailers_root_www" type="text" default="/downloads/trailers"
 			   label="COM_KA_FIELD_PATHS_TR_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_music_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_music_root_www" type="text" default="/downloads/music"
 			   label="COM_KA_FIELD_PATHS_MUSIC_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_music_demo_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_DEMO_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_music_demo_root_www" type="text" default="/downloads/music_demo"
 			   label="COM_KA_FIELD_PATHS_MUSIC_DEMO_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_music_images_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_IMG_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_music_images_root_www" type="text" default="/images/music"
 			   label="COM_KA_FIELD_PATHS_MUSIC_IMG_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_music_images_wf_root" type="text" default="" label="COM_KA_FIELD_PATHS_MUSIC_IMG_WF_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_music_images_wf_root_www" type="text" default="/images/music"
 			   label="COM_KA_FIELD_PATHS_MUSIC_IMG_WF_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC"
 			   required="true" filter="string" size="100" class="span11"/>
 
 		<field name="media_rating_image_root" type="text" default="" label="COM_KA_FIELD_PATHS_RT_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
-			   class="span11"/>
+			   class="span11 validate-path"/>
 		<field name="media_rating_image_root_www" type="text" default="/images/rating"
 			   label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
 			   filter="string" size="100" class="span11"/>

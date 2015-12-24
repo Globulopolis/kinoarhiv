@@ -154,6 +154,18 @@ JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/cookie.min
 			}
 		});
 		// End
+
+		$.post('index.php?option=com_kinoarhiv&controller=settings&task=validatePaths&format=json',
+			$('form .validate-path').serialize(), function(response){
+				$.each(response, function(key, message){
+					$('#jform_' + key).css({
+						'color': 'red',
+						'border': '1px solid red'
+					})
+					.attr('title', message)
+					.tooltip();
+				});
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="application-form" method="post" name="adminForm" autocomplete="off">
@@ -269,5 +281,5 @@ JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/cookie.min
 	</div>
 </form>
 
-<!-- Upload config layout -->
+<!-- Upload config template -->
 <?php echo $this->loadTemplate('upload_config');

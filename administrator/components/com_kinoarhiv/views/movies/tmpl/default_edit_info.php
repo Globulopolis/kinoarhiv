@@ -139,31 +139,43 @@ else
 		});
 
 		function requestUpdateStatImg(elem, data) {
-			if (confirm('<?php echo JText::_('COM_KA_MOVIE_RATES_UPDATE_IMG'); ?>')) {
-				blockUI('show');
+			$('<div id="dialog-message" title="<?php echo JText::_('MESSAGE'); ?>"><p><?php echo JText::_('COM_KA_MOVIE_RATES_UPDATE_IMG') . JText::_('COM_KA_MOVIE_RATES_UPDATE_IMG_TEXT'); ?><br /><?php echo JText::_('COM_KA_FIELD_MOVIE_VOTESUMM'); ?> - ' + data.votesum + ';<br /><?php echo JText::_('COM_KA_FIELD_MOVIE_VOTES'); ?> - ' + data.votes + '</p></div>').dialog({
+				modal: true,
+				buttons: [
+					{
+						text: '<?php echo JText::_('JTOOLBAR_REFRESH'); ?>',
+						id: 'updateStatImg_do',
+						click: function(){
+							$('#updateStatImg_do, #updateStatImg_close').button('disable');
 
-				$.ajax({
-					type: 'POST',
-					url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>&elem=' + elem,
-					data: data
-				}).done(function (response) {
-					if (response.success) {
-						var dlg = '<div id="dialog-message" title="<?php echo JText::_('MESSAGE'); ?>"><p><img src="' + response.image + '" border="0" /></p></div>';
-						$(dlg).dialog({
-							modal: true
-						});
-						blockUI('hide');
-					} else {
-						showMsg('#j-main-container', response.message);
-						$(document).scrollTop(0);
-						blockUI('hide');
+							var $this = $(this);
+							$.ajax({
+								type: 'POST',
+								url: 'index.php?option=com_kinoarhiv&controller=movies&task=updateRateImg&format=json&id=<?php echo ($movie_id != 0) ? $movie_id : ''; ?>&elem=' + elem,
+								data: data
+							}).done(function (response) {
+								if (response.success) {
+									$this.find('p').html('<p><img src="' + response.image + '" border="0" /></p>');
+									$('#updateStatImg_do, #updateStatImg_close').button('enable');
+								} else {
+									$this.find('p').html(response.message);
+									$('#updateStatImg_close').button('enable');
+								}
+							}).fail(function (xhr, status, error) {
+								$this.find('p').html(error);
+								$('#updateStatImg_close').button('enable');
+							});
+						}
+					},
+					{
+						text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
+						id: 'updateStatImg_close',
+						click: function(){
+							$(this).dialog('close');
+						}
 					}
-				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
-					$(document).scrollTop(0);
-					blockUI('hide');
-				});
-			}
+				]
+			});
 		}
 
 		<?php if ($movie_id != 0): ?>

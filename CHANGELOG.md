@@ -1,4 +1,6 @@
 ## HEAD (Unreleased)
+* Configuration for rating parser moved to config_rating_parser.xml
+* Fixed wrong URL for rating image in updateRateImg()
 * Remove Jwplayer as it's not support video send via PHP script.
 * Improve load speed for movie and person info page.
 * Added microdata for movie info.

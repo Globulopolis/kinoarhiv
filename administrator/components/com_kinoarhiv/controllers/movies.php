@@ -10,6 +10,9 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+use Joomla\String\String;
+
 /**
  * Movies list controller class
  *
@@ -455,6 +458,27 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Movie ID from DB
 		$movie_id = $app->input->get('movie_id', 0, 'int');
 
+		$registry = new Registry;
+		$config_rating_parser = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . '/config_rating_parser.xml');
+
+		if (!is_file($config_rating_parser))
+		{
+			echo json_encode(
+				array(
+					'success'  => false,
+					'votesum'  => 0,
+					'votes'    => 0,
+					'message'  => 'Configuration file not found!',
+					'movie_id' => $movie_id
+				)
+			);
+
+			return;
+		}
+
+		$parser_conf = $registry->loadFile($config_rating_parser, 'XML');
+		$parser_conf = $parser_conf->toArray();
+
 		$success = true;
 		$message = '';
 		$votesum = 0;
@@ -462,13 +486,12 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($param == 'imdb_vote' || $param == 'kp_vote')
 		{
-			$headers = array(
-				'Cookie'     => 'PHPSESSID=2fe68b9818bf8339f46d4fb5eb4cd613; user_country=ru; noflash=false; mobile=no;',
-				'Host'       => 'www.kinopoisk.ru',
-				'Referer'    => 'http://www.kinopoisk.ru/',
-				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
+			$response = KAComponentHelper::getRemoteData(
+				'http://www.kinopoisk.ru/rating/' . (int) $id . '.xml',
+				$parser_conf['imdb']['headers'],
+				30,
+				array('curl', 'socket')
 			);
-			$response = KAComponentHelper::getRemoteData('http://www.kinopoisk.ru/rating/' . (int) $id . '.xml', $headers, 30, array('curl', 'socket'));
 
 			$xml = new SimpleXMLElement($response->body);
 
@@ -485,25 +508,25 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 		elseif ($param == 'rt_vote')
 		{
-			$headers = array(
-				'Cookie'     => 'ServerID=1323; instart=8; JSESSIONID=F44F3F597B674EB4E179EA4A4E5F7E51.localhost',
-				'Host'       => 'www.rottentomatoes.com',
-				'Referer'    => 'http://www.rottentomatoes.com/',
-				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
+			$response = KAComponentHelper::getRemoteData(
+				'http://www.rottentomatoes.com/m/' . $id . '/',
+				$parser_conf['rottentomatoes']['headers'],
+				30,
+				array('curl', 'socket')
 			);
-			$response = KAComponentHelper::getRemoteData('http://www.rottentomatoes.com/m/' . $id . '/', $headers, 30, array('curl', 'socket'));
 
 			$dom = new DOMDocument('1.0', 'utf-8');
 			@$dom->loadHTML($response->body);
-
 			$xpath = new DOMXPath($dom);
-			$rating = @$xpath->query('//span[@class="meter-value superPageFontColor"]/span[@itemprop="ratingValue"]')->item(0)->nodeValue;
-			$score = @$xpath->query('//span[@itemprop="reviewCount ratingCount"]')->item(0)->nodeValue;
+			$rating = @$xpath->query($parser_conf['rottentomatoes']['patterns']['rating'])->item(0)->nodeValue;
+			$score = @$xpath->query($parser_conf['rottentomatoes']['patterns']['score'])->item(0)->nodeValue;
+			$rating = (int) $rating;
+			$score = (int) $score;
 
 			if (is_numeric($rating) && is_numeric($score))
 			{
-				$votesum = (int) $rating;
-				$votes = (int) $score;
+				$votesum = $rating;
+				$votes = $score;
 			}
 			else
 			{
@@ -513,44 +536,39 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 		elseif ($param == 'mc_vote')
 		{
-			$headers = array(
-				'Cookie'     => 'ctk=NTRkODU4NzljMzAzZjQwNWM2OGIyNzMzYTE4Mg%3D%3D; utag_main=v_id:014b6d19a0b10014d4feeb376aff0a048001a00d0086e$_sn:3$_ss:1$_st:1423471721686$_pn:1%3Bexp-session$ses_id:1423469921686%3Bexp-session; AMCV_10D31225525FF5790A490D4D%40AdobeOrg=-2017484664%7CMCMID%7C07680162007879004744428376133574352754%7CMCAID%7CNONE; s_vnum=1426056571361%26vn%3D3; s_getNewRepeat=1423469921834-Repeat; s_lv_undefined=1423469921834; prevPageType=product_overview; LDCLGFbrowser=a81db543-6173-4ca1-a45d-63880ff005ce; tmpid=1423469920701985',
-				'Host'       => 'www.metacritic.com',
-				'Referer'    => 'http://www.metacritic.com/',
-				'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0'
+			$response = KAComponentHelper::getRemoteData(
+				'http://www.metacritic.com/movie/' . $id,
+				$parser_conf['metacritic']['headers'],
+				30,
+				array('curl', 'socket')
 			);
-			$response = KAComponentHelper::getRemoteData('http://www.metacritic.com/movie/' . $id, $headers, 30, array('curl', 'socket'));
 
-			// Find the div with rating
-			if (preg_match('/<div class="details main_details">(.*?)<div class="details side_details">/si', $response->body, $matches))
+			$dom = new DOMDocument('1.0', 'utf-8');
+			@$dom->loadHTML($response->body);
+			$xpath = new DOMXPath($dom);
+			$rating = @$xpath->query($parser_conf['metacritic']['patterns']['rating'])->item(0)->nodeValue;
+			$score = @$xpath->query($parser_conf['metacritic']['patterns']['score'])->item(0)->nodeValue;
+			$rating = (int) $rating;
+			$score = (int) $score;
+
+			if (is_numeric($rating) && is_numeric($score))
 			{
-				preg_match('%<span itemprop="ratingValue">(.*?)<\/span>%si', $matches[1], $_votesum);
-				preg_match('%<span itemprop="reviewCount">(.*?)<\/span>%si', $matches[1], $_votes);
-
-				if (!isset($_votesum[1]))
-				{
-					$message = JText::_('ERROR') . ': ' . JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
-					$success = false;
-				}
-				else
-				{
-					$votesum = (int) $_votesum[1];
-					$votes = (int) str_replace(' ', '', $_votes[1]);
-				}
+				$votesum = $rating;
+				$votes = $score;
 			}
 			else
 			{
-				$message = JText::_('ERROR') . '! Someting wrong with a parser!';
+				$message = JText::_('ERROR') . ': ' . JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
 				$success = false;
 			}
 		}
 
 		echo json_encode(
 			array(
-				'success' => $success,
-				'votesum' => $votesum,
-				'votes' => $votes,
-				'message' => $message,
+				'success'  => $success,
+				'votesum'  => $votesum,
+				'votes'    => $votes,
+				'message'  => $message,
 				'movie_id' => $movie_id
 			)
 		);
@@ -625,13 +643,22 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		JLoader::register('KAImageHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'image.php');
 		$result = KAImageHelper::createRateImage($text);
 
+		if (String::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
+		{
+			$rating_image_www = JURI::root() . String::substr($params->get('media_rating_image_root_www'), 1);
+		}
+		else
+		{
+			$rating_image_www = $params->get('media_rating_image_root_www');
+		}
+
 		$document->setMimeEncoding('application/json');
 
 		echo json_encode(
 			array(
 				'success' => $result['success'],
 				'message' => $result['message'],
-				'image' => JURI::root() . $params->get('media_rating_image_root_www') . '/' . $folder . '/' . $id . '_big.png?' . time()
+				'image' => $rating_image_www . '/' . $folder . '/' . $id . '_big.png?' . time()
 			)
 		);
 	}

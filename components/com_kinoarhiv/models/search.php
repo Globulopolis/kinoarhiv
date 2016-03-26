@@ -63,7 +63,7 @@ class KinoarhivModelSearch extends JModelLegacy
 
 		rsort($new_years_arr);
 		$items->movies->from_year = array_merge($default_value, $new_years_arr);
-		$items->movies->to_year = &$items->movies->from_year;
+		$items->movies->to_year = $items->movies->from_year;
 
 		// Get the list of countries
 		$query = $db->getQuery(true)
@@ -177,7 +177,7 @@ class KinoarhivModelSearch extends JModelLegacy
 			array(array('value' => '', 'text' => '-')),
 			$budgets
 		);
-		$items->movies->to_budget = &$items->movies->from_budget;
+		$items->movies->to_budget = $items->movies->from_budget;
 
 		$items->movies->tags = (object) array();
 
@@ -187,7 +187,7 @@ class KinoarhivModelSearch extends JModelLegacy
 			array('value' => '0', 'text' => JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_F'))
 		);
 
-		$items->names->birthcountry = &$items->movies->countries;
+		$items->names->birthcountry = $items->movies->countries;
 
 		// Amplua
 		$query = $db->getQuery(true)

@@ -968,6 +968,7 @@ class KinoarhivModelMovie extends JModelForm
 				))
 			{
 				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
+				KAComponentHelper::eventLog('Error while moving the files from media folders into new location! See log for more information.');
 			}
 
 			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.

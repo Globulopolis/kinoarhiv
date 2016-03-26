@@ -9,12 +9,14 @@
  *         Website : alex-d.fr
  */
 
-.trumbowyg-box *,
-.trumbowyg-box *::before,
-.trumbowyg-box *::after {
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box; }
+.trumbowyg-box {
+  padding-top: 37px; }
+  .trumbowyg-box *,
+  .trumbowyg-box *::before,
+  .trumbowyg-box *::after {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box; }
 
 .trumbowyg-box,
 .trumbowyg-editor {
@@ -63,7 +65,7 @@
 
 .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
   position: absolute;
-  top: 37px;
+  top: 36px;
   height: 1px !important;
   width: 25%;
   min-height: 0 !important;
@@ -82,8 +84,11 @@
   color: #999; }
 
 .trumbowyg-button-pane {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  min-height: 37px;
   background: #ecf0f1;
   border-bottom: 1px solid #d7e0e2;
   margin: 0;
@@ -93,7 +98,8 @@
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden; }
   .trumbowyg-button-pane li {
-    display: inline-block;
+    display: block;
+    float: left;
     text-align: center;
     overflow: hidden;
     padding: 0 !important; }
@@ -169,6 +175,7 @@
   margin-left: -260px;
   width: 520px;
   height: 350px;
+  z-index: 11;
   overflow: hidden;
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden; }
@@ -275,7 +282,6 @@
     margin: 0 10px;
     background-color: #333;
     border: none;
-    border-top: none;
     cursor: pointer;
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
     font-size: 16px;
@@ -306,7 +312,8 @@
   background-color: rgba(255, 255, 255, 0.5);
   width: 100%;
   left: 0;
-  display: none; }
+  display: none;
+  z-index: 10; }
 
 /**
  * Fullscreen
@@ -329,96 +336,93 @@ body.trumbowyg-body-fullscreen {
   .trumbowyg-fullscreen .trumbowyg-overlay {
     height: 100% !important; }
 
-/*
- * Reset for resetCss option
- */
-.trumbowyg-editor object,
-.trumbowyg-editor embed,
-.trumbowyg-editor video,
-.trumbowyg-editor img {
-  width: auto;
-  max-width: 100%; }
-
-.trumbowyg-editor video,
-.trumbowyg-editor img {
-  height: auto; }
-
-.trumbowyg-editor img {
-  cursor: move; }
-
-.trumbowyg-editor.trumbowyg-reset-css {
-  background: #FEFEFE !important;
-  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
-  font-size: 14px !important;
-  line-height: 1.45em !important;
-  white-space: normal !important;
-  color: #333; }
-  .trumbowyg-editor.trumbowyg-reset-css a {
-    color: #15c !important;
-    text-decoration: underline !important; }
-  .trumbowyg-editor.trumbowyg-reset-css div,
-  .trumbowyg-editor.trumbowyg-reset-css p,
-  .trumbowyg-editor.trumbowyg-reset-css ul,
-  .trumbowyg-editor.trumbowyg-reset-css ol,
-  .trumbowyg-editor.trumbowyg-reset-css blockquote {
-    -webkit-box-shadow: none !important;
-            box-shadow: none !important;
-    background: none !important;
-    margin: 0 !important;
-    margin-bottom: 15px !important;
-    line-height: 1.4em !important;
+.trumbowyg-editor {
+  /*
+     * Reset for resetCss option
+     */ }
+  .trumbowyg-editor object,
+  .trumbowyg-editor embed,
+  .trumbowyg-editor video,
+  .trumbowyg-editor img {
+    max-width: 100%; }
+  .trumbowyg-editor video,
+  .trumbowyg-editor img {
+    height: auto; }
+  .trumbowyg-editor img {
+    cursor: move; }
+  .trumbowyg-editor.trumbowyg-reset-css {
+    background: #FEFEFE !important;
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
     font-size: 14px !important;
-    border: none; }
-  .trumbowyg-editor.trumbowyg-reset-css iframe,
-  .trumbowyg-editor.trumbowyg-reset-css object,
-  .trumbowyg-editor.trumbowyg-reset-css hr {
-    margin-bottom: 15px !important; }
-  .trumbowyg-editor.trumbowyg-reset-css blockquote {
-    margin-left: 32px !important;
-    font-style: italic !important;
-    color: #555; }
-  .trumbowyg-editor.trumbowyg-reset-css ul,
-  .trumbowyg-editor.trumbowyg-reset-css ol {
-    padding-left: 20px !important; }
-  .trumbowyg-editor.trumbowyg-reset-css ul ul,
-  .trumbowyg-editor.trumbowyg-reset-css ol ol,
-  .trumbowyg-editor.trumbowyg-reset-css ul ol,
-  .trumbowyg-editor.trumbowyg-reset-css ol ul {
-    border: none;
-    margin: 2px !important;
-    padding: 0 !important;
-    padding-left: 24px !important; }
-  .trumbowyg-editor.trumbowyg-reset-css hr {
-    display: block;
-    height: 1px;
-    border: none;
-    border-top: 1px solid #CCC; }
-  .trumbowyg-editor.trumbowyg-reset-css h1,
-  .trumbowyg-editor.trumbowyg-reset-css h2,
-  .trumbowyg-editor.trumbowyg-reset-css h3,
-  .trumbowyg-editor.trumbowyg-reset-css h4 {
-    color: #111;
-    background: none;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-weight: bold; }
-  .trumbowyg-editor.trumbowyg-reset-css h1 {
-    font-size: 32px !important;
-    line-height: 38px !important;
-    margin-bottom: 20px !important; }
-  .trumbowyg-editor.trumbowyg-reset-css h2 {
-    font-size: 26px !important;
-    line-height: 34px !important;
-    margin-bottom: 15px !important; }
-  .trumbowyg-editor.trumbowyg-reset-css h3 {
-    font-size: 22px !important;
-    line-height: 28px !important;
-    margin-bottom: 7px !important; }
-  .trumbowyg-editor.trumbowyg-reset-css h4 {
-    font-size: 16px !important;
-    line-height: 22px !important;
-    margin-bottom: 7px !important; }
+    line-height: 1.45em !important;
+    white-space: normal !important;
+    color: #333; }
+    .trumbowyg-editor.trumbowyg-reset-css a {
+      color: #15c !important;
+      text-decoration: underline !important; }
+    .trumbowyg-editor.trumbowyg-reset-css div,
+    .trumbowyg-editor.trumbowyg-reset-css p,
+    .trumbowyg-editor.trumbowyg-reset-css ul,
+    .trumbowyg-editor.trumbowyg-reset-css ol,
+    .trumbowyg-editor.trumbowyg-reset-css blockquote {
+      -webkit-box-shadow: none !important;
+              box-shadow: none !important;
+      background: none !important;
+      margin: 0 !important;
+      margin-bottom: 15px !important;
+      line-height: 1.4em !important;
+      font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+      font-size: 14px !important;
+      border: none; }
+    .trumbowyg-editor.trumbowyg-reset-css iframe,
+    .trumbowyg-editor.trumbowyg-reset-css object,
+    .trumbowyg-editor.trumbowyg-reset-css hr {
+      margin-bottom: 15px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css blockquote {
+      margin-left: 32px !important;
+      font-style: italic !important;
+      color: #555; }
+    .trumbowyg-editor.trumbowyg-reset-css ul,
+    .trumbowyg-editor.trumbowyg-reset-css ol {
+      padding-left: 20px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css ul ul,
+    .trumbowyg-editor.trumbowyg-reset-css ol ol,
+    .trumbowyg-editor.trumbowyg-reset-css ul ol,
+    .trumbowyg-editor.trumbowyg-reset-css ol ul {
+      border: none;
+      margin: 2px !important;
+      padding: 0 !important;
+      padding-left: 24px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css hr {
+      display: block;
+      height: 1px;
+      border: none;
+      border-top: 1px solid #CCC; }
+    .trumbowyg-editor.trumbowyg-reset-css h1,
+    .trumbowyg-editor.trumbowyg-reset-css h2,
+    .trumbowyg-editor.trumbowyg-reset-css h3,
+    .trumbowyg-editor.trumbowyg-reset-css h4 {
+      color: #111;
+      background: none;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-weight: bold; }
+    .trumbowyg-editor.trumbowyg-reset-css h1 {
+      font-size: 32px !important;
+      line-height: 38px !important;
+      margin-bottom: 20px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h2 {
+      font-size: 26px !important;
+      line-height: 34px !important;
+      margin-bottom: 15px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h3 {
+      font-size: 22px !important;
+      line-height: 28px !important;
+      margin-bottom: 7px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h4 {
+      font-size: 16px !important;
+      line-height: 22px !important;
+      margin-bottom: 7px !important; }
 
 /*
  * Black theme
@@ -444,7 +448,7 @@ body.trumbowyg-body-fullscreen {
   background: #222; }
   .trumbowyg-black .trumbowyg-dropdown button {
     background: #222;
-    color: #fff; }
+    color: #fff !important; }
     .trumbowyg-black .trumbowyg-dropdown button:hover,
     .trumbowyg-black .trumbowyg-dropdown button:focus {
       background: #555; }

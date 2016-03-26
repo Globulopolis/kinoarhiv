@@ -21,13 +21,12 @@ class KinoarhivViewRelations extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
+		$this->user = JFactory::getUser();
 		$this->task = $app->input->get('task', '', 'cmd');
 		$this->id = $app->input->get('id', 0, 'int');
 		$this->movie_id = $app->input->get('mid', 0, 'int');
 		$this->name_id = $app->input->get('nid', 0, 'int');
 		$this->element = $app->input->get('element', 'movies', 'word');
-		$this->user = &$user;
 
 		switch ($this->task)
 		{

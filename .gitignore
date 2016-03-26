@@ -179,6 +179,8 @@
 /administrator/language/en-GB/en-GB.plg_editors-xtd_article.sys.ini
 /administrator/language/en-GB/en-GB.plg_editors-xtd_image.ini
 /administrator/language/en-GB/en-GB.plg_editors-xtd_image.sys.ini
+/administrator/language/en-GB/en-GB.plg_editors-xtd_module.ini
+/administrator/language/en-GB/en-GB.plg_editors-xtd_module.sys.ini
 /administrator/language/en-GB/en-GB.plg_editors-xtd_pagebreak.ini
 /administrator/language/en-GB/en-GB.plg_editors-xtd_pagebreak.sys.ini
 /administrator/language/en-GB/en-GB.plg_editors-xtd_readmore.ini
@@ -247,6 +249,10 @@
 /administrator/language/en-GB/en-GB.plg_system_remember.sys.ini
 /administrator/language/en-GB/en-GB.plg_system_sef.ini
 /administrator/language/en-GB/en-GB.plg_system_sef.sys.ini
+/administrator/language/en-GB/en-GB.plg_system_stats.ini
+/administrator/language/en-GB/en-GB.plg_system_stats.sys.ini
+/administrator/language/en-GB/en-GB.plg_system_updatenotification.ini
+/administrator/language/en-GB/en-GB.plg_system_updatenotification.sys.ini
 /administrator/language/en-GB/en-GB.plg_twofactorauth_totp.ini
 /administrator/language/en-GB/en-GB.plg_twofactorauth_totp.sys.ini
 /administrator/language/en-GB/en-GB.plg_twofactorauth_yubikey.ini
@@ -502,7 +508,7 @@
 /components/com_jce/
 /components/com_mailto/
 /components/com_media/
-components/com_modules/
+/components/com_modules/
 /components/com_newsfeeds/
 /components/com_search/
 /components/com_tags/

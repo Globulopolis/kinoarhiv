@@ -1,4 +1,7 @@
 ## HEAD (Unreleased)
+* Remove buttons from editor fields.
+* Reduce size of jQuery UI build.
+* Update jQuery Timepicker Addon to 1.6.1
 * Update plupload to 2.1.8 trumbowyg to latest beta 8
 * Configuration for rating parser moved to config_rating_parser.xml
 * Fixed wrong URL for rating image in updateRateImg()

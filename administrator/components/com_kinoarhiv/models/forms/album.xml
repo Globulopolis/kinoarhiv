@@ -22,10 +22,8 @@
 				   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span10" filter="string" data-ac-type="genres"/>
 			<field name="covers_path" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45"/>
 			<field name="buy_url" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL"
-				   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="true"
-				   hide="readmore,pagebreak"/>
-			<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true"
-				   hide="readmore,pagebreak"/>
+				   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="false"/>
+			<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="false"/>
 			<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL"
 				   description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30"
 				   labelclass="control-label"/>

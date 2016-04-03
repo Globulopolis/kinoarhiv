@@ -17,7 +17,6 @@
 		</field>
 		<field name="ordering" type="order" data="premieres" class="inputbox span5" label="JFIELD_ORDERING_LABEL"
 			   description="JFIELD_ORDERING_DESC"/>
-		<field name="info" type="editor" label="COM_KA_FIELD_PREMIERE_DESC" filter="raw" buttons="true"
-			   hide="readmore,pagebreak"/>
+		<field name="info" type="editor" label="COM_KA_FIELD_PREMIERE_DESC" filter="raw" buttons="false"/>
 	</fieldset>
 </form>

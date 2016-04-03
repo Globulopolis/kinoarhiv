@@ -19,7 +19,6 @@
 		</field>
 		<field name="ordering" type="order" data="releases" class="inputbox span5" label="JFIELD_ORDERING_LABEL"
 			   description="JFIELD_ORDERING_DESC"/>
-		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true"
-			   hide="readmore,pagebreak"/>
+		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="false"/>
 	</fieldset>
 </form>

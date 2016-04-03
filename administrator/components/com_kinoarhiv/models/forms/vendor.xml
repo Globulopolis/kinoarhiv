@@ -9,8 +9,7 @@
 			   filter="string" size="45"/>
 		<field name="company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL"
 			   description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string"/>
-		<field name="description" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="true"
-			   hide="readmore,pagebreak"/>
+		<field name="description" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="false"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

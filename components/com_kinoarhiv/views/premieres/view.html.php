@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Premieres View class
@@ -119,9 +119,9 @@ class KinoarhivViewPremieres extends JViewLegacy
 				{
 					$item->fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+						$item->poster = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 					else

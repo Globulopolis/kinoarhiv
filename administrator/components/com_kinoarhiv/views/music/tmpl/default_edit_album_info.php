@@ -10,11 +10,11 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
-if (String::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
+if (StringHelper::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
 {
-	$poster_url = JURI::root() . String::substr($this->params->get('media_music_images_root_www'), 1) . '/'
+	$poster_url = JURI::root() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
 		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->form->getValue('id', $this->form_edit_group);
 }
 else

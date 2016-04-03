@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 class KinoarhivViewMediamanager extends JViewLegacy
 {
@@ -89,9 +89,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 					{
 						$item->folderpath = $file_path;
 
-						if (String::substr($path_www, 0, 1) == '/')
+						if (StringHelper::substr($path_www, 0, 1) == '/')
 						{
-							$item->filepath = JURI::root() . String::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
+							$item->filepath = JURI::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
 						}
 						else
 						{
@@ -106,9 +106,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 					}
 					else
 					{
-						if (String::substr($path_www, 0, 1) == '/')
+						if (StringHelper::substr($path_www, 0, 1) == '/')
 						{
-							$item->th_filepath = JURI::root() . String::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
+							$item->th_filepath = JURI::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
 						}
 						else
 						{
@@ -149,16 +149,16 @@ class KinoarhivViewMediamanager extends JViewLegacy
 						$movie_id = $app->input->get('id', 0, 'int');
 						$screenshot = $this->form->getValue('screenshot');
 
-						if (String::substr($this->params->get('media_trailers_root_www'), 0, 1) == '/')
+						if (StringHelper::substr($this->params->get('media_trailers_root_www'), 0, 1) == '/')
 						{
 							$item->set(
 								'screenshot_path_www',
-								JURI::root() . String::substr($this->params->get('media_trailers_root_www'), 1) . '/'
+								JURI::root() . StringHelper::substr($this->params->get('media_trailers_root_www'), 1) . '/'
 									. urlencode($this->form->getValue('fs_alias')) . '/' . $movie_id . '/' . $screenshot
 							);
 							$item->set(
 								'screenshot_folder_www',
-								JURI::root() . String::substr($this->params->get('media_trailers_root_www'), 1) . '/'
+								JURI::root() . StringHelper::substr($this->params->get('media_trailers_root_www'), 1) . '/'
 									. urlencode($this->form->getValue('fs_alias')) . '/' . $movie_id . '/'
 							);
 						}
@@ -260,9 +260,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 					{
 						$item->folderpath = $file_path;
 
-						if (String::substr($path_www, 0, 1) == '/')
+						if (StringHelper::substr($path_www, 0, 1) == '/')
 						{
-							$item->filepath = JURI::root() . String::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
+							$item->filepath = JURI::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
 						}
 						else
 						{
@@ -277,9 +277,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 					}
 					else
 					{
-						if (String::substr($path_www, 0, 1) == '/')
+						if (StringHelper::substr($path_www, 0, 1) == '/')
 						{
-							$item->th_filepath = JURI::root() . String::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
+							$item->th_filepath = JURI::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
 						}
 						else
 						{

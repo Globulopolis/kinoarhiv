@@ -75,13 +75,17 @@ endif; ?>
 									<div>
 										<?php if ($this->params->get('player_type') == '-1'): ?>
 
-											<video controls preload="none" poster="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
+											<video controls preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
+												width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
 												<?php foreach ($item_trailer->files['video'] as $item): ?>
 													<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 												<?php endforeach; ?>
 												<?php if (count($item_trailer->files['subtitles']) > 0):
 													foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
+														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+															srclang="<?php echo $subtitle['lang_code']; ?>"
+															label="<?php echo $subtitle['lang']; ?>"
+															<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 													<?php endforeach;
 												endif; ?>
 												<?php if (count($item_trailer->files['chapters']) > 0): ?>
@@ -91,13 +95,19 @@ endif; ?>
 
 										<?php elseif ($this->params->get('player_type') == 'videojs'): ?>
 
-											<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" poster="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" data-setup='{"techOrder": ["html5", "flash"]}'>
+											<video class="video-js vjs-default-skin vjs-big-play-centered" controls
+												preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
+												width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
+												data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'>
 												<?php foreach ($item_trailer->files['video'] as $item): ?>
 													<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 												<?php endforeach; ?>
 												<?php if (count($item_trailer->files['subtitles']) > 0):
 													foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
+														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+															srclang="<?php echo $subtitle['lang_code']; ?>"
+															label="<?php echo $subtitle['lang']; ?>"
+															<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
 													<?php endforeach;
 												endif; ?>
 												<?php if (count($item_trailer->files['chapters']) > 0): ?>
@@ -111,14 +121,18 @@ endif; ?>
 
 										<?php elseif ($this->params->get('player_type') == 'mediaelement'): ?>
 
-											<video controls="controls" preload="none" poster="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
+											<video controls="controls" preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
+												width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
 												<?php foreach ($item_trailer->files['video'] as $item):
 													$mp4_file = ($item['type'] == 'video/mp4') ? $item['src'] : ''; ?>
 													<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 												<?php endforeach; ?>
 												<?php if (count($item_trailer->files['subtitles']) > 0):
 													foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
+														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+															srclang="<?php echo $subtitle['lang_code']; ?>"
+															label="<?php echo $subtitle['lang']; ?>"
+															<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
 													<?php endforeach;
 												endif; ?>
 												<?php if (count($item_trailer->files['chapters']) > 0): ?>

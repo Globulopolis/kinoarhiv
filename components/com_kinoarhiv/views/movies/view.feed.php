@@ -8,7 +8,7 @@
  * @url            http://киноархив.com/
  */
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 defined('_JEXEC') or die;
 
@@ -140,9 +140,9 @@ class KinoarhivViewMovies extends JViewLegacy
 				{
 					$row->fs_alias = rawurlencode($row->fs_alias);
 
-					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$row->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+						$row->poster = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
 					}
 					else

@@ -9,48 +9,52 @@
  */
 
 jQuery.trumbowyg.langs.fr = {
-    viewHTML:       "Voir le HTML",
+    viewHTML: 'Voir le HTML',
 
-    formatting:     "Format",
-    p:              "Paragraphe",
-    blockquote:     "Citation",
-    code:           "Code",
-    header:         "Titre",
+    formatting: 'Format',
+    p: 'Paragraphe',
+    blockquote: 'Citation',
+    code: 'Code',
+    header: 'Titre',
 
-    bold:           "Gras",
-    italic:         "Italique",
-    strikethrough:  "Rayé",
-    underline:      "Souligné",
+    bold: 'Gras',
+    italic: 'Italique',
+    strikethrough: 'Rayé',
+    underline: 'Souligné',
 
-    strong:         "Fort",
-    em:             "Emphase",
-    del:            "Supprimé",
+    strong: 'Fort',
+    em: 'Emphase',
+    del: 'Supprimé',
 
-    unorderedList:  "Liste à puces",
-    orderedList:    "Liste ordonnée",
+    superscript: 'Exposant',
+    subscript: 'Indice',
 
-    insertImage:    "Insérer une image",
-    insertVideo:    "Insérer une video",
-    link:           "Lien",
-    createLink:     "Insérer un lien",
-    unlink:         "Supprimer le lien",
+    unorderedList: 'Liste à puces',
+    orderedList: 'Liste ordonnée',
 
-    justifyLeft:    "Aligner à gauche",
-    justifyCenter:  "Centrer",
-    justifyRight:   "Aligner à droite",
-    justifyFull:    "Justifier",
+    insertImage: 'Insérer une image',
+    insertVideo: 'Insérer une video',
+    link: 'Lien',
+    createLink: 'Insérer un lien',
+    unlink: 'Supprimer le lien',
 
-    horizontalRule: "Insérer un séparateur horizontal",
+    justifyLeft: 'Aligner à gauche',
+    justifyCenter: 'Centrer',
+    justifyRight: 'Aligner à droite',
+    justifyFull: 'Justifier',
 
-    fullscreen:     "Plein écran",
+    horizontalRule: 'Insérer un séparateur horizontal',
 
-    close:          "Fermer",
+    fullscreen: 'Plein écran',
 
-    submit:         "Valider",
-    reset:          "Annuler",
+    close: 'Fermer',
 
-    required:       "Obligatoire",
-    description:    "Description",
-    title:          "Titre",
-    text:           "Texte"
+    submit: 'Valider',
+    reset: 'Annuler',
+
+    required: 'Obligatoire',
+    description: 'Description',
+    title: 'Titre',
+    text: 'Texte',
+    target: 'Cible'
 };

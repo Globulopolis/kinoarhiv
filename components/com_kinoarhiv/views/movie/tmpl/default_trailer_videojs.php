@@ -25,21 +25,17 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 			else: ?>
 				<?php if (count($item_trailer->files['video']) > 0):
 					$tposter = $item_trailer->screenshot != '' ? 'poster="' . $item_trailer->screenshot . '"' : ''; ?>
-					<video
-						class="video-js vjs-default-skin vjs-big-play-centered"
-						controls
-						preload="none"
-						<?php echo $tposter; ?>
-						width="<?php echo $item_trailer->player_width; ?>"
-						height="<?php echo $item_trailer->player_height; ?>"
-						data-setup='{"techOrder": ["html5", "flash"]}'
+					<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $tposter; ?>
+						width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
+						data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'
 						>
 						<?php foreach ($item_trailer->files['video'] as $item): ?>
 							<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 						<?php endforeach; ?>
 						<?php if (count($item_trailer->files['subtitles']) > 0):
 							foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-								<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
+								<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>"
+									label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 							<?php endforeach;
 						endif; ?>
 						<?php if (count($item_trailer->files['chapters']) > 0): ?>
@@ -88,21 +84,17 @@ if ((isset($this->item->movie) && count($this->item->movie) > 0)
 			else: ?>
 				<?php if (count($item_movie->files['video']) > 0):
 					$mposter = $item_movie->screenshot != '' ? 'poster="' . $item_movie->screenshot . '"' : ''; ?>
-					<video
-						class="video-js vjs-default-skin vjs-big-play-centered"
-						controls
-						preload="none"
-						<?php echo $mposter; ?>
-						width="<?php echo $item_movie->player_width; ?>"
-						height="<?php echo $item_movie->player_height; ?>"
-						data-setup='{"techOrder": ["html5", "flash"]}'
+					<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $mposter; ?>
+						width="<?php echo $item_movie->player_width; ?>" height="<?php echo $item_movie->player_height; ?>"
+						data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'
 						>
 						<?php foreach ($item_movie->files['video'] as $item): ?>
 							<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 						<?php endforeach; ?>
 						<?php if (count($item_movie->files['subtitles']) > 0):
 							foreach ($item_movie->files['subtitles'] as $subtitle): ?>
-								<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
+								<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>"
+									label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 							<?php endforeach;
 						endif; ?>
 						<?php if (count($item_movie->files['chapters']) > 0): ?>

@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Movie View class
@@ -130,9 +130,9 @@ class KinoarhivViewMovie extends JViewLegacy
 			{
 				$fs_alias = rawurlencode($item->fs_alias);
 
-				if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+				if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/' . $fs_alias
+					$item->poster = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/' . $fs_alias
 						. '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else
@@ -197,11 +197,11 @@ class KinoarhivViewMovie extends JViewLegacy
 						{
 							$slide_fs_alias = rawurlencode($item->fs_alias);
 
-							if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+							if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 							{
-								$item->slides[$key]->image = JURI::base() . String::substr($params->get('media_scr_root_www'), 1)
+								$item->slides[$key]->image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
 									. '/' . $slide_fs_alias . '/' . $item->id . '/screenshots/' . $slide->filename;
-								$item->slides[$key]->th_image = JURI::base() . String::substr($params->get('media_scr_root_www'), 1)
+								$item->slides[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
 									. '/' . $slide_fs_alias . '/' . $item->id . '/screenshots/thumb_' . $slide->filename;
 							}
 							else
@@ -390,11 +390,11 @@ class KinoarhivViewMovie extends JViewLegacy
 				{
 					$fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($params->get('media_wallpapers_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_wallpapers_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . String::substr($params->get('media_wallpapers_root_www'), 1) . '/'
+						$items[$key]->image = JURI::base() . StringHelper::substr($params->get('media_wallpapers_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . String::substr($params->get('media_wallpapers_root_www'), 1) . '/'
+						$items[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_wallpapers_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 					else
@@ -527,11 +527,11 @@ class KinoarhivViewMovie extends JViewLegacy
 				{
 					$fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+						$items[$key]->image = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/posters/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . String::substr($params->get('media_posters_root_www'), 1) . '/'
+						$items[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/posters/thumb_' . $_item->filename;
 					}
 					else
@@ -660,11 +660,11 @@ class KinoarhivViewMovie extends JViewLegacy
 				{
 					$fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($params->get('media_scr_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_scr_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . String::substr($params->get('media_scr_root_www'), 1) . '/'
+						$items[$key]->image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/screenshots/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . String::substr($params->get('media_scr_root_www'), 1) . '/'
+						$items[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/screenshots/thumb_' . $_item->filename;
 					}
 					else

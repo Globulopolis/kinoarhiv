@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Movies list class
@@ -197,7 +197,7 @@ class KinoarhivModelMovies extends JModelList
 					if (preg_match('#\p{L}#u', $letter, $matches))
 					{
 						// Only any kind of letter from any language.
-						$query->where('m.title LIKE "' . $db->escape(String::strtoupper($matches[0])) . '%"');
+						$query->where('m.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
 					}
 				}
 			}
@@ -219,7 +219,7 @@ class KinoarhivModelMovies extends JModelList
 
 			if ($params->get('search_movies_title') == 1 && !empty($title))
 			{
-				if (String::strlen($title) < $params->get('search_movies_length_min') || String::strlen($title) > $params->get('search_movies_length_max'))
+				if (StringHelper::strlen($title) < $params->get('search_movies_length_min') || StringHelper::strlen($title) > $params->get('search_movies_length_max'))
 				{
 					echo KAComponentHelper::showMsg(
 						JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')),

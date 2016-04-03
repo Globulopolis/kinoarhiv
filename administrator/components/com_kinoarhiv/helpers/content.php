@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Content component helper.
@@ -48,7 +48,7 @@ class KAContentHelper extends JHelperContent
 			$item_alias = $item_title;
 		}
 
-		$item_alias = String::substr(String::strtolower($item_alias), 0, 1);
+		$item_alias = StringHelper::substr(StringHelper::strtolower($item_alias), 0, 1);
 
 		echo json_encode(
 			array(

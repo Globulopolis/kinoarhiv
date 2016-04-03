@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 JLoader::register('KADatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
@@ -209,7 +209,7 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (empty($result['movie']->fs_alias))
 			{
-				$result['movie']->fs_alias = strtolower($lang->transliterate(String::substr($result['movie']->alias, 0, 1)));
+				$result['movie']->fs_alias = strtolower($lang->transliterate(StringHelper::substr($result['movie']->alias, 0, 1)));
 			}
 		}
 
@@ -466,7 +466,7 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (empty($data['fs_alias']))
 			{
-				$data['fs_alias'] = rawurlencode(String::substr($data['alias'], 0, 1));
+				$data['fs_alias'] = rawurlencode(StringHelper::substr($data['alias'], 0, 1));
 			}
 		}
 
@@ -657,7 +657,7 @@ class KinoarhivModelMovie extends JModelForm
 				$intro_countries .= '[cn=' . $cn->code . ']' . $cn->name . '[/cn], ';
 			}
 
-			$intro_countries = '<span class="cn-list">[country ln=' . $ln_str . ']: ' . String::substr($intro_countries, 0, -2) . '[/country]</span>';
+			$intro_countries = '<span class="cn-list">[country ln=' . $ln_str . ']: ' . StringHelper::substr($intro_countries, 0, -2) . '[/country]</span>';
 
 			$countries_new_arr = explode(',', $data['countries']);
 
@@ -721,7 +721,7 @@ class KinoarhivModelMovie extends JModelForm
 				$intro_genres .= $genre->name . ', ';
 			}
 
-			$intro_genres = '<span class="gn-list">[genres ln=' . $ln_str . ']: ' . String::substr($intro_genres, 0, -2) . '[/genres]</span>';
+			$intro_genres = '<span class="gn-list">[genres ln=' . $ln_str . ']: ' . StringHelper::substr($intro_genres, 0, -2) . '[/genres]</span>';
 
 			$genres_new_arr = explode(',', $data['genres']);
 
@@ -803,7 +803,7 @@ class KinoarhivModelMovie extends JModelForm
 					$intro_directors .= '[name=' . $director->name_id . ']' . $n . '[/name], ';
 				}
 
-				$intro_directors = '<span class="dc-list">[names ln=' . $ln_str . ']: ' . String::substr($intro_directors, 0, -2) . '[/names]</span>';
+				$intro_directors = '<span class="dc-list">[names ln=' . $ln_str . ']: ' . StringHelper::substr($intro_directors, 0, -2) . '[/names]</span>';
 			}
 			// End
 
@@ -839,7 +839,7 @@ class KinoarhivModelMovie extends JModelForm
 					$intro_cast .= '[name=' . $name->name_id . ']' . $n . '[/name], ';
 				}
 
-				$intro_cast = '<span class="cast-list">[names ln=COM_KA_CAST]: ' . String::substr($intro_cast, 0, -2) . '[/names]</span>';
+				$intro_cast = '<span class="cast-list">[names ln=COM_KA_CAST]: ' . StringHelper::substr($intro_cast, 0, -2) . '[/names]</span>';
 			}
 			// End
 		}

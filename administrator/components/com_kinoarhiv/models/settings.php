@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Class KinoarhivModelSettings
@@ -154,7 +154,7 @@ class KinoarhivModelSettings extends JModelForm
 					}
 					elseif ($key == 'letters')
 					{
-						$_alphabet['movie_alphabet'][$i][$key] = explode(',', String::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
+						$_alphabet['movie_alphabet'][$i][$key] = explode(',', StringHelper::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
 					}
 				}
 			}
@@ -172,7 +172,7 @@ class KinoarhivModelSettings extends JModelForm
 					}
 					elseif ($key == 'letters')
 					{
-						$_alphabet['name_alphabet'][$i][$key] = explode(',', String::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
+						$_alphabet['name_alphabet'][$i][$key] = explode(',', StringHelper::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
 					}
 				}
 			}

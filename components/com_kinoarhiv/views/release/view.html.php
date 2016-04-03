@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Release View class
@@ -103,9 +103,9 @@ class KinoarhivViewRelease extends JViewLegacy
 			{
 				$item->fs_alias = rawurlencode($item->fs_alias);
 
-				if (String::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
+				if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . String::substr($this->params->get('media_posters_root_www'), 1) . '/'
+					$item->poster = JURI::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
 						. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else

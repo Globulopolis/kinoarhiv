@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Premieres list class
@@ -211,7 +211,7 @@ class KinoarhivModelPremieres extends JModelList
 					if (preg_match('#\p{L}#u', $letter, $matches))
 					{
 						// Only any kind of letter from any language.
-						$query->where('m.title LIKE "' . $db->escape(String::strtoupper($matches[0])) . '%"');
+						$query->where('m.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
 					}
 				}
 			}

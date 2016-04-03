@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.0.0-beta.5 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.0.0-beta.8 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -12,83 +12,82 @@
 jQuery.trumbowyg = {
     langs: {
         en: {
-            viewHTML: "View HTML",
+            viewHTML: 'View HTML',
 
-            formatting: "Formatting",
-            p: "Paragraph",
-            blockquote: "Quote",
-            code: "Code",
-            header: "Header",
+            formatting: 'Formatting',
+            p: 'Paragraph',
+            blockquote: 'Quote',
+            code: 'Code',
+            header: 'Header',
 
-            bold: "Bold",
-            italic: "Italic",
-            strikethrough: "Stroke",
-            underline: "Underline",
+            bold: 'Bold',
+            italic: 'Italic',
+            strikethrough: 'Stroke',
+            underline: 'Underline',
 
-            strong: "Strong",
-            em: "Emphasis",
-            del: "Deleted",
+            strong: 'Strong',
+            em: 'Emphasis',
+            del: 'Deleted',
 
-            unorderedList: "Unordered list",
-            orderedList: "Ordered list",
+            superscript: 'Superscript',
+            subscript: 'Subscript',
 
-            insertImage: "Insert Image",
-            insertVideo: "Insert Video",
-            link: "Link",
-            createLink: "Insert link",
-            unlink: "Remove link",
+            unorderedList: 'Unordered list',
+            orderedList: 'Ordered list',
 
-            justifyLeft: "Align Left",
-            justifyCenter: "Align Center",
-            justifyRight: "Align Right",
-            justifyFull: "Align Justify",
+            insertImage: 'Insert Image',
+            link: 'Link',
+            createLink: 'Insert link',
+            unlink: 'Remove link',
 
-            horizontalRule: "Insert horizontal rule",
-            removeformat: "Remove format",
+            justifyLeft: 'Align Left',
+            justifyCenter: 'Align Center',
+            justifyRight: 'Align Right',
+            justifyFull: 'Align Justify',
 
-            fullscreen: "fullscreen",
+            horizontalRule: 'Insert horizontal rule',
+            removeformat: 'Remove format',
 
-            close: "Close",
+            fullscreen: 'Fullscreen',
 
-            submit: "Confirm",
-            reset: "Cancel",
+            close: 'Close',
 
-            required: "Required",
-            description: "Description",
-            title: "Title",
-            text: "Text",
-            target: "Target"
+            submit: 'Confirm',
+            reset: 'Cancel',
+
+            required: 'Required',
+            description: 'Description',
+            title: 'Title',
+            text: 'Text',
+            target: 'Target'
         }
     },
 
-    // User default options
-    opts: {},
-
-    btnsGrps: {
-        design: ['bold', 'italic', 'underline', 'strikethrough'],
-        semantic: ['strong', 'em', 'del'],
-        justify: ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-        lists: ['unorderedList', 'orderedList']
-    }
+    // Plugins
+    plugins: {}
 };
 
 
-(function (navigator, window, document, $, undefined) {
+(function (navigator, window, document, $) {
     'use strict';
 
-    // @param : o are options
-    // @param : p are params
     $.fn.trumbowyg = function (options, params) {
+        var trumbowygDataName = 'trumbowyg';
         if (options === Object(options) || !options) {
             return this.each(function () {
-                if (!$(this).data('trumbowyg'))
-                    $(this).data('trumbowyg', new Trumbowyg(this, options));
+                if (!$(this).data(trumbowygDataName)) {
+                    $(this).data(trumbowygDataName, new Trumbowyg(this, options));
+                }
             });
         }
         if (this.length === 1) {
             try {
-                var t = $(this).data('trumbowyg');
+                var t = $(this).data(trumbowygDataName);
                 switch (options) {
+                    // Exec command
+                    case 'execCmd':
+                        return t.execCmd(params.cmd, params.param, params.forceCss);
+
                     // Modal box
                     case 'openModal':
                         return t.openModal(params.title, params.content);
@@ -97,15 +96,15 @@ jQuery.trumbowyg = {
                     case 'openModalInsert':
                         return t.openModalInsert(params.title, params.fields, params.callback);
 
-                    // Selection
-                    case 'saveSelection':
-                        return t.saveSelection();
-                    case 'getSelection':
-                        return t.selection;
-                    case 'getSelectedText':
-                        return t.getSelectedText();
-                    case 'restoreSelection':
-                        return t.restoreSelection();
+                    // Range
+                    case 'saveRange':
+                        return t.saveRange();
+                    case 'getRange':
+                        return t.range;
+                    case 'getRangeText':
+                        return t.getRangeText();
+                    case 'restoreRange':
+                        return t.restoreRange();
 
                     // Destroy
                     case 'destroy':
@@ -115,181 +114,296 @@ jQuery.trumbowyg = {
                     case 'empty':
                         return t.empty();
 
-                    // Public options
-                    case 'lang':
-                        return t.lang;
-
                     // HTML
                     case 'html':
                         return t.html(params);
                 }
-            } catch (e) {
+            } catch (c) {
             }
         }
 
         return false;
     };
 
-    // @param : editorElem is the DOM element
-    // @param : o are options
-    var Trumbowyg = function (editorElem, o) {
-        var t = this;
+    // @param: editorElem is the DOM element
+    var Trumbowyg = function (editorElem, options) {
+        var t = this,
+            trumbowygIconsId = 'trumbowyg-icons';
+
         // Get the document of the element. It use to makes the plugin
         // compatible on iframes.
         t.doc = editorElem.ownerDocument || document;
+
         // jQuery object of the editor
         t.$ta = $(editorElem); // $ta : Textarea
         t.$c = $(editorElem); // $c : creator
 
-        // Extend with options
-        o = $.extend(true, {}, o, $.trumbowyg.opts);
+        options = options || {};
 
         // Localization management
-        if (typeof o.lang === 'undefined' || typeof $.trumbowyg.langs[o.lang] === 'undefined')
+        if (options.lang != null || $.trumbowyg.langs[options.lang] != null) {
+            t.lang = $.extend(true, {}, $.trumbowyg.langs.en, $.trumbowyg.langs[options.lang]);
+        } else {
             t.lang = $.trumbowyg.langs.en;
-        else
-            t.lang = $.extend(true, {}, $.trumbowyg.langs.en, $.trumbowyg.langs[o.lang]);
+        }
 
-        // Header translation
-        var h = t.lang.header;
+        // SVG path
+        if ($('#' + trumbowygIconsId, t.doc).length === 0) {
+            var svgPath = options.svgPath;
+            if (svgPath == null) {
+                try {
+                    throw new Error();
+                } catch (e) {
+                    var stackLines = e.stack.split('\n');
+
+                    for (var i in stackLines) {
+                        if (!stackLines[i].match(/http[s]?:\/\//)) {
+                            continue;
+                        }
+                        svgPath = stackLines[Number(i)].match(/((http[s]?:\/\/.+\/)([^\/]+\.js)):/)[1].split('/');
+                        svgPath.pop();
+                        svgPath = svgPath.join('/') + '/ui/icons.svg';
+                        break;
+                    }
+                }
+            }
+
+            var div = t.doc.createElement('div');
+            div.id = trumbowygIconsId;
+            t.doc.body.insertBefore(div, t.doc.body.childNodes[0]);
+
+            $.get(svgPath, function (data) {
+                div.innerHTML = new XMLSerializer().serializeToString(data.documentElement);
+            });
+        }
+
+
+        /**
+         * When the button is associated to a empty object
+         * fn and title attributs are defined from the button key value
+         *
+         * For example
+         *      foo: {}
+         * is equivalent to :
+         *      foo: {
+             *          fn: 'foo',
+             *          title: this.lang.foo
+             *      }
+         */
+        var h = t.lang.header; // Header translation
+        t.btnsDef = {
+            viewHTML: {
+                fn: 'toggle'
+            },
+
+            p: {
+                fn: 'formatBlock'
+            },
+            blockquote: {
+                fn: 'formatBlock'
+            },
+            h1: {
+                fn: 'formatBlock',
+                title: h + ' 1'
+            },
+            h2: {
+                fn: 'formatBlock',
+                title: h + ' 2'
+            },
+            h3: {
+                fn: 'formatBlock',
+                title: h + ' 3'
+            },
+            h4: {
+                fn: 'formatBlock',
+                title: h + ' 4'
+            },
+            subscript: {
+                tag: 'sub'
+            },
+            superscript: {
+                tag: 'sup'
+            },
+
+            bold: {
+                key: 'B'
+            },
+            italic: {
+                key: 'I'
+            },
+            underline: {
+                tag: 'u'
+            },
+            strikethrough: {
+                tag: 'strike'
+            },
+
+            strong: {
+                fn: 'bold',
+                key: 'B'
+            },
+            em: {
+                fn: 'italic',
+                key: 'I'
+            },
+            del: {
+                fn: 'strikethrough'
+            },
+
+            createLink: {
+                key: 'K',
+                tag: 'a'
+            },
+            unlink: {},
+
+            insertImage: {},
+
+            justifyLeft: {
+                tag: 'left',
+                forceCss: true
+            },
+            justifyCenter: {
+                tag: 'center',
+                forceCss: true
+            },
+            justifyRight: {
+                tag: 'right',
+                forceCss: true
+            },
+            justifyFull: {
+                tag: 'justify',
+                forceCss: true
+            },
+
+            unorderedList: {
+                fn: 'insertUnorderedList',
+                tag: 'ul'
+            },
+            orderedList: {
+                fn: 'insertOrderedList',
+                tag: 'ol'
+            },
+
+            horizontalRule: {
+                fn: 'insertHorizontalRule'
+            },
+
+            removeformat: {},
+
+            fullscreen: {
+                class: 'trumbowyg-not-disable'
+            },
+            close: {
+                fn: 'destroy',
+                class: 'trumbowyg-not-disable'
+            },
+
+            // Dropdowns
+            formatting: {
+                dropdown: ['p', 'blockquote', 'h1', 'h2', 'h3', 'h4'],
+                ico: 'p'
+            },
+            link: {
+                dropdown: ['createLink', 'unlink']
+            }
+        };
 
         // Defaults Options
         t.o = $.extend(true, {}, {
             lang: 'en',
-            dir: 'ltr',
 
-            closable: false,
-            fullscreenable: true,
             fixedBtnPane: false,
             fixedFullWidth: false,
             autogrow: false,
 
             prefix: 'trumbowyg-',
 
-            // WYSIWYG only
             semantic: true,
             resetCss: false,
             removeformatPasted: false,
             tagsToRemove: [],
 
+            btnsGrps: {
+                design: ['bold', 'italic', 'underline', 'strikethrough'],
+                semantic: ['strong', 'em', 'del'],
+                justify: ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                lists: ['unorderedList', 'orderedList']
+            },
             btns: [
-                'viewHTML',
-                '|', 'formatting',
-                '|', 'btnGrp-design',
-                '|', 'link',
-                '|', 'insertImage',
-                '|', 'btnGrp-justify',
-                '|', 'btnGrp-lists',
-                '|', 'horizontalRule',
-                '|', 'removeformat'
+                ['viewHTML'],
+                ['formatting'],
+                'btnGrp-semantic',
+                ['superscript', 'subscript'],
+                ['link'],
+                ['insertImage'],
+                'btnGrp-justify',
+                'btnGrp-lists',
+                ['horizontalRule'],
+                ['removeformat'],
+                ['fullscreen']
             ],
-            btnsAdd: [],
+            // For custom button definitions
+            btnsDef: {},
 
-            /**
-             * When the button is associated to a empty object
-             * func and title attributs are defined from the button key value
-             *
-             * For example
-             *      foo: {}
-             * is equivalent to :
-             *      foo: {
-             *          func: 'foo',
-             *          title: this.lang.foo
-             *      }
-             */
-            btnsDef: {
-                viewHTML: {
-                    func: 'toggle'
-                },
+            inlineElementsSelector: 'a,abbr,acronym,b,caption,cite,code,col,dfn,dir,dt,dd,em,font,hr,i,kbd,li,q,span,strikeout,strong,sub,sup,u',
 
-                p: {
-                    func: 'formatBlock'
-                },
-                blockquote: {
-                    func: 'formatBlock'
-                },
-                h1: {
-                    func: 'formatBlock',
-                    title: h + ' 1'
-                },
-                h2: {
-                    func: 'formatBlock',
-                    title: h + ' 2'
-                },
-                h3: {
-                    func: 'formatBlock',
-                    title: h + ' 3'
-                },
-                h4: {
-                    func: 'formatBlock',
-                    title: h + ' 4'
-                },
+            pasteHandlers: [],
 
-                bold: {
-                    key: 'B'
-                },
-                italic: {
-                    key: 'I'
-                },
-                underline: {},
-                strikethrough: {},
+            imgDblClickHandler: function () {
+                var $img = $(this),
+                    src = $img.attr('src'),
+                    base64 = '(Base64)';
 
-                strong: {
-                    func: 'bold',
-                    key: 'B'
-                },
-                em: {
-                    func: 'italic',
-                    key: 'I'
-                },
-                del: {
-                    func: 'strikethrough'
-                },
-
-                createLink: {
-                    key: 'K'
-                },
-                unlink: {},
-
-                insertImage: {},
-
-                justifyLeft: {},
-                justifyCenter: {},
-                justifyRight: {},
-                justifyFull: {},
-
-                unorderedList: {
-                    func: 'insertUnorderedList'
-                },
-                orderedList: {
-                    func: 'insertOrderedList'
-                },
-
-                horizontalRule: {
-                    func: 'insertHorizontalRule'
-                },
-
-                removeformat: {},
-
-                // Dropdowns
-                formatting: {
-                    dropdown: ['p', 'blockquote', 'h1', 'h2', 'h3', 'h4']
-                },
-                link: {
-                    dropdown: ['createLink', 'unlink']
+                if (src.indexOf('data:image') === 0) {
+                    src = base64;
                 }
+
+                t.openModalInsert(t.lang.insertImage, {
+                    url: {
+                        label: 'URL',
+                        value: src,
+                        required: true
+                    },
+                    alt: {
+                        label: t.lang.description,
+                        value: $img.attr('alt')
+                    }
+                }, function (v) {
+                    if (v.src !== base64) {
+                        $img.attr({
+                            src: v.src
+                        });
+                    }
+                    $img.attr({
+                        alt: v.alt
+                    });
+                    return true;
+                });
+                return false;
             },
 
-            inlineElementsSelector: 'a, abbr, acronym, b, caption, cite, code, col, dfn, dir, dt, dd, em, font, hr, i, kbd, li, q, span, strikeout, strong, sub, sup, u'
-        }, o);
+            plugins: {}
+        }, options);
 
-        if (o.btns)
-            t.o.btns = o.btns;
-        else if (t.o.semantic)
-            t.o.btns[4] = 'btnGrp-semantic';
+        if (options.btns) {
+            t.o.btns = options.btns;
+        } else if (!t.o.semantic) {
+            t.o.btns[4] = 'btnGrp-design';
+        }
+
+        $.each(t.o.btnsDef, function (btnName, btnDef) {
+            t.addBtnDef(btnName, btnDef);
+        });
 
         // Keyboard shortcuts are load in this array
         t.keys = [];
+
+        // Tag to button dynamically hydrated
+        t.tagToButton = {};
+        t.tagHandlers = [];
+
+        // Admit multiple paste handlers
+        t.pasteHandlers = [].concat(t.o.pasteHandlers);
 
         t.init();
     };
@@ -299,12 +413,24 @@ jQuery.trumbowyg = {
             var t = this;
             t.height = t.$ta.height();
 
+            t.initPlugins();
+
+            // Disable image resize in Firefox
+            t.doc.execCommand('enableObjectResizing', false, false);
+            t.doc.execCommand('defaultParagraphSeparator', false, 'p');
+
             t.buildEditor();
             t.buildBtnPane();
 
             t.fixedBtnPaneEvents();
 
             t.buildOverlay();
+
+            t.$c.trigger('tbwinit');
+        },
+
+        addBtnDef: function (btnName, btnDef) {
+            this.btnsDef[btnName] = btnDef;
         },
 
         buildEditor: function () {
@@ -313,7 +439,7 @@ jQuery.trumbowyg = {
                 html = '';
 
             t.$box = $('<div/>', {
-                'class': prefix + 'box ' + prefix + 'editor-visible ' + prefix + t.o.lang + ' trumbowyg'
+                class: prefix + 'box ' + prefix + 'editor-visible ' + prefix + t.o.lang + ' trumbowyg'
             });
 
             // $ta = Textarea
@@ -348,8 +474,8 @@ jQuery.trumbowyg = {
             t.$ed
                 .addClass(prefix + 'editor')
                 .attr({
-                    'contenteditable': true,
-                    'dir': t.lang._dir || t.o.dir
+                    contenteditable: true,
+                    dir: t.lang._dir || 'ltr'
                 })
                 .html(html)
             ;
@@ -368,8 +494,7 @@ jQuery.trumbowyg = {
 
             if (!t.o.autogrow) {
                 t.$ta.add(t.$ed).css({
-                    height: t.height,
-                    overflow: 'auto'
+                    height: t.height
                 });
             }
 
@@ -378,26 +503,7 @@ jQuery.trumbowyg = {
 
             t._ctrl = false;
             t.$ed
-                .on('dblclick', 'img', function () {
-                    var $img = $(this);
-                    t.openModalInsert(t.lang.insertImage, {
-                        url: {
-                            label: 'URL',
-                            value: $img.attr('src'),
-                            required: true
-                        },
-                        alt: {
-                            label: t.lang.description,
-                            value: $img.attr('alt')
-                        }
-                    }, function (v) {
-                        return $img.attr({
-                            src: v.url,
-                            alt: v.alt
-                        });
-                    });
-                    return false;
-                })
+                .on('dblclick', 'img', t.o.imgDblClickHandler)
                 .on('keydown', function (e) {
                     t._composition = (e.which === 229);
 
@@ -406,14 +512,20 @@ jQuery.trumbowyg = {
                         var k = t.keys[String.fromCharCode(e.which).toUpperCase()];
 
                         try {
-                            t.execCmd(k.func, k.param);
+                            t.execCmd(k.fn, k.param);
                             return false;
-                        } catch (e) {
+                        } catch (c) {
                         }
                     }
                 })
                 .on('keyup', function (e) {
-                    if (!t._ctrl && e.which !== 17 && !t._composition) {
+                    if (e.which >= 37 && e.which <= 40) {
+                        return;
+                    }
+
+                    if (e.ctrlKey && (e.which === 89 || e.which === 90)) {
+                        t.$c.trigger('tbwchange');
+                    } else if (!t._ctrl && e.which !== 17 && !t._composition) {
                         t.semanticCode(false, e.which === 13);
                         t.$c.trigger('tbwchange');
                     }
@@ -422,8 +534,17 @@ jQuery.trumbowyg = {
                         t._ctrl = false;
                     }, 200);
                 })
+                .on('mouseup keydown keyup', function () {
+                    t.updateButtonPaneStatus();
+                })
                 .on('focus blur', function (e) {
                     t.$c.trigger('tbw' + e.type);
+                    if (e.type === 'blur') {
+                        $('.' + prefix + 'active-button', t.$btnPane).removeClass(prefix + 'active-button ' + prefix + 'active');
+                    }
+                })
+                .on('cut', function () {
+                    t.$c.trigger('tbwchange');
                 })
                 .on('paste', function (e) {
                     if (t.o.removeformatPasted) {
@@ -431,20 +552,25 @@ jQuery.trumbowyg = {
 
                         try {
                             // IE
-                            var text = window.clipboardData.getData("Text");
+                            var text = window.clipboardData.getData('Text');
 
                             try {
                                 // <= IE10
                                 t.doc.selection.createRange().pasteHTML(text);
-                            } catch (err) {
+                            } catch (c) {
                                 // IE 11
-                                t.doc.getSelection().getRangeAt(0).insertNode(document.createTextNode(text));
+                                t.doc.getSelection().getRangeAt(0).insertNode(t.doc.createTextNode(text));
                             }
-                        } catch (err) {
+                        } catch (d) {
                             // Not IE
                             t.execCmd('insertText', (e.originalEvent || e).clipboardData.getData('text/plain'));
                         }
                     }
+
+                    // Call pasteHandlers
+                    $.each(t.pasteHandlers, function (i, pasteHandler) {
+                        pasteHandler(e);
+                    });
 
                     setTimeout(function () {
                         if (t.o.semantic) {
@@ -454,7 +580,6 @@ jQuery.trumbowyg = {
                         }
                         t.$c.trigger('tbwpaste', e);
                     }, 0);
-
                 });
             t.$ta.on('keyup paste', function () {
                 t.$c.trigger('tbwchange');
@@ -469,195 +594,146 @@ jQuery.trumbowyg = {
         },
 
 
-        // Build button pane, use o.btns and o.btnsAdd options
+        // Build button pane, use o.btns option
         buildBtnPane: function () {
             var t = this,
                 prefix = t.o.prefix;
 
-            if (t.o.btns === false)
+            if (t.o.btns === false) {
                 return;
+            }
 
-            t.$btnPane = $('<ul/>', {
-                'class': prefix + 'button-pane'
+            var $btnPane = t.$btnPane = $('<div/>', {
+                class: prefix + 'button-pane'
             });
 
-            $.each(t.o.btns.concat(t.o.btnsAdd), function (i, btn) {
+            $.each(t.o.btns, function (i, btnGrps) {
                 // Managment of group of buttons
                 try {
-                    var b = btn.split('btnGrp-');
-                    if (b[1] !== undefined)
-                        btn = $.trumbowyg.btnsGrps[b[1]];
-                } catch (e) {
+                    var b = btnGrps.split('btnGrp-');
+                    if (b[1] != null) {
+                        btnGrps = t.o.btnsGrps[b[1]];
+                    }
+                } catch (c) {
                 }
 
-                if (!$.isArray(btn))
-                    btn = [btn];
+                if (!$.isArray(btnGrps)) {
+                    btnGrps = [btnGrps];
+                }
 
-                $.each(btn, function (i, b) {
+                var $btnGroup = $('<div/>', {
+                    class: prefix + 'button-group ' + ((btnGrps.indexOf('fullscreen') >= 0) ? prefix + 'right' : '')
+                });
+                $.each(btnGrps, function (i, btn) {
                     try { // Prevent buildBtn error
-                        var $li = $('<li/>');
+                        var $item;
 
-                        if (b === '|') // It's a separator
-                            $li.addClass(prefix + 'separator');
-                        else if (t.isSupportedBtn(b)) // It's a supported button
-                            $li.append(t.buildBtn(b));
+                        if (t.isSupportedBtn(btn)) { // It's a supported button
+                            $item = t.buildBtn(btn);
+                        }
 
-                        t.$btnPane.append($li);
-                    } catch (e) {
+                        $btnGroup.append($item);
+                    } catch (c) {
                     }
                 });
+                $btnPane.append($btnGroup);
             });
 
-            // Build right li for fullscreen and close buttons
-            var $liRight = $('<li/>', {
-                'class': prefix + 'not-disable ' + prefix + 'buttons-right'
-            });
-
-            // Add the fullscreen button
-            if (t.o.fullscreenable)
-                $liRight.append(
-                    t.buildRightBtn('fullscreen')
-                        .on('click', function () {
-                            var cssClass = prefix + 'fullscreen';
-                            t.$box.toggleClass(cssClass);
-
-                            if (t.$box.hasClass(cssClass)) {
-                                $('body').addClass(prefix + 'body-fullscreen');
-                                $.each([t.$ta, t.$ed], function () {
-                                    $(this).css({
-                                        height: 'calc(100% - 35px)',
-                                        overflow: 'auto'
-                                    });
-                                });
-                                t.$btnPane.css('width', '100%');
-                            } else {
-                                $('body').removeClass(prefix + 'body-fullscreen');
-                                t.$box.removeAttr('style');
-                                if (!t.o.autogrow)
-                                    $.each([t.$ta, t.$ed], function () {
-                                        $(this).css('height', t.height);
-                                    });
-                            }
-                            $(window).trigger('scroll');
-                        })
-                );
-
-            // Build and add close button
-            if (t.o.closable)
-                $liRight
-                    .append(
-                        t.buildRightBtn('close')
-                            .on('click', function () {
-                                if (t.$box.hasClass(prefix + 'fullscreen'))
-                                    $('body').css('overflow', 'auto');
-                                t.destroy();
-                                t.$c.trigger('tbwclose');
-                            })
-                    );
-
-
-            // Add right li only if isn't empty
-            if ($liRight.not(':empty'))
-                t.$btnPane.append($liRight);
-
-            t.$box.prepend(t.$btnPane);
+            t.$box.prepend($btnPane);
         },
 
 
         // Build a button and his action
-        buildBtn: function (n) { // n is name of the button
+        buildBtn: function (btnName) { // btnName is name of the button
             var t = this,
                 prefix = t.o.prefix,
-                btn = t.o.btnsDef[n],
-                d = btn.dropdown,
-                textDef = t.lang[n] || n,
+                btn = t.btnsDef[btnName],
+                isDropdown = btn.dropdown,
+                textDef = t.lang[btnName] || btnName,
 
                 $btn = $('<button/>', {
                     type: 'button',
-                    'class': prefix + n + '-button' + (btn.ico ? ' ' + prefix + btn.ico + '-button' : ''),
-                    text: btn.text || btn.title || textDef,
-                    title: btn.title || btn.text || textDef + ((btn.key) ? ' (Ctrl + ' + btn.key + ')' : ''),
+                    class: prefix + btnName + '-button ' + (btn.class || ''),
+                    html: '<svg><use xlink:href="#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>',
+                    title: (btn.title || btn.text || textDef) + ((btn.key) ? ' (Ctrl + ' + btn.key + ')' : ''),
                     tabindex: -1,
                     mousedown: function () {
-                        if (!d || $('.' + n + '-' + prefix + 'dropdown', t.$box).is(':hidden'))
+                        if (!isDropdown || $('.' + btnName + '-' + prefix + 'dropdown', t.$box).is(':hidden')) {
                             $('body', t.doc).trigger('mousedown');
+                        }
 
-                        if (t.$btnPane.hasClass(prefix + 'disable') && !$(this).hasClass(prefix + 'active') && !$(this).parent().hasClass(prefix + 'not-disable'))
+                        if (t.$btnPane.hasClass(prefix + 'disable') && !$(this).hasClass(prefix + 'active') && !$(this).hasClass(prefix + 'not-disable')) {
                             return false;
+                        }
 
-                        t.execCmd((d ? 'dropdown' : false) || btn.func || n,
-                            btn.param || n);
+                        t.execCmd((isDropdown ? 'dropdown' : false) || btn.fn || btnName, btn.param || btnName, btn.forceCss || false);
 
                         return false;
                     }
                 });
 
-            if (d) {
+            if (isDropdown) {
                 $btn.addClass(prefix + 'open-dropdown');
-                var c = prefix + 'dropdown',
-                    dd = $('<div/>', { // the dropdown
-                        'class': n + '-' + c + ' ' + c + ' ' + prefix + 'fixed-top'
+                var dropdownPrefix = prefix + 'dropdown',
+                    $dropdown = $('<div/>', { // the dropdown
+                        class: dropdownPrefix + '-' + btnName + ' ' + dropdownPrefix + ' ' + prefix + 'fixed-top',
+                        'data-dropdown': btnName
                     });
-                $.each(d, function (i, def) {
-                    if (t.o.btnsDef[def] && t.isSupportedBtn(def))
-                        dd.append(t.buildSubBtn(def));
+                $.each(isDropdown, function (i, def) {
+                    if (t.btnsDef[def] && t.isSupportedBtn(def)) {
+                        $dropdown.append(t.buildSubBtn(def));
+                    }
                 });
-                t.$box.append(dd.hide());
+                t.$box.append($dropdown.hide());
             } else if (btn.key) {
                 t.keys[btn.key] = {
-                    func: btn.func || n,
-                    param: btn.param || n
+                    fn: btn.fn || btnName,
+                    param: btn.param || btnName
                 };
+            }
+
+            if (!isDropdown) {
+                t.tagToButton[(btn.tag || btnName).toLowerCase()] = btnName;
             }
 
             return $btn;
         },
         // Build a button for dropdown menu
         // @param n : name of the subbutton
-        buildSubBtn: function (n) {
+        buildSubBtn: function (btnName) {
             var t = this,
-                b = t.o.btnsDef[n];
+                prefix = t.o.prefix,
+                btn = t.btnsDef[btnName];
 
-            if (b.key) {
-                t.keys[b.key] = {
-                    func: b.func || n,
-                    param: b.param || n
+            if (btn.key) {
+                t.keys[btn.key] = {
+                    fn: btn.fn || btnName,
+                    param: btn.param || btnName
                 };
             }
 
+            t.tagToButton[(btn.tag || btnName).toLowerCase()] = btnName;
+
             return $('<button/>', {
                 type: 'button',
-                'class': t.o.prefix + n + '-dropdown-button' + (b.ico ? ' ' + t.o.prefix + b.ico + '-button' : ''),
-                text: b.text || b.title || t.lang[n] || n,
-                title: ((b.key) ? ' (Ctrl + ' + b.key + ')' : null),
-                style: b.style || null,
+                class: prefix + btnName + '-dropdown-button' + (btn.ico ? ' ' + prefix + btn.ico + '-button' : ''),
+                html: '<svg><use xlink:href="#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' + (btn.text || btn.title || t.lang[btnName] || btnName),
+                title: ((btn.key) ? ' (Ctrl + ' + btn.key + ')' : null),
+                style: btn.style || null,
                 mousedown: function () {
                     $('body', t.doc).trigger('mousedown');
 
-                    t.execCmd(b.func || n,
-                        b.param || n);
+                    t.execCmd(btn.fn || btnName, btn.param || btnName, btn.forceCss || false);
 
                     return false;
                 }
-            });
-        },
-        // Build a button for right li
-        // @param n : name of the right button
-        buildRightBtn: function (n) {
-            var l = this.lang[n];
-            return $('<button/>', {
-                type: 'button',
-                'class': this.o.prefix + n + '-button',
-                title: l,
-                text: l,
-                tabindex: -1
             });
         },
         // Check if button is supported
         isSupportedBtn: function (b) {
             try {
                 return this.o.btnsDef[b].isSupported();
-            } catch (e) {
+            } catch (c) {
             }
             return true;
         },
@@ -666,7 +742,7 @@ jQuery.trumbowyg = {
         buildOverlay: function () {
             var t = this;
             t.$overlay = $('<div/>', {
-                'class': t.o.prefix + 'overlay'
+                class: t.o.prefix + 'overlay'
             }).css({
                 top: t.$btnPane.outerHeight(),
                 height: (t.$ed.outerHeight() + 1) + 'px'
@@ -689,23 +765,26 @@ jQuery.trumbowyg = {
         fixedBtnPaneEvents: function () {
             var t = this,
                 fixedFullWidth = t.o.fixedFullWidth,
-                box = t.$box;
-            if (!t.o.fixedBtnPane)
+                $box = t.$box;
+
+            if (!t.o.fixedBtnPane) {
                 return;
+            }
 
             t.isFixed = false;
 
             $(window)
                 .on('scroll resize', function () {
-                    if (!box)
+                    if (!$box) {
                         return;
+                    }
 
                     t.syncCode();
 
                     var scrollTop = $(window).scrollTop(),
-                        offset = box.offset().top + 1,
+                        offset = $box.offset().top + 1,
                         bp = t.$btnPane,
-                        oh = bp.outerHeight();
+                        oh = bp.outerHeight() - 2;
 
                     if ((scrollTop - offset > 0) && ((scrollTop - offset - t.height) < 0)) {
                         if (!t.isFixed) {
@@ -719,10 +798,10 @@ jQuery.trumbowyg = {
                             $([t.$ta, t.$ed]).css({marginTop: bp.height()});
                         }
                         bp.css({
-                            width: fixedFullWidth ? '100%' : ((box.width() - 1) + 'px')
+                            width: fixedFullWidth ? '100%' : (($box.width() - 1) + 'px')
                         });
 
-                        $('.' + t.o.prefix + 'fixed-top', box).css({
+                        $('.' + t.o.prefix + 'fixed-top', $box).css({
                             position: fixedFullWidth ? 'fixed' : 'absolute',
                             top: fixedFullWidth ? oh : oh + (scrollTop - offset) + 'px',
                             zIndex: 15
@@ -731,7 +810,7 @@ jQuery.trumbowyg = {
                         t.isFixed = false;
                         bp.removeAttr('style');
                         $([t.$ta, t.$ed]).css({marginTop: 0});
-                        $('.' + t.o.prefix + 'fixed-top', box).css({
+                        $('.' + t.o.prefix + 'fixed-top', $box).css({
                             position: 'absolute',
                             top: oh
                         });
@@ -765,8 +844,13 @@ jQuery.trumbowyg = {
                 );
             }
 
+            t.$ed.off('dblclick', 'img');
+
+            t.destroyPlugins();
+
             t.$box.remove();
             t.$c.removeData('trumbowyg');
+            $('body').removeClass(prefix + 'body-fullscreen');
         },
 
 
@@ -786,10 +870,11 @@ jQuery.trumbowyg = {
                 t.$box.toggleClass(prefix + 'editor-hidden ' + prefix + 'editor-visible');
                 t.$btnPane.toggleClass(prefix + 'disable');
                 $('.' + prefix + 'viewHTML-button', t.$btnPane).toggleClass(prefix + 'active');
-                if (t.$box.hasClass(prefix + 'editor-visible'))
+                if (t.$box.hasClass(prefix + 'editor-visible')) {
                     t.$ta.attr('tabindex', -1);
-                else
+                } else {
                     t.$ta.removeAttr('tabindex');
+                }
             }, 0);
         },
 
@@ -798,16 +883,19 @@ jQuery.trumbowyg = {
             var t = this,
                 d = t.doc,
                 prefix = t.o.prefix,
-                $dd = $('.' + name + '-' + prefix + 'dropdown', t.$box),
-                $btn = $('.' + prefix + name + '-button', t.$btnPane);
+                $dropdown = $('[data-dropdown=' + name + ']', t.$box),
+                $btn = $('.' + prefix + name + '-button', t.$btnPane),
+                show = $dropdown.is(':hidden');
 
-            if ($dd.is(':hidden')) {
+            $('body', d).trigger('mousedown');
+
+            if (show) {
                 var o = $btn.offset().left;
                 $btn.addClass(prefix + 'active');
 
-                $dd.css({
+                $dropdown.css({
                     position: 'absolute',
-                    top: t.$btnPane.outerHeight(),
+                    top: $btn.offset().top - t.$btnPane.offset().top + $btn.outerHeight(),
                     left: (t.o.fixedFullWidth && t.isFixed) ? o + 'px' : (o - t.$btnPane.offset().left) + 'px'
                 }).show();
 
@@ -818,15 +906,14 @@ jQuery.trumbowyg = {
                     $('.' + prefix + 'active', d).removeClass(prefix + 'active');
                     $('body', d).off('mousedown');
                 });
-            } else
-                $('body', d).trigger('mousedown');
+            }
         },
 
 
         // HTML Code management
         html: function (html) {
             var t = this;
-            if (html) {
+            if (html != null) {
                 t.$ta.val(html);
                 t.syncCode(true);
                 return t;
@@ -837,14 +924,13 @@ jQuery.trumbowyg = {
             var t = this;
             if (!force && t.$ed.is(':visible')) {
                 t.$ta.val(t.$ed.html());
-                t.$c.trigger('tbwchange');
             } else {
                 t.$ed.html(t.$ta.val());
             }
 
             if (t.o.autogrow) {
                 t.height = t.$ed.height();
-                if (t.height != t.$ta.css('height')) {
+                if (t.height !== t.$ta.css('height')) {
                     t.$ta.css({height: t.height});
                     t.$c.trigger('tbwresize');
                 }
@@ -856,8 +942,8 @@ jQuery.trumbowyg = {
         // @param full  : wrap text nodes in <p>
         semanticCode: function (force, full) {
             var t = this;
+            t.saveRange();
             t.syncCode(force);
-            t.saveSelection();
 
             if (t.o.tagsToRemove.length > 0) {
                 $(t.o.tagsToRemove.join(', '), t.$ed).remove();
@@ -875,7 +961,7 @@ jQuery.trumbowyg = {
                     // Wrap text nodes in span for easier processing
                     t.$ed.contents().filter(function () {
                         return this.nodeType === 3 && $.trim(this.nodeValue).length > 0;
-                    }).wrap('<span data-trumbowyg-textnode/>');
+                    }).wrap('<span data-tbw/>');
 
                     // Wrap groups of inline elements in paragraphs (recursive)
                     var wrapInlinesInParagraphsFrom = function ($from) {
@@ -897,21 +983,21 @@ jQuery.trumbowyg = {
 
                     // Unwrap paragraphs content, containing nothing usefull
                     t.$ed.find('p').filter(function () {
-                        if (t.selection && this === t.selection.startContainer) {
+                        if (t.range && this === t.range.startContainer) {
                             // Don't remove currently being edited element
                             return false;
                         }
-                        return $(this).text().trim().length === 0 && $(this).children().not('br, span').length === 0;
+                        return $(this).text().trim().length === 0 && $(this).children().not('br,span').length === 0;
                     }).contents().unwrap();
 
                     // Get rid of temporial span's
-                    $('[data-trumbowyg-textnode]', t.$ed).contents().unwrap();
+                    $('[data-tbw]', t.$ed).contents().unwrap();
 
-                    // Replace empty <p> with <br> (IE loves adding empty <p>)
-                    t.$ed.find('p:empty').replaceWith('<br/>');
+                    // Remove empty <p>
+                    t.$ed.find('p:empty').remove();
                 }
 
-                t.restoreSelection();
+                t.restoreRange();
 
                 t.$ta.val(t.$ed.html());
             }
@@ -932,38 +1018,81 @@ jQuery.trumbowyg = {
 
         // Function call when user click on "Insert Link"
         createLink: function () {
-            var t = this;
-            t.saveSelection();
+            var t = this,
+                documentSelection = t.doc.getSelection(),
+                node = documentSelection.focusNode,
+                url,
+                title,
+                target;
+
+            while (['A', 'DIV'].indexOf(node.nodeName) < 0) {
+                node = node.parentNode;
+            }
+
+            if (node && node.nodeName === 'A') {
+                var $a = $(node);
+                url = $a.attr('href');
+                title = $a.attr('title');
+                target = $a.attr('target');
+                var range = t.doc.createRange();
+                range.selectNode(node);
+                documentSelection.addRange(range);
+            }
+
+            t.saveRange();
+
             t.openModalInsert(t.lang.createLink, {
                 url: {
                     label: 'URL',
-                    required: true
+                    required: true,
+                    value: url
                 },
                 title: {
-                    label: t.lang.title
+                    label: t.lang.title,
+                    value: title
                 },
                 text: {
                     label: t.lang.text,
-                    value: t.getSelectedText()
+                    value: t.getRangeText()
                 },
                 target: {
-                    label: t.lang.target
+                    label: t.lang.target,
+                    value: target
                 }
             }, function (v) { // v is value
                 var link = $(['<a href="', v.url, '">', v.text, '</a>'].join(''));
-                if (v.title.length > 0)
+                if (v.title.length > 0) {
                     link.attr('title', v.title);
-                if (v.target.length > 0)
+                }
+                if (v.target.length > 0) {
                     link.attr('target', v.target);
-                t.selection.deleteContents();
-                t.selection.insertNode(link.get(0));
-                t.restoreSelection();
+                }
+                t.range.deleteContents();
+                t.range.insertNode(link[0]);
                 return true;
             });
         },
+        unlink: function () {
+            var t = this,
+                documentSelection = t.doc.getSelection(),
+                node = documentSelection.focusNode;
+
+            if (documentSelection.isCollapsed) {
+                while (['A', 'DIV'].indexOf(node.nodeName) < 0) {
+                    node = node.parentNode;
+                }
+
+                if (node && node.nodeName === 'A') {
+                    var range = t.doc.createRange();
+                    range.selectNode(node);
+                    documentSelection.addRange(range);
+                }
+            }
+            t.execCmd('unlink', undefined, undefined, true);
+        },
         insertImage: function () {
             var t = this;
-            t.saveSelection();
+            t.saveRange();
             t.openModalInsert(t.lang.insertImage, {
                 url: {
                     label: 'URL',
@@ -971,13 +1100,25 @@ jQuery.trumbowyg = {
                 },
                 alt: {
                     label: t.lang.description,
-                    value: t.getSelectedText()
+                    value: t.getRangeText()
                 }
             }, function (v) { // v are values
                 t.execCmd('insertImage', v.url);
                 $('img[src="' + v.url + '"]:not([alt])', t.$box).attr('alt', v.alt);
                 return true;
             });
+        },
+        fullscreen: function () {
+            var t = this,
+                prefix = t.o.prefix,
+                fullscreenCssClass = prefix + 'fullscreen',
+                isFullscreen;
+
+            t.$box.toggleClass(fullscreenCssClass);
+            isFullscreen = t.$box.hasClass(fullscreenCssClass);
+            $('body').toggleClass(prefix + 'body-fullscreen', isFullscreen);
+            $(window).trigger('scroll');
+            t.$c.trigger('tbw' + (isFullscreen ? 'open' : 'close') + 'fullscreen');
         },
 
 
@@ -986,28 +1127,39 @@ jQuery.trumbowyg = {
          * else try to call anonymous function
          * and finaly native execCommand
          */
-        execCmd: function (cmd, param) {
+        execCmd: function (cmd, param, forceCss, skipTrumbowyg) {
             var t = this;
-            if (cmd != 'dropdown')
+            skipTrumbowyg = !!skipTrumbowyg || '';
+
+            if (cmd !== 'dropdown') {
                 t.$ed.focus();
-
-            try {
-                t[cmd](param);
-            } catch (e) {
-                try {
-                    cmd(param, t);
-                } catch (e2) {
-                    if (cmd == 'insertHorizontalRule')
-                        param = null;
-                    else if (cmd == 'formatBlock' && (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') !== -1))
-                        param = '<' + param + '>';
-
-                    t.doc.execCommand(cmd, false, param);
-                }
             }
 
-            if (cmd != 'dropdown')
-                t.syncCode();
+            t.doc.execCommand('styleWithCSS', false, forceCss || false);
+
+            try {
+                t[cmd + skipTrumbowyg](param);
+            } catch (c) {
+                try {
+                    cmd(param);
+                } catch (e2) {
+                    if (cmd === 'insertHorizontalRule') {
+                        param = null;
+                    } else if (cmd === 'formatBlock' && (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') !== -1)) {
+                        param = '<' + param + '>';
+                    }
+
+                    t.doc.execCommand(cmd, false, param);
+
+                    t.syncCode();
+                    t.semanticCode(false, true);
+                }
+
+                if (cmd !== 'dropdown') {
+                    t.updateButtonPaneStatus();
+                    t.$c.trigger('tbwchange');
+                }
+            }
         },
 
 
@@ -1017,10 +1169,11 @@ jQuery.trumbowyg = {
                 prefix = t.o.prefix;
 
             // No open a modal box when exist other modal box
-            if ($('.' + prefix + 'modal-box', t.$box).length > 0)
+            if ($('.' + prefix + 'modal-box', t.$box).length > 0) {
                 return false;
+            }
 
-            t.saveSelection();
+            t.saveRange();
             t.showOverlay();
 
             // Disable all btnPane btns
@@ -1028,14 +1181,14 @@ jQuery.trumbowyg = {
 
             // Build out of ModalBox, it's the mask for animations
             var $modal = $('<div/>', {
-                'class': prefix + 'modal ' + prefix + 'fixed-top'
+                class: prefix + 'modal ' + prefix + 'fixed-top'
             }).css({
-                top: (t.$btnPane.height() + 1) + 'px'
+                top: t.$btnPane.height()
             }).appendTo(t.$box);
 
             // Click on overlay close modal by cancelling them
             t.$overlay.one('click', function () {
-                $modal.trigger(prefix + 'cancel');
+                $modal.trigger('tbwcancel');
                 return false;
             });
 
@@ -1045,18 +1198,18 @@ jQuery.trumbowyg = {
                 html: content
             })
                 .on('submit', function () {
-                    $modal.trigger(prefix + 'confirm');
+                    $modal.trigger('tbwconfirm');
                     return false;
                 })
                 .on('reset', function () {
-                    $modal.trigger(prefix + 'cancel');
+                    $modal.trigger('tbwcancel');
                     return false;
                 });
 
 
             // Build ModalBox and animate to show them
             var $box = $('<div/>', {
-                'class': prefix + 'modal-box',
+                class: prefix + 'modal-box',
                 html: $form
             })
                 .css({
@@ -1073,7 +1226,7 @@ jQuery.trumbowyg = {
             // Append title
             $('<span/>', {
                 text: title,
-                'class': prefix + 'modal-title'
+                class: prefix + 'modal-title'
             }).prependTo($box);
 
             $modal.height($box.outerHeight() + 10);
@@ -1098,7 +1251,7 @@ jQuery.trumbowyg = {
                 prefix = t.o.prefix;
 
             return $('<button/>', {
-                'class': prefix + 'modal-button ' + prefix + 'modal-' + n,
+                class: prefix + 'modal-button ' + prefix + 'modal-' + n,
                 type: n,
                 text: t.lang[n] || n
             }).appendTo($('form', $modal));
@@ -1121,26 +1274,27 @@ jQuery.trumbowyg = {
                 t.hideOverlay();
             });
 
-            t.restoreSelection();
+            t.restoreRange();
         },
         // Preformated build and management modal
         openModalInsert: function (title, fields, cmd) {
             var t = this,
                 prefix = t.o.prefix,
                 lg = t.lang,
-                html = '';
+                html = '',
+                CONFIRM_EVENT = 'tbwconfirm';
 
             $.each(fields, function (fieldName, field) {
                 var l = field.label,
                     n = field.name || fieldName;
 
-                html += '<label><input type="' + (field.type || 'text') + '" name="' + n + '" value="' + (field.value || '') + '"><span class="' + prefix + 'input-infos"><span>' +
+                html += '<label><input type="' + (field.type || 'text') + '" name="' + n + '" value="' + (field.value || '').replace(/"/g, '&quot;') + '"><span class="' + prefix + 'input-infos"><span>' +
                     ((!l) ? (lg[fieldName] ? lg[fieldName] : fieldName) : (lg[l] ? lg[l] : l)) +
                     '</span></span></label>';
             });
 
             return t.openModal(title, html)
-                .on(prefix + 'confirm', function () {
+                .on(CONFIRM_EVENT, function () {
                     var $form = $('form', $(this)),
                         valid = true,
                         values = {};
@@ -1161,17 +1315,18 @@ jQuery.trumbowyg = {
                     });
 
                     if (valid) {
-                        t.restoreSelection();
+                        t.restoreRange();
 
                         if (cmd(values, fields)) {
                             t.syncCode();
+                            t.$c.trigger('tbwchange');
                             t.closeModal();
-                            $(this).off(prefix + 'confirm');
+                            $(this).off(CONFIRM_EVENT);
                         }
                     }
                 })
-                .one(prefix + 'cancel', function () {
-                    $(this).off(prefix + 'confirm');
+                .one('tbwcancel', function () {
+                    $(this).off(CONFIRM_EVENT);
                     t.closeModal();
                 });
         },
@@ -1189,45 +1344,146 @@ jQuery.trumbowyg = {
                 .find('input+span')
                 .append(
                     $('<span/>', {
-                        'class': prefix + 'msg-error',
+                        class: prefix + 'msg-error',
                         text: err
                     })
                 );
         },
 
 
-        // Selection management
-        saveSelection: function () {
+        // Range management
+        saveRange: function () {
             var t = this,
-                ds = t.doc.selection;
+                documentSelection = t.doc.getSelection();
 
-            t.selection = null;
-            if (t.doc.getSelection) {
-                var s = t.doc.getSelection();
-                if (s.getRangeAt && s.rangeCount)
-                    t.selection = s.getRangeAt(0);
-            } else if (ds && ds.createRange)
-                t.selection = ds.createRange();
-        },
-        restoreSelection: function () {
-            var t = this,
-                range = t.selection;
+            t.range = null;
 
-            if (range) {
-                if (t.doc.getSelection) {
-                    var s = t.doc.getSelection();
-                    try {
-                        s.removeAllRanges();
-                    } catch (e) {
-                    }
-                    s.addRange(range);
-                } else if (t.doc.selection && range.select)
-                    range.select();
+            if (documentSelection.rangeCount) {
+                var savedRange = t.range = documentSelection.getRangeAt(0),
+                    range = t.doc.createRange(),
+                    rangeStart;
+                range.selectNodeContents(t.$ed[0]);
+                range.setEnd(savedRange.startContainer, savedRange.startOffset);
+                rangeStart = (range + '').length;
+                t.metaRange = {
+                    start: rangeStart,
+                    end: rangeStart + (savedRange + '').length
+                };
             }
         },
-        getSelectedText: function () {
-            var s = this.selection;
-            return (s.text !== undefined) ? s.text : s + '';
+        restoreRange: function () {
+            var t = this,
+                metaRange = t.metaRange,
+                savedRange = t.range,
+                documentSelection = t.doc.getSelection(),
+                range;
+
+            if (!savedRange) {
+                return;
+            }
+
+            if (metaRange && metaRange.start !== metaRange.end) { // Algorithm from http://jsfiddle.net/WeWy7/3/
+                var charIndex = 0,
+                    nodeStack = [t.$ed[0]],
+                    node,
+                    foundStart = false,
+                    stop = false;
+
+                range = t.doc.createRange();
+
+                while (!stop && (node = nodeStack.pop())) {
+                    if (node.nodeType === 3) {
+                        var nextCharIndex = charIndex + node.length;
+                        if (!foundStart && metaRange.start >= charIndex && metaRange.start <= nextCharIndex) {
+                            range.setStart(node, metaRange.start - charIndex);
+                            foundStart = true;
+                        }
+                        if (foundStart && metaRange.end >= charIndex && metaRange.end <= nextCharIndex) {
+                            range.setEnd(node, metaRange.end - charIndex);
+                            stop = true;
+                        }
+                        charIndex = nextCharIndex;
+                    } else {
+                        var cn = node.childNodes,
+                            i = cn.length;
+
+                        while (i > 0) {
+                            i -= 1;
+                            nodeStack.push(cn[i]);
+                        }
+                    }
+                }
+            }
+
+            documentSelection.removeAllRanges();
+            documentSelection.addRange(range || savedRange);
+        },
+        getRangeText: function () {
+            return this.range + '';
+        },
+
+        updateButtonPaneStatus: function () {
+            var t = this,
+                prefix = t.o.prefix,
+                tags = t.getTagsRecursive(t.doc.getSelection().focusNode.parentNode),
+                activeClasses = prefix + 'active-button ' + prefix + 'active';
+
+            $('.' + prefix + 'active-button', t.$btnPane).removeClass(activeClasses);
+            $.each(tags, function (i, tag) {
+                var btnName = t.tagToButton[tag.toLowerCase()],
+                    $btn = $('.' + prefix + btnName + '-button', t.$btnPane);
+
+                if ($btn.length > 0) {
+                    $btn.addClass(activeClasses);
+                } else {
+                    try {
+                        $btn = $('.' + prefix + 'dropdown .' + prefix + btnName + '-dropdown-button', t.$box);
+                        var dropdownBtnName = $btn.parent().data('dropdown');
+                        $('.' + prefix + dropdownBtnName + '-button', t.$box).addClass(activeClasses);
+                    } catch (e) {
+                    }
+                }
+            });
+        },
+        getTagsRecursive: function (element, tags) {
+            var t = this;
+            tags = tags || [];
+
+            var tag = element.tagName;
+            if (tag === 'DIV') {
+                return tags;
+            }
+            if (tag === 'P' && element.style.textAlign !== '') {
+                tags.push(element.style.textAlign);
+            }
+
+            $.each(t.tagHandlers, function (i, tagHandler) {
+                tags = tags.concat(tagHandler(element, t));
+            });
+
+            tags.push(tag);
+
+            return t.getTagsRecursive(element.parentNode, tags);
+        },
+
+        // Plugins
+        initPlugins: function () {
+            var t = this;
+            t.loadedPlugins = [];
+            $.each($.trumbowyg.plugins, function (name, plugin) {
+                if (!plugin.shouldInit || plugin.shouldInit(t)) {
+                    plugin.init(t);
+                    if (plugin.tagHandler) {
+                        t.tagHandlers.push(plugin.tagHandler);
+                    }
+                    t.loadedPlugins.push(plugin);
+                }
+            });
+        },
+        destroyPlugins: function () {
+            $.each(this.loadedPlugins, function (i, plugin) {
+                plugin.destroy();
+            });
         }
     };
 })(navigator, window, document, jQuery);

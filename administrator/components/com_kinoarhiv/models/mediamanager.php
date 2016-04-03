@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -199,7 +199,7 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 
 			$result = JPath::clean($result);
-			$fs_alias = rawurlencode(String::substr($result, 0, 1));
+			$fs_alias = rawurlencode(StringHelper::substr($result, 0, 1));
 		}
 
 		return $fs_alias;

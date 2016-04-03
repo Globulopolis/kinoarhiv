@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 JLoader::register('KADatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
@@ -152,7 +152,7 @@ class KinoarhivModelName extends JModelForm
 
 			if (empty($result['name']->fs_alias))
 			{
-				$result['name']->fs_alias = strtolower($lang->transliterate(String::substr($result['name']->alias, 0, 1)));
+				$result['name']->fs_alias = strtolower($lang->transliterate(StringHelper::substr($result['name']->alias, 0, 1)));
 			}
 		}
 
@@ -397,7 +397,7 @@ class KinoarhivModelName extends JModelForm
 
 			if (empty($data['fs_alias']))
 			{
-				$data['fs_alias'] = rawurlencode(String::substr($data['alias'], 0, 1));
+				$data['fs_alias'] = rawurlencode(StringHelper::substr($data['alias'], 0, 1));
 			}
 		}
 

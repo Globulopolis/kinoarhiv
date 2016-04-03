@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Class KinoarhivModelPremieres
@@ -193,7 +193,7 @@ class KinoarhivModelPremieres extends JModelList
 			{
 				$search = trim(substr($search, 8));
 
-				if (String::strtolower($search) == String::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0)
+				if (StringHelper::strtolower($search) == StringHelper::strtolower(JText::_('COM_KA_PREMIERE_WORLD')) || $search == 0)
 				{
 					$query->where('p.country_id = 0');
 				}

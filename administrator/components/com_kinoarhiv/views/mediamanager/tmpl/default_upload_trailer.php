@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 JHtml::_('behavior.keepalive');
 
@@ -436,7 +436,7 @@ endif;
 			if ($(this).hasClass('video')) {
 				$('p', dlg).html($('#urls_layout_video'));
 				dlg.dialog({
-					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>',
+					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>',
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function () {
 							var input = $('.dialog #urls_url_video');
@@ -463,7 +463,7 @@ endif;
 			} else if ($(this).hasClass('subtitles')) {
 				$('p', dlg).html($('#urls_layout_subtitles'));
 				dlg.dialog({
-					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES')); ?>',
+					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES')); ?>',
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function () {
 							var input = $('.dialog #urls_url_subtitles');
@@ -490,7 +490,7 @@ endif;
 			} else if ($(this).hasClass('chapters')) {
 				$('p', dlg).html('<label for="urls_url_chp"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_CHAPTERS'); ?></label><input id="urls_url_chp" class="span6" type="text" size="35" value="" name="urls_url_chp" /><div class="err_msg"></div>');
 				dlg.dialog({
-					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS')); ?>',
+					title: '<?php echo JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS')); ?>',
 					buttons: {
 						'<?php echo JText::_('JTOOLBAR_ADD'); ?>': function () {
 							var input = $('.dialog #urls_url_chp');
@@ -686,9 +686,9 @@ endif;
 						<div class="control-group">
 							<?php echo $this->form->getLabel('urls'); ?>
 							<div class="urls_form_toolbar">
-								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/film.png" border="0"/></a>
-								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0"/></a>
-								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . String::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO')); ?>" class="hasTooltip cmd-form-urls video"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/film.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES')); ?>" class="hasTooltip cmd-form-urls subtitles"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0"/></a>
+								<a href="#" title="<?php echo JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS')); ?>" class="hasTooltip cmd-form-urls chapters"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0"/></a>
 								<a href="#" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip cmd-form-urls help"><img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/help.png" border="0"/></a>
 							</div>
 							<?php echo $this->form->getInput('urls'); ?>

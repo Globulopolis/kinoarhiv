@@ -11,7 +11,9 @@
 defined('_JEXEC') or die;
 
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/trumbowyg/trumbowyg.min.js');
+JHtml::_('script', 'components/com_kinoarhiv/assets/editors/trumbowyg/plugins/colors/trumbowyg.colors.min.js');
 JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/trumbowyg/ui/default.css');
+JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/trumbowyg/plugins/colors/ui/trumbowyg.colors.css');
 KAComponentHelper::getScriptLanguage('', 'js/i18n/editors/trumbowyg');
 
 $params = $displayData->params;
@@ -22,7 +24,7 @@ $form   = $displayData->form;
 		var editor = $('#form_review').trumbowyg({
 			lang: '<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>',
 			removeformatPasted: true,
-			btns: [ 'formatting', '|', 'btnGrp-design', '|', 'btnGrp-justify', '|', 'btnGrp-lists', '|', 'viewHTML' ]
+			btns: [ 'formatting', 'btnGrp-design', 'btnGrp-justify', 'btnGrp-lists', 'foreColor', 'backColor', 'viewHTML' ]
 		});
 
 		// Insert username into editor

@@ -10,11 +10,11 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
-if (String::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
+if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
-	$rating_image_www = JURI::base() . String::substr($this->params->get('media_rating_image_root_www'), 1);
+	$rating_image_www = JURI::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
 }
 else
 {

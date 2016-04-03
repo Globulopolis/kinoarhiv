@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Releases list class
@@ -189,7 +189,7 @@ class KinoarhivModelReleases extends JModelList
 					// Only any kind of letter from any language.
 					if (preg_match('#\p{L}#u', $letter, $matches))
 					{
-						$query->where('m.title LIKE "' . $db->escape(String::strtoupper($matches[0])) . '%"');
+						$query->where('m.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
 					}
 				}
 			}

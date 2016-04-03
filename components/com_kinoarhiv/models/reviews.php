@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Class KinoarhivModelReviews
@@ -60,7 +60,7 @@ class KinoarhivModelReviews extends JModelForm
 		$movie_id = $app->input->get('id', 0, 'int');
 		$strip_tag = KAComponentHelper::cleanHTML($data['review'], null);
 
-		if (String::strlen($strip_tag) < $params->get('reviews_length_min') || String::strlen($strip_tag) > $params->get('reviews_length_max'))
+		if (StringHelper::strlen($strip_tag) < $params->get('reviews_length_min') || StringHelper::strlen($strip_tag) > $params->get('reviews_length_max'))
 		{
 			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
 

@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Movies list controller class
@@ -643,9 +643,9 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		JLoader::register('KAImageHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'image.php');
 		$result = KAImageHelper::createRateImage($text);
 
-		if (String::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
+		if (StringHelper::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
 		{
-			$rating_image_www = JURI::root() . String::substr($params->get('media_rating_image_root_www'), 1);
+			$rating_image_www = JURI::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
 		}
 		else
 		{

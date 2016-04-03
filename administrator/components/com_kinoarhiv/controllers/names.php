@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Names list controller class
@@ -506,7 +506,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$item_alias = String::substr(String::strtolower($alias), 0, 1);
+		$item_alias = StringHelper::substr(StringHelper::strtolower($alias), 0, 1);
 
 		echo json_encode(
 			array(

@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Movie item class
@@ -578,9 +578,9 @@ class KinoarhivModelMovie extends JModelForm
 					{
 						$value->fs_alias = rawurlencode($value->fs_alias);
 
-						if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+						if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 						{
-							$value->poster = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+							$value->poster = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 								. $value->fs_alias . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 						else
@@ -608,9 +608,9 @@ class KinoarhivModelMovie extends JModelForm
 						{
 							$value->dub_fs_alias = rawurlencode($value->dub_fs_alias);
 
-							if (String::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+							if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 							{
-								$value->dub_url_photo = JURI::base() . String::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+								$value->dub_url_photo = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 									. $value->dub_fs_alias . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
 							}
 							else
@@ -794,9 +794,9 @@ class KinoarhivModelMovie extends JModelForm
 						{
 							$value->fs_alias = rawurlencode($value->fs_alias);
 
-							if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
+							if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 							{
-								$value->screenshot = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
+								$value->screenshot = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 									. $value->fs_alias . '/' . $id . '/' . $value->screenshot;
 							}
 							else
@@ -933,9 +933,9 @@ class KinoarhivModelMovie extends JModelForm
 					{
 						$value->fs_alias = rawurlencode($value->fs_alias);
 
-						if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
+						if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 						{
-							$value->screenshot = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
+							$value->screenshot = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 								. $value->fs_alias . '/' . $id . '/' . $value->screenshot;
 						}
 						else
@@ -956,12 +956,12 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$_fs_alias = rawurlencode($value->fs_alias);
 
-					if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
 						// $value->path is an URL, $path is a root path to the files
-						$value->path = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
+						$value->path = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 							. $_fs_alias . '/' . $id . '/';
-						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . String::substr($params->get('media_trailers_root_www'), 1)
+						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . StringHelper::substr($params->get('media_trailers_root_www'), 1)
 							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 					}
 					else
@@ -1172,9 +1172,9 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				if (file_exists($params->get('media_trailers_root') . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot))
 				{
-					if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
-						$result->screenshot = JUri::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot;
+						$result->screenshot = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot;
 					}
 					else
 					{
@@ -1305,9 +1305,9 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$img_fs_alias = rawurlencode($result->fs_alias);
 
-					if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
-						$result->screenshot = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
+						$result->screenshot = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 							. $img_fs_alias . '/' . $id . '/' . $result->screenshot;
 					}
 					else
@@ -1328,12 +1328,12 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				$video_fs_alias = rawurlencode($result->fs_alias);
 
-				if (String::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
+				if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 				{
 					// $result->path is an URL, $path is a root path to the files
-					$result->path = JURI::base() . String::substr($params->get('media_trailers_root_www'), 1) . '/'
+					$result->path = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 						. $video_fs_alias . '/' . $id . '/';
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . String::substr($params->get('media_trailers_root_www'), 1)
+					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . StringHelper::substr($params->get('media_trailers_root_www'), 1)
 						. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
 				}
 				else

@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 /**
  * Names View class
@@ -111,9 +111,9 @@ class KinoarhivViewNames extends JViewLegacy
 				{
 					$item->fs_alias = rawurlencode($item->fs_alias);
 
-					if (String::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . String::substr($this->params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+						$item->poster = JURI::base() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 					}
 					else
 					{

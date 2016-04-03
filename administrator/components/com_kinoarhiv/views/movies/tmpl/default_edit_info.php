@@ -10,16 +10,16 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
 $movie_id = $this->form->getValue('id', $this->form_edit_group);
 
 // Set values to ignore in autocomplete for parent_id field.
 $this->form->setFieldAttribute('parent_id', 'data-ignore-ids', $movie_id, $this->form_edit_group);
 
-if (String::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
+if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 {
-	$poster_url = JURI::root() . String::substr($this->params->get('media_posters_root_www'), 1) . '/'
+	$poster_url = JURI::root() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
 		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $movie_id . '/posters/';
 }
 else

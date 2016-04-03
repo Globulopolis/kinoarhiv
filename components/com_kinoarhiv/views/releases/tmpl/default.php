@@ -10,11 +10,11 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\String;
+use Joomla\String\StringHelper;
 
-if (String::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
+if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
-	$rating_image_www = JURI::base() . String::substr($this->params->get('media_rating_image_root_www'), 1);
+	$rating_image_www = JURI::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
 }
 else
 {
@@ -102,7 +102,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 					<input type="hidden" name="option" value="com_kinoarhiv"/>
 					<input type="hidden" name="view" value="releases"/>
 					<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
-					<input type="hidden" name="lang" value="<?php echo String::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
+					<input type="hidden" name="lang" value="<?php echo StringHelper::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
 
 					<?php
 					if ($this->params->get('filter_release_country') == 1):

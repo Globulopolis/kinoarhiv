@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 5.8.7 <http://videojs.com/>
+ * Video.js 5.8.8 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -7769,6 +7769,7 @@ var VolumeMenuButton = (function (_PopupButton) {
 
     popup.addChild(vb);
 
+    this.menuContent = popup;
     this.volumeBar = vb;
 
     this.attachVolumeBarEvents();
@@ -7788,7 +7789,7 @@ var VolumeMenuButton = (function (_PopupButton) {
   };
 
   VolumeMenuButton.prototype.attachVolumeBarEvents = function attachVolumeBarEvents() {
-    this.on(['mousedown', 'touchdown'], this.handleMouseDown);
+    this.menuContent.on(['mousedown', 'touchdown'], Fn.bind(this, this.handleMouseDown));
   };
 
   VolumeMenuButton.prototype.handleMouseDown = function handleMouseDown(event) {
@@ -12828,7 +12829,10 @@ var autoSetup = function autoSetup() {
 
 // Pause to let the DOM keep processing
 var autoSetupTimeout = function autoSetupTimeout(wait, vjs) {
-  videojs = vjs;
+  if (vjs) {
+    videojs = vjs;
+  }
+
   setTimeout(autoSetup, wait);
 };
 
@@ -19825,7 +19829,7 @@ setup.autoSetupTimeout(1, videojs);
  *
  * @type {String}
  */
-videojs.VERSION = '5.8.7';
+videojs.VERSION = '5.8.8';
 
 /**
  * The global options object. These are the settings that take effect

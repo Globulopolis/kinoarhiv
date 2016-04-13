@@ -164,6 +164,7 @@ class KAComponentHelper extends JComponentHelper
 					$player_path . 'videojs/video-js.css'
 				),
 				'js'  => array(
+					$player_path . 'videojs/ie8/videojs-ie8.min.js',
 					$player_path . 'videojs/video.min.js'
 				)
 			)

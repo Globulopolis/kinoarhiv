@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/sceditor/jquery.sceditor.min.js');
 JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/sceditor/themes/square.css');
-KAComponentHelper::getScriptLanguage('', 'js/i18n/editors/sceditor/');
+KAComponentHelper::getScriptLanguage('', 'editors/sceditor/lang/');
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/sceditor/plugins/format.js');
 JHtml::_('script', 'components/com_kinoarhiv/assets/editors/sceditor/plugins/undo.js');
 

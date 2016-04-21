@@ -748,23 +748,24 @@ div.rating {
 	margin-right: 1em;
 }
 
-.trailer {
-	margin: 1.5em 0;
+#video_accordion .accordion-inner {
+	padding: 0;
 }
 
-.trailer .ui-widget-content iframe {
-	display: block;
-	margin: 0 auto;
-	width: 100%;
-}
-
-.trailer .ui-widget-header {
-	padding: 4px
-}
-
-.trailer > .ui-widget-content {
-	border: none;
+.video-responsive {
+	position: relative;
+	/*padding-bottom: 75%;*/
+	/*padding-bottom: 56.25%;*/
+	height: 0;
 	overflow: hidden;
+}
+
+.video-responsive video {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: auto;
 }
 
 /* Do not remove if you using a template other than the default template. */

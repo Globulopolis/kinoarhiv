@@ -53,7 +53,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 			return false;
 		}
 
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
@@ -71,7 +71,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="' . JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $ka_theme . '/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="' . JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $ka_theme . '/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html . $cn;
 			},
@@ -100,14 +100,11 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 			if ($throttle_enable == 0)
 			{
-				$checking_path = JPath::clean(
-					$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $item->filename
-				);
+				$checking_path = JPath::clean($params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename);
 
 				if (!is_file($checking_path))
 				{
-					$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+					$item->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png',
 						false
@@ -121,7 +118,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
+						$item->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 					else

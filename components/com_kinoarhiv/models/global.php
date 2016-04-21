@@ -29,7 +29,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	public function getAjaxData($element = '')
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$element = !empty($element) ? $element : $app->input->get('element', '', 'string');
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');

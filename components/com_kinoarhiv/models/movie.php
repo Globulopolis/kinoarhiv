@@ -105,7 +105,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getData()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -415,7 +415,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getMovieData()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -462,7 +462,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function getTags($ids)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
 		if (empty($ids))
 		{
@@ -500,7 +500,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getCast()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -564,14 +564,13 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					// Cast and crew photo
 					$checking_path = JPath::clean(
-						$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $value->fs_alias .
-						DIRECTORY_SEPARATOR . $value->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $value->url_photo
+						$params->get('media_actor_photo_root') . '/' . $value->fs_alias . '/' . $value->id . '/photo/' . $value->url_photo
 					);
 					$no_cover = ($value->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 					if (!is_file($checking_path))
 					{
-						$value->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
+						$value->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
 							. '/images/' . $no_cover . '.png';
 					}
 					else
@@ -580,7 +579,7 @@ class KinoarhivModelMovie extends JModelForm
 
 						if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 						{
-							$value->poster = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+							$value->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 								. $value->fs_alias . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 						else
@@ -594,14 +593,13 @@ class KinoarhivModelMovie extends JModelForm
 					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
 					{
 						$checking_path1 = JPath::clean(
-							$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $value->dub_fs_alias .
-							DIRECTORY_SEPARATOR . $value->dub_id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $value->dub_url_photo
+							$params->get('media_actor_photo_root') . '/' . $value->dub_fs_alias . '/' . $value->dub_id . '/photo/' . $value->dub_url_photo
 						);
 						$no_cover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 						if (!is_file($checking_path1))
 						{
-							$value->dub_url_photo = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
+							$value->dub_url_photo = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
 								. '/images/' . $no_cover1 . '.png';
 						}
 						else
@@ -610,7 +608,7 @@ class KinoarhivModelMovie extends JModelForm
 
 							if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 							{
-								$value->dub_url_photo = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+								$value->dub_url_photo = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 									. $value->dub_fs_alias . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
 							}
 							else
@@ -731,7 +729,7 @@ class KinoarhivModelMovie extends JModelForm
 	{
 		jimport('joomla.filesystem.file');
 
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -781,13 +779,12 @@ class KinoarhivModelMovie extends JModelForm
 					if ($throttle_img_enable == 0)
 					{
 						$checking_path = JPath::clean(
-							$params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $value->fs_alias
-							. DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $value->screenshot
+							$params->get('media_trailers_root') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot
 						);
 
 						if (!is_file($checking_path))
 						{
-							$value->screenshot = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+							$value->screenshot = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 								. $params->get('ka_theme') . '/images/video_off.png';
 						}
 						else
@@ -796,7 +793,7 @@ class KinoarhivModelMovie extends JModelForm
 
 							if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 							{
-								$value->screenshot = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
+								$value->screenshot = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 									. $value->fs_alias . '/' . $id . '/' . $value->screenshot;
 							}
 							else
@@ -920,13 +917,12 @@ class KinoarhivModelMovie extends JModelForm
 				if ($throttle_img_enable == 0)
 				{
 					$checking_path = JPath::clean(
-						$params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $value->fs_alias
-						. DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $value->screenshot
+						$params->get('media_trailers_root') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot
 					);
 
 					if (!is_file($checking_path))
 					{
-						$value->screenshot = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+						$value->screenshot = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 							. $params->get('ka_theme') . '/images/video_off.png';
 					}
 					else
@@ -935,7 +931,7 @@ class KinoarhivModelMovie extends JModelForm
 
 						if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 						{
-							$value->screenshot = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
+							$value->screenshot = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 								. $value->fs_alias . '/' . $id . '/' . $value->screenshot;
 						}
 						else
@@ -959,24 +955,22 @@ class KinoarhivModelMovie extends JModelForm
 					if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
 						// $value->path is an URL, $path is a root path to the files
-						$value->path = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
+						$value->path = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 							. $_fs_alias . '/' . $id . '/';
-						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . StringHelper::substr($params->get('media_trailers_root_www'), 1)
-							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+						$path = JPATH_ROOT . '/' . StringHelper::substr($params->get('media_trailers_root_www'), 1)
+							. '/' . $value->fs_alias . '/' . $id . '/';
 					}
 					else
 					{
 						$value->path = $params->get('media_trailers_root_www') . '/' . $_fs_alias . '/' . $id . '/';
-						$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+						$path = JPATH_ROOT . '/' . $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/';
 					}
 				}
 				else
 				{
 					$value->path = 'index.php?option=com_kinoarhiv&task=media.view&element=trailer&id=' . $id .
 						'&item_id=' . $value->id . '&fa=' . urlencode($value->fs_alias) . '&format=raw&Itemid=' . $itemid;
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-							. DIRECTORY_SEPARATOR . $value->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+					$path = JPATH_ROOT . '/' . $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/';
 				}
 
 				$value->files['video'] = json_decode($value->filename, true);
@@ -1109,7 +1103,7 @@ class KinoarhivModelMovie extends JModelForm
 	{
 		jimport('joomla.filesystem.file');
 
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -1292,13 +1286,12 @@ class KinoarhivModelMovie extends JModelForm
 			if ($throttle_img_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $result->fs_alias
-					. DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $result->screenshot
+					$params->get('media_trailers_root') . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot
 				);
 
 				if (!is_file($checking_path))
 				{
-					$result->screenshot = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+					$result->screenshot = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 						. $params->get('ka_theme') . '/images/video_off.png';
 				}
 				else
@@ -1307,7 +1300,7 @@ class KinoarhivModelMovie extends JModelForm
 
 					if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
-						$result->screenshot = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
+						$result->screenshot = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 							. $img_fs_alias . '/' . $id . '/' . $result->screenshot;
 					}
 					else
@@ -1331,24 +1324,24 @@ class KinoarhivModelMovie extends JModelForm
 				if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 				{
 					// $result->path is an URL, $path is a root path to the files
-					$result->path = JURI::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
+					$result->path = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
 						. $video_fs_alias . '/' . $id . '/';
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . StringHelper::substr($params->get('media_trailers_root_www'), 1)
-						. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+					$path = JPATH_ROOT . '/' . StringHelper::substr($params->get('media_trailers_root_www'), 1)
+						. '/' . $result->fs_alias . '/' . $id . '/';
 				}
 				else
 				{
 					$result->path = $params->get('media_trailers_root_www') . '/' . $video_fs_alias . '/' . $id . '/';
-					$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-						. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+					$path = JPATH_ROOT . '/' . $params->get('media_trailers_root_www')
+						. '/' . $result->fs_alias . '/' . $id . '/';
 				}
 			}
 			else
 			{
 				$result->path = 'index.php?option=com_kinoarhiv&task=media.view&element=trailer&id=' . $id .
 					'&item_id=' . $result->id . '&fa=' . urlencode($result->fs_alias) . '&format=raw&Itemid=' . $itemid;
-				$path = JPATH_ROOT . DIRECTORY_SEPARATOR . $params->get('media_trailers_root_www')
-					. DIRECTORY_SEPARATOR . $result->fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR;
+				$path = JPATH_ROOT . '/' . $params->get('media_trailers_root_www')
+					. '/' . $result->fs_alias . '/' . $id . '/';
 			}
 
 			$result->files['video'] = json_decode($result->filename, true);
@@ -1477,7 +1470,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getTrailerAccessLevel($id)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 
@@ -1499,7 +1492,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getAwards()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
@@ -1530,7 +1523,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getSoundtracks()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
@@ -1549,7 +1542,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function getDimensionFilters()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$page = $app->input->get('page', null, 'cmd');
 		$result = array();
@@ -1578,7 +1571,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function voted()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
@@ -1842,7 +1835,7 @@ class KinoarhivModelMovie extends JModelForm
 	protected function getListQuery()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$page = $app->input->get('page', 'reviews', 'cmd');
 		$filter = $app->input->get('dim_filter', '0', 'string');
@@ -1896,7 +1889,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getPagination()
 	{
-		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
+		JLoader::register('KAPagination', JPath::clean(JPATH_COMPONENT . '/libraries/pagination.php'));
 
 		$app = JFactory::getApplication();
 		$store = $this->getStoreId('getPagination');

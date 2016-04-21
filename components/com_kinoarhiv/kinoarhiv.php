@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 @ini_set('zend.ze1_compatibility_mode', 'Off');
 
 $params = JComponentHelper::getParams('com_kinoarhiv');
-JLoader::register('KAComponentHelper', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'component.php');
+JLoader::register('KAComponentHelper', JPath::clean(dirname(__FILE__) . '/helpers/component.php'));
 
 if ($params->get('offline') == 1)
 {

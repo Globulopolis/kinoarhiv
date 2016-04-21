@@ -141,7 +141,7 @@ class KinoarhivModelPremieres extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
@@ -303,7 +303,7 @@ class KinoarhivModelPremieres extends JModelList
 	 */
 	public function getSelectList()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -486,7 +486,7 @@ class KinoarhivModelPremieres extends JModelList
 	 */
 	public function getPagination()
 	{
-		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
+		JLoader::register('KAPagination', JPath::clean(JPATH_COMPONENT . '/libraries/pagination.php'));
 
 		$store = $this->getStoreId('getPagination');
 

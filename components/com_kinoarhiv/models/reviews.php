@@ -54,7 +54,7 @@ class KinoarhivModelReviews extends JModelForm
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$movie_id = $app->input->get('id', 0, 'int');
@@ -129,7 +129,7 @@ class KinoarhivModelReviews extends JModelForm
 	 */
 	protected function sendEmails($data)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
@@ -265,7 +265,7 @@ class KinoarhivModelReviews extends JModelForm
 	public function delete()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$review_id = $app->input->get('review_id', null, 'int');
 		$review_ids = $app->input->get('review_ids', array(), 'array');

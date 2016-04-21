@@ -8,9 +8,9 @@
  * @url            http://киноархив.com/
  */
 
-use Joomla\String\StringHelper;
-
 defined('_JEXEC') or die;
+
+use Joomla\String\StringHelper;
 
 /**
  * Movies feed View class
@@ -30,7 +30,7 @@ class KinoarhivViewMovies extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$items = $this->get('Items');
 
@@ -97,7 +97,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="' . JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $ka_theme . '/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="' . JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $ka_theme . '/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html . $cn;
 			},
@@ -128,13 +128,12 @@ class KinoarhivViewMovies extends JViewLegacy
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $row->fs_alias .
-					DIRECTORY_SEPARATOR . $row->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $row->filename
+					$params->get('media_posters_root') . '/' . $row->fs_alias . '/' . $row->id . '/posters/' . $row->filename
 				);
 
 				if (!is_file($checking_path))
 				{
-					$row->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+					$row->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
 				}
 				else
 				{
@@ -142,7 +141,7 @@ class KinoarhivViewMovies extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$row->poster = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
+						$row->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
 					}
 					else

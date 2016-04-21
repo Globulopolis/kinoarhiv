@@ -21,7 +21,7 @@ if ($this->params->get('search_movies_enable') == 0)
 			placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>',
 			allowClear: true,
 			formatSelection: function(data){
-				return "<img class='flag-dd' src='<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + $(data.element).data('code') + ".png'/> " + data.text;
+				return "<img class='flag-dd' src='<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + $(data.element).data('code') + ".png'/> " + data.text;
 			},
 			escapeMarkup: function(m) { return m; }
 		});
@@ -129,14 +129,13 @@ if ($this->params->get('search_movies_enable') == 0)
 				$inputs = $element.closest('.controls').find('.rate-input input');
 
 			$element.slider({
-				range: true,
+				handle: 'square',
 				min: $element.data('rate-min'),
 				max: $element.data('rate-max'),
-				values: [$values[0], $values[1]],
-				slide: function(event, ui){
-					$inputs.eq(0).val(ui.values[0]);
-					$inputs.eq(1).val(ui.values[1]);
-				}
+				value: [$values[0], $values[1]]
+			}).on('slide', function(e){
+				$inputs.eq(0).val(e.value[0]);
+				$inputs.eq(1).val(e.value[1]);
 			});
 		});
 

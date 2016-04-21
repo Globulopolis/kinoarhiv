@@ -27,7 +27,6 @@ class KAComponentHelper extends JComponentHelper
 	public static function setHeadTags()
 	{
 		$document = JFactory::getDocument();
-		$params = self::getParams('com_kinoarhiv');
 
 		if ($document->getType() != 'html')
 		{
@@ -35,8 +34,10 @@ class KAComponentHelper extends JComponentHelper
 		}
 
 		JHtml::_('jquery.framework');
+		JHtml::_('bootstrap.framework');
 		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.js');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+
+		$params = self::getParams('com_kinoarhiv');
 
 		if ($params->get('vegas_enable') == 1)
 		{

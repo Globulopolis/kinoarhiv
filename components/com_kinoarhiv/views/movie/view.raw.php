@@ -30,7 +30,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$this->watch(JFactory::getApplication()->input->get->get('type', 'trailer'));
 	}

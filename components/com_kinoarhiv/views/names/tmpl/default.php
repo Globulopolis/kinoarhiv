@@ -76,9 +76,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		<?php endif; ?>
 
 		<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
-		$('.adv-search').accordion({active: false, collapsible: true, heightStyle: 'content', animate: false});
-
-		$('.adv-search #search_form').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=names&format=raw&'.JSession::getFormToken().'=1', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function (response, status, xhr) {
+		$('#searchForm #search_form_content').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=names&format=raw&'.JSession::getFormToken().'=1', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function (response, status, xhr) {
 			if (status == 'error') {
 				showMsg('Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText);
 				return false;
@@ -96,17 +94,24 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 	endif; ?>
 
 	<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
-		<div class="adv-search">
-			<h3><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></h3>
-
-			<div id="search_form"></div>
+		<div class="accordion" id="searchForm">
+			<div class="accordion-group">
+				<div class="accordion-heading">
+					<a class="accordion-toggle" data-toggle="collapse" data-parent="#searchForm" href="#toggleSearchForm"><strong><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></strong></a>
+				</div>
+				<div id="toggleSearchForm" class="accordion-body collapse">
+					<div class="accordion-inner">
+						<div id="search_form_content" class="loading"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 	<?php endif; ?>
 
 	<?php if (count($this->items) > 0):
 		if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')):
 			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
-			echo '<br />' . JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS_' . $plural[0], $this->pagination->total);
+			echo '<br />' . JText::sprintf('COM_KA_SEARCH_PERSON_N_RESULTS_' . $plural[0], $this->pagination->total);
 		endif; ?>
 
 		<?php if ($this->params->get('pagevan_top') == 1): ?>

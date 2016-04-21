@@ -63,116 +63,129 @@ endif; ?>
 			}
 
 			$trailers_obj = $this->item->trailers; ?>
-			<div class="ui-widget">
-				<?php foreach ($trailers_obj as $item_trailer): ?>
-					<div class="trailer">
-						<div class="ui-widget-header ui-corner-top"><?php echo ($item_trailer->title == '') ? JText::_('COM_KA_TRAILER') : $item_trailer->title; ?></div>
-						<div class="ui-widget-content">
-							<?php if ($item_trailer->embed_code != ''):
-								echo $item_trailer->embed_code;
-							else:
-								if (count($item_trailer->files['video']) > 0): ?>
-									<div>
-										<?php if ($this->params->get('player_type') == '-1'): ?>
-
-											<video controls preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
-												width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
-												<?php foreach ($item_trailer->files['video'] as $item): ?>
-													<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
-												<?php endforeach; ?>
-												<?php if (count($item_trailer->files['subtitles']) > 0):
-													foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
-															srclang="<?php echo $subtitle['lang_code']; ?>"
-															label="<?php echo $subtitle['lang']; ?>"
-															<?php echo $subtitle['default'] ? ' default' : ''; ?> />
-													<?php endforeach;
-												endif; ?>
-												<?php if (count($item_trailer->files['chapters']) > 0): ?>
-													<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
-												<?php endif; ?>
-											</video>
-
-										<?php elseif ($this->params->get('player_type') == 'videojs'): ?>
-
-											<video class="video-js vjs-default-skin vjs-big-play-centered" controls
-												preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
-												width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
-												data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'>
-												<?php foreach ($item_trailer->files['video'] as $item): ?>
-													<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
-												<?php endforeach; ?>
-												<?php if (count($item_trailer->files['subtitles']) > 0):
-													foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
-															srclang="<?php echo $subtitle['lang_code']; ?>"
-															label="<?php echo $subtitle['lang']; ?>"
-															<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
-													<?php endforeach;
-												endif; ?>
-												<?php if (count($item_trailer->files['chapters']) > 0): ?>
-													<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
-												<?php endif; ?>
-												<p class="vjs-no-js">To view this video please enable JavaScript, and
-													consider upgrading to a web browser that
-													<a href="http://videojs.com/html5-video-support/" target="_blank">supports
-														HTML5 video</a></p>
-											</video>
-
-										<?php elseif ($this->params->get('player_type') == 'mediaelement'): ?>
-
-											<video controls="controls" preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
-												width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
-												<?php foreach ($item_trailer->files['video'] as $item):
-													$mp4_file = ($item['type'] == 'video/mp4') ? $item['src'] : ''; ?>
-													<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
-												<?php endforeach; ?>
-												<?php if (count($item_trailer->files['subtitles']) > 0):
-													foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-														<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
-															srclang="<?php echo $subtitle['lang_code']; ?>"
-															label="<?php echo $subtitle['lang']; ?>"
-															<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
-													<?php endforeach;
-												endif; ?>
-												<?php if (count($item_trailer->files['chapters']) > 0): ?>
-													<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default="default"/>
-												<?php endif; ?>
-												<object width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf">
-													<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf"/>
-													<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>"/>
-													<img src="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" title="No video playback capabilities"/>
-												</object>
-											</video>
-
-										<?php elseif ($this->params->get('player_type') == 'flowplayer'):
-											$watch = $item_trailer->is_movie ? 'watch-movie' : 'watch-trailer';
-											$ln_watch = $item_trailer->is_movie ? JText::_('COM_KA_WATCH_MOVIE') : JText::_('COM_KA_WATCH_TRAILER');
-											?>
-
-											<div style="height: <?php echo $item_trailer->player_height; ?>px;">
-												<?php if (!is_file($item_trailer->screenshot)): ?>
-													<div class="text-vertical-parent" style="height: <?php echo $item_trailer->player_height; ?>px;">
-														<div class="text-center text-vertical">
-															<a href="#" class="play hasTooltip <?php echo $watch; ?>" title="<?php echo $ln_watch; ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/movie_96.png" alt="<?php echo $ln_watch; ?>"/></a>
-														</div>
-													</div>
-												<?php else: ?>
-													<a href="#" class="play hasTooltip <?php echo $watch; ?>" title="<?php echo $ln_watch; ?>"><img src="<?php echo $item_trailer->screenshot; ?>"/></a>
-												<?php endif; ?>
-											</div>
-
-										<?php endif; ?>
-									</div>
-								<?php else: ?>
-									<div style="height: <?php echo $item_trailer->player_height; ?>px;">
-										<img src="<?php echo $item_trailer->screenshot; ?>"/>
-									</div>
-								<?php endif; ?>
-							<?php endif; ?>
+			<div class="accordion" id="video_accordion">
+				<?php foreach ($trailers_obj as $item_trailer):
+					if (!empty($item_trailer->resolution))
+					{
+						$resolution = explode('x', $item_trailer->resolution);
+						$video_padding = round($resolution[1] / $resolution[0] * 100, 2);
+					}
+					else
+					{
+						$dar = explode(':', $item_trailer->dar);
+						$video_padding = round($dar[1] / $dar[0] * 100, 2);
+					}
+				?>
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a class="accordion-toggle" data-toggle="collapse" data-parent="#video_accordion" href="#toggleVideo">
+								<?php echo ($item_trailer->title == '') ? JText::_('COM_KA_TRAILER') : $item_trailer->title; ?>
+							</a>
 						</div>
-						<div class="ui-widget-content ui-corner-bottom">
-							<?php if (isset($item_trailer->files['video_links']) && (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)): ?>
+						<div id="toggleVideo" class="accordion-body collapse in">
+							<div class="accordion-inner">
+								<?php if ($item_trailer->embed_code != ''):
+									echo $item_trailer->embed_code;
+								else:
+									if (count($item_trailer->files['video']) > 0): ?>
+										<div class="video-responsive" style="padding-bottom: <?php echo $video_padding; ?>%;">
+											<?php if ($this->params->get('player_type') == '-1'): ?>
+
+												<video controls preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
+													   width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>">
+													<?php foreach ($item_trailer->files['video'] as $item): ?>
+														<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
+													<?php endforeach; ?>
+													<?php if (count($item_trailer->files['subtitles']) > 0):
+														foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
+															<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+																   srclang="<?php echo $subtitle['lang_code']; ?>"
+																   label="<?php echo $subtitle['lang']; ?>"
+																<?php echo $subtitle['default'] ? ' default' : ''; ?> />
+														<?php endforeach;
+													endif; ?>
+													<?php if (count($item_trailer->files['chapters']) > 0): ?>
+														<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
+													<?php endif; ?>
+												</video>
+
+											<?php elseif ($this->params->get('player_type') == 'videojs'): ?>
+
+												<video class="video-js vjs-default-skin vjs-big-play-centered" controls
+													   preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
+													   width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
+													   data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'>
+													<?php foreach ($item_trailer->files['video'] as $item): ?>
+														<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
+													<?php endforeach; ?>
+													<?php if (count($item_trailer->files['subtitles']) > 0):
+														foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
+															<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+																   srclang="<?php echo $subtitle['lang_code']; ?>"
+																   label="<?php echo $subtitle['lang']; ?>"
+																<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
+														<?php endforeach;
+													endif; ?>
+													<?php if (count($item_trailer->files['chapters']) > 0): ?>
+														<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
+													<?php endif; ?>
+													<p class="vjs-no-js">To view this video please enable JavaScript, and
+														consider upgrading to a web browser that
+														<a href="http://videojs.com/html5-video-support/" target="_blank">supports
+															HTML5 video</a></p>
+												</video>
+
+											<?php elseif ($this->params->get('player_type') == 'mediaelement'): ?>
+
+												<div style="overflow: hidden; width: 100%;">
+													<video controls="controls" preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
+														   width="<?php echo $this->item->player_width; ?>"
+														   height="<?php echo $item_trailer->player_height; ?>"
+														   style="width: 100%; height: 100%;">
+														<?php foreach ($item_trailer->files['video'] as $item):
+															$mp4_file = ($item['type'] == 'video/mp4') ? $item['src'] : ''; ?>
+															<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
+														<?php endforeach; ?>
+														<?php if (count($item_trailer->files['subtitles']) > 0):
+															foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
+																<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+																	   srclang="<?php echo $subtitle['lang_code']; ?>"
+																	   label="<?php echo $subtitle['lang']; ?>"
+																	<?php echo $subtitle['default'] ? ' default="default"' : ''; ?> />
+															<?php endforeach;
+														endif; ?>
+														<?php if (count($item_trailer->files['chapters']) > 0): ?>
+															<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default="default"/>
+														<?php endif; ?>
+														<object width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf">
+															<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf"/>
+															<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>"/>
+															<img src="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" title="No video playback capabilities"/>
+														</object>
+													</video>
+												</div>
+
+											<?php elseif ($this->params->get('player_type') == 'flowplayer'):
+												$watch = $item_trailer->is_movie ? 'watch-movie' : 'watch-trailer';
+												$ln_watch = $item_trailer->is_movie ? JText::_('COM_KA_WATCH_MOVIE') : JText::_('COM_KA_WATCH_TRAILER');
+												?>
+
+												<div style="height: <?php echo $item_trailer->player_height; ?>px;">
+													<a href="#" class="play <?php echo $watch; ?>" title="<?php echo $ln_watch; ?>"><img src="<?php echo $item_trailer->screenshot; ?>" style="width: 100%;"/></a>
+												</div>
+
+											<?php endif; ?>
+										</div>
+									<?php else: ?>
+										<div style="height: <?php echo $item_trailer->player_height; ?>px;">
+											<img src="<?php echo $item_trailer->screenshot; ?>"/>
+										</div>
+									<?php endif; ?>
+								<?php endif; ?>
+							</div>
+						</div>
+						<?php if (isset($item_trailer->files['video_links']) && (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)): ?>
+							<div class="ui-widget-content">
 								<div class="video-links">
 									<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
 									<?php foreach ($item_trailer->files['video_links'] as $item): ?>
@@ -181,9 +194,10 @@ endif; ?>
 										</div>
 									<?php endforeach; ?>
 								</div>
-							<?php endif; ?>
-						</div>
+							</div>
+						<?php endif; ?>
 					</div>
+					<br />
 				<?php endforeach; ?>
 			</div>
 		<?php else: ?>

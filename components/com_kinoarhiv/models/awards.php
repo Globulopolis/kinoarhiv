@@ -105,7 +105,7 @@ class KinoarhivModelAwards extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'title', 'desc')))
@@ -125,7 +125,7 @@ class KinoarhivModelAwards extends JModelList
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', null, 'int');
 		$query = $db->getQuery(true);
 
@@ -158,7 +158,7 @@ class KinoarhivModelAwards extends JModelList
 	 */
 	public function getPagination()
 	{
-		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
+		JLoader::register('KAPagination', JPath::clean(JPATH_COMPONENT . '/libraries/pagination.php'));
 
 		$store = $this->getStoreId('getPagination');
 

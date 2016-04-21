@@ -14,26 +14,20 @@ use Joomla\String\StringHelper;
 
 $total_trailers = count($this->item->trailer);
 $total_movies = count($this->item->movie);
+$this->tr_collapsed = ' in';
+$this->mov_collapsed = ' in';
 
 // Set collapsed trailer
 if ($this->item->attribs->trailer_collapsed === '')
 {
 	if ($this->params->get('trailer_collapsed') == 1)
 	{
-		$tr_collapsed = 'active: false,';
-	}
-	else
-	{
-		$tr_collapsed = '';
+		$this->tr_collapsed = '';
 	}
 }
 elseif ($this->item->attribs->trailer_collapsed == 1)
 {
-	$tr_collapsed = 'active: false,';
-}
-else
-{
-	$tr_collapsed = '';
+	$this->tr_collapsed = '';
 }
 
 // Set collapsed movie
@@ -41,20 +35,12 @@ if ($this->item->attribs->movie_collapsed === '')
 {
 	if ($this->params->get('movie_collapsed') == 1)
 	{
-		$mov_collapsed = 'active: false,';
-	}
-	else
-	{
-		$mov_collapsed = '';
+		$this->mov_collapsed = '';
 	}
 }
 elseif ($this->item->attribs->movie_collapsed == 1)
 {
-	$mov_collapsed = 'active: false,';
-}
-else
-{
-	$mov_collapsed = '';
+	$this->mov_collapsed = '';
 }
 
 if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
@@ -205,31 +191,11 @@ endif;
 				width: '80%'
 			});
 		});
-		$('#open-desc').click(function (e) {
-			e.preventDefault();
-			e.stopImmediatePropagation(); // Prevent to trigger 'activate' event on accordion header
-			$.colorbox({html: $(this).closest('h3').next('div').html(), height: '95%', width: '95%'});
-		});
-		$('.desc').accordion({
-			active: false,
-			collapsible: true,
-			heightStyle: 'content'
-		});
 		$('.premiere-info-icon').click(function (e) {
 			e.preventDefault();
 			var _this = $(this);
 
 			$.colorbox({html: '<div class="overlay">' + _this.next('div').html() + '</div>'});
-		});
-		$('#trailer_accordion').accordion({
-			<?php echo $tr_collapsed; ?>
-			collapsible: true,
-			heightStyle: 'content'
-		});
-		$('#movie_accordion').accordion({
-			<?php echo $mov_collapsed; ?>
-			collapsible: true,
-			heightStyle: 'content'
 		});
 		<?php
 		if ($this->params->get('player_type') == 'flowplayer' && ($total_trailers > 0 || $total_movies > 0)): ?>
@@ -690,10 +656,14 @@ endif;
 
 		<?php if (!empty($this->item->desc)): ?>
 			<div class="ui-widget desc" id="desc">
-				<h3><?php echo JText::_('COM_KA_TECH'); ?>
-					<a href="#" id="open-desc"><span class="ui-icon ui-icon-newwin"></span></a></h3>
-
-				<div><p><?php echo $this->item->desc; ?></p></div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#desc" href="#showTechDescription"><?php echo JText::_('COM_KA_TECH'); ?></a>
+					</div>
+					<div id="showTechDescription" class="accordion-body collapse">
+						<div class="accordion-inner"><p><?php echo $this->item->desc; ?></p></div>
+					</div>
+				</div>
 			</div>
 		<?php endif; ?>
 

@@ -40,7 +40,7 @@ class KAComponentHelper extends JComponentHelper
 		JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
 
 		JHtml::_('jquery.framework');
-		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/utils.js');
 

@@ -24,10 +24,10 @@ $sfw = $this->params->get('player_swf');
 	<script type="text/javascript">
 		jQuery(document).ready(function ($) {
 			$('#trailer').flowplayer({
-				swf: '<?php echo !empty($sfw) ? $sfw : JURI::base() . 'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.swf'; ?>',
+				swf: '<?php echo !empty($sfw) ? $sfw : JUri::base() . 'components/com_kinoarhiv/assets/players/flowplayer/flowplayer.swf'; ?>',
 				embed: {
-					library: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js',
-					script: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/embed.min.js'
+					library: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js',
+					script: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/embed.min.js'
 				},
 				key: '<?php echo $this->params->get('player_key'); ?>',
 				logo: '<?php echo $this->params->get('player_logo'); ?>'
@@ -53,7 +53,10 @@ $sfw = $this->params->get('player_swf');
 							<?php endforeach; ?>
 							<?php if (count($item_trailer->files['subtitles']) > 0):
 								foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-									<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>" label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
+									<track kind="subtitles" src="<?php echo $subtitle['file']; ?>"
+										srclang="<?php echo $subtitle['lang_code']; ?>"
+										label="<?php echo $subtitle['lang']; ?>"
+										<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 								<?php endforeach;
 							endif; ?>
 						</video>

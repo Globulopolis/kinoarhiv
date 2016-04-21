@@ -44,7 +44,7 @@ class KinoarhivViewProfile extends JViewLegacy
 			return;
 		}
 
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$this->page = $app->input->get('page', '', 'cmd');
 		$this->tab = $app->input->get('tab', 'movies', 'cmd');

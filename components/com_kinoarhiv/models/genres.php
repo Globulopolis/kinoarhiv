@@ -26,7 +26,7 @@ class KinoarhivModelGenres extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 

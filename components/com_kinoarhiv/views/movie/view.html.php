@@ -48,7 +48,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$app = JFactory::getApplication();
 		$this->page = $app->input->get('page', 'movie', 'cmd');
@@ -112,8 +112,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$config = JFactory::getConfig();
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 		$checking_path = JPath::clean(
-			$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-			DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $item->filename
+			$params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
 		);
 
 		// Prepare the data
@@ -124,7 +123,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		{
 			if (!is_file($checking_path))
 			{
-				$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+				$item->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
 			}
 			else
 			{
@@ -132,7 +131,7 @@ class KinoarhivViewMovie extends JViewLegacy
 
 				if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/' . $fs_alias
+					$item->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/' . $fs_alias
 						. '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else
@@ -182,7 +181,7 @@ class KinoarhivViewMovie extends JViewLegacy
 					{
 						if (!is_file($checking_path))
 						{
-							$no_cover = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+							$no_cover = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 								. $params->get('ka_theme') . '/images/no_movie_cover.png';
 							$item->slides[$key]->image = $no_cover;
 							$item->slides[$key]->th_image = $no_cover;
@@ -199,9 +198,9 @@ class KinoarhivViewMovie extends JViewLegacy
 
 							if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 							{
-								$item->slides[$key]->image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
+								$item->slides[$key]->image = JUri::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
 									. '/' . $slide_fs_alias . '/' . $item->id . '/screenshots/' . $slide->filename;
-								$item->slides[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
+								$item->slides[$key]->th_image = JUri::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
 									. '/' . $slide_fs_alias . '/' . $item->id . '/screenshots/thumb_' . $slide->filename;
 							}
 							else
@@ -370,14 +369,13 @@ class KinoarhivViewMovie extends JViewLegacy
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'wallpapers' . DIRECTORY_SEPARATOR . $_item->filename
+					$params->get('media_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
 				);
 
 				if (!is_file($checking_path))
 				{
 					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+					$items[$key]->th_image = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 						. $params->get('ka_theme') . '/images/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png',
@@ -392,9 +390,9 @@ class KinoarhivViewMovie extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_wallpapers_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . StringHelper::substr($params->get('media_wallpapers_root_www'), 1) . '/'
+						$items[$key]->image = JUri::base() . StringHelper::substr($params->get('media_wallpapers_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_wallpapers_root_www'), 1) . '/'
+						$items[$key]->th_image = JUri::base() . StringHelper::substr($params->get('media_wallpapers_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 					else
@@ -507,14 +505,13 @@ class KinoarhivViewMovie extends JViewLegacy
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'posters' . DIRECTORY_SEPARATOR . $_item->filename
+					$params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $_item->filename
 				);
 
 				if (!is_file($checking_path))
 				{
 					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+					$items[$key]->th_image = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 						. $params->get('ka_theme') . '/images/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png',
@@ -529,9 +526,9 @@ class KinoarhivViewMovie extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
+						$items[$key]->image = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/posters/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
+						$items[$key]->th_image = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/posters/thumb_' . $_item->filename;
 					}
 					else
@@ -640,14 +637,13 @@ class KinoarhivViewMovie extends JViewLegacy
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_scr_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'screenshots' . DIRECTORY_SEPARATOR . $_item->filename
+					$params->get('media_scr_root') . '/' . $item->fs_alias . '/' . $item->id . '/screenshots/' . $_item->filename
 				);
 
 				if (!is_file($checking_path))
 				{
 					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/'
+					$items[$key]->th_image = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
 						. $params->get('ka_theme') . '/images/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png',
@@ -662,9 +658,9 @@ class KinoarhivViewMovie extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_scr_root_www'), 0, 1) == '/')
 					{
-						$items[$key]->image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1) . '/'
+						$items[$key]->image = JUri::base() . StringHelper::substr($params->get('media_scr_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/screenshots/' . $_item->filename;
-						$items[$key]->th_image = JURI::base() . StringHelper::substr($params->get('media_scr_root_www'), 1) . '/'
+						$items[$key]->th_image = JUri::base() . StringHelper::substr($params->get('media_scr_root_www'), 1) . '/'
 							. $fs_alias . '/' . $item->id . '/screenshots/thumb_' . $_item->filename;
 					}
 					else

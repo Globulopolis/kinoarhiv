@@ -60,7 +60,7 @@ class KinoarhivViewNames extends JViewLegacy
 			return false;
 		}
 
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
@@ -92,14 +92,13 @@ class KinoarhivViewNames extends JViewLegacy
 			if ($throttle_enable == 0)
 			{
 				$checking_path = JPath::clean(
-					$this->params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-					DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $item->filename
+					$this->params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
 				);
 				$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 				if (!is_file($checking_path))
 				{
-					$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/images/' . $no_cover . '.png';
+					$item->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/images/' . $no_cover . '.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $this->params->get('ka_theme') . '/images/' . $no_cover . '.png',
 						false
@@ -113,7 +112,7 @@ class KinoarhivViewNames extends JViewLegacy
 
 					if (StringHelper::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JURI::base() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 					}
 					else
 					{

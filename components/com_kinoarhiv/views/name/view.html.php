@@ -40,7 +40,7 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'content.php');
+		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
 
 		$app = JFactory::getApplication();
 		$this->page = $app->input->get('page', '', 'cmd');
@@ -108,14 +108,13 @@ class KinoarhivViewName extends JViewLegacy
 		if ($params->get('throttle_enable', 0) == 0)
 		{
 			$checking_path = JPath::clean(
-				$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias .
-				DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $item->filename
+				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
 			);
 			$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 			if (!is_file($checking_path))
 			{
-				$item->poster = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png';
+				$item->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png';
 				$dimension = KAContentHelper::getImageSize(
 					JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png',
 					false
@@ -129,7 +128,7 @@ class KinoarhivViewName extends JViewLegacy
 
 				if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+					$item->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 						. $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 				}
 				else
@@ -242,14 +241,13 @@ class KinoarhivViewName extends JViewLegacy
 			if ($params->get('throttle_image_enable', 0) == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_actor_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias
-					. DIRECTORY_SEPARATOR . $item->id . DIRECTORY_SEPARATOR . 'wallpapers' . DIRECTORY_SEPARATOR . $_item->filename
+					$params->get('media_actor_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
 				);
 
 				if (!is_file($checking_path))
 				{
 					$_item->image = 'javascript:void(0);';
-					$_item->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_wp.png';
+					$_item->th_image = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_wp.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_wp.png',
 						false
@@ -263,9 +261,9 @@ class KinoarhivViewName extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_actor_wallpapers_root_www'), 0, 1) == '/')
 					{
-						$_item->image = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+						$_item->image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 							. $_item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
-						$_item->th_image = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+						$_item->th_image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 							. $_item->fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 					else
@@ -357,14 +355,13 @@ class KinoarhivViewName extends JViewLegacy
 			if ($params->get('throttle_image_enable', 0) == 0)
 			{
 				$checking_path = JPath::clean(
-					$params->get('media_actor_photo_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR
-					. $item->id . DIRECTORY_SEPARATOR . 'photo' . DIRECTORY_SEPARATOR . $_item->filename
+					$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename
 				);
 
 				if (!is_file($checking_path))
 				{
 					$_item->image = 'javascript:void(0);';
-					$_item->th_image = JURI::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
+					$_item->th_image = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme')
 						. '/images/' . $no_cover . '.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png',
@@ -379,9 +376,9 @@ class KinoarhivViewName extends JViewLegacy
 
 					if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
-						$_item->image = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+						$_item->image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 							. $_item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
-						$_item->th_image = JURI::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+						$_item->th_image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
 							. $_item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
 					}
 					else

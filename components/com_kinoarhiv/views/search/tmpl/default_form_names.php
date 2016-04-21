@@ -21,7 +21,7 @@ if ($this->params->get('search_names_enable') == 0)
 			placeholder: '<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>',
 			allowClear: true,
 			formatSelection: function(data){
-				return "<img class='flag-dd' src='<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + $(data.element).data('code') + ".png'/> " + data.text;
+				return "<img class='flag-dd' src='<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + $(data.element).data('code') + ".png'/> " + data.text;
 			},
 			escapeMarkup: function(m) { return m; }
 		});
@@ -67,8 +67,6 @@ if ($this->params->get('search_names_enable') == 0)
 			},
 			escapeMarkup: function(m) { return m; }
 		});
-
-		$('#filters_names_birthday').datepicker({ dateFormat: 'yy-mm-dd' });
 	});
 </script>
 <div class="advsearch-names<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'names') ? ' well uk-panel uk-panel-box' : ''; ?>">
@@ -93,7 +91,19 @@ if ($this->params->get('search_names_enable') == 0)
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-4"><?php echo $this->params->get('search_names_birthday') == 1 ? KAComponentHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH') : ''; ?></div>
 						<div class="controls uk-width-1-1">
-							<?php if ($this->params->get('search_names_birthday') == 1): ?><input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-5" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" /><?php endif; ?><?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?><?php endif; ?>
+							<?php if ($this->params->get('search_names_birthday') == 1): ?>
+							<div class="input-append date"
+								data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-today-btn="linked"
+								data-date-clear-btn="true" data-date-calendar-weeks="true" data-date-today-highlight="true"
+								data-date-autoclose="true" data-date-language="ru">
+								<input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span8 uk-width-1-2" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" />
+								<div class="btn">
+									<span class="icon-calendar"></span>
+								</div>
+							</div>
+							<?php endif; ?>
+							<?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?>
+							<?php endif; ?>
 						</div>
 					</div>
 				</div>

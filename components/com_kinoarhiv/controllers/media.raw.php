@@ -52,7 +52,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 	private function movie($content)
 	{
-		JLoader::register('KAFilesystem', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'filesystem.php');
+		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -98,7 +98,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 	private function name($content)
 	{
-		JLoader::register('KAFilesystem', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'filesystem.php');
+		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -146,7 +146,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 	private function trailer($content)
 	{
-		JLoader::register('KAFilesystem', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'filesystem.php');
+		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -273,43 +273,43 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'movie')
 		{
-			$middle = DIRECTORY_SEPARATOR . rawurlencode($fs_alias) . DIRECTORY_SEPARATOR . $item_id . DIRECTORY_SEPARATOR;
+			$middle = '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
 
 			// 1-wallpapers, 2-posters, 3-screenshots
 			if ($type == 1)
 			{
-				$path = $params->get('media_wallpapers_root') . $middle . 'wallpapers' . DIRECTORY_SEPARATOR;
+				$path = $params->get('media_wallpapers_root') . $middle . 'wallpapers/';
 			}
 			elseif ($type == 2)
 			{
-				$path = $params->get('media_posters_root') . $middle . 'posters' . DIRECTORY_SEPARATOR;
+				$path = $params->get('media_posters_root') . $middle . 'posters/';
 			}
 			elseif ($type == 3)
 			{
-				$path = $params->get('media_scr_root') . $middle . 'screenshots' . DIRECTORY_SEPARATOR;
+				$path = $params->get('media_scr_root') . $middle . 'screenshots/';
 			}
 		}
 		elseif ($content === 'name')
 		{
-			$middle = DIRECTORY_SEPARATOR . rawurlencode($fs_alias) . DIRECTORY_SEPARATOR . $item_id . DIRECTORY_SEPARATOR;
+			$middle = '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
 
 			// 1-wallpapers, 2-posters, 3-photo
 			if ($type == 1)
 			{
-				$path = $params->get('media_actor_wallpapers_root') . $middle . 'wallpapers' . DIRECTORY_SEPARATOR;
+				$path = $params->get('media_actor_wallpapers_root') . $middle . 'wallpapers/';
 			}
 			elseif ($type == 2)
 			{
-				$path = $params->get('media_actor_posters_root') . $middle . 'posters' . DIRECTORY_SEPARATOR;
+				$path = $params->get('media_actor_posters_root') . $middle . 'posters/';
 			}
 			elseif ($type == 3)
 			{
-				$path = $params->get('media_actor_photo_root') . $middle . 'photo' . DIRECTORY_SEPARATOR;
+				$path = $params->get('media_actor_photo_root') . $middle . 'photo/';
 			}
 		}
 		elseif ($content === 'trailer')
 		{
-			$path = $params->get('media_trailers_root') . DIRECTORY_SEPARATOR . rawurlencode($fs_alias) . DIRECTORY_SEPARATOR . $item_id . DIRECTORY_SEPARATOR;
+			$path = $params->get('media_trailers_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
 		}
 
 		return JPath::clean($path . $filename);
@@ -327,7 +327,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	private function getVideoPath($fs_alias, $item_id, $filename)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$path = $params->get('media_trailers_root') . DIRECTORY_SEPARATOR . rawurlencode($fs_alias) . DIRECTORY_SEPARATOR . $item_id . DIRECTORY_SEPARATOR;
+		$path = $params->get('media_trailers_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
 
 		return JPath::clean($path . $filename);
 	}

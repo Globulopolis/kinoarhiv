@@ -48,7 +48,7 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getData()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -311,7 +311,7 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getNameData()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 		$lang = JFactory::getLanguage();
@@ -354,7 +354,7 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getAwards()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 
@@ -379,7 +379,7 @@ class KinoarhivModelName extends JModelList
 	public function getDimensionFilters()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$page = $app->input->get('page', null, 'cmd');
 		$result = array();
@@ -410,7 +410,7 @@ class KinoarhivModelName extends JModelList
 	protected function getListQuery()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$page = $app->input->get('page', '', 'cmd');
 		$filter = $app->input->get('dim_filter', '0', 'string');
@@ -456,7 +456,7 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getPagination()
 	{
-		JLoader::register('KAPagination', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'pagination.php');
+		JLoader::register('KAPagination', JPath::clean(JPATH_COMPONENT . '/libraries/pagination.php'));
 
 		$store = $this->getStoreId('getPagination');
 

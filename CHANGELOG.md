@@ -1,8 +1,16 @@
 ## HEAD (Unreleased)
-* Remove buttons from editor fields.
+* More userfriendly language strings with the search results count.
+* getDBO changed to getDbo, JURI to JUri on frontend.
+* Removed DIRECTORY_SEPARATOR, use / and JPath::clean instead.
+* Video player is now responsive.
+* Remove jQueryUI dependencies from frontend.
+* Update Trumbowyg to release.
+* Remove unused jquery.ui.plupload.
+* i18n files for editors moved from js/i18n/ to editor folders.
+* Remove buttons from editor fields in backend.
 * Reduce size of jQuery UI build.
 * Update jQuery Timepicker Addon to 1.6.1
-* Update plupload to 2.1.8 trumbowyg to latest beta 8
+* Update plupload to 2.1.8
 * Configuration for rating parser moved to config_rating_parser.xml
 * Fixed wrong URL for rating image in updateRateImg()
 * Remove Jwplayer as it's not support video send via PHP script.
@@ -45,7 +53,7 @@
 * Remove unused variables.
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
-* Update VideoJS to 5.8.7
+* Update VideoJS to 5.9.2
 * Update Mediaelement.js to 2.20.1
 * Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".

@@ -339,6 +339,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 	<?php endif;
 	else: ?>
 		<br/>
-		<div><?php echo ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_KEYWORD_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<div><?php echo ($this->params->get('search_movies_enable') == 1 && $this->activeFilters->exists('filters.movies')) ? JText::sprintf('COM_KA_SEARCH_VIDEO_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

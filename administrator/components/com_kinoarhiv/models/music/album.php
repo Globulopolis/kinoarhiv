@@ -66,7 +66,7 @@ class KinoarhivModelAlbum extends JModelForm
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$tmpl = $app->input->get('template', '', 'string');
 		$id = $app->input->get('id', array(), 'array');
 
@@ -150,7 +150,7 @@ class KinoarhivModelAlbum extends JModelForm
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
 		$query = $db->getQuery(true);
@@ -178,7 +178,7 @@ class KinoarhivModelAlbum extends JModelForm
 	protected function getGenres()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(0), 'array');
 		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
@@ -208,7 +208,7 @@ class KinoarhivModelAlbum extends JModelForm
 	protected function getTags()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(), 'array');
 
 		if (!empty($id[0]))
@@ -254,7 +254,7 @@ class KinoarhivModelAlbum extends JModelForm
 	public function getComposers()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
 		$order = $app->input->get('sord', 'asc', 'word');
@@ -399,7 +399,7 @@ class KinoarhivModelAlbum extends JModelForm
 	public function deleteComposers()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query_result = true;
 
@@ -450,7 +450,7 @@ class KinoarhivModelAlbum extends JModelForm
 	public function saveAccessRules()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('form', array(), 'array');
 		$id = $app->input->get('id', null, 'int');
 		$rules = array();

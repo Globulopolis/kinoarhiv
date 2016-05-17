@@ -63,7 +63,7 @@ class KinoarhivModelRelations extends JModelForm
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$task = $app->input->get('param', '', 'cmd');
 
 		// Default value is empty because if it's not set via POST request, something went wrong.
@@ -153,7 +153,7 @@ class KinoarhivModelRelations extends JModelForm
 	public function getDataList($task)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$sidx = $app->input->get('sidx', '1', 'word');
 		$sord = $app->input->get('sord', 'asc', 'word');
 		$limit = $app->input->get('rows', 25, 'int');
@@ -186,7 +186,7 @@ class KinoarhivModelRelations extends JModelForm
 	protected function buildQuery($task)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = array();
 
 		if ($task == 'countries')
@@ -273,7 +273,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	protected function buildOrder($task, $orderby, $order)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = "\n ORDER BY " . $db->quoteName($orderby) . " " . strtoupper($order);
 
 		if ($task == 'countries' || $task == 'genres' || $task == 'names')
@@ -286,7 +286,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	protected function buildWhere($task)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$id = $app->input->get('id', 0, 'int');
 		$movie_id = $app->input->get('mid', 0, 'int');
@@ -644,7 +644,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	public function relations_remove()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$task = $app->input->get('param', '', 'cmd'); // It's really task
 		$element = $app->input->get('element', 'movies', 'word');
@@ -735,7 +735,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	public function apply()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$data = $app->input->post->get('form_r', array(), 'array');
 		$task = $app->input->post->get('param', '', 'cmd');
@@ -875,7 +875,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	public function saveOrder()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$param = $app->input->get('param', '', 'cmd');
 
@@ -1077,7 +1077,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	public function saveRelNames()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$type = $app->input->get('type', '', 'word');
 
@@ -1316,7 +1316,7 @@ class KinoarhivModelRelations extends JModelForm
 
 	public function saveRelAwards()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$data = $app->input->getArray(
 			array(

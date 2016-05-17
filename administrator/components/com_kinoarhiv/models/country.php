@@ -66,7 +66,7 @@ class KinoarhivModelCountry extends JModelForm
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
 		$query = $db->getQuery(true);
@@ -84,7 +84,7 @@ class KinoarhivModelCountry extends JModelForm
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
 		$query = $db->getQuery(true);
@@ -112,7 +112,7 @@ class KinoarhivModelCountry extends JModelForm
 	public function remove()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
@@ -147,7 +147,7 @@ class KinoarhivModelCountry extends JModelForm
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$id = $app->input->post->get('id', null, 'int');
 		$name = trim($data['name']);

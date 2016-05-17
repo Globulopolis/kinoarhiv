@@ -81,7 +81,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 			<div class="fav-list">
 				<?php foreach ($this->items as $i => $item):
 					if ($this->tab == 'names'):
-						$year = $item->date_of_birth != '0000-00-00' ? JHTML::_('date', $item->date_of_birth) : '';
+						$year = $item->date_of_birth != '0000-00-00' ? JHtml::_('date', $item->date_of_birth) : '';
 						$title = $this->escape(KAContentHelper::formatItemTitle($item->name, $item->latin_name, $year));
 					else:
 						$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));

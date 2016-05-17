@@ -17,8 +17,8 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
 
 KAComponentHelper::loadMediamanagerAssets();
-JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/select.css');
-JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
+JHtml::_('stylesheet', JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/select.css');
+JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
 KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 ?>
 <script type="text/javascript">
@@ -86,8 +86,8 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 					unique_names: false,
 					multiple_queues: true,
 					filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-					flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-					silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+					flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+					silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 					preinit: {
 						init: function(up, info){
 							$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -176,7 +176,7 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 		}
 	});
 </script>
-<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="filter-bar" class="btn-toolbar">
 		<div class="btn-group pull-left">
 			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 3) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?></a>

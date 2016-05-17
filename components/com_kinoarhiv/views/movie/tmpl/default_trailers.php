@@ -12,8 +12,29 @@ defined('_JEXEC') or die;
 
 $total_trailers = count($this->item->trailers);
 
-if (isset($this->item->trailers) && $total_trailers > 0):
-	if ($this->params->get('player_type') == 'mediaelement'): ?>
+if (isset($this->item->trailers) && $total_trailers > 0): ?>
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {
+			var embed = $("iframe[src^='//player.vimeo.com'], iframe[src*='www.youtube.com'], iframe[src*='www.youtube-nocookie.com'], object, embed"),
+				embed_container = $('.video-embed');
+
+			embed.each(function(){
+				$(this).attr('data-aspectRatio', this.height / this.width).removeAttr('height').removeAttr('width');
+			});
+
+			$(window).resize(function(){
+				var new_width = embed_container.width();
+
+				embed.each(function(){
+					var $this = $(this);
+
+					$this.width(new_width).height(new_width * $this.attr('data-aspectRatio'));
+				});
+			}).resize();
+		});
+	</script>
+
+	<?php if ($this->params->get('player_type') == 'mediaelement'): ?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
 				$('video').mediaelementplayer({
@@ -63,7 +84,7 @@ endif; ?>
 			}
 
 			$trailers_obj = $this->item->trailers; ?>
-			<div class="accordion" id="video_accordion">
+			<div class="accordion" id="tr_accordion">
 				<?php foreach ($trailers_obj as $item_trailer):
 					if (!empty($item_trailer->resolution))
 					{
@@ -78,14 +99,14 @@ endif; ?>
 				?>
 					<div class="accordion-group">
 						<div class="accordion-heading">
-							<a class="accordion-toggle" data-toggle="collapse" data-parent="#video_accordion" href="#toggleVideo">
+							<a class="accordion-toggle" data-toggle="collapse" data-parent="#tr_accordion" href="#toggleVideo">
 								<?php echo ($item_trailer->title == '') ? JText::_('COM_KA_TRAILER') : $item_trailer->title; ?>
 							</a>
 						</div>
 						<div id="toggleVideo" class="accordion-body collapse in">
 							<div class="accordion-inner">
 								<?php if ($item_trailer->embed_code != ''):
-									echo $item_trailer->embed_code;
+									echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
 								else:
 									if (count($item_trailer->files['video']) > 0): ?>
 										<div class="video-responsive" style="padding-bottom: <?php echo $video_padding; ?>%;">

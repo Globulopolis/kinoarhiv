@@ -14,7 +14,7 @@ $input = JFactory::getApplication()->input;
 $album_id = $input->get('album_id', 0, 'int');
 $name_id = $input->get('name_id', 0, 'int');
 ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
+<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('#form_career_apply, #form_career_cancel, #form_name_apply, #form_name_cancel').button();
@@ -185,10 +185,10 @@ $name_id = $input->get('name_id', 0, 'int');
 				}
 			},
 			formatResult: function(data){
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
+				return "<img class='flag-dd' src='<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
 			formatSelection: function(data, container){
-				return "<img class='flag-dd' src='<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
+				return "<img class='flag-dd' src='<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
 			escapeMarkup: function(m) { return m; }
 		}).select2('container').find('ul.select2-choices').sortable({

@@ -16,16 +16,16 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 	$item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>
 	<a name="trailer"></a>
-	<div class="accordion" id="video_accordion">
+	<div class="accordion" id="tr_accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#video_accordion" href="#toggleTrailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#tr_accordion" href="#toggleTrailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
 			</div>
 			<div id="toggleTrailer" class="accordion-body collapse<?php echo $this->tr_collapsed; ?>">
 				<div class="accordion-inner">
 					<div>
 						<?php if ($item_trailer->embed_code != ''):
-							echo $item_trailer->embed_code;
+							echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
 						else:
 							$mp4_file = ''; ?>
 							<?php if (count($item_trailer->files['video']) > 0): ?>
@@ -98,16 +98,16 @@ if ((isset($this->item->movie) && count($this->item->movie) > 0)
 	$item_movie = $this->item->movie; ?>
 	<div class="clear"></div>
 	<a name="movie"></a>
-	<div class="accordion" id="video_accordion">
+	<div class="accordion" id="movie_accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#video_accordion" href="#toggleTrailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#movie_accordion" href="#toggleTrailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
 			</div>
 			<div id="toggleTrailer" class="accordion-body collapse<?php echo $this->tr_collapsed; ?>">
 				<div class="accordion-inner">
 					<div>
 						<?php if ($item_movie->embed_code != ''):
-							echo $item_movie->embed_code;
+							echo '<div class="video-embed">' . $item_movie->embed_code . '</div>';
 						else:
 							$mp4_file = ''; ?>
 							<?php if (count($item_movie->files['video']) > 0): ?>

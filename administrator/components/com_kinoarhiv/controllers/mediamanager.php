@@ -26,12 +26,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 */
 	public function upload()
 	{
-		JResponse::setHeader('Content-type', 'application/json');
+		$app = JFactory::getApplication();
+
+		$app->setHeader('Content-type', 'application/json');
 
 		if (JSession::checkToken() === false)
 		{
-			JResponse::setHeader('HTTP/1.0', '500 Server error');
-			JResponse::sendHeaders();
+			$app->setHeader('HTTP/1.0', '500 Server error');
+			$app->sendHeaders();
 
 			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
 			jexit();
@@ -40,7 +42,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$model = $this->getModel('mediamanager');
 		$dest_dir = $model->getPath();
@@ -59,8 +60,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			if (!in_array($original_extension, $allowed_ext))
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '500 Server error');
+				$app->sendHeaders();
 
 				KAComponentHelper::eventLog('Incorrected file extension');
 				jexit();
@@ -74,8 +75,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
+					$app->setHeader('HTTP/1.0', '500 Server error');
+					$app->sendHeaders();
 
 					KAComponentHelper::eventLog('Incorrected file extension');
 					jexit();
@@ -87,8 +88,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
+					$app->setHeader('HTTP/1.0', '500 Server error');
+					$app->sendHeaders();
 
 					KAComponentHelper::eventLog('Incorrected file extension');
 					jexit();
@@ -100,8 +101,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
+					$app->setHeader('HTTP/1.0', '500 Server error');
+					$app->sendHeaders();
 
 					KAComponentHelper::eventLog('Incorrected file extension');
 					jexit();
@@ -113,8 +114,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if (!in_array($original_extension, $allowed_ext))
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
+					$app->setHeader('HTTP/1.0', '500 Server error');
+					$app->sendHeaders();
 
 					KAComponentHelper::eventLog('Incorrected file extension');
 					jexit();
@@ -122,22 +123,22 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 		}
 
-		JResponse::setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
-		JResponse::setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
-		JResponse::setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
-		JResponse::setHeader('Pragma', 'no-cache', true);
+		$app->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
+		$app->setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
+		$app->setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
+		$app->setHeader('Pragma', 'no-cache', true);
 
 		// CORS
-		JResponse::setHeader('Access-Control-Allow-Origin', '*', true);
+		$app->setHeader('Access-Control-Allow-Origin', '*', true);
 
 		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
 		{
-			JResponse::setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-			JResponse::setHeader('Access-Control-Max-Age', 10000);
-			JResponse::setHeader('Access-Control-Allow-Headers', 'origin, x-csrftoken, content-type, accept');
+			$app->setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+			$app->setHeader('Access-Control-Max-Age', 10000);
+			$app->setHeader('Access-Control-Allow-Headers', 'origin, x-csrftoken, content-type, accept');
 		}
 
-		JResponse::sendHeaders();
+		$app->sendHeaders();
 
 		$cleanup_dir = true;
 		$max_file_age = 5 * 3600;
@@ -185,8 +186,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '500 Server error');
+				$app->sendHeaders();
 
 				KAComponentHelper::eventLog('Failed to open temp directory.');
 				jexit();
@@ -222,8 +223,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					}
 					else
 					{
-						JResponse::setHeader('HTTP/1.0', '500 Server error');
-						JResponse::sendHeaders();
+						$app->setHeader('HTTP/1.0', '500 Server error');
+						$app->sendHeaders();
 
 						KAComponentHelper::eventLog('Failed to open input stream.');
 						jexit();
@@ -235,8 +236,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				else
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
+					$app->setHeader('HTTP/1.0', '500 Server error');
+					$app->sendHeaders();
 
 					KAComponentHelper::eventLog('Failed to open output stream.');
 					jexit();
@@ -244,8 +245,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '500 Server error');
+				$app->sendHeaders();
 
 				KAComponentHelper::eventLog('Failed to move uploaded file.');
 				jexit();
@@ -268,8 +269,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				else
 				{
-					JResponse::setHeader('HTTP/1.0', '500 Server error');
-					JResponse::sendHeaders();
+					$app->setHeader('HTTP/1.0', '500 Server error');
+					$app->sendHeaders();
 
 					KAComponentHelper::eventLog('Failed to open input stream.');
 					jexit();
@@ -280,8 +281,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.0', '500 Server error');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '500 Server error');
+				$app->sendHeaders();
 
 				KAComponentHelper::eventLog('Failed to open output stream.');
 				jexit();
@@ -544,7 +545,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if ($app->input->get('reload', 1, 'int') == 1)
 		{
-			$this->setRedirect(JURI::getInstance()->toString());
+			$this->setRedirect(JUri::getInstance()->toString());
 		}
 	}
 
@@ -607,7 +608,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 		}
 
-		$this->setRedirect(JURI::getInstance()->toString());
+		$this->setRedirect(JUri::getInstance()->toString());
 	}
 
 	/**
@@ -657,7 +658,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if ($app->input->get('reload', 1, 'int') == 1)
 		{
-			$this->setRedirect(JURI::getInstance()->toString());
+			$this->setRedirect(JUri::getInstance()->toString());
 		}
 	}
 

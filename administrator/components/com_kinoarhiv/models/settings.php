@@ -62,7 +62,7 @@ class KinoarhivModelSettings extends JModelForm
 	 */
 	public function save($data)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$form_rules = $data['rules'];
 
 		// Unset rules array because we do not need it in the component parameters
@@ -232,7 +232,7 @@ class KinoarhivModelSettings extends JModelForm
 	 */
 	public function restoreConfig($data)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$params = json_encode($data);
 		$query = $db->getQuery(true);
 

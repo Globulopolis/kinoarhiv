@@ -122,7 +122,7 @@ class KinoarhivModelVendors extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select(
@@ -231,7 +231,7 @@ class KinoarhivModelVendors extends JModelList
 	public function batch()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 

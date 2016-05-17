@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.modal', 'collapseModal');
-JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/cookie.min.js');
+JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/cookie.min.js');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {

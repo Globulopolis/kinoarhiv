@@ -645,7 +645,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (StringHelper::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
 		{
-			$rating_image_www = JURI::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
+			$rating_image_www = JUri::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
 		}
 		else
 		{

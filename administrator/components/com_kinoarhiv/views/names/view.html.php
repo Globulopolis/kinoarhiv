@@ -105,11 +105,11 @@ class KinoarhivViewNames extends JViewLegacy
 		{
 			$items->set(
 				'poster',
-				JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
+				JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
 			);
 			$items->set(
 				'th_poster',
-				JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
+				JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
 			);
 		}
 		else
@@ -118,11 +118,11 @@ class KinoarhivViewNames extends JViewLegacy
 			{
 				$items->set(
 					'poster',
-					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/' . $form->getValue('filename', 'name')
+					JUri::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/' . $form->getValue('filename', 'name')
 				);
 				$items->set(
 					'th_poster',
-					JURI::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/thumb_' . $form->getValue('filename', 'name')
+					JUri::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/thumb_' . $form->getValue('filename', 'name')
 				);
 			}
 			else

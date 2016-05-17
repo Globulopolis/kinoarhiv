@@ -22,9 +22,9 @@ if ($this->form->getValue('id') != 0):
 	KAComponentHelper::loadMediamanagerAssets();
 endif;
 ?>
-<script type="text/javascript" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox.min.js"></script>
+<script type="text/javascript" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox.min.js"></script>
 <?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
+<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	//<![CDATA[
 	jQuery(document).ready(function ($) {
@@ -373,8 +373,8 @@ endif;
 				multi_selection: false,
 				max_files: 1,
 				filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
 					init: function (up, info) {
 						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -548,8 +548,8 @@ endif;
 				filters: [
 					{title: 'Video files', extensions: '<?php echo $this->params->get('upload_mime_video'); ?>'}
 				],
-				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
 					init: function(up, info){
 						$('#video_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -585,8 +585,8 @@ endif;
 				},
 				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
 				filters: [{title: 'Subtitle files', extensions: '<?php echo $this->params->get('upload_mime_subtitles'); ?>'}],
-				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				unique_names: false,
 				multiple_queues: true,
 				preinit: {
@@ -628,8 +628,8 @@ endif;
 				multi_selection: false,
 				max_files: 1,
 				filters: [{title: 'Chapter files', extensions: '<?php echo $this->params->get('upload_mime_chapters'); ?>'}],
-				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
 					init: function(up, info){
 						$('#chapters_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -830,7 +830,7 @@ endif;
 		<label for="urls_url_video"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO'); ?></label>
 		<input id="urls_url_video" class="span6" type="text" size="35" value="" name="urls_url_video"/>
 		<label for="urls_url_video_type"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE'); ?></label>
-		<?php echo JHTML::_('select.genericlist',
+		<?php echo JHtml::_('select.genericlist',
 			array('' => JText::_('JNONE'), 'video/mp4' => 'video/mp4', 'video/webm' => 'video/webm', 'video/ogv' => 'video/ogv'),
 			'urls_url_video_type',
 			array('class' => 'span3'),
@@ -840,7 +840,7 @@ endif;
 			'urls_url_video_type'
 		); ?>
 		<label for="urls_url_video_inplayer"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_INPLAYER'); ?></label>
-		<?php echo JHTML::_('select.genericlist',
+		<?php echo JHtml::_('select.genericlist',
 			array('false' => JText::_('JNO'), 'true' => JText::_('JYES')),
 			'urls_url_video_inplayer',
 			array('class' => 'span3'),
@@ -858,7 +858,7 @@ endif;
 		<label for="urls_url_subtitles"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_SUBTITLES'); ?></label>
 		<input id="urls_url_subtitles" class="span6" type="text" size="35" value="" name="urls_url_subtitles"/>
 		<label for="urls_url_subtitles_lang"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_SELECT'); ?></label>
-		<?php echo JHTML::_('select.genericlist',
+		<?php echo JHtml::_('select.genericlist',
 			$this->item->get('subtitles_lang_list'),
 			'urls_url_subtitles_lang',
 			array('class' => 'span3'),
@@ -868,7 +868,7 @@ endif;
 			'urls_url_subtitles_lang'
 		); ?>
 		<label for="urls_url_subtitles_default"><?php echo JText::_('JDEFAULT'); ?></label>
-		<?php echo JHTML::_('select.genericlist',
+		<?php echo JHtml::_('select.genericlist',
 			array('false' => JText::_('JNO'), 'true' => JText::_('JYES')),
 			'urls_url_subtitles_default',
 			array('class' => 'span3'),

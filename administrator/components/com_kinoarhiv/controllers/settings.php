@@ -166,22 +166,24 @@ class KinoarhivControllerSettings extends JControllerLegacy
 	 */
 	public function saveConfig()
 	{
+		$app = JFactory::getApplication();
+
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JLIB_RULES_NOT_ALLOWED'), 'error');
+			$app->redirect('index.php', JText::_('JLIB_RULES_NOT_ALLOWED'), 'error');
 
 			return;
 		}
 
 		$document = JFactory::getDocument();
 		$document->setMimeEncoding('application/octet-stream');
-		JResponse::setHeader('Pragma', 'no-cache', true);
-		JResponse::setHeader('Expires', '-1');
-		JResponse::setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
-		JResponse::setHeader('Content-Transfer-Encoding', 'Binary');
-		JResponse::setHeader('Content-disposition', 'attachment; filename="com_kinoarhiv-settings-' . JHtml::_('date', time(), 'Y-m-d_H-i-s') . '.json"');
-		JResponse::sendHeaders();
+		$app->setHeader('Pragma', 'no-cache', true);
+		$app->setHeader('Expires', '-1');
+		$app->setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
+		$app->setHeader('Content-Transfer-Encoding', 'Binary');
+		$app->setHeader('Content-disposition', 'attachment; filename="com_kinoarhiv-settings-' . JHtml::_('date', time(), 'Y-m-d_H-i-s') . '.json"');
+		$app->sendHeaders();
 		echo json_encode(JComponentHelper::getParams('com_kinoarhiv'));
 	}
 

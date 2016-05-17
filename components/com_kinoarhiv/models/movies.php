@@ -121,7 +121,6 @@ class KinoarhivModelMovies extends JModelList
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id .= ':' . $this->getState('filter.title');
 		$id .= ':' . $this->getState('list.limit');
 		$id .= ':' . $this->getState('list.ordering');
 		$id .= ':' . $this->getState('list.direction');
@@ -210,7 +209,7 @@ class KinoarhivModelMovies extends JModelList
 				->where('(m.publish_down = ' . $null_date . ' OR m.publish_down >= ' . $now_date . ')');
 		}
 
-		if ($app->input->get('task', '', 'cmd') == 'search' && KAComponentHelper::checkToken() === true)
+		if ($app->input->get('task', '', 'cmd') == 'search'/* && KAComponentHelper::checkToken() === true*/)
 		{
 			$searches = $this->getFiltersData();
 
@@ -465,77 +464,11 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function getFiltersData()
 	{
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$filter = JFilterInput::getInstance();
-		$input = JFactory::getApplication()->input;
-		$items = new Registry;
+		jimport('models.search', JPATH_COMPONENT);
 
-		if ($params->get('search_movies_enable') != 1)
-		{
-			return $items;
-		}
+		$search_model = new KinoarhivModelSearch;
 
-		if (array_key_exists('movies', $input->get('filters', array(), 'array')))
-		{
-			$filters_arr = $input->get('filters', array(), 'array');
-			$filters = $filters_arr['movies'];
-
-			if (count($filters) < 1)
-			{
-				return $items;
-			}
-
-			// Using input->getArray cause an error when subarrays with no data
-			$vars = array(
-				'filters' => array(
-					'movies' => array(
-						'title'        => isset($filters['title']) ? $filter->clean($filters['title'], 'string') : '',
-						'year'         => isset($filters['year']) ? $filter->clean($filters['year'], 'string') : '',
-						'from_year'    => isset($filters['from_year']) ? $filter->clean($filters['from_year'], 'int') : '',
-						'to_year'      => isset($filters['to_year']) ? $filter->clean($filters['to_year'], 'int') : '',
-						'country'      => isset($filters['country']) ? $filter->clean($filters['country'], 'int') : 0,
-						'cast'         => isset($filters['cast']) ? $filter->clean($filters['cast'], 'int') : 0,
-						'vendor'       => isset($filters['vendor']) ? $filter->clean($filters['vendor'], 'int') : '',
-						'genre'        => isset($filters['genre']) ? $filter->clean($filters['genre'], 'array') : '',
-						'mpaa'         => isset($filters['mpaa']) ? $filter->clean($filters['mpaa'], 'string') : '',
-						'age_restrict' => isset($filters['age_restrict']) ? $filter->clean($filters['age_restrict'], 'string') : '-1',
-						'ua_rate'      => isset($filters['ua_rate']) ? $filter->clean($filters['ua_rate'], 'int') : '-1',
-						'rate'         => array(
-							'enable' => isset($filters['rate']['enable']) ? $filter->clean($filters['rate']['enable'], 'int') : 0,
-							'min'    => isset($filters['rate']['min']) ? $filter->clean($filters['rate']['min'], 'int') : 0,
-							'max'    => isset($filters['rate']['max']) ? $filter->clean($filters['rate']['max'], 'int') : 10
-						),
-						'imdbrate'     => array(
-							'enable' => isset($filters['imdbrate']['enable']) ? $filter->clean($filters['imdbrate']['enable'], 'int') : 0,
-							'min'    => isset($filters['imdbrate']['min']) ? $filter->clean($filters['imdbrate']['min'], 'int') : 6,
-							'max'    => isset($filters['imdbrate']['max']) ? $filter->clean($filters['imdbrate']['max'], 'int') : 10
-						),
-						'kprate'       => array(
-							'enable' => isset($filters['kprate']['enable']) ? $filter->clean($filters['kprate']['enable'], 'int') : 0,
-							'min'    => isset($filters['kprate']['min']) ? $filter->clean($filters['kprate']['min'], 'int') : 6,
-							'max'    => isset($filters['kprate']['max']) ? $filter->clean($filters['kprate']['max'], 'int') : 10
-						),
-						'rtrate'       => array(
-							'enable' => isset($filters['rtrate']['enable']) ? $filter->clean($filters['rtrate']['enable'], 'int') : 0,
-							'min'    => isset($filters['rtrate']['min']) ? $filter->clean($filters['rtrate']['min'], 'int') : 0,
-							'max'    => isset($filters['rtrate']['max']) ? $filter->clean($filters['rtrate']['max'], 'int') : 100
-						),
-						'metacritic'   => array(
-							'enable' => isset($filters['metacritic']['enable']) ? $filter->clean($filters['metacritic']['enable'], 'int') : 0,
-							'min'    => isset($filters['metacritic']['min']) ? $filter->clean($filters['metacritic']['min'], 'int') : 0,
-							'max'    => isset($filters['metacritic']['max']) ? $filter->clean($filters['metacritic']['max'], 'int') : 100
-						),
-						'from_budget'  => isset($filters['from_budget']) ? $filter->clean($filters['from_budget'], 'string') : '',
-						'to_budget'    => isset($filters['to_budget']) ? $filter->clean($filters['to_budget'], 'string') : '',
-						'tags'         => isset($filters['tags']) ? $filter->clean($filters['tags'], 'string') : ''
-					)
-				)
-			);
-
-			$items->loadArray($vars);
-		}
-
-		return $items;
+		return $search_model->getActiveFilters();
 	}
 
 	/**

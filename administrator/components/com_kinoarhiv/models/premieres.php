@@ -131,7 +131,7 @@ class KinoarhivModelPremieres extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
 		$query = $db->getQuery(true);
 
@@ -270,7 +270,7 @@ class KinoarhivModelPremieres extends JModelList
 	public function saveOrder()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('ord', array(), 'array');
 		$movie_id = $app->input->post->get('movie_id', null, 'int');
 
@@ -337,7 +337,7 @@ class KinoarhivModelPremieres extends JModelList
 	public function batch()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 

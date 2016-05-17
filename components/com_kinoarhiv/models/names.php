@@ -282,44 +282,11 @@ class KinoarhivModelNames extends JModelList
 	 */
 	public function getFiltersData()
 	{
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$filter = JFilterInput::getInstance();
-		$input = JFactory::getApplication()->input;
-		$items = new Registry;
+		jimport('models.search', JPATH_COMPONENT);
 
-		if ($params->get('search_names_enable') != 1)
-		{
-			return $items;
-		}
+		$search_model = new KinoarhivModelSearch;
 
-		if (array_key_exists('names', $input->get('filters', array(), 'array')))
-		{
-			$filters_arr = $input->get('filters', array(), 'array');
-			$filters = $filters_arr['names'];
-
-			if (count($filters) < 1)
-			{
-				return $items;
-			}
-
-			$vars = array(
-				'filters' => array(
-					'names' => array(
-						'name'         => isset($filters['name']) ? $filter->clean($filters['name'], 'string') : '',
-						'gender'       => isset($filters['gender']) ? $filter->clean($filters['gender'], 'alnum') : '',
-						'mtitle'       => isset($filters['mtitle']) ? $filter->clean($filters['mtitle'], 'int') : '',
-						'birthday'     => isset($filters['birthday']) ? $filter->clean($filters['birthday'], 'string') : '',
-						'birthplace'   => isset($filters['birthplace']) ? $filter->clean($filters['birthplace'], 'string') : '',
-						'birthcountry' => isset($filters['birthcountry']) ? $filter->clean($filters['birthcountry'], 'int') : '',
-						'amplua'       => isset($filters['amplua']) ? $filter->clean($filters['amplua'], 'int') : ''
-					)
-				)
-			);
-
-			$items->loadArray($vars);
-		}
-
-		return $items;
+		return $search_model->getActiveFilters();
 	}
 
 	/**

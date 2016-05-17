@@ -388,8 +388,6 @@
 /administrator/language/ru-RU/ru-RU.plg_content_gravatar.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_installer_webinstaller.ini
 /administrator/language/ru-RU/ru-RU.plg_installer_webinstaller.sys.ini
-/administrator/language/ru-RU/ru-RU.plg_content_contact.sys.ini
-/administrator/language/ru-RU/ru-RU.plg_content_contact.ini
 /administrator/language/ru-RU/ru-RU.plg_content_geshi.ini
 /administrator/language/ru-RU/ru-RU.plg_content_geshi.sys.ini
 /administrator/language/ru-RU/ru-RU.plg_content_joomla.ini
@@ -486,11 +484,6 @@
 /administrator/language/ru-RU/ru-RU.tpl_isis.ini
 /administrator/language/ru-RU/ru-RU.tpl_isis.sys.ini
 /administrator/language/ru-RU/ru-RU.xml
-/administrator/manifests
-/administrator/modules
-/administrator/templates
-/administrator/help
-/administrator/includes
 /administrator/manifests
 /administrator/modules
 /administrator/templates
@@ -628,6 +621,7 @@
 /language/ru-RU/ru-RU.com_wrapper.ini
 /language/ru-RU/ru-RU.files_joomla.sys.ini
 /language/ru-RU/ru-RU.finder_cli.ini
+/language/ru-RU/ru-RU.lib_fof.ini
 /language/ru-RU/ru-RU.lib_fof.sys.ini
 /language/ru-RU/ru-RU.lib_idna_convert.sys.ini
 /language/ru-RU/ru-RU.ini
@@ -716,3 +710,10 @@ README.md
 CONTRIBUTING.md
 *jcomments*
 LICENSE.txt
+
+administrator/language/ru-RU/ru-RU.plg_editors-xtd_module.ini
+administrator/language/ru-RU/ru-RU.plg_editors-xtd_module.sys.ini
+administrator/language/ru-RU/ru-RU.plg_system_stats.ini
+administrator/language/ru-RU/ru-RU.plg_system_stats.sys.ini
+administrator/language/ru-RU/ru-RU.plg_system_updatenotification.ini
+administrator/language/ru-RU/ru-RU.plg_system_updatenotification.sys.ini

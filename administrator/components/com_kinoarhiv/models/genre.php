@@ -66,7 +66,7 @@ class KinoarhivModelGenre extends JModelForm
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$_id = $app->input->get('id', array(), 'array');
 		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
 
@@ -94,7 +94,7 @@ class KinoarhivModelGenre extends JModelForm
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
 
@@ -132,7 +132,7 @@ class KinoarhivModelGenre extends JModelForm
 	public function remove()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 
 		if ($app->input->get('type', 'movie', 'word') == 'music')
@@ -177,7 +177,7 @@ class KinoarhivModelGenre extends JModelForm
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$id = $app->input->post->get('id', null, 'int');
 
@@ -306,7 +306,7 @@ class KinoarhivModelGenre extends JModelForm
 	public function updateStat()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$gid = $app->input->get('id', array(), 'array');
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
 

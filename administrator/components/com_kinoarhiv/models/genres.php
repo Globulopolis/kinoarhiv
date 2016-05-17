@@ -129,7 +129,7 @@ class KinoarhivModelGenres extends JModelList
 	protected function getListQuery()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		if ($app->input->get('type', 'movie', 'word') == 'music')
@@ -266,7 +266,7 @@ class KinoarhivModelGenres extends JModelList
 	public function batch()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 

@@ -85,7 +85,7 @@ $sortFields = $this->getSortFields();
 					</td>
 					<td class="nowrap has-context">
 						<div class="pull-left">
-							<img class="flag-dd" src="<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $item->code; ?>.png" />
+							<img class="flag-dd" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $item->code; ?>.png" />
 							<?php if ($this->canEdit) : ?>
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=countries&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>

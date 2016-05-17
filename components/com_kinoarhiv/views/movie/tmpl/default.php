@@ -247,6 +247,23 @@ endif;
 				});
 			}
 		});
+
+		var embed = $("iframe[src^='//player.vimeo.com'], iframe[src*='www.youtube.com'], iframe[src*='www.youtube-nocookie.com'], object, embed"),
+			embed_container = $('.video-embed');
+
+		embed.each(function(){
+			$(this).attr('data-aspectRatio', this.height / this.width).removeAttr('height').removeAttr('width');
+		});
+
+		$(window).resize(function(){
+			var new_width = embed_container.width();
+
+			embed.each(function(){
+				var $this = $(this);
+
+				$this.width(new_width).height(new_width * $this.attr('data-aspectRatio'));
+			});
+		}).resize();
 	});
 </script>
 <div class="content movie" itemscope itemtype="http://schema.org/Movie">
@@ -387,7 +404,7 @@ endif;
 				<div class="movie-info">
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
+						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=search&filters[movies][year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 						<div>
@@ -472,7 +489,7 @@ endif;
 							<div>
 								<span class="f-col"><?php echo ($premiere->country == '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
 								<span class="s-col">
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&month=' . date('Y-m', strtotime($premiere->premiere_date)) . '&Itemid=' . $this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if (!empty($company_title)): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor=' . $premiere->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $company_title; ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&filters[movies][date]=' . date('Y-m', strtotime($premiere->premiere_date)) . '&Itemid=' . $this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if (!empty($company_title)): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&filters[movies][vendor]=' . $premiere->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $company_title; ?></a>
 										<?php if ($premiere->info != ''): ?>
 											<a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a>
 											<div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?>
@@ -533,7 +550,7 @@ endif;
 								<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 								<span class="s-col">
 									<?php foreach ($this->item->tags as $tag): ?>
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=movie&filters[movies][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->tag_title; ?>"><?php echo $tag->tag_title; ?></a>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->tag_title; ?>"><?php echo $tag->tag_title; ?></a>
 									<?php endforeach; ?>
 								</span>
 							</div>

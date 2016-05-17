@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<form action="index.php" method="post" style="margin: 0;" id="video_edit_form">
+<form action="<?php echo JUri::base(); ?>index.php" method="post" style="margin: 0;" id="video_edit_form">
 	<fieldset class="form-horizontal">
 		<div class="control-group">
 			<div class="control-label">
@@ -31,10 +31,10 @@ defined('_JEXEC') or die;
 				<label for="jform_type"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE'); ?></label>
 			</div>
 			<div class="controls">
-				<?php echo JHTML::_('select.genericlist',
-					array(''=>JText::_('JNONE'), 'video/mp4'=>'video/mp4', 'video/webm'=>'video/webm', 'video/ogv'=>'video/ogv'),
+				<?php echo JHtml::_('select.genericlist',
+					array('' => JText::_('JNONE'), 'video/mp4' => 'video/mp4', 'video/webm' => 'video/webm', 'video/ogv' => 'video/ogv'),
 					'type',
-					array('class'=>'span3'),
+					array('class' => 'span3'),
 					'value',
 					'text',
 					$this->data['type'],

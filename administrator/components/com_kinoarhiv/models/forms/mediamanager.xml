@@ -31,7 +31,7 @@
 			<option value="0">JUNPUBLISHED</option>
 		</field>
 		<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_EMBED" class="span12" rows="5"
-			   cols="30"/>
+			   cols="30" filter="raw"/>
 	</fieldset>
 
 	<field name="urls" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS" class="span12" rows="5" cols="30"

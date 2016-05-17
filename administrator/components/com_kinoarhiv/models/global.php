@@ -89,7 +89,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getCountries()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -162,7 +162,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getGenres()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -235,7 +235,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getMovies()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -313,7 +313,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getNames()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -391,7 +391,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getAwards()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -469,7 +469,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getTags()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -542,7 +542,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getVendors()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -620,7 +620,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getCareers()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -692,7 +692,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getMediatypes()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$all = $app->input->get('showAll', 0, 'int');
 		$term = $app->input->get('term', '', 'string');
 		$multiple = $app->input->get('multiple', 0, 'int');
@@ -764,7 +764,7 @@ class KinoarhivModelGlobal extends JModelLegacy
 	protected function getTrailerFiles()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$type = $app->input->get('type', '', 'string');
 

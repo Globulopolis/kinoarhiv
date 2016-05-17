@@ -46,11 +46,11 @@ class JFormFieldDatetime extends JFormField
 	public function __construct($form = null)
 	{
 		JHtml::_('jquery.framework');
-		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 		KAComponentHelper::getScriptLanguage('datepicker-', true, 'datepicker', false);
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js');
 		KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', true, 'timepicker', false);
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/utils.js');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/utils.js');
 
 		parent::__construct();
 	}

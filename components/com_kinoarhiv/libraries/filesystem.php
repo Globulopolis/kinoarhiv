@@ -66,6 +66,7 @@ class KAFilesystem
 	 */
 	public function sendFile($file_path, $throttle=0, $throttle_config=array(), $disposition=true, $cache=true)
 	{
+		$app = JFactory::getApplication();
 		$file_path = JPath::clean($file_path);
 
 		if (!is_readable($file_path))
@@ -92,20 +93,20 @@ class KAFilesystem
 			@ini_set('zlib.output_compression', 'Off');
 		}
 
-		JResponse::setHeader('Content-type', $this->detectMime($file_path), true);
+		$app->setHeader('Content-type', $this->detectMime($file_path), true);
 
 		if ($disposition)
 		{
-			JResponse::setHeader('Content-Disposition', 'inline; filename="' . basename($file_path) . '"');
+			$app->setHeader('Content-Disposition', 'inline; filename="' . basename($file_path) . '"');
 		}
 
-		JResponse::setHeader('Accept-Ranges', 'bytes');
+		$app->setHeader('Accept-Ranges', 'bytes');
 
 		if (!$cache)
 		{
-			JResponse::setHeader('Pragma', 'private');
-			JResponse::setHeader('Cache-control', 'private, max-age=2592000');
-			JResponse::setHeader('Expires', 'Mon, 01 Jan 1997 00:00:00 GMT');
+			$app->setHeader('Pragma', 'private');
+			$app->setHeader('Cache-control', 'private, max-age=2592000');
+			$app->setHeader('Expires', 'Mon, 01 Jan 1997 00:00:00 GMT');
 		}
 		else
 		{
@@ -114,16 +115,16 @@ class KAFilesystem
 			$etag_header = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim($_SERVER['HTTP_IF_NONE_MATCH']) : false;
 			$modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
 
-			JResponse::setHeader('Pragma', 'cache');
-			JResponse::setHeader('Cache-control', 'no-transform, public, max-age=2592000, s-maxage=7776000');
-			JResponse::setHeader('Etag', $etag);
-			JResponse::setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
-			JResponse::setHeader('Expires', 'Mon, 01 Jan 2100 00:00:00 GMT');
+			$app->setHeader('Pragma', 'cache');
+			$app->setHeader('Cache-control', 'no-transform, public, max-age=2592000, s-maxage=7776000');
+			$app->setHeader('Etag', $etag);
+			$app->setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
+			$app->setHeader('Expires', 'Mon, 01 Jan 2100 00:00:00 GMT');
 
 			if (@strtotime($modified_since) == $last_modified || $etag_header == $etag)
 			{
-				JResponse::setHeader('HTTP/1.1', '304 Not Modified');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.1', '304 Not Modified');
+				$app->sendHeaders();
 				die();
 			}
 		}
@@ -160,25 +161,25 @@ class KAFilesystem
 
 				$new_length = $range_end - $range + 1;
 
-				JResponse::setHeader('HTTP/1.1', '206 Partial Content');
-				JResponse::setHeader('Content-Length', $new_length);
-				JResponse::setHeader('Content-Range', 'bytes ' . $range . '-' . $range_end . '/' . $size);
+				$app->setHeader('HTTP/1.1', '206 Partial Content');
+				$app->setHeader('Content-Length', $new_length);
+				$app->setHeader('Content-Range', 'bytes ' . $range . '-' . $range_end . '/' . $size);
 			}
 			else
 			{
-				JResponse::setHeader('HTTP/1.1', '416 Requested Range Not Satisfiable');
-				JResponse::setHeader('Content-Range', 'bytes */' . $size);
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.1', '416 Requested Range Not Satisfiable');
+				$app->setHeader('Content-Range', 'bytes */' . $size);
+				$app->sendHeaders();
 				die();
 			}
 		}
 		else
 		{
 			$new_length = $size;
-			JResponse::setHeader('Content-Length', $size);
+			$app->setHeader('Content-Length', $size);
 		}
 
-		JResponse::sendHeaders();
+		$app->sendHeaders();
 
 		// Output the file itself
 		$chunksize = ($throttle == 1) ? (int) $throttle_config['bytes'] : 1024 * 8;

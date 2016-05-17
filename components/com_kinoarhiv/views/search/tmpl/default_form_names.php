@@ -70,7 +70,7 @@ if ($this->params->get('search_names_enable') == 0)
 	});
 </script>
 <div class="advsearch-names<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'names') ? ' well uk-panel uk-panel-box' : ''; ?>">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names', false); ?>" id="filters_names" method="post" autocomplete="off">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names', false); ?>" id="filters_names" method="post" autocomplete="off" class="form-validate">
 		<fieldset class="form-horizontal uk-form">
 			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE'); ?></legend>
 
@@ -89,20 +89,12 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo $this->params->get('search_names_birthday') == 1 ? KAComponentHelper::setLabel('filters_names_birthday', 'COM_KA_NAMES_DATE_OF_BIRTH') : ''; ?></div>
+						<div class="control-label uk-width-1-4"><?php echo $this->params->get('search_names_birthday') == 1 ? KAComponentHelper::setLabel('filters_names_birthday', 'COM_KA_SEARCH_ADV_NAMES_DATE_OF_BIRTH_LABEL', 'COM_KA_SEARCH_ADV_NAMES_DATE_OF_BIRTH_HELP', 'hasTooltip') : ''; ?></div>
 						<div class="controls uk-width-1-1">
 							<?php if ($this->params->get('search_names_birthday') == 1): ?>
-							<div class="input-append date"
-								data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-today-btn="linked"
-								data-date-clear-btn="true" data-date-calendar-weeks="true" data-date-today-highlight="true"
-								data-date-autoclose="true" data-date-language="ru">
-								<input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span8 uk-width-1-2" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" />
-								<div class="btn">
-									<span class="icon-calendar"></span>
-								</div>
-							</div>
+								<input name="filters[names][birthday]" type="text" id="filters_names_birthday" class="span4 uk-width-1-4 validate-birth" value="<?php echo $this->activeFilters->def('filters.names.birthday', ''); ?>" />
 							<?php endif; ?>
-							<?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?>
+							<?php if ($this->params->get('search_names_gender') == 1): ?>&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?> <?php echo JHtml::_('select.genericlist', $this->items->names->gender, 'filters[names][gender]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.names.gender', ''), 'filters_names_gender'); ?>
 							<?php endif; ?>
 						</div>
 					</div>
@@ -157,7 +149,7 @@ if ($this->params->get('search_names_enable') == 0)
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_names_amplua', 'COM_KA_SEARCH_ADV_NAMES_AMPLUA_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->names->amplua, 'filters[names][amplua]', array('class'=>'span10 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.names.amplua', ''), 'filters_names_amplua'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHtml::_('select.genericlist', $this->items->names->amplua, 'filters[names][amplua]', array('class'=>'span10 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.names.amplua', ''), 'filters_names_amplua'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -169,7 +161,7 @@ if ($this->params->get('search_names_enable') == 0)
 		<input type="hidden" name="task" value="search" />
 		<input type="hidden" name="Itemid" value="<?php echo $this->home_itemid['names']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
-		<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
+		<input type="submit" class="btn btn-primary uk-button uk-button-primary validate" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 		<input type="reset" class="btn uk-button" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="jQuery('#filters_names_birthcountry, #filters_names_mtitle').select2('val', ''); return true;" />
 	</form>
 </div>

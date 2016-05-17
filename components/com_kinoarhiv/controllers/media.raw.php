@@ -44,8 +44,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			JResponse::setHeader('HTTP/1.0', '404 Not Found');
-			JResponse::sendHeaders();
+			$app->setHeader('HTTP/1.0', '404 Not Found');
+			$app->sendHeaders();
 			jexit();
 		}
 	}
@@ -164,8 +164,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if (!$model->getTrailerAccessLevel($item_id))
 		{
-			JResponse::setHeader('HTTP/1.0', '403 Forbidden');
-			JResponse::sendHeaders();
+			$app->setHeader('HTTP/1.0', '403 Forbidden');
+			$app->sendHeaders();
 			jexit();
 		}
 
@@ -196,8 +196,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		{
 			if (KAComponentHelper::checkToken('get') === false)
 			{
-				JResponse::setHeader('HTTP/1.0', '403 Forbidden');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '403 Forbidden');
+				$app->sendHeaders();
 				jexit();
 			}
 
@@ -205,8 +205,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				JResponse::setHeader('HTTP/1.0', '404 Not Found');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '404 Not Found');
+				$app->sendHeaders();
 				jexit();
 			}
 
@@ -231,8 +231,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				JResponse::setHeader('HTTP/1.0', '404 Not Found');
-				JResponse::sendHeaders();
+				$app->setHeader('HTTP/1.0', '404 Not Found');
+				$app->sendHeaders();
 				jexit();
 			}
 

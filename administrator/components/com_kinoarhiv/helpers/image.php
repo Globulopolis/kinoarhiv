@@ -128,7 +128,7 @@ class KAImageHelper
 			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $width, $height, $width, $height);
 
 			$document->setMimeEncoding('image/png');
-			JResponse::allowCache(false);
+			$app->allowCache(false);
 
 			if (!file_exists($dst_dir))
 			{

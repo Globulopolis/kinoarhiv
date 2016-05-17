@@ -28,7 +28,7 @@ $batch_types = array(
 			<div class="control-group span6">
 				<div class="controls">
 					<label id="batch-type-lbl" for="batch-type"><?php echo JText::_('COM_KA_REVIEWS_FIELD_TYPE_TITLE'); ?></label>
-					<?php echo JHTML::_('select.genericlist', $batch_types, 'batch[type]', null, 'value', 'text', '', 'batch-type'); ?>
+					<?php echo JHtml::_('select.genericlist', $batch_types, 'batch[type]', null, 'value', 'text', '', 'batch-type'); ?>
 				</div>
 			</div>
 			<div class="control-group span6">

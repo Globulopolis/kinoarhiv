@@ -20,7 +20,7 @@ $input 		= JFactory::getApplication()->input;
 	});
 //]]>
 </script>
-<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<table class="table table-striped album-list" id="articleList">
 		<thead>
 			<tr>

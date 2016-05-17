@@ -19,11 +19,11 @@ defined('_JEXEC') or die;
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=vendors"><span class="icon-basket"> </span> <?php echo JText::_('COM_KA_VENDORS_TITLE'); ?></a>
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=awards"><span class="icon-asterisk"> </span> <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a>
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=reviews"><span class="icon-comments-2"> </span> <?php echo JText::_('COM_KA_REVIEWS_TITLE'); ?></a>
+	<br />
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=premieres"><span class="icon-calendar"> </span> <?php echo JText::_('COM_KA_PREMIERES_TITLE'); ?></a>
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=releases"><span class="icon-calendar"> </span> <?php echo JText::_('COM_KA_RELEASES_TITLE'); ?></a>
+	<br />
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=settings"><span class="icon-options"> </span> <?php echo JText::_('COM_KA_SETTINGS_TITLE'); ?></a>
-</div>
-<br />
-<div id="j-main-container" class="control-panel">
-	<p class="text-center"><a href="<?php echo $this->component['authorUrl']; ?>" target="_blank"><?php echo $this->component['name'].' '.$this->component['version']; ?></a></p>
+	<a class="btn" href="index.php?option=com_kinoarhiv&view=tools"><span class="icon-wrench"> </span> <?php echo JText::_('COM_KA_TOOLS_TITLE'); ?></a>
+	<p class="text-center"><a href="<?php echo $this->component['authorUrl']; ?>" target="_blank"><?php echo $this->component['name'] . ' ' . $this->component['version']; ?></a></p>
 </div>

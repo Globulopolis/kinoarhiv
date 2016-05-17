@@ -16,16 +16,16 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 	$item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>
 	<a name="trailer"></a>
-	<div class="accordion" id="video_accordion">
+	<div class="accordion" id="tr_accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#video_accordion" href="#toggleTrailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#tr_accordion" href="#toggleTrailer"><?php echo JText::_('COM_KA_WATCH_TRAILER'); ?></a>
 			</div>
 			<div id="toggleTrailer" class="accordion-body collapse<?php echo $this->tr_collapsed; ?>">
 				<div class="accordion-inner">
 					<div>
 						<?php if ($item_trailer->embed_code != ''):
-							echo $item_trailer->embed_code;
+							echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
 						else: ?>
 							<?php if (count($item_trailer->files['video']) > 0):
 								$tposter = $item_trailer->screenshot != '' ? 'poster="' . $item_trailer->screenshot . '"' : ''; ?>
@@ -48,8 +48,8 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 									<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
 								</video>
 							<?php else: ?>
-								<div style="height: <?php echo $item_trailer->player_height; ?>px;">
-									<img src="<?php echo $item_trailer->screenshot; ?>"/></div>
+								<div style="height: <?php echo $item_trailer->player_height; ?>px; text-align: center;">
+									<img src="<?php echo $item_trailer->screenshot; ?>" style="height: <?php echo $item_trailer->player_height; ?>px; width: <?php echo $item_trailer->player_height; ?>px;"/></div>
 							<?php endif; ?>
 							<?php if (isset($item_trailer->files['video_links'])
 								&& (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)
@@ -80,16 +80,16 @@ if ((isset($this->item->movie) && count($this->item->movie) > 0)
 ?>
 	<div class="clear"></div>
 	<a name="movie"></a>
-	<div class="accordion" id="video_accordion">
+	<div class="accordion" id="movie_accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-				<a class="accordion-toggle" data-toggle="collapse" data-parent="#video_accordion" href="#toggleMovie"><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#movie_accordion" href="#toggleMovie"><?php echo JText::_('COM_KA_WATCH_MOVIE'); ?></a>
 			</div>
 			<div id="toggleMovie" class="accordion-body collapse<?php echo $this->mov_collapsed; ?>">
 				<div class="accordion-inner">
 					<div>
 						<?php if ($item_movie->embed_code != ''):
-							echo $item_movie->embed_code;
+							echo '<div class="video-embed">' . $item_movie->embed_code . '</div>';
 						else: ?>
 							<?php if (count($item_movie->files['video']) > 0):
 								$mposter = $item_movie->screenshot != '' ? 'poster="' . $item_movie->screenshot . '"' : ''; ?>

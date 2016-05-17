@@ -93,25 +93,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
-	<?php if ($this->params->get('filter_premieres_enable') == 1): ?>
-		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" id="adminForm" method="post">
-			<input type="hidden" name="option" value="com_kinoarhiv"/>
-			<input type="hidden" name="view" value="premieres"/>
-			<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
-			<input type="hidden" name="lang" value="<?php echo StringHelper::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
-			<?php
-			echo JHtml::_('form.token');
-			echo JLayoutHelper::render(
-				'layouts.searchtools.default',
-				array(
-					'view' => $this,
-					'context' => 'premieres'
-				),
-				JPATH_COMPONENT);
-			?>
-		</form>
-	<?php endif; ?>
-
 	<?php if (count($this->items) > 0): ?>
 		<?php if ($this->params->get('pagevan_top') == 1): ?>
 			<div class="pagination top">
@@ -291,8 +272,8 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 
 						<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>
 							<div class="premiere-date">
-								<div class="date"><?php echo JHTML::_('date', $item->premiere_date, 'd'); ?></div>
-								<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?> <?php echo JHTML::_('date', $item->premiere_date, 'Y'); ?></div>
+								<div class="date"><?php echo JHtml::_('date', $item->premiere_date, 'd'); ?></div>
+								<div class="month"><?php echo JHtml::_('date', $item->premiere_date, 'F'); ?> <?php echo JHtml::_('date', $item->premiere_date, 'Y'); ?></div>
 								<div class="vendor">
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&vendor=' . $item->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $this->escape(KAContentHelper::formatItemTitle($item->company_name, $item->company_name_intl)); ?></a>
 								</div>

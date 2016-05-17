@@ -41,10 +41,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$lang = JFactory::getLanguage();
 
 		$items = $this->get('Items');
-		$list = $this->get('SelectList');
 		$pagination = $this->get('Pagination');
-		$this->filterForm = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -196,7 +193,6 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 		$this->params = $params;
 		$this->items = $items;
-		$this->selectlist = $list;
 		$this->pagination = $pagination;
 		$this->user = $user;
 

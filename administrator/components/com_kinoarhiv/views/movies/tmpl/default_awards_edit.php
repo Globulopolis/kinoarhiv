@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 $input = JFactory::getApplication()->input;
 $award_id = $input->get('award_id', 0, 'int');
 ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
+<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('.form_award button').button();

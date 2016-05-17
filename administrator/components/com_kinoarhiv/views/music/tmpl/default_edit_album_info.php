@@ -14,7 +14,7 @@ use Joomla\String\StringHelper;
 
 if (StringHelper::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
 {
-	$poster_url = JURI::root() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
+	$poster_url = JUri::root() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
 		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->form->getValue('id', $this->form_edit_group);
 }
 else
@@ -89,8 +89,8 @@ else
 				multi_selection: false,
 				max_files: 1,
 				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-				flash_swf_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-				silverlight_xap_url: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
+				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
 				preinit: {
 					init: function(up, info){
 						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -158,8 +158,8 @@ else
 					showMsg('#system-message-container', response);
 				} else {
 					var cover_preview = $('img.album-cover-preview');
-					cover_preview.attr('src', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
-					cover_preview.parent('a').attr('href', '<?php echo JURI::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
+					cover_preview.attr('src', '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
+					cover_preview.parent('a').attr('href', '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
 				}
 				blockUI();
 			}).fail(function(xhr, status, error){

@@ -10,8 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Utilities\ArrayHelper;
-
 /**
  * Component helper class
  *
@@ -358,7 +356,7 @@ class KAComponentHelper extends JComponentHelper
 
 		if (is_array($attribs) && func_num_args() == 5)
 		{
-			$attrs = ArrayHelper::toString($attribs);
+			$attrs = \Joomla\Utilities\ArrayHelper::toString($attribs);
 		}
 
 		return '<label id="' . $for . '-lbl"' . $class . 'for="' . $for . '"' . $title . $attrs . '>' . JText::_($text) . '</label>';
@@ -372,7 +370,7 @@ class KAComponentHelper extends JComponentHelper
 	 *                           Example: en-US.js or select2_locale_da.js
 	 * @param   string   $path   Path to the folder. Default searching in 'components/com_kinoarhiv/assets/' folder.
 	 * @param   boolean  $root   Start search from root Joomla folder.
-	 * @param   boolean  $jhtml  Use JHTML::script() to load. Set this to false if need to load JS into raw document.
+	 * @param   boolean  $jhtml  Use JHtml::script() to load. Set this to false if need to load JS into raw document.
 	 *
 	 * @return  void
 	 */

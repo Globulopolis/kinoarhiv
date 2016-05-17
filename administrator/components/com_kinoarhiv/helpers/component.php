@@ -35,20 +35,20 @@ class KAComponentHelper extends JComponentHelper
 			return;
 		}
 
-		JHtml::_('stylesheet', JURI::base() . 'components/com_kinoarhiv/assets/css/style.css');
-		JHtml::_('stylesheet', JURI::base() . 'components/com_kinoarhiv/assets/css/plugins.css');
-		JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
+		JHtml::_('stylesheet', JUri::base() . 'components/com_kinoarhiv/assets/css/style.css');
+		JHtml::_('stylesheet', JUri::base() . 'components/com_kinoarhiv/assets/css/plugins.css');
+		JHtml::_('stylesheet', JUri::root() . 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
 
 		JHtml::_('jquery.framework');
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
-		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/utils.js');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
+		JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/utils.js');
 
 		JText::script('COM_KA_CLOSE', true);
 
 		// Add some variables into the global scope for autocomplete
 		JText::script('COM_KA_SEARCH_AJAX', true);
-		$document->addScriptDeclaration("var ka_theme = '" . $params->get('ka_theme') . "', uri_root = '" . JURI::root() . "';");
+		$document->addScriptDeclaration("var ka_theme = '" . $params->get('ka_theme') . "', uri_root = '" . JUri::root() . "';");
 	}
 
 	/**
@@ -78,17 +78,17 @@ class KAComponentHelper extends JComponentHelper
 	 */
 	public static function loadMediamanagerAssets()
 	{
-		JHtml::_('stylesheet', JURI::base() . 'components/com_kinoarhiv/assets/css/mediamanager.css');
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/mediamanager/plupload.full.min.js');
+		JHtml::_('stylesheet', JUri::base() . 'components/com_kinoarhiv/assets/css/mediamanager.css');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/mediamanager/plupload.full.min.js');
 		self::getScriptLanguage('', true, 'mediamanager', false, '_');
-		JHtml::_('script', JURI::base() . 'components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.min.js');
+		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/mediamanager/jquery.plupload.queue.min.js');
 	}
 
 	/**
 	 * Just proxy for KALanguage::getScriptLanguage()
 	 *
 	 * @param   string   $file         Part of the filename w/o language tag and extension
-	 * @param   string   $jhtml        Use JHTML::script() to load
+	 * @param   string   $jhtml        Use JHtml::script() to load
 	 * @param   string   $script_type  Type of the script(folder name in assets/js/i8n/)
 	 * @param   boolean  $frontend     Load language file from the frontend if set to true
 	 * @param   string   $separator    Separator, which is used for split two-letter language code and two-letter country
@@ -164,7 +164,7 @@ class KAComponentHelper extends JComponentHelper
 	public static function eventLog($message, $silent = true)
 	{
 		$params = self::getParams('com_kinoarhiv');
-		$uri = JURI::getInstance();
+		$uri = JUri::getInstance();
 
 		$message = $message . "\t" . $uri->current() . '?' . $uri->getQuery();
 

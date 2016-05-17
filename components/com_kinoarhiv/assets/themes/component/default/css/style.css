@@ -748,7 +748,7 @@ div.rating {
 	margin-right: 1em;
 }
 
-#video_accordion .accordion-inner {
+#tr_accordion .accordion-inner, #movie_accordion .accordion-inner {
 	padding: 0;
 }
 

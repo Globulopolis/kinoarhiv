@@ -60,7 +60,7 @@ class JFormFieldCareer extends JFormFieldList
 	{
 		$lang = JFactory::getLanguage();
 
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select('id AS value, title AS text')
 			->from('#__ka_names_career')

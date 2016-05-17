@@ -37,8 +37,8 @@ class JFormFieldVendors extends JFormField
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		JHtml::_('jquery.framework');
-		JHtml::_('stylesheet', JURI::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/select.css');
-		JHtml::_('script', JURI::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
+		JHtml::_('stylesheet', JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/select.css');
+		JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/select2.min.js');
 		KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 
 		parent::__construct();

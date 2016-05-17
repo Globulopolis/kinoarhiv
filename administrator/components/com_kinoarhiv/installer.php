@@ -21,7 +21,7 @@ class com_kinoarhivInstallerScript
 {
 	public function install($parent)
 	{
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 
 		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
 		$form = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
@@ -88,7 +88,7 @@ class com_kinoarhivInstallerScript
 
 	public function update($parent)
 	{
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 		$params = $this->getParams();
 
 		/* Load the config.xml file on update and compare current existing parameters from DB
@@ -145,7 +145,7 @@ class com_kinoarhivInstallerScript
 
 	public function getParams($name = '')
 	{
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 
 		$db->setQuery("SELECT `params` FROM `#__extensions` WHERE `type` = 'component' AND `name` = 'Kinoarhiv'");
 		$params = json_decode($db->loadResult(), true);

@@ -82,7 +82,7 @@ class KALanguage extends JLanguage
 	 * Load language files for JS scripts
 	 *
 	 * @param   string   $file         Part of the filename w/o language tag and extension
-	 * @param   string   $jhtml        Use JHTML::script() to load
+	 * @param   string   $jhtml        Use JHtml::script() to load
 	 * @param   string   $script_type  Type of the script(folder name in assets/js/i8n/)
 	 * @param   boolean  $frontend     Load language file from the frontend if set to true
 	 * @param   string   $separator    Separator, which is used for split two-letter language code and two-letter country
@@ -98,12 +98,12 @@ class KALanguage extends JLanguage
 		if ($frontend)
 		{
 			$basepath = JPATH_ROOT . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_kinoarhiv' . DIRECTORY_SEPARATOR;
-			$url = JURI::root();
+			$url = JUri::root();
 		}
 		else
 		{
 			$basepath = JPATH_COMPONENT . DIRECTORY_SEPARATOR;
-			$url = JURI::base();
+			$url = JUri::base();
 		}
 
 		$path = $basepath . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR . $script_type;

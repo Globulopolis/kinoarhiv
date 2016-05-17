@@ -43,7 +43,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		$lang = JFactory::getLanguage();
 
 		$this->items = $this->get('Items');
-		$this->selectlist = $this->get('SelectList');
 		$this->pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
@@ -56,14 +55,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$this->ka_theme = $params->get('ka_theme');
-		$this->selectlist_val = array(
-			'country'   => $app->input->get('country', '', 'word'), // It's a string because country_id == 0 it's a world premiere
-			'year'      => $app->input->get('year', 0, 'int'),
-			'month'     => $app->input->get('month', '', 'string'),
-			'vendor'    => $app->input->get('vendor', 0, 'int'),
-			'mediatype' => $app->input->get('mediatype', '', 'string')
-		);
-
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 		$throttle_enable = $params->get('throttle_image_enable', 0);

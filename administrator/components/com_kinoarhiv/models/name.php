@@ -81,7 +81,7 @@ class KinoarhivModelName extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$tmpl = $app->input->get('template', '', 'string');
 		$id = $app->input->get('id', array(), 'array');
 
@@ -162,7 +162,7 @@ class KinoarhivModelName extends JModelForm
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
 		$query = $db->getQuery(true);
@@ -190,7 +190,7 @@ class KinoarhivModelName extends JModelForm
 	protected function getGenres()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(), 'array');
 		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
@@ -219,7 +219,7 @@ class KinoarhivModelName extends JModelForm
 	protected function getCareers()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(), 'array');
 		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
@@ -248,7 +248,7 @@ class KinoarhivModelName extends JModelForm
 	public function getAwards()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
@@ -328,7 +328,7 @@ class KinoarhivModelName extends JModelForm
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->post->get('id', null, 'int');
@@ -688,7 +688,7 @@ class KinoarhivModelName extends JModelForm
 	public function saveNameAccessRules()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('form', array(), 'array');
 		$id = $app->input->get('id', null, 'int');
 		$rules = array();
@@ -756,7 +756,7 @@ class KinoarhivModelName extends JModelForm
 	public function deleteRelAwards()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query = true;
 
@@ -808,7 +808,7 @@ class KinoarhivModelName extends JModelForm
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 

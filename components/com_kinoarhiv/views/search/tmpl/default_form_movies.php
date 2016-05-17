@@ -195,8 +195,8 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-2"><?php echo KAComponentHelper::setLabel('filters_movies_from_year', 'COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_TO_LABEL'); ?></div>
 						<div class="controls uk-width-1-3">
-							<?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->movies->from_year, 'filters[movies][from_year]', array('class'=>'span3'), 'value', 'text', $this->activeFilters->def('filters.movies.from_year', ''), 'filters_movies_from_year'); ?>&nbsp;&nbsp;&nbsp;
-							<?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->movies->to_year, 'filters[movies][to_year]', array('class'=>'span3'), 'value', 'text', $this->activeFilters->def('filters.movies.to_year', ''), 'filters_movies_to_year'); ?>
+							<?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_LABEL'); ?> <?php echo JHtml::_('select.genericlist', $this->items->movies->from_year, 'filters[movies][from_year]', array('class'=>'span3'), 'value', 'text', $this->activeFilters->def('filters.movies.from_year', ''), 'filters_movies_from_year'); ?>&nbsp;&nbsp;&nbsp;
+							<?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL'); ?> <?php echo JHtml::_('select.genericlist', $this->items->movies->to_year, 'filters[movies][to_year]', array('class'=>'span3'), 'value', 'text', $this->activeFilters->def('filters.movies.to_year', ''), 'filters_movies_to_year'); ?>
 						</div>
 					</div>
 				</div>
@@ -237,7 +237,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_vendor', 'COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->vendors, 'filters[movies][vendor]', array('class'=>'span10 uk-width-1-1'), 'value', 'text', $this->activeFilters->def('filters.movies.vendor', ''), 'filters_movies_vendor'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHtml::_('select.genericlist', $this->items->movies->vendors, 'filters[movies][vendor]', array('class'=>'span10 uk-width-1-1'), 'value', 'text', $this->activeFilters->def('filters.movies.vendor', ''), 'filters_movies_vendor'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -248,7 +248,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_genre', 'COM_KA_GENRE'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->genres, 'filters[movies][genre][]', array('class'=>'span10 uk-width-1-1', 'multiple'=>true), 'value', 'text', $this->activeFilters->def('filters.movies.genre', ''), 'filters_movies_genre'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHtml::_('select.genericlist', $this->items->movies->genres, 'filters[movies][genre][]', array('class'=>'span10 uk-width-1-1', 'multiple'=>true), 'value', 'text', $this->activeFilters->def('filters.movies.genre', ''), 'filters_movies_genre'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -260,7 +260,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="span5 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_mpaa', 'COM_KA_MPAA'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->mpaa, 'filters[movies][mpaa]', array('class'=>'span11 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.mpaa', ''), 'filters_movies_mpaa'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHtml::_('select.genericlist', $this->items->movies->mpaa, 'filters[movies][mpaa]', array('class'=>'span11 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.mpaa', ''), 'filters_movies_mpaa'); ?></div>
 					</div>
 				</div>
 				<?php endif; ?>
@@ -268,7 +268,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="span7 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_age_restrict', 'COM_KA_RU_RATE'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->age_restrict, 'filters[movies][age_restrict]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.age_restrict', '-1'), 'filters_movies_age_restrict'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHtml::_('select.genericlist', $this->items->movies->age_restrict, 'filters[movies][age_restrict]', array('class'=>'span7 uk-width-1-6'), 'value', 'text', $this->activeFilters->def('filters.movies.age_restrict', '-1'), 'filters_movies_age_restrict'); ?></div>
 					</div>
 				</div>
 				<?php endif; ?>
@@ -280,7 +280,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-3"><?php echo KAComponentHelper::setLabel('filters_movies_ua_rate', 'COM_KA_UA_RATE'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo JHTML::_('select.genericlist', $this->items->movies->ua_rate, 'filters[movies][ua_rate]', array('class'=>'span4 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.movies.ua_rate', ''), 'filters_movies_ua_rate'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo JHtml::_('select.genericlist', $this->items->movies->ua_rate, 'filters[movies][ua_rate]', array('class'=>'span4 uk-width-1-2'), 'value', 'text', $this->activeFilters->def('filters.movies.ua_rate', ''), 'filters_movies_ua_rate'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -452,8 +452,8 @@ if ($this->params->get('search_movies_enable') == 0)
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo KAComponentHelper::setLabel('filters_movies_from_budget', 'COM_KA_BUDGET'); ?></div>
 						<div class="controls uk-width-1-2">
-							<?php echo JText::_('COM_KA_SEARCH_ADV_RANGE_FROM_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->movies->from_budget, 'filters[movies][from_budget]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.movies.from_budget', ''), 'filters_movies_from_budget'); ?>&nbsp;&nbsp;&nbsp;
-							<?php echo JText::_('COM_KA_SEARCH_ADV_RANGE_TO_LABEL'); ?> <?php echo JHTML::_('select.genericlist', $this->items->movies->to_budget, 'filters[movies][to_budget]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.movies.to_budget', ''), 'filters_movies_to_budget'); ?>
+							<?php echo JText::_('COM_KA_SEARCH_ADV_RANGE_FROM_LABEL'); ?> <?php echo JHtml::_('select.genericlist', $this->items->movies->from_budget, 'filters[movies][from_budget]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.movies.from_budget', ''), 'filters_movies_from_budget'); ?>&nbsp;&nbsp;&nbsp;
+							<?php echo JText::_('COM_KA_SEARCH_ADV_RANGE_TO_LABEL'); ?> <?php echo JHtml::_('select.genericlist', $this->items->movies->to_budget, 'filters[movies][to_budget]', array('class'=>'span4 uk-width-1-4'), 'value', 'text', $this->activeFilters->def('filters.movies.to_budget', ''), 'filters_movies_to_budget'); ?>
 						</div>
 					</div>
 				</div>

@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Fixed undefined filter type for embed code field in trailer edit which cause unable to save embed html.
 * More userfriendly language strings with the search results count.
 * getDBO changed to getDbo, JURI to JUri on frontend.
 * Removed DIRECTORY_SEPARATOR, use / and JPath::clean instead.

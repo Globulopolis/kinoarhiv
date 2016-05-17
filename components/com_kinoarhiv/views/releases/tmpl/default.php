@@ -95,74 +95,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
-	<?php if ($this->params->get('filter_release_enable') == 1): ?>
-		<div class="selectlist">
-			<div class="selectlist-releases">
-				<form action="<?php echo JRoute::_('index.php'); ?>" method="get" style="clear: both;" autocomplete="off">
-					<input type="hidden" name="option" value="com_kinoarhiv"/>
-					<input type="hidden" name="view" value="releases"/>
-					<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
-					<input type="hidden" name="lang" value="<?php echo StringHelper::substr(JFactory::getLanguage()->getTag(), 0, 2); ?>"/>
-
-					<?php
-					if ($this->params->get('filter_release_country') == 1):
-						echo JText::_('COM_KA_RELEASES') . ': ' . JHtml::_(
-							'select.genericlist', $this->selectlist['countries'], 'country',
-							array('class' => 'inputbox hasTooltip', 'title' => JText::_('COM_KA_COUNTRY')),
-							'code', 'name', $this->selectlist_val['country']
-						);
-					endif;
-					?>
-
-					<?php
-					if ($this->params->get('filter_release_year') == 1):
-						echo JHtml::_(
-							'select.genericlist', $this->selectlist['years'], 'year',
-							array('class' => 'inputbox span2'), 'value', 'name', $this->selectlist_val['year']
-						);
-					endif;
-					?>
-
-					<?php
-					if ($this->params->get('filter_release_month') == 1):
-						echo JHtml::_(
-							'select.genericlist', $this->selectlist['months'], 'month',
-							array('class' => 'inputbox span3'), 'value', 'name', $this->selectlist_val['month']
-						) . '<br/>';
-					endif;
-					?>
-
-					<?php
-					if ($this->params->get('filter_release_vendor') == 1):
-						echo JText::_('COM_KA_PREMIERE_DISTRIBUTOR') . ': ' . JHtml::_(
-							'select.genericlist', $this->selectlist['vendors'], 'vendor',
-							array('class' => 'inputbox'), 'value', 'name', $this->selectlist_val['vendor']
-						);
-					endif;
-					?>
-
-					<?php
-					if ($this->params->get('filter_release_mediatype') == 1):
-						echo JHtml::_(
-							'select.genericlist', $this->selectlist['mediatype'], 'mediatype',
-							array('class' => 'inputbox'), 'value', 'name', $this->selectlist_val['mediatype']
-						);
-					endif;
-					?>
-
-					<div class="btn-group uk-button-group">
-						<button type="submit" class="btn btn-default uk-button uk-button-small">
-							<span class="ui-icon ui-icon-search"></span></button>
-						<button type="reset" class="btn btn-default uk-button uk-button-small">
-							<span class="ui-icon ui-icon-close"></span></button>
-						<button type="button" class="btn btn-default uk-button uk-button-small cmd-filters-remove" onclick="document.location.href = '<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&Itemid=' . $this->itemid, false); ?>';">
-							<span class="ui-icon ui-icon-cancel"></span></button>
-					</div>
-				</form>
-			</div>
-		</div>
-	<?php endif; ?>
-
 	<?php if (count($this->items) > 0): ?>
 		<?php if ($this->params->get('pagevan_top') == 1): ?>
 			<div class="pagination top">
@@ -317,7 +249,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 						<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>
 							<div class="premiere-date">
 								<div class="date"><?php echo date('d', strtotime($item->premiere_date)); ?></div>
-								<div class="month"><?php echo JHTML::_('date', $item->premiere_date, 'F'); ?></div>
+								<div class="month"><?php echo JHtml::_('date', $item->premiere_date, 'F'); ?></div>
 								<div class="vendor">
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&vendor=' . $item->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $item->vendor; ?></a>
 								</div>

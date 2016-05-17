@@ -137,7 +137,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function getFilesystemAlias($section, $id, $content_alias=false)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$result = (object) array();
 		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
 		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
@@ -260,7 +260,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function getListQuery()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 		$section = $app->input->get('section', '', 'word');
 		$type = $app->input->get('type', '', 'word');
@@ -383,7 +383,7 @@ class KinoarhivModelMediamanager extends JModelList
 			return array('success' => false, 'filename' => $filename, 'id' => 0);
 		}
 
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$result = array();
 		$image_sizes = (count($image_sizes) == 0) ? array(0 => 0, 1 => 0) : $image_sizes;
 		$dimension = floor($image_sizes[0]) . 'x' . floor($image_sizes[1]);
@@ -491,7 +491,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function publishOnFrontpage($action, $type = null, $item_id = 0, $id = array(), $section = null)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$type = $app->input->get('type', $type, 'word');
 		$item_id = $app->input->get('id', $item_id, 'int');
 		$id = $app->input->get('_id', $id, 'array');
@@ -642,7 +642,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function publish($action)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$type = $app->input->get('type', '', 'word');
 		$id = $app->input->get('_id', array(), 'array');
 		$section = $app->input->get('section', null, 'word');
@@ -708,7 +708,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function apply($data)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$movie_id = $app->input->get('id', 0, 'int');
 		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$type = $app->input->get('type', '', 'word');
@@ -785,7 +785,7 @@ class KinoarhivModelMediamanager extends JModelList
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$item_id = $app->input->get('id', 0, 'int');
 		$ids = $app->input->get('_id', array(), 'array');
 		$section = $app->input->get('section', '', 'cmd');
@@ -1138,7 +1138,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 		$id = $app->input->get('item_id', 0, 'int');
 
@@ -1179,7 +1179,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function saveOrderTrailerVideofile()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$item_id = $app->input->get('item_id', 0, 'int');
 		$items = $app->input->get('ord', array(), 'array');
 
@@ -1232,7 +1232,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function saveDefaultTrailerSubtitlefile()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$item_id = $app->input->get('item_id', 0, 'int');
 
 		// Item ID in array of subtitles which should be default
@@ -1283,7 +1283,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function saveOrderTrailerSubtitlefile()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$item_id = $app->input->get('item_id', 0, 'int');
 		$items = $app->input->get('cord', array(), 'array');
 
@@ -1337,7 +1337,7 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	public function saveChapters($file, $trailer_id, $movie_id)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
 		$query = $db->getQuery(true)
 			->select('COUNT(id)')
@@ -1386,7 +1386,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function getVideoDataEdit()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$trailer_id = $app->input->get('trailer_id', 0, 'int');
 		$video_id = $app->input->get('video_id', 0, 'int');
 		$query = $db->getQuery(true);
@@ -1414,7 +1414,7 @@ class KinoarhivModelMediamanager extends JModelList
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
 		if (is_null($video_id))
 		{
@@ -1478,7 +1478,7 @@ class KinoarhivModelMediamanager extends JModelList
 		JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
 
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$lang_list = KALanguage::listOfLanguages();
 		$trailer_id = $app->input->get('trailer_id', 0, 'int');
 		$subtitle_id = $app->input->get('subtitle_id', 0, 'int');
@@ -1520,7 +1520,7 @@ class KinoarhivModelMediamanager extends JModelList
 		JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
 
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$lang_list = KALanguage::listOfLanguages();
 
 		$query = $db->getQuery(true)
@@ -1655,7 +1655,7 @@ class KinoarhivModelMediamanager extends JModelList
 
 		$media = KAMedia::getInstance();
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$trailer_id = $app->input->get('item_id', 0, 'int');
 		$time = $app->input->get('time', '', 'string');
@@ -1725,7 +1725,7 @@ class KinoarhivModelMediamanager extends JModelList
 		JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
 
 		$media = KAMedia::getInstance();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
 		$query = $db->getQuery(true)
 			->select($db->quoteName('filename'))
@@ -1887,7 +1887,7 @@ class KinoarhivModelMediamanager extends JModelList
 	public function removeTrailerFiles()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', 0, 'int');
 		$item_id = $app->input->get('item_id', 0, 'int');
 		$filename = $app->input->get('file', '', 'string');
@@ -2166,7 +2166,7 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	public function getItemTitle($section = null, $id = null)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
 		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
@@ -2226,7 +2226,7 @@ class KinoarhivModelMediamanager extends JModelList
 	{
 		JLoader::register('KAFilesystemHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'filesystem.php');
 
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$app = JFactory::getApplication();
 
 		// Current item ID.

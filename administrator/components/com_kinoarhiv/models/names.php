@@ -127,7 +127,7 @@ class KinoarhivModelNames extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$query = $db->getQuery(true);
 
@@ -267,7 +267,7 @@ class KinoarhivModelNames extends JModelList
 	public function saveOrder()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('ord', array(), 'array');
 
 		if (count($data) < 2)
@@ -333,7 +333,7 @@ class KinoarhivModelNames extends JModelList
 	public function batch()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 

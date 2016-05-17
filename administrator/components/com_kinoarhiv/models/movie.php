@@ -84,7 +84,7 @@ class KinoarhivModelMovie extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$tmpl = $app->input->get('template', '', 'string');
 		$id = $app->input->get('id', array(), 'array');
 
@@ -228,7 +228,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
 		$query = $db->getQuery(true);
@@ -263,7 +263,7 @@ class KinoarhivModelMovie extends JModelForm
 	protected function getCountries()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(), 'array');
 		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
@@ -304,7 +304,7 @@ class KinoarhivModelMovie extends JModelForm
 	protected function getGenres()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(), 'array');
 		$result = array('data' => array(), 'ids' => array());
 		$query = $db->getQuery(true);
@@ -342,7 +342,7 @@ class KinoarhivModelMovie extends JModelForm
 	protected function getTags()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', array(), 'array');
 
 		if (!empty($id[0]))
@@ -398,7 +398,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function save($data)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$date = JFactory::getDate();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -632,7 +632,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function createIntroText($data, $params, $id)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query_result = true;
 		$intro_countries = '';
 		$intro_genres = '';
@@ -875,7 +875,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function updateTagMapping($ids, $movie_id)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 
 		if (!empty($ids))
 		{
@@ -1030,7 +1030,7 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function updateGenresStat($old, $new)
 	{
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$old_arr = !is_array($old) ? explode(',', $old) : $old;
 		$new_arr = !is_array($new) ? explode(',', $new) : $new;
 		$all = array_unique(array_merge($old_arr, $new_arr));
@@ -1088,7 +1088,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function getCast()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
 		$order = $app->input->get('sord', 'asc', 'word');
@@ -1264,7 +1264,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function deleteCast()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query_result = true;
 
@@ -1322,7 +1322,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function deleteRelAwards()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query_result = true;
 
@@ -1380,7 +1380,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function getAwards()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
 		$order = $app->input->get('sord', 'asc', 'word');
@@ -1461,7 +1461,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function getPremieres()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
 		$order = $app->input->get('sord', 'asc', 'word');
@@ -1561,7 +1561,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function getReleases()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$id = $app->input->get('id', null, 'int');
 		$orderby = $app->input->get('sidx', '1', 'string');
 		$order = $app->input->get('sord', 'asc', 'word');
@@ -1665,7 +1665,7 @@ class KinoarhivModelMovie extends JModelForm
 	public function saveAccessRules()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$data = $app->input->post->get('form', array(), 'array');
 		$id = $app->input->get('id', null, 'int');
 		$rules = array();
@@ -1735,7 +1735,7 @@ class KinoarhivModelMovie extends JModelForm
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 

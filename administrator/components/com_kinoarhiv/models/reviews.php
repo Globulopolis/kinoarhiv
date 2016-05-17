@@ -120,7 +120,7 @@ class KinoarhivModelReviews extends JModelList
 	protected function getListQuery()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 		$uid = $app->input->get('uid', 0, 'int');
 		$mid = $app->input->get('mid', 0, 'int');
@@ -270,7 +270,7 @@ class KinoarhivModelReviews extends JModelList
 	public function batch()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDBO();
+		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
 		$batch_data = $app->input->post->get('batch', array(), 'array');
 

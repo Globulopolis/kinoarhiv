@@ -60,7 +60,7 @@ class JFormFieldGenre extends JFormFieldList
 	{
 		$lang = JFactory::getLanguage();
 
-		$db = JFactory::getDBO();
+		$db = JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select('`id` AS `value`, `name` AS `text`, `state` AS `published`')
 			->from('#__ka_genres')

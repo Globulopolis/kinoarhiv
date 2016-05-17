@@ -55,7 +55,7 @@ class KinoarhivModelReleases extends JModelList
 	 *
 	 * @since   3.0
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState($ordering = 'r.release_date', $direction = 'ASC')
 	{
 		if ($this->context)
 		{
@@ -66,9 +66,12 @@ class KinoarhivModelReleases extends JModelList
 			$limit = $value;
 			$this->setState('list.limit', $limit);
 
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
+			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0, 'uint');
 			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
 			$this->setState('list.start', $limitstart);
+			$this->setState('list.ordering', $ordering);
+			$listOrder = $app->getUserStateFromRequest($this->context . '.list.direction', 'direction', $direction, 'cmd');
+			$this->setState('list.direction', $listOrder);
 		}
 		else
 		{
@@ -116,10 +119,6 @@ class KinoarhivModelReleases extends JModelList
 
 		// It's a string because country_id == 0 - all countries
 		$country = $app->input->get('country', '', 'word');
-		$year = $app->input->get('year', 0, 'int');
-		$vendor = $app->input->get('vendor', 0, 'int');
-		$month = $app->input->get('month', '', 'string');
-		$mediatype = $app->input->get('mediatype', '', 'string');
 		$null_date = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);
@@ -195,252 +194,11 @@ class KinoarhivModelReleases extends JModelList
 			}
 		}
 
-		if ($params->get('filter_release_country') == 1 && $country != '')
-		{
-			$subquery0 = $db->getQuery(true)
-				->select('id')
-				->from($db->quoteName('#__ka_countries'))
-				->where('code = "' . $db->escape($country) . '" AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
-
-			$subquery1 = $db->getQuery(true)
-				->select('movie_id')
-				->from($db->quoteName('#__ka_releases'))
-				->where('country_id = (' . $subquery0 . ')');
-
-			$query->where('m.id IN (' . $subquery1 . ')');
-		}
-
-		if ($params->get('filter_release_year') == 1 && !empty($year))
-		{
-			$query->where('m.id IN (SELECT movie_id FROM ' . $db->quoteName('#__ka_releases') . ' WHERE release_date LIKE "%' . $year . '%")');
-		}
-
-		if ($params->get('filter_release_month') == 1 && $month != '')
-		{
-			$query->where('m.id IN (SELECT movie_id FROM ' . $db->quoteName('#__ka_releases') . ' WHERE release_date LIKE "%' . $month . '%")');
-		}
-
-		if ($params->get('filter_release_vendor') == 1 && !empty($vendor))
-		{
-			$query->where('m.id IN (SELECT movie_id FROM ' . $db->quoteName('#__ka_releases') . ' WHERE vendor_id = "' . (int) $vendor . '")');
-		}
-
-		if ($params->get('filter_release_mediatype') == 1 && $mediatype != '')
-		{
-			$query->where('r.media_type = ' . (int) $mediatype);
-		}
-
 		$query->where('r.release_date != ' . $null_date)
 			->group($db->quoteName('m.id'))
 			->order($this->getState('list.ordering', 'r.release_date') . ' ' . $this->getState('list.direction', 'DESC'));
 
 		return $query;
-	}
-
-	/**
-	 * Releases filter
-	 *
-	 * @return  array
-	 *
-	 * @since   3.0
-	 */
-	public function getSelectList()
-	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		// It's a string because country_id == 0 it'a world premiere
-		$country = $app->input->get('country', '', 'word');
-		$year = $app->input->get('year', 0, 'int');
-		$mediatypes = array();
-		$result = array(
-			'countries' => array(
-				array('name' => JText::_('JALL'), 'code' => '')
-			),
-			'years'     => array(
-				array('value' => 0, 'name' => JText::_('JALL'))
-			),
-			'months'    => array(
-				array('value' => '', 'name' => JText::_('JALL'))
-			),
-			'vendors'   => array(
-				array('value' => '', 'name' => JText::_('JALL'))
-			),
-			'mediatype' => array(
-				array('value' => '', 'name' => JText::_('JALL'))
-			)
-		);
-
-		// Countries list
-		if ($params->get('filter_release_country') == 1)
-		{
-			$query = $db->getQuery(true)
-				->select('name, code')
-				->from($db->quoteName('#__ka_countries'))
-				->where('id IN (SELECT country_id FROM ' . $db->quoteName('#__ka_releases') . ' WHERE country_id != 0) AND state = 1')
-				->group('code');
-			$db->setQuery($query);
-
-			try
-			{
-				$countries = $db->loadAssocList();
-
-				if (count($countries) > 0)
-				{
-					$result['countries'] = array_merge($result['countries'], $countries);
-				}
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
-			}
-		}
-
-		// Years list
-		if ($params->get('filter_release_year') == 1)
-		{
-			$query = $db->getQuery(true)
-				->select("DATE_FORMAT(release_date, '%Y') AS value, DATE_FORMAT(release_date, '%Y') AS name")
-				->from($db->quoteName('#__ka_releases'));
-
-			if ($country !== '')
-			{
-				$subquery = $db->getQuery(true)
-					->select('id')
-					->from($db->quoteName('#__ka_countries'))
-					->where("code = '" . $db->escape($country) . "' AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
-
-				$query->where('country_id = (' . $subquery . ')');
-			}
-
-			$query->group('value');
-			$db->setQuery($query);
-
-			try
-			{
-				$years = $db->loadAssocList();
-
-				if (count($years) > 0)
-				{
-					$result['years'] = array_merge($result['years'], $years);
-				}
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
-			}
-		}
-
-		// Months list
-		if ($params->get('filter_release_month') == 1)
-		{
-			$query = $db->getQuery(true)
-				->select("DATE_FORMAT(release_date, '%Y-%m') AS value, release_date")
-				->from($db->quoteName('#__ka_releases'));
-
-			if ($country !== '')
-			{
-				$subquery = $db->getQuery(true)
-					->select('id')
-					->from($db->quoteName('#__ka_countries'))
-					->where("code = '" . $db->escape($country) . "' AND language IN (" . $db->quote($lang->getTag()) . "," . $db->quote('*') . ")");
-
-				$query->where('country_id = (' . $subquery . ')');
-
-				if (!empty($year))
-				{
-					$query->where("release_date LIKE '%" . $year . "%'");
-				}
-			}
-			else
-			{
-				if (!empty($year))
-				{
-					$query->where("release_date LIKE '%" . $year . "%'");
-				}
-			}
-
-			$query->group('value');
-			$db->setQuery($query);
-
-			try
-			{
-				$months = $db->loadAssocList();
-
-				if (count($months) > 0)
-				{
-					foreach ($months as $key => $month)
-					{
-						$months[$key]['name'] = JHTML::_('date', strtotime($month['release_date']), 'F Y');
-					}
-
-					$result['months'] = array_merge($result['months'], $months);
-				}
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
-			}
-		}
-
-		// Distributors list
-		if ($params->get('filter_release_vendor') == 1)
-		{
-			$subquery = $db->getQuery(true)
-				->select('vendor_id')
-				->from($db->quoteName('#__ka_releases'))
-				->where('vendor_id != 0 AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
-
-			$query = $db->getQuery(true)
-				->select('id AS value, company_name AS name, company_name_intl')
-				->from($db->quoteName('#__ka_vendors'))
-				->where('id IN (' . $subquery . ') AND state = 1');
-
-			$db->setQuery($query);
-
-			try
-			{
-				$vendors = $db->loadAssocList();
-
-				if (count($vendors) > 0)
-				{
-					$result['vendors'] = array_merge($result['vendors'], $vendors);
-				}
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
-			}
-		}
-
-		// Media types
-		if ($params->get('filter_release_mediatype') == 1)
-		{
-			$query = $db->getQuery(true)
-				->select('id AS value, title AS name')
-				->from($db->quoteName('#__ka_media_types'))
-				->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
-
-			$db->setQuery($query);
-
-			try
-			{
-				$mediatypes = $db->loadAssocList();
-
-				if (count($mediatypes) > 0)
-				{
-					$result['mediatype'] = array_merge($result['mediatype'], $mediatypes);
-				}
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
-			}
-		}
-
-		return $result;
 	}
 
 	/**

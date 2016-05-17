@@ -43,7 +43,7 @@ $sfw = $this->params->get('player_swf');
 	<div class="ui-widget">
 		<div>
 			<?php if ($item_trailer->embed_code != ''):
-				echo $item_trailer->embed_code;
+				echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
 			else: ?>
 				<?php if (count($item_trailer->files['video']) > 0): ?>
 					<div id="trailer" class="minimalist" data-nativesubtitles="true" data-ratio="<?php echo $ratio; ?>">

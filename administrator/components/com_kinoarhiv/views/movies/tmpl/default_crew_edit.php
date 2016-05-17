@@ -14,7 +14,7 @@ $input = JFactory::getApplication()->input;
 $movie_id = $input->get('movie_id', 0, 'int');
 $name_id = $input->get('name_id', 0, 'int');
 ?>
-<script type="text/javascript" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
+<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/utils.js"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
 		$('#form_career_apply, #form_career_cancel, #form_name_apply, #form_name_cancel').button();

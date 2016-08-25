@@ -486,3 +486,10 @@ table[data-sortable] th[data-sorted-direction="ascending"]:after {
 	border-bottom-color: inherit;
 	margin-top: 3px;
 }
+
+/* Select2 filter result input fix */
+.select2-container--default .select2-search--dropdown .select2-search__field {
+	height: 24px;
+	line-height: 24px;
+	margin-bottom: 0;
+}

@@ -20,8 +20,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	public function view()
 	{
 		$app = JFactory::getApplication();
-		$element = $app->input->get('element', '', 'word');
-		$content = $app->input->get('content', '', 'word');
+		$element = $this->input->get('element', '', 'word');
+		$content = $this->input->get('content', '', 'word');
 
 		header_remove('X-Powered-By');
 
@@ -54,12 +54,11 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	{
 		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
-		$fs_alias = $app->input->get('fa', '', 'string');
-		$filename = $app->input->get('fn', '', 'string');
-		$thumbnail = $app->input->get('thumbnail', 0, 'int');
+		$id = $this->input->get('id', 0, 'int');
+		$fs_alias = $this->input->get('fa', '', 'string');
+		$filename = $this->input->get('fn', '', 'string');
+		$thumbnail = $this->input->get('thumbnail', 0, 'int');
 
 		if ($id == 0)
 		{
@@ -68,7 +67,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'image')
 		{
-			$type = $app->input->get('type', 2, 'int');
+			$type = $this->input->get('type', 2, 'int');
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
 			$path = $this->getImagePath('movie', $type, $fs_alias, $id, $filename);
 
@@ -100,12 +99,11 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	{
 		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
-		$fs_alias = $app->input->get('fa', '', 'string');
-		$filename = $app->input->get('fn', '', 'string');
-		$thumbnail = $app->input->get('thumbnail', 0, 'int');
+		$id = $this->input->get('id', 0, 'int');
+		$fs_alias = $this->input->get('fa', '', 'string');
+		$filename = $this->input->get('fn', '', 'string');
+		$thumbnail = $this->input->get('thumbnail', 0, 'int');
 
 		if ($id == 0)
 		{
@@ -114,8 +112,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'image')
 		{
-			$type = $app->input->get('type', 3, 'int');
-			$gender = $app->input->get('gender', 0, 'int');
+			$type = $this->input->get('type', 3, 'int');
+			$gender = $this->input->get('gender', 0, 'int');
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
 			$path = $this->getImagePath('name', $type, $fs_alias, $id, $filename);
 
@@ -150,10 +148,10 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
-		$item_id = $app->input->get('item_id', 0, 'int');
-		$fs_alias = $app->input->get('fa', '', 'string');
-		$filename = $app->input->get('fn', '', 'string');
+		$id = $this->input->get('id', 0, 'int');
+		$item_id = $this->input->get('item_id', 0, 'int');
+		$fs_alias = $this->input->get('fa', '', 'string');
+		$filename = $this->input->get('fn', '', 'string');
 
 		if ($id == 0)
 		{
@@ -171,7 +169,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'image')
 		{
-			$type = $app->input->get('type', 2, 'int');
+			$type = $this->input->get('type', 2, 'int');
 			$path = $this->getImagePath('trailer', $type, $fs_alias, $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))

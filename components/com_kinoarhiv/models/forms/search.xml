@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="movie">
+		<fieldset name="search" addfieldpath="components/com_kinoarhiv/models/fields/search/"
+				  addrulepath="components/com_kinoarhiv/models/rules/">
+			<field name="title" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL" filter="string"
+				   class="span10 uk-width-1-1" required="true"/>
+			<field name="year" type="text" default="" label="COM_KA_YEAR"
+				   description="COM_KA_SEARCH_ADV_MOVIES_YEAR_HELP" maxlength="10" filter="string"
+				   class="span3 uk-width-1-4 validate-date" validate="date"/>
+			<field name="year_range" type="year" default="" label="COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_TO_LABEL"
+				   class="span3 uk-width-1-4" data-range="true" data-content="movie"
+				   labelfrom="COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_LABEL"
+				   labelto="COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL" filter="string">
+				<option value="">-</option>
+			</field>
+			<field name="country" type="autocomplete" label="COM_KA_COUNTRY" class="span10 uk-width-1-1"
+				   data-content="countries" data-allow-clear="true" data-key="id" filter="integer"
+				   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+				<option value=""></option>
+			</field>
+			<field name="cast" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_NAMES_LABEL" filter="integer"
+				   description="COM_KA_SEARCH_ADV_MOVIES_NAMES_LABEL_DESC" labelclass="data-uk-tooltip"
+				   class="span10 uk-width-1-1" data-content="names" data-allow-clear="true" data-remote="true"
+				   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+				<option value=""></option>
+			</field>
+			<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL" filter="integer"
+				   class="span10 uk-width-1-1" data-content="vendors" data-allow-clear="true" data-key="id"
+				   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+				<option value=""></option>
+			</field>
+			<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
+				   data-content="genres-movie" data-allow-clear="true" data-key="id" multiple="true"
+				   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+				<option value=""></option>
+			</field>
+			<field name="mpaa" type="list" label="COM_KA_MPAA" class="span11 uk-width-1-6" filter="string">
+				<option value="">-</option>
+				<option value="g">G</option>
+				<option value="gp">GP</option>
+				<option value="pg">PG</option>
+				<option value="pg-13">PG-13</option>
+				<option value="r">R</option>
+				<option value="nc-17">NC-17</option>
+			</field>
+			<field name="age_restrict" type="list" label="COM_KA_RU_RATE" class="span7 uk-width-1-6" filter="integer">
+				<option value="-1">-</option>
+				<option value="0">0+</option>
+				<option value="6">6+</option>
+				<option value="12">12+</option>
+				<option value="16">16+</option>
+				<option value="18">18+</option>
+			</field>
+			<field name="ua_rate" type="list" label="COM_KA_UA_RATE" class="span4 uk-width-1-2" filter="integer">
+				<option value="-1">-</option>
+				<option value="0">COM_KA_SEARCH_ADV_MOVIES_UA_RATE_0</option>
+				<option value="1">COM_KA_SEARCH_ADV_MOVIES_UA_RATE_1</option>
+				<option value="2">COM_KA_SEARCH_ADV_MOVIES_UA_RATE_2</option>
+			</field>
+
+			<field name="rate_min" type="text" default="" label="COM_KA_RATE" maxlength="2" size="3"
+				   class="search_movies_rate_min" hint="0" filter="integer"/>
+			<field name="rate_max" type="text" default="" label="COM_KA_RATE" maxlength="2" size="3"
+				   class="search_movies_rate_max" hint="10" filter="integer"/>
+			<field name="rate_slider" type="slider" data-default="[0,params::vote_summ_num]" label="COM_KA_RATE"
+				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
+				   data-slider-max="params::vote_summ_num" data-slider-input-min="#movie_rate_min"
+				   data-slider-input-max="#movie_rate_max" translateLabel="false"/>
+
+			<field name="imdb_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE" maxlength="2"
+				   size="3" class="search_movies_imdbrate_min" hint="0" filter="integer"/>
+			<field name="imdb_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE" maxlength="2"
+				   size="3" class="search_movies_imdbrate_max" hint="10" filter="integer"/>
+			<field name="imdb_rate_slider" type="slider" data-default="[6,10]" translateLabel="false"
+				   label="COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE" class="search-rate-slider" data-slider-handle="square"
+				   data-slider-range="true" data-slider-min="0" data-slider-max="10"
+				   data-slider-input-min="#movie_imdb_rate_min" data-slider-input-max="#movie_imdb_rate_max"/>
+
+			<field name="kp_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_KP_RATE" maxlength="2"
+				   size="3" class="search_movies_kprate_min" hint="0" filter="integer"/>
+			<field name="kp_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_KP_RATE" maxlength="2"
+				   size="3" class="search_movies_kprate_max" hint="10" filter="integer"/>
+			<field name="kp_rate_slider" type="slider" data-default="[6,10]" label="COM_KA_SEARCH_ADV_MOVIES_KP_RATE"
+				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
+				   data-slider-max="10" data-slider-input-min="#movie_kp_rate_min"
+				   data-slider-input-max="#movie_kp_rate_max" translateLabel="false"/>
+
+			<field name="rt_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_RT_RATE" maxlength="3"
+				   size="3" class="search_movies_rtrate_min" hint="0" filter="integer"/>
+			<field name="rt_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_RT_RATE" maxlength="3"
+				   size="3" class="search_movies_rtrate_max" hint="100" filter="integer"/>
+			<field name="rt_rate_slider" type="slider" data-default="[50,100]" label="COM_KA_SEARCH_ADV_MOVIES_RT_RATE"
+				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
+				   data-slider-max="100" data-slider-input-min="#movie_rt_rate_min"
+				   data-slider-input-max="#movie_rt_rate_max" translateLabel="false"/>
+
+			<field name="mc_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_MTC_RATE" maxlength="3"
+				   size="3" class="search_movies_metacritic_min" hint="0" filter="integer"/>
+			<field name="mc_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_MTC_RATE" maxlength="3"
+				   size="3" class="search_movies_metacritic_max" hint="100" filter="integer"/>
+			<field name="mc_rate_slider" type="slider" data-default="[50,100]" label="COM_KA_SEARCH_ADV_MOVIES_MTC_RATE"
+				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
+				   data-slider-max="100" data-slider-input-min="#movie_mc_rate_min"
+				   data-slider-input-max="#movie_mc_rate_max" translateLabel="false"/>
+
+			<field name="budget" type="budget" default="" label="COM_KA_BUDGET" class="span3 uk-width-1-4"
+				   data-range="true" labelfrom="COM_KA_SEARCH_ADV_RANGE_FROM_LABEL"
+				   labelto="COM_KA_SEARCH_ADV_RANGE_TO_LABEL" filter="string">
+				<option value="">-</option>
+			</field>
+			<field name="premiere_date" type="premiere" data-content="date" default=""
+				   label="COM_KA_SEARCH_ADV_MOVIES_PREMIERE_DATE" class="span3 uk-width-1-4">
+				<option value="">-</option>
+			</field>
+			<field name="premiere_country" type="premiere" data-content="countries" default="" filter="integer"
+				   label="COM_KA_SEARCH_ADV_MOVIES_PREMIERE_COUNTRY" class="span7 uk-width-1-4 hasAutocomplete">
+				<option value=""></option>
+				<option value="0">COM_KA_PREMIERE_DATE_WORLDWIDE</option>
+			</field>
+			<field name="release_date" type="release" data-content="date" default=""
+				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_DATE" class="span3 uk-width-1-4">
+				<option value="">-</option>
+			</field>
+			<field name="release_country" type="release" data-content="countries" default="" filter="integer"
+				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_COUNTRY" class="span7 uk-width-1-4 hasAutocomplete">
+				<option value=""></option>
+			</field>
+			<field name="tags" type="autocomplete" label="JTAG" class="span10 uk-width-1-1" data-content="tags"
+				   data-allow-clear="true" data-key="id" multiple="true" data-placeholder="JGLOBAL_SELECT_AN_OPTION"
+				   data-minimum-input-length="1" data-maximum-selection-size="5">
+				<option value=""></option>
+			</field>
+		</fieldset>
+	</fields>
+
+	<fields name="name">
+		<field name="name" type="text" default="" label="COM_KA_SEARCH_ADV_NAMES_NAME_LABEL" filter="string"
+			   class="span10 uk-width-1-1" required="true"/>
+		<field name="birthday" type="text" default="" label="COM_KA_SEARCH_ADV_NAMES_DATE_OF_BIRTH_LABEL"
+			   description="COM_KA_SEARCH_ADV_NAMES_DATE_OF_BIRTH_HELP" class="span4 uk-width-1-4 validate-date"
+			   validate="date"/>
+		<field name="gender" type="list" label="COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL" class="span4 uk-width-1-4"
+			   filter="integer">
+			<option value="-1">-</option>
+			<option value="1">COM_KA_SEARCH_ADV_NAMES_GENDER_M</option>
+			<option value="0">COM_KA_SEARCH_ADV_NAMES_GENDER_F</option>
+		</field>
+		<field name="title" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL" filter="integer"
+			   labelclass="data-uk-tooltip"
+			   class="span10 uk-width-1-1" data-content="movies" data-allow-clear="true" data-remote="true"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			<option value=""></option>
+		</field>
+		<field name="birthplace" type="text" default="" label="COM_KA_NAMES_BIRTHPLACE_1" filter="string"
+			   class="span10 uk-width-1-1"/>
+		<field name="country" type="autocomplete" label="COM_KA_COUNTRY" class="span10 uk-width-1-1" filter="integer"
+			   data-content="countries" data-allow-clear="true" data-key="id"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
+		</field>
+		<field name="amplua" type="autocomplete" label="COM_KA_SEARCH_ADV_NAMES_AMPLUA_LABEL" filter="integer"
+			   class="span10 uk-width-1-1" data-content="amplua" data-allow-clear="true" data-key="id"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
+		</field>
+	</fields>
+</form>

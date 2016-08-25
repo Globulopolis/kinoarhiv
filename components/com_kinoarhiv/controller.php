@@ -52,11 +52,13 @@ class KinoarhivController extends JControllerLegacy
 	}
 
 	/**
-	 * Method mark movie as favorite
+	 * Method to mark movie as favorite
 	 *
-	 * @return string
+	 * @return mixed
 	 *
 	 * @throws Exception
+	 *
+	 * @since  3.0
 	 */
 	public function favorite()
 	{
@@ -108,11 +110,13 @@ class KinoarhivController extends JControllerLegacy
 	}
 
 	/**
-	 * Method mark movie as watched
+	 * Method to mark movie as watched
 	 *
-	 * @return string
+	 * @return mixed
 	 *
 	 * @throws Exception
+	 *
+	 * @since  3.0
 	 */
 	public function watched()
 	{
@@ -169,16 +173,16 @@ class KinoarhivController extends JControllerLegacy
 	}
 
 	/**
-	 * Method process user votes
+	 * Method to process user votes
 	 *
-	 * @return string
+	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	public function vote()
 	{
 		$user = JFactory::getUser();
-		$document = JFactory::getDocument();
-
-		$document->setMimeEncoding('application/json');
+		JFactory::getDocument()->setMimeEncoding('application/json');
 
 		if ($user->guest)
 		{
@@ -189,23 +193,6 @@ class KinoarhivController extends JControllerLegacy
 
 		$model = $this->getModel('movie');
 		$result = $model->voted();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to get ajax data from component tables
-	 *
-	 * @return string
-	 */
-	public function ajaxData()
-	{
-		$document = JFactory::getDocument();
-		$document->setMimeEncoding('application/json', false);
-		$document->setName('response');
-
-		$model = $this->getModel('global');
-		$result = $model->getAjaxData();
 
 		echo json_encode($result);
 	}

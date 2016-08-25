@@ -45,7 +45,7 @@ elseif ($this->item->attribs->movie_collapsed == 1)
 
 if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
-	$rating_image_www = JURI::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
+	$rating_image_www = JUri::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
 }
 else
 {
@@ -67,16 +67,7 @@ if (isset($this->item->slides) && !empty($this->item->slides)):
 endif;
 ?>
 <script type="text/javascript">
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	jQuery(document).ready(function ($) {
-		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		<?php if (!$this->user->guest): ?>
 		<?php if ($this->params->get('allow_votes') == 1): ?>
 		$('.rateit').bind('over', function (e, v) {
@@ -404,7 +395,7 @@ endif;
 				<div class="movie-info">
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=search&filters[movies][year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>"><?php echo $this->item->year; ?></a></span>
+						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=search&filters[movies][year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->year; ?></a></span>
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 						<div>
@@ -414,7 +405,7 @@ endif;
 								for ($i = 0, $n = $cn_count; $i < $n; $i++):
 									$country = $this->item->countries[$i]; ?>
 									<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>" rel="nofollow"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
 						</div>
@@ -472,7 +463,7 @@ endif;
 								<?php $genre_count = count($this->item->genres);
 								for ($i = 0, $n = $genre_count; $i < $n; $i++):
 									$genre = $this->item->genres[$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre" rel="nofollow"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
 						</div>
@@ -480,7 +471,7 @@ endif;
 					<?php if (!empty($this->item->budget)): ?>
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_BUDGET'); ?></span>
-							<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][from_budget]=' . $this->item->budget . '&Itemid=' . $this->itemid); ?>"><?php echo $this->item->budget; ?></a></span>
+							<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][from_budget]=' . $this->item->budget . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->budget; ?></a></span>
 						</div>
 					<?php endif; ?>
 					<?php if (count($this->item->premieres) > 0):

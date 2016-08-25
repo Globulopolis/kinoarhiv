@@ -20,15 +20,19 @@ use Joomla\Registry\Registry;
 class JFormRuleIp extends JFormRule
 {
 	/**
-	 * Method to test value
+	 * Method to test the IP.
 	 *
-	 * @param   SimpleXMLElement  $element  XML element
-	 * @param   mixed             $value    Value of the input
-	 * @param   null              $group    Field group
-	 * @param   Registry          $input    Input object
-	 * @param   JForm             $form     Form
+	 * @param   SimpleXMLElement  $element  The SimpleXMLElement object representing the `<field>` tag for the form field object.
+	 * @param   mixed             $value    The form field value to validate.
+	 * @param   string            $group    The field name group control value. This acts as as an array container for the field.
+	 *                                      For example if the field has name="foo" and the group value is set to "bar" then the
+	 *                                      full field name would end up being "bar[foo]".
+	 * @param   Registry          $input    An optional Registry object with the entire data set to validate against the entire form.
+	 * @param   JForm             $form     The form object for which the field is being tested.
 	 *
-	 * @return bool
+	 * @return  boolean  True if the value is valid, false otherwise.
+	 *
+	 * @since   3.0
 	 */
 	public function test(SimpleXMLElement $element, $value, $group = null, Registry $input = null, JForm $form = null)
 	{

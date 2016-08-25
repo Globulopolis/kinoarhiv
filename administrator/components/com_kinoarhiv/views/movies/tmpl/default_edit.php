@@ -19,7 +19,6 @@ $movie_id = $this->form->getValue('id', $this->form_edit_group);
 <?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
-<script type="text/javascript" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		var url, handler;
@@ -63,10 +62,10 @@ $movie_id = $this->form->getValue('id', $this->form_edit_group);
 		$.fn.bootstrapBtn = bootstrapButton;
 
 		var active_tab = 0;
-		if (typeof $.cookie('com_kinoarhiv.movie.tabs') == 'undefined') {
-			$.cookie('com_kinoarhiv.movie.tabs', 0);
+		if (typeof Cookies.get('com_kinoarhiv.movie.tabs') == 'undefined') {
+			Cookies.set('com_kinoarhiv.movie.tabs', 0);
 		} else {
-			active_tab = $.cookie('com_kinoarhiv.movie.tabs');
+			active_tab = Cookies.get('com_kinoarhiv.movie.tabs');
 		}
 
 		$('#movie_tabs').tabs({
@@ -74,7 +73,7 @@ $movie_id = $this->form->getValue('id', $this->form_edit_group);
 				$(this).tabs('option', 'active', parseInt(active_tab, 10));
 			},
 			activate: function(event, ui){
-				$.cookie('com_kinoarhiv.movie.tabs', ui.newTab.index());
+				Cookies.set('com_kinoarhiv.movie.tabs', ui.newTab.index());
 			}
 		});
 

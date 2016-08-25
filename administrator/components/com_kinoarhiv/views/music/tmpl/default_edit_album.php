@@ -19,7 +19,6 @@ KAComponentHelper::loadMediamanagerAssets();
 <?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
-<script type="text/javascript" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js"></script>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
@@ -39,10 +38,10 @@ KAComponentHelper::loadMediamanagerAssets();
 		$.fn.bootstrapBtn = bootstrapButton;
 
 		var active_tab = 0;
-		if (typeof $.cookie('com_kinoarhiv.albums.tabs') == 'undefined') {
-			$.cookie('com_kinoarhiv.albums.tabs', 0);
+		if (typeof Cookies.get('com_kinoarhiv.albums.tabs') == 'undefined') {
+			Cookies.set('com_kinoarhiv.albums.tabs', 0);
 		} else {
-			active_tab = $.cookie('com_kinoarhiv.albums.tabs');
+			active_tab = Cookies.get('com_kinoarhiv.albums.tabs');
 		}
 
 		$('#albums_tabs').tabs({
@@ -50,7 +49,7 @@ KAComponentHelper::loadMediamanagerAssets();
 				$(this).tabs('option', 'active', parseInt(active_tab, 10));
 			},
 			activate: function(event, ui){
-				$.cookie('com_kinoarhiv.albums.tabs', ui.newTab.index());
+				Cookies.set('com_kinoarhiv.albums.tabs', ui.newTab.index());
 			}
 		});
 

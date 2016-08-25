@@ -16,7 +16,7 @@ function blockUI(action) {
 }
 
 /*
- * A JavaScript equivalent of PHP’s empty. See http://phpjs.org/functions/empty/
+ * A JavaScript equivalent of PHP's empty. See http://phpjs.org/functions/empty/
  *
  * @return  boolean
  */

@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.modal', 'collapseModal');
-JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/cookie.min.js');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -40,10 +39,10 @@ JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/cookie.min
 
 	jQuery(document).ready(function($){
 		var active_tab = 0;
-		if (typeof $.cookie('com_kinoarhiv.settings.tabs') == 'undefined') {
-			$.cookie('com_kinoarhiv.settings.tabs', 0);
+		if (typeof Cookies.get('com_kinoarhiv.settings.tabs') == 'undefined') {
+			Cookies.set('com_kinoarhiv.settings.tabs', 0);
 		} else {
-			active_tab = $.cookie('com_kinoarhiv.settings.tabs');
+			active_tab = Cookies.get('com_kinoarhiv.settings.tabs');
 		}
 
 		$('#settings_tabs').tabs({
@@ -51,7 +50,7 @@ JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/cookie.min
 				$(this).tabs('option', 'active', parseInt(active_tab, 10));
 			},
 			activate: function(event, ui){
-				$.cookie('com_kinoarhiv.settings.tabs', ui.newTab.index());
+				Cookies.set('com_kinoarhiv.settings.tabs', ui.newTab.index());
 			}
 		});
 
@@ -259,7 +258,6 @@ JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/cookie.min
 							<?php echo $this->loadTemplate('search_names'); ?>
 						</div>
 					</div>
-					<?php echo $this->loadTemplate('search_other'); ?>
 				</div>
 
 				<?php if ($this->userIsSuperAdmin): ?>

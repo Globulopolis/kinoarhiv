@@ -27,6 +27,8 @@ class KinoarhivViewMovies extends JViewLegacy
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	public function display($tpl = null)
 	{
@@ -48,8 +50,10 @@ class KinoarhivViewMovies extends JViewLegacy
 		$siteEmail = $app->get('mailfrom');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$ka_theme = $params->get('ka_theme');
-		$itemid = $this->itemid;
 		$throttle_enable = $params->get('throttle_image_enable', 0);
+
+		// Used in preg_replace_callback
+		$itemid = $this->itemid;
 
 		$document->setTitle(JText::_('COM_KA_MOVIES'));
 		$document->setDescription($params->get('meta_description'));

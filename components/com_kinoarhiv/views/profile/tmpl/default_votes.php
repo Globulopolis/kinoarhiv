@@ -15,15 +15,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		function showMsg(selector, text) {
-			$(selector).aurora({
-				text: text,
-				placement: 'before',
-				button: 'close',
-				button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-			});
-		}
-
 		$('.rateit').bind('over', function (e, v) {
 			$(this).attr('title', v);
 		});
@@ -105,7 +96,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 			<?php endforeach; ?>
 		</div>
 
-		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+		<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 			<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 				<div class="pagination bottom">
 					<?php echo $this->pagination->getPagesLinks(); ?><br/>

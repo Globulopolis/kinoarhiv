@@ -86,8 +86,8 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 					unique_names: false,
 					multiple_queues: true,
 					filters: [{title: 'Image', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-					flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.flash.swf',
-					silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/plupload.silverlight.xap',
+					flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/Moxie.swf',
+					silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/Moxie.xap',
 					preinit: {
 						init: function(up, info){
 							$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');

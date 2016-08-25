@@ -25,7 +25,7 @@ $form   = $displayData->form;
 			plugins: 'format,undo',
 			toolbar: 'bold,italic,underline|left,center,right,justify|bulletlist,orderedlist|font,size,format|quote|undo,maximize,source',
 			height: '300',
-			style: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/editors/wysihtml5/ui/default_editor.css',
+			style: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/editors/wysihtml5/ui/default_editor.css',
 			emoticonsEnabled: false
 		});
 
@@ -86,7 +86,7 @@ $form   = $displayData->form;
 	});
 </script>
 <div style="clear: both;">&nbsp;</div>
-<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
 	<p><?php echo $form->getInput('review'); ?></p>
 	<div class="select-type"><?php echo $form->getLabel('type'); ?><?php echo $form->getInput('type'); ?></div>
 	<div class="clear"></div>

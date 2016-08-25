@@ -23,7 +23,7 @@ $form   = $displayData->form;
 	jQuery(document).ready(function($){
 		var editor = new wysihtml5.Editor('form_review', {
 			toolbar: document.querySelector('.editor-toolbar'),
-			stylesheets: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/editors/wysihtml5/ui/default_editor.css',
+			stylesheets: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/editors/wysihtml5/ui/default_editor.css',
 			parserRules: wysihtml5ParserRules
 		}).on('load', function(){
 			if (typeof wysihtml5i18n !== 'undefined') {
@@ -109,7 +109,7 @@ $form   = $displayData->form;
 	});
 </script>
 <div style="clear: both;">&nbsp;</div>
-<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
 	<div class="toolbar-container">
 		<ul class="editor-toolbar">
 			<li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" class="h1 hasTooltip"></li>

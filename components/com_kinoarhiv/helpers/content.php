@@ -26,6 +26,8 @@ class KAContentHelper
 	 * @param   string   $dimension   Default image dimension
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public static function getImageSize($path, $scale=true, $base_width=0, $dimension='128x128')
 	{
@@ -64,6 +66,8 @@ class KAContentHelper
 	 * @param   string  $separator    Separator to split titles.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public static function formatItemTitle($firstTitle, $secondTitle, $date='', $separator=' / ')
 	{

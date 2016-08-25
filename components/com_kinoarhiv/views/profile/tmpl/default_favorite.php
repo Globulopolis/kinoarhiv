@@ -24,16 +24,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		function showMsg(selector, text) {
-			$(selector).aurora({
-				text: text,
-				placement: 'before',
-				button: 'close',
-				button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-			});
-		}
-
-		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 		$('.cmd-fav-delete').click(function (e) {
 			e.preventDefault();
 			var _this = $(this);
@@ -106,7 +96,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>"/>
 		</form>
 
-		<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+		<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 			<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 				<div class="pagination bottom">
 					<?php echo $this->pagination->getPagesLinks(); ?><br/>

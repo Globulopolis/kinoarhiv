@@ -45,6 +45,8 @@ class KinoarhivModelName extends JModelList
 	 * Get an item data
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getData()
 	{
@@ -214,6 +216,8 @@ class KinoarhivModelName extends JModelList
 	 * @param   integer  $day    Day number
 	 *
 	 * @return string
+	 *
+	 * @since  3.0
 	 */
 	public function getZodiacSign($month, $day)
 	{
@@ -308,6 +312,8 @@ class KinoarhivModelName extends JModelList
 	 * Method to get person data
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getNameData()
 	{
@@ -351,6 +357,8 @@ class KinoarhivModelName extends JModelList
 	 * Method to get awards for person
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getAwards()
 	{
@@ -375,6 +383,8 @@ class KinoarhivModelName extends JModelList
 	 * Build list of filters by dimensions for gallery
 	 *
 	 * @return  array
+	 *
+	 * @since  3.0
 	 */
 	public function getDimensionFilters()
 	{

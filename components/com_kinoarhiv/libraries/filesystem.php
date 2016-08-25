@@ -19,6 +19,8 @@ class KAFilesystem
 {
 	/**
 	 * @var    array  instance of this class
+	 *
+	 * @since  3.0
 	 */
 	protected static $instance;
 
@@ -38,7 +40,7 @@ class KAFilesystem
 	 *
 	 * @return  KAFilesystem
 	 *
-	 * @since   3.0
+	 * @since  3.0
 	 */
 	public static function getInstance()
 	{
@@ -63,6 +65,8 @@ class KAFilesystem
 	 * @return  mixed
 	 *
 	 * @throws  Exception
+	 *
+	 * @since  3.0
 	 */
 	public function sendFile($file_path, $throttle=0, $throttle_config=array(), $disposition=true, $cache=true)
 	{
@@ -220,6 +224,8 @@ class KAFilesystem
 	 * Clean all buffers
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	private function cleanAll()
 	{
@@ -235,6 +241,8 @@ class KAFilesystem
 	 * @param   resource  $handle  Path to a file.
 	 *
 	 * @return  mixed (int|float) File size on success or false on error
+	 *
+	 * @since  3.0
 	 */
 	public function getFilesize($handle)
 	{
@@ -277,6 +285,8 @@ class KAFilesystem
 	 * @param   string  $path  Path to a file.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public function detectMime($path)
 	{

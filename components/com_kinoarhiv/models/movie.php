@@ -102,6 +102,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Get a movie item object
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getData()
 	{
@@ -150,7 +152,7 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (empty($result))
 			{
-				return false;
+				return (object) array();
 			}
 		}
 		catch (Exception $e)
@@ -412,6 +414,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Get a short movie info
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getMovieData()
 	{
@@ -459,6 +463,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * @param   mixed  $ids  Tag ID or array of tags IDs
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	protected function getTags($ids)
 	{
@@ -466,7 +472,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		if (empty($ids))
 		{
-			return array();
+			return (object) array();
 		}
 
 		if (is_array($ids))
@@ -497,6 +503,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Method to get cast and crew for movie
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getCast()
 	{
@@ -721,9 +729,11 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Method to get trailers for movie
 	 *
-	 * @param   integer  $id    Movie ID
+	 * @param   integer  $id  Movie ID
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getTrailers($id = null)
 	{
@@ -1098,6 +1108,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * @param   string   $type  Trailer type. If set to 'movie' when it's full length movie, trailer otherwise.
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getTrailer($id = null, $type = null)
 	{
@@ -1120,7 +1132,7 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			if ($params->get('allow_guest_watch') != 1)
 			{
-				return array();
+				return (object) array();
 			}
 
 			$is_movie = 1;
@@ -1150,7 +1162,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		if (count($result) < 1)
 		{
-			return array();
+			return (object) array();
 		}
 
 		$result->player_width = $params->get('player_width');
@@ -1467,6 +1479,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * @param   integer  $id  Trailer ID.
 	 *
 	 * @return boolean
+	 *
+	 * @since  3.0
 	 */
 	public function getTrailerAccessLevel($id)
 	{
@@ -1489,6 +1503,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Get winned awards for movie
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getAwards()
 	{
@@ -1520,6 +1536,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Get the list of albums and their tracks for movie
 	 *
 	 * @return object
+	 *
+	 * @since  3.0
 	 */
 	public function getSoundtracks()
 	{
@@ -1538,6 +1556,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Build list of filters by dimensions for gallery
 	 *
 	 * @return  array
+	 *
+	 * @since  3.0
 	 */
 	public function getDimensionFilters()
 	{
@@ -1567,6 +1587,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * Method to process user votes
 	 *
 	 * @return array
+	 *
+	 * @since  3.0
 	 */
 	public function voted()
 	{

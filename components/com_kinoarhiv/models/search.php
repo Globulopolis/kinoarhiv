@@ -17,14 +17,52 @@ use Joomla\Registry\Registry;
  *
  * @since  3.0
  */
-class KinoarhivModelSearch extends JModelLegacy
+class KinoarhivModelSearch extends JModelForm
 {
+	/**
+	 * Method to get the record form.
+	 *
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
+	 *
+	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since   3.0
+	 */
+	public function getForm($data = array(), $loadData = true)
+	{
+		$form = $this->loadForm('com_kinoarhiv.search', 'search', array('control' => 'form', 'load_data' => $loadData));
+
+		if (empty($form))
+		{
+			return false;
+		}
+
+		return $form;
+	}
+
+	/**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return  array    The default data is an empty array.
+	 *
+	 * @since   3.0
+	 */
+	protected function loadFormData()
+	{
+		return $this->getItems();
+	}
+
 	/**
 	 * Get initial data for lists in search form
 	 *
 	 * @return   object
 	 */
 	public function getItems()
+	{
+		return $_POST;
+	}
+	/*public function getItems()
 	{
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
@@ -214,7 +252,7 @@ class KinoarhivModelSearch extends JModelLegacy
 		);
 
 		return $items;
-	}
+	}*/
 
 	/**
 	 * Get the homepage Itemid for movies and names lists
@@ -256,6 +294,8 @@ class KinoarhivModelSearch extends JModelLegacy
 	 * Get the values for inputs
 	 *
 	 * @return   object
+	 *
+	 * @deprecated
 	 */
 	public function getActiveFilters()
 	{

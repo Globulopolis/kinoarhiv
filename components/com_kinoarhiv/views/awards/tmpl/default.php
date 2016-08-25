@@ -28,7 +28,7 @@ defined('_JEXEC') or die;
 
 	<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 			<div class="pagination bottom">
-				<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+				<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 				<?php echo $this->pagination->getPagesLinks(); ?><br />
 				<?php echo $this->pagination->getResultsCounter(); ?>
 				<?php echo $this->pagination->getLimitBox(); ?>

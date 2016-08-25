@@ -10,21 +10,14 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">
 	//<![CDATA[
 	jQuery(document).ready(function ($) {
-		function showMsg(selector, text) {
-			$(selector).aurora({
-				text: text,
-				placement: 'after',
-				button: 'close',
-				button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-			});
-		}
-
 		<?php if ($this->params->get('vegas_enable') == 1):
 		$src = explode(',', $this->params->get('vegas_bg'));
 			if (count($src) > 0): ?>
@@ -40,14 +33,12 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 				src: '<?php echo trim($image); ?>'
 				<?php endif; ?>
 			})<?php if ($this->params->get('vegas_overlay') != '-1'): ?>('overlay', {
-			src: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
+			src: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
 			opacity: <?php echo $this->params->get('vegas_overlay_opacity'); ?>
 		})<?php endif; ?>;
 		<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');
 		<?php endif; ?>
 		<?php endif; ?>
-
-		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 
 		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function (e) {
@@ -149,7 +140,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 								<?php endif; ?>
 							</div>
 							<?php if ($item->career != ''): ?>
-								<div class="name-career"><?php echo JText::_('COM_KA_NAMES_CAREER'); ?><?php echo JString::strtolower($item->career); ?></div>
+								<div class="name-career"><?php echo JText::_('COM_KA_NAMES_CAREER'); ?><?php echo StringHelper::strtolower($item->career); ?></div>
 							<?php endif; ?>
 							<?php if (!empty($item->birthplace) || !empty($item->country)): ?>
 								<div class="name-bd">
@@ -159,8 +150,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 								</div>
 							<?php endif; ?>
 							<?php if ($item->genres != ''): ?>
-								<div class="name-genres"><?php echo JText::_('COM_KA_GENRES'); ?>
-									: <?php echo JString::strtolower($item->genres); ?></div>
+								<div class="name-genres"><?php echo JText::_('COM_KA_GENRES'); ?>: <?php echo StringHelper::strtolower($item->genres); ?></div>
 							<?php endif; ?>
 							<div class="separator"></div>
 							<div class="tabs">
@@ -187,7 +177,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		<?php endforeach; ?>
 		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 		<div class="pagination bottom">
-			<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+			<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 				<?php echo $this->pagination->getPagesLinks(); ?><br/>
 				<?php echo $this->pagination->getResultsCounter(); ?>
 				<?php echo $this->pagination->getLimitBox(); ?>

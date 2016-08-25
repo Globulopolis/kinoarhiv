@@ -15,12 +15,14 @@ defined('_JEXEC') or die;
  *
  * @since  3.0
  */
-class KAComponentHelper extends JComponentHelper
+class KAComponentHelper
 {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	public static function setHeadTags()
 	{
@@ -33,9 +35,9 @@ class KAComponentHelper extends JComponentHelper
 
 		JHtml::_('jquery.framework');
 		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.js');
+		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.min.js');
 
-		$params = self::getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($params->get('vegas_enable') == 1)
 		{
@@ -45,6 +47,17 @@ class KAComponentHelper extends JComponentHelper
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/plugin.css');
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/style.css');
+
+		// Add some variables into the global scope
+		$js_vars = array(
+			'ka_theme' => $params->get('ka_theme'),
+			'language' => array(
+				'tag'         => JFactory::getLanguage()->getTag(),
+				'placeholder' => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
+				'close'       => JText::_('COM_KA_CLOSE')
+			)
+		);
+		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');
 	}
 
 	/**
@@ -56,6 +69,8 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   boolean  $close  Show close link.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public static function showMsg($text, $extra = array(), $close = false)
 	{
@@ -91,10 +106,12 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   array   $extra  Addtitional parameters for HTMLPurifier.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public static function cleanHTML($text, $tags = '', $extra = array())
 	{
-		$params = self::getParams('com_kinoarhiv');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$cache_path = JPath::clean(JPATH_CACHE . '/kinoarhiv/DefinitionCache/Serializer');
 
 		require_once JPath::clean(JPATH_COMPONENT . '/libraries/htmlpurifier/HTMLPurifier.standalone.php');
@@ -139,6 +156,8 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   string  $key     License key.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	public static function loadPlayerAssets($player, $key = '')
 	{
@@ -188,7 +207,7 @@ class KAComponentHelper extends JComponentHelper
 
 			if ($player == 'videojs')
 			{
-				$document->addScriptDeclaration("videojs.options.flash.swf='" . JURI::base() . $player_path . "videojs/video-js.swf';");
+				$document->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . $player_path . "videojs/video-js.swf';");
 			}
 			elseif ($player == 'mediaelement')
 			{
@@ -241,11 +260,13 @@ class KAComponentHelper extends JComponentHelper
 	 * @return  mixed
 	 *
 	 * @throws  Exception
+	 *
+	 * @since  3.0
 	 */
 	public static function eventLog($message, $silent = true)
 	{
-		$params = self::getParams('com_kinoarhiv');
-		$uri = JURI::getInstance();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$uri = JUri::getInstance();
 		$user = JFactory::getUser();
 
 		$message = $message . "\t" . $uri->current() . '?' . $uri->getQuery();
@@ -324,6 +345,8 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   string  $messageType  The message type. Default is message.
 	 *
 	 * @return  mixed   False if url is empty, void otherwise
+	 *
+	 * @since  3.0
 	 */
 	public static function doRedirect($url = null, $message = null, $messageType = 'message')
 	{
@@ -347,6 +370,8 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   array   $attribs  Additional HTML attributes
 	 *
 	 * @return   string
+	 *
+	 * @since  3.0
 	 */
 	public static function setLabel($for, $text, $title = '', $class = '', $attribs = array())
 	{
@@ -373,13 +398,15 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   boolean  $jhtml  Use JHtml::script() to load. Set this to false if need to load JS into raw document.
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	public static function getScriptLanguage($file, $path, $root=false, $jhtml=true)
 	{
 		$lang = JFactory::getLanguage()->getTag();
 		$filename = $file . $lang . '.js';
 
-		if ($root)
+		if ($root === true)
 		{
 			$basepath = JPATH_ROOT . '/' . $path . '/';
 			$url = JPath::clean($path . '/', '/');
@@ -425,6 +452,8 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   string  $function  Function name to check.
 	 *
 	 * @return  boolean
+	 *
+	 * @since  3.0
 	 */
 	public static function functionExists($function)
 	{

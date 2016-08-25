@@ -68,17 +68,16 @@ elseif ($this->element == 'names')
 <?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js" type="text/javascript"></script>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js" type="text/javascript"></script>
-<script src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
 		var col_sort = '',
 			list = $('#list');
 
-		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
-			$.cookie('<?php echo $uid_hash; ?>', '<?php echo $cookie; ?>', {expires: 365});
+		if (typeof Cookies.get('<?php echo $uid_hash; ?>') == 'undefined') {
+			Cookies.set('<?php echo $uid_hash; ?>', '<?php echo $cookie; ?>', {expires: 365});
 			col_sort = '<?php echo $cookie; ?>'.split('.');
 		} else {
-			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
+			col_sort = Cookies.get('<?php echo $uid_hash; ?>').split('.');
 		}
 
 		list.jqGrid({
@@ -103,7 +102,7 @@ elseif ($this->element == 'names')
 			sortorder: col_sort[2],
 			viewrecords: true,
 			onSortCol: function (i, col, ord) {
-				$.cookie('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
+				Cookies.set('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
 			}
 		});
 		list.jqGrid('navGrid', '#pager', {

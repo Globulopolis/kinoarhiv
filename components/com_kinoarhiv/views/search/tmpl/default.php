@@ -12,10 +12,7 @@ defined('_JEXEC') or die;
 
 if (JFactory::getDocument()->getType() == 'html')
 {
-	JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/select.css');
 	JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/bootstrap-slider.css');
-	JHtml::_('script', 'components/com_kinoarhiv/assets/js/select2.min.js');
-	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select');
 	JHtml::_('script', 'components/com_kinoarhiv/assets/js/bootstrap-slider.min.js');
 	JHtml::_('behavior.formvalidator');
 }

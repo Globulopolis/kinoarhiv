@@ -38,7 +38,7 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
 				$('video').mediaelementplayer({
-					pluginPath: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
+					pluginPath: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
 					flashName: 'flashmediaelement.swf',
 					silverlightName: 'silverlightmediaelement.xap'
 				});
@@ -179,7 +179,7 @@ endif; ?>
 															<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default="default"/>
 														<?php endif; ?>
 														<object width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" type="application/x-shockwave-flash" data="components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf">
-															<param name="movie" value="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf"/>
+															<param name="movie" value="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/flashmediaelement.swf"/>
 															<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>"/>
 															<img src="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" title="No video playback capabilities"/>
 														</object>

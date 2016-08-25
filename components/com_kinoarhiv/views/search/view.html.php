@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
  */
 class KinoarhivViewSearch extends JViewLegacy
 {
-	protected $items;
+	protected $form;
 
 	protected $params;
 
@@ -27,13 +27,13 @@ class KinoarhivViewSearch extends JViewLegacy
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-
-		$this->items = $this->get('Items');
-		$this->activeFilters = $this->get('ActiveFilters');
+		$this->form = $this->get('Form');
 		$this->home_itemid = $this->get('HomeItemid');
 
 		if (count($errors = $this->get('Errors')))
@@ -55,6 +55,8 @@ class KinoarhivViewSearch extends JViewLegacy
 	 * Prepares the document
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	protected function _prepareDocument()
 	{

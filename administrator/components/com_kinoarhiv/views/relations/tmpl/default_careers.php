@@ -22,11 +22,11 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 	jQuery(document).ready(function ($) {
 		var col_sort = '',
 			list = $('#list');
-		if (typeof $.cookie('<?php echo $uid_hash; ?>') == 'undefined') {
-			$.cookie('<?php echo $uid_hash; ?>', 'name.3.asc', {expires: 365});
+		if (typeof Cookies.get('<?php echo $uid_hash; ?>') == 'undefined') {
+			Cookies.set('<?php echo $uid_hash; ?>', 'name.3.asc', {expires: 365});
 			col_sort = 'name.3.asc'.split('.');
 		} else {
-			col_sort = $.cookie('<?php echo $uid_hash; ?>').split('.');
+			col_sort = Cookies.get('<?php echo $uid_hash; ?>').split('.');
 		}
 
 		list.jqGrid({
@@ -85,7 +85,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 			sortorder: col_sort[2],
 			viewrecords: true,
 			onSortCol: function (i, col, ord) {
-				$.cookie('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
+				Cookies.set('<?php echo $uid_hash; ?>', i + '.' + col + '.' + ord, {expires: 365});
 			}
 		});
 		list.jqGrid('navGrid', '#pager', {

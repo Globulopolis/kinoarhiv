@@ -14,7 +14,7 @@ use Joomla\String\StringHelper;
 
 if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
-	$rating_image_www = JURI::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
+	$rating_image_www = JUri::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
 }
 else
 {
@@ -27,15 +27,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		function showMsg(selector, text) {
-			$(selector).aurora({
-				text: text,
-				placement: 'after',
-				button: 'close',
-				button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-			});
-		}
-
 		<?php if ($this->params->get('vegas_enable') == 1):
 			$src = explode(',', $this->params->get('vegas_bg'));
 
@@ -52,14 +43,12 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 				src: '<?php echo trim($image); ?>'
 				<?php endif; ?>
 			})<?php if ($this->params->get('vegas_overlay') != '-1'): ?>('overlay', {
-			src: '<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
+			src: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
 			opacity: <?php echo $this->params->get('vegas_overlay_opacity'); ?>
 		})<?php endif; ?>;
 			<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');
 			<?php endif;
 		endif; ?>
-
-		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 
 		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function (e) {
@@ -291,7 +280,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		<?php endforeach; ?>
 		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 			<div class="pagination bottom">
-				<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+				<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 					<?php echo $this->pagination->getPagesLinks(); ?><br/>
 					<?php echo $this->pagination->getResultsCounter(); ?>
 					<?php echo $this->pagination->getLimitBox(); ?>

@@ -50,6 +50,8 @@ class KinoarhivModelReviews extends JModelForm
 	 * @return boolean
 	 *
 	 * @throws Exception
+	 *
+	 * @since  3.0
 	 */
 	public function save($data)
 	{
@@ -126,6 +128,8 @@ class KinoarhivModelReviews extends JModelForm
 	 * @param   array  $data  An array of form array('review'=>$review, 'id'=>$id, 'ip'=>$ip, 'datetime'=>$datetime)
 	 *
 	 * @return  boolean
+	 *
+	 * @since  3.0
 	 */
 	protected function sendEmails($data)
 	{
@@ -171,8 +175,8 @@ class KinoarhivModelReviews extends JModelForm
 			}
 
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movie_title);
-			$admin_url = JURI::base() . 'administrator/index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]=' . $data['insertid'];
-			$movie_url = JRoute::_(JURI::getInstance()) . '&review=' . $data['insertid'] . '#review-' . $data['insertid'];
+			$admin_url = JUri::base() . 'administrator/index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]=' . $data['insertid'];
+			$movie_url = JRoute::_(JUri::getInstance()) . '&review=' . $data['insertid'] . '#review-' . $data['insertid'];
 
 			$body = JText::sprintf(
 				'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
@@ -223,8 +227,8 @@ class KinoarhivModelReviews extends JModelForm
 			}
 
 			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movie_title);
-			$uprofile_url = JRoute::_(JURI::base() . 'index.php?option=com_kinoarhiv&view=profile&page=reviews&Itemid=' . (int) $menu_itemid);
-			$movie_url = JRoute::_(JURI::getInstance() . '&review=' . (int) $data['insertid']) . '#review-' . (int) $data['insertid'];
+			$uprofile_url = JRoute::_(JUri::base() . 'index.php?option=com_kinoarhiv&view=profile&page=reviews&Itemid=' . (int) $menu_itemid);
+			$movie_url = JRoute::_(JUri::getInstance() . '&review=' . (int) $data['insertid']) . '#review-' . (int) $data['insertid'];
 
 			$body = JText::sprintf(
 				'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
@@ -261,6 +265,8 @@ class KinoarhivModelReviews extends JModelForm
 	 * @return boolean
 	 *
 	 * @throws Exception
+	 *
+	 * @since  3.0
 	 */
 	public function delete()
 	{

@@ -76,7 +76,7 @@ defined('_JEXEC') or die;
 			<?php endfor; ?>
 
 			<div class="pagination bottom">
-				<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" name="adminForm"
+				<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm"
 					id="adminForm" style="clear: both;" autocomplete="off">
 					<?php echo $this->pagination->getPagesLinks(); ?><br/>
 					<?php echo $this->pagination->getResultsCounter(); ?>&nbsp;

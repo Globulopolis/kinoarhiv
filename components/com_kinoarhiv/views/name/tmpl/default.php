@@ -10,18 +10,12 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <script type="text/javascript">
 	//<![CDATA[
-	function showMsg(selector, text) {
-		jQuery(selector).aurora({
-			text: text,
-			button: 'close',
-			button_title: '[<?php echo JText::_('COM_KA_CLOSE'); ?>]'
-		});
-	}
-
 	jQuery(document).ready(function ($) {
 		<?php if ($this->params->get('link_favorite') == 1): ?>
 		$('.fav a').click(function (e) {
@@ -52,9 +46,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 	//]]>
 </script>
 <div class="content name">
-	<?php if ($this->params->get('use_alphabet') == 1):
+<?php
+	if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
-	endif; ?>
+	endif;
+?>
 
 	<article class="uk-article">
 		<?php
@@ -87,10 +83,10 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_BIRTH'); ?></span>
 						<span class="s-col">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]=' . $this->item->date_of_birth_raw . '&Itemid=' . $this->itemid); ?>">
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]=' . $this->item->date_of_birth_raw . '&Itemid=' . $this->itemid); ?>" rel="nofollow">
 								<?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>,
 							<?php if ($this->item->zodiac !== ''): ?>
-								<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0"/> <?php echo JText::_('COM_KA_NAMES_ZODIAC_' . JString::strtoupper($this->item->zodiac)); ?>,
+								<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0"/> <?php echo JText::_('COM_KA_NAMES_ZODIAC_' . StringHelper::strtoupper($this->item->zodiac)); ?>,
 							<?php endif; ?>
 							<?php echo $this->item->date_of_birth_interval_str; ?>
 						</span>
@@ -109,7 +105,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 						<span class="s-col">
 							<?php echo !empty($this->item->birthplace) ? $this->item->birthplace : ''; ?><?php if (!empty($this->item->birthplace) && !empty($this->item->country)): ?>, <?php endif; ?><?php if (!empty($this->item->country)): ?>
 								<img class="ui-icon-country" border="0" alt="<?php echo $this->item->country; ?>" src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $this->item->code; ?>.png">
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthcountry]=' . $this->item->birthcountry . '&Itemid=' . $this->itemid); ?>"><?php echo $this->item->country; ?></a><?php endif; ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthcountry]=' . $this->item->birthcountry . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->country; ?></a><?php endif; ?>
 						</span>
 						</div>
 					<?php endif; ?>
@@ -126,7 +122,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 							<?php $career_count = count($this->item->career);
 							for ($i = 0, $n = $career_count; $i < $n; $i++):
 								$career = $this->item->career[$i]; ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][amplua]=' . $career->id); ?>"><?php echo JString::strtolower($career->title); ?></a><?php echo $i + 1 == $n ? '' : ', '; ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][amplua]=' . $career->id); ?>" rel="nofollow"><?php echo StringHelper::strtolower($career->title); ?></a><?php echo $i + 1 == $n ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 						</div>
@@ -138,7 +134,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 							<?php $genres_count = count($this->item->genres);
 							for ($i = 0, $n = $genres_count; $i < $n; $i++):
 								$genre = $this->item->genres[$i]; ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][genre]=' . $genre->id); ?>"><?php echo JString::strtolower($genre->name); ?></a><?php echo $i + 1 == $n ? '' : ', '; ?>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][genre]=' . $genre->id); ?>" rel="nofollow"><?php echo StringHelper::strtolower($genre->name); ?></a><?php echo $i + 1 == $n ? '' : ', '; ?>
 							<?php endfor; ?>
 						</span>
 						</div>

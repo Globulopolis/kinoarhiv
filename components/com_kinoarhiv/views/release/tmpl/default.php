@@ -14,7 +14,7 @@ use Joomla\String\StringHelper;
 
 if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
-	$rating_image_www = JURI::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
+	$rating_image_www = JUri::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
 }
 else
 {
@@ -24,11 +24,9 @@ else
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 ?>
 <!-- Do not include script below into the head! -->
-<script src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/js/sortable.min.js" type="text/javascript"></script>
+<script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/sortable.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
-
 		$('.hasDesc').click(function () {
 			$(this).next('tr').toggle();
 			if ($(this).next('tr').is(':hidden')) {
@@ -173,7 +171,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
 									<a name="row-<?php echo $row->id; ?>"></a>
 								</td>
 								<td>
-									<img class="flag-dd" src="<?php echo JURI::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>
+									<img class="flag-dd" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>
 								</td>
 								<td><?php echo $row->media_type; ?></td>
 								<td><?php if ($row->desc != ''): ?>

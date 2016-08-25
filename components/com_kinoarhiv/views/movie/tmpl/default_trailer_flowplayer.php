@@ -18,7 +18,6 @@ $sfw = $this->params->get('player_swf');
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title><?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?></title>
-	<link href="components/com_kinoarhiv/assets/themes/ui/<?php echo $this->params->get('ui_theme'); ?>/jquery-ui.css" rel="stylesheet" type="text/css"/>
 	<link href="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/css/style.css" rel="stylesheet" type="text/css"/>
 	<?php KAComponentHelper::loadPlayerAssets($this->params->get('player_type')); ?>
 	<script type="text/javascript">
@@ -40,14 +39,14 @@ $sfw = $this->params->get('player_swf');
 	$item_trailer = $this->item;
 	$ratio_raw = explode(':', $item_trailer->dar);
 	$ratio = round($ratio_raw[1] / $ratio_raw[0], 4); ?>
-	<div class="ui-widget">
+	<div class="accordion" id="tr_accordion">
 		<div>
 			<?php if ($item_trailer->embed_code != ''):
 				echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
 			else: ?>
 				<?php if (count($item_trailer->files['video']) > 0): ?>
 					<div id="trailer" class="minimalist" data-nativesubtitles="true" data-ratio="<?php echo $ratio; ?>">
-						<video preload="none" poster="<?php echo $item_trailer->screenshot; ?>">
+						<video preload="none" poster="<?php echo $item_trailer->screenshot; ?>" width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>" style="width: 100%; height: 100%;">
 							<?php foreach ($item_trailer->files['video'] as $item): ?>
 								<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 							<?php endforeach; ?>

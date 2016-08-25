@@ -279,6 +279,8 @@ class KinoarhivModelNames extends JModelList
 	 * Get the values from search inputs
 	 *
 	 * @return   object
+	 *
+	 * @since  3.0
 	 */
 	public function getFiltersData()
 	{
@@ -295,6 +297,8 @@ class KinoarhivModelNames extends JModelList
 	 * @return array
 	 *
 	 * @throws Exception
+	 *
+	 * @since  3.0
 	 */
 	public function favorite()
 	{

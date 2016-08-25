@@ -45,6 +45,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	public function display($tpl = null)
 	{
@@ -89,6 +91,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed  A string if successful, otherwise a Error object.
+	 *
+	 * @since  3.0
 	 */
 	protected function info($tpl)
 	{
@@ -285,6 +289,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Method to get and show full cast and crew.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function cast()
 	{
@@ -339,6 +345,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Method to get and show wallpapers.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function wallpp()
 	{
@@ -475,6 +483,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Method to get and show posters.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function posters()
 	{
@@ -607,6 +617,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Method to get and show screenshots.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function screenshots()
 	{
@@ -742,6 +754,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Method to get and show awards.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function awards()
 	{
@@ -800,6 +814,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Method to get and show trailers.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function trailers()
 	{
@@ -923,6 +939,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Build list of image resolutions.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	protected function getDimensionList()
 	{
@@ -950,6 +968,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * Prepares the document
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	protected function _prepareDocument()
 	{

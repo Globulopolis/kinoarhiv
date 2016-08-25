@@ -804,6 +804,10 @@ div.rating {
 	margin-right: 8px;
 }
 
+#review-form .editor-container {
+	margin-right: 2px;
+}
+
 .thumb {
 	float: left;
 	margin: 8px 2px;
@@ -1086,12 +1090,11 @@ div.rating {
 	padding: 0 5px;
 }
 
-#filters_movies_rate_min, #filters_movies_rate_max,
-#filters_movies_imdbrate_min, #filters_movies_imdbrate_max,
-#filters_movies_kprate_min, #filters_movies_kprate_max,
-#filters_movies_rtrate_min, #filters_movies_rtrate_max,
-#filters_movies_metacritic_min, #filters_movies_metacritic_max {
-	border: none;
+.search_movies_rate_min, .search_movies_rate_max,
+.search_movies_imdbrate_min, .search_movies_imdbrate_max,
+.search_movies_kprate_min, .search_movies_kprate_max,
+.search_movies_rtrate_min, .search_movies_rtrate_max,
+.search_movies_metacritic_min, .search_movies_metacritic_max {
 	height: 18px;
 	margin: 0;
 	width: 30%;

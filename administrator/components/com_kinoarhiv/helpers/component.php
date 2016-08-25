@@ -42,6 +42,7 @@ class KAComponentHelper extends JComponentHelper
 		JHtml::_('jquery.framework');
 		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
 		JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
+		JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/js.cookie.min.js');
 		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/utils.js');
 
 		JText::script('COM_KA_CLOSE', true);

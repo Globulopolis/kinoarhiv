@@ -24,7 +24,8 @@ $form   = $displayData->form;
 		var editor = $('#form_review').trumbowyg({
 			lang: '<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>',
 			removeformatPasted: true,
-			btns: [ 'formatting', 'btnGrp-design', 'btnGrp-justify', 'btnGrp-lists', 'foreColor', 'backColor', 'viewHTML' ]
+			btns: [ 'formatting', 'btnGrp-design', 'btnGrp-justify', 'btnGrp-lists', 'foreColor', 'backColor', 'viewHTML' ],
+			resetCss: true
 		});
 
 		// Insert username into editor
@@ -88,8 +89,8 @@ $form   = $displayData->form;
 	});
 </script>
 <div style="clear: both;">&nbsp;</div>
-<form action="<?php echo htmlspecialchars(JURI::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
-	<p><?php echo $form->getInput('review'); ?></p>
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="review-form" class="form-horizontal uk-form editor">
+	<div class="editor-container"><?php echo $form->getInput('review'); ?></div>
 	<div class="select-type"><?php echo $form->getLabel('type'); ?><?php echo $form->getInput('type'); ?></div>
 	<div class="clear"></div>
 	<?php

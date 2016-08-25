@@ -34,6 +34,8 @@ class KinoarhivViewNames extends JViewLegacy
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
 	 * @return  mixed
+	 *
+	 * @since  3.0
 	 */
 	public function display($tpl = null)
 	{
@@ -159,6 +161,8 @@ class KinoarhivViewNames extends JViewLegacy
 	 * Prepares the document
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	protected function _prepareDocument()
 	{

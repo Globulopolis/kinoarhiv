@@ -24,24 +24,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		$('.cmd-fav-delete').click(function (e) {
-			e.preventDefault();
-			var _this = $(this);
-
-			$.ajax({
-				url: _this.attr('href') + '&format=raw'
-			}).done(function (response) {
-				if (response.success) {
-					_this.closest('div').remove();
-					showMsg('.fav-list', response.message);
-				} else {
-					showMsg('.fav-list', '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
-				}
-			}).fail(function (xhr, status, error) {
-				showMsg('.fav-list', error);
-			});
-		});
-
 		$('#checkall-toggle').click(function () {
 			if ($(this).is(':checked')) {
 				$('.fav-list .title-small :checkbox').prop('checked', true);
@@ -78,7 +60,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 					endif; ?>
 					<div class="title-small">
 						<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a></span>
-						<span style="float: right;"><a class="cmd-fav-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $this->tab . '&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0"/></a></span>
+						<span style="float: right;"><a class="cmd-favorite remove" data-msg_placement=".fav-list" data-remove="div" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $this->tab . '&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0"/></a></span>
 					</div>
 				<?php endforeach; ?>
 				<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>

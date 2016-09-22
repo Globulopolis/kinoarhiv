@@ -16,6 +16,7 @@ if ($this->params->get('search_movies_enable') == 0)
 }
 ?>
 <script type="text/javascript">
+	console.dir(parent.jQuery.fn.select2.locales);
 	jQuery(document).ready(function($){
 		document.formvalidator.setHandler('date', function(value){
 			var matches = /^(\d{4})[-\/](\d{2})[-\/](\d{2})$/.exec(value),
@@ -63,7 +64,7 @@ if ($this->params->get('search_movies_enable') == 0)
 		});
 
 		$('.cmd-reset-movies').click(function(){
-			$('#movie_country, #movie_vendor, #movie_genre, #movie_cast, #movie_tags').select2('val', '');
+			$('#form_movies_country, #form_movies_vendor, #form_movies_genre, #form_movies_cast, #form_movies_tags').select2('val', '');
 			$('.hasSlider').slider('refresh');
 		});
 	});
@@ -77,8 +78,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -88,8 +89,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('year', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('year', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('year', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('year', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -99,8 +100,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-3">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-2"><?php echo $this->form->getLabel('year_range', 'movie'); ?></div>
-						<div class="controls uk-width-1-3"><?php echo $this->form->getInput('year_range', 'movie'); ?></div>
+						<div class="control-label uk-width-1-2"><?php echo $this->form->getLabel('year_range', 'movies'); ?></div>
+						<div class="controls uk-width-1-3"><?php echo $this->form->getInput('year_range', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -110,8 +111,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('country', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('country', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('country', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('country', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -121,8 +122,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('cast', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('cast', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('cast', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('cast', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -132,8 +133,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('vendor', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('vendor', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('vendor', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('vendor', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -143,8 +144,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('genre', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('genre', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('genre', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('genre', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -155,16 +156,16 @@ if ($this->params->get('search_movies_enable') == 0)
 				<?php if ($this->params->get('search_movies_mpaa') == 1): ?>
 				<div class="span5 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('mpaa', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('mpaa', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('mpaa', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('mpaa', 'movies'); ?></div>
 					</div>
 				</div>
 				<?php endif; ?>
 				<?php if ($this->params->get('search_movies_age_restrict') == 1): ?>
 				<div class="span7 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('age_restrict', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('age_restrict', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('age_restrict', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('age_restrict', 'movies'); ?></div>
 					</div>
 				</div>
 				<?php endif; ?>
@@ -175,8 +176,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-3"><?php echo $this->form->getLabel('ua_rate', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('ua_rate', 'movie'); ?></div>
+						<div class="control-label uk-width-1-3"><?php echo $this->form->getLabel('ua_rate', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('ua_rate', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -186,12 +187,12 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('rate_min', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('rate_min', 'movies'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<?php echo $this->form->getInput('rate_min', 'movie'); ?> - <?php echo $this->form->getInput('rate_max', 'movie'); ?>
+								<?php echo $this->form->getInput('rate_min', 'movies'); ?> - <?php echo $this->form->getInput('rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rate_slider', 'movie'); ?></div>
+							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -202,12 +203,12 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('imdb_rate_min', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('imdb_rate_min', 'movies'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<?php echo $this->form->getInput('imdb_rate_min', 'movie'); ?> - <?php echo $this->form->getInput('imdb_rate_max', 'movie'); ?>
+								<?php echo $this->form->getInput('imdb_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('imdb_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('imdb_rate_slider', 'movie'); ?></div>
+							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('imdb_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -218,12 +219,12 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('kp_rate_min', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('kp_rate_min', 'movies'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<?php echo $this->form->getInput('kp_rate_min', 'movie'); ?> - <?php echo $this->form->getInput('kp_rate_max', 'movie'); ?>
+								<?php echo $this->form->getInput('kp_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('kp_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('kp_rate_slider', 'movie'); ?></div>
+							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('kp_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -234,12 +235,12 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('rt_rate_min', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('rt_rate_min', 'movies'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<?php echo $this->form->getInput('rt_rate_min', 'movie'); ?> - <?php echo $this->form->getInput('rt_rate_max', 'movie'); ?>
+								<?php echo $this->form->getInput('rt_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('rt_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rt_rate_slider', 'movie'); ?></div>
+							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rt_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -250,12 +251,12 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('mc_rate_min', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('mc_rate_min', 'movies'); ?></div>
 						<div class="controls uk-width-1-2" style="padding-top: 4px;">
 							<div class="span3 rate-input">
-								<?php echo $this->form->getInput('mc_rate_min', 'movie'); ?> - <?php echo $this->form->getInput('mc_rate_max', 'movie'); ?>
+								<?php echo $this->form->getInput('mc_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('mc_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('mc_rate_slider', 'movie'); ?></div>
+							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('mc_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -266,8 +267,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('budget', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('budget', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('budget', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('budget', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -279,7 +280,7 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><label id="movie_premiere_country-lbl" for="movie_premiere_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_PREMIERE'); ?></label></div>
 							<div class="controls uk-width-1-2">
-								<?php echo $this->form->getInput('premiere_country', 'movie'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('premiere_date', 'movie'); ?>
+								<?php echo $this->form->getInput('premiere_country', 'movies'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('premiere_date', 'movies'); ?>
 							</div>
 						</div>
 					</div>
@@ -292,7 +293,7 @@ if ($this->params->get('search_movies_enable') == 0)
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><label id="movie_release_country-lbl" for="movie_release_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_RELEASE'); ?></label></div>
 							<div class="controls uk-width-1-2">
-								<?php echo $this->form->getInput('release_country', 'movie'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('release_date', 'movie'); ?>
+								<?php echo $this->form->getInput('release_country', 'movies'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('release_date', 'movies'); ?>
 							</div>
 						</div>
 					</div>
@@ -303,8 +304,8 @@ if ($this->params->get('search_movies_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('tags', 'movie'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('tags', 'movie'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('tags', 'movies'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('tags', 'movies'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -313,8 +314,8 @@ if ($this->params->get('search_movies_enable') == 0)
 
 		<input type="hidden" name="option" value="com_kinoarhiv" />
 		<input type="hidden" name="task" value="search.results" />
-		<input type="hidden" name="content" value="movie" />
-		<input type="hidden" name="Itemid" value="<?php echo $this->home_itemid['movies']; ?>" />
+		<input type="hidden" name="content" value="movies" />
+		<input type="hidden" name="m_itemid" value="<?php echo $this->home_itemid['movies']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 		<input type="submit" class="btn btn-primary uk-button uk-button-primary validate" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 		<input type="reset" class="btn uk-button cmd-reset-movies" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />

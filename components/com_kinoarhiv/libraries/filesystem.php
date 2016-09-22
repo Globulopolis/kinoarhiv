@@ -180,6 +180,7 @@ class KAFilesystem
 		else
 		{
 			$new_length = $size;
+			$app->setHeader('HTTP/1.1', '200 OK');
 			$app->setHeader('Content-Length', $size);
 		}
 

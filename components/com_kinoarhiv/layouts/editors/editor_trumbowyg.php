@@ -24,7 +24,7 @@ $form   = $displayData->form;
 		var editor = $('#form_review').trumbowyg({
 			lang: '<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>',
 			removeformatPasted: true,
-			btns: [ 'formatting', 'btnGrp-design', 'btnGrp-justify', 'btnGrp-lists', 'foreColor', 'backColor', 'viewHTML' ],
+			btns: [ 'formatting', 'btnGrp-design', 'btnGrp-justify', 'btnGrp-lists', ['foreColor', 'backColor'], 'viewHTML' ],
 			resetCss: true
 		});
 

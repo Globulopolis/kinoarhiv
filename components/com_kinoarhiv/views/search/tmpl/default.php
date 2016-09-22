@@ -12,8 +12,6 @@ defined('_JEXEC') or die;
 
 if (JFactory::getDocument()->getType() == 'html')
 {
-	JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/bootstrap-slider.css');
-	JHtml::_('script', 'components/com_kinoarhiv/assets/js/bootstrap-slider.min.js');
 	JHtml::_('behavior.formvalidator');
 }
 else
@@ -24,9 +22,10 @@ else
 	</style>
 	<script src="components/com_kinoarhiv/assets/js/bootstrap-slider.min.js" type="text/javascript"></script>
 	<script src="components/com_kinoarhiv/assets/js/select2.min.js" type="text/javascript"></script>
-	<script src="media/system/js/core-uncompressed.js" type="text/javascript"></script>
-	<script src="media/system/js/punycode-uncompressed.js" type="text/javascript"></script>
-	<script src="media/system/js/validate-uncompressed.js" type="text/javascript"></script>' . "\n";
+	<script src="media/system/js/core.js" type="text/javascript"></script>
+	<script src="media/system/js/punycode.js" type="text/javascript"></script>
+	<script src="media/system/js/validate.js" type="text/javascript"></script>
+	<script src="components/com_kinoarhiv/assets/js/component.min.js" type="text/javascript"></script>' . "\n";
 	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select', false, false);
 }
 ?>

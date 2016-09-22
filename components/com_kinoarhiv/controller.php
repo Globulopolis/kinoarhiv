@@ -52,7 +52,7 @@ class KinoarhivController extends JControllerLegacy
 	}
 
 	/**
-	 * Method to mark movie as favorite
+	 * Method to mark movie, person as favorite
 	 *
 	 * @return mixed
 	 *
@@ -94,7 +94,6 @@ class KinoarhivController extends JControllerLegacy
 		else
 		{
 			$tab = $this->input->get('tab', '', 'cmd');
-
 			$page = $this->input->get('page', '', 'cmd');
 			$id = $this->input->get('id', 0, 'int');
 			$_id = ($id != 0) ? '&id=' . $id : '';

@@ -65,10 +65,12 @@ class JFormFieldBudget extends JFormFieldList
 
 		if ($this->element['data-range'] == 'true')
 		{
+			$_value_1 = (is_array($this->value) && array_key_exists(0, $this->value)) ? $this->value[0] : '';
+			$_value_2 = (is_array($this->value) && array_key_exists(1, $this->value)) ? $this->value[1] : '';
 			$html[] = JText::_($this->element['labelfrom']) . '&nbsp;';
-			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $this->value, $this->id . '_from');
+			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $_value_1, $this->id . '_from');
 			$html[] = '&nbsp;&nbsp;&nbsp;&nbsp;' . JText::_($this->element['labelto']) . '&nbsp;';
-			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $this->value, $this->id . '_to');
+			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $_value_2, $this->id . '_to');
 		}
 		else
 		{

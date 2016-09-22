@@ -10,8 +10,8 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\String\StringHelper;
 
 /**
  * Persons list class
@@ -143,8 +143,6 @@ class KinoarhivModelNames extends JModelList
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$where_id = array();
-
 		$query = $db->getQuery(true);
 
 		$query->select(
@@ -174,36 +172,48 @@ class KinoarhivModelNames extends JModelList
 
 		$query->where('n.state = 1 AND n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND n.access IN (' . $groups . ')');
 
-		if ($app->input->get('task', '', 'cmd') == 'search' && KAComponentHelper::checkToken() === true)
-		{
-			$searches = $this->getFiltersData();
+		$filters = $this->getFiltersData();
 
+		if ($filters !== false)
+		{
 			// Filter by name
-			$name = $searches->get('filters.names.name');
+			$name = trim($filters->get('names.name'));
 
 			if ($params->get('search_names_name') == 1 && !empty($name))
 			{
-				$query->where("(n.name LIKE '%" . $db->escape($name) . "%' OR n.latin_name LIKE '%" . $db->escape($name) . "%')");
+				$exact_match = $app->input->get('exact_match', 0, 'int');
+				$filter = StringHelper::strtolower(trim($name));
+
+				if ($exact_match === 1)
+				{
+					$filter = $db->quote('%' . $db->escape($filter, true) . '%', false);
+				}
+				else
+				{
+					$filter = $db->quote($db->escape($filter, true) . '%', false);
+				}
+
+				$query->where('(n.name LIKE ' . $filter . ' OR n.latin_name LIKE ' . $filter . ')');
 			}
 
 			// Filter by birthday
-			$birthday = $searches->get('filters.names.birthday');
+			$birthday = $filters->get('names.birthday');
 
 			if ($params->get('search_names_birthday') == 1 && !empty($birthday))
 			{
-				$query->where("n.date_of_birth LIKE '%" . $db->escape($birthday) . "%'");
+				$query->where('n.date_of_birth LIKE ' . $db->quote('%' . $db->escape($birthday, true) . '%', false));
 			}
 
 			// Filter by gender
-			$gender = $searches->get('filters.names.gender');
+			$gender = $filters->get('names.gender');
 
-			if ($params->get('search_names_gender') == 1 && ($gender === 0 || $gender === 1))
+			if ($params->get('search_names_gender') == 1 && ($gender !== -1))
 			{
-				$query->where("n.gender = " . (int) $gender);
+				$query->where('n.gender = ' . (int) $gender);
 			}
 
 			// Filter by movie title
-			$mtitle = $searches->get('filters.names.mtitle');
+			$mtitle = $filters->get('names.title');
 
 			if ($params->get('search_names_mtitle') == 1 && !empty($mtitle))
 			{
@@ -216,27 +226,32 @@ class KinoarhivModelNames extends JModelList
 				$db->setQuery($subquery_title);
 				$name_ids = $db->loadColumn();
 
-				$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
+				if (count($name_ids) == 0)
+				{
+					$name_ids = array(0);
+				}
+
+				$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($name_ids)) . ')');
 			}
 
 			// Filter by birthplace
-			$birthplace = trim($searches->get('filters.names.birthplace'));
+			$birthplace = trim($filters->get('names.birthplace'));
 
 			if ($params->get('search_names_birthplace') == 1 && !empty($birthplace))
 			{
-				$query->where("n.birthplace LIKE '%" . $db->escape($birthplace) . "%'");
+				$query->where('n.birthplace LIKE ' . $db->quote('%' . $db->escape($birthplace, true) . '%', false));
 			}
 
 			// Filter by country
-			$country = $searches->get('filters.names.birthcountry');
+			$country = $filters->get('names.birthcountry');
 
 			if ($params->get('search_names_birthcountry') == 1 && !empty($country))
 			{
-				$query->where("n.birthcountry = " . (int) $country);
+				$query->where('n.birthcountry = ' . (int) $country);
 			}
 
 			// Filter by amplua
-			$amplua = $searches->get('filters.names.amplua');
+			$amplua = $filters->get('names.amplua');
 
 			if ($params->get('search_names_amplua') == 1 && !empty($amplua))
 			{
@@ -249,20 +264,12 @@ class KinoarhivModelNames extends JModelList
 				$db->setQuery($subquery_amplua);
 				$name_ids = $db->loadColumn();
 
-				$where_id = (!empty($name_ids)) ? array_merge($where_id, $name_ids) : array(0);
-			}
-
-			if ((!empty($mtitle) || !empty($amplua)) && !empty($where_id))
-			{
-				// Remove 0 in array
-				$ids_keys = array_keys($where_id, 0);
-
-				foreach ($ids_keys as $k)
+				if (count($name_ids) == 0)
 				{
-					unset($where_id[$k]);
+					$name_ids = array(0);
 				}
 
-				$query->where("n.id IN (" . implode(',', ArrayHelper::arrayUnique($where_id)) . ")");
+				$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($name_ids)) . ')');
 			}
 		}
 

@@ -52,9 +52,10 @@ class KAComponentHelper
 		$js_vars = array(
 			'ka_theme' => $params->get('ka_theme'),
 			'language' => array(
-				'tag'         => JFactory::getLanguage()->getTag(),
-				'placeholder' => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
-				'close'       => JText::_('COM_KA_CLOSE')
+				'tag'           => JFactory::getLanguage()->getTag(),
+				'placeholder'   => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
+				'close'         => JText::_('COM_KA_CLOSE'),
+				'error_occured' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');

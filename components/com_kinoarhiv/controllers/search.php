@@ -26,20 +26,21 @@ class KinoarhivControllerSearch extends JControllerLegacy
 	 */
 	public function results()
 	{
-		if (JSession::checkToken() === false)
+		$app = JFactory::getApplication();
+		$content = $this->input->post->get('content', '', 'word');
+
+		if (KAComponentHelper::checkToken() === false)
 		{
-			// Inform user about an error. This is disabled in reviews controller.
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=search', false), JText::_('JINVALID_TOKEN'), 'error');
+			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=search', false));
 
 			return false;
 		}
 
-		$app = JFactory::getApplication();
-		$content = $this->input->post->get('content', '', 'word');
-
-		if ($content == '')
+		if (empty($content))
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=search', false), 'Wrong content', 'error');
+			KAComponentHelper::eventLog('Wrong search query: content parameter');
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=search', false));
 
 			return false;
 		}
@@ -50,9 +51,29 @@ class KinoarhivControllerSearch extends JControllerLegacy
 
 		if (!$form)
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=search', false), $model->getError(), 'error');
+			KAComponentHelper::eventLog($model->getError());
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=search', false));
 
 			return false;
+		}
+
+		// Slashes cause errors, <> get stripped anyway later on. # causes problems.
+		$badchars = array('#', '>', '<', '\\');
+
+		// We need to check field name for person
+		$title_field = ($content == 'names') ? 'name' : 'title';
+
+		$data[$content][$title_field] = trim(str_replace($badchars, '', $data[$content][$title_field]));
+
+		// If searchword enclosed in double quotes, strip quotes and do exact match
+		if (substr($data[$content][$title_field], 0, 1) == '"' && substr($data[$content][$title_field], -1) == '"')
+		{
+			$data[$content][$title_field] = substr($data[$content][$title_field], 1, -1);
+			$exact_match = true;
+		}
+		else
+		{
+			$exact_match = false;
 		}
 
 		$validData = $model->validate($form, $data, $content);
@@ -78,27 +99,20 @@ class KinoarhivControllerSearch extends JControllerLegacy
 			return false;
 		}
 
-		/*// Slashes cause errors, <> get stripped anyway later on. # causes problems.
-		$badchars = array('#', '>', '<', '\\');
-		$searchword = trim(str_replace($badchars, '', $this->input->post->get('searchword', null, 'string')));
-
-		// If searchword enclosed in double quotes, strip quotes and do exact match
-		if (substr($searchword, 0, 1) == '"' && substr($searchword, -1) == '"')
-		{
-			$post['searchword'] = substr($searchword, 1, -1);
-			$this->input->set('searchphrase', 'exact');
-		}
-		else
-		{
-			$post['searchword'] = $searchword;
-		}*/
-
-		$post = $data;
-
 		$uri = JUri::getInstance();
-		$uri->setQuery($post);
+		$uri->setQuery($data);
 		$uri->setVar('option', 'com_kinoarhiv');
+		$uri->setVar('view', $content);
+		$uri->setVar('Itemid', $this->input->post->get('m_itemid', '', 'int'));
+		$uri->setVar('content', $content);
+
+		if ($exact_match)
+		{
+			$uri->setVar('exact_match', 1);
+		}
 
 		$this->setRedirect(JRoute::_('index.php' . $uri->toString(array('query', 'fragment')), false));
+
+		return true;
 	}
 }

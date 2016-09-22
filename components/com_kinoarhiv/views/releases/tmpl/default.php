@@ -50,32 +50,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');
 		<?php endif; ?>
 		<?php endif; ?>
-
-		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-		$('.fav a').click(function (e) {
-			e.preventDefault();
-			var _this = $(this);
-
-			$.ajax({
-				url: _this.attr('href') + '&format=raw'
-			}).done(function (response) {
-				if (response.success) {
-					_this.text(response.text);
-					_this.attr('href', response.url);
-					if (_this.hasClass('delete')) {
-						_this.removeClass('delete').addClass('add');
-					} else {
-						_this.removeClass('add').addClass('delete');
-					}
-					showMsg(_this.closest('header'), response.message);
-				} else {
-					showMsg(_this.closest('header'), '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
-				}
-			}).fail(function (xhr, status, error) {
-				showMsg(_this.closest('header'), error);
-			});
-		});
-		<?php endif; ?>
 	});
 	//]]>
 </script>
@@ -152,11 +126,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 							<?php endif; ?>
 						</p>
 						<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-							<p class="fav">
+							<p class="favorite">
 								<?php if ($item->favorite == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="cmd-favorite delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=favorite&action=add&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="cmd-favorite add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 								<?php endif; ?>
 							</p>
 						<?php endif; ?>

@@ -146,17 +146,17 @@ h3.title {
 	margin: 0 4px;
 }
 
-.item .fav {
+.item .favorite {
 	float: right;
 	margin: 0 4px;
 }
 
-.fav a.add {
+.favorite a.add {
 	background: url("../images/icons/favorite_add_16.png") no-repeat;
 	padding: 0 0 2px 20px;
 }
 
-.fav a.delete {
+.favorite a.delete {
 	background: url("../images/icons/favorite_delete_16.png") no-repeat;
 	padding: 0 0 2px 20px;
 }

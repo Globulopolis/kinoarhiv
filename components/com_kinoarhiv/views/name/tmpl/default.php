@@ -14,37 +14,6 @@ use Joomla\String\StringHelper;
 
 JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
-<script type="text/javascript">
-	//<![CDATA[
-	jQuery(document).ready(function ($) {
-		<?php if ($this->params->get('link_favorite') == 1): ?>
-		$('.fav a').click(function (e) {
-			e.preventDefault();
-			var _this = $(this);
-
-			$.ajax({
-				url: _this.attr('href') + '&format=raw'
-			}).done(function (response) {
-				if (response.success) {
-					_this.text(response.text);
-					_this.attr('href', response.url);
-					if (_this.hasClass('delete')) {
-						_this.removeClass('delete').addClass('add');
-					} else {
-						_this.removeClass('add').addClass('delete');
-					}
-					showMsg($('.mark-links'), response.message);
-				} else {
-					showMsg($('.mark-links'), '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?> ' + response.message);
-				}
-			}).fail(function (xhr, status, error) {
-				showMsg($('.mark-links'), error);
-			});
-		});
-		<?php endif; ?>
-	});
-	//]]>
-</script>
 <div class="content name">
 <?php
 	if ($this->params->get('use_alphabet') == 1):
@@ -67,11 +36,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 				<?php if (!$this->user->guest): ?>
 					<div class="mark-links">
 						<?php if ($this->params->get('link_favorite') == 1): ?>
-							<div class="fav">
+							<div class="favorite">
 								<?php if ($this->item->favorite == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite delete" data-msg_placement=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite add" data-msg_placement=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>

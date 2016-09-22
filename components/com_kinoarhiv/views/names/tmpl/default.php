@@ -40,34 +40,8 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		<?php endif; ?>
 		<?php endif; ?>
 
-		<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-		$('.fav a').click(function (e) {
-			e.preventDefault();
-			var _this = $(this);
-
-			$.ajax({
-				url: _this.attr('href') + '&format=raw'
-			}).done(function (response) {
-				if (response.success) {
-					_this.text(response.text);
-					_this.attr('href', response.url);
-					if (_this.hasClass('delete')) {
-						_this.removeClass('delete').addClass('add');
-					} else {
-						_this.removeClass('add').addClass('delete');
-					}
-					showMsg(_this.closest('.middle-nav'), response.message);
-				} else {
-					showMsg(_this.closest('.middle-nav'), '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
-				}
-			}).fail(function (xhr, status, error) {
-				showMsg(_this.closest('.middle-nav'), error);
-			});
-		});
-		<?php endif; ?>
-
-		<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
-		$('#searchForm #search_form_content').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=names&format=raw&'.JSession::getFormToken().'=1', false); ?>', <?php echo json_encode($this->activeFilters); ?>, function (response, status, xhr) {
+		<?php if ($this->params->get('search_names_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('names')): ?>
+		$('#searchForm #search_form_content').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=names&format=raw&' . JSession::getFormToken() . '=1', false); ?>', <?php echo json_encode(array('form' => $this->filtersData)); ?>, function (response, status, xhr) {
 			if (status == 'error') {
 				showMsg('Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText);
 				return false;
@@ -84,7 +58,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
 	endif; ?>
 
-	<?php if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')): ?>
+	<?php if ($this->params->get('search_names_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('names')): ?>
 		<div class="accordion" id="searchForm">
 			<div class="accordion-group">
 				<div class="accordion-heading">
@@ -100,7 +74,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 	<?php endif; ?>
 
 	<?php if (count($this->items) > 0):
-		if ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')):
+		if ($this->params->get('search_names_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('names')):
 			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			echo '<br />' . JText::sprintf('COM_KA_SEARCH_PERSON_N_RESULTS_' . $plural[0], $this->pagination->total);
 		endif; ?>
@@ -130,11 +104,11 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 						<div class="introtext">
 							<div class="middle-nav clearfix">
 								<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
-									<p class="fav">
+									<p class="favorite">
 										<?php if ($item->favorite == 1): ?>
-											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="cmd-favorite delete" data-msg_placement=".middle-nav"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 										<?php else: ?>
-											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=add&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=add&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" class="cmd-favorite add" data-msg_placement=".middle-nav"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 										<?php endif; ?>
 									</p>
 								<?php endif; ?>
@@ -186,6 +160,6 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 	<?php endif;
 	else: ?>
 		<br/>
-		<div><?php echo ($this->params->get('search_names_enable') == 1 && $this->activeFilters->exists('filters.names')) ? JText::sprintf('COM_KA_SEARCH_PERSON_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<div><?php echo ($this->params->get('search_names_enable') == 1 && $this->filtersData->exists('names')) ? JText::sprintf('COM_KA_SEARCH_PERSON_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

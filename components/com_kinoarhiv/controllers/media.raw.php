@@ -257,12 +257,14 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 * Method to get the filesystem path for image content
 	 *
 	 * @param   string   $content   Item type. Movie or person or trailer screenshot or album art.
-	 * @param   integer  $type      Content image type.
+	 * @param   integer  $type      Content image type. 1 - wallpapers, 2 - posters, 3 - screenshots
 	 * @param   string   $fs_alias  Filesystem alias(`fs_alias` column).
 	 * @param   integer  $item_id   Item ID.
 	 * @param   string   $filename  File name.
 	 *
-	 * @return string
+	 * @return  string
+	 *
+	 * @since    3.0
 	 */
 	private function getImagePath($content, $type, $fs_alias, $item_id, $filename)
 	{
@@ -320,7 +322,9 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 * @param   integer  $item_id   Item ID.
 	 * @param   string   $filename  File name.
 	 *
-	 * @return string
+	 * @return  string
+	 *
+	 * @since   3.0
 	 */
 	private function getVideoPath($fs_alias, $item_id, $filename)
 	{

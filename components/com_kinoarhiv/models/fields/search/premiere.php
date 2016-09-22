@@ -53,6 +53,13 @@ class JFormFieldPremiere extends JFormFieldList
 
 		$attr .= $this->required ? ' required aria-required="true"' : '';
 		$attr .= $this->multiple ? ' multiple' : '';
+
+		// A 'data-allow-clear' required true/false instead of an empty value
+		$attr .= (string) $this->element['data-allow-clear'] == 'true' ? ' data-allow-clear="true"' : ' data-allow-clear="false"';
+
+		// A 'data-placeholder' must be always set
+		$attr .= $this->element['data-placeholder'] ? ' data-placeholder="' . JText::_($this->element['data-placeholder']) . '"' : ' data-placeholder=""';
+
 		$options = (array) $this->getOptions();
 
 		if ($this->element['data-content'] == 'date')

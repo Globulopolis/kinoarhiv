@@ -17,50 +17,8 @@ if ($this->params->get('search_names_enable') == 0)
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('#filters_names_mtitle').select2({
-			placeholder: '<?php echo JText::_('JGLOBAL_KEEP_TYPING'); ?>',
-			allowClear: true,
-			minimumInputLength: 1,
-			maximumSelectionSize: 1,
-			ajax: {
-				cache: true,
-				url: '<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&Itemid=' . $this->home_itemid['movies'], false); ?>',
-				data: function(term, page){
-					return {
-						term: term,
-						showAll: 0
-					}
-				},
-				results: function(data, page){
-					return {results: data};
-				}
-			},
-			initSelection: function(element, callback){
-				var id = parseInt($(element).val(), 10);
-
-				if (id !== 0) {
-					$.ajax('<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=ajaxData&element=movies&format=json&Itemid=' . $this->home_itemid['movies'], false); ?>', {
-						data: {
-							id: id
-						}
-					}).done(function(data){
-						callback(data);
-					});
-				}
-			},
-			formatResult: function(data){
-				if (data.year == '0000') return data.title;
-				return data.title+' ('+data.year+')';
-			},
-			formatSelection: function(data){
-				if (data.year == '0000') return data.title;
-				return data.title+' ('+data.year+')';
-			},
-			escapeMarkup: function(m) { return m; }
-		});
-
 		$('.cmd-reset-names').click(function(){
-			$('#name_country').select2('val', '');
+			$('#form_names_title').select2('val', '');
 		});
 	});
 </script>
@@ -73,8 +31,8 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('name', 'name'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('name', 'name'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('name', 'names'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('name', 'names'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -84,13 +42,13 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-2"><?php echo $this->form->getLabel('birthday', 'name'); ?></div>
+						<div class="control-label uk-width-1-2"><?php echo $this->form->getLabel('birthday', 'names'); ?></div>
 						<div class="controls uk-width-1-1">
 							<?php if ($this->params->get('search_names_birthday') == 1): ?>
-								<?php echo $this->form->getInput('birthday', 'name'); ?>
+								<?php echo $this->form->getInput('birthday', 'names'); ?>
 							<?php endif; ?>
 							<?php if ($this->params->get('search_names_gender') == 1): ?>
-							&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?>&nbsp;&nbsp;<?php echo $this->form->getInput('gender', 'name'); ?>
+							&nbsp;&nbsp;&nbsp;<?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_GENDER_LABEL'); ?>&nbsp;&nbsp;<?php echo $this->form->getInput('gender', 'names'); ?>
 							<?php endif; ?>
 						</div>
 					</div>
@@ -102,8 +60,8 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'name'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'name'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'names'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'names'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -113,8 +71,8 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo $this->form->getLabel('birthplace', 'name'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('birthplace', 'name'); ?></div>
+						<div class="control-label uk-width-1-4"><?php echo $this->form->getLabel('birthplace', 'names'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('birthplace', 'names'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -124,8 +82,8 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-4"><?php echo $this->form->getLabel('country', 'name'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('country', 'name'); ?></div>
+						<div class="control-label uk-width-1-4"><?php echo $this->form->getLabel('country', 'names'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('country', 'names'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -135,8 +93,8 @@ if ($this->params->get('search_names_enable') == 0)
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('amplua', 'name'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('amplua', 'name'); ?></div>
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('amplua', 'names'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('amplua', 'names'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -145,8 +103,8 @@ if ($this->params->get('search_names_enable') == 0)
 
 		<input type="hidden" name="option" value="com_kinoarhiv" />
 		<input type="hidden" name="task" value="search.results" />
-		<input type="hidden" name="content" value="name" />
-		<input type="hidden" name="Itemid" value="<?php echo $this->home_itemid['names']; ?>" />
+		<input type="hidden" name="content" value="names" />
+		<input type="hidden" name="m_itemid" value="<?php echo $this->home_itemid['names']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 		<input type="submit" class="btn btn-primary uk-button uk-button-primary validate" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 		<input type="reset" class="btn uk-button cmd-reset-names" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />

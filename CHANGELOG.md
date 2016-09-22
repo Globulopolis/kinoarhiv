@@ -1,4 +1,6 @@
 ## HEAD (Unreleased)
+* Added new field type
+* Improve search
 * Fixed undefined filter type for embed code field in trailer edit which cause unable to save embed html.
 * More userfriendly language strings with the search results count.
 * getDBO changed to getDbo, JURI to JUri on frontend.
@@ -54,7 +56,7 @@
 * Remove unused variables.
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
-* Update VideoJS to 5.9.2
+* Update VideoJS to 5.10.2
 * Update Mediaelement.js to 2.20.1
 * Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".

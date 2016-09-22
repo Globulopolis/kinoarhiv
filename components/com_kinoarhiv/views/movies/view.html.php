@@ -10,7 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
@@ -44,16 +43,7 @@ class KinoarhivViewMovies extends JViewLegacy
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
-
-		if ($app->input->get('task', '', 'cmd') == 'search' && KAComponentHelper::checkToken() === true)
-		{
-			$this->activeFilters = $this->get('FiltersData');
-		}
-		else
-		{
-			$this->activeFilters = new Registry;
-		}
-
+		$this->filtersData = $this->get('FiltersData');
 		$this->items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 

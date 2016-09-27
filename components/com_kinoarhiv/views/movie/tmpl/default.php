@@ -272,11 +272,11 @@ endif;
 										<?php }
 									} ?>
 									<?php if ($this->params->get('ratings_img_kp') != 0 && !empty($this->item->kp_id)): ?>
-										<a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
+										<a href="https://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
 											<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
 												<img src="<?php echo $rating_image_www; ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0"/>
 											<?php else: ?>
-												<img src="http://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;"/>
+												<img src="https://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;"/>
 											<?php endif; ?>
 										</a>
 									<?php endif; ?>
@@ -284,7 +284,7 @@ endif;
 									{
 										if (file_exists($this->params->get('media_rating_image_root') . '/rottentomatoes/' . $this->item->id . '_big.png'))
 										{ ?>
-											<a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0"/></a>
+											<a href="https://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0"/></a>
 										<?php }
 									} ?>
 									<?php if ($this->params->get('ratings_img_metacritic') != 0 && !empty($this->item->metacritics_id))
@@ -310,7 +310,7 @@ endif;
 								<?php if (!empty($this->item->kp_votesum) && !empty($this->item->kp_votes)): ?>
 									<br/><br/>
 									<div id="rate-kp"><span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span>
-										<span class="b"><a href="http://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->kp_votesum; ?> (<?php echo $this->item->kp_votes; ?>)</a></span>
+										<span class="b"><a href="https://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->kp_votesum; ?> (<?php echo $this->item->kp_votes; ?>)</a></span>
 									</div>
 								<?php else: ?>
 									<div id="rate-kp">
@@ -320,7 +320,7 @@ endif;
 								<?php if (!empty($this->item->rate_fc)): ?>
 									<br/><br/>
 									<div id="rate-rt"><span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span>
-										<span class="b"><a href="http://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->rate_fc; ?> %</a></span>
+										<span class="b"><a href="https://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->rate_fc; ?> %</a></span>
 									</div>
 								<?php else: ?>
 									<div id="rate-rt">

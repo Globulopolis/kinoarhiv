@@ -1,5 +1,6 @@
 ## HEAD (Unreleased)
-* Added new field type
+* Change urls for kinopoisk and rottentomatoes to https
+* Added new field types
 * Improve search
 * Fixed undefined filter type for embed code field in trailer edit which cause unable to save embed html.
 * More userfriendly language strings with the search results count.

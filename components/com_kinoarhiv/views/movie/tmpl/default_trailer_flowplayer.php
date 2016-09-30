@@ -35,7 +35,7 @@ $sfw = $this->params->get('player_swf');
 	</script>
 </head>
 <body style="margin: 0; padding: 0; background-color: #333333;">
-<?php if (isset($this->item) && count($this->item) > 0):
+<?php if (isset($this->item) && count(get_object_vars($this->item)) > 0):
 	$item_trailer = $this->item;
 	$ratio_raw = explode(':', $item_trailer->dar);
 	$ratio = round($ratio_raw[1] / $ratio_raw[0], 4); ?>

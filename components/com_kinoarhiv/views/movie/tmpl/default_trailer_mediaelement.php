@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 KAComponentHelper::loadPlayerAssets($this->params->get('player_type'));
 
-if (isset($this->item->trailer) && count($this->item->trailer) > 0):
+if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) > 0):
 	$item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>
 	<a name="trailer"></a>
@@ -35,7 +35,10 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 										pluginPath: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
 										flashName: 'flashmediaelement.swf',
 										silverlightName: 'silverlightmediaelement.xap',
-										poster: '<?php echo $this->item->trailer->screenshot; ?>'
+										poster: '<?php echo $this->item->trailer->screenshot; ?>',
+										success: function(player, node){
+											$(player).closest('.mejs-container').attr('lang', mejs.i18n.getLanguage());
+										}
 									});
 								});
 							</script>
@@ -91,7 +94,7 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 	</div>
 <?php endif;
 
-if ((isset($this->item->movie) && count($this->item->movie) > 0)
+if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0)
 	&& ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')
 ):
 
@@ -117,7 +120,10 @@ if ((isset($this->item->movie) && count($this->item->movie) > 0)
 										pluginPath: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
 										flashName: 'flashmediaelement.swf',
 										silverlightName: 'silverlightmediaelement.xap',
-										poster: '<?php echo $this->item->movie->screenshot; ?>'
+										poster: '<?php echo $this->item->movie->screenshot; ?>',
+										success: function(player, node){
+											$(player).closest('.mejs-container').attr('lang', mejs.i18n.getLanguage());
+										}
 									});
 								});
 							</script>

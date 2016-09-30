@@ -1,4 +1,6 @@
 ## HEAD (Unreleased)
+* Add i18n to videojs, mediaelement template.
+* Fixed error in trailer display template
 * Change urls for kinopoisk and rottentomatoes to https
 * Added new field types
 * Improve search

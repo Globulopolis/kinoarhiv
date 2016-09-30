@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 KAComponentHelper::loadPlayerAssets($this->params->get('player_type'));
 
-if (isset($this->item->trailer) && count($this->item->trailer) > 0):
+if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) > 0):
 	$item_trailer = $this->item->trailer; ?>
 	<div class="clear"></div>
 	<a name="trailer"></a>
@@ -31,7 +31,7 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 								$tposter = $item_trailer->screenshot != '' ? 'poster="' . $item_trailer->screenshot . '"' : ''; ?>
 								<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $tposter; ?>
 									   width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
-									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'
+									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo $this->lang->getTag(); ?>"}'
 								>
 									<?php foreach ($item_trailer->files['video'] as $item): ?>
 										<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
@@ -72,7 +72,7 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 	</div>
 <?php endif;
 
-if ((isset($this->item->movie) && count($this->item->movie) > 0)
+if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0)
 	&& ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')
 ):
 
@@ -95,7 +95,7 @@ if ((isset($this->item->movie) && count($this->item->movie) > 0)
 								$mposter = $item_movie->screenshot != '' ? 'poster="' . $item_movie->screenshot . '"' : ''; ?>
 								<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $mposter; ?>
 									   width="<?php echo $item_movie->player_width; ?>" height="<?php echo $item_movie->player_height; ?>"
-									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'
+									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo $this->lang->getTag(); ?>"}'
 								>
 									<?php foreach ($item_movie->files['video'] as $item): ?>
 										<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>

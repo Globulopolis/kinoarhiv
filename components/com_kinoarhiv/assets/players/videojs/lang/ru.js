@@ -18,9 +18,22 @@ videojs.addLanguage("ru",{
  "Captions": "Подписи",
  "captions off": "Подписи выкл.",
  "Chapters": "Главы",
+ "Close Modal Dialog": "Close Modal Dialog",
+ "Descriptions": "Описания",
+ "descriptions off": "описания выкл.",
+ "Audio Track": "Звуковая дорожка",
  "You aborted the media playback": "Вы прервали воспроизведение видео",
  "A network error caused the media download to fail part-way.": "Ошибка сети вызвала сбой во время загрузки видео.",
  "The media could not be loaded, either because the server or network failed or because the format is not supported.": "Невозможно загрузить видео из-за сетевого или серверного сбоя либо формат не поддерживается.",
  "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "Воспроизведение видео было приостановлено из-за повреждения либо в связи с тем, что видео использует функции, неподдерживаемые вашим браузером.",
- "No compatible source was found for this media.": "Совместимые источники для этого видео отсутствуют."
+ "No compatible source was found for this media.": "Совместимые источники для этого видео отсутствуют.",
+ "Play Video": "Воспроизвести видео",
+ "Close": "Закрыть",
+ "Modal Window": "Модальное окно",
+ "This is a modal window": "Это модальное окно",
+ "This modal can be closed by pressing the Escape key or activating the close button.": "Это модальное окно можно закрыть нажав Esc или кнопку закрытия окна.",
+ ", opens captions settings dialog": ", opens captions settings dialog",
+ ", opens subtitles settings dialog": ", opens subtitles settings dialog",
+ ", opens descriptions settings dialog": ", opens descriptions settings dialog",
+ ", selected": ", selected"
 });

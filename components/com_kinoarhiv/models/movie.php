@@ -382,8 +382,8 @@ class KinoarhivModelMovie extends JModelForm
 			$result->releases = (object) array();
 		}
 
-		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : array();
-		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : array();
+		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : (object) array();
+		$result->movie = ($params->get('watch_movie') == 1) ? $this->getTrailer($id, 'movie') : (object) array();
 
 		// Get Slider items
 		if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1)

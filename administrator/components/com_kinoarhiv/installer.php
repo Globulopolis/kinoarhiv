@@ -22,15 +22,7 @@ class com_kinoarhivInstallerScript
 	public function install($parent)
 	{
 		$db = JFactory::getDbo();
-
-		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
-		$form = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
-
-		if (empty($form))
-		{
-			throw new Exception('Cannot load the config.xml file!');
-		}
-
+		$form = $this->loadForm();
 		$data = array();
 
 		// Get the fieldset names
@@ -89,30 +81,23 @@ class com_kinoarhivInstallerScript
 	public function update($parent)
 	{
 		$db = JFactory::getDbo();
+		$form = $this->loadForm();
 		$params = $this->getParams();
 
 		/* Load the config.xml file on update and compare current existing parameters from DB
 		 * with the parameters from file and add new into array and store in DB.
 		*/
-		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
-		$config = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
-
-		if (empty($config))
-		{
-			throw new Exception('Cannot load the config.xml file!');
-		}
-
 		// Get the fieldset names
 		$name_fieldsets = array();
 
-		foreach ($config->getFieldsets() as $fieldset)
+		foreach ($form->getFieldsets() as $fieldset)
 		{
 			$name_fieldsets[] = $fieldset->name;
 		}
 
 		foreach ($name_fieldsets as $fieldset_name)
 		{
-			foreach ($config->getFieldset($fieldset_name) as $field)
+			foreach ($form->getFieldset($fieldset_name) as $field)
 			{
 				$fieldname = $field->getAttribute('name');
 
@@ -151,5 +136,18 @@ class com_kinoarhivInstallerScript
 		$params = json_decode($db->loadResult(), true);
 
 		return !empty($name) ? $params[$name] : $params;
+	}
+
+	private function loadForm()
+	{
+		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
+		$form = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
+
+		if (empty($form))
+		{
+			throw new Exception('Could not load config.xml file!');
+		}
+
+		return $form;
 	}
 }

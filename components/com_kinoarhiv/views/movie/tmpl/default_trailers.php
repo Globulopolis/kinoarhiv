@@ -40,7 +40,10 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 				$('video').mediaelementplayer({
 					pluginPath: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/mediaelement/',
 					flashName: 'flashmediaelement.swf',
-					silverlightName: 'silverlightmediaelement.xap'
+					silverlightName: 'silverlightmediaelement.xap',
+					success: function(player, node){
+						$(player).closest('.mejs-container').attr('lang', mejs.i18n.getLanguage());
+					}
 				});
 			});
 		</script>
@@ -85,7 +88,7 @@ endif; ?>
 
 			$trailers_obj = $this->item->trailers; ?>
 			<div class="accordion" id="tr_accordion">
-				<?php foreach ($trailers_obj as $item_trailer):
+				<?php foreach ($trailers_obj as $key => $item_trailer):
 					if (!empty($item_trailer->resolution))
 					{
 						$resolution = explode('x', $item_trailer->resolution);
@@ -99,11 +102,11 @@ endif; ?>
 				?>
 					<div class="accordion-group">
 						<div class="accordion-heading">
-							<a class="accordion-toggle" data-toggle="collapse" data-parent="#tr_accordion" href="#toggleVideo">
+							<a class="accordion-toggle" data-toggle="collapse" href="#toggleVideo-<?php echo $key; ?>">
 								<?php echo ($item_trailer->title == '') ? JText::_('COM_KA_TRAILER') : $item_trailer->title; ?>
 							</a>
 						</div>
-						<div id="toggleVideo" class="accordion-body collapse in">
+						<div id="toggleVideo-<?php echo $key; ?>" class="accordion-body collapse in">
 							<div class="accordion-inner">
 								<?php if ($item_trailer->embed_code != ''):
 									echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
@@ -135,7 +138,7 @@ endif; ?>
 												<video class="video-js vjs-default-skin vjs-big-play-centered" controls
 													   preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
 													   width="<?php echo $this->item->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
-													   data-setup='{"techOrder": ["html5", "flash"], "fluid": true}'>
+													   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo JFactory::getLanguage()->getTag(); ?>"}'>
 													<?php foreach ($item_trailer->files['video'] as $item): ?>
 														<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 													<?php endforeach; ?>
@@ -218,7 +221,6 @@ endif; ?>
 							</div>
 						<?php endif; ?>
 					</div>
-					<br />
 				<?php endforeach; ?>
 			</div>
 		<?php else: ?>

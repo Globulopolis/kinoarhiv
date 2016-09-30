@@ -154,13 +154,12 @@ class KAComponentHelper
 	 * Load CSS and Javascript for HTML5/Flash player
 	 *
 	 * @param   string  $player  Player type.
-	 * @param   string  $key     License key.
 	 *
 	 * @return  mixed
 	 *
 	 * @since  3.0
 	 */
-	public static function loadPlayerAssets($player, $key = '')
+	public static function loadPlayerAssets($player)
 	{
 		$document = JFactory::getDocument();
 		$player_path = 'components/com_kinoarhiv/assets/players/';
@@ -208,11 +207,14 @@ class KAComponentHelper
 
 			if ($player == 'videojs')
 			{
+				self::getScriptLanguage('', 'players/videojs/lang');
 				$document->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . $player_path . "videojs/video-js.swf';");
 			}
 			elseif ($player == 'mediaelement')
 			{
 				JHtml::script($player_path . 'mediaelement/mediaelement-and-player.min.js');
+				self::getScriptLanguage('me-i18n-locale-', 'players/mediaelement/lang', false, true, true);
+				$document->addScriptDeclaration("mejs.i18n.locale.language = '" . substr(JFactory::getLanguage()->getTag(), 0, 2) . "';");
 			}
 			elseif ($player == 'flowplayer')
 			{
@@ -258,7 +260,7 @@ class KAComponentHelper
 	 * @param   string  $message  Text to log.
 	 * @param   mixed   $silent   Throw exception or not. True - throw, false - not, 'ui' - show message.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @throws  Exception
 	 *
@@ -382,7 +384,7 @@ class KAComponentHelper
 
 		if (is_array($attribs) && func_num_args() == 5)
 		{
-			$attrs = \Joomla\Utilities\ArrayHelper::toString($attribs);
+			$attrs = Joomla\Utilities\ArrayHelper::toString($attribs);
 		}
 
 		return '<label id="' . $for . '-lbl"' . $class . 'for="' . $for . '"' . $title . $attrs . '>' . JText::_($text) . '</label>';
@@ -391,20 +393,22 @@ class KAComponentHelper
 	/**
 	 * Load language files for JS scripts
 	 *
-	 * @param   string   $file   Part of the filename w/o language tag and extention. Filenames must follow by the
-	 *                           next rules - filename[lang code].js. Leave empty if filename contain only language code.
-	 *                           Example: en-US.js or select2_locale_da.js
-	 * @param   string   $path   Path to the folder. Default searching in 'components/com_kinoarhiv/assets/' folder.
-	 * @param   boolean  $root   Start search from root Joomla folder.
-	 * @param   boolean  $jhtml  Use JHtml::script() to load. Set this to false if need to load JS into raw document.
+	 * @param   string   $file       Part of the filename w/o language tag and extention. Filenames must follow by the
+	 *                               next rules - filename[lang code].js. Leave empty if filename contain only language code.
+	 *                               Example: $file[]en-US.js or $file[select2_locale_]da.js
+	 * @param   string   $path       Path to the folder. Default searching in 'components/com_kinoarhiv/assets/' folder.
+	 * @param   boolean  $root       Start search from root Joomla folder.
+	 * @param   boolean  $jhtml      Use JHtml::script() to load. Set this to false if need to load JS into raw document.
+	 * @param   boolean  $lowercase  Convert language string to lowercase or not.
 	 *
 	 * @return  void
 	 *
 	 * @since  3.0
 	 */
-	public static function getScriptLanguage($file, $path, $root=false, $jhtml=true)
+	public static function getScriptLanguage($file, $path, $root=false, $jhtml=true, $lowercase=false)
 	{
 		$lang = JFactory::getLanguage()->getTag();
+		$lang = $lowercase ? Joomla\String\StringHelper::strtolower($lang) : $lang;
 		$filename = $file . $lang . '.js';
 
 		if ($root === true)

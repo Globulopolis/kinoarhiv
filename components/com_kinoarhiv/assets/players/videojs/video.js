@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 5.11.5 <http://videojs.com/>
+ * Video.js 5.11.7 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -15051,6 +15051,8 @@ var Html5 = (function (_Tech) {
           'class': 'vjs-tech'
         }));
       }
+
+      el.playerId = this.options_.playerId;
     }
 
     // Update specific tag settings, in case they were overridden
@@ -20277,10 +20279,10 @@ function removeElData(el) {
  */
 
 function hasElClass(element, classToCheck) {
+  throwIfWhitespace(classToCheck);
   if (element.classList) {
     return element.classList.contains(classToCheck);
   } else {
-    throwIfWhitespace(classToCheck);
     return classRegExp(classToCheck).test(element.className);
   }
 }
@@ -20736,6 +20738,10 @@ var _guidJs = _dereq_('./guid.js');
 
 var Guid = _interopRequireWildcard(_guidJs);
 
+var _logJs = _dereq_('./log.js');
+
+var _logJs2 = _interopRequireDefault(_logJs);
+
 var _globalWindow = _dereq_('global/window');
 
 var _globalWindow2 = _interopRequireDefault(_globalWindow);
@@ -20790,7 +20796,11 @@ function on(elem, type, fn) {
           if (event.isImmediatePropagationStopped()) {
             break;
           } else {
-            handlersCopy[m].call(elem, event, hash);
+            try {
+              handlersCopy[m].call(elem, event, hash);
+            } catch (e) {
+              _logJs2['default'].error(e);
+            }
           }
         }
       }
@@ -21113,7 +21123,7 @@ function _handleMultipleEvents(fn, elem, types, callback) {
   });
 }
 
-},{"./dom.js":142,"./guid.js":146,"global/document":1,"global/window":2}],144:[function(_dereq_,module,exports){
+},{"./dom.js":142,"./guid.js":146,"./log.js":147,"global/document":1,"global/window":2}],144:[function(_dereq_,module,exports){
 /**
  * @file fn.js
  */
@@ -21892,7 +21902,7 @@ setup.autoSetupTimeout(1, videojs);
  *
  * @type {String}
  */
-videojs.VERSION = '5.11.5';
+videojs.VERSION = '5.11.7';
 
 /**
  * The global options object. These are the settings that take effect

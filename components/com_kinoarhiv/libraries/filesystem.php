@@ -18,7 +18,7 @@ defined('_JEXEC') or die;
 class KAFilesystem
 {
 	/**
-	 * @var    array  instance of this class
+	 * @var    KAFilesystem  instance of this class
 	 *
 	 * @since  3.0
 	 */
@@ -53,8 +53,8 @@ class KAFilesystem
 	}
 
 	/**
-	 * Sets-up headers and starts transfering bytes. This is fork from https://github.com/diversen/http-send-file
-	 * adapted for Joomla.
+	 * Sets-up headers and starts transfering.
+	 * BEWARE!!! This method doesn't work correctly on 32bit servers. It's not possible to fix it! DO NOT USE 32bit platforms!
 	 *
 	 * @param   string   $file_path        Path to a file
 	 * @param   integer  $throttle         Use throttle mechanism
@@ -70,7 +70,6 @@ class KAFilesystem
 	 */
 	public function sendFile($file_path, $throttle=0, $throttle_config=array(), $disposition=true, $cache=true)
 	{
-		$app = JFactory::getApplication();
 		$file_path = JPath::clean($file_path);
 
 		if (!is_readable($file_path))
@@ -97,20 +96,20 @@ class KAFilesystem
 			@ini_set('zlib.output_compression', 'Off');
 		}
 
-		$app->setHeader('Content-type', $this->detectMime($file_path), true);
+		header('Content-type: ' . $this->detectMime($file_path));
 
 		if ($disposition)
 		{
-			$app->setHeader('Content-Disposition', 'inline; filename="' . basename($file_path) . '"');
+			header('Content-Disposition: inline; filename="' . basename($file_path) . '"');
 		}
 
-		$app->setHeader('Accept-Ranges', 'bytes');
+		header('Accept-Ranges: bytes');
 
 		if (!$cache)
 		{
-			$app->setHeader('Pragma', 'private');
-			$app->setHeader('Cache-control', 'private, max-age=2592000');
-			$app->setHeader('Expires', 'Mon, 01 Jan 1997 00:00:00 GMT');
+			header('Pragma: private');
+			header('Cache-control: private, max-age=2592000');
+			header('Expires: Mon, 01 Jan 1997 00:00:00 GMT');
 		}
 		else
 		{
@@ -119,16 +118,15 @@ class KAFilesystem
 			$etag_header = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim($_SERVER['HTTP_IF_NONE_MATCH']) : false;
 			$modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
 
-			$app->setHeader('Pragma', 'cache');
-			$app->setHeader('Cache-control', 'no-transform, public, max-age=2592000, s-maxage=7776000');
-			$app->setHeader('Etag', $etag);
-			$app->setHeader('Last-Modified', gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
-			$app->setHeader('Expires', 'Mon, 01 Jan 2100 00:00:00 GMT');
+			header('Pragma: cache');
+			header('Cache-control: no-transform, public, max-age=2592000, s-maxage=7776000');
+			header('Etag: ' . $etag);
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
+			header('Expires: Mon, 01 Jan 2100 00:00:00 GMT');
 
 			if (@strtotime($modified_since) == $last_modified || $etag_header == $etag)
 			{
-				$app->setHeader('HTTP/1.1', '304 Not Modified');
-				$app->sendHeaders();
+				header('HTTP/1.1 304 Not Modified');
 				die();
 			}
 		}
@@ -138,6 +136,7 @@ class KAFilesystem
 
 		// Multipart-download and download resuming support
 		$valid_range = true;
+		$range = 0;
 
 		if (isset($_SERVER['HTTP_RANGE']))
 		{
@@ -149,7 +148,7 @@ class KAFilesystem
 
 			if ($valid_range)
 			{
-				list($a, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+				list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
 				list($range) = explode(',', $range, 2);
 				list($range, $range_end) = explode('-', $range);
 				$range = (int) $range;
@@ -165,26 +164,23 @@ class KAFilesystem
 
 				$new_length = $range_end - $range + 1;
 
-				$app->setHeader('HTTP/1.1', '206 Partial Content');
-				$app->setHeader('Content-Length', $new_length);
-				$app->setHeader('Content-Range', 'bytes ' . $range . '-' . $range_end . '/' . $size);
+				header('HTTP/1.1 206 Partial Content');
+				header('Content-Length: ' . $new_length);
+				header('Content-Range: bytes ' . $range . '-' . $range_end . '/' . $size);
 			}
 			else
 			{
-				$app->setHeader('HTTP/1.1', '416 Requested Range Not Satisfiable');
-				$app->setHeader('Content-Range', 'bytes */' . $size);
-				$app->sendHeaders();
+				header('HTTP/1.1 416 Requested Range Not Satisfiable');
+				header('Content-Range: bytes */' . $size);
 				die();
 			}
 		}
 		else
 		{
 			$new_length = $size;
-			$app->setHeader('HTTP/1.1', '200 OK');
-			$app->setHeader('Content-Length', $size);
+			header('HTTP/1.1 200 OK');
+			header('Content-Length: ' . $size);
 		}
-
-		$app->sendHeaders();
 
 		// Output the file itself
 		$chunksize = ($throttle == 1) ? (int) $throttle_config['bytes'] : 1024 * 8;
@@ -304,6 +300,10 @@ class KAFilesystem
 			elseif (KAComponentHelper::functionExists('mime_content_type'))
 			{
 				$mime = mime_content_type($path);
+			}
+			elseif (KAComponentHelper::functionExists('exif_imagetype') === true)
+			{
+				$mime = image_type_to_mime_type(exif_imagetype($path));
 			}
 		}
 

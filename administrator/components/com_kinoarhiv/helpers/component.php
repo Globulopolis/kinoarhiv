@@ -23,6 +23,8 @@ class KAComponentHelper extends JComponentHelper
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
 	 *
 	 * @return  void
+	 *
+	 * @since  3.0
 	 */
 	public static function setHeadTags()
 	{
@@ -60,7 +62,10 @@ class KAComponentHelper extends JComponentHelper
 	 * @param   integer  $timeout    Request timeout in seconds
 	 * @param   string   $transport  Transport type
 	 *
-	 * @return JHttpResponse
+	 * @return  JHttpResponse
+	 *
+	 * @since 3.0
+	 * @deprecated 3.1
 	 */
 	public static function getRemoteData($url, $headers = null, $timeout = 30, $transport = 'curl')
 	{

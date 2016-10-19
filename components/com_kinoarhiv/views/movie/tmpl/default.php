@@ -187,7 +187,8 @@ endif;
 			minSlides: <?php echo (int) $this->params->get('slider_min_item'); ?>,
 			maxSlides: <?php echo count($this->item->slides); ?>,
 			slideWidth: <?php echo (int) $this->params->get('size_x_scr'); ?>,
-			slideMargin: 5
+			slideMargin: 5,
+			infiniteLoop: false
 		});
 
 		$('.screenshot-slider li a').colorbox({returnFocus: false, maxHeight: '90%', maxWidth: '90%', rel: 'slideGroup', photo: true});

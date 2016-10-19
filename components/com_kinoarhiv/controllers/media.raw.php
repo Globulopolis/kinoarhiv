@@ -46,7 +46,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		{
 			$app->setHeader('HTTP/1.0', '404 Not Found');
 			$app->sendHeaders();
-			jexit();
+			exit(0);
 		}
 	}
 
@@ -62,7 +62,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($id == 0)
 		{
-			jexit();
+			exit(0);
 		}
 
 		if ($content === 'image')
@@ -91,7 +91,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			jexit();
+			exit(0);
 		}
 	}
 
@@ -107,7 +107,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($id == 0)
 		{
-			jexit();
+			exit(0);
 		}
 
 		if ($content === 'image')
@@ -138,7 +138,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			jexit();
+			exit(0);
 		}
 	}
 
@@ -155,7 +155,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($id == 0)
 		{
-			jexit();
+			exit(0);
 		}
 
 		$model = $this->getModel('movie');
@@ -164,7 +164,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		{
 			$app->setHeader('HTTP/1.0', '403 Forbidden');
 			$app->sendHeaders();
-			jexit();
+			exit(0);
 		}
 
 		if ($content === 'image')
@@ -196,7 +196,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			{
 				$app->setHeader('HTTP/1.0', '403 Forbidden');
 				$app->sendHeaders();
-				jexit();
+				exit(0);
 			}
 
 			$path = $this->getVideoPath(urldecode($fs_alias), $id, $filename);
@@ -205,7 +205,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			{
 				$app->setHeader('HTTP/1.0', '404 Not Found');
 				$app->sendHeaders();
-				jexit();
+				exit(0);
 			}
 
 			try
@@ -231,7 +231,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			{
 				$app->setHeader('HTTP/1.0', '404 Not Found');
 				$app->sendHeaders();
-				jexit();
+				exit(0);
 			}
 
 			try
@@ -249,7 +249,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			jexit();
+			exit(0);
 		}
 	}
 

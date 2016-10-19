@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-if (isset($this->item->trailer) && count($this->item->trailer) > 0):
+if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) > 0):
 	$item_trailer = $this->item->trailer;
 
 	if (!empty($item_trailer->resolution))
@@ -82,7 +82,7 @@ if (isset($this->item->trailer) && count($this->item->trailer) > 0):
 <?php endif;
 
 if ((isset($this->item->movie)
-	&& count($this->item->movie) > 0)
+	&& count(get_object_vars($this->item->movie)) > 0)
 	&& ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')):
 		$item_movie = $this->item->movie;
 

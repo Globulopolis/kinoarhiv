@@ -1,4 +1,4 @@
-var wysihtml5i18n = {
+var wysihtml_i18n = {
     h1: 'Заголовок 1',
     h2: 'Заголовок 2',
     h3: 'Заголовок 3',
@@ -12,7 +12,6 @@ var wysihtml5i18n = {
     insertOrderedList: 'Нумерация',
     q: 'Цитата',
     blockquote: 'Блок цитаты',
-    font: 'Шрифт',
     fontsize: 'Размер шрифта',
     change_view: 'Исходный код',
     undo: 'Отменить ввод',

@@ -1,4 +1,4 @@
-var wysihtml5ParserRules = {
+var wysihtmlParserRules = {
     "classes": {
         "wysiwyg-clear-both": 1,
         "wysiwyg-clear-left": 1,
@@ -289,7 +289,9 @@ var wysihtml5ParserRules = {
         "marquee": {
             "rename_tag": "span"
         },
-        "b": {},
+        "b": {
+            "rename_tag": "strong"
+        },
         "q": {
             "check_attributes": {
                 "cite": "url"

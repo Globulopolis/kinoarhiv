@@ -64,7 +64,7 @@ class KinoarhivModelName extends JModelList
 					"n.attribs, n.metakey, n.metadesc, n.metadata, cn.name AS country, cn.code, g.filename, g.dimension")
 			->from($db->quoteName('#__ka_names', 'n'));
 
-		$query->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.photo_frontpage = 1 AND g.state = 1');
+		$query->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1 AND g.state = 1');
 		$query->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON `cn`.`id` = n.birthcountry AND cn.state = 1');
 
 		if (!$user->get('guest'))

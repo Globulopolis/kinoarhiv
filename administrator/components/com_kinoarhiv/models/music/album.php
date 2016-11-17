@@ -115,7 +115,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 			// Join over gallery item
 			$query->select($db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g') . ' ON ' . $db->quoteName('g.item_id') . ' = ' . $db->quoteName('a.id') . ' AND ' . $db->quoteName('g.poster_frontpage') . ' = 1');
+				->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g') . ' ON ' . $db->quoteName('g.item_id') . ' = ' . $db->quoteName('a.id') . ' AND ' . $db->quoteName('g.frontpage') . ' = 1');
 
 			// Join over the language
 			$query->select($db->quoteName('l.title', 'language_title'))

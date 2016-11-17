@@ -166,20 +166,8 @@ class KinoarhivViewGenres extends JViewLegacy
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'a.state'  => JText::_('JSTATUS'),
-			'a.name'   => JText::_('JGLOBAL_TITLE'),
-			'a.stats'  => JText::_('COM_KA_GENRES_STATS'),
-			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
-			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id'     => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

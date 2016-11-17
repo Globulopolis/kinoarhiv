@@ -70,7 +70,7 @@ class KinoarhivViewAwards extends JViewLegacy
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		if (!$user->authorise('core.create.career', 'com_kinoarhiv') && !$user->authorise('core.edit.career', 'com_kinoarhiv'))
+		if (!$user->authorise('core.create.award', 'com_kinoarhiv') && !$user->authorise('core.edit.award', 'com_kinoarhiv'))
 		{
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 		}
@@ -153,18 +153,8 @@ class KinoarhivViewAwards extends JViewLegacy
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'a.state'  => JText::_('JSTATUS'),
-			'a.title'  => JText::_('COM_KA_FIELD_AW_LABEL'),
-			'language' => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id'     => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

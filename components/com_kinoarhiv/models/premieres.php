@@ -136,7 +136,7 @@ class KinoarhivModelPremieres extends JModelList
 
 		// Join over gallery item
 		$query->select('g.filename, g.dimension')
-			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1');
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
 
 		$query->select('p.premiere_date, p.vendor_id')
 			->join('LEFT', $db->quoteName('#__ka_premieres', 'p') . ' ON p.movie_id = m.id AND p.country_id != 0');

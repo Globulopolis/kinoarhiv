@@ -12,31 +12,29 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
 
-$input = JFactory::getApplication()->input;
-$section = $input->get('section', '', 'word');
-$type = $input->get('type', '', 'word');
+$this->input   = JFactory::getApplication()->input;
+$this->section = $this->input->get('section', '', 'word');
+$this->type    = $this->input->get('type', '', 'word');
+$this->tab     = $this->input->get('tab', 0, 'int');
+$this->id      = $this->input->get('id', 0, 'int');
 ?>
 <script type="text/javascript" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/js/jquery.colorbox.min.js"></script>
 <?php KAComponentHelper::getScriptLanguage('jquery.colorbox-', false, 'colorbox', true); ?>
 <div id="j-main-container">
-<?php if ($section == 'movie')
+<?php if ($this->section == 'movie')
 {
-	if ($type == 'gallery')
+	if ($this->type == 'gallery')
 	{
 		echo $this->loadTemplate('movie_gallery_list');
 	}
-	elseif ($type == 'trailers')
+	elseif ($this->type == 'trailers')
 	{
 		echo $this->loadTemplate('movie_trailers_list');
 	}
-	elseif ($type == 'sounds')
-	{
-		echo $this->loadTemplate('movie_soundtracks_list');
-	}
 }
-elseif ($section == 'name')
+elseif ($this->section == 'name')
 {
-	if ($type == 'gallery')
+	if ($this->type == 'gallery')
 	{
 		echo $this->loadTemplate('name_gallery_list');
 	}

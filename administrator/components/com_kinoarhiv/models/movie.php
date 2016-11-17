@@ -192,7 +192,7 @@ class KinoarhivModelMovie extends JModelForm
 
 			// Join over gallery item
 			$query->select($db->quoteName('g.id', 'gid') . ',' . $db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1');
+				->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1');
 
 			$db->setQuery($query);
 			$result['movie'] = $db->loadObject();

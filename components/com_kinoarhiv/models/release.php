@@ -82,7 +82,7 @@ class KinoarhivModelRelease extends JModelItem
 					)
 					->select($db->quoteName('m.introtext', 'text'))
 					->from($db->quoteName('#__ka_movies', 'm'))
-					->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1')
+					->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1')
 					->where($db->quoteName('m.id') . ' = ' . $pk . ' AND ' . $db->quoteName('m.state') . ' = 1')
 					->where($db->quoteName('m.access') . ' IN (' . implode(',', $groups) . ')');
 				$db->setQuery($query);

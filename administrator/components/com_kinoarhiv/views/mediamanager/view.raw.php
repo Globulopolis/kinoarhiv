@@ -12,8 +12,21 @@ defined('_JEXEC') or die;
 
 class KinoarhivViewMediamanager extends JViewLegacy
 {
+	protected $data;
+
 	protected $form;
 
+	protected $params;
+
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function display($tpl = null)
 	{
 		$input = JFactory::getApplication()->input;
@@ -23,11 +36,11 @@ class KinoarhivViewMediamanager extends JViewLegacy
 			$this->form = $this->get('Form');
 		}
 
-		if ($tpl == 'upload_subtitles_lang_edit')
+		if ($tpl == 'trailer_subtitles_lang_edit')
 		{
 			$this->data = $this->get('SubtitleEdit');
 		}
-		elseif ($tpl == 'upload_videodata_edit')
+		elseif ($tpl == 'trailer_videodata_edit')
 		{
 			$this->data = $this->get('VideoDataEdit');
 		}

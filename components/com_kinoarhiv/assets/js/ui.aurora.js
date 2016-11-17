@@ -1,5 +1,5 @@
 /*!
- * jQuery UI Aurora 0.9
+ * jQuery UI Aurora 1.0
  *
  * Copyright 2012
  * Licensed under the GPL Version 2 license.
@@ -16,7 +16,7 @@
 			button = ' <a href="javascript:void(0);" class="ui-message-button">'+opts.button_title+'</a>';
 		}
 
-		var html = '<div class="ui-message" style="display: none; margin: '+opts.styles.indent.message_margin+';">'
+		var html = $('<div class="ui-message" style="display: none; margin: '+opts.styles.indent.message_margin+';">'
 			+'<div class="ui-widget">'
 				+'<div style="padding: '+opts.styles.indent.div_padding+';" class="'+opts.container+' ui-corner-all">'
 					+'<div style="margin: '+opts.styles.indent.div_margin+';">'
@@ -25,7 +25,7 @@
 					+'</div>'
 				+'</div>'
 			+'</div>'
-		+'</div>';
+		+'</div>');
 
 		if (opts.placement == 'prepend' || opts.placement == 'append') {
 			if (opts.only_one) {
@@ -35,9 +35,9 @@
 			}
 
 			if (opts.placement == 'prepend') {
-				var div = $(html).prependTo(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
+				html.prependTo(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
 			} else {
-				var div = $(html).appendTo(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
+				html.appendTo(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
 			}
 		} else if (opts.placement == 'before') {
 			if (opts.only_one) {
@@ -46,7 +46,7 @@
 				}
 			}
 
-			var div = $(html).insertBefore(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
+			html.insertBefore(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
 		} else {
 			if (opts.only_one) {
 				if (this.next().hasClass('ui-message')) {
@@ -54,11 +54,13 @@
 				}
 			}
 
-			var div = $(html).insertAfter(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
+			html.insertAfter(this).animate({ opacity: 'toggle' }, opts.effect.speed, opts.effect.effect, opts.onComplete);
 		}
 
 		if (opts.button == 'hide') {
-			$('.ui-message').on('click', 'a.ui-message-button', function(){
+			var ui_message = $('.ui-message');
+
+			ui_message.on('click', 'a.ui-message-button', function(){
 				var parent = $(this).closest('.ui-message');
 
 				parent.find('span').eq(1).hide();
@@ -69,7 +71,8 @@
 				});
 				parent.find('.ui-icon').css('cursor', 'pointer');
 			});
-			$('.ui-message').on('click', 'span.ui-icon', function(){
+
+			ui_message.on('click', 'span.ui-icon', function(){
 				var parent = $(this).closest('.ui-message');
 
 				parent.find('span').eq(1).show();

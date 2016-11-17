@@ -41,7 +41,7 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
+					<th width="1%" style="min-width:55px;" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>

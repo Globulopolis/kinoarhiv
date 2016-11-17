@@ -189,7 +189,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			{
 				JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
 				JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
-				JToolbarHelper::custom('sounds', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
+				JToolbarHelper::custom('soundtracks', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 			}
 		}
 		else

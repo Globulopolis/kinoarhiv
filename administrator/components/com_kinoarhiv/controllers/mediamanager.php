@@ -868,7 +868,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		$document = JFactory::getDocument();
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanager');
 		$message = '';
@@ -891,7 +890,135 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			$result = array('success' => false, 'message' => $message);
 		}
 
-		$document->setName('response');
+		echo json_encode($result);
+	}
+
+	public function upload_remote()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$model = $this->getModel('mediamanager');
+		$message = '';
+		$urls = $app->input->post->get('urls', '', 'string');
+		$urls_arr = explode("\n", $urls);
+		$section = $app->input->get('section', '', 'word');
+		$type = $app->input->get('type', '', 'word');
+		$tab = $app->input->get('tab', null, 'int');
+		$id = $app->input->get('id', null, 'int');
+		$frontpage = $app->input->get('frontpage', 0, 'int');
+
+		if (count($urls_arr) > 0 && !empty($id))
+		{
+			JLoader::register('KAImage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'image.php');
+			$image = new KAImage;
+
+			foreach ($urls_arr as $url)
+			{
+				$output = KAComponentHelper::getRemoteData($url);
+
+				if ($output->code == 200 || $output->code == 301 || $output->code == 304)
+				{
+					$dest_dir = $model->getPath($section, $type, $tab, $id) . '/';
+					$filename = basename($url);
+					$file_path = JPath::clean($dest_dir . $filename);
+
+					if (file_put_contents($file_path, $output->body) !== false)
+					{
+						if ($section == 'movie')
+						{
+							if ($type == 'gallery')
+							{
+								$orig_image = @getimagesize($file_path);
+
+								if ($tab == 1)
+								{
+									$width  = (int) $params->get('size_x_wallpp');
+									$height = ($width * $orig_image[1]) / $orig_image[0];
+								}
+								elseif ($tab == 2)
+								{
+									$width  = (int) $params->get('size_x_posters');
+									$height = ($width * $orig_image[1]) / $orig_image[0];
+								}
+								elseif ($tab == 3)
+								{
+									$width  = (int) $params->get('size_x_scr');
+									$height = ($width * $orig_image[1]) / $orig_image[0];
+								}
+
+								// Add watermark
+								if ($params->get('upload_gallery_watermark_image_on') == 1)
+								{
+									$watermark_img = $params->get('upload_gallery_watermark_image');
+
+									if (!empty($watermark_img) && file_exists($watermark_img))
+									{
+										$image->addWatermark($dest_dir, $filename, $watermark_img);
+									}
+								}
+
+								$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
+								//$result = $model->saveImageInDB($image, $filename, $orig_image, 'movie', $tab, $id, $frontpage);
+							}
+						}
+						elseif ($section == 'name')
+						{
+							if ($app->input->get('type') == 'gallery')
+							{
+								$orig_image = @getimagesize($file_path);
+
+								if ($tab == 1)
+								{
+									$width = (int) $params->get('size_x_wallpp');
+									$height = ($width * $orig_image[1]) / $orig_image[0];
+								}
+								elseif ($tab == 2)
+								{
+									$width = (int) $params->get('size_x_posters');
+									$height = ($width * $orig_image[1]) / $orig_image[0];
+								}
+								elseif ($tab == 3)
+								{
+									$width = (int) $params->get('size_x_photo');
+									$height = ($width * $orig_image[1]) / $orig_image[0];
+								}
+
+								// Add watermark
+								if ($params->get('upload_gallery_watermark_image_on') == 1)
+								{
+									$watermark_img = $params->get('upload_gallery_watermark_image');
+
+									if (!empty($watermark_img) && file_exists($watermark_img))
+									{
+										$image->addWatermark($dest_dir, $filename, $watermark_img);
+									}
+								}
+
+								$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
+								//$result = $model->saveImageInDB($image, $filename, $orig_image, 'name', $tab, $id, $frontpage);
+							}
+						}
+					}
+					else
+					{
+						$message .= JText::_('COM_KA_FILE_UPLOAD_ERROR') . ': ' . $url . "\n";
+					}
+				}
+				else
+				{
+					$message .= 'HTTP error: ' . $output->code . "\n";
+				}
+			}
+
+			$result = array('success' => true, 'message' => $message);
+		}
+		else
+		{
+			$result = array('success' => false, 'message' => JText::_('COM_KA_FILE_UPLOAD_ERROR'));
+		}
+
 		echo json_encode($result);
 	}
 }

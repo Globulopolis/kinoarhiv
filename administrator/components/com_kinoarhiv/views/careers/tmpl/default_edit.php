@@ -19,8 +19,8 @@ JHtml::_('behavior.keepalive');
 			return;
 		}
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_title').val() == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+			if (document.getElementById('form_title').value == '') {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
 		}

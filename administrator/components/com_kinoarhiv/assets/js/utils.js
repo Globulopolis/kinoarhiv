@@ -1,10 +1,31 @@
-function showMsg(selector, text) {
-	jQuery(selector).aurora({
-		text: text,
-		placement: 'before',
-		button: 'close',
-		button_title: '['+ Joomla.JText._('COM_KA_CLOSE') +']'
-	});
+/**
+ * @depreated 3.1
+ */
+
+/**
+ * Create a message and display
+ *
+ * @param   selector   Selector.
+ * @param   text       Message text.
+ * @param   placement  Where to place the message.
+ * @param   btn_type   Show button to close or hide.
+ * @param   btn_title  Text for close or hide button.
+ *
+ * @return  void
+ */
+function showMsg(selector, text, placement, btn_type, btn_title) {
+	placement = (typeof placement == 'undefined') ? 'after' : placement;
+	btn_type = (typeof btn_type == 'undefined' || empty(btn_type)) ? 'close' : btn_type;
+	btn_title = (typeof btn_title == 'undefined' || empty(btn_title)) ? KA_vars.language.close : btn_title;
+
+	if (jQuery.fn.aurora) {
+		jQuery(selector).aurora({
+			text: text,
+			placement: placement,
+			button: btn_type,
+			button_title: '[' + btn_title + ']'
+		});
+	}
 }
 
 function blockUI(action) {

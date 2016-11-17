@@ -23,6 +23,8 @@ class KAMedia
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since  3.0
 	 */
 	public function __construct()
 	{
@@ -33,6 +35,8 @@ class KAMedia
 	 * Returns a reference to the KAMedia object, only creating it if it doesn't already exist.
 	 *
 	 * @return  KAMedia
+	 *
+	 * @since  3.0
 	 */
 	public static function getInstance()
 	{
@@ -51,9 +55,11 @@ class KAMedia
 	 * @param   array  $data  An array with the data. folder - path to the folder, screenshot - filename of the
 	 *                        screenshot(if exists), filename - videofile.
 	 *
-	 * @return  array  Array with results
+	 * @return  mixed  Array with results or false otherwise
+	 *
+	 * @since  3.0
 	 */
-	public function createScreenshot($data)
+	public function createVideoScreenshot($data)
 	{
 		if (!empty($data['screenshot']) && file_exists($data['folder'] . $data['screenshot']))
 		{
@@ -117,6 +123,8 @@ class KAMedia
 	 * @param   string  $path  Path to a file.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public function detectMime($path)
 	{
@@ -147,6 +155,8 @@ class KAMedia
 	 * @param   string  $format  Output format. See http://ffmpeg.org/ffprobe.html#Writers
 	 *
 	 * @return  mixed   Array with results if error, string otherwise
+	 *
+	 * @since  3.0
 	 */
 	public function getVideoInfo($path, $stream = 'v:0', $format = 'json')
 	{
@@ -191,6 +201,8 @@ class KAMedia
 	 * @param   boolean  $format  Output format. If set to true, format result to 00:00:00:000, as is otherwise.
 	 *
 	 * @return  mixed   Array with results if error, string otherwise
+	 *
+	 * @since  3.0
 	 */
 	public function getVideoDuration($path, $format = false)
 	{
@@ -244,6 +256,8 @@ class KAMedia
 	 * @param   string  $path  Path to a file.
 	 *
 	 * @return  mixed   Array with results if error, true otherwise
+	 *
+	 * @since  3.0
 	 */
 	public function checkLibrary($path)
 	{
@@ -271,6 +285,8 @@ class KAMedia
 	 * @return  boolean  True on success
 	 *
 	 * @throws  Exception
+	 *
+	 * @since  3.0
 	 */
 	public function normalizeVTT($path, $filename, $replace=true, $new_filename='')
 	{

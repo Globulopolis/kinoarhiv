@@ -159,7 +159,7 @@ class KinoarhivModelNames extends JModelList
 
 		// Join over gallery item
 		$query->select($db->quoteName(array('gal.filename', 'gal.dimension')))
-			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'gal') . ' ON gal.name_id = n.id AND gal.type = 3 AND gal.photo_frontpage = 1 AND gal.state = 1');
+			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'gal') . ' ON gal.name_id = n.id AND gal.type = 3 AND gal.frontpage = 1 AND gal.state = 1');
 
 		$query->join('LEFT', $db->quoteName('#__ka_genres', 'g') . ' ON g.id IN (SELECT genre_id FROM ' . $db->quoteName('#__ka_rel_names_genres') . ' WHERE name_id = n.id)')
 		->join('LEFT', $db->quoteName('#__ka_names_career', 'cr') . ' ON cr.id IN (SELECT career_id FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE name_id = n.id)');

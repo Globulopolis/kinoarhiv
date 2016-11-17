@@ -129,7 +129,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		// Join over gallery item
 		$query->select($db->quoteName('g.filename'))
-			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1');
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
 
 		if (!$user->get('guest'))
 		{
@@ -544,8 +544,8 @@ class KinoarhivModelMovie extends JModelForm
 			->join('LEFT', $db->quoteName('#__ka_names', 'd') . ' ON d.id = t.dub_id AND d.state = 1 AND d.access IN (' . $groups . ') AND d.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 'r') . ' ON r.dub_id = n.id AND r.movie_id = ' . (int) $id)
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 'ac') . ' ON ac.name_id = n.id AND ac.movie_id = ' . (int) $id)
-			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.photo_frontpage = 1')
-			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'dg') . ' ON dg.name_id = d.id AND dg.type = 3 AND dg.photo_frontpage = 1');
+			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1')
+			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'dg') . ' ON dg.name_id = d.id AND dg.type = 3 AND dg.frontpage = 1');
 
 			$subquery_crew = $db->getQuery(true)
 				->select('name_id')

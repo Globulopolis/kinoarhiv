@@ -15,8 +15,8 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save') {
-			if (jQuery('#form_review').val() == '' || jQuery('#form_movie_id').select2('val') == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+			if (document.getElementById('form_review').value == '' || jQuery('#form_movie_id').select2('val') == '') {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
 		}

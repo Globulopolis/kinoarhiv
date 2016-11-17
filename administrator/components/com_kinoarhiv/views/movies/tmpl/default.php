@@ -95,13 +95,13 @@ $sortFields = $this->getSortFields();
 					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
+					<th width="1%" style="min-width:55px;" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'a.title', $listDirn, $listOrder); ?>
 					</th>
-					<th width="7%" style="min-width:35px" class="nowrap center"></th>
+					<th width="7%" style="min-width:35px;" class="nowrap center"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>

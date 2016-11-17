@@ -1,3 +1,12 @@
+/**
+ * @package     Kinoarhiv.Site
+ * @subpackage  com_kinoarhiv
+ *
+ * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ * @license     GNU General Public License version 2 or later
+ * @url            http://киноархив.com/
+ */
+
 /*
  * A JavaScript equivalent of PHP's empty. See http://phpjs.org/functions/empty/
  *
@@ -76,9 +85,9 @@ function formatItemTitle(firstTitle, secondTitle, date, separator) {
  * @return  void
  */
 function showMsg(selector, text, placement, btn_type, btn_title) {
-	placement = (placement == 'undefinded') ? 'after' : placement;
-	btn_type = (btn_type == 'undefinded' || empty(btn_type)) ? 'close' : btn_type;
-	btn_title = (btn_title == 'undefinded' || empty(btn_title)) ? KA_vars.language.close : btn_title;
+	placement = (typeof placement == 'undefined') ? 'after' : placement;
+	btn_type = (typeof btn_type == 'undefined' || empty(btn_type)) ? 'close' : btn_type;
+	btn_title = (typeof btn_title == 'undefined' || empty(btn_title)) ? KA_vars.language.close : btn_title;
 
 	if (jQuery.fn.aurora) {
 		jQuery(selector).aurora({
@@ -87,6 +96,21 @@ function showMsg(selector, text, placement, btn_type, btn_title) {
 			button: btn_type,
 			button_title: '[' + btn_title + ']'
 		});
+	}
+}
+
+/**
+ * Block UI interaction.
+ *
+ * @param   action  Show or hide block.
+ *
+ * @return  void
+ */
+function blockUI(action) {
+	if (action == 'show') {
+		jQuery('<div class="ui-widget-overlay" id="blockui" style="z-index: 10001;"></div>').appendTo('body').show();
+	} else {
+		jQuery('#blockui').remove();
 	}
 }
 
@@ -107,6 +131,41 @@ jQuery(document).ready(function($){
 
 	// Add support for UIkit tooltips
 	$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
+
+	// Create datetime field
+	$('.hasDatetime').each(function(index, element){
+		var $this = $(element);
+
+		if ($this.attr('readonly')) {
+			return;
+		}
+
+		if ($this.val() === 'NOW') {
+			$this.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+		}
+
+		if ($this.data('type') == 'time') {
+			$this.timepicker({
+				timeFormat: $this.data('time-format'),
+				showOn: 'button'
+			});
+		} else if ($this.data('type') == 'date') {
+			$this.datepicker({
+				dateFormat: $this.data('date-format'),
+				showButtonPanel: true,
+				showOn: 'button'
+			});
+		} else if ($this.data('type') == 'datetime') {
+			$this.datetimepicker({
+				dateFormat: $this.data('date-format'),
+				timeFormat: $this.data('time-format'),
+				showButtonPanel: true,
+				showOn: 'button'
+			});
+		}
+
+		$this.next('.ui-datepicker-trigger').addClass('btn btn-default').html('<i class="icon-calendar"></i>');
+	});
 
 	$('.hasAutocomplete').each(function(index, element){
 		if ($(element).data('select2-disabled')) {

@@ -39,7 +39,7 @@ $movie_id = $this->form->getValue('id', $this->form_edit_group);
 			}
 
 			return false;
-		} else if (task == 'sounds') {
+		} else if (task == 'soundtracks') {
 			url = 'index.php?option=com_kinoarhiv&view=music&type=albums<?php echo $movie_id != 0 ? '&movie_id=' . $movie_id : ''; ?>';
 			handler = window.open(url);
 			if (!handler) {

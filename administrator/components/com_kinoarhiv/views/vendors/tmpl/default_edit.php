@@ -15,8 +15,8 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_company_name').val() == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+			if (document.getElementById('form_company_name').value == '') {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
 		}

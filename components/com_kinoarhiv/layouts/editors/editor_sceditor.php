@@ -25,7 +25,7 @@ $form   = $displayData->form;
 			plugins: 'format,undo',
 			toolbar: 'bold,italic,underline|left,center,right,justify|bulletlist,orderedlist|font,size,format|quote|undo,maximize,source',
 			height: '300',
-			style: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/editors/wysihtml5/ui/default_editor.css',
+			style: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/editors/sceditor/themes/default_editor.css',
 			emoticonsEnabled: false
 		});
 

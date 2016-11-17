@@ -10,24 +10,10 @@
 
 defined('_JEXEC') or die;
 
-$user		= JFactory::getUser();
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 <script type="text/javascript">
-	Joomla.orderTable = function() {
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
-		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
-	};
-
 	Joomla.submitbutton = function(task) {
 		if (task == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
@@ -37,7 +23,7 @@ $sortFields = $this->getSortFields();
 	};
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_PREMIERES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
+		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_PREMIERES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
 
 		<?php if (count($this->items) > 1): ?>
 		$('#articleList tbody').sortable({
@@ -56,10 +42,10 @@ $sortFields = $this->getSortFields();
 			update: function(e, ui){
 				$.post('index.php?option=com_kinoarhiv&controller=premieres&task=saveOrder&format=json', $('#articleList tbody .order input.ord').serialize()+'&<?php echo JSession::getFormToken(); ?>=1&movie_id='+$(ui.item).find('input[name="movie_id"]').val(), function(response){
 					if (!response.success) {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 					}
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});
@@ -83,7 +69,7 @@ $sortFields = $this->getSortFields();
 					<th width="12%" class="center">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_PREMIERE_DATE_LABEL', 'p.premiere_date', $listDirn, $listOrder); ?>
 					</th>
-					<th width="30%" style="min-width:55px">
+					<th width="30%" style="min-width:55px;">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
 					</th>
 					<th width="25%" class="nowrap hidden-phone">

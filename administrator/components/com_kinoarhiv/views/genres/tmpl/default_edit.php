@@ -20,8 +20,8 @@ $item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') ==
 			return;
 		}
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_name').val() == '' || jQuery('#form_stats').val() == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>', 'before');
+			if (document.getElementById('form_name').value == '' || document.getElementById('form_stats').value == '') {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>', 'before');
 				return;
 			}
 		}
@@ -37,10 +37,10 @@ $item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') ==
 			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {
 					_this.prev('input').val(response.total);
-					showMsg($('#adminForm'), '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>');
+					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>');
 				} else {
 					_this.prev('input').val('0');
-					showMsg($('#adminForm'), response.message);
+					showMsg('#system-message-container', response.message);
 				}
 			});
 		});

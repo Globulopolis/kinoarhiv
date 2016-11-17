@@ -118,12 +118,12 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies_gallery` (
   `dimension` varchar(10) NOT NULL DEFAULT '',
   `movie_id` int(10) NOT NULL DEFAULT '0',
   `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1-wallpapers, 2-posters, 3-screenshots, 4-soundtracks album cover',
-  `poster_frontpage` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `frontpage` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `state` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_movie_id` (`movie_id`),
   KEY `idx_type` (`type`),
-  KEY `idx_poster` (`poster_frontpage`),
+  KEY `idx_poster` (`frontpage`),
   KEY `idx_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -190,11 +190,11 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
   `filename` varchar(128) NOT NULL DEFAULT '',
   `dimension` varchar(10) NOT NULL DEFAULT '',
   `item_id` bigint(19) NOT NULL DEFAULT '0',
-  `poster_frontpage` tinyint(1) unsigned DEFAULT '0',
+  `frontpage` tinyint(1) unsigned DEFAULT '0',
   `state` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_itemid` (`item_id`),
-  KEY `idx_poster` (`poster_frontpage`),
+  KEY `idx_poster` (`frontpage`),
   KEY `idx_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -289,13 +289,13 @@ CREATE TABLE IF NOT EXISTS `#__ka_names_gallery` (
   `dimension` varchar(10) NOT NULL DEFAULT '',
   `name_id` int(10) NOT NULL DEFAULT '0',
   `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1-wallpapers, 2-posters, 3-photo',
-  `photo_frontpage` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `frontpage` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `state` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_name_id` (`name_id`),
   KEY `idx_type` (`type`),
   KEY `idx_state` (`state`),
-  KEY `idx_frontpage` (`photo_frontpage`)
+  KEY `idx_frontpage` (`frontpage`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_premieres` (

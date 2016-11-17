@@ -29,10 +29,12 @@ class KAImage extends JImage
 	 * @param   mixed    $thumbsName      True for default filename, false - for default filename in component
 	 *                                    (thumb_$filename), string - custom prefix for filename
 	 *
-	 * @return array
+	 * @return  array
 	 *
 	 * @throws  LogicException
 	 * @throws  InvalidArgumentException
+	 *
+	 * @since  3.0
 	 */
 	public function _createThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true)
 	{
@@ -118,10 +120,12 @@ class KAImage extends JImage
 	 *                               bc - bottom center, br - bottom right.
 	 * @param   array   $properties  additional properties
 	 *
-	 * @return array
+	 * @return  void
 	 *
 	 * @throws  LogicException
 	 * @throws  InvalidArgumentException
+	 *
+	 * @since  3.0
 	 */
 	public function addWatermark($directory, $filename, $watermark, $position = 'br', $properties = array())
 	{
@@ -216,9 +220,7 @@ class KAImage extends JImage
 				}
 			}
 
-			$watermark_x = 0;
 			$watermark_x_offset = (int) isset($properties['watermark_x_offset']) ? $properties['watermark_x_offset'] : 10;
-			$watermark_y = 0;
 			$watermark_y_offset = (int) isset($properties['watermark_y_offset']) ? $properties['watermark_y_offset'] : 10;
 
 			if (isset($properties['watermark_x']) && is_numeric($properties['watermark_x']))
@@ -268,7 +270,10 @@ class KAImage extends JImage
 			}
 
 			imagealphablending($image->handle, true);
-			imagecopyresampled($image->handle, $filter, $watermark_x, $watermark_y, 0, 0, $watermark_dst_width, $watermark_dst_height, $watermark_src_width, $watermark_src_height);
+			imagecopyresampled(
+				$image->handle, $filter, $watermark_x, $watermark_y, 0, 0,
+				$watermark_dst_width, $watermark_dst_height, $watermark_src_width, $watermark_src_height
+			);
 		}
 		else
 		{

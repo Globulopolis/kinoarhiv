@@ -10,25 +10,10 @@
 
 defined('_JEXEC') or die;
 
-$user		= JFactory::getUser();
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 <script type="text/javascript">
-	Joomla.orderTable = function() {
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		var dirn;
-		if (order != '<?php echo $listOrder; ?>') {
-			dirn = 'asc';
-		} else {
-			dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
-	};
-
 	Joomla.submitbutton = function(pressbutton) {
 		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
@@ -59,10 +44,10 @@ $sortFields = $this->getSortFields();
 			update: function(){
 				$.post('index.php?option=com_kinoarhiv&controller=careers&task=saveOrder&format=json', $('#articleList tbody .order input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 					}
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

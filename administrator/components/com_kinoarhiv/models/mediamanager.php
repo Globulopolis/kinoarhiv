@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
 
+JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
+
 /**
  * Class KinoarhivModelMediamanager
  *
@@ -20,6 +22,8 @@ use Joomla\Utilities\ArrayHelper;
  */
 class KinoarhivModelMediamanager extends JModelList
 {
+	protected $context = null;
+
 	/**
 	 * Constructor.
 	 *
@@ -35,14 +39,544 @@ class KinoarhivModelMediamanager extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'g.id',
 				'filename', 'g.filename',
+				'title', 'g.title',
 				'dimension', 'g.dimension',
+				'frontpage', 'g.frontpage',
 				'state', 'g.state',
-				'poster_frontpage', 'g.poster_frontpage', 'g.frontpage',
-				'access', 'g.access', 'access_level',
 				'language', 'g.language');
 		}
 
+		$input = JFactory::getApplication()->input;
+
+		// Adjust context to support different active filters for gallery and trailers.
+		if ($input->get('type', '', 'word') == 'trailers')
+		{
+			$this->context = 'com_kinoarhiv_mediamanager_trailers';
+		}
+		else
+		{
+			$this->context = 'com_kinoarhiv_mediamanager_' . $input->get('section', '', 'word') . '_gallery';
+		}
+
 		parent::__construct($config);
+	}
+
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * This method should only be called once per instantiation and is designed
+	 * to be called on the first call to the getState() method unless the model
+	 * configuration flag to ignore the request is set.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   An optional ordering field.
+	 * @param   string  $direction  An optional direction (asc|desc).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
+	protected function populateState($ordering = null, $direction = null)
+	{
+		$app = JFactory::getApplication();
+
+		// Adjust the context to support modal layouts.
+		if ($layout = $app->input->get('layout'))
+		{
+			$this->context .= '.' . $layout;
+		}
+
+		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$this->setState('filter.search', $search);
+
+		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+		$this->setState('filter.access', $access);
+
+		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
+
+		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
+		$this->setState('filter.language', $language);
+
+		// Force a language
+		$forcedLanguage = $app->input->get('forcedLanguage');
+
+		if (!empty($forcedLanguage))
+		{
+			$this->setState('filter.language', $forcedLanguage);
+			$this->setState('filter.forcedLanguage', $forcedLanguage);
+		}
+
+		// List state information.
+		parent::populateState('g.filename', 'asc');
+	}
+
+	/**
+	 * Get the filter form
+	 *
+	 * @param   array    $data      data
+	 * @param   boolean  $loadData  load current data
+	 *
+	 * @return  JForm|boolean  The JForm object or false on error
+	 *
+	 * @since   3.1
+	 */
+	public function getFilterForm($data = array(), $loadData = true)
+	{
+		$input = JFactory::getApplication()->input;
+		$form = null;
+
+		// Try to locate the filter form automatically. Example: ContentModelArticles => "filter_articles"
+		if (empty($this->filterFormName))
+		{
+			$classNameParts = explode('Model', get_called_class());
+
+			if (count($classNameParts) == 2)
+			{
+				$this->filterFormName = 'filter_' . strtolower($classNameParts[1]);
+			}
+		}
+
+		if (!empty($this->filterFormName))
+		{
+			if ($input->get('type', '', 'word') == 'gallery')
+			{
+				$filterFormName = $this->filterFormName . '_gallery';
+			}
+			elseif ($input->get('type', '', 'word') == 'trailers')
+			{
+				$filterFormName = $this->filterFormName . '_trailers';
+			}
+			else
+			{
+				$filterFormName = $this->filterFormName;
+			}
+
+			// Get the form based on content type.
+			$form = $this->loadForm($this->context . '.filter', $filterFormName, array('control' => '', 'load_data' => $loadData));
+		}
+
+		return $form;
+	}
+
+	/**
+	 * Method to get a store id based on the model configuration state.
+	 *
+	 * This is necessary because the model is used by the component and
+	 * different modules that might need different sets of data or different
+	 * ordering requirements.
+	 *
+	 * @param   string  $id  An identifier string to generate the store id.
+	 *
+	 * @return  string  A store id.
+	 *
+	 * @since   3.0
+	 */
+	protected function getStoreId($id = '')
+	{
+		// Compile the store id.
+		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.access');
+		$id .= ':' . $this->getState('filter.published');
+		$id .= ':' . $this->getState('filter.language');
+
+		return parent::getStoreId($id);
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @throws  Exception
+	 * @since   3.0
+	 */
+	protected function getListQuery()
+	{
+		$input   = JFactory::getApplication()->input;
+		$section = $input->get('section', '', 'word');
+		$type    = $input->get('type', '', 'word');
+
+		if ($section == 'movie' && $type == 'gallery')
+		{
+			$query = $this->listQueryMovieImages();
+		}
+		elseif ($section == 'movie' && $type == 'trailers')
+		{
+			$query = $this->listQueryMovieTrailers();
+		}
+		elseif ($section == 'name' && $type == 'gallery')
+		{
+			$query = $this->listQueryNameImages();
+		}
+
+		if (empty($query))
+		{
+			throw new Exception('Empty JDatabaseQuery in ' . __METHOD__, 500);
+		}
+
+		return $query;
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set for movie images.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
+	private function listQueryMovieImages()
+	{
+		$input = JFactory::getApplication()->input;
+		$tab   = $input->get('tab', 0, 'int');
+		$id    = $input->get('id', 0, 'int');
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$this->getState(
+				'list.select',
+				$db->quoteName(array('g.id', 'g.filename', 'g.dimension', 'g.movie_id', 'g.frontpage', 'g.state', 'm.alias', 'm.fs_alias'))
+			)
+		);
+		$query->from($db->quoteName('#__ka_movies_gallery', 'g'))
+			->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'));
+
+		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+			->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
+
+		// Filter by published state
+		$published = $this->getState('filter.published');
+
+		if (is_numeric($published))
+		{
+			$query->where('g.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
+			$query->where('(g.state = 0 OR g.state = 1)');
+		}
+
+		// Filter by search in title.
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('g.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(g.filename LIKE ' . $search . ')');
+			}
+		}
+
+		// Add the list ordering clause.
+		$orderCol = $this->state->get('list.ordering', 'g.filename');
+		$orderDirn = $this->state->get('list.direction', 'asc');
+
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+
+		return $query;
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set for name images.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
+	private function listQueryNameImages()
+	{
+		$input = JFactory::getApplication()->input;
+		$tab   = $input->get('tab', 0, 'int');
+		$id    = $input->get('id', 0, 'int');
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$this->getState(
+				'list.select',
+				$db->quoteName(array('g.id', 'g.filename', 'g.dimension', 'g.name_id', 'g.frontpage', 'g.state', 'n.alias', 'n.fs_alias'))
+			)
+		);
+		$query->from($db->quoteName('#__ka_names_gallery', 'g'))
+			->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('g.name_id'));
+
+		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+			->where($db->quoteName('g.name_id') . ' = ' . (int) $id);
+
+		// Filter by published state
+		$published = $this->getState('filter.published');
+
+		if (is_numeric($published))
+		{
+			$query->where('g.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
+			$query->where('(g.state = 0 OR g.state = 1)');
+		}
+
+		// Filter by search in title.
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('g.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(g.filename LIKE ' . $search . ')');
+			}
+		}
+
+		// Add the list ordering clause.
+		$orderCol = $this->state->get('list.ordering', 'g.filename');
+		$orderDirn = $this->state->get('list.direction', 'asc');
+
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+
+		return $query;
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set for trailers list.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
+	private function listQueryMovieTrailers()
+	{
+		$input = JFactory::getApplication()->input;
+		$id    = $input->get('id', 0, 'int');
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$this->getState(
+				'list.select',
+				$db->quoteName(
+					array('g.id', 'g.title', 'g.embed_code', 'g.filename', 'g.duration', 'g._subtitles', 'g._chapters',
+						'g.frontpage', 'g.state', 'g.language', 'g.is_movie', 'm.fs_alias'
+					)
+				)
+			)
+		);
+		$query->from($db->quoteName('#__ka_trailers', 'g'))
+			->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'));
+
+		// Join over the language
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('g.language'));
+
+		// Join over the asset groups.
+		$query->select($db->quoteName('ag.title', 'access_level'))
+			->join('LEFT', $db->quoteName('#__viewlevels', 'ag') . ' ON ' . $db->quoteName('ag.id') . ' = ' . $db->quoteName('g.access'));
+
+		$query->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
+			->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
+
+		// Filter by access level.
+		if ($access = $this->getState('filter.access'))
+		{
+			$query->where('g.access = ' . (int) $access);
+		}
+
+		// Filter by published state
+		$published = $this->getState('filter.published');
+
+		if (is_numeric($published))
+		{
+			$query->where('g.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
+			$query->where('(g.state = 0 OR g.state = 1)');
+		}
+
+		// Filter by search in title.
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('g.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(g.filename LIKE ' . $search . ')');
+			}
+		}
+
+		// Filter on the language.
+		if ($language = $this->getState('filter.language'))
+		{
+			$query->where('g.language = ' . $db->quote($language));
+		}
+
+		// Add the list ordering clause.
+		$orderCol = $this->state->get('list.ordering', 'g.title');
+		$orderDirn = $this->state->get('list.direction', 'asc');
+
+		// SQL server change
+		if ($orderCol == 'language')
+		{
+			$orderCol = 'l.title';
+		}
+
+		if ($orderCol == 'access_level')
+		{
+			$orderCol = 'ag.title';
+		}
+
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+
+		return $query;
+	}
+
+	/**
+	 * Method to get a list of articles.
+	 * Overridden to add a check for access levels.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   3.0
+	 */
+	public function getItems()
+	{
+		$items = parent::getItems();
+
+		if (JFactory::getApplication()->isSite())
+		{
+			$user = JFactory::getUser();
+			$groups = $user->getAuthorisedViewLevels();
+
+			for ($x = 0, $count = count($items); $x < $count; $x++)
+			{
+				// Check the access level. Remove articles the user shouldn't see
+				if (!in_array($items[$x]->access, $groups))
+				{
+					unset($items[$x]);
+				}
+			}
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Method to get a single record for trailer.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.0
+	 */
+	public function getItem()
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+		$id = $app->input->get('item_id', 0, 'int');
+
+		$query->select(
+			$db->quoteName(
+				array('g.id', 'g.movie_id', 'g.title', 'g.embed_code', 'g.screenshot', 'g.urls', 'g.filename',
+					'g.resolution', 'g.dar', 'g.duration', 'g._subtitles', 'g._chapters', 'g.frontpage', 'g.access',
+					'g.state', 'g.language', 'g.is_movie'
+				)
+			)
+		)
+			->from($db->quoteName('#__ka_trailers', 'g'));
+
+		$query->select($db->quoteName(array('m.alias', 'm.fs_alias')))
+			->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON `m`.`id` = `g`.`movie_id`');
+
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->leftJoin($db->quoteName('#__languages', 'l') . ' ON `l`.`lang_code` = `g`.`language`');
+
+		$query->select($db->quoteName('ag.title', 'access_level'))
+			->leftJoin($db->quoteName('#__viewlevels', 'ag') . ' ON ag.id = g.access');
+
+		$query->where($db->quoteName('g.id') . ' = ' . $id);
+
+		$db->setQuery($query);
+		$result = $db->loadObject();
+
+		return $result;
+	}
+
+	/**
+	 * Method to get an item title.
+	 *
+	 * @param   string   $section  The section for searching. Can be 'movie', 'name', 'trailer', 'soundtrack'
+	 * @param   integer  $id       Item ID.
+	 *
+	 * @return  mixed  Object with the data. False on error.
+	 *
+	 * @since  3.0
+	 */
+	public function getItemTitle($section = null, $id = null)
+	{
+		$db = $this->getDbo();
+		$app = JFactory::getApplication();
+		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
+		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
+
+		if ($section == 'movie')
+		{
+			$query = $db->getQuery(true)
+				->select($db->quoteName('title'))
+				->from($db->quoteName('#__ka_movies'))
+				->where($db->quoteName('id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+			$data = $db->loadResult();
+		}
+		elseif ($section == 'name')
+		{
+			$query = $db->getQuery(true)
+				->select($db->quoteName(array('name', 'latin_name')))
+				->from($db->quoteName('#__ka_names'))
+				->where($db->quoteName('id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+			$result = $db->loadObject();
+			$data = '';
+
+			if (!empty($result->name))
+			{
+				$data .= $result->name;
+			}
+
+			if (!empty($result->name) && !empty($result->latin_name))
+			{
+				$data .= ' / ';
+			}
+
+			if (!empty($result->latin_name))
+			{
+				$data .= $result->latin_name;
+			}
+		}
+		else
+		{
+			$app->enqueueMessage('Unknown section type!', 'error');
+
+			return false;
+		}
+
+		return $data;
 	}
 
 	/**
@@ -54,6 +588,8 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   integer  $id       The item ID (movie or name).
 	 *
 	 * @return  string   Absolute filesystem path to a file.
+	 *
+	 * @since   3.0
 	 */
 	public function getPath($section = '', $type = '', $tab = 0, $id = 0)
 	{
@@ -133,6 +669,8 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   boolean  $content_alias  Return first letter of content alias(`alias` field).
 	 *
 	 * @return  string  URL safe alias
+	 *
+	 * @since   3.0
 	 */
 	public function getFilesystemAlias($section, $id, $content_alias=false)
 	{
@@ -206,164 +744,6 @@ class KinoarhivModelMediamanager extends JModelList
 	}
 
 	/**
-	 * Method to auto-populate the model state.
-	 *
-	 * This method should only be called once per instantiation and is designed
-	 * to be called on the first call to the getState() method unless the model
-	 * configuration flag to ignore the request is set.
-	 *
-	 * Note. Calling getState in this method will result in recursion.
-	 *
-	 * @param   string  $ordering   An optional ordering field.
-	 * @param   string  $direction  An optional direction (asc|desc).
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	protected function populateState($ordering = null, $direction = null)
-	{
-		$app = JFactory::getApplication();
-
-		// Adjust the context to support modal layouts.
-		if ($layout = $app->input->get('layout'))
-		{
-			$this->context .= '.' . $layout;
-		}
-
-		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', 0, 'int');
-		$this->setState('filter.access', $access);
-
-		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
-		$this->setState('filter.language', $language);
-
-		// Force a language
-		$forcedLanguage = $app->input->get('forcedLanguage');
-
-		if (!empty($forcedLanguage))
-		{
-			$this->setState('filter.language', $forcedLanguage);
-			$this->setState('filter.forcedLanguage', $forcedLanguage);
-		}
-
-		// List state information.
-		parent::populateState('g.id', 'asc');
-	}
-
-	/**
-	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
-	 *
-	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
-	 *
-	 * @since   3.0
-	 */
-	public function getListQuery()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', 0, 'int');
-		$id = $app->input->get('id', 0, 'int');
-
-		if ($section == 'movie')
-		{
-			if ($type == 'gallery')
-			{
-				$query->select(
-					$this->getState(
-						'list.select',
-						$db->quoteName(array('g.id', 'g.filename', 'g.dimension', 'g.movie_id', 'g.poster_frontpage', 'g.state', 'm.alias', 'm.fs_alias'))
-					)
-				);
-				$query->from($db->quoteName('#__ka_movies_gallery', 'g'))
-					->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'))
-					->where($db->quoteName('g.type') . ' = ' . (int) $tab)
-					->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
-					->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
-
-				$orderCol = $this->state->get('list.ordering', 'g.id');
-				$orderDirn = $this->state->get('list.direction', 'desc');
-				$query->order($db->escape($orderCol . ' ' . strtoupper($orderDirn)));
-			}
-			elseif ($type == 'trailers')
-			{
-				$query->select(
-					$this->getState(
-						'list.select',
-						$db->quoteName(
-							array('g.id', 'g.title', 'g.embed_code', 'g.filename', 'g.duration', 'g._subtitles', 'g._chapters',
-								'g.frontpage', 'g.state', 'g.language', 'g.is_movie'
-							)
-						)
-					)
-				)
-				->from($db->quoteName('#__ka_trailers', 'g'));
-
-				// Join over the language
-				$query->select($db->quoteName('l.title', 'language_title'))
-					->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('g.language'));
-
-				// Join over the movie
-				$query->select($db->quoteName('m.fs_alias'))
-					->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'));
-
-				// Join over the asset groups.
-				$query->select($db->quoteName('ag.title', 'access_level'))
-					->join('LEFT', $db->quoteName('#__viewlevels', 'ag') . ' ON ' . $db->quoteName('ag.id') . ' = ' . $db->quoteName('g.access'));
-
-				$query->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
-					->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
-
-				// Add the list ordering clause.
-				$orderCol = $this->state->get('list.ordering', 'g.id');
-				$orderDirn = $this->state->get('list.direction', 'desc');
-
-				// Sqlsrv change
-				if ($orderCol == 'language')
-				{
-					$orderCol = 'l.title';
-				}
-
-				if ($orderCol == 'access_level')
-				{
-					$orderCol = 'ag.title';
-				}
-
-				$query->order($db->escape($orderCol . ' ' . $orderDirn));
-			}
-		}
-		elseif ($section == 'name')
-		{
-			if ($type == 'gallery')
-			{
-				$query->select(
-					$this->getState(
-						'list.select',
-						$db->quoteName(array('g.id', 'g.filename', 'g.dimension', 'g.name_id', 'g.photo_frontpage', 'g.state', 'n.alias', 'n.fs_alias'))
-					)
-				);
-				$query->from($db->quoteName('#__ka_names_gallery', 'g'))
-					->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('g.name_id'))
-					->where($db->quoteName('g.type') . ' = ' . (int) $tab)
-					->where('(' . $db->quoteName('g.state') . ' = 0 OR ' . $db->quoteName('g.state') . ' = 1)')
-					->where($db->quoteName('g.name_id') . ' = ' . (int) $id);
-
-				$orderCol = $this->state->get('list.ordering', 'g.id');
-				$orderDirn = $this->state->get('list.direction', 'desc');
-				$query->order($db->escape($orderCol . ' ' . strtoupper($orderDirn)));
-			}
-		}
-		else
-		{
-			$query = null;
-		}
-
-		return $query;
-	}
-
-	/**
 	 * Method to save image information into DB. Accepted gallery items for movie and poster for trailer.
 	 *
 	 * @param   resource  $image        Image source.
@@ -374,7 +754,9 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   integer   $item_id      Item ID.
 	 * @param   integer   $frontpage    Item published on frontpage.
 	 *
-	 * @return   array
+	 * @return  mixed
+	 *
+	 * @since   3.0
 	 */
 	public function saveImageInDB($image = null, $filename, $image_sizes = array(), $section, $item_type = null, $item_id, $frontpage = 0)
 	{
@@ -393,7 +775,7 @@ class KinoarhivModelMediamanager extends JModelList
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__ka_movies_gallery'), 'id')
-				->columns($db->quoteName(array('id', 'filename', 'dimension', 'movie_id', 'type', 'poster_frontpage', 'state')))
+				->columns($db->quoteName(array('id', 'filename', 'dimension', 'movie_id', 'type', 'frontpage', 'state')))
 				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $item_id . "', '" . (int) $item_type . "', '" . (int) $frontpage . "', '1'");
 			$db->setQuery($query);
 
@@ -409,7 +791,7 @@ class KinoarhivModelMediamanager extends JModelList
 					$query = $db->getQuery(true);
 
 					$query->update($db->quoteName('#__ka_movies_gallery'))
-						->set($db->quoteName('poster_frontpage') . " = '0'")
+						->set($db->quoteName('frontpage') . " = '0'")
 						->where($db->quoteName('movie_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 2')
 						->where($db->quoteName('id') . ' != ' . $result['id']);
 					$db->setQuery($query);
@@ -430,7 +812,7 @@ class KinoarhivModelMediamanager extends JModelList
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__ka_names_gallery'), 'id')
-				->columns($db->quoteName(array('id', 'filename', 'dimension', 'name_id', 'type', 'photo_frontpage', 'state')))
+				->columns($db->quoteName(array('id', 'filename', 'dimension', 'name_id', 'type', 'frontpage', 'state')))
 				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $item_id . "', '" . (int) $item_type . "', '" . (int) $frontpage . "', '1'");
 			$db->setQuery($query);
 
@@ -446,7 +828,7 @@ class KinoarhivModelMediamanager extends JModelList
 					$query = $db->getQuery(true);
 
 					$query->update($db->quoteName('#__ka_names_gallery'))
-						->set($db->quoteName('photo_frontpage') . " = '0'")
+						->set($db->quoteName('frontpage') . " = '0'")
 						->where($db->quoteName('name_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 3')
 						->where($db->quoteName('id') . ' != ' . $result['id']);
 					$db->setQuery($query);
@@ -487,6 +869,8 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   string   $section  Movie or name.
 	 *
 	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
 	 */
 	public function publishOnFrontpage($action, $type = null, $item_id = 0, $id = array(), $section = null)
 	{
@@ -502,20 +886,20 @@ class KinoarhivModelMediamanager extends JModelList
 			if ($section == 'movie')
 			{
 				$table = '#__ka_movies_gallery';
-				$pub_col = 'poster_frontpage';
+				$pub_col = 'frontpage';
 				$item_col = 'movie_id';
 				$type_num = 2;
 			}
 			elseif ($section == 'name')
 			{
 				$table = '#__ka_names_gallery';
-				$pub_col = 'photo_frontpage';
+				$pub_col = 'frontpage';
 				$item_col = 'name_id';
 				$type_num = 3;
 			}
 			else
 			{
-				$this->setError('Unknown gallery type');
+				$app->enqueueMessage('Unknown gallery type');
 
 				return false;
 			}
@@ -533,14 +917,14 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 			catch (Exception $e)
 			{
-				$this->setError($e->getMessage());
+				$app->enqueueMessage($e->getMessage());
 
 				return false;
 			}
 
 			if (!isset($id[0]) || empty($id[0]))
 			{
-				$this->setError('Unknown ID');
+				$app->enqueueMessage('Unknown ID');
 
 				return false;
 			}
@@ -557,7 +941,7 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 			catch (Exception $e)
 			{
-				$this->setError($e->getMessage());
+				$app->enqueueMessage($e->getMessage());
 
 				return false;
 			}
@@ -597,14 +981,14 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 			catch (Exception $e)
 			{
-				$this->setError($e->getMessage());
+				$app->enqueueMessage($e->getMessage());
 
 				return false;
 			}
 
 			if (!isset($id[0]) || empty($id[0]))
 			{
-				$this->setError('Unknown ID');
+				$app->enqueueMessage('Unknown ID');
 
 				return false;
 			}
@@ -621,7 +1005,7 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 			catch (Exception $e)
 			{
-				$this->setError($e->getMessage());
+				$app->enqueueMessage($e->getMessage());
 
 				return false;
 			}
@@ -659,7 +1043,7 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 			else
 			{
-				$this->setError('Unknown gallery type!');
+				$app->enqueueMessage('Unknown gallery type!');
 
 				return false;
 			}
@@ -670,7 +1054,7 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 		else
 		{
-			$this->setError('Unknown gallery!');
+			$app->enqueueMessage('Unknown gallery!');
 
 			return false;
 		}
@@ -688,7 +1072,7 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
+			$app->enqueueMessage($e->getMessage());
 
 			return false;
 		}
@@ -703,7 +1087,7 @@ class KinoarhivModelMediamanager extends JModelList
 	 *
 	 * @return  mixed  True on success, False on error, lastInsertID on trailer save.
 	 *
-	 * @since   12.2
+	 * @since   3.0
 	 */
 	public function apply($data)
 	{
@@ -744,7 +1128,7 @@ class KinoarhivModelMediamanager extends JModelList
 					}
 					catch (Exception $e)
 					{
-						$this->setError($e->getMessage());
+						$app->enqueueMessage($e->getMessage());
 
 						return false;
 					}
@@ -769,7 +1153,7 @@ class KinoarhivModelMediamanager extends JModelList
 					}
 					catch (Exception $e)
 					{
-						$this->setError($e->getMessage());
+						$app->enqueueMessage($e->getMessage());
 
 						return false;
 					}
@@ -780,6 +1164,13 @@ class KinoarhivModelMediamanager extends JModelList
 		return true;
 	}
 
+	/**
+	 * Method to remove the images from database and filesystem except trailer files.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on trailer save.
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		jimport('joomla.filesystem.file');
@@ -823,7 +1214,7 @@ class KinoarhivModelMediamanager extends JModelList
 				}
 				catch (Exception $e)
 				{
-					$this->setError($e->getMessage());
+					$app->enqueueMessage($e->getMessage());
 
 					return false;
 				}
@@ -854,7 +1245,7 @@ class KinoarhivModelMediamanager extends JModelList
 				if ($query_result === false)
 				{
 					$db->transactionRollback();
-					$this->setError('Commit failed!');
+					$app->enqueueMessage('Commit failed!');
 				}
 				else
 				{
@@ -892,7 +1283,7 @@ class KinoarhivModelMediamanager extends JModelList
 				}
 				catch (Exception $e)
 				{
-					$this->setError($e->getMessage());
+					$app->enqueueMessage($e->getMessage());
 
 					return false;
 				}
@@ -951,7 +1342,7 @@ class KinoarhivModelMediamanager extends JModelList
 				if ($query_result === false)
 				{
 					$db->transactionRollback();
-					$this->setError('Commit failed!');
+					$app->enqueueMessage('Commit failed!');
 				}
 				else
 				{
@@ -992,7 +1383,7 @@ class KinoarhivModelMediamanager extends JModelList
 				}
 				catch (Exception $e)
 				{
-					$this->setError($e->getMessage());
+					$app->enqueueMessage($e->getMessage());
 
 					return false;
 				}
@@ -1023,7 +1414,7 @@ class KinoarhivModelMediamanager extends JModelList
 				if ($query_result === false)
 				{
 					$db->transactionRollback();
-					$this->setError('Commit failed!');
+					$app->enqueueMessage('Commit failed!');
 				}
 				else
 				{
@@ -1050,7 +1441,7 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 		else
 		{
-			$this->setError(JText::_('COM_KA_ITEMS_DELETED_ERROR'));
+			$app->enqueueMessage(JText::_('COM_KA_ITEMS_DELETED_ERROR'));
 
 			return false;
 		}
@@ -1064,109 +1455,59 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   array    $data      Data for the form.
 	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
-	 * @return  mixed  A JForm object on success, false on failure
+	 * @return  mixed  A JForm object on success, false on failure.
+	 *                 Return true if not an 'edit' trailer call(avoid conflicts with filters and limits for gallery lists).
 	 *
 	 * @since   3.0
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$form = $this->loadForm('com_kinoarhiv.mediamanager', 'mediamanager', array('control' => 'form', 'load_data' => $loadData));
+		$input = JFactory::getApplication()->input;
+		$type  = $input->get('type', '', 'word');
+		$task  = $input->get('task', '', 'cmd');
 
-		if (empty($form))
+		if ($type == 'trailers' && $task == 'edit')
 		{
-			return false;
+			$form = $this->loadForm('com_kinoarhiv.mediamanager', 'mediamanager', array('control' => 'form', 'load_data' => $loadData));
+
+			if (empty($form))
+			{
+				return false;
+			}
+
+			return $form;
 		}
 
-		return $form;
+		return true;
 	}
 
 	/**
 	 * Method to get the data that should be injected in the form.
 	 *
-	 * @return  array    The default data is an empty array.
+	 * @return  mixed  The default data is an array. Otherwise method must return an array from parent overloaded method
+	 *                 to avoid conflicts with filters and limits for gallery lists.
 	 *
 	 * @since   3.0
 	 */
 	protected function loadFormData()
 	{
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.trailers.' . JFactory::getUser()->id . '.edit_data', array());
+		$input = JFactory::getApplication()->input;
+		$type  = $input->get('type', '', 'word');
+		$task  = $input->get('task', '', 'cmd');
 
-		if (empty($data))
+		if ($type == 'trailers' && $task == 'edit')
 		{
-			$data = $this->getItem();
-		}
+			$data = JFactory::getApplication()->getUserState('com_kinoarhiv.trailers.' . JFactory::getUser()->id . '.edit_data', array());
 
-		return $data;
-	}
-
-	/**
-	 * Method to get a list of articles.
-	 * Overridden to add a check for access levels.
-	 *
-	 * @return  mixed  An array of data items on success, false on failure.
-	 *
-	 * @since   1.6.1
-	 */
-	public function getItems()
-	{
-		$items = parent::getItems();
-		$app = JFactory::getApplication();
-
-		if ($app->isSite())
-		{
-			$user = JFactory::getUser();
-			$groups = $user->getAuthorisedViewLevels();
-
-			for ($x = 0, $count = count($items); $x < $count; $x++)
+			if (empty($data))
 			{
-				// Check the access level. Remove articles the user shouldn't see
-				if (!in_array($items[$x]->access, $groups))
-				{
-					unset($items[$x]);
-				}
+				$data = $this->getItem();
 			}
+
+			return $data;
 		}
 
-		return $items;
-	}
-
-	/**
-	 * Method to get a single record.
-	 *
-	 * @return  mixed  Object on success, false on failure.
-	 */
-	public function getItem()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-		$id = $app->input->get('item_id', 0, 'int');
-
-		$query->select(
-			$db->quoteName(
-				array('g.id', 'g.movie_id', 'g.title', 'g.embed_code', 'g.screenshot', 'g.urls', 'g.filename',
-					'g.resolution', 'g.dar', 'g.duration', 'g._subtitles', 'g._chapters', 'g.frontpage', 'g.access',
-					'g.state', 'g.language', 'g.is_movie'
-				)
-			)
-		)
-		->from($db->quoteName('#__ka_trailers', 'g'));
-
-		$query->select($db->quoteName(array('m.alias', 'm.fs_alias')))
-			->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON `m`.`id` = `g`.`movie_id`');
-
-		$query->select($db->quoteName('l.title', 'language_title'))
-			->leftJoin($db->quoteName('#__languages', 'l') . ' ON `l`.`lang_code` = `g`.`language`');
-
-		$query->select($db->quoteName('ag.title', 'access_level'))
-			->leftJoin($db->quoteName('#__viewlevels', 'ag') . ' ON ag.id = g.access');
-
-		$query->where($db->quoteName('g.id') . ' = ' . $id);
-
-		$db->setQuery($query);
-		$result = $db->loadObject();
-
-		return $result;
+		return parent::loadFormData();
 	}
 
 	/**
@@ -1333,7 +1674,9 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   integer  $trailer_id  ID of the trailer
 	 * @param   integer  $movie_id    ID of the movie
 	 *
-	 * @return    mixed    Last insert ID on INSERT or true on UPDATE
+	 * @return  mixed    Last insert ID on INSERT or true on UPDATE
+	 *
+	 * @since  3.0
 	 */
 	public function saveChapters($file, $trailer_id, $movie_id)
 	{
@@ -1383,6 +1726,13 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 	}
 
+	/**
+	 * Method to get videofile parameters from database for quick edit.
+	 *
+	 * @return  array
+	 *
+	 * @since  3.0
+	 */
 	public function getVideoDataEdit()
 	{
 		$app = JFactory::getApplication();
@@ -1409,6 +1759,17 @@ class KinoarhivModelMediamanager extends JModelList
 		);
 	}
 
+	/**
+	 * Method to get videofile parameters from database for quick edit.
+	 *
+	 * @param   string   $trailer_id  ID of the trailer
+	 * @param   integer  $video_id    ID of videofile from json array
+	 * @param   integer  $movie_id    ID of the movie
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function saveVideofileData($trailer_id, $video_id = null, $movie_id = null)
 	{
 		jimport('joomla.filesystem.file');
@@ -1473,8 +1834,16 @@ class KinoarhivModelMediamanager extends JModelList
 		return JText::_('COM_KA_SAVED');
 	}
 
+	/**
+	 * Method to get subtitle parameters for trailer from database for quick edit.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.0
+	 */
 	public function getSubtitleEdit()
 	{
+		// TODO Use jimport
 		JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
 
 		$app = JFactory::getApplication();
@@ -1512,7 +1881,9 @@ class KinoarhivModelMediamanager extends JModelList
 	 * @param   integer  $subtitle_id  ID of the movie
 	 * @param   boolean  $edit         If set to true, we save info from subtitle information edit form.
 	 *
-	 * @return    mixed    Last insert ID on INSERT or true on UPDATE
+	 * @return  mixed    Last insert ID on INSERT or true on UPDATE
+	 *
+	 * @since  3.0
 	 */
 	public function saveSubtitles($file, $trailer_id, $movie_id = 0, $subtitle_id = null, $edit = false)
 	{
@@ -1648,10 +2019,16 @@ class KinoarhivModelMediamanager extends JModelList
 		return $result;
 	}
 
+	/**
+	 * Method to create screenshot from videofile store it in filesystem and database.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.0
+	 */
 	public function create_screenshot()
 	{
 		jimport('joomla.filesystem.file');
-		JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
 
 		$media = KAMedia::getInstance();
 		$app = JFactory::getApplication();
@@ -1694,7 +2071,7 @@ class KinoarhivModelMediamanager extends JModelList
 				$db->setQuery($query);
 				$db->execute();
 
-				$output = $media->createScreenshot($data);
+				$output = $media->createVideoScreenshot($data);
 
 				if ($output)
 				{
@@ -1720,10 +2097,19 @@ class KinoarhivModelMediamanager extends JModelList
 		return 'error:' . JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR');
 	}
 
-	public function saveVideo($file = '', $trailer_id, $movie_id)
+	/**
+	 * Method to save information about uploaded videofile into JSON object and store it in database.
+	 *
+	 * @param   string   $filename    Filename to process and store.
+	 * @param   integer  $trailer_id  Trailer ID.
+	 * @param   integer  $movie_id    Movie ID.
+	 *
+	 * @return  mixed   Array of filtered data if valid, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	public function saveVideo($filename, $trailer_id, $movie_id)
 	{
-		JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
-
 		$media = KAMedia::getInstance();
 		$db = $this->getDbo();
 
@@ -1745,7 +2131,7 @@ class KinoarhivModelMediamanager extends JModelList
 
 			foreach ($result_arr as $k => $v)
 			{
-				if ($v['src'] == $file)
+				if ($v['src'] == $filename)
 				{
 					$file_exists = true;
 					break;
@@ -1759,9 +2145,9 @@ class KinoarhivModelMediamanager extends JModelList
 			// End
 
 			$files_arr = $result_arr;
-			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $file);
-			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $file));
-			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $file, true);
+			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $filename);
+			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $filename));
+			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $filename, true);
 
 			if (is_array($duration))
 			{
@@ -1782,7 +2168,7 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 
 			$files_arr[] = array(
-				'src'        => $file,
+				'src'        => $filename,
 				'type'       => $mime_type,
 				'resolution' => $stream_width . 'x' . $stream_height
 			);
@@ -1810,8 +2196,8 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 		else
 		{
-			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $file);
-			$video_info = $media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $file);
+			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $filename);
+			$video_info = $media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $filename);
 
 			if ($video_info === false)
 			{
@@ -1824,7 +2210,7 @@ class KinoarhivModelMediamanager extends JModelList
 			}
 
 			$video_info = json_decode($video_info);
-			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $file, true);
+			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $filename, true);
 
 			if (is_array($duration))
 			{
@@ -1846,7 +2232,7 @@ class KinoarhivModelMediamanager extends JModelList
 
 			$files_arr = array(
 				0 => array(
-					'src'        => $file,
+					'src'        => $filename,
 					'type'       => $mime_type,
 					'resolution' => $stream_width . 'x' . $stream_height
 				)
@@ -2157,70 +2543,11 @@ class KinoarhivModelMediamanager extends JModelList
 	}
 
 	/**
-	 * Method to get an item title.
-	 *
-	 * @param   string   $section  The section for searching. Can be 'movie', 'name', 'trailer', 'soundtrack'
-	 * @param   integer  $id       Item ID.
-	 *
-	 * @return  mixed  Object with the data. False on error.
-	 */
-	public function getItemTitle($section = null, $id = null)
-	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
-		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
-		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
-
-		if ($section == 'movie')
-		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName('title'))
-				->from($db->quoteName('#__ka_movies'))
-				->where($db->quoteName('id') . ' = ' . (int) $id);
-
-			$db->setQuery($query);
-			$data = $db->loadResult();
-		}
-		elseif ($section == 'name')
-		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName(array('name', 'latin_name')))
-				->from($db->quoteName('#__ka_names'))
-				->where($db->quoteName('id') . ' = ' . (int) $id);
-
-			$db->setQuery($query);
-			$result = $db->loadObject();
-			$data = '';
-
-			if (!empty($result->name))
-			{
-				$data .= $result->name;
-			}
-
-			if (!empty($result->name) && !empty($result->latin_name))
-			{
-				$data .= ' / ';
-			}
-
-			if (!empty($result->latin_name))
-			{
-				$data .= $result->latin_name;
-			}
-		}
-		else
-		{
-			$this->setError('Unknown section type!');
-
-			return false;
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Method for copy items from gallery from one movie to another.
 	 *
-	 * @return    mixed    Object with the data. False on error.
+	 * @return  mixed    Object with the data. False on error.
+	 *
+	 * @since  3.0
 	 */
 	public function copyfrom()
 	{

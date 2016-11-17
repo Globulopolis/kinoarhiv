@@ -12,24 +12,10 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 
-$user		= JFactory::getUser();
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 <script type="text/javascript">
-	Joomla.orderTable = function() {
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
-		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
-	};
-
 	Joomla.submitbutton = function(pressbutton) {
 		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
@@ -51,7 +37,7 @@ $sortFields = $this->getSortFields();
 					<th width="1%">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:55px" class="nowrap center hidden-phone">
+					<th width="1%" style="min-width:55px;" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'v.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>

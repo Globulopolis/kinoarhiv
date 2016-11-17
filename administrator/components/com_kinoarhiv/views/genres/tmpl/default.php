@@ -10,31 +10,21 @@
 
 defined('_JEXEC') or die;
 
-$user		= JFactory::getUser();
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
-if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') {
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
+
+if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music')
+{
 	$item_type = 'music';
 	$upd_stat_text = 'COM_KA_GENRES_MUSIC_STATS_UPDATED_COUNT';
-} else {
+}
+else
+{
 	$item_type = 'movie';
 	$upd_stat_text = 'COM_KA_GENRES_STATS_UPDATED_COUNT';
 }
 ?>
 <script type="text/javascript">
-	Joomla.orderTable = function() {
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
-		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
-	};
-
 	Joomla.submitbutton = function(pressbutton) {
 		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
@@ -55,9 +45,9 @@ if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') 
 			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&type=<?php echo $item_type; ?>&id[]='+_this.closest('tr').attr('sortable-group-id')+'&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {
 					_this.closest('td').find('span.total').text(response.total);
-					showMsg('#articleList', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>&nbsp;' + response.total + '<?php echo JText::_($upd_stat_text); ?>');
+					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>&nbsp;' + response.total + '<?php echo JText::_($upd_stat_text); ?>');
 				} else {
-					showMsg('#articleList', response.message);
+					showMsg('#system-message-container', response.message);
 				}
 			});
 		});
@@ -75,7 +65,7 @@ if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') 
 					<th width="1%" class="center">
 						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-					<th width="1%" style="min-width:35px" class="nowrap center hidden-phone">
+					<th width="1%" style="min-width:35px;" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 					<th>

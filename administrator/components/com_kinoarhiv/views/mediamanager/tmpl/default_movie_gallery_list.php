@@ -10,11 +10,9 @@
 
 defined('_JEXEC') or die;
 
-$user		= JFactory::getUser();
-$input 		= JFactory::getApplication()->input;
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
+$user      = JFactory::getUser();
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
 
 KAComponentHelper::loadMediamanagerAssets();
 JHtml::_('stylesheet', JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/select.css');
@@ -22,19 +20,6 @@ JHtml::_('script', JUri::root() . 'components/com_kinoarhiv/assets/js/select2.mi
 KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 ?>
 <script type="text/javascript">
-	Joomla.orderTable = function() {
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		var dirn;
-		if (order != '<?php echo $listOrder; ?>') {
-			dirn = 'asc';
-		} else {
-			dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
-	};
-
 	jQuery(document).ready(function($){
 		var bootstrapTooltip = $.fn.tooltip.noConflict();
 		$.fn.bootstrapTlp = bootstrapTooltip;
@@ -57,7 +42,7 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 			}
 		});
 
-		<?php if ($input->get('tab', 0, 'int') == 2): ?>
+		<?php if ($this->tab == 2): ?>
 		$('.cmd-fp_off, .cmd-fp_on').click(function(){
 			var boxchecked = $('input[name="boxchecked"]');
 
@@ -74,11 +59,42 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 		});
 		<?php endif; ?>
 
+		$('.cmd-remote-urls').click(function(e){
+			e.preventDefault();
+			var input = $('#remote_urls');
+
+			if (input.val() == '') {
+				showMsg('#remote_urls', '<?php echo JText::_('COM_KA_FILE_UPLOAD_ERROR'); ?>');
+				return false;
+			}
+
+			$('.cmd-remote-urls').attr('disabled', 'disabled');
+			blockUI('show');
+
+			$.ajax({
+				type: 'POST',
+				url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload_remote&format=raw&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=<?php echo $this->tab; ?>&id=<?php echo $this->id; ?>',
+				data: {'urls': input.val(), '<?php echo JSession::getFormToken(); ?>': 1},
+				dataType: 'json'
+			}).done(function(response){
+				if (!response.success) {
+					showMsg('#remote_urls', response.message);
+				}
+
+				$('.cmd-remote-urls').removeAttr('disabled');
+				blockUI();
+			}).fail(function(xhr, status, error){
+				showMsg('#remote_urls', error);
+				$('.cmd-remote-urls').removeAttr('disabled');
+				blockUI();
+			});
+		});
+
 		Joomla.submitbutton = function(task) {
 			if (task == 'upload') {
 				$('#image_uploader').pluploadQueue({
 					runtimes: 'html5,flash,silverlight,html4',
-					url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $input->get('section', '', 'word'); ?>&type=<?php echo $input->get('type', '', 'word'); ?>&tab=<?php echo $input->get('tab', 0, 'int'); ?>&id=<?php echo $input->get('id', 0, 'int'); ?>',
+					url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=<?php echo $this->tab; ?>&id=<?php echo $this->id; ?>',
 					multipart_params: {
 						'<?php echo JSession::getFormToken(); ?>': 1
 					},
@@ -167,7 +183,15 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 						}
 					]
 				});
-				dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw&id=<?php echo $input->get('id', 0, 'int'); ?>&item_type=<?php echo $input->get('type', '', 'word'); ?>&section=<?php echo $input->get('section', '', 'word'); ?>');
+
+				$.ajax({
+					url: 'index.php?option=com_kinoarhiv&task=loadTemplate&template=copyfrom&model=mediamanager&view=mediamanager&format=raw&id=<?php echo $this->id; ?>&item_type=<?php echo $this->type; ?>&section=<?php echo $this->section; ?>',
+					dataType: 'html'
+				}).done(function(response){
+					$('div#dialog-copy p').replaceWith(response);
+				}).fail(function(xhr, status, error){
+					showMsg('#dialog-copy p', status + ': ' + error);
+				});
 
 				return false;
 			}
@@ -177,107 +201,101 @@ KAComponentHelper::getScriptLanguage('select2_locale_', true, 'select', true);
 	});
 </script>
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
-	<div id="filter-bar" class="btn-toolbar">
-		<div class="btn-group pull-left">
-			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 3) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?></a>
-			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=2&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 2) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?></a>
-			<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=1&id=<?php echo $input->get('id', 0, 'int'); ?>" class="btn btn-small <?php echo ($input->get('tab', 0, 'int') == 1) ? 'btn-success' : ''; ?>"><span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?></a>
-		</div>
-		<div class="btn-group pull-right">
-			<label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
-			<?php echo $this->pagination->getLimitBox(); ?>
-		</div>
-		<div class="btn-group pull-right">
-			<label for="directionTable" class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
-			<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
-				<option value=""><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></option>
-				<option value="asc" <?php if ($listDirn == 'asc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
-				<option value="desc" <?php if ($listDirn == 'desc') echo 'selected="selected"'; ?>><?php echo JText::_('JGLOBAL_ORDER_DESCENDING');  ?></option>
-			</select>
-		</div>
-		<div class="btn-group pull-right">
-			<label for="sortTable" class="element-invisible"><?php echo JText::_('JGLOBAL_SORT_BY'); ?></label>
-			<select name="sortTable" id="sortTable" class="input-xlarge" onchange="Joomla.orderTable()">
-				<option value=""><?php echo JText::_('JGLOBAL_SORT_BY');?></option>
-				<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
-			</select>
-		</div>
-	</div><br />
+	<div class="btn-group pull-left" style="margin: 0 10px 0 0;">
+		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo $this->id; ?>" class="btn <?php echo ($this->tab == 3) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?>
+		</a>
+		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=2&id=<?php echo $this->id; ?>" class="btn <?php echo ($this->tab == 2) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?>
+		</a>
+		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=1&id=<?php echo $this->id; ?>" class="btn <?php echo ($this->tab == 1) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?>
+		</a>
+	</div>
+	<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
+	<div class="clearfix"> </div>
+
 	<table class="table table-striped gallery-list" id="articleList">
 		<thead>
 			<tr>
 				<th width="1%" class="center">
 					<?php echo JHtml::_('grid.checkall'); ?>
 				</th>
-				<th><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FILENAME'); ?></th>
-				<th width="15%" class="nowrap center hidden-phone"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_DIMENSION'); ?></th>
-				<?php if ($input->get('tab', 0, 'int') == 2): ?>
-					<th width="10%" style="min-width: 55px" class="nowrap center"><?php echo JText::_('COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE'); ?></th>
+				<th width="1%" style="min-width:35px;" class="nowrap center hidden-phone">
+					<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'g.state', $listDirn, $listOrder); ?>
+				</th>
+				<th>
+					<?php echo JHtml::_('searchtools.sort', 'COM_KA_MOVIES_GALLERY_HEADING_FILENAME', 'g.filename', $listDirn, $listOrder); ?>
+				</th>
+				<th width="15%" class="nowrap center hidden-phone">
+					<?php echo JHtml::_('searchtools.sort', 'COM_KA_MOVIES_GALLERY_HEADING_DIMENSION', 'g.dimension', $listDirn, $listOrder); ?>
+				</th>
+				<?php if ($this->tab == 2): ?>
+					<th width="10%" style="min-width: 55px" class="nowrap center">
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE', 'g.frontpage', $listDirn, $listOrder); ?>
+					</th>
 				<?php endif; ?>
-				<th width="1%" style="min-width: 55px" class="nowrap center hidden-phone"><?php echo JText::_('JSTATUS'); ?></th>
-				<th width="5%" class="nowrap center"><?php echo JText::_('JGRID_HEADING_ID'); ?></th>
+				<th width="5%" class="nowrap center">
+					<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'g.id', $listDirn, $listOrder); ?>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
-			<?php if (count($this->items) == 0): ?>
-				<tr>
-					<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
-				</tr>
-			<?php else:
-				foreach ($this->items as $i => $item):
-					$canEdit    = $user->authorise('core.edit',			'com_kinoarhiv.movie.' . $item->id);
-					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.movie.' . $item->id);
-				?>
-				<tr class="row<?php echo $i % 2; ?>">
-					<td class="center">
-						<?php echo JHtml::_('grid.id', $i, $item->id, false, '_id'); ?>
-					</td>
-					<td>
-						<?php if (!empty($item->error)): ?><a href="#" class="hasTooltip error_image" title="<?php echo $item->error; ?>"></a><?php endif; ?>
-						<a href="<?php echo $item->filepath; ?>" class="tooltip-img" rel="group_<?php echo $input->get('tab', 0, 'int'); ?>"><?php echo $item->filename; ?></a>
-						<?php if ($item->th_filepath != ''): ?><img src="<?php echo $item->th_filepath; ?>" class="tooltip-img-content" /><?php endif; ?>
-						<?php if ($item->folderpath != ''): ?> <span class="small gray">(<?php echo $item->folderpath; ?>)</span><?php endif; ?>
-					</td>
-					<td class="center hidden-phone">
-						<?php echo $item->dimension; ?>
-					</td>
-					<?php if ($input->get('tab', 0, 'int') == 2 && $canChange): ?>
+		<?php if (count($this->items) == 0): ?>
+			<tr>
+				<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+			</tr>
+		<?php else:
+			foreach ($this->items as $i => $item):
+				$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.movie.' . $item->id);
+			?>
+			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->id; ?>">
+				<td class="center">
+					<?php echo JHtml::_('grid.id', $i, $item->id, false, '_id'); ?>
+				</td>
+				<td class="center hidden-phone">
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
+				</td>
+				<td class="nowrap has-context">
+					<?php if (!empty($item->error)): ?><a href="#" class="hasTooltip error_image" title="<?php echo $item->error; ?>"></a><?php endif; ?>
+					<a href="<?php echo $item->filepath; ?>" class="tooltip-img" rel="group_<?php echo $this->tab; ?>"><?php echo $item->filename; ?></a>
+					<?php if ($item->th_filepath != ''): ?><img src="<?php echo $item->th_filepath; ?>" class="tooltip-img-content" /><?php endif; ?>
+					<?php if ($item->folderpath != ''): ?> <span class="small gray">(<?php echo $item->folderpath; ?>)</span><?php endif; ?>
+				</td>
+				<td class="center hidden-phone">
+					<?php echo $item->dimension; ?>
+				</td>
+				<?php if ($this->tab == 2 && $canChange): ?>
 					<td class="center">
 						<div class="btn-group">
-							<?php if ($item->poster_frontpage == 0): ?>
+							<?php if ($item->frontpage == 0): ?>
 								<a class="btn btn-micro active cmd-fp_off" href="javascript:void(0);"><i class="icon-unpublish"></i></a>
 							<?php else: ?>
 								<a class="btn btn-micro active cmd-fp_on" href="javascript:void(0);"><i class="icon-publish"></i></a>
 							<?php endif; ?>
 						</div>
 					</td>
-					<?php endif; ?>
-					<td class="center hidden-phone">
-						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
-					</td>
-					<td class="center">
-						<?php echo (int) $item->id; ?>
-					</td>
-				</tr>
-				<?php endforeach;
-			endif; ?>
+				<?php endif; ?>
+				<td class="center">
+					<?php echo (int) $item->id; ?>
+				</td>
+			</tr>
+			<?php endforeach;
+		endif; ?>
 		</tbody>
 	</table>
+	<?php echo $this->pagination->getListFooter(); ?>
+	<?php echo $this->pagination->getResultsCounter(); ?>
+
 	<input type="hidden" name="controller" value="mediamanager" />
-	<input type="hidden" name="section" value="<?php echo $input->get('section', '', 'word'); ?>" />
-	<input type="hidden" name="type" value="<?php echo $input->get('type', '', 'word'); ?>" />
-	<input type="hidden" name="tab" value="<?php echo $input->get('tab', 0, 'int'); ?>" />
-	<input type="hidden" name="id" value="<?php echo $input->get('id', 0, 'int'); ?>" />
+	<input type="hidden" name="section" value="<?php echo $this->section; ?>" />
+	<input type="hidden" name="type" value="<?php echo $this->type; ?>" />
+	<input type="hidden" name="tab" value="<?php echo $this->tab; ?>" />
+	<input type="hidden" name="id" value="<?php echo $this->id; ?>" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="boxchecked" value="0" />
-	<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-	<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 	<input type="hidden" name="file_uploaded" value="0" />
-	<div class="pagination bottom">
-		<?php echo $this->pagination->getListFooter(); ?><br />
-		<?php echo $this->pagination->getResultsCounter(); ?>
-	</div>
+
+	<?php echo JLayoutHelper::render('layouts.edit.upload_image', array('remoteupload' => true), JPATH_COMPONENT); ?>
 	<?php echo JHtml::_('form.token'); ?>
 </form>
-
-<?php echo JLayoutHelper::render('layouts.edit.upload_image', array(), JPATH_COMPONENT);

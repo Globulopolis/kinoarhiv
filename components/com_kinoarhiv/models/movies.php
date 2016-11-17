@@ -164,7 +164,7 @@ class KinoarhivModelMovies extends JModelList
 
 		// Join over gallery item
 		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
-			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.poster_frontpage = 1 AND g.state = 1');
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
 
 		// Join over favorited
 		if (!$user->get('guest'))

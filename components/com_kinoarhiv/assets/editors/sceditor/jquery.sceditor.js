@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -63,17 +63,17 @@
 		var $             = __webpack_require__(1);
 		var SCEditor      = __webpack_require__(2);
 		var PluginManager = __webpack_require__(3);
-		var browser       = __webpack_require__(4);
-		var escape        = __webpack_require__(5);
+		var browser       = __webpack_require__(6);
+		var escape        = __webpack_require__(7);
 
 
 		// For backwards compatibility
 		$.sceditor = SCEditor;
 
-		SCEditor.commands       = __webpack_require__(6);
-		SCEditor.defaultOptions = __webpack_require__(7);
-		SCEditor.RangeHelper    = __webpack_require__(8);
-		SCEditor.dom            = __webpack_require__(9);
+		SCEditor.commands       = __webpack_require__(9);
+		SCEditor.defaultOptions = __webpack_require__(10);
+		SCEditor.RangeHelper    = __webpack_require__(4);
+		SCEditor.dom            = __webpack_require__(5);
 
 		SCEditor.ie                 = browser.ie;
 		SCEditor.ios                = browser.ios;
@@ -92,7 +92,7 @@
 		 * matched by the jQuery selector.
 		 *
 		 * If options is set to "state" it will return bool value
-		 * indicating if the editor has been initilised on the
+		 * indicating if the editor has been initialised on the
 		 * matched textarea(s). If there is only one textarea
 		 * it will return the bool value for that textarea.
 		 * If more than one textarea is matched it will
@@ -123,7 +123,8 @@
 				$this = this.jquery ? this : $(this);
 				instance = $this.data('sceditor');
 
-				// Don't allow the editor to be initilised on it's own source editor
+				// Don't allow the editor to be initialised
+				// on it's own source editor
 				if ($this.parents('.sceditor-container').length > 0) {
 					return;
 				}
@@ -151,7 +152,7 @@
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	module.exports = jQuery;
 
@@ -164,11 +165,11 @@
 
 		var $             = __webpack_require__(1);
 		var PluginManager = __webpack_require__(3);
-		var RangeHelper   = __webpack_require__(8);
-		var dom           = __webpack_require__(9);
-		var escape        = __webpack_require__(5);
-		var browser       = __webpack_require__(4);
-		var _tmpl         = __webpack_require__(10);
+		var RangeHelper   = __webpack_require__(4);
+		var dom           = __webpack_require__(5);
+		var escape        = __webpack_require__(7);
+		var browser       = __webpack_require__(6);
+		var _tmpl         = __webpack_require__(8);
 
 		var globalWin  = window;
 		var globalDoc  = document;
@@ -495,7 +496,7 @@
 				initPlugins();
 				initEmoticons();
 				initToolBar();
-				initEditor();
+				initEditor(!!options.startInSourceMode);
 				initCommands();
 				initOptions();
 				initEvents();
@@ -509,7 +510,7 @@
 				updateActiveButtons();
 
 				var loaded = function () {
-					$globalWin.unbind('load', loaded);
+					$globalWin.off('load', loaded);
 
 					if (options.autofocus) {
 						autofocus();
@@ -525,7 +526,7 @@
 
 					pluginManager.call('ready');
 				};
-				$globalWin.load(loaded);
+				$globalWin.on('load', loaded);
 				if (globalDoc.readyState && globalDoc.readyState === 'complete') {
 					loaded();
 				}
@@ -565,15 +566,29 @@
 
 			/**
 			 * Creates the editor iframe and textarea
+			 * @param {boolean} startInSourceMode Force loading the editor in this
+			 *																	mode
 			 * @private
 			 */
-			initEditor = function () {
+			initEditor = function (startInSourceMode) {
 				var doc, tabIndex;
 
-				$sourceEditor  = $('<textarea></textarea>').hide();
+				$sourceEditor  = $('<textarea></textarea>');
 				$wysiwygEditor = $(
 					'<iframe frameborder="0" allowfullscreen="true"></iframe>'
 				);
+
+				/* This needs to be done right after they are created because,
+				 * for any reason, the user may not want the value to be tinkered
+				 * by any filters.
+				 */
+				if (startInSourceMode) {
+					$editorContainer.addClass('sourceMode');
+					$wysiwygEditor.hide();
+				} else {
+					$editorContainer.addClass('wysiwygMode');
+					$sourceEditor.hide();
+				}
 
 				if (!options.spellcheck) {
 					$sourceEditor.attr('spellcheck', 'false');
@@ -599,7 +614,7 @@
 				doc.write(_tmpl('html', {
 					// Add IE version class to the HTML element so can apply
 					// conditional styling without CSS hacks
-					attrs: IE_VER ? ' class="ie ie"' + IE_VER : '',
+					attrs: IE_VER ? ' class="ie ie' + IE_VER + '"' : '',
 					spellcheck: options.spellcheck ? '' : 'spellcheck="false"',
 					charset: options.charset,
 					style: options.style
@@ -617,7 +632,7 @@
 					$wysiwygBody.height('100%');
 
 					if (!IE_VER) {
-						$wysiwygBody.bind('touchend', base.focus);
+						$wysiwygBody.on('touchend', base.focus);
 					}
 				}
 
@@ -638,8 +653,8 @@
 			initOptions = function () {
 				// auto-update original textbox on blur if option set to true
 				if (options.autoUpdate) {
-					$wysiwygBody.bind('blur', autoUpdate);
-					$sourceEditor.bind('blur', autoUpdate);
+					$wysiwygBody.on('blur', autoUpdate);
+					$sourceEditor.on('blur', autoUpdate);
 				}
 
 				if (options.rtl === null) {
@@ -649,7 +664,7 @@
 				base.rtl(!!options.rtl);
 
 				if (options.autoExpand) {
-					$wysiwygDoc.bind('keyup', base.expandToContent);
+					$wysiwygDoc.on('keyup', base.expandToContent);
 				}
 
 				if (options.resizeEnabled) {
@@ -675,10 +690,10 @@
 				$globalDoc.click(handleDocumentClick);
 
 				$(original.form)
-					.bind('reset', handleFormReset)
+					.on('reset', handleFormReset)
 					.submit(base.updateOriginal);
 
-				$globalWin.bind('resize orientationChanged', handleWindowResize);
+				$globalWin.on('resize orientationChanged', handleWindowResize);
 
 				$wysiwygBody
 					.keypress(handleKeyPress)
@@ -687,9 +702,9 @@
 					.keyup(appendNewLine)
 					.blur(valueChangedBlur)
 					.keyup(valueChangedKeyUp)
-					.bind('paste', handlePasteEvt)
-					.bind(CHECK_SELECTION_EVENTS, checkSelectionChanged)
-					.bind(EVENTS_TO_FORWARD, handleEvent);
+					.on('paste', handlePasteEvt)
+					.on(CHECK_SELECTION_EVENTS, checkSelectionChanged)
+					.on(EVENTS_TO_FORWARD, handleEvent);
 
 				if (options.emoticonsCompat && globalWin.getSelection) {
 					$wysiwygBody.keyup(emoticonsCheckWhitespace);
@@ -699,22 +714,22 @@
 					.blur(valueChangedBlur)
 					.keyup(valueChangedKeyUp)
 					.keydown(handleKeyDown)
-					.bind(EVENTS_TO_FORWARD, handleEvent);
+					.on(EVENTS_TO_FORWARD, handleEvent);
 
 				$wysiwygDoc
 					.mousedown(handleMouseDown)
 					.blur(valueChangedBlur)
-					.bind(CHECK_SELECTION_EVENTS, checkSelectionChanged)
-					.bind('beforedeactivate keyup mouseup', saveRange)
+					.on(CHECK_SELECTION_EVENTS, checkSelectionChanged)
+					.on('beforedeactivate keyup mouseup', saveRange)
 					.keyup(appendNewLine)
 					.focus(function () {
 						lastRange = null;
 					});
 
 				$editorContainer
-					.bind('selectionchanged', checkNodeChanged)
-					.bind('selectionchanged', updateActiveButtons)
-					.bind('selectionchanged valuechanged nodechanged', handleEvent);
+					.on('selectionchanged', checkNodeChanged)
+					.on('selectionchanged', updateActiveButtons)
+					.on('selectionchanged valuechanged nodechanged', handleEvent);
 			};
 
 			/**
@@ -744,7 +759,8 @@
 						shortcut = command.shortcut;
 						$button  = _tmpl('toolbarButton', {
 							name: commandName,
-							dispName: base._(command.tooltip || commandName)
+							dispName: base._(command.name ||
+									command.tooltip || commandName)
 						}, true);
 
 						$button
@@ -773,7 +789,7 @@
 							$button.attr(
 								'title',
 								base._(command.tooltip) +
-									(shortcut ? '(' + shortcut + ')' : '')
+									(shortcut ? ' (' + shortcut + ')' : '')
 							);
 						}
 
@@ -913,8 +929,8 @@
 
 					$cover.hide();
 					$editorContainer.removeClass('resizing').height('auto');
-					$globalDoc.unbind(moveEvents, mouseMoveFunc);
-					$globalDoc.unbind(endEvents, mouseUpFunc);
+					$globalDoc.off(moveEvents, mouseMoveFunc);
+					$globalDoc.off(endEvents, mouseUpFunc);
 
 					e.preventDefault();
 				};
@@ -922,7 +938,7 @@
 				$editorContainer.append($grip);
 				$editorContainer.append($cover.hide());
 
-				$grip.bind('touchstart mousedown', function (e) {
+				$grip.on('touchstart mousedown', function (e) {
 					// iOS uses window.event
 					if (e.type === 'touchstart') {
 						e      = globalWin.event;
@@ -939,8 +955,8 @@
 
 					$editorContainer.addClass('resizing');
 					$cover.show();
-					$globalDoc.bind(moveEvents, mouseMoveFunc);
-					$globalDoc.bind(endEvents, mouseUpFunc);
+					$globalDoc.on(moveEvents, mouseMoveFunc);
+					$globalDoc.on(endEvents, mouseUpFunc);
 
 					// The resize cover will not fill the container in
 					// IE6 unless a height is specified.
@@ -1485,19 +1501,23 @@
 				lastRange     = null;
 				pluginManager = null;
 
-				$globalDoc.unbind('click', handleDocumentClick);
-				$globalWin.unbind('resize orientationChanged', handleWindowResize);
+				if ($dropdown) {
+					$dropdown.off().remove();
+				}
+
+				$globalDoc.off('click', handleDocumentClick);
+				$globalWin.off('resize orientationChanged', handleWindowResize);
 
 				$(original.form)
-					.unbind('reset', handleFormReset)
-					.unbind('submit', base.updateOriginal);
+					.off('reset', handleFormReset)
+					.off('submit', base.updateOriginal);
 
-				$wysiwygBody.unbind();
-				$wysiwygDoc.unbind().find('*').remove();
+				$wysiwygBody.off();
+				$wysiwygDoc.off().find('*').remove();
 
-				$sourceEditor.unbind().remove();
+				$sourceEditor.off().remove();
 				$toolbar.remove();
-				$editorContainer.unbind().find('*').unbind().remove();
+				$editorContainer.off().find('*').off().remove();
 				$editorContainer.remove();
 
 				$original
@@ -1515,7 +1535,7 @@
 			 * Creates a menu item drop down
 			 *
 			 * @param  {HTMLElement} menuItem The button to align the dropdown with
-			 * @param  {string} name          Used for styling the dropown, will be
+			 * @param  {string} name          Used for styling the dropdown, will be
 			 *                                a class sceditor-name
 			 * @param  {HTMLElement} content  The HTML content of the dropdown
 			 * @param  {bool} ieFix           If to add the unselectable attribute
@@ -1532,7 +1552,9 @@
 					cssClass = 'sceditor-' + name,
 					onlyclose = $dropdown && $dropdown.is('.' + cssClass);
 
-				base.closeDropDown();
+				// Will re-focus the editor. This is needed for IE
+				// as it has special logic to save/restore the selection
+				base.closeDropDown(true);
 
 				if (onlyclose) {
 					return;
@@ -1571,7 +1593,9 @@
 				// place the cursor at the start of the editor instead
 				// of focusing on the input.
 				setTimeout(function () {
-					$dropdown.find('input,textarea').first().focus();
+					if ($dropdown) {
+						$dropdown.find('input,textarea').first().focus();
+					}
 				});
 			};
 
@@ -1708,7 +1732,7 @@
 			 */
 			base.closeDropDown = function (focus) {
 				if ($dropdown) {
-					$dropdown.unbind().remove();
+					$dropdown.off().remove();
 					$dropdown = null;
 				}
 
@@ -1740,7 +1764,7 @@
 			 *
 			 * <p>If endHtml is specified, any selected text will be placed
 			 * between html and endHtml. If there is no selected text html
-			 * and endHtml will just be concated together.</p>
+			 * and endHtml will just be concatenate together.</p>
 			 *
 			 * @param {string} html
 			 * @param {string} [endHtml=null]
@@ -1770,7 +1794,7 @@
 
 				// Insert the HTML and save the range so the editor can be scrolled
 				// to the end of the selection. Also allows emoticons to be replaced
-				// without affecting the cusrsor position
+				// without affecting the cursor position
 				rangeHelper.insertHTML(html, endHtml);
 				rangeHelper.saveRange();
 				replaceEmoticons($wysiwygBody[0]);
@@ -1818,7 +1842,7 @@
 			 *
 			 * <p>If endText is specified any selected text will be placed between
 			 * text and endText. If no text is selected text and endText will
-			 * just be concated together.</p>
+			 * just be concatenate together.</p>
 			 *
 			 * @param {String} text
 			 * @param {String} [endText=null]
@@ -1843,7 +1867,7 @@
 			 *
 			 * <p>If endText is specified any selected text will be placed between
 			 * text and endText. If no text is selected text and endText will
-			 * just be concated together.</p>
+			 * just be concatenate together.</p>
 			 *
 			 * <p>The cursor will be placed after the text param. If endText is
 			 * specified the cursor will be placed before endText, so passing:<br />
@@ -2021,7 +2045,7 @@
 			 *
 			 * <p>If end is supplied any selected text will be placed between
 			 * start and end. If there is no selected text start and end
-			 * will be concated together.</p>
+			 * will be concatenate together.</p>
 			 *
 			 * <p>If the filter param is set to true, the HTML/BBCode will be
 			 * passed through any plugin filters. If using the BBCode plugin
@@ -2042,7 +2066,7 @@
 			 *
 			 * <p>If end is supplied any selected text will be placed between
 			 * start and end. If there is no selected text start and end
-			 * will be concated together.</p>
+			 * will be concatenate together.</p>
 			 *
 			 * <p>If the filter param is set to true, the HTML/BBCode will be
 			 * passed through any plugin filters. If using the BBCode plugin
@@ -2115,41 +2139,23 @@
 			 * @memberOf jQuery.sceditor.prototype
 			 */
 			base.getWysiwygEditorValue = function (filter) {
-				var	html, ieBookmark,
-					hasSelection = rangeHelper.hasSelection();
+				var	html;
+				// Create a tmp node to store contents so it can be modified
+				// without affecting anything else.
+				var $tmp = $('<div>')
+					.appendTo(document.body)
+					.append($($wysiwygBody[0].childNodes).clone());
 
-				if (hasSelection) {
-					rangeHelper.saveRange();
-				// IE <= 8 bookmark the current TextRange position
-				// and restore it after
-				} else if (lastRange && lastRange.getBookmark) {
-					ieBookmark = lastRange.getBookmark();
-				}
+				dom.fixNesting($tmp[0]);
 
-				dom.fixNesting($wysiwygBody[0]);
+				html = $tmp.html();
 
 				// filter the HTML and DOM through any plugins
-				html = $wysiwygBody.html();
-
 				if (filter !== false && pluginManager.hasHandler('toSource')) {
-					html = pluginManager.callOnlyFirst(
-						'toSource', html, $wysiwygBody
-					);
+					html = pluginManager.callOnlyFirst('toSource', html, $tmp);
 				}
 
-				if (hasSelection) {
-					rangeHelper.restoreRange();
-
-					// remove the last stored range for
-					// IE as it no longer applies
-					lastRange = null;
-				} else if (ieBookmark) {
-					lastRange.moveToBookmark(ieBookmark);
-
-					// remove the last stored range for
-					// IE as it no longer applies
-					lastRange = null;
-				}
+				$tmp.remove();
 
 				return html;
 			};
@@ -2896,11 +2902,11 @@
 						// Also allows unbinding without unbinding the editors own
 						// event handlers.
 						if (!excludeWysiwyg) {
-							$editorContainer.bind('scewys' + events[i], handler);
+							$editorContainer.on('scewys' + events[i], handler);
 						}
 
 						if (!excludeSource) {
-							$editorContainer.bind('scesrc' + events[i], handler);
+							$editorContainer.on('scesrc' + events[i], handler);
 						}
 
 						// Start sending value changed events
@@ -2938,11 +2944,11 @@
 				while (i--) {
 					if ($.isFunction(handler)) {
 						if (!excludeWysiwyg) {
-							$editorContainer.unbind('scewys' + events[i], handler);
+							$editorContainer.off('scewys' + events[i], handler);
 						}
 
 						if (!excludeSource) {
-							$editorContainer.unbind('scesrc' + events[i], handler);
+							$editorContainer.off('scesrc' + events[i], handler);
 						}
 					}
 				}
@@ -2986,7 +2992,7 @@
 			};
 
 			/**
-			 * Fucuses the editors input area
+			 * Focuses the editors input area
 			 *
 			 * @return {this}
 			 * @function
@@ -3050,6 +3056,8 @@
 					sourceEditor.focus();
 				}
 
+				updateActiveButtons();
+
 				return base;
 			};
 
@@ -3111,7 +3119,7 @@
 			/**
 			 * <p>Adds a handler to the node changed event.</p>
 			 *
-			 * <p>Happends whenever the node containing the selection/caret
+			 * <p>Happens whenever the node containing the selection/caret
 			 * changes in WYSIWYG mode.</p>
 			 *
 			 * @param  {Function} handler
@@ -3210,7 +3218,7 @@
 						emoticonsCache[emoticonsCache.length - 1][0].length;
 				}
 
-				replacedEmoticon = rangeHelper.raplaceKeyword(
+				replacedEmoticon = rangeHelper.replaceKeyword(
 					base.emoticonsCache,
 					true,
 					true,
@@ -3244,7 +3252,7 @@
 					noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
 
 				currentEmoticons = $.map(currentEmoticons, function (emoticon) {
-					// Ignore emotiocons that have been removed from DOM
+					// Ignore emoticons that have been removed from DOM
 					if (!emoticon || !emoticon.parentNode) {
 						return null;
 					}
@@ -3351,7 +3359,7 @@
 						});
 
 					currentEmoticons = [];
-					$wysiwygBody.unbind('keypress', emoticonsKeyPress);
+					$wysiwygBody.off('keypress', emoticonsKeyPress);
 
 					triggerValueChanged();
 				}
@@ -3508,7 +3516,7 @@
 					character = SPECIAL_KEYS[which] ||
 						String.fromCharCode(which).toLowerCase();
 
-				if (e.ctrlKey) {
+				if (e.ctrlKey || e.metaKey) {
 					shortcut.push('ctrl');
 				}
 
@@ -3592,7 +3600,7 @@
 					node     = range.parentElement();
 					tmpRange = $wysiwygDoc[0].selection.createRange();
 
-					// Select te entire parent and set the end
+					// Select the entire parent and set the end
 					// as start of the current range
 					tmpRange.moveToElementText(node);
 					tmpRange.setEndPoint('EndToStart', range);
@@ -3682,7 +3690,7 @@
 			};
 
 			/**
-			 * Triggers the valueChnaged signal if there is
+			 * Triggers the valueChanged signal if there is
 			 * a plugin that handles it.
 			 *
 			 * If rangeHelper.saveRange() has already been
@@ -4143,1561 +4151,13 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
-		'use strict';
-
-		var $ = __webpack_require__(1);
-
-		var USER_AGENT = navigator.userAgent;
-
-		/**
-		 * Detects the version of IE is being used if any.
-		 *
-		 * Will be the IE version number or undefined if the
-		 * browser is not IE.
-		 *
-		 * Source: https://gist.github.com/527683 with extra code
-		 * for IE 10 & 11 detection.
-		 *
-		 * @function
-		 * @name ie
-		 * @type {int}
-		 */
-		exports.ie = (function () {
-			var	undef,
-				v   = 3,
-				doc = document,
-				div = doc.createElement('div'),
-				all = div.getElementsByTagName('i');
-
-			do {
-				div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->';
-			} while (all[0]);
-
-			// Detect IE 10 as it doesn't support conditional comments.
-			if ((doc.documentMode && doc.all && window.atob)) {
-				v = 10;
-			}
-
-			// Detect IE 11
-			if (v === 4 && doc.documentMode) {
-				v = 11;
-			}
-
-			return v > 4 ? v : undef;
-		}());
-
-		/**
-		 * <p>Detects if the browser is iOS</p>
-		 *
-		 * <p>Needed to fix iOS specific bugs/</p>
-		 *
-		 * @function
-		 * @name ios
-		 * @memberOf jQuery.sceditor
-		 * @type {Boolean}
-		 */
-		exports.ios = /iPhone|iPod|iPad| wosbrowser\//i.test(USER_AGENT);
-
-		/**
-		 * If the browser supports WYSIWYG editing (e.g. older mobile browsers).
-		 *
-		 * @function
-		 * @name isWysiwygSupported
-		 * @return {Boolean}
-		 */
-		exports.isWysiwygSupported = (function () {
-			var	match, isUnsupported, undef,
-				editableAttr = $('<p contenteditable="true">')[0].contentEditable;
-
-			// Check if the contenteditable attribute is supported
-			if (editableAttr === undef && editableAttr === 'inherit') {
-				return false;
-			}
-
-			// I think blackberry supports contentEditable or will at least
-			// give a valid value for the contentEditable detection above
-			// so it isn't included in the below tests.
-
-			// I hate having to do UA sniffing but some mobile browsers say they
-			// support contentediable when it isn't usable, i.e. you can't enter
-			// text.
-			// This is the only way I can think of to detect them which is also how
-			// every other editor I've seen deals with this issue.
-
-			// Exclude Opera mobile and mini
-			isUnsupported = /Opera Mobi|Opera Mini/i.test(USER_AGENT);
-
-			if (/Android/i.test(USER_AGENT)) {
-				isUnsupported = true;
-
-				if (/Safari/.test(USER_AGENT)) {
-					// Android browser 534+ supports content editable
-					// This also matches Chrome which supports content editable too
-					match = /Safari\/(\d+)/.exec(USER_AGENT);
-					isUnsupported = (!match || !match[1] ? true : match[1] < 534);
-				}
-			}
-
-			// The current version of Amazon Silk supports it, older versions didn't
-			// As it uses webkit like Android, assume it's the same and started
-			// working at versions >= 534
-			if (/ Silk\//i.test(USER_AGENT)) {
-				match = /AppleWebKit\/(\d+)/.exec(USER_AGENT);
-				isUnsupported = (!match || !match[1] ? true : match[1] < 534);
-			}
-
-			// iOS 5+ supports content editable
-			if (exports.ios) {
-				// Block any version <= 4_x(_x)
-				isUnsupported = /OS [0-4](_\d)+ like Mac/i.test(USER_AGENT);
-			}
-
-			// FireFox does support WYSIWYG on mobiles so override
-			// any previous value if using FF
-			if (/Firefox/i.test(USER_AGENT)) {
-				isUnsupported = false;
-			}
-
-			if (/OneBrowser/i.test(USER_AGENT)) {
-				isUnsupported = false;
-			}
-
-			// UCBrowser works but doesn't give a unique user agent
-			if (navigator.vendor === 'UCWEB') {
-				isUnsupported = false;
-			}
-
-			return !isUnsupported;
-		}());
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
-		'use strict';
-
-		var VALID_SCHEME_REGEX =
-			/^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(?:\/\/)/i;
-
-		/**
-		 * Escapes a string so it's safe to use in regex
-		 *
-		 * @param {String} str
-		 * @return {String}
-		 * @name regex
-		 */
-		exports.regex = function (str) {
-			return str.replace(/([\-.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-		};
-
-		/**
-		 * Escapes all HTML entities in a string
-		 *
-		 * If noQuotes is set to false, all single and double
-		 * quotes will also be escaped
-		 *
-		 * @param {String} str
-		 * @param {Boolean} [noQuotes=false]
-		 * @return {String}
-		 * @name entities
-		 * @since 1.4.1
-		 */
-		exports.entities = function (str, noQuotes) {
-			if (!str) {
-				return str;
-			}
-
-			var replacements = {
-				'&': '&amp;',
-				'<': '&lt;',
-				'>': '&gt;',
-				'  ': ' &nbsp;',
-				'\r\n': '\n',
-				'\r': '\n',
-				'\n': '<br />'
-			};
-
-			if (noQuotes !== false) {
-				replacements['"']  = '&#34;';
-				replacements['\''] = '&#39;';
-				replacements['`']  = '&#96;';
-			}
-
-			str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
-				return replacements[match] || match;
-			});
-
-			return str;
-		};
-
-		/**
-		 * Escape URI scheme.
-		 *
-		 * Appends the current URL to a url if it has a scheme that is not:
-		 *
-		 * http
-		 * https
-		 * sftp
-		 * ftp
-		 * mailto
-		 * spotify
-		 * skype
-		 * ssh
-		 * teamspeak
-		 * tel
-		 * //
-		 *
-		 * **IMPORTANT**: This does not escape any HTML in a url, for
-		 * that use the escape.entities() method.
-		 *
-		 * @param  {String} url
-		 * @return {String}
-		 * @name escapeUriScheme
-		 * @memberOf jQuery.sceditor
-		 * @since 1.4.5
-		 */
-		exports.uriScheme = function (url) {
-			/*jshint maxlen:false*/
-			var	path,
-				// If there is a : before a / then it has a scheme
-				hasScheme = /^[^\/]*:/i,
-				location = window.location;
-
-			// Has no scheme or a valid scheme
-			if ((!url || !hasScheme.test(url)) || VALID_SCHEME_REGEX.test(url)) {
-				return url;
-			}
-
-			path = location.pathname.split('/');
-			path.pop();
-
-			return location.protocol + '//' +
-				location.host +
-				path.join('/') + '/' +
-				url;
-		};
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
-		'use strict';
-
-		var $      = __webpack_require__(1);
-		var IE_VER = __webpack_require__(4).ie;
-		var _tmpl  = __webpack_require__(10);
-
-		// In IE < 11 a BR at the end of a block level element
-		// causes a line break. In all other browsers it's collapsed.
-		var IE_BR_FIX = IE_VER && IE_VER < 11;
-
-
-		/**
-		 * Map of all the commands for SCEditor
-		 * @type {Object}
-		 * @name commands
-		 * @memberOf jQuery.sceditor
-		 */
-		var defaultCommnds = {
-			// START_COMMAND: Bold
-			bold: {
-				exec: 'bold',
-				tooltip: 'Bold',
-				shortcut: 'ctrl+b'
-			},
-			// END_COMMAND
-			// START_COMMAND: Italic
-			italic: {
-				exec: 'italic',
-				tooltip: 'Italic',
-				shortcut: 'ctrl+i'
-			},
-			// END_COMMAND
-			// START_COMMAND: Underline
-			underline: {
-				exec: 'underline',
-				tooltip: 'Underline',
-				shortcut: 'ctrl+u'
-			},
-			// END_COMMAND
-			// START_COMMAND: Strikethrough
-			strike: {
-				exec: 'strikethrough',
-				tooltip: 'Strikethrough'
-			},
-			// END_COMMAND
-			// START_COMMAND: Subscript
-			subscript: {
-				exec: 'subscript',
-				tooltip: 'Subscript'
-			},
-			// END_COMMAND
-			// START_COMMAND: Superscript
-			superscript: {
-				exec: 'superscript',
-				tooltip: 'Superscript'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Left
-			left: {
-				exec: 'justifyleft',
-				tooltip: 'Align left'
-			},
-			// END_COMMAND
-			// START_COMMAND: Centre
-			center: {
-				exec: 'justifycenter',
-				tooltip: 'Center'
-			},
-			// END_COMMAND
-			// START_COMMAND: Right
-			right: {
-				exec: 'justifyright',
-				tooltip: 'Align right'
-			},
-			// END_COMMAND
-			// START_COMMAND: Justify
-			justify: {
-				exec: 'justifyfull',
-				tooltip: 'Justify'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Font
-			font: {
-				_dropDown: function (editor, caller, callback) {
-					var	fontIdx = 0,
-						fonts   = editor.opts.fonts.split(','),
-						content = $('<div />'),
-						/** @private */
-						clickFunc = function () {
-							callback($(this).data('font'));
-							editor.closeDropDown(true);
-							return false;
-						};
-
-					for (; fontIdx < fonts.length; fontIdx++) {
-						content.append(
-							_tmpl('fontOpt', {
-								font: fonts[fontIdx]
-							}, true).click(clickFunc)
-						);
-					}
-
-					editor.createDropDown(caller, 'font-picker', content);
-				},
-				exec: function (caller) {
-					var editor = this;
-
-					defaultCommnds.font._dropDown(
-						editor,
-						caller,
-						function (fontName) {
-							editor.execCommand('fontname', fontName);
-						}
-					);
-				},
-				tooltip: 'Font Name'
-			},
-			// END_COMMAND
-			// START_COMMAND: Size
-			size: {
-				_dropDown: function (editor, caller, callback) {
-					var	content   = $('<div />'),
-						/** @private */
-						clickFunc = function (e) {
-							callback($(this).data('size'));
-							editor.closeDropDown(true);
-							e.preventDefault();
-						};
-
-					for (var i = 1; i <= 7; i++) {
-						content.append(_tmpl('sizeOpt', {
-							size: i
-						}, true).click(clickFunc));
-					}
-
-					editor.createDropDown(caller, 'fontsize-picker', content);
-				},
-				exec: function (caller) {
-					var editor = this;
-
-					defaultCommnds.size._dropDown(
-						editor,
-						caller,
-						function (fontSize) {
-							editor.execCommand('fontsize', fontSize);
-						}
-					);
-				},
-				tooltip: 'Font Size'
-			},
-			// END_COMMAND
-			// START_COMMAND: Colour
-			color: {
-				_dropDown: function (editor, caller, callback) {
-					var	i, x, color, colors,
-						genColor     = {r: 255, g: 255, b: 255},
-						content      = $('<div />'),
-						colorColumns = editor.opts.colors ?
-							editor.opts.colors.split('|') : new Array(21),
-						// IE is slow at string concation so use an array
-						html         = [],
-						cmd          = defaultCommnds.color;
-
-					if (!cmd._htmlCache) {
-						for (i = 0; i < colorColumns.length; ++i) {
-							colors = colorColumns[i] ?
-								colorColumns[i].split(',') : new Array(21);
-
-							html.push('<div class="sceditor-color-column">');
-
-							for (x = 0; x < colors.length; ++x) {
-								// use pre defined colour if can otherwise use the
-								// generated color
-								color = colors[x] || '#' +
-									genColor.r.toString(16) +
-									genColor.g.toString(16) +
-									genColor.b.toString(16);
-
-								html.push(
-									'<a href="#" class="sceditor-color-option"' +
-									' style="background-color: ' + color + '"' +
-									' data-color="' + color + '"></a>'
-								);
-
-								if (x % 5 === 0) {
-									genColor.g -= 51;
-									genColor.b = 255;
-								} else {
-									genColor.b -= 51;
-								}
-							}
-
-							html.push('</div>');
-
-							if (i % 5 === 0) {
-								genColor.r -= 51;
-								genColor.g = 255;
-								genColor.b = 255;
-							} else {
-								genColor.g = 255;
-								genColor.b = 255;
-							}
-						}
-
-						cmd._htmlCache = html.join('');
-					}
-
-					content.append(cmd._htmlCache)
-						.find('a')
-						.click(function (e) {
-							callback($(this).attr('data-color'));
-							editor.closeDropDown(true);
-							e.preventDefault();
-						});
-
-					editor.createDropDown(caller, 'color-picker', content);
-				},
-				exec: function (caller) {
-					var editor = this;
-
-					defaultCommnds.color._dropDown(
-						editor,
-						caller,
-						function (color) {
-							editor.execCommand('forecolor', color);
-						}
-					);
-				},
-				tooltip: 'Font Color'
-			},
-			// END_COMMAND
-			// START_COMMAND: Remove Format
-			removeformat: {
-				exec: 'removeformat',
-				tooltip: 'Remove Formatting'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Cut
-			cut: {
-				exec: 'cut',
-				tooltip: 'Cut',
-				errorMessage: 'Your browser does not allow the cut command. ' +
-					'Please use the keyboard shortcut Ctrl/Cmd-X'
-			},
-			// END_COMMAND
-			// START_COMMAND: Copy
-			copy: {
-				exec: 'copy',
-				tooltip: 'Copy',
-				errorMessage: 'Your browser does not allow the copy command. ' +
-					'Please use the keyboard shortcut Ctrl/Cmd-C'
-			},
-			// END_COMMAND
-			// START_COMMAND: Paste
-			paste: {
-				exec: 'paste',
-				tooltip: 'Paste',
-				errorMessage: 'Your browser does not allow the paste command. ' +
-					'Please use the keyboard shortcut Ctrl/Cmd-V'
-			},
-			// END_COMMAND
-			// START_COMMAND: Paste Text
-			pastetext: {
-				exec: function (caller) {
-					var	val, content,
-						editor  = this;
-
-					content = _tmpl('pastetext', {
-						label: editor._(
-							'Paste your text inside the following box:'
-						),
-						insert: editor._('Insert')
-					}, true);
-
-					content.find('.button').click(function (e) {
-						val = content.find('#txt').val();
-
-						if (val) {
-							editor.wysiwygEditorInsertText(val);
-						}
-
-						editor.closeDropDown(true);
-						e.preventDefault();
-					});
-
-					editor.createDropDown(caller, 'pastetext', content);
-				},
-				tooltip: 'Paste Text'
-			},
-			// END_COMMAND
-			// START_COMMAND: Bullet List
-			bulletlist: {
-				exec: 'insertunorderedlist',
-				tooltip: 'Bullet list'
-			},
-			// END_COMMAND
-			// START_COMMAND: Ordered List
-			orderedlist: {
-				exec: 'insertorderedlist',
-				tooltip: 'Numbered list'
-			},
-			// END_COMMAND
-			// START_COMMAND: Indent
-			indent: {
-				state: function (parents, firstBlock) {
-					// Only works with lists, for now
-					// This is a nested list, so it will always work
-					var	range, startParent, endParent,
-						$firstBlock = $(firstBlock),
-						parentLists = $firstBlock.parents('ul,ol,menu'),
-						parentList  = parentLists.first();
-
-					// in case it's a list with only a single <li>
-					if (parentLists.length > 1 ||
-						parentList.children().length > 1) {
-						return 0;
-					}
-
-					if ($firstBlock.is('ul,ol,menu')) {
-						// if the whole list is selected, then this must be
-						// invalidated because the browser will place a
-						// <blockquote> there
-						range = this.getRangeHelper().selectedRange();
-
-						if (window.Range && range instanceof Range) {
-							startParent = range.startContainer.parentNode;
-							endParent   = range.endContainer.parentNode;
-
-	// TODO: could use nodeType for this?
-	// Maybe just check the firstBlock contins both the start and end conatiners
-							// Select the tag, not the textNode
-							// (that's why the parentNode)
-							if (startParent !==
-								startParent.parentNode.firstElementChild ||
-								// work around a bug in FF
-								($(endParent).is('li') && endParent !==
-									endParent.parentNode.lastElementChild)) {
-								return 0;
-							}
-						// it's IE... As it is impossible to know well when to
-						// accept, better safe than sorry
-						} else {
-							return $firstBlock.is('li,ul,ol,menu') ? 0 : -1;
-						}
-					}
-
-					return -1;
-				},
-				exec: function () {
-					var editor = this,
-						$elm   = $(editor.getRangeHelper().getFirstBlockParent());
-
-					editor.focus();
-
-					// An indent system is quite complicated as there are loads
-					// of complications and issues around how to indent text
-					// As default, let's just stay with indenting the lists,
-					// at least, for now.
-					if ($elm.parents('ul,ol,menu')) {
-						editor.execCommand('indent');
-					}
-				},
-				tooltip: 'Add indent'
-			},
-			// END_COMMAND
-			// START_COMMAND: Outdent
-			outdent: {
-				state: function (parents, firstBlock) {
-					return $(firstBlock).is('ul,ol,menu') ||
-						$(firstBlock).parents('ul,ol,menu').length > 0 ? 0 : -1;
-				},
-				exec: function () {
-					var	editor = this,
-						$elm   = $(editor.getRangeHelper().getFirstBlockParent());
-
-					if ($elm.parents('ul,ol,menu')) {
-						editor.execCommand('outdent');
-					}
-				},
-				tooltip: 'Remove one indent'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Table
-			table: {
-				forceNewLineAfter: ['table'],
-				exec: function (caller) {
-					var	editor  = this,
-						content = _tmpl('table', {
-							rows: editor._('Rows:'),
-							cols: editor._('Cols:'),
-							insert: editor._('Insert')
-						}, true);
-
-					content.find('.button').click(function (e) {
-						var	row, col,
-							rows = content.find('#rows').val() - 0,
-							cols = content.find('#cols').val() - 0,
-							html = '<table>';
-
-						if (rows < 1 || cols < 1) {
-							return;
-						}
-
-						for (row = 0; row < rows; row++) {
-							html += '<tr>';
-
-							for (col = 0; col < cols; col++) {
-								html += '<td>' +
-										(IE_BR_FIX ? '' : '<br />') +
-									'</td>';
-							}
-
-							html += '</tr>';
-						}
-
-						html += '</table>';
-
-						editor.wysiwygEditorInsertHtml(html);
-						editor.closeDropDown(true);
-						e.preventDefault();
-					});
-
-					editor.createDropDown(caller, 'inserttable', content);
-				},
-				tooltip: 'Insert a table'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Horizontal Rule
-			horizontalrule: {
-				exec: 'inserthorizontalrule',
-				tooltip: 'Insert a horizontal rule'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Code
-			code: {
-				forceNewLineAfter: ['code'],
-				exec: function () {
-					this.wysiwygEditorInsertHtml(
-						'<code>',
-						(IE_BR_FIX ? '' : '<br />') + '</code>'
-					);
-				},
-				tooltip: 'Code'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Image
-			image: {
-				exec: function (caller) {
-					var	editor  = this,
-						content = _tmpl('image', {
-							url: editor._('URL:'),
-							width: editor._('Width (optional):'),
-							height: editor._('Height (optional):'),
-							insert: editor._('Insert')
-						}, true);
-
-					content.find('.button').click(function (e) {
-						var	val    = content.find('#image').val(),
-							width  = content.find('#width').val(),
-							height = content.find('#height').val(),
-							attrs  = '';
-
-						if (width) {
-							attrs += ' width="' + width + '"';
-						}
-
-						if (height) {
-							attrs += ' height="' + height + '"';
-						}
-
-						if (val) {
-							editor.wysiwygEditorInsertHtml(
-								'<img' + attrs + ' src="' + val + '" />'
-							);
-						}
-
-						editor.closeDropDown(true);
-						e.preventDefault();
-					});
-
-					editor.createDropDown(caller, 'insertimage', content);
-				},
-				tooltip: 'Insert an image'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: E-mail
-			email: {
-				exec: function (caller) {
-					var	editor  = this,
-						content = _tmpl('email', {
-							label: editor._('E-mail:'),
-							desc: editor._('Description (optional):'),
-							insert: editor._('Insert')
-						}, true);
-
-					content.find('.button').click(function (e) {
-						var val         = content.find('#email').val(),
-							description = content.find('#des').val();
-
-						if (val) {
-							// needed for IE to reset the last range
-							editor.focus();
-
-							if (!editor.getRangeHelper().selectedHtml() ||
-								description) {
-								description = description || val;
-
-								editor.wysiwygEditorInsertHtml(
-									'<a href="' + 'mailto:' + val + '">' +
-										description +
-									'</a>'
-								);
-							} else {
-								editor.execCommand('createlink', 'mailto:' + val);
-							}
-						}
-
-						editor.closeDropDown(true);
-						e.preventDefault();
-					});
-
-					editor.createDropDown(caller, 'insertemail', content);
-				},
-				tooltip: 'Insert an email'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Link
-			link: {
-				exec: function (caller) {
-					var	editor  = this,
-						content = _tmpl('link', {
-							url: editor._('URL:'),
-							desc: editor._('Description (optional):'),
-							ins: editor._('Insert')
-						}, true);
-
-					content.find('.button').click(function (e) {
-						var	val         = content.find('#link').val(),
-							description = content.find('#des').val();
-
-						if (val) {
-							// needed for IE to restore the last range
-							editor.focus();
-
-							// If there is no selected text then must set the URL as
-							// the text. Most browsers do this automatically, sadly
-							// IE doesn't.
-							if (!editor.getRangeHelper().selectedHtml() ||
-								description) {
-								description = description || val;
-
-								editor.wysiwygEditorInsertHtml(
-									'<a href="' + val + '">' + description + '</a>'
-								);
-							} else {
-								editor.execCommand('createlink', val);
-							}
-						}
-
-						editor.closeDropDown(true);
-						e.preventDefault();
-					});
-
-					editor.createDropDown(caller, 'insertlink', content);
-				},
-				tooltip: 'Insert a link'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Unlink
-			unlink: {
-				state: function () {
-					var $current = $(this.currentNode());
-					return $current.is('a') ||
-						$current.parents('a').length > 0 ? 0 : -1;
-				},
-				exec: function () {
-					var	$current = $(this.currentNode()),
-						$anchor  = $current.is('a') ? $current :
-							$current.parents('a').first();
-
-					if ($anchor.length) {
-						$anchor.replaceWith($anchor.contents());
-					}
-				},
-				tooltip: 'Unlink'
-			},
-			// END_COMMAND
-
-
-			// START_COMMAND: Quote
-			quote: {
-				forceNewLineAfter: ['blockquote'],
-				exec: function (caller, html, author) {
-					var	before = '<blockquote>',
-						end    = '</blockquote>';
-
-					// if there is HTML passed set end to null so any selected
-					// text is replaced
-					if (html) {
-						author = (author ? '<cite>' + author + '</cite>' : '');
-						before = before + author + html + end;
-						end    = null;
-					// if not add a newline to the end of the inserted quote
-					} else if (this.getRangeHelper().selectedHtml() === '') {
-						end = (IE_BR_FIX ? '' : '<br />') + end;
-					}
-
-					this.wysiwygEditorInsertHtml(before, end);
-				},
-				tooltip: 'Insert a Quote'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Emoticons
-			emoticon: {
-				exec: function (caller) {
-					var editor = this;
-
-					var createContent = function (includeMore) {
-						var	$moreLink,
-							emoticonsCompat = editor.opts.emoticonsCompat,
-							rangeHelper     = editor.getRangeHelper(),
-							startSpace      = emoticonsCompat &&
-								rangeHelper.getOuterText(true, 1) !== ' ' ?
-								' ' : '',
-							endSpace        = emoticonsCompat &&
-								rangeHelper.getOuterText(false, 1) !== ' ' ?
-								' ' : '',
-							$content        = $('<div />'),
-							$line           = $('<div />').appendTo($content),
-							perLine         = 0,
-							emoticons       = $.extend(
-								{},
-								editor.opts.emoticons.dropdown,
-								includeMore ? editor.opts.emoticons.more : {}
-							);
-
-						$.each(emoticons, function () {
-							perLine++;
-						});
-						perLine = Math.sqrt(perLine);
-
-						$.each(emoticons, function (code, emoticon) {
-							$line.append(
-								$('<img />').attr({
-									src: emoticon.url || emoticon,
-									alt: code,
-									title: emoticon.tooltip || code
-								}).click(function () {
-									editor.insert(startSpace + $(this).attr('alt') +
-										endSpace, null, false).closeDropDown(true);
-
-									return false;
-								})
-							);
-
-							if ($line.children().length >= perLine) {
-								$line = $('<div />').appendTo($content);
-							}
-						});
-
-						if (!includeMore) {
-							$moreLink = $(
-								'<a class="sceditor-more">' +
-									editor._('More') + '</a>'
-							).click(function () {
-								editor.createDropDown(
-									caller,
-									'more-emoticons',
-									createContent(true)
-								);
-
-								return false;
-							});
-
-							$content.append($moreLink);
-						}
-
-						return $content;
-					};
-
-					editor.createDropDown(
-						caller,
-						'emoticons',
-						createContent(false)
-					);
-				},
-				txtExec: function (caller) {
-					defaultCommnds.emoticon.exec.call(this, caller);
-				},
-				tooltip: 'Insert an emoticon'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: YouTube
-			youtube: {
-				_dropDown: function (editor, caller, handleIdFunc) {
-					var	matches,
-						content = _tmpl('youtubeMenu', {
-							label: editor._('Video URL:'),
-							insert: editor._('Insert')
-						}, true);
-
-					content.find('.button').click(function (e) {
-						var val = content
-							.find('#link')
-							.val();
-
-						if (val) {
-							matches = val.match(
-								/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/
-							);
-
-							if (matches) {
-								val = matches[1];
-							}
-
-							if (/^[a-zA-Z0-9_\-]{11}$/.test(val)) {
-								handleIdFunc(val);
-							} else {
-								/*global alert:false*/
-								alert('Invalid YouTube video');
-							}
-						}
-
-						editor.closeDropDown(true);
-						e.preventDefault();
-					});
-
-					editor.createDropDown(caller, 'insertlink', content);
-				},
-				exec: function (caller) {
-					var editor = this;
-
-					defaultCommnds.youtube._dropDown(
-						editor,
-						caller,
-						function (id) {
-							editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
-								id: id
-							}));
-						}
-					);
-				},
-				tooltip: 'Insert a YouTube video'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Date
-			date: {
-				_date: function (editor) {
-					var	now   = new Date(),
-						year  = now.getYear(),
-						month = now.getMonth() + 1,
-						day   = now.getDate();
-
-					if (year < 2000) {
-						year = 1900 + year;
-					}
-
-					if (month < 10) {
-						month = '0' + month;
-					}
-
-					if (day < 10) {
-						day = '0' + day;
-					}
-
-					return editor.opts.dateFormat
-						.replace(/year/i, year)
-						.replace(/month/i, month)
-						.replace(/day/i, day);
-				},
-				exec: function () {
-					this.insertText(defaultCommnds.date._date(this));
-				},
-				txtExec: function () {
-					this.insertText(defaultCommnds.date._date(this));
-				},
-				tooltip: 'Insert current date'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Time
-			time: {
-				_time: function () {
-					var	now   = new Date(),
-						hours = now.getHours(),
-						mins  = now.getMinutes(),
-						secs  = now.getSeconds();
-
-					if (hours < 10) {
-						hours = '0' + hours;
-					}
-
-					if (mins < 10) {
-						mins = '0' + mins;
-					}
-
-					if (secs < 10) {
-						secs = '0' + secs;
-					}
-
-					return hours + ':' + mins + ':' + secs;
-				},
-				exec: function () {
-					this.insertText(defaultCommnds.time._time());
-				},
-				txtExec: function () {
-					this.insertText(defaultCommnds.time._time());
-				},
-				tooltip: 'Insert current time'
-			},
-			// END_COMMAND
-
-
-			// START_COMMAND: Ltr
-			ltr: {
-				state: function (parents, firstBlock) {
-					return firstBlock && firstBlock.style.direction === 'ltr';
-				},
-				exec: function () {
-					var	editor = this,
-						elm    = editor.getRangeHelper().getFirstBlockParent(),
-						$elm   = $(elm);
-
-					editor.focus();
-
-					if (!elm || $elm.is('body')) {
-						editor.execCommand('formatBlock', 'p');
-
-						elm  = editor.getRangeHelper().getFirstBlockParent();
-						$elm = $(elm);
-
-						if (!elm || $elm.is('body')) {
-							return;
-						}
-					}
-
-					if ($elm.css('direction') === 'ltr') {
-						$elm.css('direction', '');
-					} else {
-						$elm.css('direction', 'ltr');
-					}
-				},
-				tooltip: 'Left-to-Right'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Rtl
-			rtl: {
-				state: function (parents, firstBlock) {
-					return firstBlock && firstBlock.style.direction === 'rtl';
-				},
-				exec: function () {
-					var	editor = this,
-						elm    = editor.getRangeHelper().getFirstBlockParent(),
-						$elm   = $(elm);
-
-					editor.focus();
-
-					if (!elm || $elm.is('body')) {
-						editor.execCommand('formatBlock', 'p');
-
-						elm  = editor.getRangeHelper().getFirstBlockParent();
-						$elm = $(elm);
-
-						if (!elm || $elm.is('body')) {
-							return;
-						}
-					}
-
-					if ($elm.css('direction') === 'rtl') {
-						$elm.css('direction', '');
-					} else {
-						$elm.css('direction', 'rtl');
-					}
-				},
-				tooltip: 'Right-to-Left'
-			},
-			// END_COMMAND
-
-
-			// START_COMMAND: Print
-			print: {
-				exec: 'print',
-				tooltip: 'Print'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Maximize
-			maximize: {
-				state: function () {
-					return this.maximize();
-				},
-				exec: function () {
-					this.maximize(!this.maximize());
-				},
-				txtExec: function () {
-					this.maximize(!this.maximize());
-				},
-				tooltip: 'Maximize',
-				shortcut: 'ctrl+shift+m'
-			},
-			// END_COMMAND
-
-			// START_COMMAND: Source
-			source: {
-				state: function () {
-					return this.sourceMode();
-				},
-				exec: function () {
-					this.toggleSourceMode();
-				},
-				txtExec: function () {
-					this.toggleSourceMode();
-				},
-				tooltip: 'View source',
-				shortcut: 'ctrl+shift+s'
-			},
-			// END_COMMAND
-
-			// this is here so that commands above can be removed
-			// without having to remove the , after the last one.
-			// Needed for IE.
-			ignore: {}
-		};
-
-		return defaultCommnds;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
-		'use strict';
-
-		var $ = __webpack_require__(1);
-
-
-		/**
-		 * Default options for SCEditor
-		 * @type {Object}
-		 */
-		return {
-			/** @lends jQuery.sceditor.defaultOptions */
-			/**
-			 * Toolbar buttons order and groups. Should be comma separated and
-			 * have a bar | to separate groups
-			 *
-			 * @type {String}
-			 */
-			toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
-				'left,center,right,justify|font,size,color,removeformat|' +
-				'cut,copy,paste,pastetext|bulletlist,orderedlist,indent,outdent|' +
-				'table|code,quote|horizontalrule,image,email,link,unlink|' +
-				'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
-
-			/**
-			 * Comma separated list of commands to excludes from the toolbar
-			 *
-			 * @type {String}
-			 */
-			toolbarExclude: null,
-
-			/**
-			 * Stylesheet to include in the WYSIWYG editor. This is what will style
-			 * the WYSIWYG elements
-			 *
-			 * @type {String}
-			 */
-			style: 'jquery.sceditor.default.css',
-
-			/**
-			 * Comma separated list of fonts for the font selector
-			 *
-			 * @type {String}
-			 */
-			fonts: 'Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,' +
-				'Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana',
-
-			/**
-			 * Colors should be comma separated and have a bar | to signal a new
-			 * column.
-			 *
-			 * If null the colors will be auto generated.
-			 *
-			 * @type {string}
-			 */
-			colors: null,
-
-			/**
-			 * The locale to use.
-			 * @type {String}
-			 */
-			locale: $('html').attr('lang') || 'en',
-
-			/**
-			 * The Charset to use
-			 * @type {String}
-			 */
-			charset: 'utf-8',
-
-			/**
-			 * Compatibility mode for emoticons.
-			 *
-			 * Helps if you have emoticons such as :/ which would put an emoticon
-			 * inside http://
-			 *
-			 * This mode requires emoticons to be surrounded by whitespace or end of
-			 * line chars. This mode has limited As You Type emoticon conversion
-			 * support. It will not replace AYT for end of line chars, only
-			 * emoticons surrounded by whitespace. They will still be replaced
-			 * correctly when loaded just not AYT.
-			 *
-			 * @type {Boolean}
-			 */
-			emoticonsCompat: false,
-
-			/**
-			 * If to enable emoticons. Can be changes at runtime using the
-			 * emoticons() method.
-			 *
-			 * @type {Boolean}
-			 * @since 1.4.2
-			 */
-			emoticonsEnabled: true,
-
-			/**
-			 * Emoticon root URL
-			 *
-			 * @type {String}
-			 */
-			emoticonsRoot: '',
-			emoticons: {
-				dropdown: {
-					':)': 'emoticons/smile.png',
-					':angel:': 'emoticons/angel.png',
-					':angry:': 'emoticons/angry.png',
-					'8-)': 'emoticons/cool.png',
-					':\'(': 'emoticons/cwy.png',
-					':ermm:': 'emoticons/ermm.png',
-					':D': 'emoticons/grin.png',
-					'<3': 'emoticons/heart.png',
-					':(': 'emoticons/sad.png',
-					':O': 'emoticons/shocked.png',
-					':P': 'emoticons/tongue.png',
-					';)': 'emoticons/wink.png'
-				},
-				more: {
-					':alien:': 'emoticons/alien.png',
-					':blink:': 'emoticons/blink.png',
-					':blush:': 'emoticons/blush.png',
-					':cheerful:': 'emoticons/cheerful.png',
-					':devil:': 'emoticons/devil.png',
-					':dizzy:': 'emoticons/dizzy.png',
-					':getlost:': 'emoticons/getlost.png',
-					':happy:': 'emoticons/happy.png',
-					':kissing:': 'emoticons/kissing.png',
-					':ninja:': 'emoticons/ninja.png',
-					':pinch:': 'emoticons/pinch.png',
-					':pouty:': 'emoticons/pouty.png',
-					':sick:': 'emoticons/sick.png',
-					':sideways:': 'emoticons/sideways.png',
-					':silly:': 'emoticons/silly.png',
-					':sleeping:': 'emoticons/sleeping.png',
-					':unsure:': 'emoticons/unsure.png',
-					':woot:': 'emoticons/w00t.png',
-					':wassat:': 'emoticons/wassat.png'
-				},
-				hidden: {
-					':whistling:': 'emoticons/whistling.png',
-					':love:': 'emoticons/wub.png'
-				}
-			},
-
-			/**
-			 * Width of the editor. Set to null for automatic with
-			 *
-			 * @type {int}
-			 */
-			width: null,
-
-			/**
-			 * Height of the editor including toolbar. Set to null for automatic
-			 * height
-			 *
-			 * @type {int}
-			 */
-			height: null,
-
-			/**
-			 * If to allow the editor to be resized
-			 *
-			 * @type {Boolean}
-			 */
-			resizeEnabled: true,
-
-			/**
-			 * Min resize to width, set to null for half textarea width or -1 for
-			 * unlimited
-			 *
-			 * @type {int}
-			 */
-			resizeMinWidth: null,
-			/**
-			 * Min resize to height, set to null for half textarea height or -1 for
-			 * unlimited
-			 *
-			 * @type {int}
-			 */
-			resizeMinHeight: null,
-			/**
-			 * Max resize to height, set to null for double textarea height or -1
-			 * for unlimited
-			 *
-			 * @type {int}
-			 */
-			resizeMaxHeight: null,
-			/**
-			 * Max resize to width, set to null for double textarea width or -1 for
-			 * unlimited
-			 *
-			 * @type {int}
-			 */
-			resizeMaxWidth: null,
-			/**
-			 * If resizing by height is enabled
-			 *
-			 * @type {Boolean}
-			 */
-			resizeHeight: true,
-			/**
-			 * If resizing by width is enabled
-			 *
-			 * @type {Boolean}
-			 */
-			resizeWidth: true,
-
-			/**
-			 * Date format, will be overridden if locale specifies one.
-			 *
-			 * The words year, month and day will be replaced with the users current
-			 * year, month and day.
-			 *
-			 * @type {String}
-			 */
-			dateFormat: 'year-month-day',
-
-			/**
-			 * Element to inset the toolbar into.
-			 *
-			 * @type {HTMLElement}
-			 */
-			toolbarContainer: null,
-
-			/**
-			 * If to enable paste filtering. This is currently experimental, please
-			 * report any issues.
-			 *
-			 * @type {Boolean}
-			 */
-			enablePasteFiltering: false,
-
-			/**
-			 * If to completely disable pasting into the editor
-			 *
-			 * @type {Boolean}
-			 */
-			disablePasting: false,
-
-			/**
-			 * If the editor is read only.
-			 *
-			 * @type {Boolean}
-			 */
-			readOnly: false,
-
-			/**
-			 * If to set the editor to right-to-left mode.
-			 *
-			 * If set to null the direction will be automatically detected.
-			 *
-			 * @type {Boolean}
-			 */
-			rtl: false,
-
-			/**
-			 * If to auto focus the editor on page load
-			 *
-			 * @type {Boolean}
-			 */
-			autofocus: false,
-
-			/**
-			 * If to auto focus the editor to the end of the content
-			 *
-			 * @type {Boolean}
-			 */
-			autofocusEnd: true,
-
-			/**
-			 * If to auto expand the editor to fix the content
-			 *
-			 * @type {Boolean}
-			 */
-			autoExpand: false,
-
-			/**
-			 * If to auto update original textbox on blur
-			 *
-			 * @type {Boolean}
-			 */
-			autoUpdate: false,
-
-			/**
-			 * If to enable the browsers built in spell checker
-			 *
-			 * @type {Boolean}
-			 */
-			spellcheck: true,
-
-			/**
-			 * If to run the source editor when there is no WYSIWYG support. Only
-			 * really applies to mobile OS's.
-			 *
-			 * @type {Boolean}
-			 */
-			runWithoutWysiwygSupport: false,
-
-			/**
-			 * Optional ID to give the editor.
-			 *
-			 * @type {String}
-			 */
-			id: null,
-
-			/**
-			 * Comma separated list of plugins
-			 *
-			 * @type {String}
-			 */
-			plugins: '',
-
-			/**
-			 * z-index to set the editor container to. Needed for jQuery UI dialog.
-			 *
-			 * @type {Int}
-			 */
-			zIndex: null,
-
-			/**
-			 * If to trim the BBCode. Removes any spaces at the start and end of the
-			 * BBCode string.
-			 *
-			 * @type {Boolean}
-			 */
-			bbcodeTrim: false,
-
-			/**
-			 * If to disable removing block level elements by pressing backspace at
-			 * the start of them
-			 *
-			 * @type {Boolean}
-			 */
-			disableBlockRemove: false,
-
-			/**
-			 * BBCode parser options, only applies if using the editor in BBCode
-			 * mode.
-			 *
-			 * See SCEditor.BBCodeParser.defaults for list of valid options
-			 *
-			 * @type {Object}
-			 */
-			parserOptions: { },
-
-			/**
-			 * CSS that will be added to the to dropdown menu (eg. z-index)
-			 *
-			 * @type {Object}
-			 */
-			dropDownCss: { }
-		};
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 		'use strict';
 
 		var $       = __webpack_require__(1);
-		var dom     = __webpack_require__(9);
-		var escape  = __webpack_require__(5);
-		var browser = __webpack_require__(4);
+		var dom     = __webpack_require__(5);
+		var escape  = __webpack_require__(7);
+		var browser = __webpack_require__(6);
 
 		var IE_VER = browser.ie;
 
@@ -5710,6 +4170,68 @@
 			return $('<p>', node.ownerDocument).append(node).html();
 		};
 
+		/**
+		 * Gets the text, start/end node and offset for
+		 * length chars left or right of the passed node
+		 * at the specified offset.
+		 *
+		 * @param  {Node}  node
+		 * @param  {Number}  offset
+		 * @param  {Boolean} isLeft
+		 * @param  {Number}  length
+		 * @return {Object}
+		 * @private
+		 */
+		var outerText = function (range, isLeft, length) {
+			var nodeValue, remaining, start, end, node,
+				text = '',
+				next = range.startContainer,
+				offset = range.startOffset;
+
+			// Handle cases where node is a paragraph and offset
+			// refers to the index of a text node.
+			// 3 = text node
+			if (next && next.nodeType !== 3) {
+				next = next.childNodes[offset];
+				offset = 0;
+			}
+
+			start = end = offset;
+
+			while (length > text.length && next && next.nodeType === 3) {
+				nodeValue = next.nodeValue;
+				remaining = length - text.length;
+
+				// If not the first node, start and end should be at their
+				// max values as will be updated when getting the text
+				if (node) {
+					end = nodeValue.length;
+					start = 0;
+				}
+
+				node = next;
+
+				if (isLeft) {
+					start = Math.max(end - remaining, 0);
+					offset = start;
+
+					text = nodeValue.substr(start, end - start) + text;
+					next = node.previousSibling;
+				} else {
+					end = Math.min(remaining, nodeValue.length);
+					offset = start + end;
+
+					text += nodeValue.substr(start, end);
+					next = node.nextSibling;
+				}
+			}
+
+			return {
+				node: node || next,
+				offset: offset,
+				text: text
+			};
+		};
 
 		var RangeHelper = function (w, d) {
 			var	_createMarker, _isOwner, _prepareInput,
@@ -5727,7 +4249,7 @@
 			 *
 			 * <p>If endHTML is specified the selected contents will be put between
 			 * html and endHTML. If there is nothing selected html and endHTML are
-			 * just concated together.</p>
+			 * just concatenate together.</p>
 			 *
 			 * @param {string} html
 			 * @param {string} endHTML
@@ -5927,12 +4449,14 @@
 					}
 
 					range = doc.createRange();
-					range.setStart(firstChild, 0);
+					// Must be setStartBefore otherwise it can cause infinite
+					// loops with lists in WebKit. See issue 442
+					range.setStartBefore(firstChild);
 
 					sel.addRange(range);
 				}
 
-				if (isW3C) {
+				if (isW3C && sel.rangeCount > 0) {
 					range = sel.getRangeAt(0);
 				}
 
@@ -6295,7 +4819,8 @@
 			 * @memberOf RangeHelper.prototype
 			 */
 			base.selectOuterText = function (left, right) {
-				var range = base.cloneSelected();
+				var start, end,
+					range = base.cloneSelected();
 
 				if (!range) {
 					return false;
@@ -6307,8 +4832,11 @@
 					range.moveStart(CHARACTER, 0 - left);
 					range.moveEnd(CHARACTER, right);
 				} else {
-					range.setStart(range.startContainer, range.startOffset - left);
-					range.setEnd(range.endContainer, range.endOffset + right);
+					start = outerText(range, true, left);
+					end = outerText(range, false, right);
+
+					range.setStart(start.node, start.offset);
+					range.setEnd(end.node, end.offset);
 				}
 
 				base.selectRange(range);
@@ -6325,9 +4853,7 @@
 			 * @memberOf RangeHelper.prototype
 			 */
 			base.getOuterText = function (before, length) {
-				var	textContent, startPos,
-					ret   = '',
-					range = base.cloneSelected();
+				var	range = base.cloneSelected();
 
 				if (!range) {
 					return '';
@@ -6335,31 +4861,17 @@
 
 				range.collapse(!before);
 
-				if (isW3C) {
-					textContent = range.startContainer.textContent;
-					startPos    = range.startOffset;
-
-					if (before) {
-						startPos = startPos - length;
-
-						if (startPos < 0) {
-							length += startPos;
-							startPos = 0;
-						}
-					}
-
-					ret = textContent.substr(startPos, length);
-				} else {
+				if (!isW3C) {
 					if (before) {
 						range.moveStart(CHARACTER, 0 - length);
 					} else {
 						range.moveEnd(CHARACTER, length);
 					}
 
-					ret = range.text;
+					return range.text;
 				}
 
-				return ret;
+				return outerText(range, before, length).text;
 			};
 
 			/**
@@ -6379,11 +4891,11 @@
 			 *                                    set to the pressed character
 			 * @return {boolean}
 			 * @function
-			 * @name raplaceKeyword
+			 * @name replaceKeyword
 			 * @memberOf RangeHelper.prototype
 			 */
 			/*jshint maxparams: false*/
-			base.raplaceKeyword = function (
+			base.replaceKeyword = function (
 				keywords,
 				includeAfter,
 				keywordsSorted,
@@ -6397,11 +4909,12 @@
 					});
 				}
 
-				var before, beforeAndAfter, matchPos, startPos, beforeLen,
+				var outerText, matchPos, startIndex, leftLen,
 					charsLeft, keyword, keywordLen,
-					wsRegex    = '[\\s\xA0\u2002\u2003\u2009]',
-					keywordIdx = keywords.length,
-					maxKeyLen  = longestKeyword ||
+					whitespaceRegex = '[\\s\xA0\u2002\u2003\u2009]',
+					keywordIdx      = keywords.length,
+					whitespaceLen   = requireWhitespace ? 1 : 0,
+					maxKeyLen       = longestKeyword ||
 						keywords[keywordIdx - 1][0].length;
 
 				if (requireWhitespace) {
@@ -6415,57 +4928,57 @@
 					maxKeyLen++;
 				}
 
-				keypressChar   = keypressChar || '';
-				before         = base.getOuterText(true, maxKeyLen);
-				beforeLen      = before.length;
-				beforeAndAfter = before + keypressChar;
+				keypressChar = keypressChar || '';
+				outerText    = base.getOuterText(true, maxKeyLen);
+				leftLen      = outerText.length;
+				outerText   += keypressChar;
 
 				if (includeAfter) {
-					beforeAndAfter += base.getOuterText(false, maxKeyLen);
+					outerText += base.getOuterText(false, maxKeyLen);
 				}
 
 				while (keywordIdx--) {
-					keyword      = keywords[keywordIdx][0];
-					keywordLen   = keyword.length;
-					startPos     = beforeLen - 1 - keywordLen;
+					keyword    = keywords[keywordIdx][0];
+					keywordLen = keyword.length;
+					startIndex = Math.max(0, leftLen - keywordLen - whitespaceLen);
 
 					if (requireWhitespace) {
-						matchPos = beforeAndAfter
-							// Start position needs to be 1 char before to include
-							// any previous whitespace
-							.substr(Math.max(0, startPos - 1))
+						matchPos = outerText
+							.substr(startIndex)
 							.search(new RegExp(
-								'(?:' + wsRegex + ')' +
+								'(?:' + whitespaceRegex + ')' +
 								escape.regex(keyword) +
-								'(?=' + wsRegex + ')'
+								'(?=' + whitespaceRegex + ')'
 							));
 					} else {
-						matchPos = beforeAndAfter.indexOf(keyword, startPos);
+						matchPos = outerText.indexOf(keyword, startIndex);
 					}
 
 					if (matchPos > -1) {
+						// Add the length of the text that was removed by substr()
+						// when matching and also add 1 for the whitespace
 						if (requireWhitespace) {
-							matchPos += startPos + 1;
+							matchPos += startIndex + 1;
 						}
 
-						// Make sure the substr is between before and
-						// after not entirely in one or the other
-						if (matchPos > beforeLen ||
-							matchPos + keywordLen + (requireWhitespace ? 1 : 0) <
-							beforeLen) {
-							continue;
+						// Make sure the match is between before and
+						// after, not just entirely in one side or the other
+						if (matchPos <= leftLen &&
+							matchPos + keywordLen + whitespaceLen >= leftLen) {
+							charsLeft = leftLen - matchPos;
+
+							// If the keypress char is white space then it should
+							// not be replaced, only chars that are part of the
+							// key should be replaced.
+							base.selectOuterText(
+								charsLeft,
+								keywordLen - charsLeft -
+									(/^\S/.test(keypressChar) ? 1 : 0)
+							);
+
+							base.insertHTML(keywords[keywordIdx][1]);
+							return true;
 						}
-
-						charsLeft = beforeLen - matchPos;
-
-						base.selectOuterText(
-							charsLeft,
-							keywordLen - charsLeft -
-								(/^\S/.test(keypressChar) ? 1 : 0)
-						);
-
-						base.insertHTML(keywords[keywordIdx][1]);
-						return true;
 					}
 				}
 
@@ -6525,14 +5038,14 @@
 
 
 /***/ },
-/* 9 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 		'use strict';
 
 		var $       = __webpack_require__(1);
-		var browser = __webpack_require__(4);
+		var browser = __webpack_require__(6);
 
 		var _propertyNameCache = {};
 
@@ -6607,7 +5120,7 @@
 			/**
 			 * Checks if an element has any styling.
 			 *
-			 * It has styiling if it is not a plain <div> or <p> or
+			 * It has styling if it is not a plain <div> or <p> or
 			 * if it has a class, style attribute or data.
 			 *
 			 * @param  {HTMLElement} elm
@@ -6640,7 +5153,7 @@
 				while (attrsIdx--) {
 					attr = oldAttrs[attrsIdx];
 
-					// IE < 8 returns all possible attribtues instead of just
+					// IE < 8 returns all possible attributes instead of just
 					// the specified ones so have to check it is specified.
 					if (!browser.ie || attr.specified) {
 						// IE < 8 doesn't return the CSS for the style attribute
@@ -6648,7 +5161,12 @@
 						if (browser.ie < 8 && /style/i.test(attr.name)) {
 							dom.copyCSS(oldElm, newElm);
 						} else {
-							newElm.setAttribute(attr.name, attr.value);
+							// Some browsers parse invalid attributes names like
+							// 'size"2' which throw an exception when set, just
+							// ignore these.
+							try {
+								newElm.setAttribute(attr.name, attr.value);
+							} catch (ex) {}
 						}
 					}
 				}
@@ -6678,18 +5196,18 @@
 			 */
 			canHaveChildren: function (node) {
 				// 1  = Element
-				// 9  = Docuemnt
+				// 9  = Document
 				// 11 = Document Fragment
 				if (!/11?|9/.test(node.nodeType)) {
 					return false;
 				}
 
-				// List of empty HTML tags seperated by bar (|) character.
+				// List of empty HTML tags separated by bar (|) character.
 				// Source: http://www.w3.org/TR/html4/index/elements.html
 				// Source: http://www.w3.org/TR/html5/syntax.html#void-elements
-				return ('|iframe|area|base|basefont|br|col|frame|hr|img|input|' +
-					'isindex|link|meta|param|command|embed|keygen|source|track|' +
-					'wbr|').indexOf('|' + node.nodeName.toLowerCase() + '|') < 0;
+				return ('|iframe|area|base|basefont|br|col|frame|hr|img|input|wbr' +
+					'|isindex|link|meta|param|command|embed|keygen|source|track|' +
+					'object|').indexOf('|' + node.nodeName.toLowerCase() + '|') < 0;
 			},
 
 			/**
@@ -6988,12 +5506,11 @@
 						$elm.is('hr') || $elm.is('th')) {
 						return '';
 					}
-
+	// check all works with changes and merge with prev?
 					// IE changes text-align to the same as the current direction
 					// so skip unless its not the same
-					if (direction && styleValue &&
-						((/right/i.test(styleValue) && direction === 'rtl') ||
-						(/left/i.test(styleValue) && direction === 'ltr'))) {
+					if ((/right/i.test(styleValue) && direction === 'rtl') ||
+						(/left/i.test(styleValue) && direction === 'ltr')) {
 						return '';
 					}
 				}
@@ -7029,7 +5546,251 @@
 
 
 /***/ },
-/* 10 */
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
+		'use strict';
+
+		var $ = __webpack_require__(1);
+
+		var USER_AGENT = navigator.userAgent;
+
+		/**
+		 * Detects the version of IE is being used if any.
+		 *
+		 * Will be the IE version number or undefined if the
+		 * browser is not IE.
+		 *
+		 * Source: https://gist.github.com/527683 with extra code
+		 * for IE 10 & 11 detection.
+		 *
+		 * @function
+		 * @name ie
+		 * @type {int}
+		 */
+		exports.ie = (function () {
+			var	undef,
+				v   = 3,
+				doc = document,
+				div = doc.createElement('div'),
+				all = div.getElementsByTagName('i');
+
+			do {
+				div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->';
+			} while (all[0]);
+
+			// Detect IE 10 as it doesn't support conditional comments.
+			if ((doc.documentMode && doc.all && window.atob)) {
+				v = 10;
+			}
+
+			// Detect IE 11
+			if (v === 4 && doc.documentMode) {
+				v = 11;
+			}
+
+			return v > 4 ? v : undef;
+		}());
+
+		/**
+		 * <p>Detects if the browser is iOS</p>
+		 *
+		 * <p>Needed to fix iOS specific bugs/</p>
+		 *
+		 * @function
+		 * @name ios
+		 * @memberOf jQuery.sceditor
+		 * @type {Boolean}
+		 */
+		exports.ios = /iPhone|iPod|iPad| wosbrowser\//i.test(USER_AGENT);
+
+		/**
+		 * If the browser supports WYSIWYG editing (e.g. older mobile browsers).
+		 *
+		 * @function
+		 * @name isWysiwygSupported
+		 * @return {Boolean}
+		 */
+		exports.isWysiwygSupported = (function () {
+			var	match, isUnsupported, undef,
+				editableAttr = $('<p contenteditable="true">')[0].contentEditable;
+
+			// Check if the contenteditable attribute is supported
+			if (editableAttr === undef || editableAttr === 'inherit') {
+				return false;
+			}
+
+			// I think blackberry supports contentEditable or will at least
+			// give a valid value for the contentEditable detection above
+			// so it isn't included in the below tests.
+
+			// I hate having to do UA sniffing but some mobile browsers say they
+			// support contentediable when it isn't usable, i.e. you can't enter
+			// text.
+			// This is the only way I can think of to detect them which is also how
+			// every other editor I've seen deals with this issue.
+
+			// Exclude Opera mobile and mini
+			isUnsupported = /Opera Mobi|Opera Mini/i.test(USER_AGENT);
+
+			if (/Android/i.test(USER_AGENT)) {
+				isUnsupported = true;
+
+				if (/Safari/.test(USER_AGENT)) {
+					// Android browser 534+ supports content editable
+					// This also matches Chrome which supports content editable too
+					match = /Safari\/(\d+)/.exec(USER_AGENT);
+					isUnsupported = (!match || !match[1] ? true : match[1] < 534);
+				}
+			}
+
+			// The current version of Amazon Silk supports it, older versions didn't
+			// As it uses webkit like Android, assume it's the same and started
+			// working at versions >= 534
+			if (/ Silk\//i.test(USER_AGENT)) {
+				match = /AppleWebKit\/(\d+)/.exec(USER_AGENT);
+				isUnsupported = (!match || !match[1] ? true : match[1] < 534);
+			}
+
+			// iOS 5+ supports content editable
+			if (exports.ios) {
+				// Block any version <= 4_x(_x)
+				isUnsupported = /OS [0-4](_\d)+ like Mac/i.test(USER_AGENT);
+			}
+
+			// FireFox does support WYSIWYG on mobiles so override
+			// any previous value if using FF
+			if (/Firefox/i.test(USER_AGENT)) {
+				isUnsupported = false;
+			}
+
+			if (/OneBrowser/i.test(USER_AGENT)) {
+				isUnsupported = false;
+			}
+
+			// UCBrowser works but doesn't give a unique user agent
+			if (navigator.vendor === 'UCWEB') {
+				isUnsupported = false;
+			}
+
+			return !isUnsupported;
+		}());
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
+		'use strict';
+
+		var VALID_SCHEME_REGEX =
+			/^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(?:\/\/)/i;
+
+		/**
+		 * Escapes a string so it's safe to use in regex
+		 *
+		 * @param {String} str
+		 * @return {String}
+		 * @name regex
+		 */
+		exports.regex = function (str) {
+			return str.replace(/([\-.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+		};
+
+		/**
+		 * Escapes all HTML entities in a string
+		 *
+		 * If noQuotes is set to false, all single and double
+		 * quotes will also be escaped
+		 *
+		 * @param {String} str
+		 * @param {Boolean} [noQuotes=false]
+		 * @return {String}
+		 * @name entities
+		 * @since 1.4.1
+		 */
+		exports.entities = function (str, noQuotes) {
+			if (!str) {
+				return str;
+			}
+
+			var replacements = {
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'  ': ' &nbsp;',
+				'\r\n': '\n',
+				'\r': '\n',
+				'\n': '<br />'
+			};
+
+			if (noQuotes !== false) {
+				replacements['"']  = '&#34;';
+				replacements['\''] = '&#39;';
+				replacements['`']  = '&#96;';
+			}
+
+			str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
+				return replacements[match] || match;
+			});
+
+			return str;
+		};
+
+		/**
+		 * Escape URI scheme.
+		 *
+		 * Appends the current URL to a url if it has a scheme that is not:
+		 *
+		 * http
+		 * https
+		 * sftp
+		 * ftp
+		 * mailto
+		 * spotify
+		 * skype
+		 * ssh
+		 * teamspeak
+		 * tel
+		 * //
+		 *
+		 * **IMPORTANT**: This does not escape any HTML in a url, for
+		 * that use the escape.entities() method.
+		 *
+		 * @param  {String} url
+		 * @return {String}
+		 * @name escapeUriScheme
+		 * @memberOf jQuery.sceditor
+		 * @since 1.4.5
+		 */
+		exports.uriScheme = function (url) {
+			/*jshint maxlen:false*/
+			var	path,
+				// If there is a : before a / then it has a scheme
+				hasScheme = /^[^\/]*:/i,
+				location = window.location;
+
+			// Has no scheme or a valid scheme
+			if ((!url || !hasScheme.test(url)) || VALID_SCHEME_REGEX.test(url)) {
+				return url;
+			}
+
+			path = location.pathname.split('/');
+			path.pop();
+
+			return location.protocol + '//' +
+				location.host +
+				path.join('/') + '/' +
+				url;
+		};
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
@@ -7047,7 +5808,12 @@
 					'<head>' +
 	// TODO: move these styles into the CSS file
 						'<style>.ie * {min-height: auto !important} ' +
-							'.ie table td {height:15px}</style>' +
+							'.ie table td {height:15px} ' +
+							// Target Edge (fixes edge issues)
+							'@supports (-ms-ime-align:auto) { ' +
+								'* { min-height: auto !important; } ' +
+							'}' +
+							'</style>' +
 						'<meta http-equiv="Content-Type" ' +
 							'content="text/html;charset={charset}" />' +
 						'<link rel="stylesheet" type="text/css" href="{style}" />' +
@@ -7109,13 +5875,13 @@
 
 			youtubeMenu:
 				'<div><label for="link">{label}</label> ' +
-					'<input type="text" id="link" placeholder="http://" /></div>' +
+					'<input type="text" id="link" placeholder="https://" /></div>' +
 				'<div><input type="button" class="button" value="{insert}" />' +
 					'</div>',
 
 			youtube:
 				'<iframe width="560" height="315" ' +
-				'src="http://www.youtube.com/embed/{id}?wmode=opaque" ' +
+				'src="https://www.youtube.com/embed/{id}?wmode=opaque" ' +
 				'data-youtube-id="{id}" frameborder="0" allowfullscreen></iframe>'
 		};
 
@@ -7148,5 +5914,1317 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
+		'use strict';
+
+		var $      = __webpack_require__(1);
+		var IE_VER = __webpack_require__(6).ie;
+		var _tmpl  = __webpack_require__(8);
+
+		// In IE < 11 a BR at the end of a block level element
+		// causes a line break. In all other browsers it's collapsed.
+		var IE_BR_FIX = IE_VER && IE_VER < 11;
+
+
+		/**
+		 * Map of all the commands for SCEditor
+		 * @type {Object}
+		 * @name commands
+		 * @memberOf jQuery.sceditor
+		 */
+		var defaultCommnds = {
+			// START_COMMAND: Bold
+			bold: {
+				exec: 'bold',
+				tooltip: 'Bold',
+				shortcut: 'Ctrl+B'
+			},
+			// END_COMMAND
+			// START_COMMAND: Italic
+			italic: {
+				exec: 'italic',
+				tooltip: 'Italic',
+				shortcut: 'Ctrl+I'
+			},
+			// END_COMMAND
+			// START_COMMAND: Underline
+			underline: {
+				exec: 'underline',
+				tooltip: 'Underline',
+				shortcut: 'Ctrl+U'
+			},
+			// END_COMMAND
+			// START_COMMAND: Strikethrough
+			strike: {
+				exec: 'strikethrough',
+				tooltip: 'Strikethrough'
+			},
+			// END_COMMAND
+			// START_COMMAND: Subscript
+			subscript: {
+				exec: 'subscript',
+				tooltip: 'Subscript'
+			},
+			// END_COMMAND
+			// START_COMMAND: Superscript
+			superscript: {
+				exec: 'superscript',
+				tooltip: 'Superscript'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Left
+			left: {
+				exec: 'justifyleft',
+				tooltip: 'Align left'
+			},
+			// END_COMMAND
+			// START_COMMAND: Centre
+			center: {
+				exec: 'justifycenter',
+				tooltip: 'Center'
+			},
+			// END_COMMAND
+			// START_COMMAND: Right
+			right: {
+				exec: 'justifyright',
+				tooltip: 'Align right'
+			},
+			// END_COMMAND
+			// START_COMMAND: Justify
+			justify: {
+				exec: 'justifyfull',
+				tooltip: 'Justify'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Font
+			font: {
+				_dropDown: function (editor, caller, callback) {
+					var	fontIdx = 0,
+						fonts   = editor.opts.fonts.split(','),
+						content = $('<div />'),
+						/** @private */
+						clickFunc = function () {
+							callback($(this).data('font'));
+							editor.closeDropDown(true);
+							return false;
+						};
+
+					for (; fontIdx < fonts.length; fontIdx++) {
+						content.append(
+							_tmpl('fontOpt', {
+								font: fonts[fontIdx]
+							}, true).click(clickFunc)
+						);
+					}
+
+					editor.createDropDown(caller, 'font-picker', content);
+				},
+				exec: function (caller) {
+					var editor = this;
+
+					defaultCommnds.font._dropDown(
+						editor,
+						caller,
+						function (fontName) {
+							editor.execCommand('fontname', fontName);
+						}
+					);
+				},
+				tooltip: 'Font Name'
+			},
+			// END_COMMAND
+			// START_COMMAND: Size
+			size: {
+				_dropDown: function (editor, caller, callback) {
+					var	content   = $('<div />'),
+						/** @private */
+						clickFunc = function (e) {
+							callback($(this).data('size'));
+							editor.closeDropDown(true);
+							e.preventDefault();
+						};
+
+					for (var i = 1; i <= 7; i++) {
+						content.append(_tmpl('sizeOpt', {
+							size: i
+						}, true).click(clickFunc));
+					}
+
+					editor.createDropDown(caller, 'fontsize-picker', content);
+				},
+				exec: function (caller) {
+					var editor = this;
+
+					defaultCommnds.size._dropDown(
+						editor,
+						caller,
+						function (fontSize) {
+							editor.execCommand('fontsize', fontSize);
+						}
+					);
+				},
+				tooltip: 'Font Size'
+			},
+			// END_COMMAND
+			// START_COMMAND: Colour
+			color: {
+				_dropDown: function (editor, caller, callback) {
+					var	i, x, color, colors,
+						genColor     = {r: 255, g: 255, b: 255},
+						content      = $('<div />'),
+						colorColumns = editor.opts.colors ?
+							editor.opts.colors.split('|') : new Array(21),
+						// IE is slow at string concatenation so use an array
+						html         = [],
+						cmd          = defaultCommnds.color;
+
+					if (!cmd._htmlCache) {
+						for (i = 0; i < colorColumns.length; ++i) {
+							colors = colorColumns[i] ?
+								colorColumns[i].split(',') : new Array(21);
+
+							html.push('<div class="sceditor-color-column">');
+
+							for (x = 0; x < colors.length; ++x) {
+								// use pre defined colour if can otherwise use the
+								// generated color
+								color = colors[x] || '#' +
+									genColor.r.toString(16) +
+									genColor.g.toString(16) +
+									genColor.b.toString(16);
+
+								html.push(
+									'<a href="#" class="sceditor-color-option"' +
+									' style="background-color: ' + color + '"' +
+									' data-color="' + color + '"></a>'
+								);
+
+								if (x % 5 === 0) {
+									genColor.g -= 51;
+									genColor.b = 255;
+								} else {
+									genColor.b -= 51;
+								}
+							}
+
+							html.push('</div>');
+
+							if (i % 5 === 0) {
+								genColor.r -= 51;
+								genColor.g = 255;
+								genColor.b = 255;
+							} else {
+								genColor.g = 255;
+								genColor.b = 255;
+							}
+						}
+
+						cmd._htmlCache = html.join('');
+					}
+
+					content.append(cmd._htmlCache)
+						.find('a')
+						.click(function (e) {
+							callback($(this).attr('data-color'));
+							editor.closeDropDown(true);
+							e.preventDefault();
+						});
+
+					editor.createDropDown(caller, 'color-picker', content);
+				},
+				exec: function (caller) {
+					var editor = this;
+
+					defaultCommnds.color._dropDown(
+						editor,
+						caller,
+						function (color) {
+							editor.execCommand('forecolor', color);
+						}
+					);
+				},
+				tooltip: 'Font Color'
+			},
+			// END_COMMAND
+			// START_COMMAND: Remove Format
+			removeformat: {
+				exec: 'removeformat',
+				tooltip: 'Remove Formatting'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Cut
+			cut: {
+				exec: 'cut',
+				tooltip: 'Cut',
+				errorMessage: 'Your browser does not allow the cut command. ' +
+					'Please use the keyboard shortcut Ctrl/Cmd-X'
+			},
+			// END_COMMAND
+			// START_COMMAND: Copy
+			copy: {
+				exec: 'copy',
+				tooltip: 'Copy',
+				errorMessage: 'Your browser does not allow the copy command. ' +
+					'Please use the keyboard shortcut Ctrl/Cmd-C'
+			},
+			// END_COMMAND
+			// START_COMMAND: Paste
+			paste: {
+				exec: 'paste',
+				tooltip: 'Paste',
+				errorMessage: 'Your browser does not allow the paste command. ' +
+					'Please use the keyboard shortcut Ctrl/Cmd-V'
+			},
+			// END_COMMAND
+			// START_COMMAND: Paste Text
+			pastetext: {
+				exec: function (caller) {
+					var	val, content,
+						editor  = this;
+
+					content = _tmpl('pastetext', {
+						label: editor._(
+							'Paste your text inside the following box:'
+						),
+						insert: editor._('Insert')
+					}, true);
+
+					content.find('.button').click(function (e) {
+						val = content.find('#txt').val();
+
+						if (val) {
+							editor.wysiwygEditorInsertText(val);
+						}
+
+						editor.closeDropDown(true);
+						e.preventDefault();
+					});
+
+					editor.createDropDown(caller, 'pastetext', content);
+				},
+				tooltip: 'Paste Text'
+			},
+			// END_COMMAND
+			// START_COMMAND: Bullet List
+			bulletlist: {
+				exec: 'insertunorderedlist',
+				tooltip: 'Bullet list'
+			},
+			// END_COMMAND
+			// START_COMMAND: Ordered List
+			orderedlist: {
+				exec: 'insertorderedlist',
+				tooltip: 'Numbered list'
+			},
+			// END_COMMAND
+			// START_COMMAND: Indent
+			indent: {
+				state: function (parents, firstBlock) {
+					// Only works with lists, for now
+					// This is a nested list, so it will always work
+					var	range, startParent, endParent,
+						$firstBlock = $(firstBlock),
+						parentLists = $firstBlock.parents('ul,ol,menu'),
+						parentList  = parentLists.first();
+
+					// in case it's a list with only a single <li>
+					if (parentLists.length > 1 ||
+						parentList.children().length > 1) {
+						return 0;
+					}
+
+					if ($firstBlock.is('ul,ol,menu')) {
+						// if the whole list is selected, then this must be
+						// invalidated because the browser will place a
+						// <blockquote> there
+						range = this.getRangeHelper().selectedRange();
+
+						if (window.Range && range instanceof Range) {
+							startParent = range.startContainer.parentNode;
+							endParent   = range.endContainer.parentNode;
+
+	// TODO: could use nodeType for this?
+	// Maybe just check the firstBlock contains both the start and end containers
+							// Select the tag, not the textNode
+							// (that's why the parentNode)
+							if (startParent !==
+								startParent.parentNode.firstElementChild ||
+								// work around a bug in FF
+								($(endParent).is('li') && endParent !==
+									endParent.parentNode.lastElementChild)) {
+								return 0;
+							}
+						// it's IE... As it is impossible to know well when to
+						// accept, better safe than sorry
+						} else {
+							return $firstBlock.is('li,ul,ol,menu') ? 0 : -1;
+						}
+					}
+
+					return -1;
+				},
+				exec: function () {
+					var editor = this,
+						$elm   = $(editor.getRangeHelper().getFirstBlockParent());
+
+					editor.focus();
+
+					// An indent system is quite complicated as there are loads
+					// of complications and issues around how to indent text
+					// As default, let's just stay with indenting the lists,
+					// at least, for now.
+					if ($elm.parents('ul,ol,menu')) {
+						editor.execCommand('indent');
+					}
+				},
+				tooltip: 'Add indent'
+			},
+			// END_COMMAND
+			// START_COMMAND: Outdent
+			outdent: {
+				state: function (parents, firstBlock) {
+					return $(firstBlock).is('ul,ol,menu') ||
+						$(firstBlock).parents('ul,ol,menu').length > 0 ? 0 : -1;
+				},
+				exec: function () {
+					var	editor = this,
+						$elm   = $(editor.getRangeHelper().getFirstBlockParent());
+
+					if ($elm.parents('ul,ol,menu')) {
+						editor.execCommand('outdent');
+					}
+				},
+				tooltip: 'Remove one indent'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Table
+			table: {
+				forceNewLineAfter: ['table'],
+				exec: function (caller) {
+					var	editor  = this,
+						content = _tmpl('table', {
+							rows: editor._('Rows:'),
+							cols: editor._('Cols:'),
+							insert: editor._('Insert')
+						}, true);
+
+					content.find('.button').click(function (e) {
+						var	row, col,
+							rows = content.find('#rows').val() - 0,
+							cols = content.find('#cols').val() - 0,
+							html = '<table>';
+
+						if (rows < 1 || cols < 1) {
+							return;
+						}
+
+						for (row = 0; row < rows; row++) {
+							html += '<tr>';
+
+							for (col = 0; col < cols; col++) {
+								html += '<td>' +
+										(IE_BR_FIX ? '' : '<br />') +
+									'</td>';
+							}
+
+							html += '</tr>';
+						}
+
+						html += '</table>';
+
+						editor.wysiwygEditorInsertHtml(html);
+						editor.closeDropDown(true);
+						e.preventDefault();
+					});
+
+					editor.createDropDown(caller, 'inserttable', content);
+				},
+				tooltip: 'Insert a table'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Horizontal Rule
+			horizontalrule: {
+				exec: 'inserthorizontalrule',
+				tooltip: 'Insert a horizontal rule'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Code
+			code: {
+				forceNewLineAfter: ['code'],
+				exec: function () {
+					this.wysiwygEditorInsertHtml(
+						'<code>',
+						(IE_BR_FIX ? '' : '<br />') + '</code>'
+					);
+				},
+				tooltip: 'Code'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Image
+			image: {
+				exec: function (caller) {
+					var	editor  = this,
+						content = _tmpl('image', {
+							url: editor._('URL:'),
+							width: editor._('Width (optional):'),
+							height: editor._('Height (optional):'),
+							insert: editor._('Insert')
+						}, true);
+
+					content.find('.button').click(function (e) {
+						var	val    = content.find('#image').val(),
+							width  = content.find('#width').val(),
+							height = content.find('#height').val(),
+							attrs  = '';
+
+						if (width) {
+							attrs += ' width="' + width + '"';
+						}
+
+						if (height) {
+							attrs += ' height="' + height + '"';
+						}
+
+						if (val) {
+							editor.wysiwygEditorInsertHtml(
+								'<img' + attrs + ' src="' + val + '" />'
+							);
+						}
+
+						editor.closeDropDown(true);
+						e.preventDefault();
+					});
+
+					editor.createDropDown(caller, 'insertimage', content);
+				},
+				tooltip: 'Insert an image'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: E-mail
+			email: {
+				exec: function (caller) {
+					var	editor  = this,
+						content = _tmpl('email', {
+							label: editor._('E-mail:'),
+							desc: editor._('Description (optional):'),
+							insert: editor._('Insert')
+						}, true);
+
+					content.find('.button').click(function (e) {
+						var val         = content.find('#email').val(),
+							description = content.find('#des').val();
+
+						if (val) {
+							// needed for IE to reset the last range
+							editor.focus();
+
+							if (!editor.getRangeHelper().selectedHtml() ||
+								description) {
+								description = description || val;
+
+								editor.wysiwygEditorInsertHtml(
+									'<a href="' + 'mailto:' + val + '">' +
+										description +
+									'</a>'
+								);
+							} else {
+								editor.execCommand('createlink', 'mailto:' + val);
+							}
+						}
+
+						editor.closeDropDown(true);
+						e.preventDefault();
+					});
+
+					editor.createDropDown(caller, 'insertemail', content);
+				},
+				tooltip: 'Insert an email'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Link
+			link: {
+				exec: function (caller) {
+					var	editor  = this,
+						content = _tmpl('link', {
+							url: editor._('URL:'),
+							desc: editor._('Description (optional):'),
+							ins: editor._('Insert')
+						}, true);
+
+					content.find('.button').click(function (e) {
+						var	val         = content.find('#link').val(),
+							description = content.find('#des').val();
+
+						if (val) {
+							// needed for IE to restore the last range
+							editor.focus();
+
+							// If there is no selected text then must set the URL as
+							// the text. Most browsers do this automatically, sadly
+							// IE doesn't.
+							if (!editor.getRangeHelper().selectedHtml() ||
+								description) {
+								description = description || val;
+
+								editor.wysiwygEditorInsertHtml(
+									'<a href="' + val + '">' + description + '</a>'
+								);
+							} else {
+								editor.execCommand('createlink', val);
+							}
+						}
+
+						editor.closeDropDown(true);
+						e.preventDefault();
+					});
+
+					editor.createDropDown(caller, 'insertlink', content);
+				},
+				tooltip: 'Insert a link'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Unlink
+			unlink: {
+				state: function () {
+					var $current = $(this.currentNode());
+					return $current.is('a') ||
+						$current.parents('a').length > 0 ? 0 : -1;
+				},
+				exec: function () {
+					var	$current = $(this.currentNode()),
+						$anchor  = $current.is('a') ? $current :
+							$current.parents('a').first();
+
+					if ($anchor.length) {
+						$anchor.replaceWith($anchor.contents());
+					}
+				},
+				tooltip: 'Unlink'
+			},
+			// END_COMMAND
+
+
+			// START_COMMAND: Quote
+			quote: {
+				forceNewLineAfter: ['blockquote'],
+				exec: function (caller, html, author) {
+					var	before = '<blockquote>',
+						end    = '</blockquote>';
+
+					// if there is HTML passed set end to null so any selected
+					// text is replaced
+					if (html) {
+						author = (author ? '<cite>' + author + '</cite>' : '');
+						before = before + author + html + end;
+						end    = null;
+					// if not add a newline to the end of the inserted quote
+					} else if (this.getRangeHelper().selectedHtml() === '') {
+						end = (IE_BR_FIX ? '' : '<br />') + end;
+					}
+
+					this.wysiwygEditorInsertHtml(before, end);
+				},
+				tooltip: 'Insert a Quote'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Emoticons
+			emoticon: {
+				exec: function (caller) {
+					var editor = this;
+
+					var createContent = function (includeMore) {
+						var	$moreLink,
+							emoticonsCompat = editor.opts.emoticonsCompat,
+							rangeHelper     = editor.getRangeHelper(),
+							startSpace      = emoticonsCompat &&
+								rangeHelper.getOuterText(true, 1) !== ' ' ?
+								' ' : '',
+							endSpace        = emoticonsCompat &&
+								rangeHelper.getOuterText(false, 1) !== ' ' ?
+								' ' : '',
+							$content        = $('<div />'),
+							$line           = $('<div />').appendTo($content),
+							perLine         = 0,
+							emoticons       = $.extend(
+								{},
+								editor.opts.emoticons.dropdown,
+								includeMore ? editor.opts.emoticons.more : {}
+							);
+
+						$.each(emoticons, function () {
+							perLine++;
+						});
+						perLine = Math.sqrt(perLine);
+
+						$.each(emoticons, function (code, emoticon) {
+							$line.append(
+								$('<img />').attr({
+									src: emoticon.url || emoticon,
+									alt: code,
+									title: emoticon.tooltip || code
+								}).click(function () {
+									editor.insert(startSpace + $(this).attr('alt') +
+										endSpace, null, false).closeDropDown(true);
+
+									return false;
+								})
+							);
+
+							if ($line.children().length >= perLine) {
+								$line = $('<div />').appendTo($content);
+							}
+						});
+
+						if (!includeMore && editor.opts.emoticons.more) {
+							$moreLink = $(
+								'<a class="sceditor-more">' +
+									editor._('More') + '</a>'
+							).click(function () {
+								editor.createDropDown(
+									caller,
+									'more-emoticons',
+									createContent(true)
+								);
+
+								return false;
+							});
+
+							$content.append($moreLink);
+						}
+
+						return $content;
+					};
+
+					editor.createDropDown(
+						caller,
+						'emoticons',
+						createContent(false)
+					);
+				},
+				txtExec: function (caller) {
+					defaultCommnds.emoticon.exec.call(this, caller);
+				},
+				tooltip: 'Insert an emoticon'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: YouTube
+			youtube: {
+				_dropDown: function (editor, caller, handleIdFunc) {
+					var	matches,
+						content = _tmpl('youtubeMenu', {
+							label: editor._('Video URL:'),
+							insert: editor._('Insert')
+						}, true);
+
+					content.find('.button').click(function (e) {
+						var val = content
+							.find('#link')
+							.val();
+
+						if (val) {
+							matches = val.match(
+								/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/
+							);
+
+							if (matches) {
+								val = matches[1];
+							}
+
+							if (/^[a-zA-Z0-9_\-]{11}$/.test(val)) {
+								handleIdFunc(val);
+							} else {
+								/*global alert:false*/
+								alert('Invalid YouTube video');
+							}
+						}
+
+						editor.closeDropDown(true);
+						e.preventDefault();
+					});
+
+					editor.createDropDown(caller, 'insertlink', content);
+				},
+				exec: function (caller) {
+					var editor = this;
+
+					defaultCommnds.youtube._dropDown(
+						editor,
+						caller,
+						function (id) {
+							editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
+								id: id
+							}));
+						}
+					);
+				},
+				tooltip: 'Insert a YouTube video'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Date
+			date: {
+				_date: function (editor) {
+					var	now   = new Date(),
+						year  = now.getYear(),
+						month = now.getMonth() + 1,
+						day   = now.getDate();
+
+					if (year < 2000) {
+						year = 1900 + year;
+					}
+
+					if (month < 10) {
+						month = '0' + month;
+					}
+
+					if (day < 10) {
+						day = '0' + day;
+					}
+
+					return editor.opts.dateFormat
+						.replace(/year/i, year)
+						.replace(/month/i, month)
+						.replace(/day/i, day);
+				},
+				exec: function () {
+					this.insertText(defaultCommnds.date._date(this));
+				},
+				txtExec: function () {
+					this.insertText(defaultCommnds.date._date(this));
+				},
+				tooltip: 'Insert current date'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Time
+			time: {
+				_time: function () {
+					var	now   = new Date(),
+						hours = now.getHours(),
+						mins  = now.getMinutes(),
+						secs  = now.getSeconds();
+
+					if (hours < 10) {
+						hours = '0' + hours;
+					}
+
+					if (mins < 10) {
+						mins = '0' + mins;
+					}
+
+					if (secs < 10) {
+						secs = '0' + secs;
+					}
+
+					return hours + ':' + mins + ':' + secs;
+				},
+				exec: function () {
+					this.insertText(defaultCommnds.time._time());
+				},
+				txtExec: function () {
+					this.insertText(defaultCommnds.time._time());
+				},
+				tooltip: 'Insert current time'
+			},
+			// END_COMMAND
+
+
+			// START_COMMAND: Ltr
+			ltr: {
+				state: function (parents, firstBlock) {
+					return firstBlock && firstBlock.style.direction === 'ltr';
+				},
+				exec: function () {
+					var	editor = this,
+						elm    = editor.getRangeHelper().getFirstBlockParent(),
+						$elm   = $(elm);
+
+					editor.focus();
+
+					if (!elm || $elm.is('body')) {
+						editor.execCommand('formatBlock', 'p');
+
+						elm  = editor.getRangeHelper().getFirstBlockParent();
+						$elm = $(elm);
+
+						if (!elm || $elm.is('body')) {
+							return;
+						}
+					}
+
+					if ($elm.css('direction') === 'ltr') {
+						$elm.css('direction', '');
+					} else {
+						$elm.css('direction', 'ltr');
+					}
+				},
+				tooltip: 'Left-to-Right'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Rtl
+			rtl: {
+				state: function (parents, firstBlock) {
+					return firstBlock && firstBlock.style.direction === 'rtl';
+				},
+				exec: function () {
+					var	editor = this,
+						elm    = editor.getRangeHelper().getFirstBlockParent(),
+						$elm   = $(elm);
+
+					editor.focus();
+
+					if (!elm || $elm.is('body')) {
+						editor.execCommand('formatBlock', 'p');
+
+						elm  = editor.getRangeHelper().getFirstBlockParent();
+						$elm = $(elm);
+
+						if (!elm || $elm.is('body')) {
+							return;
+						}
+					}
+
+					if ($elm.css('direction') === 'rtl') {
+						$elm.css('direction', '');
+					} else {
+						$elm.css('direction', 'rtl');
+					}
+				},
+				tooltip: 'Right-to-Left'
+			},
+			// END_COMMAND
+
+
+			// START_COMMAND: Print
+			print: {
+				exec: 'print',
+				tooltip: 'Print'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Maximize
+			maximize: {
+				state: function () {
+					return this.maximize();
+				},
+				exec: function () {
+					this.maximize(!this.maximize());
+				},
+				txtExec: function () {
+					this.maximize(!this.maximize());
+				},
+				tooltip: 'Maximize',
+				shortcut: 'Ctrl+Shift+M'
+			},
+			// END_COMMAND
+
+			// START_COMMAND: Source
+			source: {
+				state: function () {
+					return this.sourceMode();
+				},
+				exec: function () {
+					this.toggleSourceMode();
+				},
+				txtExec: function () {
+					this.toggleSourceMode();
+				},
+				tooltip: 'View source',
+				shortcut: 'Ctrl+Shift+S'
+			},
+			// END_COMMAND
+
+			// this is here so that commands above can be removed
+			// without having to remove the , after the last one.
+			// Needed for IE.
+			ignore: {}
+		};
+
+		return defaultCommnds;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
+		'use strict';
+
+		var $ = __webpack_require__(1);
+
+
+		/**
+		 * Default options for SCEditor
+		 * @type {Object}
+		 */
+		return {
+			/** @lends jQuery.sceditor.defaultOptions */
+			/**
+			 * Toolbar buttons order and groups. Should be comma separated and
+			 * have a bar | to separate groups
+			 *
+			 * @type {String}
+			 */
+			toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
+				'left,center,right,justify|font,size,color,removeformat|' +
+				'cut,copy,paste,pastetext|bulletlist,orderedlist,indent,outdent|' +
+				'table|code,quote|horizontalrule,image,email,link,unlink|' +
+				'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
+
+			/**
+			 * Comma separated list of commands to excludes from the toolbar
+			 *
+			 * @type {String}
+			 */
+			toolbarExclude: null,
+
+			/**
+			 * Stylesheet to include in the WYSIWYG editor. This is what will style
+			 * the WYSIWYG elements
+			 *
+			 * @type {String}
+			 */
+			style: 'jquery.sceditor.default.css',
+
+			/**
+			 * Comma separated list of fonts for the font selector
+			 *
+			 * @type {String}
+			 */
+			fonts: 'Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,' +
+				'Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana',
+
+			/**
+			 * Colors should be comma separated and have a bar | to signal a new
+			 * column.
+			 *
+			 * If null the colors will be auto generated.
+			 *
+			 * @type {string}
+			 */
+			colors: null,
+
+			/**
+			 * The locale to use.
+			 * @type {String}
+			 */
+			locale: $('html').attr('lang') || 'en',
+
+			/**
+			 * The Charset to use
+			 * @type {String}
+			 */
+			charset: 'utf-8',
+
+			/**
+			 * Compatibility mode for emoticons.
+			 *
+			 * Helps if you have emoticons such as :/ which would put an emoticon
+			 * inside http://
+			 *
+			 * This mode requires emoticons to be surrounded by whitespace or end of
+			 * line chars. This mode has limited As You Type emoticon conversion
+			 * support. It will not replace AYT for end of line chars, only
+			 * emoticons surrounded by whitespace. They will still be replaced
+			 * correctly when loaded just not AYT.
+			 *
+			 * @type {Boolean}
+			 */
+			emoticonsCompat: false,
+
+			/**
+			 * If to enable emoticons. Can be changes at runtime using the
+			 * emoticons() method.
+			 *
+			 * @type {Boolean}
+			 * @since 1.4.2
+			 */
+			emoticonsEnabled: true,
+
+			/**
+			 * Emoticon root URL
+			 *
+			 * @type {String}
+			 */
+			emoticonsRoot: '',
+			emoticons: {
+				dropdown: {
+					':)': 'emoticons/smile.png',
+					':angel:': 'emoticons/angel.png',
+					':angry:': 'emoticons/angry.png',
+					'8-)': 'emoticons/cool.png',
+					':\'(': 'emoticons/cwy.png',
+					':ermm:': 'emoticons/ermm.png',
+					':D': 'emoticons/grin.png',
+					'<3': 'emoticons/heart.png',
+					':(': 'emoticons/sad.png',
+					':O': 'emoticons/shocked.png',
+					':P': 'emoticons/tongue.png',
+					';)': 'emoticons/wink.png'
+				},
+				more: {
+					':alien:': 'emoticons/alien.png',
+					':blink:': 'emoticons/blink.png',
+					':blush:': 'emoticons/blush.png',
+					':cheerful:': 'emoticons/cheerful.png',
+					':devil:': 'emoticons/devil.png',
+					':dizzy:': 'emoticons/dizzy.png',
+					':getlost:': 'emoticons/getlost.png',
+					':happy:': 'emoticons/happy.png',
+					':kissing:': 'emoticons/kissing.png',
+					':ninja:': 'emoticons/ninja.png',
+					':pinch:': 'emoticons/pinch.png',
+					':pouty:': 'emoticons/pouty.png',
+					':sick:': 'emoticons/sick.png',
+					':sideways:': 'emoticons/sideways.png',
+					':silly:': 'emoticons/silly.png',
+					':sleeping:': 'emoticons/sleeping.png',
+					':unsure:': 'emoticons/unsure.png',
+					':woot:': 'emoticons/w00t.png',
+					':wassat:': 'emoticons/wassat.png'
+				},
+				hidden: {
+					':whistling:': 'emoticons/whistling.png',
+					':love:': 'emoticons/wub.png'
+				}
+			},
+
+			/**
+			 * Width of the editor. Set to null for automatic with
+			 *
+			 * @type {int}
+			 */
+			width: null,
+
+			/**
+			 * Height of the editor including toolbar. Set to null for automatic
+			 * height
+			 *
+			 * @type {int}
+			 */
+			height: null,
+
+			/**
+			 * If to allow the editor to be resized
+			 *
+			 * @type {Boolean}
+			 */
+			resizeEnabled: true,
+
+			/**
+			 * Min resize to width, set to null for half textarea width or -1 for
+			 * unlimited
+			 *
+			 * @type {int}
+			 */
+			resizeMinWidth: null,
+			/**
+			 * Min resize to height, set to null for half textarea height or -1 for
+			 * unlimited
+			 *
+			 * @type {int}
+			 */
+			resizeMinHeight: null,
+			/**
+			 * Max resize to height, set to null for double textarea height or -1
+			 * for unlimited
+			 *
+			 * @type {int}
+			 */
+			resizeMaxHeight: null,
+			/**
+			 * Max resize to width, set to null for double textarea width or -1 for
+			 * unlimited
+			 *
+			 * @type {int}
+			 */
+			resizeMaxWidth: null,
+			/**
+			 * If resizing by height is enabled
+			 *
+			 * @type {Boolean}
+			 */
+			resizeHeight: true,
+			/**
+			 * If resizing by width is enabled
+			 *
+			 * @type {Boolean}
+			 */
+			resizeWidth: true,
+
+			/**
+			 * Date format, will be overridden if locale specifies one.
+			 *
+			 * The words year, month and day will be replaced with the users current
+			 * year, month and day.
+			 *
+			 * @type {String}
+			 */
+			dateFormat: 'year-month-day',
+
+			/**
+			 * Element to inset the toolbar into.
+			 *
+			 * @type {HTMLElement}
+			 */
+			toolbarContainer: null,
+
+			/**
+			 * If to enable paste filtering. This is currently experimental, please
+			 * report any issues.
+			 *
+			 * @type {Boolean}
+			 */
+			enablePasteFiltering: false,
+
+			/**
+			 * If to completely disable pasting into the editor
+			 *
+			 * @type {Boolean}
+			 */
+			disablePasting: false,
+
+			/**
+			 * If the editor is read only.
+			 *
+			 * @type {Boolean}
+			 */
+			readOnly: false,
+
+			/**
+			 * If to set the editor to right-to-left mode.
+			 *
+			 * If set to null the direction will be automatically detected.
+			 *
+			 * @type {Boolean}
+			 */
+			rtl: false,
+
+			/**
+			 * If to auto focus the editor on page load
+			 *
+			 * @type {Boolean}
+			 */
+			autofocus: false,
+
+			/**
+			 * If to auto focus the editor to the end of the content
+			 *
+			 * @type {Boolean}
+			 */
+			autofocusEnd: true,
+
+			/**
+			 * If to auto expand the editor to fix the content
+			 *
+			 * @type {Boolean}
+			 */
+			autoExpand: false,
+
+			/**
+			 * If to auto update original textbox on blur
+			 *
+			 * @type {Boolean}
+			 */
+			autoUpdate: false,
+
+			/**
+			 * If to enable the browsers built in spell checker
+			 *
+			 * @type {Boolean}
+			 */
+			spellcheck: true,
+
+			/**
+			 * If to run the source editor when there is no WYSIWYG support. Only
+			 * really applies to mobile OS's.
+			 *
+			 * @type {Boolean}
+			 */
+			runWithoutWysiwygSupport: false,
+
+			/**
+			 * If to load the editor in source mode and still allow switching
+			 * between WYSIWYG and source mode
+			 *
+			 * @type {Boolean}
+			 */
+			startInSourceMode: false,
+
+			/**
+			 * Optional ID to give the editor.
+			 *
+			 * @type {String}
+			 */
+			id: null,
+
+			/**
+			 * Comma separated list of plugins
+			 *
+			 * @type {String}
+			 */
+			plugins: '',
+
+			/**
+			 * z-index to set the editor container to. Needed for jQuery UI dialog.
+			 *
+			 * @type {Int}
+			 */
+			zIndex: null,
+
+			/**
+			 * If to trim the BBCode. Removes any spaces at the start and end of the
+			 * BBCode string.
+			 *
+			 * @type {Boolean}
+			 */
+			bbcodeTrim: false,
+
+			/**
+			 * If to disable removing block level elements by pressing backspace at
+			 * the start of them
+			 *
+			 * @type {Boolean}
+			 */
+			disableBlockRemove: false,
+
+			/**
+			 * BBCode parser options, only applies if using the editor in BBCode
+			 * mode.
+			 *
+			 * See SCEditor.BBCodeParser.defaults for list of valid options
+			 *
+			 * @type {Object}
+			 */
+			parserOptions: { },
+
+			/**
+			 * CSS that will be added to the to dropdown menu (eg. z-index)
+			 *
+			 * @type {Object}
+			 */
+			dropDownCss: { }
+		};
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
 /***/ }
-/******/ ])
+/******/ ]);

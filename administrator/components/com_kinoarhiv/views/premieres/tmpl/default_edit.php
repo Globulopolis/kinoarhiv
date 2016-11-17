@@ -15,8 +15,8 @@ JHtml::_('behavior.keepalive');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '' || jQuery('#form_premiere_date').val() == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+			if (jQuery('#form_movie_id').select2('val') == '' || jQuery('#form_vendor_id').select2('val') == '' || document.getElementById('#form_premiere_date').value == '') {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
 		}

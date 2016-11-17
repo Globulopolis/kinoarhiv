@@ -21,7 +21,9 @@ class KALanguage extends JLanguage
 	 * Method return list of languages for subtitles for video files.
 	 * List of languages according to http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 	 *
-	 * @return    array
+	 * @return  array
+	 *
+	 * @since  3.0
 	 */
 	public static function listOfLanguages()
 	{
@@ -88,7 +90,10 @@ class KALanguage extends JLanguage
 	 * @param   string   $separator    Separator, which is used for split two-letter language code and two-letter country
 	 *                                 code. Usually separated by hyphens('-'). E.g. en-US, ru-RU
 	 *
-	 * @return mixed String or void
+	 * @return  void
+	 *
+	 * @since  3.0
+	 * @deprecated  3.1
 	 */
 	public static function getScriptLanguage($file, $jhtml, $script_type, $frontend, $separator='-')
 	{

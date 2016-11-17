@@ -131,7 +131,7 @@ class KinoarhivModelName extends JModelForm
 			$query->select($db->quoteName('g.id', 'gid') . ',' . $db->quoteName('g.filename'))
 				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON ' . $db->quoteName('g.name_id') . ' = ' . $db->quoteName('n.id')
 					. ' AND ' . $db->quoteName('g.type') . ' = 3'
-					. ' AND ' . $db->quoteName('g.photo_frontpage') . ' = 1');
+					. ' AND ' . $db->quoteName('g.frontpage') . ' = 1');
 
 			// Join over countries
 			$query->select($db->quoteName('c.name', 'country') . ',' . $db->quoteName('c.code', 'country_code'))

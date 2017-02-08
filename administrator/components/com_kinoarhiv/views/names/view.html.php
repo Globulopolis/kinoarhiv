@@ -59,7 +59,7 @@ class KinoarhivViewNames extends JViewLegacy
 				$this->edit($tpl);
 				break;
 			default:
-				$this->_display($tpl);
+				$this->listItems($tpl);
 				break;
 		}
 	}
@@ -75,15 +75,16 @@ class KinoarhivViewNames extends JViewLegacy
 	 *
 	 * @since   3.0
 	 */
-	protected function _display($tpl)
+	protected function listItems($tpl)
 	{
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state = $this->get('State');
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
@@ -111,11 +112,11 @@ class KinoarhivViewNames extends JViewLegacy
 	{
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-
 		$form = $this->get('Form');
 		$items = new Registry;
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

@@ -56,12 +56,12 @@ class KinoarhivViewMovies extends JViewLegacy
 				$this->edit($tpl);
 				break;
 			default:
-				$this->_display($tpl);
+				$this->listItems($tpl);
 				break;
 		}
 	}
 
-	protected function _display($tpl)
+	protected function listItems($tpl)
 	{
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items = $this->get('Items');
@@ -69,8 +69,9 @@ class KinoarhivViewMovies extends JViewLegacy
 		$this->state = $this->get('State');
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
@@ -89,8 +90,9 @@ class KinoarhivViewMovies extends JViewLegacy
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->form = $this->get('Form');
 		$items = new Registry;
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

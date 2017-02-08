@@ -90,7 +90,6 @@ class KinoarhivControllerCountries extends JControllerLegacy
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
 		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.

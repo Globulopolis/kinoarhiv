@@ -34,12 +34,12 @@ class KinoarhivViewVendors extends JViewLegacy
 				$this->edit($tpl);
 				break;
 			default:
-				$this->_display($tpl);
+				$this->listItems($tpl);
 				break;
 		}
 	}
 
-	protected function _display($tpl)
+	protected function listItems($tpl)
 	{
 		$user = JFactory::getUser();
 
@@ -48,8 +48,9 @@ class KinoarhivViewVendors extends JViewLegacy
 		$this->state = $this->get('State');
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

@@ -50,12 +50,12 @@ class KinoarhivViewCountries extends JViewLegacy
 				$this->edit($tpl);
 				break;
 			default:
-				$this->_display($tpl);
+				$this->listItems($tpl);
 				break;
 		}
 	}
 
-	protected function _display($tpl)
+	protected function listItems($tpl)
 	{
 		$user = JFactory::getUser();
 
@@ -65,8 +65,9 @@ class KinoarhivViewCountries extends JViewLegacy
 		$this->filterForm = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

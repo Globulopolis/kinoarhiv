@@ -25,8 +25,6 @@ class KinoarhivViewReleases extends JViewLegacy
 
 	protected $params;
 
-	private $ka_theme = null;
-
 	/**
 	 * Execute and display a template script.
 	 *
@@ -43,11 +41,11 @@ class KinoarhivViewReleases extends JViewLegacy
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
-
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -56,7 +54,6 @@ class KinoarhivViewReleases extends JViewLegacy
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$this->ka_theme = $params->get('ka_theme');
 		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 		$throttle_enable = $params->get('throttle_image_enable', 0);

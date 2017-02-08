@@ -265,7 +265,7 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="vegas_overlay" type="filelist" default=""
-			   directory="components/com_kinoarhiv/assets/themes/component/default/images/overlays/"
+			   directory="media/com_kinoarhiv/images/overlays/"
 			   label="COM_KA_FIELD_AP_VEGAS_OVERLAY_LABEL" hide_default="true"/>
 		<field name="vegas_overlay_opacity" type="text" default="0.5" label="COM_KA_FIELD_AP_VEGAS_OVERLAY_OP_LABEL"
 			   filter="string" size="3"/>

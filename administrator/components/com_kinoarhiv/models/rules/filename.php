@@ -44,7 +44,7 @@ class JFormRuleFilename extends JFormRule
 			return true;
 		}
 
-		if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $value) == true)
+		if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $value) === true)
 		{
 			return false;
 		}

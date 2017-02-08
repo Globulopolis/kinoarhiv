@@ -1,0 +1,23 @@
+var wysihtml_i18n = {
+    h1: 'Заголовок 1',
+    h2: 'Заголовок 2',
+    h3: 'Заголовок 3',
+    h4: 'Заголовок 4',
+    h5: 'Заголовок 5',
+    h6: 'Заголовок 6',
+    bold: 'Полужирный CTRL+B',
+    italic: 'Курсив CTRL+I',
+    underline: 'Подчеркнутый CTRL+U',
+    insertUnorderedList: 'Маркеры',
+    insertOrderedList: 'Нумерация',
+    q: 'Цитата',
+    blockquote: 'Блок цитаты',
+    fontsize: 'Размер шрифта',
+    change_view: 'Исходный код',
+    undo: 'Отменить ввод',
+    redo: 'Повторить ввод',
+    justifyLeft: 'Выровнять текст по левому краю',
+    justifyCenter: 'Выровнять по центру',
+    justifyRight: 'Выровнять текст по правому краю',
+    justifyFull: 'Выровнять по ширине'
+};

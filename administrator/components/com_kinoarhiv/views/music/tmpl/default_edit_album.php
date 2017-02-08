@@ -11,19 +11,23 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
-KAComponentHelper::loadMediamanagerAssets();
+KAComponentHelperBackend::loadMediamanagerAssets();
+
+$this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0;
 ?>
-<link type="text/css" rel="stylesheet" href="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/css/mediamanager.css"/>
+<link type="text/css" rel="stylesheet" href="<?php echo JUri::root(); ?>media/com_kinoarhiv/css/plupload.css"/>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js"></script>
-<?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
+<?php KAComponentHelper::getScriptLanguage('grid.locale-', 'media/com_kinoarhiv/js/i18n/grid/', false); ?>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
 <script type="text/javascript">
+	Kinoarhiv.setActiveTab();
+
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_title').val() == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+			if (document.getElementById('form_title').value == '') {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
 		}
@@ -37,23 +41,7 @@ KAComponentHelper::loadMediamanagerAssets();
 		var bootstrapButton = $.fn.button.noConflict();
 		$.fn.bootstrapBtn = bootstrapButton;
 
-		var active_tab = 0;
-		if (typeof Cookies.get('com_kinoarhiv.albums.tabs') == 'undefined') {
-			Cookies.set('com_kinoarhiv.albums.tabs', 0);
-		} else {
-			active_tab = Cookies.get('com_kinoarhiv.albums.tabs');
-		}
-
-		$('#albums_tabs').tabs({
-			create: function(event, ui){
-				$(this).tabs('option', 'active', parseInt(active_tab, 10));
-			},
-			activate: function(event, ui){
-				Cookies.set('com_kinoarhiv.albums.tabs', ui.newTab.index());
-			}
-		});
-
-		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+		<?php if ($this->id != 0): ?>
 		$('.cmd-rules').click(function(e){
 			e.preventDefault();
 			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -107,124 +95,141 @@ KAComponentHelper::loadMediamanagerAssets();
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<div class="span12">
-				<div id="albums_tabs">
-					<ul>
-						<li><a href="#page-main"><?php echo JText::_('COM_KA_MOVIES_TAB_MAIN'); ?></a></li>
-						<li><a href="#page-composer"><?php echo JText::_('COM_KA_MUSIC_GROUP_HEADING'); ?></a></li>
-						<li><a href="#page-tracks"><?php echo JText::_('COM_KA_MUSIC_TRACKS_TITLE'); ?></a></li>
-						<li><a href="#page-rates"><?php echo JText::_('COM_KA_MOVIES_TAB_RATE'); ?></a></li>
-						<li><a href="#page-meta"><?php echo JText::_('COM_KA_MOVIES_TAB_META'); ?></a></li>
-						<li><a href="#page-publ"><?php echo JText::_('COM_KA_MOVIES_TAB_PUB'); ?></a></li>
-					</ul>
-					<div id="page-main">
-						<?php echo $this->loadTemplate('edit_album_info'); ?>
+			<?php echo JHtml::_('bootstrap.startTabSet', 'albums', array('active' => 'page0')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page0', JText::_('COM_KA_MOVIES_TAB_MAIN')); ?>
+
+				<div id="page0">
+					<?php echo $this->loadTemplate('edit_album_info'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page1', JText::_('COM_KA_MUSIC_GROUP_HEADING')); ?>
+
+				<div id="page1">
+					<div class="row-fluid">
+						<?php echo $this->loadTemplate('edit_composer'); ?>
 					</div>
-					<div id="page-composer">
-						<div class="row-fluid">
-							<?php echo $this->loadTemplate('edit_composer'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page2', JText::_('COM_KA_MUSIC_TRACKS_TITLE')); ?>
+
+				<div id="page2">
+					<div class="row-fluid">
+						<?php //echo $this->loadTemplate('edit_tracks'); ?>
+					</div>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page3', JText::_('COM_KA_MOVIES_TAB_RATE')); ?>
+
+				<div id="page3">
+					<?php //echo $this->loadTemplate('edit_rates'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page4', JText::_('COM_KA_MOVIES_TAB_META')); ?>
+
+				<div id="page4">
+					<?php echo $this->loadTemplate('edit_meta'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page5', JText::_('COM_KA_MOVIES_TAB_PUB')); ?>
+
+				<div id="page5">
+					<div class="row-fluid">
+						<div class="span6">
+							<fieldset class="form-horizontal">
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('created', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('created', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('modified', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('modified', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('created_by', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('created_by', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('link_titles', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('link_titles', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('show_author', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('show_author', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('show_create_date', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('show_create_date', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('show_modify_date', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('show_modify_date', $this->form_attribs_group); ?></div>
+								</div>
+							</fieldset>
 						</div>
-					</div>
-					<div id="page-tracks">
-						<div class="row-fluid">
-							<?php //echo $this->loadTemplate('edit_tracks'); ?>
-						</div>
-					</div>
-					<div id="page-rates">
-						<?php //echo $this->loadTemplate('edit_rates'); ?>
-					</div>
-					<div id="page-meta">
-						<?php echo $this->loadTemplate('edit_meta'); ?>
-					</div>
-					<div id="page-publ">
-						<div class="row-fluid">
-							<div class="span6">
-								<fieldset class="form-horizontal">
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('created', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('created', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('modified', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('modified', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('created_by', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('created_by', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('link_titles', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('link_titles', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('show_author', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('show_author', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('show_create_date', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('show_create_date', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('show_modify_date', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('show_modify_date', $this->form_attribs_group); ?></div>
-									</div>
-								</fieldset>
-							</div>
-							<div class="span6">
-								<fieldset class="form-horizontal">
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('language', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('language', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('access', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('state', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
-										<div class="controls">
-										<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+						<div class="span6">
+							<fieldset class="form-horizontal">
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('language', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('language', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('access', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('state', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
+									<div class="controls">
+										<?php if ($this->id != 0): ?>
 											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php else: ?>
 											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php endif; ?>
-										</div>
 									</div>
-                                    <div class="control-group">
-                                        <div class="control-label"><?php echo $this->form->getLabel('show_tags', $this->form_attribs_group); ?></div>
-                                        <div class="controls"><?php echo $this->form->getInput('show_tags', $this->form_attribs_group); ?></div>
-                                    </div>
-                                    <div class="control-group">
-                                        <div class="control-label"><?php echo $this->form->getLabel('allow_votes', $this->form_attribs_group); ?></div>
-                                        <div class="controls"><?php echo $this->form->getInput('allow_votes', $this->form_attribs_group); ?></div>
-                                    </div>
-                                    <div class="control-group">
-                                        <div class="control-label"><?php echo $this->form->getLabel('ratings_show_local', $this->form_attribs_group); ?></div>
-                                        <div class="controls"><?php echo $this->form->getInput('ratings_show_local', $this->form_attribs_group); ?></div>
-                                    </div>
-                                    <div class="control-group">
-                                        <div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>
-                                        <div class="controls"><?php echo $this->form->getInput('allow_reviews', $this->form_attribs_group); ?></div>
-                                    </div>
-								</fieldset>
-							</div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('show_tags', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('show_tags', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('allow_votes', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('allow_votes', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('ratings_show_local', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('ratings_show_local', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('allow_reviews', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('allow_reviews', $this->form_attribs_group); ?></div>
+								</div>
+							</fieldset>
 						</div>
 					</div>
 				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 			</div>
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('fs_alias', $this->form_edit_group)."\n"; ?>
+	<?php echo $this->form->getInput('fs_alias', $this->form_edit_group) . "\n"; ?>
 	<input type="hidden" name="controller" value="music" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group): 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo $this->id; ?>" />
+	<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.music.tabs.' . $this->user->get('id') . '.' . $this->id); ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

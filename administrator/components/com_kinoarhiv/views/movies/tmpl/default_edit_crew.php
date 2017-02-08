@@ -30,7 +30,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				searchtext: '<?php echo JText::_('JSEARCH_FILTER'); ?>'
 			},
 			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
-			grid_width: $('#movie_tabs').width()
+			grid_width: $('#moviesContent').width()
 		};
 
 		c_grid_cfg.grid_height = (c_grid_cfg.grid_height < 100) ? 200 : c_grid_cfg.grid_height;
@@ -100,10 +100,10 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 					if (response.success) {
 						crew_grid.trigger('reloadGrid');
 					} else {
-						showMsg('#j-main-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
+						showMsg('#system-message-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
 					}
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});
@@ -279,7 +279,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteCast&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
 					crew_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

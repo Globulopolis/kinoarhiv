@@ -10,7 +10,6 @@
 
 defined('JPATH_PLATFORM') or die;
 
-jimport('helpers.content', JPATH_COMPONENT);
 JFormHelper::loadFieldClass('list');
 
 /**
@@ -84,7 +83,7 @@ class JFormFieldRelease extends JFormFieldList
 		elseif ($this->element['data-content'] == 'vendors')
 		{
 			$query = $db->getQuery(true)
-				->select('r.id, v.company_name, v.company_name_intl')
+				->select('r.id, v.company_name')
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
 				->where("r.vendor_id != 0 AND r.language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
@@ -115,7 +114,7 @@ class JFormFieldRelease extends JFormFieldList
 			{
 				$new_objects[] = array(
 					'value' => $item->id,
-					'text'  => KAContentHelper::formatItemTitle($item->company_name, $item->company_name_intl)
+					'text'  => $item->company_name
 				);
 			}
 

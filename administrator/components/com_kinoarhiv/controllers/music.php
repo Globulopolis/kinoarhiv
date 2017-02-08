@@ -137,7 +137,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$validData = $model->validate($form, $data);
 
 		if ($validData === false) {
-			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
+			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html') {
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]='.$data['id']);
@@ -414,7 +414,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
 
 				return;
@@ -427,13 +427,13 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	/**
 	 * Method to encode item alias for using in filesystem paths and url.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
 	 * @since  3.0
 	 */
 	public function getFilesystemAlias()
 	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php');
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$input = JFactory::getApplication()->input;
 

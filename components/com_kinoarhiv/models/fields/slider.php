@@ -38,9 +38,9 @@ class JFormFieldSlider extends JFormField
 
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'system/html5fallback.js', false, true);
-		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/bootstrap-slider.css');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/bootstrap-slider.min.js');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.min.js');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/bootstrap-slider.css');
+		JHtml::_('script', 'media/com_kinoarhiv/js/bootstrap-slider.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 
 		$attr = '';
 		$attr .= !empty($this->class) ? ' class="hasSlider ' . $this->element['class'] . '"' : '';
@@ -156,6 +156,6 @@ class JFormFieldSlider extends JFormField
 		}
 
 		return '<input name="' . $this->name . '" data-slider-min="' . $min . '" data-slider-max="' . $max . '"'
-			. ' data-slider-value="' . $current_value . '"' . ($id !== '' ? ' id="' . $id . '"' : '') . trim($attr) . ' />';
+			. ' data-slider-value="' . $current_value . '"' . ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';
 	}
 }

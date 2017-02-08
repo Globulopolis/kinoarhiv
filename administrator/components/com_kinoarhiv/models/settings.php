@@ -26,9 +26,13 @@ class KinoarhivModelSettings extends JModelForm
 	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
 	 * @return  mixed  A JForm object on success, false on failure
+	 *
+	 * @since  3.0
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
+		JForm::addFieldPath(JPATH_ROOT . '/components/com_kinoarhiv/models/fields/');
+
 		// Load config.xml from root component folder.
 		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
 		$form = $this->loadForm('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => $loadData), false, '/config');
@@ -45,6 +49,8 @@ class KinoarhivModelSettings extends JModelForm
 	 * Get the component information.
 	 *
 	 * @return  object
+	 *
+	 * @since  3.0
 	 */
 	public function getSettings()
 	{
@@ -59,6 +65,8 @@ class KinoarhivModelSettings extends JModelForm
 	 * @param   array  $data  containing config data.
 	 *
 	 * @return  bool    True on success, false on failure.
+	 *
+	 * @since  3.0
 	 */
 	public function save($data)
 	{
@@ -138,7 +146,8 @@ class KinoarhivModelSettings extends JModelForm
 			$data['slider_max_item'] = 10;
 		}
 
-		$alphabet = JFactory::getApplication()->input->post->get('letters', array(), 'array');
+		$app = JFactory::getApplication();
+		$alphabet = $app->input->post->get('letters', array(), 'array');
 		$filter = JFilterInput::getInstance();
 		$_alphabet = array();
 
@@ -194,7 +203,7 @@ class KinoarhivModelSettings extends JModelForm
 
 		if (!$result)
 		{
-			$this->setError(JText::_('ERROR'));
+			$app->enqueueMessage(JText::_('ERROR'), 'error');
 
 			return false;
 		}
@@ -212,7 +221,7 @@ class KinoarhivModelSettings extends JModelForm
 		}
 		else
 		{
-			$this->setError(JText::_('COM_KA_NO_ACCESS_RULES_SAVE'));
+			$app->enqueueMessage(JText::_('COM_KA_NO_ACCESS_RULES_SAVE'), 'error');
 
 			return false;
 		}
@@ -229,6 +238,8 @@ class KinoarhivModelSettings extends JModelForm
 	 * @param   string  $data  String with configuration
 	 *
 	 * @return boolean
+	 *
+	 * @since  3.0
 	 */
 	public function restoreConfig($data)
 	{

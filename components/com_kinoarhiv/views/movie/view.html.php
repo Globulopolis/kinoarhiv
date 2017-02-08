@@ -837,7 +837,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 
 		// Check if player folder exists.
-		if (!file_exists(JPATH_ROOT . '/components/com_kinoarhiv/assets/players/' . $params->get('player_type')))
+		if (!file_exists(JPATH_ROOT . '/media/com_kinoarhiv/players/' . $params->get('player_type')))
 		{
 			$player_layout = ($params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $params->get('player_type');
 			KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));

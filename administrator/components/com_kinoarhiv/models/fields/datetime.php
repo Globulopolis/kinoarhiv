@@ -11,7 +11,7 @@
 defined('JPATH_PLATFORM') or die;
 
 /**
- * Form Field class for the Joomla Platform.
+ * Form Field class for the Kinoarhiv.
  *
  * Provides a pop up date picker linked to a button.
  * Optionally may be filtered to use user's or server's time zone.
@@ -37,25 +37,6 @@ class JFormFieldDatetime extends JFormField
 	protected $maxLength;
 
 	/**
-	 * Method to instantiate the form field object.
-	 *
-	 * @param   JForm  $form  The form to attach to the form field object.
-	 *
-	 * @since   3.0
-	 */
-	public function __construct($form = null)
-	{
-		JHtml::_('jquery.framework');
-		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/jquery-ui.min.js');
-		KAComponentHelper::getScriptLanguage('datepicker-', true, 'datepicker', false);
-		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/jquery-ui-timepicker.min.js');
-		KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', true, 'timepicker', false);
-		JHtml::_('script', JUri::base() . 'components/com_kinoarhiv/assets/js/utils.js');
-
-		parent::__construct();
-	}
-
-	/**
 	 * Method to get the field input.
 	 *
 	 * @return  string  The field input.
@@ -64,6 +45,13 @@ class JFormFieldDatetime extends JFormField
 	 */
 	protected function getInput()
 	{
+		JHtml::_('jquery.framework');
+		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
+		KAComponentHelper::getScriptLanguage('datepicker-', 'media/com_kinoarhiv/js/i18n/datepicker/', true, false);
+		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui-timepicker-addon.min.js');
+		KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', 'media/com_kinoarhiv/js/i18n/timepicker/', true, false);
+		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
+
 		$attributes = ' ';
 		$class = 'hasDatetime ';
 

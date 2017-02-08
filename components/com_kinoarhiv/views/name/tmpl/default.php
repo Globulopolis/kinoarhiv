@@ -11,8 +11,6 @@
 defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
-
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <div class="content name">
 <?php
@@ -55,7 +53,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]=' . $this->item->date_of_birth_raw . '&Itemid=' . $this->itemid); ?>" rel="nofollow">
 								<?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>,
 							<?php if ($this->item->zodiac !== ''): ?>
-								<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0"/> <?php echo JText::_('COM_KA_NAMES_ZODIAC_' . StringHelper::strtoupper($this->item->zodiac)); ?>,
+								<img src="media/com_kinoarhiv/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0"/> <?php echo JText::_('COM_KA_NAMES_ZODIAC_' . StringHelper::strtoupper($this->item->zodiac)); ?>,
 							<?php endif; ?>
 							<?php echo $this->item->date_of_birth_interval_str; ?>
 						</span>

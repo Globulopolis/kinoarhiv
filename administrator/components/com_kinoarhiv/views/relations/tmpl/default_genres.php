@@ -65,7 +65,7 @@ elseif ($this->element == 'names')
 ?>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js" type="text/javascript"></script>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
+<?php KAComponentHelper::getScriptLanguage('grid.locale-', 'media/com_kinoarhiv/js/i18n/grid/', false); ?>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js" type="text/javascript"></script>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -90,7 +90,7 @@ elseif ($this->element == 'names')
 			loadui: 'block',
 			height: Math.round($(window).height() - ($('.container-main').offset().top * 1.8)),
 			shrinkToFit: true,
-			width: $('#j-main-container').innerWidth(),
+			width: $('#system-message-container').innerWidth(),
 			colNames: <?php echo json_encode($cols['colnames']); ?>,
 			colModel: <?php echo json_encode($cols['colmodel']); ?>,
 			multiselect: true,
@@ -130,10 +130,10 @@ elseif ($this->element == 'names')
 					if (response.success) {
 						$('#list').trigger('reloadGrid');
 					} else {
-						showMsg('#j-main-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
+						showMsg('#system-message-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
 					}
 				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

@@ -28,19 +28,6 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	z-index: 10001 !important;
 }
 
-#movie_tabs .ui-tabs-panel, #albums_tabs .ui-tabs-panel {
-	padding: 1em 0.5em;
-}
-
-#page-cast-crew, #page-awards, #page-premieres, #page-releases, #page-composer {
-	padding: .5em 0 !important;
-}
-
-.control-panel a.btn, #toolbar .btn {
-	margin: 4px 0 4px 4px;
-	min-width: 100px;
-}
-
 .ui-progressbar {
 	position: relative;
 }
@@ -61,24 +48,24 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	outline: none !important;
 }
 
-label.hasTip {
+label.hasTooltip {
 	border-bottom: 1px dashed #ddd;
 }
 
-.table th, .table td {
-	border-left: 1px solid #eee;
-	border-top: none !important;
-	border-bottom: 1px solid #eee;
+.cmd-update-stats {
+	margin-left: 1em;
 }
 
-.table thead {
-	border-top: 1px solid #eee;
-	border-bottom: 1px solid #eee;
+/* Styles for icons in movie list */
+td.icons-list a {
+	margin-top: .2em;
 }
 
-.table th:last-child, .table td:last-child {
-	border-right: 1px solid #eee;
+td.icons-list a:hover,
+td.icons-list a:focus {
+	text-decoration: none;
 }
+/* End */
 
 .flag-dd {
 	margin: 0 4px 2px 0;
@@ -132,8 +119,15 @@ label.hasTip {
 }
 
 .ajax-loading {
-	background: url('../images/icons/spinner.gif') no-repeat left center !important;
-	padding-left: 20px;
+	background: url('../images/loading.gif') no-repeat left center !important;
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-moz-transform: translateX(-50%) translateY(-50%);
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	transform: translateX(-50%) translateY(-50%);
 }
 
 .rel-names-dlg label.hasTip, .rel-awards-dlg label.hasTip {
@@ -209,17 +203,18 @@ table .ui-state-highlight {
 	margin: 0 !important;
 }
 
-.gallery_tabs .ui-tabs-panel {
-	padding: .5em !important;
-}
-
-.gallery-list a.error_image {
+a.error_image {
 	background: url("../images/icons/error.png") no-repeat left center;
 	padding-left: 20px;
 }
 
-.gallery-list a.error_image + a {
+a.error_image + a, #screenshot_file.error_image {
 	color: red !important;
+}
+
+/* Fix for indent */
+.gallery-list [class*="span"]:first-child {
+	margin-left: 15px !important;
 }
 
 .tooltip-img-content {
@@ -244,12 +239,7 @@ span.icon {
 
 #v_sortable li, #sub_sortable li, #cap_sortable li, #chap_sortable li {
 	height: 1.8em;
-	cursor: pointer;
-}
-
-.cmd-refresh-filelist, .cmd-file-remove.all.subtitle {
-	display: inline-block;
-	float: right;
+	cursor: default;
 }
 
 #filelist h3.ui-widget {
@@ -264,10 +254,6 @@ span.icon {
 
 .t-subtitles {
 	margin-right: 0.5em;
-}
-
-.admform-upload-trailers h3 {
-	padding: 3px 4px;
 }
 
 .video_upload_files {
@@ -285,20 +271,12 @@ span.icon {
 	cursor: default;
 }
 
-.dialog .err_msg {
-	display: none;
-}
-
 .urls_form_toolbar {
-	margin: 3px 0;
+	margin: 5px 0;
 }
 
-.urls_form_toolbar a {
-	padding-right: 5px;
-}
-
-.urls_form_toolbar a:focus {
-	outline: none !important;
+.urls_form_toolbar a:hover {
+	text-decoration: none;
 }
 
 img.movie-poster-preview, img.album-cover-preview {

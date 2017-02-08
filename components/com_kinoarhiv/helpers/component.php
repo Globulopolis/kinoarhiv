@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 /**
  * Component helper class
  *
@@ -35,13 +36,16 @@ class KAComponentHelper
 
 		JHtml::_('jquery.framework');
 		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/frontend.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if ($params->get('vegas_enable') == 1)
 		{
-			JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.vegas.min.js');
+			JHtml::_('script', 'media/com_kinoarhiv/js/vegas.min.js');
+			JHtml::_('stylesheet', 'media/com_kinoarhiv/css/vegas.min.css');
 		}
 
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
@@ -50,12 +54,14 @@ class KAComponentHelper
 
 		// Add some variables into the global scope
 		$js_vars = array(
-			'ka_theme' => $params->get('ka_theme'),
+			'params' => array(
+				'ka_theme' => $params->get('ka_theme')
+			),
 			'language' => array(
-				'tag'           => JFactory::getLanguage()->getTag(),
-				'placeholder'   => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
-				'close'         => JText::_('COM_KA_CLOSE'),
-				'error_occured' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+				'tag'                          => JFactory::getLanguage()->getTag(),
+				'JGLOBAL_SELECT_AN_OPTION'     => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
+				'COM_KA_CLOSE'                 => JText::_('COM_KA_CLOSE'),
+				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');
@@ -64,9 +70,9 @@ class KAComponentHelper
 	/**
 	 * Return html structure for message. jQueryUI stylesheets required.
 	 *
-	 * @param   string   $text   Text for display.
+	 * @param   string   $text   Text to display. Translated string.
 	 * @param   array    $extra  Array of optional elements. $extra['icon'] - the icon type; $extra['type'] - the type of
-	 *                           message. Can be 'highlight', 'error', 'disabled'.
+	 *                           message. Can be 'highlight', 'error', 'disabled', 'default'.
 	 * @param   boolean  $close  Show close link.
 	 *
 	 * @return  string
@@ -115,7 +121,7 @@ class KAComponentHelper
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$cache_path = JPath::clean(JPATH_CACHE . '/kinoarhiv/DefinitionCache/Serializer');
 
-		require_once JPath::clean(JPATH_COMPONENT . '/libraries/htmlpurifier/HTMLPurifier.standalone.php');
+		require_once JPath::clean(JPATH_COMPONENT . '/libraries/vendor/htmlpurifier/HTMLPurifier.standalone.php');
 
 		$purifier_config = HTMLPurifier_Config::createDefault();
 
@@ -148,110 +154,6 @@ class KAComponentHelper
 		$clean_html = $purifier->purify($text);
 
 		return $clean_html;
-	}
-
-	/**
-	 * Load CSS and Javascript for HTML5/Flash player
-	 *
-	 * @param   string  $player  Player type.
-	 *
-	 * @return  mixed
-	 *
-	 * @since  3.0
-	 */
-	public static function loadPlayerAssets($player)
-	{
-		$document = JFactory::getDocument();
-		$player_path = 'components/com_kinoarhiv/assets/players/';
-
-		$paths = array(
-			'flowplayer'   => array(
-				'css' => array(
-					$player_path . 'flowplayer/skin/all-skins.css'
-				),
-				'js'  => array()
-			),
-			'mediaelement' => array(
-				'css' => array(
-					$player_path . 'mediaelement/mediaelementplayer.css'
-				),
-				'js'  => array()
-			),
-			'videojs'      => array(
-				'css' => array(
-					$player_path . 'videojs/video-js.css'
-				),
-				'js'  => array(
-					$player_path . 'videojs/ie8/videojs-ie8.min.js',
-					$player_path . 'videojs/video.min.js'
-				)
-			)
-		);
-
-		if ($document->getType() == 'html')
-		{
-			foreach ($paths[$player] as $k => $v)
-			{
-				foreach ($v as $url)
-				{
-					if ($k == 'css')
-					{
-						JHtml::_('stylesheet', $url);
-					}
-					elseif ($k == 'js')
-					{
-						JHtml::_('script', $url);
-					}
-				}
-			}
-
-			if ($player == 'videojs')
-			{
-				self::getScriptLanguage('', 'players/videojs/lang');
-				$document->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . $player_path . "videojs/video-js.swf';");
-			}
-			elseif ($player == 'mediaelement')
-			{
-				JHtml::script($player_path . 'mediaelement/mediaelement-and-player.min.js');
-				self::getScriptLanguage('me-i18n-locale-', 'players/mediaelement/lang', false, true, true);
-				$document->addScriptDeclaration("mejs.i18n.locale.language = '" . substr(JFactory::getLanguage()->getTag(), 0, 2) . "';");
-			}
-			elseif ($player == 'flowplayer')
-			{
-				JHtml::script($player_path . 'flowplayer/flowplayer.min.js');
-			}
-
-			return true;
-		}
-		elseif ($document->getType() == 'raw')
-		{
-			$html = '';
-
-			foreach ($paths[$player] as $k => $v)
-			{
-				foreach ($v as $url)
-				{
-					if ($k == 'css')
-					{
-						$html .= '<link href="' . $url . '" rel="stylesheet" type="text/css" />' . "\n";
-					}
-					elseif ($k == 'js')
-					{
-						$html .= "\t" . '<script src="' . $url . '" type="text/javascript"></script>' . "\n";
-					}
-				}
-			}
-
-			if ($player == 'flowplayer')
-			{
-				$html .= "\t" . '<script src="media/jui/js/jquery.js" type="text/javascript"></script>' . "\n";
-				$html .= "\t" . '<script src="components/com_kinoarhiv/assets/players/flowplayer/flowplayer.min.js" type="text/javascript"></script>' . "\n";
-			}
-
-			echo $html;
-		}
-
-		return true;
 	}
 
 	/**
@@ -396,36 +298,21 @@ class KAComponentHelper
 	 * @param   string   $file       Part of the filename w/o language tag and extention. Filenames must follow by the
 	 *                               next rules - filename[lang code].js. Leave empty if filename contain only language code.
 	 *                               Example: $file[]en-US.js or $file[select2_locale_]da.js
-	 * @param   string   $path       Path to the folder. Default searching in 'components/com_kinoarhiv/assets/' folder.
-	 * @param   boolean  $root       Start search from root Joomla folder.
+	 * @param   string   $path       Path to folder.
 	 * @param   boolean  $jhtml      Use JHtml::script() to load. Set this to false if need to load JS into raw document.
 	 * @param   boolean  $lowercase  Convert language string to lowercase or not.
 	 *
 	 * @return  void
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
-	public static function getScriptLanguage($file, $path, $root=false, $jhtml=true, $lowercase=false)
+	public static function getScriptLanguage($file, $path, $jhtml = true, $lowercase = false)
 	{
 		$lang = JFactory::getLanguage()->getTag();
 		$lang = $lowercase ? Joomla\String\StringHelper::strtolower($lang) : $lang;
 		$filename = $file . $lang . '.js';
-
-		if ($root === true)
-		{
-			$basepath = JPATH_ROOT . '/' . $path . '/';
-			$url = JPath::clean($path . '/', '/');
-		}
-		else
-		{
-			if (empty($path))
-			{
-				$path = 'js/i18n/';
-			}
-
-			$basepath = JPATH_COMPONENT . '/assets/' . $path . '/';
-			$url = JPath::clean('components/com_kinoarhiv/assets/' . $path . '/', '/');
-		}
+		$basepath = JPATH_ROOT . '/' . $path . '/';
+		$url = JPath::clean($path . '/', '/');
 
 		if (is_file(JPath::clean($basepath . $filename)))
 		{
@@ -506,5 +393,28 @@ class KAComponentHelper
 		$token = JSession::getFormToken();
 
 		return (bool) JFactory::getApplication()->input->$method->get($token, '', 'alnum');
+	}
+
+	/**
+	 * Get data from remote server
+	 *
+	 * @param   string   $url        URL
+	 * @param   null     $headers    Headers to send
+	 * @param   integer  $timeout    Request timeout in seconds
+	 * @param   string   $transport  Transport type
+	 *
+	 * @return  JHttpResponse
+	 *
+	 * @since 3.0
+	 * @deprecated 3.1
+	 */
+	public static function getRemoteData($url, $headers = null, $timeout = 30, $transport = 'curl')
+	{
+		$options = new Registry;
+
+		$http = JHttpFactory::getHttp($options, $transport);
+		$response = $http->get($url, $headers, $timeout);
+
+		return $response;
 	}
 }

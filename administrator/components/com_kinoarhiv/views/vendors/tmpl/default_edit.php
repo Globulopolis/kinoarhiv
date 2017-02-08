@@ -10,20 +10,17 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (document.getElementById('form_company_name').value == '') {
-				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
-				return;
-			}
+		if (task == 'vendors.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+			Joomla.submitform(task, document.getElementById('item-form'));
 		}
-		Joomla.submitform(task);
-	}
+	};
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $this->form->getValue('id')); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
 	<div id="j-main-container">
 		<fieldset class="form-horizontal">
 			<?php foreach ($this->form->getFieldset('edit') as $field): ?>
@@ -35,8 +32,6 @@ JHtml::_('behavior.keepalive');
 		</fieldset>
 	</div>
 
-	<input type="hidden" name="controller" value="vendors" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

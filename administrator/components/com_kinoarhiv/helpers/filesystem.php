@@ -23,7 +23,7 @@ class KAFilesystemHelper
 	 * @param   string   $path   Filesystem path to a folder.
 	 * @param   boolean  $cache  Clear stat cache.
 	 *
-	 * @return   integer   False on error
+	 * @return   integer   Folder size, false on error.
 	 */
 	public static function getFolderSize($path, $cache = true)
 	{

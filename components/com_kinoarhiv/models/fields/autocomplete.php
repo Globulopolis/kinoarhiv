@@ -10,13 +10,13 @@
 
 defined('JPATH_PLATFORM') or die;
 
-jimport('helpers.content', JPATH_COMPONENT);
+jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 JFormHelper::loadFieldClass('list');
 
 /**
  * Form field to load a remote data or local
  *
- * @since  3.0
+ * @since  3.1
  */
 class JFormFieldAutocomplete extends JFormFieldList
 {
@@ -24,7 +24,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	protected $type = 'Autocomplete';
 
@@ -34,9 +34,9 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @return  string  The field input.
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	protected function getInput()
+	public function getInput()
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -48,16 +48,16 @@ class JFormFieldAutocomplete extends JFormFieldList
 		}
 
 		JHtml::_('script', 'system/html5fallback.js', false, true);
-		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/css/select.css');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/select2.min.js');
-		KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select');
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/component.min.js');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select.css');
+		JHtml::_('script', 'media/com_kinoarhiv/js/select2.min.js');
+		KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select');
+		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 
-		$allowed_types = array('countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua');
+		$allowed_types = array('countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua', 'mediatypes');
 		$attr = '';
 
 		// Initialize some field attributes.
-		$attr .= !empty($this->class) ? ' class="hasAutocomplete ' . $this->element['class'] . '"' : '';
+		$attr .= !empty($this->class) ? ' class="hasAutocomplete ' . $this->class . '"' : ' class="hasAutocomplete"';
 		$attr .= $this->readonly ? ' readonly' : '';
 
 		// To avoid user's confusion, readonly="true" should imply disabled="true".
@@ -89,6 +89,10 @@ class JFormFieldAutocomplete extends JFormFieldList
 		// Use native input
 		$attr .= $this->element['data-select2-disabled'] ? ' data-select2-disabled="true"' : '';
 
+		// Content language. This option override default content language from query.
+		$data_lang = $this->element['data-lang'];
+		$attr .= $data_lang ? ' data-lang="' . (string) $data_lang . '"' : '';
+
 		$id = $this->id !== false ? $this->id : $this->name;
 		$id = str_replace(array('[', ']'), '', $id);
 		$options = (array) $this->getOptions();
@@ -102,28 +106,62 @@ class JFormFieldAutocomplete extends JFormFieldList
 			$option_html = '';
 			$query = null;
 
+			if (!empty($data_lang))
+			{
+				if ($data_lang == '*')
+				{
+					$query_lang = "";
+				}
+				else
+				{
+					$query_lang = "language IN (" . $db->quote($data_lang) . ",'*')";
+				}
+			}
+			else
+			{
+				// Default active language
+				$query_lang = "language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')";
+			}
+
 			if ($this->element['data-content'] == 'countries')
 			{
 				$query = $db->getQuery(true)
 					->select('id AS value, name AS text, ' . $db->quoteName('code', 'data-country-code'))
 					->from($db->quoteName('#__ka_countries'))
-					->where("state = 1 AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
-					->order('name ASC');
+					->where('state = 1');
+
+				if ($query_lang != '')
+				{
+					$query->where($query_lang);
+				}
+
+				$query->order('name ASC');
 			}
 			elseif ($this->element['data-content'] == 'vendors')
 			{
 				$query = $db->getQuery(true)
-					->select('id AS value, company_name, company_name_intl')
+					->select('id AS value, company_name')
 					->from($db->quoteName('#__ka_vendors'))
-					->where("state = 1 AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')");
+					->where('state = 1');
+
+				if ($query_lang != '')
+				{
+					$query->where($query_lang);
+				}
 			}
 			elseif ($this->element['data-content'] == 'genres-movie')
 			{
 				$query = $db->getQuery(true)
 					->select('id AS value, name AS text')
 					->from($db->quoteName('#__ka_genres'))
-					->where("state = 1 AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*') AND access IN (" . $groups . ")")
-					->order('name ASC');
+					->where('state = 1 AND access IN (' . $groups . ')');
+
+				if ($query_lang != '')
+				{
+					$query->where($query_lang);
+				}
+
+				$query->order('name ASC');
 			}
 			elseif ($this->element['data-content'] == 'tags')
 			{
@@ -137,7 +175,12 @@ class JFormFieldAutocomplete extends JFormFieldList
 						->where("type_alias = 'com_kinoarhiv.movie'");
 
 				$query->where('id IN (' . $subquery . ') AND access IN (' . $groups . ')')
-					->where("published = 1 AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')");
+					->where('published = 1');
+
+				if ($query_lang != '')
+				{
+					$query->where($query_lang);
+				}
 			}
 			elseif ($this->element['data-content'] == 'amplua')
 			{
@@ -145,15 +188,34 @@ class JFormFieldAutocomplete extends JFormFieldList
 				$query = $db->getQuery(true)
 					->select('id AS value, title AS text')
 					->from($db->quoteName('#__ka_names_career'))
-					->where("(is_mainpage = 1 OR is_amplua = 1) AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')");
+					->where('(is_mainpage = 1 OR is_amplua = 1)');
+
+				if ($query_lang != '')
+				{
+					$query->where($query_lang);
+				}
 
 				if (!empty($amplua_disabled))
 				{
+					$amplua_disabled = is_array($amplua_disabled) ? implode(',', $amplua_disabled) : $amplua_disabled;
 					$query->where('id NOT IN (' . $amplua_disabled . ')');
 				}
 
 				$query->group('title')
 					->order('ordering ASC, title ASC');
+			}
+			elseif ($this->element['data-content'] == 'mediatypes')
+			{
+				$query = $db->getQuery(true)
+					->select('id AS value, title AS text')
+					->from($db->quoteName('#__ka_media_types'));
+
+				if ($query_lang != '')
+				{
+					$query->where($query_lang);
+				}
+
+				$query->order('title ASC');
 			}
 
 			try
@@ -178,7 +240,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					{
 						if ($this->element['data-content'] == 'vendors')
 						{
-							$element->text = KAContentHelper::formatItemTitle($element->company_name, $element->company_name_intl);
+							$element->text = $element->company_name;
 						}
 					}
 
@@ -208,7 +270,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					$option_html .= '<option value="' . $element->value . '"' . $option_attr . $selected . '>' . $text . '</option>';
 				}
 
-				$html = '<select' . ($id !== '' ? ' id="' . $id . '"' : '') . ' name="' . $this->name . '"' . trim($attr) . '>' . $option_html . '</select>';
+				$html = '<select' . ($id !== '' ? ' id="' . $id . '"' : '') . ' name="' . $this->name . '" ' . trim($attr) . '>' . $option_html . '</select>';
 			}
 			else
 			{
@@ -228,7 +290,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					{
 						$items[] = array(
 							'value' => $item->value,
-							'text'  => KAContentHelper::formatItemTitle($item->company_name, $item->company_name_intl)
+							'text'  => $item->company_name
 						);
 					}
 					else
@@ -289,5 +351,75 @@ class JFormFieldAutocomplete extends JFormFieldList
 			return '<input type="hidden" name="' . $this->name . '" value="' . $value . '"'
 				. ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';
 		}
+	}
+
+	/**
+	 * Method to get the field options.
+	 *
+	 * @return  array  The field option objects.
+	 *
+	 * @since   3.1
+	 */
+	protected function getOptions()
+	{
+		$fieldname = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname);
+		$options = array();
+
+		if (!is_object($this->element))
+		{
+			return array();
+		}
+
+		foreach ($this->element->xpath('option') as $option)
+		{
+			// Filter requirements
+			if ($requires = explode(',', (string) $option['requires']))
+			{
+				// Requires multilanguage
+				if (in_array('multilanguage', $requires) && !JLanguageMultilang::isEnabled())
+				{
+					continue;
+				}
+
+				// Requires associations
+				if (in_array('associations', $requires) && !JLanguageAssociations::isEnabled())
+				{
+					continue;
+				}
+			}
+
+			$value = (string) $option['value'];
+			$text = trim((string) $option) ? trim((string) $option) : $value;
+
+			$disabled = (string) $option['disabled'];
+			$disabled = ($disabled == 'true' || $disabled == 'disabled' || $disabled == '1');
+			$disabled = $disabled || ($this->readonly && $value != $this->value);
+
+			$checked = (string) $option['checked'];
+			$checked = ($checked == 'true' || $checked == 'checked' || $checked == '1');
+
+			$selected = (string) $option['selected'];
+			$selected = ($selected == 'true' || $selected == 'selected' || $selected == '1');
+
+			$tmp = array(
+				'value'    => $value,
+				'text'     => JText::alt($text, $fieldname),
+				'disable'  => $disabled,
+				'class'    => (string) $option['class'],
+				'selected' => ($checked || $selected),
+				'checked'  => ($checked || $selected),
+			);
+
+			// Set some event handler attributes. But really, should be using unobtrusive js.
+			$tmp['onclick']  = (string) $option['onclick'];
+			$tmp['onchange']  = (string) $option['onchange'];
+
+			// Add the option object to the result set.
+			$options[] = (object) $tmp;
+		}
+
+		reset($options);
+
+		return $options;
 	}
 }

@@ -51,26 +51,26 @@ class KAImageHelper
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$cmd = $app->input->get('elem', '', 'string');
 		$id = $app->input->get('id', 0, 'int');
-		$path = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'rating';
+		$path = JPATH_ROOT . '/media/com_kinoarhiv/images/rating';
 
 		if ($cmd == 'rt_vote')
 		{
-			$file = $path . DIRECTORY_SEPARATOR . 'rottentomatoes_blank.png';
+			$file = $path . '/rottentomatoes_blank.png';
 			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'rottentomatoes' . DIRECTORY_SEPARATOR;
 		}
 		elseif ($cmd == 'mc_vote')
 		{
-			$file = $path . DIRECTORY_SEPARATOR . 'metacritic_blank.png';
+			$file = $path . '/metacritic_blank.png';
 			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'metacritic' . DIRECTORY_SEPARATOR;
 		}
 		elseif ($cmd == 'kp_vote')
 		{
-			$file = $path . DIRECTORY_SEPARATOR . 'kinopoisk_blank.png';
+			$file = $path . '/kinopoisk_blank.png';
 			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'kinopoisk' . DIRECTORY_SEPARATOR;
 		}
 		elseif ($cmd == 'imdb_vote')
 		{
-			$file = $path . DIRECTORY_SEPARATOR . 'imdb_blank.png';
+			$file = $path . '/imdb_blank.png';
 			$dst_dir = $params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'imdb' . DIRECTORY_SEPARATOR;
 		}
 		else
@@ -78,7 +78,9 @@ class KAImageHelper
 			return array('success' => false, 'message' => 'Unknown type!');
 		}
 
-		$font = JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'OpenSans-Regular.ttf';
+		$font = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/fonts/OpenSans-Regular.ttf');
+		$file = JPath::clean($file);
+		$dst_dir = JPath::clean($dst_dir);
 
 		if (file_exists($file))
 		{

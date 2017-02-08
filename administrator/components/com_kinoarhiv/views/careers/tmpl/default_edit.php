@@ -10,24 +10,23 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
+
+$id = $this->form->getValue('id');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
+		if (task == 'careers.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+			Joomla.submitform(task, document.getElementById('item-form'));
+		}
+
 		if (task == 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=careers&element=movies<?php echo ($this->form->getValue('id') != 0) ? '&id='.$this->form->getValue('id') : ''; ?>';
-			return;
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=careers&element=movies<?php echo $id != 0 ? '&id=' . $id : ''; ?>';
 		}
-		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (document.getElementById('form_title').value == '') {
-				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
-				return;
-			}
-		}
-		Joomla.submitform(task);
-	}
+	};
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $id); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
 	<div id="j-main-container">
 		<fieldset class="form-horizontal">
 			<?php foreach ($this->form->getFieldset('edit') as $field): ?>
@@ -39,8 +38,6 @@ JHtml::_('behavior.keepalive');
 		</fieldset>
 	</div>
 
-	<input type="hidden" name="controller" value="careers" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

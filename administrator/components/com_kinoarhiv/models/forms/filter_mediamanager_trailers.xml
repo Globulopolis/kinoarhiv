@@ -22,8 +22,8 @@
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="g.state ASC">JSTATUS_ASC</option>
 			<option value="g.state DESC">JSTATUS_DESC</option>
-			<option value="g.title ASC">JGLOBAL_TITLE_ASC</option>
-			<option value="g.title DESC">JGLOBAL_TITLE_DESC</option>
+			<option value="g.title ASC">COM_KA_TRAILERS_TITLE_ASC</option>
+			<option value="g.title DESC">COM_KA_TRAILERS_TITLE_DESC</option>
 			<option value="g.frontpage ASC">COM_KA_MOVIES_GALLERY_FRONTPAGE_SORT_ASC</option>
 			<option value="g.frontpage DESC">COM_KA_MOVIES_GALLERY_FRONTPAGE_SORT_DESC</option>
 			<option value="g.access ASC">JGRID_HEADING_ACCESS_ASC</option>

@@ -34,7 +34,6 @@ class KinoarhivModelVendors extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'v.id',
 				'company_name', 'v.company_name',
-				'company_name_intl', 'v.company_name_intl',
 				'state', 'v.state',
 				'language', 'v.language',);
 		}
@@ -128,7 +127,7 @@ class KinoarhivModelVendors extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				$db->quoteName(array('v.id', 'v.company_name', 'v.company_name_intl', 'v.company_name_alias', 'v.language', 'v.state'))
+				$db->quoteName(array('v.id', 'v.company_name', 'v.company_name_alias', 'v.language', 'v.state'))
 			)
 		);
 		$query->from($db->quoteName('#__ka_vendors', 'v'));
@@ -166,7 +165,7 @@ class KinoarhivModelVendors extends JModelList
 			else
 			{
 				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
-				$query->where('(v.company_name LIKE ' . $search . ' OR v.company_name_intl LIKE ' . $search . ')');
+				$query->where('v.company_name LIKE ' . $search);
 			}
 		}
 

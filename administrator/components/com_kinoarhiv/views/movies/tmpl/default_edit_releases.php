@@ -30,7 +30,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				searchtext: '<?php echo JText::_('JSEARCH_FILTER'); ?>'
 			},
 			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
-			grid_width: $('#movie_tabs').width()
+			grid_width: $('#moviesContent').width()
 		};
 
 		r_grid_cfg.grid_height = (r_grid_cfg.grid_height < 100) ? 200 : r_grid_cfg.grid_height;
@@ -249,7 +249,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteReleases&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray(), '<?php echo JSession::getFormToken(); ?>': 1}, function(response){
 					releases_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

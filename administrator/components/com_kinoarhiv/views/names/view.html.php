@@ -12,6 +12,11 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 
+/**
+ * View class for a name.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewNames extends JViewLegacy
 {
 	protected $items;
@@ -28,9 +33,21 @@ class KinoarhivViewNames extends JViewLegacy
 
 	protected $form_attribs_group;
 
+	protected $user;
+
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
+		$this->user = JFactory::getUser();
 		$task = $app->input->get('task', '', 'cmd');
 
 		switch ($task)
@@ -47,6 +64,17 @@ class KinoarhivViewNames extends JViewLegacy
 		}
 	}
 
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
 	protected function _display($tpl)
 	{
 		$this->items = $this->get('Items');
@@ -68,6 +96,17 @@ class KinoarhivViewNames extends JViewLegacy
 		parent::display($tpl);
 	}
 
+	/**
+	 * Display the view for a name edit.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
 	protected function edit($tpl)
 	{
 		$app = JFactory::getApplication();
@@ -153,18 +192,25 @@ class KinoarhivViewNames extends JViewLegacy
 		$app->input->set('hidemainmenu', true);
 	}
 
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @param   string  $task  Task
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function addToolbar($task = '')
 	{
-		$user = JFactory::getUser();
-
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('names.apply');
+			JToolbarHelper::save('names.save');
+			JToolbarHelper::save2new('names.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('names.cancel');
 		}
 		elseif ($task == 'edit')
 		{
@@ -177,11 +223,11 @@ class KinoarhivViewNames extends JViewLegacy
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			}
 
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('names.apply');
+			JToolbarHelper::save('names.save');
+			JToolbarHelper::save2new('names.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('names.cancel');
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
 		}
@@ -189,53 +235,42 @@ class KinoarhivViewNames extends JViewLegacy
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE')), 'users');
 
-			if ($user->authorise('core.create', 'com_kinoarhiv'))
+			if ($this->user->authorise('core.create', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('names.add');
 			}
 
-			if ($user->authorise('core.edit', 'com_kinoarhiv'))
+			if ($this->user->authorise('core.edit', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('names.edit');
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($this->user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
+				JToolbarHelper::publishList('names.publish');
+				JToolbarHelper::unpublishList('names.unpublish');
 			}
 
-			if ($user->authorise('core.delete', 'com_kinoarhiv'))
+			if ($this->user->authorise('core.delete', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'names.remove');
 			}
 
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($this->user->authorise('core.create', 'com_kinoarhiv')
+				&& $this->user->authorise('core.edit', 'com_kinoarhiv')
+				&& $this->user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'a.state'      => JText::_('JSTATUS'),
-			'a.name'       => JText::_('COM_KA_FIELD_NAME'),
-			'a.latin_name' => JText::_('COM_KA_FIELD_NAME_LATIN'),
-			'a.access'     => JText::_('JGRID_HEADING_ACCESS'),
-			'language'     => JText::_('JGRID_HEADING_LANGUAGE'),
-			'a.id'         => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

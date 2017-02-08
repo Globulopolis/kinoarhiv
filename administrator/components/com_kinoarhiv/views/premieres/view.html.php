@@ -84,11 +84,11 @@ class KinoarhivViewPremieres extends JViewLegacy
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_PREMIERES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'calendar');
 			}
 
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('premieres.apply');
+			JToolbarHelper::save('premieres.save');
+			JToolbarHelper::save2new('premieres.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('premieres.cancel');
 		}
 		else
 		{
@@ -96,40 +96,30 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 			if ($user->authorise('core.create', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('premieres.add');
 			}
 
 			if ($user->authorise('core.edit', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('premieres.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.delete', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'premieres.remove');
 			}
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv')
+				&& $user->authorise('core.edit', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'p.premiere_date' => JText::_('COM_KA_FIELD_PREMIERE_DATE_LABEL'),
-			'm.title'         => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
-			'c.name'          => JText::_('COM_KA_FIELD_COUNTRY_LABEL'),
-			'p.language'      => JText::_('JGRID_HEADING_LANGUAGE'),
-			'p.id'            => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

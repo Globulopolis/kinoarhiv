@@ -156,9 +156,9 @@
 			<option value="0">COM_KA_SEARCH_ADV_NAMES_GENDER_F</option>
 		</field>
 		<field name="title" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL" filter="integer"
-			   labelclass="data-uk-tooltip"
-			   class="span10 uk-width-1-1" data-content="movies" data-allow-clear="true" data-remote="true"
-			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			   labelclass="data-uk-tooltip" class="span10 uk-width-1-1" data-content="movies" data-allow-clear="true"
+			   data-remote="true" data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1"
+			   data-key="id">
 			<option value=""></option>
 		</field>
 		<field name="birthplace" type="text" default="" label="COM_KA_NAMES_BIRTHPLACE_1" filter="string"

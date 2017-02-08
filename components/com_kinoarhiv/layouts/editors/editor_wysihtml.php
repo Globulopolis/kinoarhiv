@@ -10,13 +10,14 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('jquery.framework');
 JHtml::_('bootstrap.framework');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/wysihtml/wysihtml.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/wysihtml/wysihtml.all-commands.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/wysihtml/wysihtml.toolbar.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/wysihtml/parser_rules/advanced_custom.js');
-JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/wysihtml/themes/default/default.css');
-KAComponentHelper::getScriptLanguage('', 'editors/wysihtml/lang/');
+JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.all-commands.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.toolbar.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/parser_rules/advanced_custom.js');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/wysihtml/themes/default/default.css');
+KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/wysihtml/lang/');
 
 $params = $displayData->params;
 $form   = $displayData->form;
@@ -25,7 +26,7 @@ $form   = $displayData->form;
 	jQuery(document).ready(function($){
 		var editor = new wysihtml.Editor('form_review', {
 			toolbar: document.querySelector('.editor-toolbar'),
-			stylesheets: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/editors/wysihtml/themes/default/default_editor.css',
+			stylesheets: '<?php echo JUri::base(); ?>media/com_kinoarhiv/editors/wysihtml/themes/default/default_editor.css',
 			parserRules: wysihtmlParserRules
 		}).on('load', function(){
 			if (typeof wysihtml_i18n !== 'undefined') {

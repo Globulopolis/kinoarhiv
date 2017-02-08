@@ -141,7 +141,7 @@ class KinoarhivModelPremieres extends JModelList
 		$query->select('p.premiere_date, p.vendor_id')
 			->join('LEFT', $db->quoteName('#__ka_premieres', 'p') . ' ON p.movie_id = m.id AND p.country_id != 0');
 
-		$query->select('v.company_name, v.company_name_intl, v.company_name_alias')
+		$query->select('v.company_name, v.company_name_alias')
 			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = p.vendor_id AND v.state = 1');
 
 		if (!$user->get('guest'))

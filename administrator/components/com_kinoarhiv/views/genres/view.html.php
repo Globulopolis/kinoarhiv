@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * View class for a list of genres.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewGenres extends JViewLegacy
 {
 	protected $items;
@@ -20,6 +25,17 @@ class KinoarhivViewGenres extends JViewLegacy
 
 	protected $form;
 
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -87,6 +103,15 @@ class KinoarhivViewGenres extends JViewLegacy
 		$app->input->set('hidemainmenu', true);
 	}
 
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @param   string  $task  Task(not a task from URL).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function addToolbar($task = '')
 	{
 		$app = JFactory::getApplication();
@@ -104,25 +129,26 @@ class KinoarhivViewGenres extends JViewLegacy
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title) . ': ' . JText::_('COM_KA_NEW')), 'smiley-2');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('genres.apply');
+			JToolbarHelper::save('genres.save');
+			JToolbarHelper::save2new('genres.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('genres.cancel');
 		}
 		elseif ($task == 'edit')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title) . ': ' . $this->form->getValue('name')), 'smiley-2');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('genres.apply');
+			JToolbarHelper::save('genres.save');
+			JToolbarHelper::save2new('genres.save2new');
 
 			if ($this->form->getValue('id') != 0)
 			{
 				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
+
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('genres.cancel');
 		}
 		else
 		{
@@ -130,38 +156,39 @@ class KinoarhivViewGenres extends JViewLegacy
 
 			if ($user->authorise('core.create.genre', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('genres.add');
 			}
 
 			if ($user->authorise('core.edit.genre', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('genres.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.edit.state.genre', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
+				JToolbarHelper::publishList('genres.publish');
+				JToolbarHelper::unpublishList('genres.unpublish');
 			}
 
 			if ($user->authorise('core.delete.genre', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'genres.remove');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.recount.genre', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::custom('updateStat', 'chart', 'chart', JText::_('COM_KA_GENRES_STATS_UPDATE'), true);
+				JToolbarHelper::custom('genres.updateStat', 'chart', 'chart', JText::_('COM_KA_GENRES_STATS_UPDATE'), true);
 			}
 
 			JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create.genre', 'com_kinoarhiv') && $user->authorise('core.edit.genre', 'com_kinoarhiv') && $user->authorise('core.edit.state.genre', 'com_kinoarhiv'))
+			if ($user->authorise('core.create.genre', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.genre', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state.genre', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 

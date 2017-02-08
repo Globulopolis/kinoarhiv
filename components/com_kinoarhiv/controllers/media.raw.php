@@ -174,7 +174,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				$path = JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/video_off.png';
+				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/video_off.png';
 			}
 
 			try

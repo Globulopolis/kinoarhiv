@@ -21,6 +21,8 @@ abstract class KAHtmlBatch
 	 * Display a batch widget for the country selector.
 	 *
 	 * @return  string  The necessary HTML for the widget.
+	 *
+	 * @since  3.0
 	 */
 	public static function country()
 	{
@@ -43,6 +45,8 @@ abstract class KAHtmlBatch
 	 * Display a batch widget for the mediatype selector.
 	 *
 	 * @return  string  The necessary HTML for the widget.
+	 *
+	 * @since  3.0
 	 */
 	public static function mediatype()
 	{
@@ -69,6 +73,8 @@ abstract class KAHtmlBatch
 	 * Display a batch widget for the vendor selector.
 	 *
 	 * @return  string  The necessary HTML for the widget.
+	 *
+	 * @since  3.0
 	 */
 	public static function vendor()
 	{

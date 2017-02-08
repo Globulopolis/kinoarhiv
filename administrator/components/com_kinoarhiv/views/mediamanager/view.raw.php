@@ -10,10 +10,13 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * View class to list some items.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewMediamanager extends JViewLegacy
 {
-	protected $data;
-
 	protected $form;
 
 	protected $params;
@@ -29,23 +32,11 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$input = JFactory::getApplication()->input;
-
-		if ($input->get('type', '', 'word') == 'trailers')
-		{
-			$this->form = $this->get('Form');
-		}
-
-		if ($tpl == 'trailer_subtitles_lang_edit')
-		{
-			$this->data = $this->get('SubtitleEdit');
-		}
-		elseif ($tpl == 'trailer_videodata_edit')
-		{
-			$this->data = $this->get('VideoDataEdit');
-		}
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->form = $this->get('Form');
+		$this->path = KAContentHelper::getPath('movie', 'trailers', null, JFactory::getApplication()->input->getInt('id', 0));
 
 		parent::display($tpl);
 	}

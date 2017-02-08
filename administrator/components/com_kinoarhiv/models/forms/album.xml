@@ -56,7 +56,7 @@
 				<option value="*">JALL</option>
 			</field>
 			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-				   filter="intval" size="1" default="1">
+				   filter="integer" size="1" default="1">
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
@@ -162,7 +162,7 @@
 		</field>
 		<field name="n_birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string"/>
 		<field name="n_birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11"
-			   filter="intval" data-ac-type="countries" multiple="false"/>
+			   filter="integer" data-ac-type="countries" multiple="false"/>
 		<field name="n_desc" type="textarea" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="raw"
 			   cols="6" rows="5"/>
 		<field name="n_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">

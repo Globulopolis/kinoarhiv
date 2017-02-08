@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="edit">
-		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
-			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
-		<field name="movie_id" type="movies" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span5" filter="intval"
-			   required="true" size="11" data-ac-type="movies"/>
-		<field name="country_id" type="countries" label="COM_KA_FIELD_COUNTRY_LABEL"
-			   description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span5" filter="intval" size="11"
-			   data-ac-type="countries" data-allow-clear="true"/>
-		<field name="vendor_id" type="vendors" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true" class="span5"
-			   filter="intval" size="11" data-ac-type="vendors"/>
+	<fieldset name="edit" addfieldpath="/components/com_kinoarhiv/models/fields">
+		<field name="movie_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_LABEL" filter="integer" required="true"
+			   class="span6" data-content="movies" data-allow-clear="true" data-remote="true" data-lang="*"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			<option value=""></option>
+		</field>
+		<field name="country_id" type="autocomplete" label="COM_KA_FIELD_COUNTRY_LABEL" filter="integer" required="true"
+			   class="span6" data-content="countries" data-allow-clear="true" data-remote="true" data-lang="*"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			<option value=""></option>
+		</field>
+		<field name="vendor_id" type="autocomplete" label="COM_KA_FIELD_RELEASE_VENDOR" filter="integer" required="true"
+			   class="span6" data-content="vendors" data-allow-clear="true" data-remote="true" data-lang="*"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			<option value=""></option>
+		</field>
 		<field name="premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" size="22"
 			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="datetime" filter="user_utc" required="true"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
@@ -18,5 +24,7 @@
 		<field name="ordering" type="order" data="premieres" class="inputbox span5" label="JFIELD_ORDERING_LABEL"
 			   description="JFIELD_ORDERING_DESC"/>
 		<field name="info" type="editor" label="COM_KA_FIELD_PREMIERE_DESC" filter="raw" buttons="false"/>
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
 	</fieldset>
 </form>

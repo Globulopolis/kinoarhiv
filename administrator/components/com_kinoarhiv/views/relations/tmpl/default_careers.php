@@ -14,7 +14,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 ?>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js" type="text/javascript"></script>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js" type="text/javascript"></script>
-<?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
+<?php KAComponentHelper::getScriptLanguage('grid.locale-', 'media/com_kinoarhiv/js/i18n/grid/', false); ?>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js" type="text/javascript"></script>
 <script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js" type="text/javascript"></script>
 <script src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/js/cookie.min.js" type="text/javascript"></script>
@@ -35,7 +35,7 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 			loadui: 'block',
 			height: Math.round($(window).height() - ($('.container-main').offset().top * 1.8)),
 			shrinkToFit: true,
-			width: $('#j-main-container').innerWidth(),
+			width: $('#system-message-container').innerWidth(),
 			colNames: [
 				'<?php echo JText::_('COM_KA_CAREER_FIELD_TITLE'); ?>',
 				'<?php echo JText::_('COM_KA_FIELD_CAREER_ID'); ?>',
@@ -112,10 +112,10 @@ $uid_hash = md5(crc32($this->user->get('id')) . md5($this->task)) . crc32($this-
 					if (response.success) {
 						$('#list').trigger('reloadGrid');
 					} else {
-						showMsg('#j-main-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
+						showMsg('#system-message-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
 					}
 				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

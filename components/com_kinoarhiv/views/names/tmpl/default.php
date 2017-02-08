@@ -12,8 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">
 	//<![CDATA[

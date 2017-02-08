@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * View class for a list of awards.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewAwards extends JViewLegacy
 {
 	protected $items;
@@ -20,6 +25,17 @@ class KinoarhivViewAwards extends JViewLegacy
 
 	protected $form;
 
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -86,6 +102,15 @@ class KinoarhivViewAwards extends JViewLegacy
 		$app->input->set('hidemainmenu', true);
 	}
 
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @param   string  $task  Task(not a task from URL).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function addToolbar($task = '')
 	{
 		$user = JFactory::getUser();
@@ -93,18 +118,18 @@ class KinoarhivViewAwards extends JViewLegacy
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'asterisk');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('awards.apply');
+			JToolbarHelper::save('awards.save');
+			JToolbarHelper::save2new('awards.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('awards.cancel');
 		}
 		elseif ($task == 'edit')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_AWARDS_TITLE') . ': ' . $this->form->getValue('title')), 'asterisk');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('awards.apply');
+			JToolbarHelper::save('awards.save');
+			JToolbarHelper::save2new('awards.save2new');
 
 			if ($this->form->getValue('id') != 0)
 			{
@@ -112,7 +137,7 @@ class KinoarhivViewAwards extends JViewLegacy
 			}
 
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('awards.cancel');
 		}
 		else
 		{
@@ -120,24 +145,24 @@ class KinoarhivViewAwards extends JViewLegacy
 
 			if ($user->authorise('core.create.award', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('awards.add');
 			}
 
 			if ($user->authorise('core.edit.award', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('awards.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.edit.state.award', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
+				JToolbarHelper::publishList('awards.publish');
+				JToolbarHelper::unpublishList('awards.unpublish');
 			}
 
 			if ($user->authorise('core.delete.award', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'awards.remove');
 				JToolbarHelper::divider();
 			}
 
@@ -148,7 +173,6 @@ class KinoarhivViewAwards extends JViewLegacy
 				&& $user->authorise('core.edit.award', 'com_kinoarhiv')
 				&& $user->authorise('core.edit.state.award', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 

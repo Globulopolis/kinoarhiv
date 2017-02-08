@@ -39,7 +39,7 @@ class KinoarhivModelReleases extends JModelList
 				'release_date', 'r.release_date',
 				'name', 'c.name',
 				'media_type', 'r.media_type',
-				'vendor', 'v.company_name', 'v.company_name_intl',
+				'vendor', 'v.company_name',
 				'language', 'r.language',
 				'ordering', 'r.ordering');
 		}
@@ -144,7 +144,7 @@ class KinoarhivModelReleases extends JModelList
 			$this->getState(
 				'list.select',
 				'r.id, r.movie_id, r.release_date, r.language, r.ordering, m.title, m.year, v.company_name, ' .
-				'v.company_name_intl, c.name, c.code, media.title AS media_type'
+				'c.name, c.code, media.title AS media_type'
 			)
 		);
 		$query->from($db->quoteName('#__ka_releases', 'r'))
@@ -273,24 +273,18 @@ class KinoarhivModelReleases extends JModelList
 	}
 
 	/**
-	 * Saves the manually set order of records.
+	 * Method save careers ordering in lists.
 	 *
-	 * @return  array
+	 * @param   array    $data      Indexed array of IDs
+	 * @param   integer  $movie_id  Movie ID
+	 *
+	 * @return  boolean
 	 *
 	 * @since   3.0
 	 */
-	public function saveOrder()
+	public function saveOrder($data, $movie_id)
 	{
-		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$data = $app->input->post->get('ord', array(), 'array');
-		$movie_id = $app->input->post->get('movie_id', 0, 'int');
-
-		if (count($data) < 2)
-		{
-			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
-		}
-
 		$query_result = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_releases');
@@ -302,8 +296,8 @@ class KinoarhivModelReleases extends JModelList
 
 			$query->update($db->quoteName('#__ka_releases'))
 				->set($db->quoteName('ordering') . " = '" . (int) $key . "'")
-				->where(array($db->quoteName('ordering') . ' = ' . (int) $value, $db->quoteName('movie_id') . ' = ' . (int) $movie_id));
-
+				->where($db->quoteName('ordering') . ' = ' . (int) $value)
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)
@@ -325,18 +319,7 @@ class KinoarhivModelReleases extends JModelList
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query_result)
-		{
-			$success = true;
-			$message = JText::_('COM_KA_SAVED');
-		}
-		else
-		{
-			$success = false;
-			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
-		}
-
-		return array('success' => $success, 'message' => $message);
+		return (bool) $query_result;
 	}
 
 	/**

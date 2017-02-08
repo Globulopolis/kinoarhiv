@@ -12,17 +12,15 @@ defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
 
-$id = $this->form->getValue('id', $this->form_edit_group);
-
 if (StringHelper::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
 {
 	$poster_url = JUri::root() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1) . '/'
-		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $id . '/photo/';
+		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->id . '/photo/';
 }
 else
 {
 	$poster_url = $this->params->get('media_actor_photo_root_www') . '/' . urlencode($this->form->getValue('fs_alias', $this->form_edit_group))
-		. '/' . $id . '/photo/';
+		. '/' . $this->id . '/photo/';
 }
 ?>
 <script type="text/javascript">
@@ -33,7 +31,7 @@ else
 					$.ajax({
 						url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=names&multiple=0&format=json',
 						type: 'POST',
-						data: { term: $(el).val(), ignore: [<?php echo $id; ?>] },
+						data: { term: $(el).val(), ignore: [<?php echo $this->id; ?>] },
 						cache: true
 					}).done(function(response){
 						if (response.length > 0) {
@@ -44,7 +42,7 @@ else
 			});
 		});
 
-		<?php if ($id != 0): ?>
+		<?php if ($this->id != 0): ?>
 		$('.movie-poster-preview').parent().click(function (e) {
 			e.preventDefault();
 
@@ -62,7 +60,7 @@ else
 
 			$('#image_uploader').pluploadQueue({
 				runtimes: 'html5,flash,silverlight,html4',
-				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=name&type=gallery&tab=3&id=<?php echo ($id != 0) ? $id : 0; ?>&frontpage=1',
+				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&frontpage=1',
 				multipart_params: {
 					'<?php echo JSession::getFormToken(); ?>': 1
 				},
@@ -72,8 +70,8 @@ else
 				multi_selection: false,
 				max_files: 1,
 				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/Moxie.swf',
-				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/Moxie.xap',
+				flash_swf_url: '<?php echo JUri::root(); ?>media/com_kinoarhiv/js/mediamanager/Moxie.swf',
+				silverlight_xap_url: '<?php echo JUri::root(); ?>media/com_kinoarhiv/js/mediamanager/Moxie.xap',
 				preinit: {
 					init: function(up, info){
 						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -96,14 +94,14 @@ else
 							url = '<?php echo $poster_url; ?>';
 
 						blockUI('show');
-						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=name&type=gallery&tab=3&id=<?php echo ($id != 0) ? $id : 0; ?>&format=raw',
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&format=raw',
 							{'_id[]': response_obj.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0}
 						).done(function (response) {
 							var cover_preview = $('img.movie-poster-preview');
 
 							cover_preview.attr('src', url + 'thumb_' + response_obj.filename + '?_=' + new Date().getTime());
 							cover_preview.parent('a').attr('href', url + response_obj.filename + '?_=' + new Date().getTime());
-							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo ($id != 0) ? $id : 0; ?>&_id[]=' + response_obj.id + '&format=raw');
+							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&_id[]=' + response_obj.id + '&format=raw');
 							blockUI();
 							$('#imgModalUpload').modal('hide');
 						}).fail(function (xhr, status, error) {
@@ -157,7 +155,7 @@ else
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $id . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->id . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
 
 			if ($(this).hasClass('info')) {
 				$(dialog).dialog({
@@ -216,8 +214,8 @@ else
 				<div class="controls">
 					<?php echo $this->form->getInput('careers', $this->form_edit_group); ?>
 					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=careers&task=add" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/add.png" border="0"/></a></span>
-					<?php if ($id != 0): ?>
-						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo ($id != 0) ? $id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0"/></a></span>
+					<?php if ($this->id != 0): ?>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo $this->id; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0"/></a></span>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -249,10 +247,10 @@ else
 			</fieldset>
 		</div>
 		<div class="span3">
-			<?php if ($id != 0): ?>
+			<?php if ($this->id != 0): ?>
 				<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="movie-poster-preview" height="110"/></a>
 				<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-				<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $id; ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+				<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 			<?php endif; ?>
 		</div>
 		<fieldset class="form-horizontal">
@@ -274,8 +272,8 @@ else
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
 					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=genres&task=add" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/add.png" border="0"/></a></span>
-					<?php if ($id != 0): ?>
-						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo ($id != 0) ? $id : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0"/></a></span>
+					<?php if ($this->id != 0): ?>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo $this->id; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0"/></a></span>
 					<?php endif; ?>
 				</div>
 			</div>

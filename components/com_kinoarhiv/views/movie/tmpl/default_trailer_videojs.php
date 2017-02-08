@@ -10,7 +10,11 @@
 
 defined('_JEXEC') or die;
 
-KAComponentHelper::loadPlayerAssets($this->params->get('player_type'));
+JHtml::_('stylesheet', 'media/com_kinoarhiv/players/videojs/video-js.min.css');
+JHtml::_('script', 'media/com_kinoarhiv/players/videojs/ie8/videojs-ie8.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/players/videojs/video.min.js');
+KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/lang');
+JFactory::getDocument()->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . "media/com_kinoarhiv/players/videojs/video-js.swf';");
 
 if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) > 0):
 	$item_trailer = $this->item->trailer; ?>
@@ -31,8 +35,7 @@ if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) 
 								$tposter = $item_trailer->screenshot != '' ? 'poster="' . $item_trailer->screenshot . '"' : ''; ?>
 								<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $tposter; ?>
 									   width="<?php echo $item_trailer->player_width; ?>" height="<?php echo $item_trailer->player_height; ?>"
-									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo $this->lang->getTag(); ?>"}'
-								>
+									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo $this->lang->getTag(); ?>"}'>
 									<?php foreach ($item_trailer->files['video'] as $item): ?>
 										<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 									<?php endforeach; ?>
@@ -95,8 +98,7 @@ if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0
 								$mposter = $item_movie->screenshot != '' ? 'poster="' . $item_movie->screenshot . '"' : ''; ?>
 								<video class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" <?php echo $mposter; ?>
 									   width="<?php echo $item_movie->player_width; ?>" height="<?php echo $item_movie->player_height; ?>"
-									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo $this->lang->getTag(); ?>"}'
-								>
+									   data-setup='{"techOrder": ["html5", "flash"], "fluid": true, "language": "<?php echo $this->lang->getTag(); ?>"}'>
 									<?php foreach ($item_movie->files['video'] as $item): ?>
 										<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 									<?php endforeach; ?>

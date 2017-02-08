@@ -62,18 +62,19 @@ class KinoarhivModelCountry extends JModelForm
 	 * Method to get a single record.
 	 *
 	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since   3.0
 	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$_id = $app->input->get('id', array(), 'array');
-		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$id = $app->input->get('id', null, 'array');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'name', 'code', 'language', 'state')))
 			->from($db->quoteName('#__ka_countries'))
-			->where($db->quoteName('id') . ' = ' . (int) $id);
+			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -81,6 +82,15 @@ class KinoarhivModelCountry extends JModelForm
 		return $result;
 	}
 
+	/**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   boolean  $isUnpublish  Action state
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
@@ -149,24 +159,9 @@ class KinoarhivModelCountry extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$id = $app->input->post->get('id', null, 'int');
 		$name = trim($data['name']);
 
-		if (empty($name))
-		{
-			$this->setError(JText::_('COM_KA_REQUIRED'));
-
-			$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('COM_KA_REQUIRED')
-				)
-			);
-
-			return false;
-		}
-
-		if (empty($id))
+		if (empty($data['id']))
 		{
 			// Check if country with this name allready exists
 			$query = $db->getQuery(true);
@@ -180,14 +175,7 @@ class KinoarhivModelCountry extends JModelForm
 
 			if ($count > 0)
 			{
-				$this->setError(JText::_('COM_KA_COUNTRY_EXISTS'));
-
-				$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data',
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_COUNTRY_EXISTS')
-					)
-				);
+				$app->enqueueMessage(JText::_('COM_KA_COUNTRY_EXISTS'), 'error');
 
 				return false;
 			}
@@ -207,39 +195,28 @@ class KinoarhivModelCountry extends JModelForm
 				->set($db->quoteName('code') . " = '" . $db->escape($data['code']) . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
 				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $id);
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
+
+		$db->setQuery($query);
 
 		try
 		{
-			$db->setQuery($query);
 			$db->execute();
 
-			if (empty($id))
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
 			{
-				$id = $db->insertid();
+				$session_data = $app->getUserState('com_kinoarhiv.countries.' . $user->id . '.edit_data');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.edit_data', $session_data);
 			}
-
-			$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data',
-				array(
-					'success' => true,
-					'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-					'data'    => array('id' => $id, 'name' => $name)
-				)
-			);
 
 			return true;
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
-				)
-			);
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
@@ -252,7 +229,7 @@ class KinoarhivModelCountry extends JModelForm
 	 * @param   array   $data   The data to validate.
 	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 * @return  mixed   Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
@@ -260,6 +237,12 @@ class KinoarhivModelCountry extends JModelForm
 	 */
 	public function validate($form, $data, $group = null)
 	{
+		// Include the plugins for the delete events.
+		JPluginHelper::importPlugin($this->events_map['validate']);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
+
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);

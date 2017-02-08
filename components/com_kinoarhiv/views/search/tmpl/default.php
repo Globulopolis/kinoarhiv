@@ -17,16 +17,16 @@ if (JFactory::getDocument()->getType() == 'html')
 else
 {
 	echo '<style type="text/css">
-		@import url("components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/select.css");
-		@import url("components/com_kinoarhiv/assets/themes/component/' . $this->params->get('ka_theme') . '/css/bootstrap-slider.css");
+		@import url("media/com_kinoarhiv/css/select.css");
+		@import url("media/com_kinoarhiv/css/bootstrap-slider.css");
 	</style>
-	<script src="components/com_kinoarhiv/assets/js/bootstrap-slider.min.js" type="text/javascript"></script>
-	<script src="components/com_kinoarhiv/assets/js/select2.min.js" type="text/javascript"></script>
+	<script src="media/com_kinoarhiv/js/bootstrap-slider.min.js" type="text/javascript"></script>
+	<script src="media/com_kinoarhiv/js/select2.min.js" type="text/javascript"></script>
 	<script src="media/system/js/core.js" type="text/javascript"></script>
 	<script src="media/system/js/punycode.js" type="text/javascript"></script>
 	<script src="media/system/js/validate.js" type="text/javascript"></script>
-	<script src="components/com_kinoarhiv/assets/js/component.min.js" type="text/javascript"></script>' . "\n";
-	KAComponentHelper::getScriptLanguage('select2_locale_', 'js/i18n/select', false, false);
+	<script src="media/com_kinoarhiv/js/core.min.js" type="text/javascript"></script>' . "\n";
+	KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select', false);
 }
 ?>
 <div class="uk-article ka-content">

@@ -10,26 +10,16 @@
 
 defined('_JEXEC') or die;
 
-$user		= JFactory::getUser();
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
+JHtml::_('bootstrap.tooltip');
+
+$user      = JFactory::getUser();
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
+$columns   = 8;
 ?>
 <script type="text/javascript">
-	Joomla.orderTable = function() {
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		if (order != '<?php echo $listOrder; ?>') {
-			var dirn = 'asc';
-		} else {
-			var dirn = direction.options[direction.selectedIndex].value;
-		}
-		Joomla.tableOrdering(order, dirn, '');
-	};
-
 	Joomla.submitbutton = function(task) {
-		if (task == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (task == 'names.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 			return;
 		} else if (task == 'menu') {
@@ -40,7 +30,7 @@ $sortFields = $this->getSortFields();
 	};
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#articleList\', \'<?php echo JText::_('COM_KA_NAMES_SEARCH_HELP', true); ?>\');"><span class="icon-help"></span></button></div>');
+		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_NAMES_SEARCH_HELP', true); ?>\');"><span class="icon-help"></span></button></div>');
 
 		$('.rel-menu').css({
 			left: $('#toolbar-tools').offset().left+'px',
@@ -54,7 +44,11 @@ $sortFields = $this->getSortFields();
 
 		<?php if (count($this->items) > 1): ?>
 		$('#articleList tbody').sortable({
+			axis:'y',
+			cancel: 'input,textarea,button,select,option,.inactive',
 			placeholder: 'ui-state-highlight',
+			handle: '.sortable-handler',
+			cursor: 'move',
 			helper: function(e, tr){
 				var $originals = tr.children();
 				var $helper = tr.clone();
@@ -64,15 +58,13 @@ $sortFields = $this->getSortFields();
 				});
 				return $helper;
 			},
-			handle: '.sortable-handler',
-			cursor: 'move',
 			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&controller=names&task=saveOrder&format=json', $('#articleList tbody .order input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
+				$.post('index.php?option=com_kinoarhiv&task=names.saveOrder&format=json', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 					}
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});
@@ -114,16 +106,16 @@ $sortFields = $this->getSortFields();
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="7" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item) :
-					$canEdit    = $user->authorise('core.edit',			'com_kinoarhiv.name.'.$item->id);
-					$canChange  = $user->authorise('core.edit.state',	'com_kinoarhiv.name.'.$item->id);
+					$canEdit   = $user->authorise('core.edit',       'com_kinoarhiv.name.' . $item->id);
+					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.name.' . $item->id);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
-						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv.name.'.$item->id)) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
+						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv.name.' . $item->id)) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
 						<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
 					</td>
 					<td class="center">
@@ -131,7 +123,7 @@ $sortFields = $this->getSortFields();
 					</td>
 					<td class="center hidden-phone">
 						<div class="btn-group">
-							<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $canChange, 'cb'); ?>
+							<?php echo JHtml::_('jgrid.published', $item->state, $i, 'names.', $canChange, 'cb'); ?>
 						</div>
 					</td>
 					<td class="has-context">
@@ -143,13 +135,13 @@ $sortFields = $this->getSortFields();
 							<?php endif; ?>
 							<?php if ($canEdit): ?>
 								<?php if (!empty($item->name)): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->name); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->name); ?></a>
 								<?php endif; ?>
 								<?php if (!empty($item->name) && !empty($item->latin_name)): echo '/'; endif;?>
 								<?php if (!empty($item->latin_name)): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->latin_name); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->latin_name); ?></a>
 								<?php endif; ?>
-								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - '.$item->date_of_death : ''; ?>)
+								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - ' . $item->date_of_death : ''; ?>)
 							<?php else: ?>
 								<span>
 								<?php if (!empty($item->name)): ?>
@@ -159,7 +151,7 @@ $sortFields = $this->getSortFields();
 								<?php if (!empty($item->latin_name)): ?>
 									<?php echo $this->escape($item->latin_name); ?>
 								<?php endif; ?>
-								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - '.$item->date_of_death : ''; ?>)
+								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - ' . $item->date_of_death : ''; ?>)
 								</span> 
 							<?php endif; ?>
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
@@ -191,11 +183,27 @@ $sortFields = $this->getSortFields();
 				<?php endforeach;
 			endif; ?>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="<?php echo $columns; ?>"></td>
+				</tr>
+			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php echo $this->loadTemplate('batch'); ?>
+		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
+			&& $user->authorise('core.edit', 'com_kinoarhiv')
+			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+			<?php echo JHtml::_(
+				'bootstrap.renderModal',
+				'collapseModal',
+				array(
+					'title' => JText::_('COM_KA_BATCH_OPTIONS'),
+					'footer' => $this->loadTemplate('batch_footer')
+				),
+				$this->loadTemplate('batch_body')
+			); ?>
+		<?php endif; ?>
 
-		<input type="hidden" name="controller" value="names" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>

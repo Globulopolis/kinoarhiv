@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
 			} else if (task == 'relations_edit') {
 				items.filter(':checked');
 				if (items.length > 1) {
-					showMsg('#j-main-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
+					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 				} else if (items.length == 1) {
 					var id = items.attr('id').split('_'); // Split 'id' attribute value of the checkbox by '_' separator
 
@@ -51,7 +51,7 @@ defined('_JEXEC') or die;
 				items.filter(':checked');
 
 				if (items.length <= 0) {
-					showMsg('#j-main-container', '<?php echo JText::_('JWARNING_TRASH_MUST_SELECT'); ?>');
+					showMsg('#system-message-container', '<?php echo JText::_('JWARNING_TRASH_MUST_SELECT'); ?>');
 					return;
 				}
 
@@ -60,10 +60,10 @@ defined('_JEXEC') or die;
 				}
 
 				$.post('index.php?option=com_kinoarhiv&controller=relations&task=delete&element=<?php echo $this->element; ?>&param=<?php echo $this->task; ?><?php echo isset($this->award_type) ? '&award_type=' . $this->award_type : ''; ?>&format=json', {'data': items.serializeArray()}, function(response){
-					showMsg('#j-main-container', response.message);
+					showMsg('#system-message-container', response.message);
 					$('#list').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			} else if (task == '<?php echo $this->task; ?>') {
 				document.location.href = 'index.php?option=com_kinoarhiv&view=<?php echo $this->task; ?>';

@@ -10,12 +10,16 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('bootstrap.tooltip');
+
+$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+$columns   = 9;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(pressbutton) {
-		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (pressbutton == 'reviews.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 			return;
 		}
@@ -67,16 +71,16 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="9" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item): ?>
-				<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->id; ?>">
+				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
 					<td class="center hidden-phone">
-						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $this->canEditState, 'cb'); ?>
+						<?php echo JHtml::_('jgrid.published', $item->state, $i, 'reviews.', $this->canEditState, 'cb'); ?>
 					</td>
 					<td class="center hidden-phone">
 						<?php if ($item->type == 2): ?>
@@ -89,7 +93,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<td>
 						<span><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
 						<?php if ($this->canEdit) : ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
 						<?php endif; ?>
 					</td>
 					<td class="small center hidden-phone">
@@ -97,28 +101,44 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					</td>
 					<td class="small">
 						<?php echo $item->movie; ?><br />
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&mid='.$item->movie_id); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&mid=' . $item->movie_id); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->username; ?><br />
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&uid='.$item->uid); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_USER'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
-						<a href="<?php echo JRoute::_('index.php?option=com_users&task=user.edit&id='.$item->uid); ?>" title="<?php echo JText::sprintf('COM_KA_REVIEWS_USERS_EDIT_USER', $item->username); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/user_edit.png" border="0"></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&uid=' . $item->uid); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_USER'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_users&task=user.edit&id=' . $item->uid); ?>" title="<?php echo JText::sprintf('COM_KA_REVIEWS_USERS_EDIT_USER', $item->username); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/user_edit.png" border="0"></a>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->ip; ?>
 					</td>
 					<td class="center">
-						<?php echo (int)$item->id; ?>
+						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>
 				<?php endforeach;
 			endif; ?>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="<?php echo $columns; ?>"></td>
+				</tr>
+			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php echo $this->loadTemplate('batch'); ?>
+		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
+			&& $user->authorise('core.edit', 'com_kinoarhiv')
+			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+			<?php echo JHtml::_(
+				'bootstrap.renderModal',
+				'collapseModal',
+				array(
+					'title' => JText::_('COM_KA_BATCH_OPTIONS'),
+					'footer' => $this->loadTemplate('batch_footer')
+				),
+				$this->loadTemplate('batch_body')
+			); ?>
+		<?php endif; ?>
 
-		<input type="hidden" name="controller" value="reviews" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>

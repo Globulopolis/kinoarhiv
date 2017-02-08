@@ -1,49 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
-	<fieldset name="tr_edit">
-		<field name="title" type="text" default="" label="JGLOBAL_TITLE" class="span12" filter="string" size="35"/>
-		<field name="frontpage" type="list" label="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE"
-			   description="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE_DESC" class="span12" filter="intval" size="1"
-			   default="0">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="is_movie" type="list" label="COM_KA_TRAILERS_ISMOVIE" description="COM_KA_TRAILERS_ISMOVIE_DESC"
-			   class="span12" filter="intval" size="1" default="0">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="resolution" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION"
-			   description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6" filter="string"
-			   size="35"/>
-		<field name="dar" type="text" default="" label="COM_KA_TRAILERS_HEADING_DAR_TITLE"
-			   description="COM_KA_TRAILERS_HEADING_DAR_TITLE_DESC" class="span6" filter="string" size="35"/>
-		<field name="duration" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="span6"
-			   datatype="time" timeformat="HH:mm:ss"/>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
-			   class="span12" size="1"/>
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
-			<option value="*">JALL</option>
-		</field>
-		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="span12"
-			   filter="intval" size="1" default="1">
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-		</field>
-		<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_EMBED" class="span12" rows="5"
-			   cols="30" filter="raw"/>
-	</fieldset>
+<form addrulepath="administrator/components/com_kinoarhiv/models/rules">
+	<fields name="trailer">
+		<fieldset name="trailer_edit">
+			<field name="title" type="text" default="" label="COM_KA_TRAILERS_TITLE" class="span12" filter="string"
+				   required="true" size="35"/>
+			<field name="frontpage" type="radio" label="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE"
+				   description="COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE_DESC" class="btn-group" filter="integer"
+				   size="1" default="0">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="is_movie" type="radio" label="COM_KA_TRAILERS_ISMOVIE"
+				   description="COM_KA_TRAILERS_ISMOVIE_DESC" class="btn-group" filter="integer" size="1" default="0">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="resolution" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION"
+				   description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6" filter="string"
+				   size="35"/>
+			<field name="dar" type="text" default="" label="COM_KA_TRAILERS_HEADING_DAR_TITLE"
+				   description="COM_KA_TRAILERS_HEADING_DAR_TITLE_DESC" class="span6" filter="string" size="35"/>
+			<field name="duration" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="input-medium"
+				   datatype="time" timeformat="HH:mm:ss.l"/>
+			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
+				   size="1"/>
+			<field name="language" type="language" client="site" default="*"
+				   label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+				<option value="*">JALL</option>
+			</field>
+			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" filter="integer"
+				   size="1" default="1">
+				<option value="1">JPUBLISHED</option>
+				<option value="0">JUNPUBLISHED</option>
+			</field>
+			<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_EMBED" class="span12"
+				   rows="5" filter="raw" spellcheck="false"/>
+			<field name="urls" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS" class="span12" rows="5"
+				   spellcheck="false"/>
+			<field name="item_id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+				   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
 
-	<field name="urls" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS" class="span12" rows="5" cols="30"
-		   spellcheck="false"/>
-	<field name="screenshot" type="hidden" class="readonly" size="10" default="" readonly="true"/>
-	<field name="filename" type="hidden" class="readonly" size="10" default="" readonly="true"/>
-	<field name="_subtitles" type="hidden" class="readonly" size="10" default="" readonly="true"/>
-	<field name="_chapters" type="hidden" class="readonly" size="10" default="" readonly="true"/>
-	<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC"
-		   size="10" default="0" readonly="true"/>
-	<field name="movie_id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
-		   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
-	<field name="alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
-	<field name="fs_alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+			<!-- Fields below holding data for selected columns and is not used on save event. -->
+			<field name="screenshot" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+			<field name="video" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+			<field name="subtitles" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+			<field name="chapters" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+			<field name="alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+			<field name="fs_alias" type="hidden" class="readonly" size="10" default="" readonly="true"/>
+		</fieldset>
+	</fields>
+
+	<fields name="trailer_finfo_video">
+		<fieldset name="fileinfo_video">
+			<field name="src" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME"
+				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
+			<field name="type" type="list" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE" filter="string"
+				   description="COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE_DESC"
+				   default="" class="span6">
+				<option value="">JNONE</option>
+				<option value="video/mp4">video/mp4 (.mp4)</option>
+				<option value="video/webm">video/webm (.webm)</option>
+				<option value="video/ogv">video/ogv (.ogv)</option>
+				<option value="video/x-flv">video/x-flv (.flv)</option>
+				<option value="video/x-m4v">video/x-m4v (.m4v)</option>
+				<option value="application/x-mpegURL">application/x-mpegURL (.m3u8)</option>
+				<option value="vnd.apple.mpegURL">vnd.apple.mpegURL (.m3u8)</option>
+				<option value="video/MP2T">video/MP2T (.ts)</option>
+				<option value="application/dash+xml">application/dash+xml (.mpd)</option>
+			</field>
+			<field name="resolution" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION"
+				   description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6"
+				   filter="string"/>
+		</fieldset>
+	</fields>
+
+	<fields name="trailer_finfo_subtitles">
+		<fieldset name="fileinfo_subtitles">
+			<field name="file" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME"
+				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
+			<field name="lang_code" type="subtitlelanguage" label="COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_SELECT"
+				   filter="string" default="" class="span6">
+				<option value="">JNONE</option>
+			</field>
+			<field name="lang" type="text" default="" label="COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_DESC"
+				   class="span6" filter="string"/>
+			<field name="default" type="list" label="JDEFAULT" class="span6" filter="integer" size="1" default="0">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+		</fieldset>
+	</fields>
+
+	<fields name="trailer_finfo_chapters">
+		<fieldset name="fileinfo_chapters">
+			<field name="file" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME"
+				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
+		</fieldset>
+	</fields>
 </form>

@@ -59,12 +59,12 @@ else
 						$('#form_movie_imdb_votes').val(response.votes);
 						requestUpdateStatImg(cmd, response);
 					} else {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 						$(document).scrollTop(0);
 					}
 					blockUI('hide');
 				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 					$(document).scrollTop(0);
 					blockUI('hide');
 				});
@@ -82,12 +82,12 @@ else
 						$('#form_movie_kp_votes').val(response.votes);
 						requestUpdateStatImg(cmd, response);
 					} else {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 						$(document).scrollTop(0);
 					}
 					blockUI('hide');
 				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 					$(document).scrollTop(0);
 					blockUI('hide');
 				});
@@ -104,12 +104,12 @@ else
 						$('#form_movie_rate_fc').val(response.votesum);
 						requestUpdateStatImg(cmd, response);
 					} else {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 						$(document).scrollTop(0);
 					}
 					blockUI('hide');
 				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 					$(document).scrollTop(0);
 					blockUI('hide');
 				});
@@ -126,12 +126,12 @@ else
 						$('#form_movie_metacritics').val(response.votesum);
 						requestUpdateStatImg(cmd, response);
 					} else {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 						$(document).scrollTop(0);
 					}
 					blockUI('hide');
 				}).fail(function (xhr, status, error) {
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 					$(document).scrollTop(0);
 					blockUI('hide');
 				});
@@ -206,8 +206,8 @@ else
 				multi_selection: false,
 				max_files: 1,
 				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-				flash_swf_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/Moxie.swf',
-				silverlight_xap_url: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/mediamanager/Moxie.xap',
+				flash_swf_url: '<?php echo JUri::root(); ?>media/com_kinoarhiv/js/mediamanager/Moxie.swf',
+				silverlight_xap_url: '<?php echo JUri::root(); ?>media/com_kinoarhiv/js/mediamanager/Moxie.xap',
 				preinit: {
 					init: function (up, info) {
 						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
@@ -423,4 +423,12 @@ else
 	</div>
 </div>
 
-<?php echo JLayoutHelper::render('layouts.edit.upload_image', array(), JPATH_COMPONENT); ?>
+<?php // TODO Обработка не готова
+echo JLayoutHelper::render(
+	'layouts.edit.upload_image',
+	array(
+		'remote_upload' => false,
+		'remote_url' => 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload_remote&format=raw&section=movie&type=gallery&tab=2&id=' . $movie_id . '&frontpage=1'
+	),
+	JPATH_COMPONENT
+); ?>

@@ -11,7 +11,7 @@
 defined('JPATH_BASE') or die;
 
 /**
- * Form Field class for the Joomla Platform.
+ * Form Field class for the Kinoarhiv.
  *
  * @since  3.0
  */

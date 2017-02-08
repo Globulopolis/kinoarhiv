@@ -10,50 +10,39 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.modal', 'collapseModal');
 ?>
 <script type="text/javascript">
+	Kinoarhiv.setActiveTab();
+
 	Joomla.submitbutton = function(task) {
 		jQuery(document).ready(function($){
-			var form = $('#application-form');
-			if (task != 'cancel' && task != 'save' && task != 'saveConfig' && task != 'restoreConfigLayout' && task != 'restoreConfig') {
-				$.post(form.attr('action'), form.serialize()+'&task='+task+'&format=json', function(response){
-					showMsg('.container-main', response.message);
+			var form = $('#adminForm');
+			if (task != 'settings.cancel' && task != 'settings.save' && task != 'settings.saveConfig'
+				&& task != 'restoreConfigLayout' && task != 'settings.restoreConfig')
+			{
+				$.post(form.attr('action'), form.serialize() + '&task=' + task + '&format=json', function(response){
+					showMsg('#system-message-container', response.message);
 					$(document).scrollTop(0);
 				}).fail(function(xhr, status, error){
-					showMsg('.container-main', error);
+					showMsg('#system-message-container', error);
 				});
 			} else {
-				if (task == 'saveConfig') {
-					window.location = '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=settings&task=saveConfig&format=raw';
+				if (task == 'settings.saveConfig') {
+					window.location = '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=settings.saveConfig&format=json';
 				} else if (task == 'restoreConfigLayout') {
 					$('#collapseModal').modal();
-				} else if (task == 'restoreConfig') {
+				} else if (task == 'settings.restoreConfig') {
 					Joomla.submitform(task, document.getElementById('adminRestoreConfig'));
 				} else {
-					Joomla.submitform(task, document.getElementById('application-form'));
+					Joomla.submitform(task, document.getElementById('adminForm'));
 				}
 			}
 		});
 	};
 
 	jQuery(document).ready(function($){
-		var active_tab = 0;
-		if (typeof Cookies.get('com_kinoarhiv.settings.tabs') == 'undefined') {
-			Cookies.set('com_kinoarhiv.settings.tabs', 0);
-		} else {
-			active_tab = Cookies.get('com_kinoarhiv.settings.tabs');
-		}
-
-		$('#settings_tabs').tabs({
-			create: function(event, ui){
-				$(this).tabs('option', 'active', parseInt(active_tab, 10));
-			},
-			activate: function(event, ui){
-				Cookies.set('com_kinoarhiv.settings.tabs', ui.newTab.index());
-			}
-		});
-
 		$('#jform_premieres_list_limit, #jform_releases_list_limit').spinner({
 			spin: function(event, ui){
 				if (ui.value > 5) {
@@ -154,130 +143,288 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 		});
 		// End
 
-		$.post('index.php?option=com_kinoarhiv&controller=settings&task=validatePaths&format=json',
+		$.post('index.php?option=com_kinoarhiv&task=settings.validatePaths&format=json',
 			$('form .validate-path').serialize(), function(response){
 				$.each(response, function(key, message){
 					$('#jform_' + key).css({
 						'color': 'red',
 						'border': '1px solid red'
 					})
-					.attr('title', message)
-					.tooltip();
+					.attr('title', message);
 				});
+
+				$('input[title]').tooltip();
+		}).fail(function (xhr, status, error) {
+			showMsg('#system-message-container', error);
 		});
 	});
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="application-form" method="post" name="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv');?>" id="adminForm" method="post" name="adminForm" autocomplete="off">
 	<div class="row-fluid">
-		<!-- Begin Content -->
 		<div class="span12">
-			<div id="settings_tabs">
-				<ul>
-					<li><a href="#page-global"><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></a></li>
-					<li><a href="#page-updl"><?php echo JText::_('COM_KA_UPLOAD_DOWNLOAD_TAB'); ?></a></li>
-					<li><a href="#page-music"><?php echo JText::_('COM_KA_MUSIC_TAB'); ?></a></li>
-					<li><a href="#page-appearance"><?php echo JText::_('COM_KA_APPEARANCE_TAB'); ?></a></li>
-					<li><a href="#page-reviews"><?php echo JText::_('COM_KA_REVIEWS_TAB'); ?></a></li>
-					<li><a href="#page-search"><?php echo JText::_('COM_KA_SEARCH_TAB'); ?></a></li>
-					<?php if ($this->userIsSuperAdmin): ?>
-					<li><a href="#page-access"><?php echo JText::_('COM_KA_PERMISSIONS_LABEL'); ?></a></li>
-					<?php endif; ?>
-				</ul>
-				<div id="page-global">
-					<div class="row-fluid">
-						<div class="span6">
-							<?php echo $this->loadTemplate('global'); ?>
-						</div>
-						<div class="span6">
-							<?php echo $this->loadTemplate('metadata'); ?>
-						</div>
-					</div>
-					<div class="row-fluid">
-						<div class="span12">
-							<?php echo $this->loadTemplate('paths'); ?>
-						</div>
-					</div>
-				</div>
+		<?php echo JHtml::_('bootstrap.startTabSet', 'settings', array('active' => 'page0')); ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page0', JText::_('COM_KA_SETTINGS_TAB')); ?>
 
-				<div id="page-updl">
-					<div class="row-fluid">
-						<?php echo $this->loadTemplate('updl'); ?>
+			<div id="page0">
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_GLOBAL_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('global') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_META_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('metadata') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
 					</div>
 				</div>
-
-				<div id="page-music">
-					<div class="row-fluid">
-						<div class="span6">
-							<?php echo $this->loadTemplate('music_global'); ?>
-						</div>
-						<div class="span6">
-							<?php echo $this->loadTemplate('music_covers'); ?>
-						</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<fieldset class="form-horizontal paths">
+							<legend><?php echo JText::_('COM_KA_PATHS_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('paths') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls settings-paths"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
 					</div>
 				</div>
-
-				<div id="page-appearance">
-					<div class="row-fluid">
-						<div class="span6">
-							<?php echo $this->loadTemplate('ap_global'); ?>
-							<?php echo $this->loadTemplate('ap_nav'); ?>
-						</div>
-						<div class="span6">
-							<?php echo $this->loadTemplate('ap_item'); ?>
-						</div>
-					</div>
-					<div class="row-fluid">
-						<div class="span12">
-							<?php echo $this->loadTemplate('ap_rate'); ?>
-						</div>
-					</div>
-					<div class="row-fluid">
-						<div class="span12">
-							<?php echo $this->loadTemplate('ap_alphabet'); ?>
-						</div>
-					</div>
-				</div>
-
-				<div id="page-reviews">
-					<div class="row-fluid">
-						<div class="span6">
-							<?php echo $this->loadTemplate('reviews'); ?>
-						</div>
-						<div class="span6">
-							<?php echo $this->loadTemplate('reviews_save'); ?>
-						</div>
-					</div>
-				</div>
-
-				<div id="page-search">
-					<div class="row-fluid">
-						<div class="span6">
-							<?php echo $this->loadTemplate('search_movies'); ?>
-						</div>
-						<div class="span6">
-							<?php echo $this->loadTemplate('search_names'); ?>
-						</div>
-					</div>
-				</div>
-
-				<?php if ($this->userIsSuperAdmin): ?>
-				<div id="page-access">
-					<div class="row-fluid">
-						<div class="span12">
-							<?php echo $this->loadTemplate('access'); ?>
-						</div>
-					</div>
-				</div>
-				<?php endif; ?>
 			</div>
 
-			<input type="hidden" name="controller" value="settings" />
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page1', JText::_('COM_KA_UPLOAD_DOWNLOAD_TAB')); ?>
+
+			<div id="page1">
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_GALLERY_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('gallery') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_UPLOAD_DOWNLOAD_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('content_dl') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page2', JText::_('COM_KA_MUSIC_TAB')); ?>
+
+			<div id="page2">
+				<div class="row-fluid">
+					<div class="span6">
+						<?php echo $this->loadTemplate('music_global'); ?>
+					</div>
+					<div class="span6">
+						<?php echo $this->loadTemplate('music_covers'); ?>
+					</div>
+				</div>
+			</div>
+
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page3', JText::_('COM_KA_APPEARANCE_TAB')); ?>
+
+			<div id="page3">
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_GLOBAL_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('ap_global') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('ap_nav') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<?php echo $this->loadTemplate('ap_item'); ?>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_RATE_LABEL'); ?></legend>
+							<div class="span6">
+								<?php foreach ($this->form->getFieldset('ap_rate') as $field): ?>
+									<div class="control-group">
+										<div class="control-label"><?php echo $field->label; ?></div>
+										<div class="controls"><?php echo $field->input; ?></div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+							<div class="span6">
+								<?php foreach ($this->form->getFieldset('ap_rate_img') as $field): ?>
+									<div class="control-group">
+										<div class="control-label"><?php echo $field->label; ?></div>
+										<div class="controls"><?php echo $field->input; ?></div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<?php echo $this->loadTemplate('ap_alphabet'); ?>
+					</div>
+				</div>
+			</div>
+
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page4', JText::_('COM_KA_REVIEWS_TAB')); ?>
+
+			<div id="page4">
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></legend>
+							<?php foreach ($this->form->getFieldset('reviews') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_REVIEWS_SETTINGS_SAVE_LABEL'); ?></legend>
+							<?php foreach ($this->form->getFieldset('reviews_save') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page5', JText::_('COM_KA_SEARCH_TAB')); ?>
+
+			<div id="page5">
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_MOVIES'); ?></legend>
+							<?php foreach ($this->form->getFieldset('search_movies') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_NAMES'); ?></legend>
+							<?php foreach ($this->form->getFieldset('search_names') as $field): ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php if ($this->userIsSuperAdmin): ?>
+			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page6', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
+
+			<div id="page6">
+				<div class="row-fluid">
+					<div class="span12">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?></legend>
+							<div class="control-group">
+								<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules'); ?></div>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php endif; ?>
+		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
+
 			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.settings.tabs.' . $this->user->get('id')); ?>" />
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
-		<!-- End Content -->
 	</div>
 </form>
 
 <!-- Upload config template -->
-<?php echo $this->loadTemplate('upload_config');
+<div class="modal hide fade" id="collapseModal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&#215;</button>
+		<h3><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG'); ?></h3>
+	</div>
+	<div class="modal-body modal-upload">
+		<div class="row-fluid">
+			<form method="post" enctype="multipart/form-data" id="adminRestoreConfig">
+				<fieldset class="form-horizontal">
+					<div class="control-group span6">
+						<div class="control-label"><label id="form_upload_config-lbl" class="" for="form_upload_config"><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_FILE'); ?></label></div>
+						<div class="controls">
+							<input id="form_upload_config" type="file" accept=".json" value="" name="form_upload_config" required aria-required="true" />
+						</div>
+					</div>
+					<input type="hidden" name="controller" value="settings" />
+					<input type="hidden" name="task" value="settings.restoreConfig" />
+					<?php echo JHtml::_('form.token'); ?>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" type="submit" onclick="Joomla.submitbutton('settings.restoreConfig');">
+			<?php echo JText::_('JTOOLBAR_UNTRASH'); ?>
+		</button>
+		<button class="btn" type="button" onclick="document.getElementById('form_upload_config').value='';" data-dismiss="modal">
+			<?php echo JText::_('JCANCEL'); ?>
+		</button>
+	</div>
+</div>

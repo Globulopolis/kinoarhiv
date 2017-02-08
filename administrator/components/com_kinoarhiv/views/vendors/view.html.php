@@ -93,20 +93,20 @@ class KinoarhivViewVendors extends JViewLegacy
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'basket');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('vendors.apply');
+			JToolbarHelper::save('vendors.save');
+			JToolbarHelper::save2new('vendors.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('vendors.cancel');
 		}
 		elseif ($task == 'edit')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_VENDORS_TITLE') . ': ' . $this->form->getValue('company_name')), 'basket');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('vendors.apply');
+			JToolbarHelper::save('vendors.save');
+			JToolbarHelper::save2new('vendors.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('vendors.cancel');
 		}
 		else
 		{
@@ -114,48 +114,38 @@ class KinoarhivViewVendors extends JViewLegacy
 
 			if ($user->authorise('core.create.vendor', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('vendors.add');
 			}
 
 			if ($user->authorise('core.edit.vendor', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('vendors.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.edit.state.vendor', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
+				JToolbarHelper::publishList('vendors.publish');
+				JToolbarHelper::unpublishList('vendors.unpublish');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.delete.vendor', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'vendors.remove');
 				JToolbarHelper::divider();
 			}
 
-			if ($user->authorise('core.create.vendor', 'com_kinoarhiv') && $user->authorise('core.edit.vendor', 'com_kinoarhiv') && $user->authorise('core.edit.state.vendor', 'com_kinoarhiv'))
+			if ($user->authorise('core.create.vendor', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.vendor', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state.vendor', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'v.state'             => JText::_('JSTATUS'),
-			'v.company_name'      => JText::_('COM_KA_VENDORS_FIELD_TITLE'),
-			'v.company_name_intl' => JText::_('COM_KA_VENDORS_FIELD_TITLE_INTL'),
-			'language'            => JText::_('JGRID_HEADING_LANGUAGE'),
-			'v.id'                => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

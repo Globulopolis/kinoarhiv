@@ -10,12 +10,16 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('bootstrap.tooltip');
+
+$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+$columns   = 9;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (task == 'releases.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 			return;
 		}
@@ -27,7 +31,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 
 		<?php if (count($this->items) > 1): ?>
 		$('#articleList tbody').sortable({
+			axis:'y',
+			cancel: 'input,textarea,button,select,option,.inactive',
 			placeholder: 'ui-state-highlight',
+			handle: '.sortable-handler',
+			cursor: 'move',
 			helper: function(e, tr){
 				var $originals = tr.children();
 				var $helper = tr.clone();
@@ -37,10 +45,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				});
 				return $helper;
 			},
-			handle: '.sortable-handler',
-			cursor: 'move',
 			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&controller=releases&task=saveOrder&format=json', $('#articleList tbody .order input.ord').serialize()+'&<?php echo JSession::getFormToken(); ?>=1&movie_id='+$(ui.item).find('input[name="movie_id"]').val(), function(response){
+				$.post('index.php?option=com_kinoarhiv&task=releases.saveOrder&format=json', $('#articleList tbody .order input.ord').serialize() + '&<?php echo JSession::getFormToken(); ?>=1&movie_id=' + $(ui.item).find('input[name="movie_id"]').val(), function(response){
 					if (!response.success) {
 						showMsg('#system-message-container', response.message);
 					}
@@ -92,12 +98,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="9" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item) :
 					$canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
-					$canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
@@ -110,17 +115,13 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
 					<td class="center">
-						<a href="index.php?option=com_kinoarhiv&view=releases&controller=releases&task=edit&id[]=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->release_date; ?></a>
+						<a href="index.php?option=com_kinoarhiv&view=releases&task=releases.edit&id[]=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->release_date; ?></a>
 					</td>
 					<td>
 						<?php echo $this->escape($item->title); ?><?php echo $item->year != '0000' ? ' (' . $item->year . ')' : ''; ?>
 					</td>
 					<td class="nowrap hidden-phone">
-						<?php $vendor_0 = !empty($item->company_name) ? $item->company_name : '';
-						$vendor_1 = !empty($item->company_name) && !empty($item->company_name_intl) ? ' / ' : '';
-						$vendor_2 = !empty($item->company_name_intl) ? $item->company_name_intl : '';
-						echo $vendor_0 . $vendor_1 . $vendor_2;
-						?>
+						<?php echo $item->company_name; ?>
 					</td>
 					<td class="nowrap hidden-phone">
 						<?php if ($item->name != ''): ?>
@@ -147,11 +148,27 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				<?php endforeach;
 			endif; ?>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="<?php echo $columns; ?>"></td>
+				</tr>
+			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php echo $this->loadTemplate('batch'); ?>
+		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
+			&& $user->authorise('core.edit', 'com_kinoarhiv')
+			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+			<?php echo JHtml::_(
+				'bootstrap.renderModal',
+				'collapseModal',
+				array(
+					'title' => JText::_('COM_KA_BATCH_OPTIONS'),
+					'footer' => $this->loadTemplate('batch_footer')
+				),
+				$this->loadTemplate('batch_body')
+			); ?>
+		<?php endif; ?>
 
-		<input type="hidden" name="controller" value="releases" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>

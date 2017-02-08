@@ -21,10 +21,9 @@ else
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 ?>
-<!-- Do not include script below into the head! -->
-<script src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/sortable.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
 		$('.hasDesc').click(function () {

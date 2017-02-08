@@ -83,43 +83,31 @@ class KinoarhivViewReviews extends JViewLegacy
 		if ($task == 'edit')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_FIELD_REVIEW') . ': ' . JText::_('COM_KA_EDIT')), 'comments-2');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
+			JToolbarHelper::apply('reviews.apply');
+			JToolbarHelper::save('reviews.save');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('reviews.cancel');
 		}
 		else
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_TITLE')), 'comments-2');
-			JToolbarHelper::editList('edit');
+			JToolbarHelper::editList('reviews.edit');
 			JToolbarHelper::divider();
-			JToolbarHelper::publishList();
-			JToolbarHelper::unpublishList();
-			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+			JToolbarHelper::publishList('reviews.publish');
+			JToolbarHelper::unpublishList('reviews.unpublish');
+			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'reviews.remove');
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create', 'com_kinoarhiv') && $user->authorise('core.edit', 'com_kinoarhiv') && $user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv')
+				&& $user->authorise('core.edit', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'a.state'    => JText::_('JSTATUS'),
-			'a.type'     => JText::_('COM_KA_REVIEWS_FIELD_TYPE'),
-			'a.created'  => JText::_('JGLOBAL_SHOW_PUBLISH_DATE_LABEL'),
-			'm.movie'    => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
-			'u.username' => JText::_('COM_KA_REVIEWS_FIELD_USER'),
-			'a.ip'       => JText::_('COM_KA_REVIEWS_FIELD_USER_IP'),
-			'a.id'       => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

@@ -31,8 +31,7 @@ class KAImage extends JImage
 	 *
 	 * @return  array
 	 *
-	 * @throws  LogicException
-	 * @throws  InvalidArgumentException
+	 * @throws  RuntimeException
 	 *
 	 * @since  3.0
 	 */
@@ -44,7 +43,7 @@ class KAImage extends JImage
 		// Make sure the resource handle is valid.
 		if (!$image->isLoaded())
 		{
-			throw new LogicException('No valid image was loaded.');
+			throw new RuntimeException('No valid image was loaded.');
 		}
 
 		// No thumbFolder set -> we will create a thumbs folder in the current image folder
@@ -56,7 +55,7 @@ class KAImage extends JImage
 		// Check destination
 		if (!is_dir($thumbsFolder) && (!is_dir(dirname($thumbsFolder)) || !@mkdir($thumbsFolder)))
 		{
-			throw new InvalidArgumentException('Folder does not exist and cannot be created: ' . $thumbsFolder);
+			throw new RuntimeException('Folder does not exist and cannot be created: ' . $thumbsFolder);
 		}
 
 		// Process thumbs
@@ -122,20 +121,20 @@ class KAImage extends JImage
 	 *
 	 * @return  void
 	 *
-	 * @throws  LogicException
-	 * @throws  InvalidArgumentException
+	 * @throws  RuntimeException
 	 *
 	 * @since  3.0
 	 */
 	public function addWatermark($directory, $filename, $watermark, $position = 'br', $properties = array())
 	{
-		$image = new JImage($directory . DIRECTORY_SEPARATOR . $filename);
+		$file = JPath::clean($directory . '/' . $filename);
+		$image = new JImage($file);
 		$watermark = new JImage($watermark);
 
 		// Make sure the resource handle is valid.
 		if (!$image->isLoaded() && !$watermark->isLoaded())
 		{
-			throw new LogicException('No valid image was loaded.');
+			throw new RuntimeException('No valid image was loaded.');
 		}
 
 		// Parent image properties
@@ -153,7 +152,7 @@ class KAImage extends JImage
 
 				if (!$filter)
 				{
-					throw new LogicException('An error has occured while creating image.');
+					throw new RuntimeException('An error has occured while creating image.');
 				}
 				else
 				{
@@ -169,7 +168,7 @@ class KAImage extends JImage
 
 				if (!$filter)
 				{
-					throw new LogicException('An error has occured while creating image.');
+					throw new RuntimeException('An error has occured while creating image.');
 				}
 				else
 				{
@@ -185,7 +184,7 @@ class KAImage extends JImage
 
 				if (!$filter)
 				{
-					throw new LogicException('An error has occured while creating image.');
+					throw new RuntimeException('An error has occured while creating image.');
 				}
 				else
 				{
@@ -195,7 +194,7 @@ class KAImage extends JImage
 		}
 		else
 		{
-			throw new LogicException('Unknown or unsupported image type.');
+			throw new RuntimeException('Unknown or unsupported image type.');
 		}
 
 		if ($wtCreated)
@@ -277,22 +276,22 @@ class KAImage extends JImage
 		}
 		else
 		{
-			throw new LogicException('An error has occured.');
+			throw new RuntimeException('An error has occured.');
 		}
 
 		if ($imgProperties->mime == 'image/gif')
 		{
-			$image->toFile($directory . DIRECTORY_SEPARATOR . $filename, IMAGETYPE_GIF);
+			$image->toFile($file, IMAGETYPE_GIF);
 		}
 		elseif ($imgProperties->mime == 'image/jpeg')
 		{
 			$quality = isset($properties['output_quality']) ? (int) $properties['output_quality'] : 75;
-			$image->toFile($directory . DIRECTORY_SEPARATOR . $filename, IMAGETYPE_JPEG, array('quality' => $quality));
+			$image->toFile($file, IMAGETYPE_JPEG, array('quality' => $quality));
 		}
 		elseif ($imgProperties->mime == 'image/png')
 		{
 			$quality = isset($properties['output_quality']) ? (int) $properties['output_quality'] : 3;
-			$image->toFile($directory . DIRECTORY_SEPARATOR . $filename, IMAGETYPE_PNG, array('quality' => $quality));
+			$image->toFile($file, IMAGETYPE_PNG, array('quality' => $quality));
 		}
 	}
 }

@@ -23,6 +23,8 @@ abstract class KAHtmlContent
 	 * Get a list of the available content country items.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public static function country()
 	{
@@ -33,7 +35,7 @@ abstract class KAHtmlContent
 
 			$query->select('a.id AS value, a.name AS text')
 				->from('#__ka_countries AS a')
-				->where('a.state >= 0')
+				->where('a.state = 1')
 				->order('a.name');
 
 			$db->setQuery($query);
@@ -47,15 +49,19 @@ abstract class KAHtmlContent
 	 * Get a list of the available content vendor items.
 	 *
 	 * @return  string
+	 *
+	 * @since  3.0
 	 */
 	public static function vendor()
 	{
 		if (empty(static::$items[__METHOD__]))
 		{
+			jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->select('a.id AS value, a.company_name, a.company_name_intl')
+			$query->select('a.id AS value, a.company_name')
 				->from('#__ka_vendors AS a')
 				->where('a.state >= 0');
 
@@ -65,11 +71,9 @@ abstract class KAHtmlContent
 
 			foreach ($rows as $row)
 			{
-				$vendor = ($row->company_name_intl != '') ? $row->company_name . ' / ' . $row->company_name_intl : $row->company_name;
-
 				$data[] = array(
 					'value' => $row->value,
-					'text'  => $vendor
+					'text'  => $row->company_name
 				);
 			}
 

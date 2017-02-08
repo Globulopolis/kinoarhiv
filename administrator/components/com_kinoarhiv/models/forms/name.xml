@@ -26,7 +26,7 @@
 			<field name="desc" type="editor" label="COM_KA_FIELD_NAME_DESC" filter="raw" buttons="false"/>
 			<field name="birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string"/>
 			<field name="birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY"
-				   class="span11" filter="intval" data-ac-type="countries" multiple="false"/>
+				   class="span11" filter="integer" data-ac-type="countries" multiple="false"/>
 			<field name="genres" type="genres" default="" label="COM_KA_FIELD_MOVIE_GENRES"
 				   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span11" filter="string" data-ac-type="genres"
 				   data-multiple="true" data-sortable="true"/>
@@ -57,7 +57,7 @@
 				<option value="*">JALL</option>
 			</field>
 			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-				   filter="intval" size="1" default="1">
+				   filter="integer" size="1" default="1">
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
@@ -115,7 +115,7 @@
 		<field name="a_desc" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="raw"
 			   cols="6" rows="5"/>
 		<field name="a_state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-			   filter="intval" size="1" default="1">
+			   filter="integer" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field>

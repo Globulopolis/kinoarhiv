@@ -20,7 +20,6 @@ else
 }
 
 $plural = $this->lang->getPluralSuffixes($this->pagination->total);
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {

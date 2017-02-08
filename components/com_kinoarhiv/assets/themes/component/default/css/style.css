@@ -1,6 +1,6 @@
 /* Default style */
 .loading {
-	background: url("../images/icons/select/select2-spinner.gif") no-repeat center center;
+	background: url("../images/icons/select2/select2-spinner.gif") no-repeat center center;
 }
 .ka-content form {
 	margin: 0;
@@ -896,11 +896,6 @@ div.rating {
 	padding-left: 16px;
 }
 
-.watch-buttons {
-	margin-top: 1em;
-	text-align: center;
-}
-
 .flag-dd {
 	margin: 0 4px 2px 0;
 }
@@ -1011,14 +1006,6 @@ div.rating {
 	border-left: 0;
 	border-right: 0;
 	padding: 0;
-}
-
-.watch-buttons a:hover {
-	-moz-box-shadow: 0 0 3px 0 #ccc;
-	-webkit-box-shadow: 0 0 3px 0 #ccc;
-	box-shadow: 0 0 3px 0 #ccc;
-	-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=0, Color='#cccccc')";
-	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=0, Color='#cccccc');
 }
 
 .video-links {

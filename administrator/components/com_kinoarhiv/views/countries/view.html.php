@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * View class for a list of countries.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewCountries extends JViewLegacy
 {
 	protected $items;
@@ -20,6 +25,17 @@ class KinoarhivViewCountries extends JViewLegacy
 
 	protected $form;
 
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -87,6 +103,15 @@ class KinoarhivViewCountries extends JViewLegacy
 		$app->input->set('hidemainmenu', true);
 	}
 
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @param   string  $task  Task(not a task from URL).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function addToolbar($task = '')
 	{
 		$user = JFactory::getUser();
@@ -94,25 +119,25 @@ class KinoarhivViewCountries extends JViewLegacy
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_COUNTRIES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'location');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('countries.apply');
+			JToolbarHelper::save('countries.save');
+			JToolbarHelper::save2new('countries.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('countries.cancel');
 		}
 		elseif ($task == 'edit')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_COUNTRIES_TITLE') . ': ' . $this->form->getValue('name')), 'location');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('countries.apply');
+			JToolbarHelper::save('countries.save');
+			JToolbarHelper::save2new('countries.save2new');
 
 			if ($this->form->getValue('id') != 0)
 			{
 				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('countries.cancel');
 		}
 		else
 		{
@@ -120,33 +145,34 @@ class KinoarhivViewCountries extends JViewLegacy
 
 			if ($user->authorise('core.create.country', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('countries.add');
 			}
 
 			if ($user->authorise('core.edit.country', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('countries.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.edit.state.country', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::publishList();
-				JToolbarHelper::unpublishList();
+				JToolbarHelper::publishList('countries.publish');
+				JToolbarHelper::unpublishList('countries.unpublish');
 			}
 
 			if ($user->authorise('core.delete.country', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'countries.remove');
 				JToolbarHelper::divider();
 			}
 
 			JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create.country', 'com_kinoarhiv') && $user->authorise('core.edit.country', 'com_kinoarhiv') && $user->authorise('core.edit.state.country', 'com_kinoarhiv'))
+			if ($user->authorise('core.create.country', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.country', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state.country', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 

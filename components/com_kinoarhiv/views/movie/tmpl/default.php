@@ -52,13 +52,13 @@ else
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox.min.js');
-KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'js/i18n/colorbox');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.plugin.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.countdown.min.js');
-KAComponentHelper::getScriptLanguage('jquery.countdown-', 'js/i18n/countdown');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.plugin.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.countdown.min.js');
+KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/js/i18n/countdown');
 
 if (isset($this->item->slides) && !empty($this->item->slides)):
 	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1):
@@ -163,22 +163,6 @@ endif;
 
 			$.colorbox({html: '<div class="overlay">' + _this.next('div').html() + '</div>'});
 		});
-		<?php
-		if ($this->params->get('player_type') == 'flowplayer' && ($total_trailers > 0 || $total_movies > 0)): ?>
-		$('.watch-buttons a').click(function (e) {
-			e.preventDefault();
-
-			if ($(this).hasClass('watch-trailer')) {
-				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false); ?>')) {
-					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=trailer&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false))?>');
-				}
-			} else if ($(this).hasClass('watch-movie')) {
-				if (!window.open('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false); ?>')) {
-					showMsg('.watch-buttons', '<?php echo JText::sprintf('COM_KA_NEWWINDOW_BLOCKED', JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watch&type=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw', false))?>');
-				}
-			}
-		});
-		<?php endif; ?>
 
 		<?php if (isset($this->item->slides) && !empty($this->item->slides)):
 			if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
@@ -451,12 +435,11 @@ endif;
 						</div>
 					<?php endif; ?>
 					<?php if (count($this->item->premieres) > 0):
-						foreach ($this->item->premieres as $premiere):
-							$company_title = KAContentHelper::formatItemTitle($premiere->company_name, $premiere->company_name_intl); ?>
+						foreach ($this->item->premieres as $premiere): ?>
 							<div>
 								<span class="f-col"><?php echo ($premiere->country == '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
 								<span class="s-col">
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&filters[movies][date]=' . date('Y-m', strtotime($premiere->premiere_date)) . '&Itemid=' . $this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if (!empty($company_title)): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&filters[movies][vendor]=' . $premiere->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $company_title; ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&filters[movies][date]=' . date('Y-m', strtotime($premiere->premiere_date)) . '&Itemid=' . $this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if (!empty($premiere->company_name)): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=premieres&filters[movies][vendor]=' . $premiere->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $premiere->company_name; ?></a>
 										<?php if ($premiere->info != ''): ?>
 											<a href="#" class="ui-icon-bullet-arrow-down premiere-info-icon"></a>
 											<div class="premiere-info"><?php echo $premiere->info; ?></div><?php endif; ?>
@@ -467,12 +450,11 @@ endif;
 						<?php endforeach;
 					endif; ?>
 					<?php if (count($this->item->releases) > 0):
-						foreach ($this->item->releases as $release):
-							$company_title = KAContentHelper::formatItemTitle($release->company_name, $release->company_name_intl); ?>
+						foreach ($this->item->releases as $release): ?>
 							<div>
 								<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JHtml::_('string.truncate', $release->media_type, 14)); ?></span>
 								<span class="s-col">
-									<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if (!empty($company_title)): ?>, <?php echo $company_title; ?><?php endif; ?><?php echo ($release->country != '') ? ', ' . $release->country : ''; ?>&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $release->movie_id . '&Itemid=' . $this->itemid); ?>#row-<?php echo $release->id; ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
+									<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if (!empty($release->company_name)): ?>, <?php echo $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', ' . $release->country : ''; ?>&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $release->movie_id . '&Itemid=' . $this->itemid); ?>#row-<?php echo $release->id; ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
 								</span>
 							</div>
 						<?php endforeach;
@@ -592,34 +574,14 @@ endif;
 		{
 			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $this->params->get('player_type');
 
-			// Needed to avoid a bugs. Flowplayer redirect when SEF is turned on.
-			if ($this->params->get('player_type') == 'flowplayer')
+			try
 			{
-				?>
-				<div class="clear"></div>
-				<div class="watch-buttons">
-					<?php if ($total_trailers > 0): ?>
-						<a href="#" class="btn btn-info watch-trailer"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_TRAILER'); ?>
-						</a>
-					<?php endif; ?>
-					<?php if ($total_movies > 0): ?>
-						<a href="#" class="btn btn-info watch-movie"><span class="icon-play"></span> <?php echo JText::_('COM_KA_WATCH_MOVIE'); ?>
-						</a>
-					<?php endif; ?>
-				</div>
-				<?php
+				echo $this->loadTemplate($player_layout);
 			}
-			else
+			catch (Exception $e)
 			{
-				try
-				{
-					echo $this->loadTemplate($player_layout);
-				}
-				catch (Exception $e)
-				{
-					KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
-					echo $this->loadTemplate('trailer');
-				}
+				KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+				echo $this->loadTemplate('trailer');
 			}
 		}
 		?>

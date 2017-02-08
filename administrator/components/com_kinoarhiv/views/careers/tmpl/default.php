@@ -10,12 +10,17 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('bootstrap.tooltip');
+
+$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+$saveOrder = $listOrder == 'a.ordering';
+$columns   = 7;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(pressbutton) {
-		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (pressbutton == 'careers.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 			return;
 		}
@@ -29,7 +34,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 	jQuery(document).ready(function($){
 		<?php if (count($this->items) > 1): ?>
 		$('#articleList tbody').sortable({
+			axis:'y',
+			cancel: 'input,textarea,button,select,option,.inactive',
 			placeholder: 'ui-state-highlight',
+			handle: '.sortable-handler',
+			cursor: 'move',
 			helper: function(e, tr){
 				var $originals = tr.children();
 				var $helper = tr.clone();
@@ -39,10 +48,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				});
 				return $helper;
 			},
-			handle: '.sortable-handler',
-			cursor: 'move',
 			update: function(){
-				$.post('index.php?option=com_kinoarhiv&controller=careers&task=saveOrder&format=json', $('#articleList tbody .order input').serialize()+'&<?php echo JSession::getFormToken(); ?>=1', function(response){
+				$.post('index.php?option=com_kinoarhiv&task=careers.saveOrder&format=json', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
 						showMsg('#system-message-container', response.message);
 					}
@@ -89,14 +96,29 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="7" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
-				foreach ($this->items as $i => $item): ?>
+				foreach ($this->items as $i => $item):
+					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv');
+					$iconClass = '';
+				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
-						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$this->canEdit) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
+						<?php
+						if (!$canChange)
+						{
+							$iconClass = ' inactive';
+						}
+						elseif (!$saveOrder)
+						{
+							$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::tooltipText('JORDERINGDISABLED');
+						}
+						?>
+						<span class="sortable-handler<?php echo $iconClass ?>"><span class="icon-menu"></span></span>
+					<?php if ($canChange && $saveOrder) : ?>
 						<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+					<?php endif; ?>
 					</td>
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
@@ -104,7 +126,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=careers.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->title); ?></a>
 							<?php else : ?>
 								<span><?php echo $this->escape($item->title); ?></span>
@@ -113,8 +135,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					</td>
 					<td class="small hidden-phone center">
 						<?php echo JHtml::_('jgrid.state', array(
-							1 => array('offmainpage', 'COM_KA_FIELD_CAREER_MAINPAGE', 'COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISH', 'COM_KA_FIELD_CAREER_MAINPAGE_PUBLISHED', true, 'publish', 'publish'),
-							0 => array('onmainpage', 'COM_KA_FIELD_CAREER_MAINPAGE', 'COM_KA_FIELD_CAREER_MAINPAGE_PUBLISH', 'COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISHED', true, 'unpublish', 'unpublish')
+							1 => array('careers.offmainpage', 'COM_KA_FIELD_CAREER_MAINPAGE', 'COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISH', 'COM_KA_FIELD_CAREER_MAINPAGE_PUBLISHED', true, 'publish', 'publish'),
+							0 => array('careers.onmainpage', 'COM_KA_FIELD_CAREER_MAINPAGE', 'COM_KA_FIELD_CAREER_MAINPAGE_PUBLISH', 'COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISHED', true, 'unpublish', 'unpublish')
 							), $item->is_mainpage, $i, '', $this->canEdit, 'cbm'); ?>
 					</td>
 					<td class="small hidden-phone center">
@@ -139,11 +161,27 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				<?php endforeach;
 			endif; ?>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="<?php echo $columns; ?>"></td>
+				</tr>
+			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php echo $this->loadTemplate('batch'); ?>
+		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
+			&& $user->authorise('core.edit', 'com_kinoarhiv')
+			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+			<?php echo JHtml::_(
+				'bootstrap.renderModal',
+				'collapseModal',
+				array(
+					'title' => JText::_('COM_KA_BATCH_OPTIONS'),
+					'footer' => $this->loadTemplate('batch_footer')
+				),
+				$this->loadTemplate('batch_body')
+			); ?>
+		<?php endif; ?>
 
-		<input type="hidden" name="controller" value="careers" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>

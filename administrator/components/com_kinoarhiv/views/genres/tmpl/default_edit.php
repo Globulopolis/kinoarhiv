@@ -10,43 +10,46 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
+
 $item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') ? 'music' : 'movie';
+$id = $this->form->getValue('id');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
+		if (task == 'genres.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+			Joomla.submitform(task, document.getElementById('item-form'));
+		}
+
 		if (task == 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&type=<?php echo $item_type; ?>&element=movies<?php echo ($this->form->getValue('id') != 0) ? '&id='.$this->form->getValue('id') : ''; ?>';
-			return;
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&type=<?php echo $item_type; ?>&element=movies<?php echo $id != 0 ? '&id=' . $id : ''; ?>';
 		}
-		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (document.getElementById('form_name').value == '' || document.getElementById('form_stats').value == '') {
-				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>', 'before');
-				return;
-			}
-		}
-		Joomla.submitform(task);
 	};
 
 	jQuery(document).ready(function($){
-		$('#form_stats').after('&nbsp;<a href="#" class="updateStat hasTooltip" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a>');
-		$('#adminForm').on('click', 'a.updateStat', function(e){
+		$('#form_stats').after('<a href="#" class="cmd-update-stats hasTooltip" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><span class="icon-refresh"></span></a>');
+		$('a.cmd-update-stats').tooltip();
+
+		$('form').on('click', 'a.cmd-update-stats', function(e){
 			e.preventDefault();
 			var _this = $(this);
 
-			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
+			$.getJSON('index.php?option=com_kinoarhiv&task=genres.updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo $id != 0 ? $id : ''; ?>&format=json&boxchecked=1&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {
 					_this.prev('input').val(response.total);
-					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>');
+					showMsg('#system-message-container', response.message);
 				} else {
 					_this.prev('input').val('0');
 					showMsg('#system-message-container', response.message);
 				}
+			}).fail(function (xhr, status, error) {
+				showMsg('#system-message-container', error);
 			});
 		});
 	});
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $id); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
 	<div id="j-main-container">
 		<fieldset class="form-horizontal">
 			<?php foreach ($this->form->getFieldset('edit') as $field): ?>
@@ -58,9 +61,7 @@ $item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') ==
 		</fieldset>
 	</div>
 
-	<input type="hidden" name="controller" value="genres" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="type" value="<?php echo $item_type; ?>" />
-	<input type="hidden" name="id" value="<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : ''; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

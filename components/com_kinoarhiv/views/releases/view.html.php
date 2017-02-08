@@ -65,14 +65,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		foreach ($this->items as $item)
 		{
 			$item->attribs = json_decode($item->attribs);
-			$item->vendor = $item->company_name;
-
-			if (!empty($item->company_name) && !empty($item->company_name_intl))
-			{
-				$item->vendor .= ' / ';
-			}
-
-			$item->vendor .= $item->company_name_intl;
 
 			// Replace country BB-code
 			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme)

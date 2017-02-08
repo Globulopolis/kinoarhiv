@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
 			</div>
 			<div class="span8">
 				<div class="control-group">
-					<div class="control-label"><label class="hasTip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
+					<div class="control-label"><label class="hasTooltip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[movie][letters][]" value="" class="letters span12" />
@@ -52,7 +52,7 @@ defined('_JEXEC') or die;
 			</div>
 			<div class="span8">
 				<div class="control-group">
-					<div class="control-label"><label class="hasTip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
+					<div class="control-label"><label class="hasTooltip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[movie][letters][]" value="<?php echo implode(',', $letters->letters); ?>" class="letters span12" />
@@ -80,7 +80,7 @@ defined('_JEXEC') or die;
 			</div>
 			<div class="span8">
 				<div class="control-group">
-					<div class="control-label"><label class="hasTip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
+					<div class="control-label"><label class="hasTooltip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[name][letters][]" value="" class="letters span12" />
@@ -102,7 +102,7 @@ defined('_JEXEC') or die;
 			</div>
 			<div class="span8">
 				<div class="control-group">
-					<div class="control-label"><label class="hasTip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
+					<div class="control-label"><label class="hasTooltip" title="<?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_DESC'); ?>"><?php echo JText::_('COM_KA_SETTINGS_AP_AB_LETTERS_LABEL'); ?></label></div>
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[name][letters][]" value="<?php echo implode(',', $letters->letters); ?>" class="letters span12" />

@@ -84,10 +84,10 @@ endif; ?>
 					if (response.success) {
 						$('#list_composers').trigger('reloadGrid');
 					} else {
-						showMsg('#j-main-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
+						showMsg('#system-message-container', '<?php echo JText::_('COM_KA_SAVE_ORDER_ERROR'); ?>');
 					}
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});
@@ -249,7 +249,7 @@ endif; ?>
 					showMsg('.composer-container', response.message);
 					$('#list_composers').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

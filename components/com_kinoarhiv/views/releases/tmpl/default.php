@@ -21,9 +21,8 @@ else
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">
 	//<![CDATA[
@@ -214,7 +213,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
 								<div class="date"><?php echo date('d', strtotime($item->premiere_date)); ?></div>
 								<div class="month"><?php echo JHtml::_('date', $item->premiere_date, 'F'); ?></div>
 								<div class="vendor">
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&vendor=' . $item->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $item->vendor; ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=releases&vendor=' . $item->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $item->company_name; ?></a>
 								</div>
 							</div>
 						<?php endif; ?>

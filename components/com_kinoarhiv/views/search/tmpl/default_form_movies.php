@@ -16,7 +16,6 @@ if ($this->params->get('search_movies_enable') == 0)
 }
 ?>
 <script type="text/javascript">
-	console.dir(parent.jQuery.fn.select2.locales);
 	jQuery(document).ready(function($){
 		document.formvalidator.setHandler('date', function(value){
 			var matches = /^(\d{4})[-\/](\d{2})[-\/](\d{2})$/.exec(value),

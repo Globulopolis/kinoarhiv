@@ -10,11 +10,12 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/trumbowyg/ui/trumbowyg.css');
-JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/trumbowyg/plugins/colors/ui/trumbowyg.colors.css');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/trumbowyg/trumbowyg.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/trumbowyg/plugins/colors/trumbowyg.colors.min.js');
-KAComponentHelper::getScriptLanguage('', 'editors/trumbowyg/lang/');
+JHtml::_('jquery.framework');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/trumbowyg/ui/trumbowyg.min.css');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/trumbowyg/plugins/colors/ui/trumbowyg.colors.min.css');
+JHtml::_('script', 'media/com_kinoarhiv/editors/trumbowyg/trumbowyg.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/editors/trumbowyg/plugins/colors/trumbowyg.colors.min.js');
+KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/trumbowyg/lang/');
 
 $params = $displayData->params;
 $form   = $displayData->form;

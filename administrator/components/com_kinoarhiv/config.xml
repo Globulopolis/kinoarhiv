@@ -173,11 +173,6 @@
 	<fieldset name="gallery" label="COM_KA_SETTINGS_GALLERY_LABEL">
 		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32"/>
-		<field name="upload_chunk" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_UPLOAD_CHUNK_LABEL"
-			   description="COM_KA_FIELD_UPLOAD_CHUNK_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 		<field name="upload_chunk_size" type="text" default="1mb" label="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_CHUNK_LIMIT_LABEL_DESC" required="true" filter="string" size="32"/>
 
@@ -357,7 +352,7 @@
 		<field name="player_width" type="text" default="690" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true"
 			   filter="integer" size="6"/>
 		<field name="player_type" type="folderlist" default="videojs"
-			   directory="components/com_kinoarhiv/assets/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL"
+			   directory="media/com_kinoarhiv/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL"
 			   description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" hide_default="true"/>
 		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL"
 			   description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12"/>
@@ -544,7 +539,7 @@
 			<option value="jc">COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_JCM</option>
 			<option value="disqus">COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_DISQUS</option>
 		</field>
-		<field name="review_editor" type="folderlist" directory="components/com_kinoarhiv/assets/editors"
+		<field name="review_editor" type="folderlist" directory="media/com_kinoarhiv/editors"
 			   default="wysihtml5" label="COM_KA_FIELD_REVIEWS_EDITOR_TYPE_LABEL"
 			   description="COM_KA_FIELD_REVIEWS_EDITOR_TYPE_DESC" hide_none="true" hide_default="true"/>
 		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL"
@@ -739,9 +734,12 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_amplua_disabled" type="careers" default="" class="span12"
-			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="string" data-ac-type="careers"
-			   data-multiple="true" data-sel-size="-1"/>
+		<field name="search_names_amplua_disabled" type="autocomplete" data-remote="true" data-remote-show-all="true"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="array" class="span10 uk-width-1-1"
+			   data-content="careers" data-allow-clear="true" data-key="id" multiple="true"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
+		</field>
 	</fieldset>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox"

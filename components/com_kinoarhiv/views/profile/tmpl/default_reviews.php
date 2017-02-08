@@ -9,11 +9,9 @@
  */
 
 defined('_JEXEC') or die;
-
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 ?>
 <script type="text/javascript">
-	jQuery(document).ready(function ($) {
+	jQuery(document).ready(function($){
 		$('#checkall-toggle').click(function () {
 			if ($(this).is(':checked')) {
 				$('.r-list .title-small :checkbox').prop('checked', true);
@@ -22,7 +20,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 			}
 		});
 
-		$('#adminForm').submit(function (e) {
+		$('#adminForm').submit(function(e){
 			var items = $('input', this).filter(':checked');
 
 			if (items.length == 0 || items.length < 0) {
@@ -33,6 +31,7 @@ JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
 </script>
 <div class="uk-article ka-content user-profile reviews">
 	<?php echo $this->loadTemplate('tabs'); ?>
+
 	<?php if (count($this->items) > 0): ?>
 		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
 			<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS') . $this->pagination->total; ?></div>

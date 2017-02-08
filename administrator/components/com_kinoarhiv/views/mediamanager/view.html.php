@@ -10,7 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
@@ -50,13 +49,18 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$type    = $input->get('type', '', 'word');
 		$task    = $input->get('task', '', 'cmd');
 
+		if (strpos($task, '.') !== false)
+		{
+			list ($type, $task) = explode('.', $task);
+		}
+
 		if ($section == 'movie' && $type == 'gallery')
 		{
 			$this->listMovieImages($tpl);
 		}
 		elseif ($section == 'movie' && $type == 'trailers')
 		{
-			if ($task == 'edit')
+			if ($task == 'edit' || $task == 'add')
 			{
 				$this->editMovieTrailer();
 			}
@@ -71,7 +75,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		}
 		else
 		{
-			throw new Exception('Wrong \'section\' ot \'type\' variables from URL', 500);
+			throw new Exception('Wrong \'section\' or \'type\' variables from URL', 500);
 		}
 	}
 
@@ -365,7 +369,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	 */
 	protected function editMovieTrailer()
 	{
-		JLoader::register('KALanguage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'language.php');
+		jimport('components.com_kinoarhiv.libraries.language', JPATH_ROOT . '/administrator');
 
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
@@ -377,65 +381,53 @@ class KinoarhivViewMediamanager extends JViewLegacy
 
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->form = $this->get('Form');
-		$item = new Registry;
-		$page_title = $this->get('ItemTitle');
+		$this->lang_list = KALanguage::listOfLanguages();
 
 		if (count($errors = $this->get('Errors')))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		JToolbarHelper::title(
-			JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_TRAILERS') . ' - ' . $page_title),
-			'images'
-		);
-
-		if (!empty($item))
+		if ($this->form->getValue('trailer.item_id'))
 		{
-			$movie_id = $app->input->get('id', 0, 'int');
-			$screenshot = $this->form->getValue('screenshot');
+			// Path to a folder with file. E.g. /var/www/htdocs/etc...
+			$this->folder_path = JPath::clean(
+				$this->params->get('media_trailers_root') . '/' . $this->form->getValue('trailer.fs_alias') . '/' . $app->input->get('id', 0, 'int') . '/'
+			);
 
+			// URL to a screenshot
 			if (StringHelper::substr($this->params->get('media_trailers_root_www'), 0, 1) == '/')
 			{
-				$item->set(
-					'screenshot_path_www',
-					JUri::root() . StringHelper::substr($this->params->get('media_trailers_root_www'), 1) . '/'
-					. urlencode($this->form->getValue('fs_alias')) . '/' . $movie_id . '/' . $screenshot
-				);
-				$item->set(
-					'screenshot_folder_www',
-					JUri::root() . StringHelper::substr($this->params->get('media_trailers_root_www'), 1) . '/'
-					. urlencode($this->form->getValue('fs_alias')) . '/' . $movie_id . '/'
-				);
+				$this->folder_path_www = JUri::root() . StringHelper::substr($this->params->get('media_trailers_root_www'), 1)
+					. '/' . urlencode($this->form->getValue('trailer.fs_alias')) . '/' . $app->input->get('id', 0, 'int') . '/';
 			}
 			else
 			{
-				$item->set(
-					'screenshot_path_www',
-					$this->params->get('media_trailers_root_www') . '/' . urlencode($this->form->getValue('fs_alias'))
-					. '/' . $movie_id . '/' . $screenshot
-				);
-				$item->set(
-					'screenshot_folder_www',
-					$this->params->get('media_trailers_root_www') . '/' . urlencode($this->form->getValue('fs_alias'))
-					. '/' . $movie_id . '/'
-				);
+				$this->folder_path_www = $this->params->get('media_trailers_root_www') . '/' . urlencode($this->form->getValue('trailer.fs_alias'))
+					. '/' . $app->input->get('id', 0, 'int') . '/';
 			}
 
-			$item->set(
-				'screenshot_path',
-				$this->params->get('media_trailers_root') . '/' . $this->form->getValue('fs_alias') . '/'
-				. $movie_id . '/' . $screenshot
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_TRAILERS')
+					. ': ' . $this->form->getValue('trailer.title')
+				),
+				'images'
 			);
-			$item->set('subtitles_lang_list', KALanguage::listOfLanguages());
+		}
+		else
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_TRAILERS')
+					. ' - ' . JText::_('COM_KA_NEW')
+				),
+				'images'
+			);
 		}
 
 		if ($this->getLayout() !== 'modal')
 		{
 			$this->addToolbar();
 		}
-
-		$this->item = $item;
 
 		parent::display('trailer_edit');
 		$app->input->set('hidemainmenu', true);
@@ -455,15 +447,20 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$task = $app->input->get('task', '', 'cmd');
 		$type = $app->input->get('type', '', 'cmd');
 
-		if ($task == 'edit')
+		if (strpos($task, '.') !== false)
+		{
+			list ($type, $task) = explode('.', $task);
+		}
+
+		if ($task == 'edit' || $task == 'add')
 		{
 			if ($type == 'trailers')
 			{
-				JToolbarHelper::apply('apply');
-				JToolbarHelper::save('save');
-				JToolbarHelper::save2new('save2new');
+				JToolbarHelper::apply('mediamanager.apply');
+				JToolbarHelper::save('mediamanager.save');
+				JToolbarHelper::save2new('mediamanager.save2new');
 				JToolbarHelper::divider();
-				JToolbarHelper::cancel();
+				JToolbarHelper::cancel('mediamanager.cancel');
 			}
 		}
 		else
@@ -472,42 +469,54 @@ class KinoarhivViewMediamanager extends JViewLegacy
 			{
 				if ($user->authorise('core.create', 'com_kinoarhiv'))
 				{
-					JToolbarHelper::custom('upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
-					JToolbarHelper::custom('copyfrom', 'copy', 'copy', JText::_('JTOOLBAR_COPYFROM'), false);
+					JToolbarHelper::custom('mediamanager.upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
+					JToolbarHelper::custom('mediamanager.copyfrom', 'copy', 'copy', JText::_('JTOOLBAR_COPYFROM'), false);
 					JToolbarHelper::divider();
 				}
 
 				if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
 				{
-					JToolbarHelper::publishList();
-					JToolbarHelper::unpublishList();
+					JToolbarHelper::publishList('mediamanager.publish');
+					JToolbarHelper::unpublishList('mediamanager.unpublish');
 					JToolbarHelper::divider();
 				}
 
 				if ($user->authorise('core.delete', 'com_kinoarhiv'))
 				{
-					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'mediamanager.remove');
 				}
 			}
 			elseif ($type == 'trailers')
 			{
 				if ($user->authorise('core.create', 'com_kinoarhiv'))
 				{
-					JToolbarHelper::custom('add', 'new', 'new', JText::_('JTOOLBAR_NEW'), false);
-					JToolbarHelper::editList('edit');
+					JToolbarHelper::custom('mediamanager.add', 'new', 'new', JText::_('JTOOLBAR_NEW'), false);
+					JToolbarHelper::editList('mediamanager.edit');
 					JToolbarHelper::divider();
 				}
 
 				if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
 				{
-					JToolbarHelper::publishList();
-					JToolbarHelper::unpublishList();
+					JToolbarHelper::publishList('mediamanager.publish');
+					JToolbarHelper::unpublishList('mediamanager.unpublish');
 					JToolbarHelper::divider();
 				}
 
 				if ($user->authorise('core.delete', 'com_kinoarhiv'))
 				{
-					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+					JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'mediamanager.remove');
+					JToolbarHelper::divider();
+				}
+
+				if ($user->authorise('core.create', 'com_kinoarhiv')
+					&& $user->authorise('core.edit', 'com_kinoarhiv')
+					&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
+				{
+					$title = JText::_('JTOOLBAR_BATCH');
+					$layout = new JLayoutFile('joomla.toolbar.batch');
+
+					$dhtml = $layout->render(array('title' => $title));
+					JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 				}
 			}
 		}

@@ -11,24 +11,407 @@
 defined('_JEXEC') or die;
 
 /**
- * Global model class to provide an API
+ * Global model class to provide an API.
  *
- * @since  3.0
+ * @since  3.1
  */
 class KinoarhivModelAPI extends JModelLegacy
 {
 	/**
-	 * Proxy method and should be changed in future releases.
+	 * Database Connector
 	 *
-	 * @param   string  $element  Data type. Can be 'countries', 'genres', 'movies', 'awards', 'names', 'tags', 'careers', 'vendors'
-	 *
-	 * @return  object
-	 *
-	 * @since 3.0
+	 * @var    JDatabaseDriver
+	 * @since  3.1
 	 */
-	public function getData($element = '')
+	protected $db;
+
+	/**
+	 * An input object
+	 *
+	 * @var    object
+	 * @since  3.1
+	 */
+	protected $input;
+
+	/**
+	 * A language object
+	 *
+	 * @var    object
+	 * @since  3.1
+	 */
+	protected $lang;
+
+	/**
+	 * A content language to filter by
+	 *
+	 * @var    string
+	 * @since  3.1
+	 */
+	protected $query_lang;
+
+	/**
+	 * User access groups to filter by
+	 *
+	 * @var    string
+	 * @since  3.1
+	 */
+	protected $query_access;
+
+	/**
+	 * Item state
+	 *
+	 * @var    string
+	 * @since  3.1
+	 */
+	protected $query_state;
+
+	/**
+	 * Constructor
+	 *
+	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
+	 *
+	 * @since   12.2
+	 * @throws  Exception
+	 */
+	public function __construct($config = array())
 	{
-		return $this->getAjaxData($element = '');
+		parent::__construct($config);
+
+		$this->input = JFactory::getApplication()->input;
+		$this->lang = JFactory::getLanguage();
+		$this->db = $this->getDbo();
+		$user = JFactory::getUser();
+		$data_lang = $this->input->get('data_lang', '', 'string');
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+
+		if ($data_lang != '')
+		{
+			if ($data_lang == '*')
+			{
+				$this->query_lang = '';
+			}
+			else
+			{
+				$this->query_lang = 'language IN (' . $this->db->quote($data_lang) . ')';
+			}
+		}
+		else
+		{
+			$this->query_lang = 'language IN (' . $this->db->quote($this->lang->getTag()) . ',' . $this->db->quote('*') . ')';
+		}
+
+		if (array_key_exists('item_access', $config) && is_array($config['item_access']))
+		{
+			$this->query_access = 'access IN (' . implode(',', $config['item_access']) . ')';
+		}
+		else
+		{
+			$this->query_access = 'access IN (' . $groups . ')';
+		}
+
+		if (array_key_exists('item_state', $config) && is_array($config['item_state']))
+		{
+			$this->query_state = 'state IN (' . implode(',', $config['item_state']) . ')';
+		}
+		else
+		{
+			$this->query_state = 'state = 1';
+		}
+	}
+
+	/**
+	 * Method to get list of countries or country based on filters.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function getCountries()
+	{
+		$id = $this->input->get('id', 0, 'int');
+		$all = $this->input->get('showAll', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term = $this->input->get('term', '', 'string');
+
+		// Do not remove `code` field from the query. It's necessary for flagging row in select
+		$query = $this->db->getQuery(true)
+			->select('id, name AS text, code')
+			->from($this->db->quoteName('#__ka_countries'));
+
+		// Filter by language
+		if ($this->query_lang != '')
+		{
+			$query->where($this->query_lang);
+		}
+
+		// Filter by item state
+		if ($this->query_state != '')
+		{
+			$query->where($this->query_state);
+		}
+
+		if ($all == 0)
+		{
+			if ($id == 0)
+			{
+				if (empty($term))
+				{
+					return array();
+				}
+
+				$query->where('name LIKE "' . $this->db->escape($term) . '%"')
+					->order('name ASC');
+
+				$this->db->setQuery($query);
+				$result = $this->db->loadObjectList();
+			}
+			else
+			{
+				if ($multiple == 1)
+				{
+					// TODO Convert ID's into string
+					$ids = $this->input->get('id', '', 'string');
+					$query->where('id IN (' . $ids . ')')
+						->order('name ASC');
+
+					$this->db->setQuery($query);
+					$result = $this->db->loadObjectList();
+				}
+				else
+				{
+					$query->where('id = ' . (int) $id);
+
+					$this->db->setQuery($query);
+					$result = $this->db->loadObject();
+				}
+			}
+		}
+		else
+		{
+			$query->order('name ASC');
+
+			$this->db->setQuery($query);
+			$result = $this->db->loadObjectList();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get list of movies or movie based on filters.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function getMovies()
+	{
+		$id = $this->input->get('id', 0, 'int');
+		$all = $this->input->get('showAll', 0, 'int');
+		$term = $this->input->get('term', '', 'string');
+
+		$query = $this->db->getQuery(true)
+			->select('id, title, year')
+			->from($this->db->quoteName('#__ka_movies'));
+
+		// Filter by language
+		if ($this->query_lang != '')
+		{
+			$query->where($this->query_lang);
+		}
+
+		// Filter by access
+		if ($this->query_access != '')
+		{
+			$query->where($this->query_access);
+		}
+
+		// Filter by item state
+		if ($this->query_state != '')
+		{
+			$query->where($this->query_state);
+		}
+
+		if (empty($all))
+		{
+			if (empty($id))
+			{
+				$query->where("title LIKE '" . $this->db->escape($term) . "%'");
+
+				$this->db->setQuery($query);
+				$result = $this->db->loadObjectList();
+			}
+			else
+			{
+				$query->where('id = ' . (int) $id);
+
+				$this->db->setQuery($query);
+				$result = $this->db->loadObject();
+			}
+		}
+		else
+		{
+			$query->order('title ASC');
+
+			$this->db->setQuery($query);
+			$result = $this->db->loadObjectList();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get list of distributors or distributor based on filters.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function getVendors()
+	{
+		$id = $this->input->get('id', 0, 'int');
+		$all = $this->input->get('showAll', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term = $this->input->get('term', '', 'string');
+
+		$query = $this->db->getQuery(true)
+			->select('id, company_name AS text')
+			->from($this->db->quoteName('#__ka_vendors'));
+
+		// Filter by language
+		if ($this->query_lang != '')
+		{
+			$query->where($this->query_lang);
+		}
+
+		// Filter by item state
+		if ($this->query_state != '')
+		{
+			$query->where($this->query_state);
+		}
+
+		if ($all == 0)
+		{
+			if ($id == 0)
+			{
+				if (empty($term))
+				{
+					return array();
+				}
+
+				$query->where('company_name LIKE "' . $this->db->escape($term) . '%"')
+					->order('company_name ASC');
+
+				$this->db->setQuery($query);
+				$result = $this->db->loadObjectList();
+			}
+			else
+			{
+				if ($multiple == 1)
+				{
+					// TODO Convert ID's into string
+					$ids = $this->input->get('id', '', 'string');
+					$query->where('id IN (' . $ids . ')')
+						->order('company_name ASC');
+
+					$this->db->setQuery($query);
+					$result = $this->db->loadObjectList();
+				}
+				else
+				{
+					$query->where('id = ' . (int) $id);
+
+					$this->db->setQuery($query);
+					$result = $this->db->loadObject();
+				}
+			}
+		}
+		else
+		{
+			$query->order('company_name ASC');
+
+			$this->db->setQuery($query);
+			$result = $this->db->loadObjectList();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get list of trailer files.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function getTrailerFiles()
+	{
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
+		$id = $this->input->get('id', 0, 'int');
+		$data = $this->input->get('data', '', 'string');
+
+		$query = $this->db->getQuery(true)
+			->select($this->db->quoteName(array('movie_id', 'screenshot', 'video', 'subtitles', 'chapters')))
+			->from($this->db->quoteName('#__ka_trailers'))
+			->where('id = ' . (int) $id);
+
+		$this->db->setQuery($query);
+
+		try
+		{
+			$result = $this->db->loadAssoc();
+			$folder = KAContentHelper::getPath('movie', 'trailers', null, $result['movie_id']);
+		}
+		catch (Exception $e)
+		{
+			return array();
+		}
+
+		if ($data != '')
+		{
+			$columns = explode(',', $data);
+
+			// Always attach screenshot if data type = video
+			if (in_array('video', $columns))
+			{
+				$columns[] = 'screenshot';
+				$screenshot['file'] = $result['screenshot'];
+				$screenshot['is_file'] = (!is_file($folder . $result['screenshot'])) ? 0 : 1;
+				$result['screenshot'] = $screenshot;
+			}
+
+			$video = json_decode($result['video']);
+			$result['video'] = array();
+
+			foreach ($video as $key => $item)
+			{
+				$result['video'][$key] = $item;
+				$result['video'][$key]->is_file = (!is_file($folder . $item->src)) ? 0 : 1;
+			}
+
+			$subtitles = json_decode($result['subtitles']);
+			$result['subtitles'] = array();
+
+			foreach ($subtitles as $key => $item)
+			{
+				$result['subtitles'][$key] = $item;
+				$result['subtitles'][$key]->is_file = (!is_file($folder . $item->file)) ? 0 : 1;
+			}
+
+			$chapters = json_decode($result['chapters']);
+			$result['chapters'] = array();
+
+			foreach ($chapters as $key => $item)
+			{
+				$result['chapters'][$key] = $item;
+				$result['chapters']['is_file'] = (!is_file($folder . $item)) ? 0 : 1;
+			}
+
+			$result = array_intersect_key($result, array_flip($columns));
+		}
+
+		return $result;
 	}
 
 	/**
@@ -42,7 +425,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @since 3.0
 	 */
-	public function getAjaxData($element = '')
+	public function getData($element = '')
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
@@ -215,11 +598,11 @@ class KinoarhivModelAPI extends JModelLegacy
 
 			if ($type == 0)
 			{
-				$result = $this->getAjaxData('movies');
+				$result = $this->getData('movies');
 			}
 			elseif ($type == 1)
 			{
-				$result = $this->getAjaxData('names');
+				$result = $this->getData('names');
 			}
 			else
 			{
@@ -454,5 +837,24 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 
 		return $result;
+	}
+
+	public function getRatingById($id, $name)
+	{
+		$db = $this->getDbo();
+
+		switch ($name)
+		{
+			case 'imdb':
+				$cols = array('imdb_votesum', 'imdb_votes');
+				break;
+			default:
+				return false;
+		}
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName($cols))
+			->from($db->quoteName('#__ka_movies'))
+			->where('');
 	}
 }

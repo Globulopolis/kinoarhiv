@@ -19,7 +19,7 @@ $data = $displayData;
 		<span class="ab_letters btn-toolbar">
 			<span class="btn-group uk-button-group">
 				<?php foreach ($alphabet->letters as $letters): ?>
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&letter='.$letters.'&Itemid='.$data['itemid']); ?>" class="btn btn-mini btn-default uk-button uk-button-small"><?php echo $letters; ?></a>
+				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&letter=' . $letters . '&Itemid=' . $data['itemid']); ?>" class="btn btn-mini btn-default uk-button uk-button-small"><?php echo $letters; ?></a>
 				<?php endforeach; ?>
 			</span>
 		</span>

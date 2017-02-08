@@ -38,7 +38,7 @@ class KinoarhivModelPremieres extends JModelList
 				'title', 'm.title',
 				'premiere_date', 'p.premiere_date',
 				'name', 'c.name',
-				'vendor', 'v.company_name', 'v.company_name_intl',
+				'vendor', 'v.company_name',
 				'language', 'p.language',
 				'ordering', 'p.ordering');
 		}
@@ -144,7 +144,7 @@ class KinoarhivModelPremieres extends JModelList
 		$query->from($db->quoteName('#__ka_premieres', 'p'))
 			->select($db->quoteName(array('m.title', 'm.year')))
 			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('p.movie_id'))
-			->select($db->quoteName(array('v.company_name', 'v.company_name_intl')))
+			->select($db->quoteName('v.company_name'))
 			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('p.vendor_id'))
 			->select($db->quoteName(array('c.name', 'c.code')))
 			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('p.country_id'));
@@ -261,24 +261,18 @@ class KinoarhivModelPremieres extends JModelList
 	}
 
 	/**
-	 * Saves the manually set order of records.
+	 * Method save careers ordering in lists.
 	 *
-	 * @return  array
+	 * @param   array    $data      Indexed array of IDs
+	 * @param   integer  $movie_id  Movie ID
+	 *
+	 * @return  boolean
 	 *
 	 * @since   3.0
 	 */
-	public function saveOrder()
+	public function saveOrder($data, $movie_id)
 	{
-		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$data = $app->input->post->get('ord', array(), 'array');
-		$movie_id = $app->input->post->get('movie_id', null, 'int');
-
-		if (count($data) < 2)
-		{
-			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
-		}
-
 		$query_result = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_premieres');
@@ -290,8 +284,8 @@ class KinoarhivModelPremieres extends JModelList
 
 			$query->update($db->quoteName('#__ka_premieres'))
 				->set($db->quoteName('ordering') . " = '" . (int) $key . "'")
-				->where(array($db->quoteName('ordering') . ' = ' . (int) $value, $db->quoteName('movie_id') . ' = ' . (int) $movie_id));
-
+				->where($db->quoteName('ordering') . ' = ' . (int) $value)
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)
@@ -313,18 +307,7 @@ class KinoarhivModelPremieres extends JModelList
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query_result)
-		{
-			$success = true;
-			$message = JText::_('COM_KA_SAVED');
-		}
-		else
-		{
-			$success = false;
-			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
-		}
-
-		return array('success' => $success, 'message' => $message);
+		return (bool) $query_result;
 	}
 
 	/**

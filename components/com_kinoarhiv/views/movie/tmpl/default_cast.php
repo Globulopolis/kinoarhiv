@@ -10,8 +10,8 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.plugin.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.more.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.plugin.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {

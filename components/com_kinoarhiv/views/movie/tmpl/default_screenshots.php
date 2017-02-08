@@ -10,9 +10,10 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.colorbox.min.js');
-KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'js/i18n/colorbox');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <div class="content movie screenshots">
 	<?php if ($this->params->get('use_alphabet') == 1):

@@ -52,41 +52,44 @@ class KAMedia
 	/**
 	 * Create screenshot from videofile
 	 *
-	 * @param   array  $data  An array with the data. folder - path to the folder, screenshot - filename of the
-	 *                        screenshot(if exists), filename - videofile.
+	 * @param   string  $folder      Path to the folder with file.
+	 * @param   string  $filename    Videofile filename.
+	 * @param   string  $time        Time.
 	 *
-	 * @return  mixed  Array with results or false otherwise
+	 * @return  mixed   Array with results or false otherwise
 	 *
 	 * @since  3.0
 	 */
-	public function createVideoScreenshot($data)
+	public function createVideoScreenshot($folder, $filename, $time)
 	{
-		if (!empty($data['screenshot']) && file_exists($data['folder'] . $data['screenshot']))
-		{
-			@unlink($data['folder'] . $data['screenshot']);
-		}
-
+		$app = JFactory::getApplication();
 		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path'));
 
 		if ($ffmpeg_path !== '')
 		{
 			if (!KAComponentHelper::functionExists('shell_exec'))
 			{
-				die('shell_exec() function not exists or safe mode or suhosin is on!');
+				$app->enqueueMessage('shell_exec() function not exists or safe mode or suhosin is on!', 'error');
+
+				return false;
 			}
 
 			$check_lib = $this->checkLibrary($this->params->get('ffmpeg_path'));
 
 			if ($check_lib !== true)
 			{
+				$app->enqueueMessage($check_lib[1], 'error');
+
 				return false;
 			}
 
-			$result_filename = $data['filename'] . '.png';
-			$video_info = $this->getVideoInfo($data['folder'] . $data['filename']);
+			$result_filename = $filename . '.png';
+			$video_info = $this->getVideoInfo($folder . $filename);
 
 			if ($video_info === false)
 			{
+				$app->enqueueMessage(JText::_('ERROR'), 'error');
+
 				return false;
 			}
 
@@ -95,8 +98,8 @@ class KAMedia
 			$scr_h = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;
 
 			@set_time_limit(0);
-			$cmd = $ffmpeg_path . ' -hide_banner -nostats -i ' . $data['folder'] . $data['filename'] . ' -ss ' . $data['time'] .
-				' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $data['folder'] . $result_filename . ' -y';
+			$cmd = $ffmpeg_path . ' -hide_banner -nostats -i ' . $folder . $filename . ' -ss ' . $time .
+				' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $folder . $result_filename . ' -y';
 
 			if (IS_WIN)
 			{
@@ -109,11 +112,16 @@ class KAMedia
 
 			$output = shell_exec($cmd);
 
-			return array($result_filename, '<pre>' . $cmd . '<br />' . $output . '</pre>');
+			return array(
+				'filename' => $result_filename,
+				'stdout'   => '<pre>' . $cmd . '<br />' . $output . '</pre>'
+			);
 		}
 		else
 		{
-			die(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND'));
+			$app->enqueueMessage(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND'), 'error');
+
+			return false;
 		}
 	}
 

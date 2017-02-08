@@ -21,9 +21,8 @@ else
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/ui.aurora.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.rateit.min.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.lazyload.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {

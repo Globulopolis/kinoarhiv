@@ -140,7 +140,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
+			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html')
 			{
@@ -163,7 +163,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		{
 			if ($document->getType() == 'html')
 			{
-				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
 
 				// TODO id key should be changed to avoid a notice about undefined index
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $data['id']);
@@ -489,8 +489,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			$response = KAComponentHelper::getRemoteData(
 				'http://www.kinopoisk.ru/rating/' . (int) $id . '.xml',
 				$parser_conf['imdb']['headers'],
-				30,
-				array('curl', 'socket')
+				30
 			);
 
 			$xml = new SimpleXMLElement($response->body);
@@ -511,8 +510,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			$response = KAComponentHelper::getRemoteData(
 				'http://www.rottentomatoes.com/m/' . $id . '/',
 				$parser_conf['rottentomatoes']['headers'],
-				30,
-				array('curl', 'socket')
+				30
 			);
 
 			$dom = new DOMDocument('1.0', 'utf-8');
@@ -539,8 +537,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			$response = KAComponentHelper::getRemoteData(
 				'http://www.metacritic.com/movie/' . $id,
 				$parser_conf['metacritic']['headers'],
-				30,
-				array('curl', 'socket')
+				30
 			);
 
 			$dom = new DOMDocument('1.0', 'utf-8');
@@ -762,7 +759,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 
 				return;
@@ -804,21 +801,5 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$result = $model->deleteReleases();
 
 		echo json_encode($result);
-	}
-
-	/**
-	 * Method to encode item alias for using in filesystem paths and url.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function getFilesystemAlias()
-	{
-		JLoader::register('KAContentHelper', JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php');
-
-		$input = JFactory::getApplication()->input;
-
-		echo KAContentHelper::getFilesystemAlias($input->get('form_movie_alias', '', 'string'), $input->get('form_movie_title', '', 'string'));
 	}
 }

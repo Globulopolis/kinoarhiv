@@ -90,11 +90,11 @@ class KinoarhivViewReleases extends JViewLegacy
 				);
 			}
 
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('releases.apply');
+			JToolbarHelper::save('releases.save');
+			JToolbarHelper::save2new('releases.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('releases.cancel');
 		}
 		else
 		{
@@ -102,43 +102,30 @@ class KinoarhivViewReleases extends JViewLegacy
 
 			if ($user->authorise('core.create', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('releases.add');
 			}
 
 			if ($user->authorise('core.edit', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('releases.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.delete', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'releases.remove');
 			}
 
 			if ($user->authorise('core.create', 'com_kinoarhiv')
 				&& $user->authorise('core.edit', 'com_kinoarhiv')
 				&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 
 				$dhtml = $layout->render(array('title' => $title));
-				JToolBar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
 			}
 		}
-	}
-
-	protected function getSortFields()
-	{
-		return array(
-			'r.release_date' => JText::_('COM_KA_FIELD_RELEASE_DATE_LABEL'),
-			'm.title'        => JText::_('COM_KA_FIELD_MOVIE_LABEL'),
-			'c.name'         => JText::_('COM_KA_FIELD_RELEASE_COUNTRY'),
-			'r.media_type'   => JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'),
-			'r.language'     => JText::_('JGRID_HEADING_LANGUAGE'),
-			'r.id'           => JText::_('JGRID_HEADING_ID')
-		);
 	}
 }

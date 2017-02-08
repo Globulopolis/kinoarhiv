@@ -62,13 +62,14 @@ class KinoarhivModelRelease extends JModelForm
 	 * Method to get a single record.
 	 *
 	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.0
 	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$_id = $app->input->get('id', array(), 'array');
-		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$id = $app->input->get('id', null, 'array');
 		$query = $db->getQuery(true);
 
 		$query->select(
@@ -79,7 +80,7 @@ class KinoarhivModelRelease extends JModelForm
 			->select($db->quoteName('c.code') . ',' . $db->quoteName('c.name', 'title'))
 			->from($db->quoteName('#__ka_releases', 'r'))
 			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
-			->where($db->quoteName('r.id') . ' = ' . (int) $id);
+			->where($db->quoteName('r.id') . ' = ' . (int) $id[0]);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -101,9 +102,8 @@ class KinoarhivModelRelease extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$id = $app->input->post->get('id', null, 'int');
 
-		if (empty($id))
+		if (empty($data['id']))
 		{
 			$query = $db->getQuery(true);
 
@@ -124,39 +124,28 @@ class KinoarhivModelRelease extends JModelForm
 				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
 				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $id);
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
+
+		$db->setQuery($query);
 
 		try
 		{
-			$db->setQuery($query);
 			$db->execute();
 
-			if (empty($id))
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
 			{
-				$id = $db->insertid();
+				$session_data = $app->getUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data', $session_data);
 			}
-
-			$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.data',
-				array(
-					'success' => true,
-					'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-					'data'    => array('id' => $id)
-				)
-			);
 
 			return true;
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
-				)
-			);
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
@@ -188,62 +177,6 @@ class KinoarhivModelRelease extends JModelForm
 		}
 	}
 
-	// TODO Should be removed in the feature releases
-	public function deleteReleases()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$data = $app->input->post->get('data', array(), 'array');
-		$query = true;
-
-		$db->setDebug(true);
-		$db->lockTable('#__ka_releases');
-		$db->transactionStart();
-
-		foreach ($data as $key => $value)
-		{
-			$_name = explode('_', $value['name']);
-			$item_id = $_name[3];
-
-			$query = $db->getQuery(true);
-
-			$query->delete($db->quoteName('#__ka_releases'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-			$db->setQuery($query . ';');
-
-			if ($db->execute() === false)
-			{
-				$query = false;
-				break;
-			}
-		}
-
-		if ($query === false)
-		{
-			$db->transactionRollback();
-		}
-		else
-		{
-			$db->transactionCommit();
-		}
-
-		$db->unlockTables();
-		$db->setDebug(false);
-
-		if ($query)
-		{
-			$success = true;
-			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
-		}
-		else
-		{
-			$success = false;
-			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
-		}
-
-		return array('success' => $success, 'message' => $message);
-	}
-
 	/**
 	 * Method to validate the form data.
 	 *
@@ -251,7 +184,7 @@ class KinoarhivModelRelease extends JModelForm
 	 * @param   array   $data   The data to validate.
 	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 * @return  mixed   Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
@@ -259,6 +192,12 @@ class KinoarhivModelRelease extends JModelForm
 	 */
 	public function validate($form, $data, $group = null)
 	{
+		// Include the plugins for the delete events.
+		JPluginHelper::importPlugin($this->events_map['validate']);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
+
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);

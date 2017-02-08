@@ -62,18 +62,19 @@ class KinoarhivModelCareer extends JModelForm
 	 * Method to get a single record.
 	 *
 	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.0
 	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$_id = $app->input->get('id', array(), 'array');
-		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$id = $app->input->get('id', null, 'array');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'title', 'is_mainpage', 'is_amplua', 'ordering', 'language')))
 			->from($db->quoteName('#__ka_names_career'))
-			->where($db->quoteName('id') . ' = ' . (int) $id);
+			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -81,6 +82,15 @@ class KinoarhivModelCareer extends JModelForm
 		return $result;
 	}
 
+	/**
+	 * Method to post an item on movie frontpage in cast&crew list.
+	 *
+	 * @param   integer  $offmainpage  Post on frontpage if == 1
+	 *
+	 * @return  boolean
+	 *
+	 * @since  3.0
+	 */
 	public function onmainpage($offmainpage)
 	{
 		$app = JFactory::getApplication();
@@ -103,7 +113,7 @@ class KinoarhivModelCareer extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
@@ -129,7 +139,7 @@ class KinoarhivModelCareer extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
@@ -140,7 +150,7 @@ class KinoarhivModelCareer extends JModelForm
 	 *
 	 * @param   array  $data  The form data.
 	 *
-	 * @return  boolean  True on success.
+	 * @return  boolean
 	 *
 	 * @since   3.0
 	 */
@@ -149,26 +159,12 @@ class KinoarhivModelCareer extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$id = $app->input->post->get('id', null, 'int');
 		$title = trim($data['title']);
 
-		if (empty($title))
+		// Create a new record, update existing otherwise.
+		if (empty($data['id']))
 		{
-			$this->setError(JText::_('COM_KA_REQUIRED'));
-
-			$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('COM_KA_REQUIRED')
-				)
-			);
-
-			return false;
-		}
-
-		if (empty($id))
-		{
-			// Check if career with this title allready exists
+			// Check if career with this title allready exists.
 			$query = $db->getQuery(true);
 
 			$query->select('COUNT(id)')
@@ -180,14 +176,7 @@ class KinoarhivModelCareer extends JModelForm
 
 			if ($count > 0)
 			{
-				$this->setError(JText::_('COM_KA_CAREER_EXISTS'));
-
-				$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.data',
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_CAREER_EXISTS')
-					)
-				);
+				$app->enqueueMessage(JText::_('COM_KA_CAREER_EXISTS'), 'error');
 
 				return false;
 			}
@@ -208,41 +197,78 @@ class KinoarhivModelCareer extends JModelForm
 				->set($db->quoteName('is_amplua') . " = '" . (int) $data['is_amplua'] . "'")
 				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $id);
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
+
+		$db->setQuery($query);
 
 		try
 		{
-			$db->setQuery($query);
 			$db->execute();
 
-			if (empty($id))
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
 			{
-				$id = $db->insertid();
+				$session_data = $app->getUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', $session_data);
 			}
-
-			$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.data',
-				array(
-					'success' => true,
-					'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-					'data'    => array('id' => $id, 'title' => $title)
-				)
-			);
 
 			return true;
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
-				)
-			);
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  mixed   Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   12.2
+	 */
+	public function validate($form, $data, $group = null)
+	{
+		// Include the plugins for the delete events.
+		JPluginHelper::importPlugin($this->events_map['validate']);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
+
+		// Filter and validate the form data.
+		$data = $form->filter($data);
+		$return = $form->validate($data, $group);
+
+		// Check for an error.
+		if ($return instanceof Exception)
+		{
+			$this->setError($return->getMessage());
+
+			return false;
+		}
+
+		// Check the validation results.
+		if ($return === false)
+		{
+			// Get the validation messages from the form.
+			foreach ($form->getErrors() as $message)
+			{
+				$this->setError($message);
+			}
+
+			return false;
+		}
+
+		return $data;
 	}
 }

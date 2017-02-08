@@ -22,12 +22,12 @@ JHtml::_('behavior.keepalive');
 
 			_$('input.required').each(function(){
 				var _this = _$(this);
-				_$('#j-main-container').aurora.destroy({indexes:'all'});
+				_$('#system-message-container').aurora.destroy({indexes:'all'});
 
 				if (_this.val() == '') {
 					state_required = false;
 					_this.parent().prev('div').find('label').addClass('red-label');
-					showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				} else {
 					_this.parent().prev('div').find('label').removeClass('red-label');
 				}
@@ -41,7 +41,7 @@ JHtml::_('behavior.keepalive');
 								document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=edit&param=awards&award_id='+response.ids[0]+'&item_id='+response.ids[1]+'&award_type='+_$('#form_r_type').val();
 							}
 
-							showMsg('#j-main-container', response.message);
+							showMsg('#system-message-container', response.message);
 							_$('input[name="control_id[0]"]').val(response.ids[0]);
 							_$('input[name="control_id[1]"]').val(response.ids[1]);
 						} else if (task == 'save') {
@@ -50,10 +50,10 @@ JHtml::_('behavior.keepalive');
 							document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=add&param=<?php echo $this->param; ?>';
 						}
 					} else {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 					}
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		}

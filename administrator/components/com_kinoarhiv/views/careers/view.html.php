@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * View class for a list of careers.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewCareers extends JViewLegacy
 {
 	protected $items;
@@ -20,6 +25,17 @@ class KinoarhivViewCareers extends JViewLegacy
 
 	protected $form;
 
+	/**
+	 * Display the view
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
@@ -85,6 +101,15 @@ class KinoarhivViewCareers extends JViewLegacy
 		$app->input->set('hidemainmenu', true);
 	}
 
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @param   string  $task  Task(not a task from URL).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function addToolbar($task = '')
 	{
 		$user = JFactory::getUser();
@@ -92,25 +117,26 @@ class KinoarhivViewCareers extends JViewLegacy
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'address');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('careers.apply');
+			JToolbarHelper::save('careers.save');
+			JToolbarHelper::save2new('careers.save2new');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('careers.cancel');
 		}
 		elseif ($task == 'edit')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE') . ': ' . $this->form->getValue('title')), 'address');
-			JToolbarHelper::apply('apply');
-			JToolbarHelper::save('save');
-			JToolbarHelper::save2new('save2new');
+			JToolbarHelper::apply('careers.apply');
+			JToolbarHelper::save('careers.save');
+			JToolbarHelper::save2new('careers.save2new');
 
 			if ($this->form->getValue('id') != 0)
 			{
 				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			}
+
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel();
+			JToolbarHelper::cancel('careers.cancel');
 		}
 		else
 		{
@@ -118,27 +144,28 @@ class KinoarhivViewCareers extends JViewLegacy
 
 			if ($user->authorise('core.create.career', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::addNew('add');
+				JToolbarHelper::addNew('careers.add');
 			}
 
 			if ($user->authorise('core.edit.career', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::editList('edit');
+				JToolbarHelper::editList('careers.edit');
 				JToolbarHelper::divider();
 			}
 
 			if ($user->authorise('core.delete.career', 'com_kinoarhiv'))
 			{
-				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'remove');
+				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'careers.remove');
 				JToolbarHelper::divider();
 			}
 
 			JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
 			JToolbarHelper::divider();
 
-			if ($user->authorise('core.create.career', 'com_kinoarhiv') && $user->authorise('core.edit.career', 'com_kinoarhiv') && $user->authorise('core.edit.state.career', 'com_kinoarhiv'))
+			if ($user->authorise('core.create.career', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.career', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state.career', 'com_kinoarhiv'))
 			{
-				JHtml::_('bootstrap.modal', 'collapseModal');
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');
 

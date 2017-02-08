@@ -327,7 +327,7 @@ class KinoarhivModelMovie extends JModelForm
 		if ($params->get('premieres_list_limit') > 0)
 		{
 			$query_p = $db->getQuery(true)
-				->select('p.id, p.vendor_id, p.premiere_date, p.info, c.name AS country, v.company_name, v.company_name_intl')
+				->select('p.id, p.vendor_id, p.premiere_date, p.info, c.name AS country, v.company_name')
 				->from($db->quoteName('#__ka_premieres', 'p'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = p.vendor_id')
 				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = p.country_id')
@@ -356,7 +356,7 @@ class KinoarhivModelMovie extends JModelForm
 		if ($params->get('releases_list_limit') > 0)
 		{
 			$query_r = $db->getQuery(true)
-				->select('r.id, r.movie_id, r.release_date, c.name AS country, v.company_name, v.company_name_intl, media.title AS media_type')
+				->select('r.id, r.movie_id, r.release_date, c.name AS country, v.company_name, media.title AS media_type')
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
 				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
@@ -756,8 +756,8 @@ class KinoarhivModelMovie extends JModelForm
 		$query = $db->getQuery(true)
 			->select(
 				$db->quoteName(
-					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.filename', 'tr.resolution',
-						'tr.dar', 'tr.duration', 'tr._subtitles', 'tr._chapters', 'tr.is_movie', 'm.alias', 'm.fs_alias'
+					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.resolution', 'tr.dar',
+						'tr.duration', 'tr.video', 'tr.subtitles', 'tr.chapters', 'tr.is_movie', 'm.alias', 'm.fs_alias'
 					)
 				)
 			)
@@ -794,8 +794,7 @@ class KinoarhivModelMovie extends JModelForm
 
 						if (!is_file($checking_path))
 						{
-							$value->screenshot = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
-								. $params->get('ka_theme') . '/images/video_off.png';
+							$value->screenshot = JUri::base() . 'media/com_kinoarhiv/images/video_off.png';
 						}
 						else
 						{
@@ -932,8 +931,7 @@ class KinoarhivModelMovie extends JModelForm
 
 					if (!is_file($checking_path))
 					{
-						$value->screenshot = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
-							. $params->get('ka_theme') . '/images/video_off.png';
+						$value->screenshot = JUri::base() . 'media/com_kinoarhiv/images/video_off.png';
 					}
 					else
 					{
@@ -983,7 +981,7 @@ class KinoarhivModelMovie extends JModelForm
 					$path = JPATH_ROOT . '/' . $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/';
 				}
 
-				$value->files['video'] = json_decode($value->filename, true);
+				$value->files['video'] = json_decode($value->video, true);
 				$value->files['video_links'] = array();
 
 				if (count($value->files['video']) > 0)
@@ -1042,7 +1040,7 @@ class KinoarhivModelMovie extends JModelForm
 				}
 
 				// Check if subtitle file exists
-				$_subtitles = json_decode($value->_subtitles, true);
+				$_subtitles = json_decode($value->subtitles, true);
 
 				if (!empty($_subtitles))
 				{
@@ -1069,7 +1067,7 @@ class KinoarhivModelMovie extends JModelForm
 				$value->files['subtitles'] = $_subtitles;
 
 				// Check if chapter file exists
-				$_chapters = json_decode($value->_chapters, true);
+				$_chapters = json_decode($value->chapters, true);
 
 				if (!empty($_chapters))
 				{
@@ -1145,8 +1143,9 @@ class KinoarhivModelMovie extends JModelForm
 		$query = $db->getQuery(true)
 			->select(
 				$db->quoteName(
-					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.filename', 'tr.resolution',
-						'tr.dar', 'tr.duration', 'tr._subtitles', 'tr._chapters', 'm.title', 'm.year', 'm.alias', 'm.fs_alias'
+					array('tr.id', 'tr.title', 'tr.embed_code', 'tr.screenshot', 'tr.urls', 'tr.resolution', 'tr.dar',
+						'tr.duration', 'tr.video', 'tr.subtitles', 'tr.chapters', 'm.title', 'm.year', 'm.alias',
+						'm.fs_alias'
 					)
 				)
 			)
@@ -1303,8 +1302,7 @@ class KinoarhivModelMovie extends JModelForm
 
 				if (!is_file($checking_path))
 				{
-					$result->screenshot = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/'
-						. $params->get('ka_theme') . '/images/video_off.png';
+					$result->screenshot = JUri::base() . 'media/com_kinoarhiv/images/video_off.png';
 				}
 				else
 				{
@@ -1356,7 +1354,7 @@ class KinoarhivModelMovie extends JModelForm
 					. '/' . $result->fs_alias . '/' . $id . '/';
 			}
 
-			$result->files['video'] = json_decode($result->filename, true);
+			$result->files['video'] = json_decode($result->video, true);
 			$result->files['video_links'] = array();
 
 			// Checking video extentions
@@ -1416,7 +1414,7 @@ class KinoarhivModelMovie extends JModelForm
 			}
 
 			// Check if subtitle file exists
-			$_subtitles = json_decode($result->_subtitles, true);
+			$_subtitles = json_decode($result->subtitles, true);
 
 			if (!empty($_subtitles))
 			{
@@ -1443,7 +1441,7 @@ class KinoarhivModelMovie extends JModelForm
 			$result->files['subtitles'] = $_subtitles;
 
 			// Check if chapter file exists
-			$_chapters = json_decode($result->_chapters, true);
+			$_chapters = json_decode($result->chapters, true);
 
 			if (!empty($_chapters))
 			{

@@ -30,7 +30,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				searchtext: '<?php echo JText::_('JSEARCH_FILTER'); ?>'
 			},
 			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
-			grid_width: $('#movie_tabs').width()
+			grid_width: $('#moviesContent').width()
 		};
 
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
@@ -233,7 +233,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				$.post('index.php?option=com_kinoarhiv&controller=movies&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
 					aw_grid.trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

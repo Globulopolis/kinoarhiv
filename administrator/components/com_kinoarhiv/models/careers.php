@@ -10,8 +10,21 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * Class KinoarhivModelCareers
+ *
+ * @since  3.0
+ */
 class KinoarhivModelCareers extends JModelList
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JModelLegacy
+	 * @since   3.0
+	 */
 	public function __construct($config = array())
 	{
 		if (empty($config['filter_fields']))
@@ -28,6 +41,22 @@ class KinoarhivModelCareers extends JModelList
 		parent::__construct($config);
 	}
 
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * This method should only be called once per instantiation and is designed
+	 * to be called on the first call to the getState() method unless the model
+	 * configuration flag to ignore the request is set.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @param   string  $ordering   An optional ordering field.
+	 * @param   string  $direction  An optional direction (asc|desc).
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
 		$app = JFactory::getApplication();
@@ -57,6 +86,19 @@ class KinoarhivModelCareers extends JModelList
 		parent::populateState('a.title', 'asc');
 	}
 
+	/**
+	 * Method to get a store id based on the model configuration state.
+	 *
+	 * This is necessary because the model is used by the component and
+	 * different modules that might need different sets of data or different
+	 * ordering requirements.
+	 *
+	 * @param   string  $id  An identifier string to generate the store id.
+	 *
+	 * @return  string  A store id.
+	 *
+	 * @since   3.0
+	 */
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
@@ -66,6 +108,14 @@ class KinoarhivModelCareers extends JModelList
 		return parent::getStoreId($id);
 	}
 
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @throws  Exception
+	 * @since   3.0
+	 */
 	protected function getListQuery()
 	{
 		$db = $this->getDbo();
@@ -150,17 +200,18 @@ class KinoarhivModelCareers extends JModelList
 		return $items;
 	}
 
-	public function saveOrder()
+	/**
+	 * Method save careers ordering in lists.
+	 *
+	 * @param   array  $data  Indexed array of IDs
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.0
+	 */
+	public function saveOrder($data)
 	{
-		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$data = $app->input->post->get('ord', array(), 'array');
-
-		if (count($data) < 2)
-		{
-			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
-		}
-
 		$query_result = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_names_career');
@@ -194,20 +245,16 @@ class KinoarhivModelCareers extends JModelList
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query_result)
-		{
-			$success = true;
-			$message = JText::_('COM_KA_SAVED');
-		}
-		else
-		{
-			$success = false;
-			$message = JText::_('COM_KA_SAVE_ORDER_ERROR');
-		}
-
-		return array('success' => $success, 'message' => $message);
+		return (bool) $query_result;
 	}
 
+	/**
+	 * Method to perform batch operations on an item or a set of items.
+	 *
+	 * @return  boolean  Returns true on success, false on failure.
+	 *
+	 * @since   3.0
+	 */
 	public function batch()
 	{
 		$app = JFactory::getApplication();

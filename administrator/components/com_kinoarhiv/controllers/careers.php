@@ -59,7 +59,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 	/**
 	 * Proxy to KinoarhivControllerCareers::save()
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -71,7 +71,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 	/**
 	 * Proxy to KinoarhivControllerCareers::save()
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -83,31 +83,19 @@ class KinoarhivControllerCareers extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
 		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.create.career', 'com_kinoarhiv') && !$user->authorise('core.edit.career', 'com_kinoarhiv'))
 		{
-			if ($document->getType() == 'html')
-			{
-				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-
-				return;
-			}
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
 		$app = JFactory::getApplication();
@@ -117,18 +105,9 @@ class KinoarhivControllerCareers extends JControllerLegacy
 
 		if (!$form)
 		{
-			if ($document->getType() == 'html')
-			{
-				$app->enqueueMessage($model->getError(), 'error');
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
 
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => $model->getError()));
-
-				return;
-			}
+			return;
 		}
 
 		// Process aliases for columns name
@@ -142,80 +121,50 @@ class KinoarhivControllerCareers extends JControllerLegacy
 			}
 		}
 
-		// Store data for use in KinoarhivModelCareer::loadFormData()
-		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', $data);
 		$validData = $model->validate($form, $data);
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=careers.edit&id[]=' . $data['id']);
 
-			if ($document->getType() == 'html')
-			{
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]=' . $data['id']);
-
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => $errors));
-
-				return;
-			}
+			return;
 		}
 
+		// Store data for use in KinoarhivModelCareer::loadFormData()
+		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.careers.' . $user->id . '.data');
 
 		if (!$result)
 		{
-			if ($document->getType() == 'html')
-			{
-				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
-				$this->setMessage($this->getError(), 'error');
+			// Errors enqueue in the model
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=careers.edit&id[]=' . $validData['id']);
 
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]=' . $data['id']);
-
-				return;
-			}
-			else
-			{
-				echo json_encode($session_data);
-
-				return;
-			}
+			return;
 		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
 
 		// Delete session data taken from model
-		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', null);
 
-		if ($document->getType() == 'html')
+		// Set the redirect based on the task.
+		switch ($this->getTask())
 		{
-			$id = $session_data['data']['id'];
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=careers.add', $message);
+				break;
+			case 'apply':
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=careers.edit&id[]=' . $session_data['id'], $message);
+				break;
 
-			// Set the redirect based on the task.
-			switch ($this->getTask())
-			{
-				case 'save2new':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=careers&task=add', $message);
-					break;
-				case 'apply':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=careers&task=edit&id[]=' . $id, $message);
-					break;
-
-				case 'save':
-				default:
-					$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', $message);
-					break;
-			}
-		}
-		else
-		{
-			echo json_encode($session_data);
+			case 'save':
+			default:
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', $message);
+				break;
 		}
 	}
 
@@ -243,12 +192,8 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		{
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
-			return false;
+			return;
 		}
-
-		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.careers.global.data', null);
 
 		$message = $offmainpage ? JText::_('COM_KA_FIELD_CAREER_MAINPAGE_UNPUBLISHED') : JText::_('COM_KA_FIELD_CAREER_MAINPAGE_PUBLISHED');
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', $message);
@@ -283,10 +228,6 @@ class KinoarhivControllerCareers extends JControllerLegacy
 			return;
 		}
 
-		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.careers.global.data', null);
-
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 
@@ -299,39 +240,10 @@ class KinoarhivControllerCareers extends JControllerLegacy
 	 */
 	public function cancel()
 	{
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-
-		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.admin', 'com_kinoarhiv'))
-		{
-			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-			return;
-		}
-
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.data', null);
-		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', null);
+		JFactory::getApplication()->setUserState('com_kinoarhiv.careers.' . JFactory::getUser()->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=careers');
-	}
-
-	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function saveOrder()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('careers');
-		$result = $model->saveOrder();
-
-		echo json_encode($result);
 	}
 
 	/**
@@ -366,7 +278,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=careers');
 
 				return;

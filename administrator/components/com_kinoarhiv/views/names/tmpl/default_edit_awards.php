@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-if ($this->form->getValue('id', $this->form_edit_group) == 0)
+if ($this->id == 0)
 {
 	echo JText::_('COM_KA_NO_ID');
 
@@ -30,7 +30,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 				searchtext: '<?php echo JText::_('JSEARCH_FILTER'); ?>'
 			},
 			grid_height: Math.round(($(window).height() - $('#adminForm').offset().top) - 180),
-			grid_width: $('#name_tabs').width()
+			grid_width: $('#namesContent').width()
 		};
 
 		aw_grid_cfg.grid_height = (aw_grid_cfg.grid_height < 100) ? 200 : aw_grid_cfg.grid_height;
@@ -38,7 +38,7 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 		var aw_grid = $('#list_awards');
 
 		aw_grid.jqGrid({
-			url: 'index.php?option=com_kinoarhiv&controller=names&task=getAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>',
+			url: 'index.php?option=com_kinoarhiv&controller=names&task=getAwards&format=json<?php echo $this->id != 0 ? '&id=' . $this->id : ''; ?>',
 			datatype: 'json',
 			height: aw_grid_cfg.grid_height,
 			width: aw_grid_cfg.grid_width,
@@ -228,11 +228,11 @@ if ($this->form->getValue('id', $this->form_edit_group) == 0)
 					return;
 				}
 
-				$.post('index.php?option=com_kinoarhiv&controller=names&task=deleteRelAwards&format=json<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id=' . $this->form->getValue('id', $this->form_edit_group) : ''; ?>', {'data': items.serializeArray()}, function(response){
+				$.post('index.php?option=com_kinoarhiv&controller=names&task=deleteRelAwards&format=json<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?>', {'data': items.serializeArray()}, function(response){
 					showMsg('.awards-container', response.message);
 					$('#list_awards').trigger('reloadGrid');
 				}).fail(function(xhr, status, error){
-					showMsg('#j-main-container', error);
+					showMsg('#system-message-container', error);
 				});
 			}
 		});

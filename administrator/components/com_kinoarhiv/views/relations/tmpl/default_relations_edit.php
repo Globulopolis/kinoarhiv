@@ -21,12 +21,12 @@ JHtml::_('behavior.keepalive');
 
 			jQuery('input.required').each(function(){
 				var _this = jQuery(this);
-				jQuery('#j-main-container').aurora.destroy({indexes:'all'});
+				jQuery('#system-message-container').aurora.destroy({indexes:'all'});
 
 				if (_this.val() == '') {
 					state_required = false;
 					_this.parent().prev('div').find('label').addClass('red-label');
-					showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				} else {
 					_this.parent().prev('div').find('label').removeClass('red-label');
 				}
@@ -35,7 +35,7 @@ JHtml::_('behavior.keepalive');
 				jQuery.post('index.php?option=com_kinoarhiv&controller=relations&task='+task+'&element=<?php echo $this->element; ?>&format=json', jQuery('form').serialize(), function(response){
 					if (response.success) {
 						if (task == 'apply') {
-							showMsg('#j-main-container', response.message);
+							showMsg('#system-message-container', response.message);
 							jQuery('input[name="control_id[0]"]').val(response.ids[0]);
 							jQuery('input[name="control_id[1]"]').val(response.ids[1]);
 						} else if (task == 'save') {
@@ -44,7 +44,7 @@ JHtml::_('behavior.keepalive');
 							document.location.href = 'index.php?option=com_kinoarhiv&controller=relations&task=add&element=<?php echo $this->element; ?>&param=<?php echo $this->param; ?>';
 						}
 					} else {
-						showMsg('#j-main-container', response.message);
+						showMsg('#system-message-container', response.message);
 					}
 				});
 			}

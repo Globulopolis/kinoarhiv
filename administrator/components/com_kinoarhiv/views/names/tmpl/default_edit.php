@@ -11,26 +11,33 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
-KAComponentHelper::loadMediamanagerAssets();
+KAComponentHelperBackend::loadMediamanagerAssets();
+
+$this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0;
 ?>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js"></script>
-<?php KAComponentHelper::getScriptLanguage('grid.locale-', false, 'grid', false); ?>
+<?php KAComponentHelper::getScriptLanguage('grid.locale-', 'media/com_kinoarhiv/js/i18n/grid/', false); ?>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
 <script type="text/javascript">
+	Kinoarhiv.setActiveTab();
+
 	Joomla.submitbutton = function(task) {
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
-			if (jQuery('#form_name_name').val() == '' || jQuery('#form_name_latin_name').val() == '' || jQuery('#form_name_alias').val() == '') {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
+			if (document.getElementById('form_name_name').value == ''
+				|| document.getElementById('form_name_latin_name').value == ''
+				|| document.getElementById('form_name_alias').value == ''
+			) {
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_REQUIRED'); ?>');
 				return;
 			}
 		} else if (task == 'gallery') {
 			var tab = (task == 'gallery') ? '&tab=3' : '';
-			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? '&id='.$this->form->getValue('id', $this->form_edit_group) : ''; ?>';
+			var url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type='+ task + tab +'<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?>';
 			var handler = window.open(url);
 			if (!handler) {
-				showMsg('#j-main-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>'+url+'<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
+				showMsg('#system-message-container', '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_A'); ?>' + url + '<?php echo JText::_('COM_KA_NEWWINDOW_BLOCKED_B'); ?>');
 			}
 
 			return false;
@@ -45,23 +52,7 @@ KAComponentHelper::loadMediamanagerAssets();
 		var bootstrapButton = $.fn.button.noConflict();
 		$.fn.bootstrapBtn = bootstrapButton;
 
-		var active_tab = 0;
-		if (typeof Cookies.get('com_kinoarhiv.name.tabs') == 'undefined') {
-			Cookies.set('com_kinoarhiv.name.tabs', 0);
-		} else {
-			active_tab = Cookies.get('com_kinoarhiv.name.tabs');
-		}
-
-		$('#name_tabs').tabs({
-			create: function(event, ui){
-				$(this).tabs('option', 'active', parseInt(active_tab, 10));
-			},
-			activate: function(event, ui){
-				Cookies.set('com_kinoarhiv.name.tabs', ui.newTab.index());
-			}
-		});
-
-		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+		<?php if ($this->id != 0): ?>
 		$('.cmd-rules').click(function(e){
 			e.preventDefault();
 			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
@@ -115,81 +106,91 @@ KAComponentHelper::loadMediamanagerAssets();
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<div class="span12">
-				<div id="name_tabs">
-					<ul>
-						<li><a href="#page-main"><?php echo JText::_('COM_KA_NAMES_TAB_MAIN'); ?></a></li>
-						<li><a href="#page-awards"><?php echo JText::_('COM_KA_NAMES_TAB_AWARDS'); ?></a></li>
-						<li><a href="#page-meta"><?php echo JText::_('COM_KA_NAMES_TAB_META'); ?></a></li>
-						<li><a href="#page-publ"><?php echo JText::_('COM_KA_NAMES_TAB_PUB'); ?></a></li>
-					</ul>
-					<div id="page-main">
-						<?php echo $this->loadTemplate('edit_info'); ?>
-					</div>
-					<div id="page-awards">
-						<?php echo $this->loadTemplate('edit_awards'); ?>
-					</div>
-					<div id="page-meta">
-						<?php echo $this->loadTemplate('edit_meta'); ?>
-					</div>
-					<div id="page-publ">
-						<div class="row-fluid">
-							<div class="span6">
-								<fieldset class="form-horizontal">
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('link_titles', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('link_titles', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_name_wallpp', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_name_wallpp', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_name_posters', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_name_posters', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_name_photos', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_name_photos', $this->form_attribs_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('tab_name_awards', $this->form_attribs_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('tab_name_awards', $this->form_attribs_group); ?></div>
-									</div>
-								</fieldset>
-							</div>
-							<div class="span6">
-								<fieldset class="form-horizontal">
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('language', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('language', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('access', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_edit_group); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('state', $this->form_edit_group); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
-										<div class="controls">
-										<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+			<?php echo JHtml::_('bootstrap.startTabSet', 'names', array('active' => 'page0')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page0', JText::_('COM_KA_NAMES_TAB_MAIN')); ?>
+
+				<div id="page0">
+					<?php echo $this->loadTemplate('edit_info'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page1', JText::_('COM_KA_NAMES_TAB_AWARDS')); ?>
+
+				<div id="page1">
+					<?php echo $this->loadTemplate('edit_awards'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page2', JText::_('COM_KA_NAMES_TAB_META')); ?>
+
+				<div id="page2">
+					<?php echo $this->loadTemplate('edit_meta'); ?>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page3', JText::_('COM_KA_NAMES_TAB_PUB')); ?>
+
+				<div id="page3">
+					<div class="row-fluid">
+						<div class="span6">
+							<fieldset class="form-horizontal">
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('ordering', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('ordering', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('link_titles', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('link_titles', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('tab_name_wallpp', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('tab_name_wallpp', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('tab_name_posters', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('tab_name_posters', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('tab_name_photos', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('tab_name_photos', $this->form_attribs_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('tab_name_awards', $this->form_attribs_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('tab_name_awards', $this->form_attribs_group); ?></div>
+								</div>
+							</fieldset>
+						</div>
+						<div class="span6">
+							<fieldset class="form-horizontal">
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('language', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('language', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('access', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('access', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_edit_group); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('state', $this->form_edit_group); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
+									<div class="controls">
+										<?php if ($this->id != 0): ?>
 											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php else: ?>
 											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
 										<?php endif; ?>
-										</div>
 									</div>
-								</fieldset>
-							</div>
+								</div>
+							</fieldset>
 						</div>
 					</div>
 				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+			<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 			</div>
 		</div>
 	</div>
@@ -199,6 +200,7 @@ KAComponentHelper::loadMediamanagerAssets();
 	<?php echo $this->form->getInput('id', $this->form_edit_group)."\n"; ?>
 	<input type="hidden" name="controller" value="names" />
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="id" id="id" value="<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" />
+	<input type="hidden" name="id" id="id" value="<?php echo $this->id; ?>" />
+	<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.names.tabs.' . $this->user->get('id') . '.' . $this->id); ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

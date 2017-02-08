@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form addrulepath="/administrator/components/com_kinoarhiv/models/rules">
+<form addrulepath="administrator/components/com_kinoarhiv/models/rules"
+	  addfieldpath="/components/com_kinoarhiv/models/fields">
 	<fieldset name="edit">
-		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
-			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
-		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="false"/>
-		<field name="movie_id" type="movies" label="COM_KA_FIELD_MOVIE_LABEL" required="true" class="span12"
-			   filter="intval" size="11" data-ac-type="movies"/>
+		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="false"
+			   required="true"/>
+		<field name="movie_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_LABEL" filter="integer" required="true"
+			   class="span12" data-content="movies" data-allow-clear="true" data-remote="true" data-lang="*"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			<option value=""></option>
+		</field>
 		<field name="created" type="datetime" default="NOW" class="inputbox" datatype="datetime"
 			   label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
 		<field name="uid" type="user" label="COM_KA_REVIEWS_FIELD_USER" labelclass="control-label"/>
@@ -18,9 +21,11 @@
 			<option value="3">COM_KA_REVIEWS_TYPE_3</option>
 		</field>
 		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-			   filter="intval" size="1" default="1">
+			   filter="integer" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field>
+		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
 	</fieldset>
 </form>

@@ -10,8 +10,12 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('bootstrap.tooltip');
+
+$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+$columns   = 7;
 
 if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music')
 {
@@ -26,26 +30,28 @@ else
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(pressbutton) {
-		if (pressbutton == 'edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (pressbutton == 'genres.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
+
 			return;
 		}
 		if (pressbutton == 'relations') {
 			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=<?php echo $item_type; ?>';
+
 			return;
 		}
 		Joomla.submitform(pressbutton);
 	};
 
 	jQuery(document).ready(function($){
-		$('#articleList a.updateStat').click(function(e){
+		$('a.updateStat').click(function(e){
 			e.preventDefault();
-			var _this = $(this);
+			var $this = $(this);
 
-			$.getJSON('index.php?option=com_kinoarhiv&controller=genres&task=updateStat&type=<?php echo $item_type; ?>&id[]='+_this.closest('tr').attr('sortable-group-id')+'&format=json&<?php echo JSession::getFormToken(); ?>=1', function(response){
+			$.getJSON($this.attr('href') + '&boxchecked=1&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {
-					_this.closest('td').find('span.total').text(response.total);
-					showMsg('#system-message-container', '<?php echo JText::_('COM_KA_GENRES_STATS_UPDATED'); ?>&nbsp;' + response.total + '<?php echo JText::_($upd_stat_text); ?>');
+					$this.closest('td').find('span.total').text(response.total);
+					showMsg('#system-message-container', response.message + '&nbsp;' + response.total + '<?php echo JText::_($upd_stat_text); ?>');
 				} else {
 					showMsg('#system-message-container', response.message);
 				}
@@ -54,7 +60,7 @@ else
 	});
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres&type='.$item_type); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres&type=' . $item_type); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
@@ -88,21 +94,21 @@ else
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="6" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item): ?>
-				<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->id; ?>">
+				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
 					<td class="center hidden-phone">
-						<?php echo JHtml::_('jgrid.published', $item->state, $i, '', $this->canEditState, 'cb'); ?>
+						<?php echo JHtml::_('jgrid.published', $item->state, $i, 'genres.', $this->canEditState, 'cb'); ?>
 					</td>
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&controller=genres&type='.$item_type.'&task=edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&type=' . $item_type . '&task=genres.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>
 								<span class="small">(<?php echo JText::_('JFIELD_ALIAS_LABEL'); ?>: <?php echo $this->escape($item->alias); ?>)</span>
 							<?php else : ?>
@@ -111,7 +117,16 @@ else
 						</div>
 					</td>
 					<td class="small hidden-phone">
-						<span class="total"><?php echo $item->stats; ?></span> <?php if ($this->canUpdateStat) : ?><span style="float: right;"><a href="#" class="hasTooltip updateStat" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" /></a></span><?php endif; ?>
+						<span class="total"><?php echo $item->stats; ?></span>&nbsp;
+						<?php if ($this->canUpdateStat) : ?>
+
+						<span style="float: right;">
+							<a href="index.php?option=com_kinoarhiv&task=genres.updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo $item->id; ?>&format=json" class="hasTooltip updateStat" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
+								<img src="<?php echo JUri::base(); ?>/components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" />
+							</a>
+						</span>
+
+						<?php endif; ?>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $this->escape($item->access_level); ?>
@@ -124,18 +139,34 @@ else
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type='.$item_type.'&id='.$item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS').': '.$this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=' . $item_type . '&id=' . $item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS') . ': ' . $this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
 						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>
 				<?php endforeach;
 			endif; ?>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="<?php echo $columns; ?>"></td>
+				</tr>
+			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php echo $this->loadTemplate('batch'); ?>
+		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
+			&& $user->authorise('core.edit', 'com_kinoarhiv')
+			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+			<?php echo JHtml::_(
+				'bootstrap.renderModal',
+				'collapseModal',
+				array(
+					'title' => JText::_('COM_KA_BATCH_OPTIONS'),
+					'footer' => $this->loadTemplate('batch_footer')
+				),
+				$this->loadTemplate('batch_body')
+			); ?>
+		<?php endif; ?>
 
-		<input type="hidden" name="controller" value="genres" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>

@@ -5,7 +5,7 @@
 			<field name="id" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
 				   default="0" readonly="true"/>
 			<field name="parent_id" type="movies" default="0" label="COM_KA_FIELD_MOVIE_PARENT_LABEL"
-				   description="COM_KA_FIELD_MOVIE_PARENT_DESC" class="span12" filter="intval" size="11"
+				   description="COM_KA_FIELD_MOVIE_PARENT_DESC" class="span12" filter="integer" size="11"
 				   data-ac-type="movies" data-sel-size="1" data-allow-clear="true" data-ignore-ids="true"/>
 			<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12" required="true"
 				   filter="string" size="45"/>
@@ -44,7 +44,7 @@
 				<option value="r">COM_KA_FIELD_MOVIE_RATES_MPAA_R</option>
 				<option value="nc-17">COM_KA_FIELD_MOVIE_RATES_MPAA_NC17</option>
 			</field>
-			<field name="age_restrict" type="list" label="COM_KA_FIELD_MOVIE_RATES_RU" class="span10" filter="intval"
+			<field name="age_restrict" type="list" label="COM_KA_FIELD_MOVIE_RATES_RU" class="span10" filter="integer"
 				   default="-1">
 				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
 				<option value="0">COM_KA_FIELD_MOVIE_RATES_RU_0</option>
@@ -55,7 +55,7 @@
 				<option value="21">COM_KA_FIELD_MOVIE_RATES_RU_21</option>
 			</field>
 			<field name="ua_rate" type="list" label="COM_KA_FIELD_MOVIE_RATES_UA"
-				   description="COM_KA_FIELD_MOVIE_RATES_UA_DESC" class="span10" filter="intval" default="0">
+				   description="COM_KA_FIELD_MOVIE_RATES_UA_DESC" class="span10" filter="integer" default="0">
 				<option value="-1">COM_KA_FIELD_MOVIE_RATES_NA</option>
 				<option value="0">COM_KA_FIELD_MOVIE_RATES_UA_0</option>
 				<option value="1">COM_KA_FIELD_MOVIE_RATES_UA_1</option>
@@ -64,15 +64,15 @@
 			<field name="imdb_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_IMDB" class="span6"
 				   filter="string" size="15"/>
 			<field name="imdb_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_IMDB_VOTES" class="span6"
-				   filter="intval" size="15"/>
+				   filter="integer" size="15"/>
 			<field name="imdb_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_IMDB_ID" class="span12"
-				   filter="intval" size="45"/>
+				   filter="integer" size="45"/>
 			<field name="kp_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_KP" class="span6"
 				   filter="string" size="15"/>
 			<field name="kp_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_KP_VOTES" class="span6"
-				   filter="intval" size="15"/>
+				   filter="integer" size="15"/>
 			<field name="kp_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_KP_ID" class="span12"
-				   filter="intval" size="45"/>
+				   filter="integer" size="45"/>
 			<field name="rate_fc" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT" class="span6"
 				   filter="string" size="45"/>
 			<field name="rottentm_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_RT_ID" class="span12"
@@ -81,10 +81,10 @@
 				   filter="string" size="45"/>
 			<field name="metacritics_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_MC_ID" class="span12"
 				   filter="string" size="45"/>
-			<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="intval"
+			<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6" filter="integer"
 				   size="45"/>
 			<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM" class="span6"
-				   filter="intval" size="45"/>
+				   filter="integer" size="45"/>
 			<field name="rate_custom" type="editor" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT"
 				   description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" filter="raw" buttons="false"/>
 
@@ -128,7 +128,7 @@
 				<option value="*">JALL</option>
 			</field>
 			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-				   filter="intval" size="1" default="1">
+				   filter="integer" size="1" default="1">
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
@@ -310,7 +310,7 @@
 		</field>
 		<field name="n_birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string"/>
 		<field name="n_birthcountry" type="countries" default="0" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" class="span11"
-			   filter="intval" data-ac-type="countries" data-allow-clear="true" data-sel-size="1"/>
+			   filter="integer" data-ac-type="countries" data-allow-clear="true" data-sel-size="1"/>
 		<field name="n_desc" type="textarea" default="" label="COM_KA_FIELD_NAME_DESC" class="span12" filter="raw"
 			   cols="6" rows="5"/>
 		<field name="n_language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
@@ -337,7 +337,7 @@
 		<field name="a_desc" type="textarea" default="" label="COM_KA_FIELD_AW_DESC" class="span10" filter="raw"
 			   cols="6" rows="5"/>
 		<field name="a_state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-			   filter="intval" size="1" default="1">
+			   filter="integer" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field>
@@ -350,9 +350,9 @@
 		<field name="p_movie_id" type="hidden" label="COM_KA_FIELD_MOVIE_LABEL" class="span10 required" required="true"
 			   default=""/>
 		<field name="p_vendor_id" type="vendors" default="" label="COM_KA_FIELD_PREMIERE_VENDOR" required="true"
-			   class="span10" filter="intval" data-ac-type="vendors" data-sel-size="1" data-allow-clear="true"/>
+			   class="span10" filter="integer" data-ac-type="vendors" data-sel-size="1" data-allow-clear="true"/>
 		<field name="p_country_id" type="countries" default="" label="COM_KA_FIELD_COUNTRY_LABEL" required="true"
-			   description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="intval" data-ac-type="countries"
+			   description="COM_KA_FIELD_PREMIERE_COUNTRY_DESC" class="span10" filter="integer" data-ac-type="countries"
 			   data-sel-size="1" data-allow-clear="true"/>
 		<field name="p_premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox"
 			   datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
@@ -369,13 +369,13 @@
 		<field name="r_movie_id" type="hidden" label="COM_KA_FIELD_MOVIE_LABEL" class="span10 required" required="true"
 			   default=""/>
 		<field name="r_vendor_id" type="vendors" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true"
-			   class="span10" filter="intval" data-ac-type="vendors" data-sel-size="1" data-allow-clear="true"/>
+			   class="span10" filter="integer" data-ac-type="vendors" data-sel-size="1" data-allow-clear="true"/>
 		<field name="r_country_id" type="countries" default="" label="COM_KA_FIELD_COUNTRY_LABEL" required="true"
-			   class="span10" filter="intval" data-ac-type="countries" data-sel-size="1" data-allow-clear="true"/>
+			   class="span10" filter="integer" data-ac-type="countries" data-sel-size="1" data-allow-clear="true"/>
 		<field name="r_release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox"
 			   datatype="date" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
 		<field name="r_media_type" type="mediatypes" class="span10" default="" label="COM_KA_RELEASES_MEDIATYPE_TITLE"
-			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="intval" data-allow-clear="true"
+			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" data-allow-clear="true"
 			   data-ac-type="mediatypes" data-sel-size="1"/>
 		<field name="r_desc" type="textarea" default="" label="JGLOBAL_DESCRIPTION"
 			   description="COM_KA_FIELD_RELEASE_DESC_LABEL_DESC" class="span10" filter="raw" cols="6" rows="5"/>
@@ -389,14 +389,12 @@
 	<fieldset name="vendor_quick_add">
 		<field name="v_company_name" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE" class="span5"
 			   required="true" filter="string" size="45"/>
-		<field name="v_company_name_intl" type="text" default="" label="COM_KA_VENDORS_FIELD_TITLE_INTL" class="span5"
-			   filter="string" size="45"/>
 		<field name="v_company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL"
 			   description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string"/>
 		<field name="v_description" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span10" default="" filter="raw"
 			   cols="6" rows="5"/>
 		<field name="v_state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"
-			   filter="intval" size="1" default="1">
+			   filter="integer" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field>

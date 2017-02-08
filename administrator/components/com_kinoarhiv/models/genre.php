@@ -62,13 +62,14 @@ class KinoarhivModelGenre extends JModelForm
 	 * Method to get a single record.
 	 *
 	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since   3.0
 	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$_id = $app->input->get('id', array(), 'array');
-		$id = !empty($_id) ? $_id[0] : $app->input->get('id', null, 'int');
+		$id = $app->input->get('id', null, 'array');
 
 		if ($app->input->get('type', 'movie', 'word') == 'music')
 		{
@@ -83,7 +84,7 @@ class KinoarhivModelGenre extends JModelForm
 
 		$query->select($db->quoteName(array('id', 'name', 'alias', 'stats', 'state', 'access', 'language')))
 			->from($db->quoteName($table))
-			->where($db->quoteName('id') . ' = ' . (int) $id);
+			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();
@@ -91,6 +92,15 @@ class KinoarhivModelGenre extends JModelForm
 		return $result;
 	}
 
+	/**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   boolean  $isUnpublish  Action state
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function publish($isUnpublish)
 	{
 		$app = JFactory::getApplication();
@@ -179,7 +189,6 @@ class KinoarhivModelGenre extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$id = $app->input->post->get('id', null, 'int');
 
 		if ($app->input->get('type', 'movie', 'word') == 'music')
 		{
@@ -192,28 +201,14 @@ class KinoarhivModelGenre extends JModelForm
 
 		$name = trim($data['name']);
 
-		if (empty($name))
-		{
-			$this->setError(JText::_('COM_KA_REQUIRED'));
-
-			$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('COM_KA_REQUIRED')
-				)
-			);
-
-			return false;
-		}
-
 		// Automatic handling of alias for empty fields
-		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new')) && (int) $app->input->get('id') == 0)
+		if (in_array($app->input->get('task'), array('genres.apply', 'genres.save', 'genres.save2new')) && (int) $app->input->get('id') == 0)
 		{
 			if ($data['alias'] == null)
 			{
 				if (JFactory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$data['alias'] = JFilterOutput::stringURLUnicodeSlug($name);
+					$data['alias'] = JFilterOutput::stringUrlUnicodeSlug($name);
 				}
 				else
 				{
@@ -222,7 +217,7 @@ class KinoarhivModelGenre extends JModelForm
 			}
 		}
 
-		if (empty($id))
+		if (empty($data['id']))
 		{
 			// Check if genre with this name allready exists
 			$query = $db->getQuery(true);
@@ -236,14 +231,7 @@ class KinoarhivModelGenre extends JModelForm
 
 			if ($count > 0)
 			{
-				$this->setError(JText::_('COM_KA_COUNTRY_EXISTS'));
-
-				$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.data',
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_COUNTRY_EXISTS')
-					)
-				);
+				$app->enqueueMessage(JText::_('COM_KA_COUNTRY_EXISTS'), 'error');
 
 				return false;
 			}
@@ -265,168 +253,218 @@ class KinoarhivModelGenre extends JModelForm
 				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
 				->set($db->quoteName('access') . " = '" . (int) $data['access'] . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $id);
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
+
+		$db->setQuery($query);
 
 		try
 		{
-			$db->setQuery($query);
 			$db->execute();
 
-			if (empty($id))
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
 			{
-				$id = $db->insertid();
+				$session_data = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', $session_data);
 			}
-
-			$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.data',
-				array(
-					'success' => true,
-					'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-					'data'    => array('id' => $id, 'name' => $name)
-				)
-			);
 
 			return true;
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.data',
-				array(
-					'success' => false,
-					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
-				)
-			);
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
 	}
 
-	public function updateStat()
+	/**
+	 * Method to update stats for genres.
+	 *
+	 * @return  mixed   Total numbers of items, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	public function updateStats()
+	{
+		$app = JFactory::getApplication();
+
+		if ($app->input->get('type', 'movie', 'word') == 'music')
+		{
+			$result = $this->updateMusicGenresStat();
+		}
+		elseif ($app->input->get('type', 'movie', 'word') == 'movie')
+		{
+			$result = $this->updateMovieGenresStat();
+		}
+		else
+		{
+			$result = false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to update stats for movie genres.
+	 *
+	 * @return  mixed   Total numbers of items, false otherwise.
+	 *
+	 * @since   3.1
+	 */
+	private function updateMovieGenresStat()
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$gid = $app->input->get('id', array(), 'array');
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
+		$total = 0;
 
-		if ($app->input->get('type', 'movie', 'word') == 'music')
+		// Check if control number is the same with selected.
+		if (count($gid) != $boxchecked)
 		{
-			$table_genres = '#__ka_music_genres';
-			$table_rel_genres = '#__ka_music_rel_genres';
-		}
-		else
-		{
-			$table_genres = '#__ka_genres';
-			$table_rel_genres = '#__ka_rel_genres';
+			return false;
 		}
 
-		if (count($gid) > 1)
+		$db->setDebug(true);
+		$db->lockTable('#__ka_genres');
+		$db->transactionStart();
+
+		foreach ($gid as $genre_id)
 		{
-			if (count($gid) != $boxchecked)
-			{
-				return array('success' => false);
-			}
-
-			$result = true;
-			$db->setDebug(true);
-			$db->lockTable('#__ka_genres');
-			$db->transactionStart();
-
-			foreach ($gid as $genre_id)
-			{
-				$query = $db->getQuery(true)
-					->update($db->quoteName($table_genres));
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_genres'));
 
 				$subquery = $db->getQuery(true)
 					->select('COUNT(genre_id)')
-					->from($db->quoteName($table_rel_genres));
+					->from($db->quoteName('#__ka_rel_genres'))
+					->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id);
 
-				if ($app->input->get('type', 'movie', 'word') == 'music')
-				{
-					$subquery->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id . ' AND ' . $db->quoteName('type') . ' = 0');
-				}
-				else
-				{
-					$subquery->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id);
-				}
+			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
+				->where($db->quoteName('id') . ' = ' . (int) $genre_id . ';');
 
-				$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
-					->where($db->quoteName('id') . ' = ' . (int) $genre_id . ';');
+			$db->setQuery($query);
+			$query = $db->execute();
 
-				$db->setQuery($query);
-				$query = $db->execute();
-
-				if ($query === false)
-				{
-					$result = false;
-					break;
-				}
-			}
-
-			if ($result === false)
+			if ($query === false)
 			{
-				$db->transactionRollback();
-				$this->setError('Commit failed!');
+				break;
 			}
-			else
-			{
-				$db->transactionCommit();
-			}
+		}
 
-			$db->unlockTables();
-			$db->setDebug(false);
-			$total = 0;
+		if ($query === false)
+		{
+			$db->transactionRollback();
+			$app->enqueueMessage('Commit failed!', 'error');
 		}
 		else
 		{
-			if (empty($gid[0]))
+			$db->transactionCommit();
+
+			// Count total genres for genre ID. Required for single row update.
+			if (count($gid) == 1)
 			{
-				return array('success' => false, 'message' => JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR'));
-			}
-
-			$query = $db->getQuery(true)
-				->update($db->quoteName($table_genres));
-
-			$subquery = $db->getQuery(true)
-				->select('COUNT(genre_id)')
-				->from($db->quoteName($table_rel_genres));
-
-			if ($app->input->get('type', 'movie', 'word') == 'music')
-			{
-				$subquery->where($db->quoteName('genre_id') . ' = ' . (int) $gid[0] . ' AND ' . $db->quoteName('type') . ' = 0');
-			}
-			else
-			{
-				$subquery->where($db->quoteName('genre_id') . ' = ' . (int) $gid[0]);
-			}
-
-			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
-				->where($db->quoteName('id') . ' = ' . (int) $gid[0]);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-
 				$query = $db->getQuery(true)
 					->select($db->quoteName('stats'))
-					->from($db->quoteName($table_genres))
+					->from($db->quoteName('#__ka_genres'))
 					->where($db->quoteName('id') . ' = ' . (int) $gid[0]);
 
 				$db->setQuery($query);
 				$total = $db->loadResult();
-				$result = true;
-			}
-			catch (Exception $e)
-			{
-				$total = 0;
-				$result = false;
 			}
 		}
 
-		return array('success' => $result, 'total' => $total);
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		if ($query === false)
+		{
+			return false;
+		}
+
+		return (int) $total;
+	}
+
+	/**
+	 * Method to update stats for music genres.
+	 *
+	 * @return  mixed   Total numbers of items, false otherwise.
+	 *
+	 * @since   3.1
+	 */
+	private function updateMusicGenresStat()
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$gid = $app->input->get('id', array(), 'array');
+		$boxchecked = $app->input->get('boxchecked', 0, 'int');
+		$total = 0;
+
+		// Check if control number is the same with selected.
+		if (count($gid) != $boxchecked)
+		{
+			return false;
+		}
+
+		$db->setDebug(true);
+		$db->lockTable('#__ka_music_genres');
+		$db->transactionStart();
+
+		foreach ($gid as $genre_id)
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_music_genres'));
+
+				$subquery = $db->getQuery(true)
+					->select('COUNT(genre_id)')
+					->from($db->quoteName('#__ka_music_rel_genres'))
+					->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id . ' AND ' . $db->quoteName('type') . ' = 0');
+
+			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
+				->where($db->quoteName('id') . ' = ' . (int) $genre_id . ';');
+
+			$db->setQuery($query);
+			$query = $db->execute();
+
+			if ($query === false)
+			{
+				break;
+			}
+		}
+
+		if ($query === false)
+		{
+			$db->transactionRollback();
+			$app->enqueueMessage('Commit failed!', 'error');
+		}
+		else
+		{
+			$db->transactionCommit();
+
+			// Count total genres for genre ID. Required for single row update.
+			if (count($gid) == 1)
+			{
+				$query = $db->getQuery(true)
+					->select($db->quoteName('stats'))
+					->from($db->quoteName('#__ka_music_genres'))
+					->where($db->quoteName('id') . ' = ' . (int) $gid[0]);
+
+				$db->setQuery($query);
+				$total = $db->loadResult();
+			}
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		if ($query === false)
+		{
+			return false;
+		}
+
+		return (int) $total;
 	}
 
 	/**
@@ -436,7 +474,7 @@ class KinoarhivModelGenre extends JModelForm
 	 * @param   array   $data   The data to validate.
 	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 * @return  mixed   Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
@@ -444,6 +482,12 @@ class KinoarhivModelGenre extends JModelForm
 	 */
 	public function validate($form, $data, $group = null)
 	{
+		// Include the plugins for the delete events.
+		JPluginHelper::importPlugin($this->events_map['validate']);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
+
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);

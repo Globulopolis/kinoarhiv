@@ -10,11 +10,12 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/sceditor/jquery.sceditor.min.js');
-JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/editors/sceditor/themes/square.css');
-KAComponentHelper::getScriptLanguage('', 'editors/sceditor/lang/');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/sceditor/plugins/format.js');
-JHtml::_('script', 'components/com_kinoarhiv/assets/editors/sceditor/plugins/undo.js');
+JHtml::_('jquery.framework');
+JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/jquery.sceditor.min.js');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/sceditor/themes/square.min.css');
+KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/sceditor/lang/');
+JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/plugins/format.js');
+JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/plugins/undo.js');
 
 $params = $displayData->params;
 $form   = $displayData->form;
@@ -25,7 +26,7 @@ $form   = $displayData->form;
 			plugins: 'format,undo',
 			toolbar: 'bold,italic,underline|left,center,right,justify|bulletlist,orderedlist|font,size,format|quote|undo,maximize,source',
 			height: '300',
-			style: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/editors/sceditor/themes/default_editor.css',
+			style: '<?php echo JUri::base(); ?>media/com_kinoarhiv/editors/sceditor/themes/default_editor.css',
 			emoticonsEnabled: false
 		});
 

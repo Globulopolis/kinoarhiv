@@ -160,7 +160,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelper::renderErrors($model->getErrors(), $document->getType());
+			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), $document->getType());
 
 			if ($document->getType() == 'html')
 			{
@@ -183,7 +183,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		{
 			if ($document->getType() == 'html')
 			{
-				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $id);
 
 				return;
@@ -392,7 +392,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelper::renderErrors($model->getErrors(), 'html');
+				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=names');
 
 				return;
@@ -489,6 +489,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	 *
 	 * @since  3.0
 	 */
+	// TODO Should be removed
 	public function getFilesystemAlias()
 	{
 		$input = JFactory::getApplication()->input;

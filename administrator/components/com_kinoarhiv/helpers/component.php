@@ -92,7 +92,7 @@ class KAComponentHelperBackend extends JComponentHelper
 	/**
 	 * Method to get an errors from $errors and enqueue or directly display them.
 	 *
-	 * @param   mixed    $errors  An Exception object or array.
+	 * @param   mixed    $errors  Exceptions object or array.
 	 * @param   string   $format  Document type format.
 	 * @param   integer  $count   Number of errors to process.
 	 *

@@ -30,7 +30,7 @@ $columns   = 2;
 			<td colspan="<?php echo $columns; ?>" style="padding-top: 15px;">
 				<ul class="thumbnails gallery-list">
 					<?php if (count($this->items) == 0):
-						echo JText::_('COM_KA_NO_ITEMS');
+						echo JText::_('COM_KA_NO_FILES');
 					else:
 						foreach ($this->items as $i => $item):
 							$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->section . '.' . $item->id);

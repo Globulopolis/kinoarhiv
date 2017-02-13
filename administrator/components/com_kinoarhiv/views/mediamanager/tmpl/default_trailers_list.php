@@ -54,6 +54,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 		<?php else:
 			foreach ($this->items as $i => $item):
 				$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.movie.' . $item->id);
+				$canEdit = $user->authorise('core.edit', 'com_kinoarhiv.movie.' . $item->id);
+				$video = json_decode($item->video, true);
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
@@ -77,13 +79,19 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				<td>
 					<?php if ($item->embed_code != ''): ?>
 						<span class="icon icon-play-2 hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_ISCODE'); ?>"></span>
-					<?php elseif ($item->video != ''): ?>
+					<?php elseif (count($video)): ?>
 						<span class="icon icon-camera-2 hasTooltip" title="<?php echo JText::_('COM_KA_TRAILERS_ISFILE'); ?>"></span>
 					<?php else: ?>
 						<a class="error_image"></a>
 					<?php endif; ?>
-					&nbsp;<a href="index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=<?php echo $this->id; ?>&item_id[]=<?php echo $item->id; ?>"><?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></a>
-					<?php if ($item->video != ''): ?> <span class="small">(<?php echo $item->duration; ?>)</span><?php endif; ?>
+
+					<?php if ($canEdit): ?>
+						<a href="index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=<?php echo $this->id; ?>&item_id[]=<?php echo $item->id; ?>"><?php echo $this->escape($item->title) == '' ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></a>
+					<?php else: ?>
+						<span><?php echo $this->escape($item->title) == '' ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></span>
+					<?php endif; ?>
+
+					<?php if (count($video) && $item->duration): ?> <span class="small">(<?php echo $item->duration; ?>)</span><?php endif; ?>
 				</td>
 				<td class="center hidden-phone">
 					<?php echo $this->escape($item->access_level); ?>

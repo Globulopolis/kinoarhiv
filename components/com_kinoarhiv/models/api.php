@@ -81,10 +81,10 @@ class KinoarhivModelAPI extends JModelLegacy
 		$this->lang = JFactory::getLanguage();
 		$this->db = $this->getDbo();
 		$user = JFactory::getUser();
-		$data_lang = $this->input->get('data_lang', '', 'string');
 		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$data_lang = $this->input->get('data_lang', '', 'string');
 
-		if ($data_lang != '')
+		if ($data_lang !== '')
 		{
 			if ($data_lang == '*')
 			{
@@ -97,7 +97,21 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 		else
 		{
-			$this->query_lang = 'language IN (' . $this->db->quote($this->lang->getTag()) . ',' . $this->db->quote('*') . ')';
+			if (array_key_exists('data_lang', $config) && $config['data_lang'] != '')
+			{
+				if ($config['data_lang'] == '*')
+				{
+					$this->query_lang = '';
+				}
+				else
+				{
+					$this->query_lang = 'language IN (' . $this->db->quote($config['data_lang']) . ')';
+				}
+			}
+			else
+			{
+				//$this->query_lang = 'language IN (' . $this->db->quote($this->lang->getTag()) . ',' . $this->db->quote('*') . ')';
+			}
 		}
 
 		if (array_key_exists('item_access', $config) && is_array($config['item_access']))
@@ -106,7 +120,14 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 		else
 		{
-			$this->query_access = 'access IN (' . $groups . ')';
+			if (array_key_exists('item_access', $config) && $config['item_access'] == '*')
+			{
+				$this->query_access = '';
+			}
+			else
+			{
+				//$this->query_access = 'access IN (' . $groups . ')';
+			}
 		}
 
 		if (array_key_exists('item_state', $config) && is_array($config['item_state']))
@@ -125,6 +146,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 * @return  mixed
 	 *
 	 * @since   3.1
+	 * @throws  RuntimeException
 	 */
 	public function getCountries()
 	{
@@ -161,9 +183,16 @@ class KinoarhivModelAPI extends JModelLegacy
 
 				$query->where('name LIKE "' . $this->db->escape($term) . '%"')
 					->order('name ASC');
-
 				$this->db->setQuery($query);
-				$result = $this->db->loadObjectList();
+
+				try
+				{
+					$result = $this->db->loadObjectList();
+				}
+				catch (RuntimeException $e)
+				{
+					throw new RuntimeException(JText::_('ERROR'), 500);
+				}
 			}
 			else
 			{
@@ -173,25 +202,46 @@ class KinoarhivModelAPI extends JModelLegacy
 					$ids = $this->input->get('id', '', 'string');
 					$query->where('id IN (' . $ids . ')')
 						->order('name ASC');
-
 					$this->db->setQuery($query);
-					$result = $this->db->loadObjectList();
+
+					try
+					{
+						$result = $this->db->loadObjectList();
+					}
+					catch (RuntimeException $e)
+					{
+						throw new RuntimeException(JText::_('ERROR'), 500);
+					}
 				}
 				else
 				{
 					$query->where('id = ' . (int) $id);
-
 					$this->db->setQuery($query);
-					$result = $this->db->loadObject();
+
+					try
+					{
+						$result = $this->db->loadObject();
+					}
+					catch (RuntimeException $e)
+					{
+						throw new RuntimeException(JText::_('ERROR'), 500);
+					}
 				}
 			}
 		}
 		else
 		{
 			$query->order('name ASC');
-
 			$this->db->setQuery($query);
-			$result = $this->db->loadObjectList();
+
+			try
+			{
+				$result = $this->db->loadObjectList();
+			}
+			catch (RuntimeException $e)
+			{
+				throw new RuntimeException(JText::_('ERROR'), 500);
+			}
 		}
 
 		return $result;
@@ -203,16 +253,24 @@ class KinoarhivModelAPI extends JModelLegacy
 	 * @return  mixed
 	 *
 	 * @since   3.1
+	 * @throws  RuntimeException
 	 */
 	public function getMovies()
 	{
 		$id = $this->input->get('id', 0, 'int');
 		$all = $this->input->get('showAll', 0, 'int');
 		$term = $this->input->get('term', '', 'string');
+		$ignore = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select('id, title, year')
 			->from($this->db->quoteName('#__ka_movies'));
+
+		// Filter results set by IDs
+		if (!empty($ignore))
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
 
 		// Filter by language
 		if ($this->query_lang != '')
@@ -237,24 +295,45 @@ class KinoarhivModelAPI extends JModelLegacy
 			if (empty($id))
 			{
 				$query->where("title LIKE '" . $this->db->escape($term) . "%'");
-
 				$this->db->setQuery($query);
-				$result = $this->db->loadObjectList();
+
+				try
+				{
+					$result = $this->db->loadObjectList();
+				}
+				catch (RuntimeException $e)
+				{
+					throw new RuntimeException(JText::_('ERROR'), 500);
+				}
 			}
 			else
 			{
 				$query->where('id = ' . (int) $id);
-
 				$this->db->setQuery($query);
-				$result = $this->db->loadObject();
+
+				try
+				{
+					$result = $this->db->loadObject();
+				}
+				catch (RuntimeException $e)
+				{
+					throw new RuntimeException(JText::_('ERROR'), 500);
+				}
 			}
 		}
 		else
 		{
 			$query->order('title ASC');
-
 			$this->db->setQuery($query);
-			$result = $this->db->loadObjectList();
+
+			try
+			{
+				$result = $this->db->loadObjectList();
+			}
+			catch (RuntimeException $e)
+			{
+				throw new RuntimeException(JText::_('ERROR'), 500);
+			}
 		}
 
 		return $result;
@@ -266,6 +345,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 * @return  mixed
 	 *
 	 * @since   3.1
+	 * @throws  RuntimeException
 	 */
 	public function getVendors()
 	{
@@ -301,9 +381,16 @@ class KinoarhivModelAPI extends JModelLegacy
 
 				$query->where('company_name LIKE "' . $this->db->escape($term) . '%"')
 					->order('company_name ASC');
-
 				$this->db->setQuery($query);
-				$result = $this->db->loadObjectList();
+
+				try
+				{
+					$result = $this->db->loadObjectList();
+				}
+				catch (RuntimeException $e)
+				{
+					throw new RuntimeException(JText::_('ERROR'), 500);
+				}
 			}
 			else
 			{
@@ -313,54 +400,281 @@ class KinoarhivModelAPI extends JModelLegacy
 					$ids = $this->input->get('id', '', 'string');
 					$query->where('id IN (' . $ids . ')')
 						->order('company_name ASC');
-
 					$this->db->setQuery($query);
-					$result = $this->db->loadObjectList();
+
+					try
+					{
+						$result = $this->db->loadObjectList();
+					}
+					catch (RuntimeException $e)
+					{
+						throw new RuntimeException(JText::_('ERROR'), 500);
+					}
 				}
 				else
 				{
 					$query->where('id = ' . (int) $id);
-
 					$this->db->setQuery($query);
-					$result = $this->db->loadObject();
+
+					try
+					{
+						$result = $this->db->loadObject();
+					}
+					catch (RuntimeException $e)
+					{
+						throw new RuntimeException(JText::_('ERROR'), 500);
+					}
 				}
 			}
 		}
 		else
 		{
 			$query->order('company_name ASC');
-
 			$this->db->setQuery($query);
-			$result = $this->db->loadObjectList();
+
+			try
+			{
+				$result = $this->db->loadObjectList();
+			}
+			catch (RuntimeException $e)
+			{
+				throw new RuntimeException(JText::_('ERROR'), 500);
+			}
 		}
 
 		return $result;
 	}
 
 	/**
-	 * Method to get list of trailer files.
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
 	 *
-	 * @return  mixed
+	 * @param   string   $section  Type of the item. Can be 'movie' or 'name'.
+	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   integer  $tab      Tab number from gallery(or empty value for 'trailers', 'soundtracks').
+	 * @param   integer  $id       The item ID (movie or name).
+	 *
+	 * @return  object
+	 *
+	 * @throws  RuntimeException
+	 * @since   3.1
+	 */
+	public function getGalleryFiles($section = '', $type = '', $tab = 0, $id = 0)
+	{
+		$db      = $this->getDbo();
+		$input   = JFactory::getApplication()->input;
+		$section = !empty($section) ? $section : $input->get('section', '', 'word');
+		$type    = !empty($type) ? $type : $input->get('type', '', 'word');
+		$tab     = !empty($tab) ? $tab : $input->get('tab', 0, 'int');
+		$id      = !empty($id) ? $id : $input->get('id', 0, 'int');
+
+		if ($section == 'movie' && $type == 'gallery')
+		{
+			$query = $this->listQueryMovieImages($tab, $id);
+		}
+		elseif ($section == 'name' && $type == 'gallery')
+		{
+			$query = $this->listQueryNameImages($tab, $id);
+		}
+
+		if (empty($query))
+		{
+			throw new RuntimeException(JText::_('ERROR'), 500);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			throw new RuntimeException(JText::_('ERROR'), 500);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set for movie images.
+	 *
+	 * @param   integer  $tab  Tab number from gallery.
+	 * @param   integer  $id   The movie ID.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
 	 * @since   3.1
 	 */
-	public function getTrailerFiles()
+	private function listQueryMovieImages($tab, $id)
+	{
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(
+				array('g.id', 'g.filename', 'g.dimension', 'g.movie_id', 'g.frontpage', 'g.state', 'm.alias', 'm.fs_alias')
+			)
+		);
+
+		$query->from($db->quoteName('#__ka_movies_gallery', 'g'))
+			->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'));
+
+		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+			->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
+
+		// Filter by published state
+		/*$published = $this->getState('filter.published');
+
+		if (is_numeric($published))
+		{
+			$query->where('g.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
+			$query->where('(g.state = 0 OR g.state = 1)');
+		}
+
+		// Filter by search in title.
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('g.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(g.filename LIKE ' . $search . ')');
+			}
+		}
+
+		// Add the list ordering clause.
+		$orderCol = $this->state->get('list.ordering', 'g.filename');
+		$orderDirn = $this->state->get('list.direction', 'asc');
+
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));*/
+
+		return $query;
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set for name images.
+	 *
+	 * @param   integer  $tab  Tab number from gallery.
+	 * @param   integer  $id   The movie ID.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
+	private function listQueryNameImages($tab, $id)
+	{
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(
+				array('g.id', 'g.filename', 'g.dimension', 'g.name_id', 'g.frontpage', 'g.state', 'n.alias', 'n.fs_alias')
+			)
+		);
+
+		$query->from($db->quoteName('#__ka_names_gallery', 'g'))
+			->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('g.name_id'));
+
+		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+			->where($db->quoteName('g.name_id') . ' = ' . (int) $id);
+
+		// Filter by published state
+		/*$published = $this->getState('filter.published');
+
+		if (is_numeric($published))
+		{
+			$query->where('g.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
+			$query->where('(g.state = 0 OR g.state = 1)');
+		}
+
+		// Filter by search in title.
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('g.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(g.filename LIKE ' . $search . ')');
+			}
+		}
+
+		// Add the list ordering clause.
+		$orderCol = $this->state->get('list.ordering', 'g.filename');
+		$orderDirn = $this->state->get('list.direction', 'asc');
+
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));*/
+
+		return $query;
+	}
+
+	/**
+	 * Method to get list of trailer files.
+	 *
+	 * @param   integer  $id    Trailer ID.
+	 * @param   string   $data  Comma separated list of columns which should return.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.1
+	 */
+	public function getTrailerFiles($id = 0, $data = '')
 	{
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$id = $this->input->get('id', 0, 'int');
-		$data = $this->input->get('data', '', 'string');
+		$id = !empty($id) ? $id : $this->input->get('id', 0, 'int');
+		$data = !empty($data) ? $data : $this->input->get('data', '', 'string');
+		$filters = !empty($filters) ? $filters : $this->input->get('filters', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName(array('movie_id', 'screenshot', 'video', 'subtitles', 'chapters')))
 			->from($this->db->quoteName('#__ka_trailers'))
 			->where('id = ' . (int) $id);
 
+		// Filter by language
+		if ($this->query_lang != '')
+		{
+			$query->where($this->query_lang);
+		}
+
+		// Filter by access
+		if ($this->query_access != '')
+		{
+			$query->where($this->query_access);
+		}
+
+		// Filter by item state
+		if ($this->query_state != '')
+		{
+			$query->where($this->query_state);
+		}
+
 		$this->db->setQuery($query);
 
 		try
 		{
 			$result = $this->db->loadAssoc();
+
+			if (count($result) < 1)
+			{
+				return array();
+			}
+
 			$folder = KAContentHelper::getPath('movie', 'trailers', null, $result['movie_id']);
 		}
 		catch (Exception $e)
@@ -370,7 +684,7 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		if ($data != '')
 		{
-			$columns = explode(',', $data);
+			$columns = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($data));
 
 			// Always attach screenshot if data type = video
 			if (in_array('video', $columns))

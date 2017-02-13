@@ -77,7 +77,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				$query = $db->getQuery(true);
 
 				$query->update($db->quoteName('#__ka_movies_gallery'))
-					->set($db->quoteName('frontpage') . " = '0'")
+					->set($db->quoteName('frontpage') . " = 0")
 					->where($db->quoteName('movie_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 2')
 					->where($db->quoteName('id') . ' != ' . $result['id']);
 				$db->setQuery($query);
@@ -120,7 +120,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				$query = $db->getQuery(true);
 
 				$query->update($db->quoteName('#__ka_names_gallery'))
-					->set($db->quoteName('frontpage') . " = '0'")
+					->set($db->quoteName('frontpage') . " = 0")
 					->where($db->quoteName('name_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 3')
 					->where($db->quoteName('id') . ' != ' . $result['id']);
 				$db->setQuery($query);
@@ -142,7 +142,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_trailers'))
-				->set($db->quoteName('screenshot') . " = '" . $filename . "'")
+				->set($db->quoteName('screenshot') . " = '" . $db->escape($filename) . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $item_id);
 			$db->setQuery($query);
 
@@ -655,288 +655,75 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	}
 
 	/**
-	 * Method to remove item from database.
+	 * Removes an item.
+	 *
+	 * @param   string   $section  Type of the item. Can be 'movie' or 'name'.
+	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   integer  $tab      Tab number from gallery(or empty value for 'trailers', 'soundtracks').
+	 * @param   integer  $id       The item ID (movie or name).
+	 * @param   array    $ids      Array of ID to remove(file id).
 	 *
 	 * @return  boolean   True on success, false on error.
 	 *
 	 * @since   3.0
 	 */
-	public function remove()
+	public function remove($section, $type, $tab = 0, $id = 0, $ids = array())
 	{
-		/*jimport('joomla.filesystem.file');
-
-		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$item_id = $app->input->get('id', 0, 'int');
-		$ids = $app->input->get('_id', array(), 'array');
-		$section = $app->input->get('section', '', 'cmd');
-		$type = $app->input->get('type', '', 'cmd');
-		$tab = $app->input->get('tab', 0, 'int');
-		$query_result = true;
 
 		if ($section == 'movie')
 		{
 			if ($type == 'gallery')
 			{
-				if (empty($ids[0]))
-				{
-					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-					return false;
-				}
-
 				$query = $db->getQuery(true)
-					->select($db->quoteName(array('id', 'filename')))
-					->from($db->quoteName('#__ka_movies_gallery'))
+					->delete($db->quoteName('#__ka_movies_gallery'))
+					->where($db->quoteName('movie_id') . ' = ' . (int) $id)
+					->where($db->quoteName('type') . ' = ' . (int) $tab)
 					->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-				$db->setQuery($query);
-
-				try
-				{
-					$files_obj = $db->loadObjectList();
-
-					if (count($files_obj) == 0)
-					{
-						echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-						return false;
-					}
-				}
-				catch (Exception $e)
-				{
-					$app->enqueueMessage($e->getMessage(), 'error');
-
-					return false;
-				}
-
-				$db->setDebug(true);
-				$db->lockTable('#__ka_movies_gallery');
-				$db->transactionStart();
-
-				$path = $this->getPath('movie', 'gallery', $tab, $item_id) . '/';
-
-				foreach ($files_obj as $file)
-				{
-					JFile::delete($path . $file->filename);
-					JFile::delete($path . 'thumb_' . $file->filename);
-
-					$query = $db->getQuery(true)
-						->delete($db->quoteName('#__ka_movies_gallery'))
-						->where($db->quoteName('id') . ' = ' . (int) $file->id);
-					$db->setQuery($query . ';');
-
-					if ($db->execute() === false)
-					{
-						$query_result = false;
-						break;
-					}
-				}
-
-				if ($query_result === false)
-				{
-					$db->transactionRollback();
-					$app->enqueueMessage('Commit failed!');
-				}
-				else
-				{
-					$db->transactionCommit();
-				}
-
-				$db->unlockTables();
-				$db->setDebug(false);
 			}
 			elseif ($type == 'trailers')
 			{
-				if (empty($ids[0]))
-				{
-					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-					return false;
-				}
-
 				$query = $db->getQuery(true)
-					->select($db->quoteName(array('id', 'screenshot', 'filename', '_subtitles', '_chapters')))
-					->from($db->quoteName('#__ka_trailers'))
+					->delete($db->quoteName('#__ka_trailers'))
+					->where($db->quoteName('movie_id') . ' = ' . (int) $id)
 					->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-				$db->setQuery($query);
+			}
+			else
+			{
+				JFactory::getApplication()->enqueueMessage('Wrong type', 'error');
 
-				try
-				{
-					$rows = $db->loadObjectList();
-
-					if (count($rows) == 0)
-					{
-						echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-						return false;
-					}
-				}
-				catch (Exception $e)
-				{
-					$app->enqueueMessage($e->getMessage(), 'error');
-
-					return false;
-				}
-
-				$path = $this->getPath('movie', 'trailers', 0, $item_id);
-				$db->setDebug(true);
-				$db->lockTable('#__ka_trailers');
-				$db->transactionStart();
-
-				foreach ($rows as $row)
-				{
-					if (!empty($row->screenshot))
-					{
-						JFile::delete($path . $row->screenshot);
-					}
-
-					$video = json_decode($row->filename, true);
-
-					if (count($video) > 0)
-					{
-						foreach ($video as $file)
-						{
-							JFile::delete($path . $file['src']);
-						}
-					}
-
-					$subtitles = json_decode($row->_subtitles, true);
-
-					if (count($subtitles) > 0)
-					{
-						foreach ($subtitles as $file)
-						{
-							JFile::delete($path . $file['file']);
-						}
-					}
-
-					$chapters = json_decode($row->_chapters, true);
-
-					if (count($chapters) > 0)
-					{
-						JFile::delete($path . $chapters['file']);
-					}
-
-					$query = $db->getQuery(true)
-						->delete($db->quoteName('#__ka_trailers'))
-						->where($db->quoteName('id') . ' = ' . (int) $row->id);
-					$db->setQuery($query . ';');
-
-					if ($db->execute() === false)
-					{
-						$query_result = false;
-						break;
-					}
-				}
-
-				if ($query_result === false)
-				{
-					$db->transactionRollback();
-					$app->enqueueMessage('Commit failed!');
-				}
-				else
-				{
-					$db->transactionCommit();
-				}
-
-				$db->unlockTables();
-				$db->setDebug(false);
+				return false;
 			}
 		}
 		elseif ($section == 'name')
 		{
-			if ($type == 'gallery')
-			{
-				if (empty($ids[0]))
-				{
-					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-					return false;
-				}
-
-				$query = $db->getQuery(true)
-					->select($db->quoteName(array('id', 'filename')))
-					->from($db->quoteName('#__ka_names_gallery'))
-					->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-				$db->setQuery($query);
-
-				try
-				{
-					$files_obj = $db->loadObjectList();
-
-					if (count($files_obj) == 0)
-					{
-						echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-						return false;
-					}
-				}
-				catch (Exception $e)
-				{
-					$app->enqueueMessage($e->getMessage(), 'error');
-
-					return false;
-				}
-
-				$db->setDebug(true);
-				$db->lockTable('#__ka_names_gallery');
-				$db->transactionStart();
-
-				$path = $this->getPath('name', 'gallery', $tab, $item_id) . '/';
-
-				foreach ($files_obj as $file)
-				{
-					JFile::delete($path . $file->filename);
-					JFile::delete($path . 'thumb_' . $file->filename);
-
-					$query = $db->getQuery(true)
-						->delete($db->quoteName('#__ka_names_gallery'))
-						->where($db->quoteName('id') . ' = ' . (int) $file->id);
-					$db->setQuery($query . ';');
-
-					if ($db->execute() === false)
-					{
-						$query_result = false;
-						break;
-					}
-				}
-
-				if ($query_result === false)
-				{
-					$db->transactionRollback();
-					$app->enqueueMessage('Commit failed!');
-				}
-				else
-				{
-					$db->transactionCommit();
-				}
-
-				$db->unlockTables();
-				$db->setDebug(false);
-			}
-		}
-		elseif ($section == 'music')
-		{
-			if ($type == 'gallery')
-			{
-				if (empty($ids[0]))
-				{
-					echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-
-					return false;
-				}
-
-				// TODO Implement music gallery item remove code.
-			}
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_names_gallery'))
+				->where($db->quoteName('name_id') . ' = ' . (int) $id)
+				->where($db->quoteName('type') . ' = ' . (int) $tab)
+				->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 		}
 		else
 		{
-			$app->enqueueMessage(JText::_('COM_KA_ITEMS_DELETED_ERROR'));
+			JFactory::getApplication()->enqueueMessage('Wrong section', 'error');
 
 			return false;
 		}
 
-		return true;*/
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -1254,7 +1041,11 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 		elseif ($type == 'chapters')
 		{
-			$old_filename = JPath::clean($files['file']);
+			if ($is_new == 0)
+			{
+				$old_filename = JPath::clean($files['file']);
+			}
+
 			$new_filename = JPath::clean($data['file']);
 			$files['file'] = $new_filename;
 		}
@@ -1284,7 +1075,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 		$query = $db->getQuery(true)
 			->update($db->quoteName('#__ka_trailers'))
-			->set($db->quoteName($type) . " = '" . $file_obj . "'")
+			->set($db->quoteName($type) . " = '" . $db->escape($file_obj) . "'")
 			->where($db->quoteName('id') . ' = ' . (int) $item_id);
 
 		$db->setQuery($query);
@@ -1653,24 +1444,34 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				return false;
 			}
 
+			// Get all table columns from $table
 			$cols_obj = $db->getTableColumns($table);
 			$_keys = $db->quoteName(array_keys($cols_obj));
 			$cols = implode(', ', $_keys);
 			$cols_count = count($_keys);
 
+			// Get all rows $table
 			$query = $db->getQuery(true)
 				->select($cols)
 				->from($db->quoteName($table))
 				->where($db->quoteName($col) . ' = ' . (int) $from_id . ' AND ' . $db->quoteName('type') . ' = ' . (int) $from_tab);
 
+				// Remove from result set rows with the same filename(avoid duplicates).
+				$subquery = $db->getQuery(true)
+					->select($db->quoteName('filename'))
+					->from($db->quoteName($table))
+					->where($db->quoteName($col) . ' = ' . (int) $to_id . ' AND ' . $db->quoteName('type') . ' = ' . (int) $from_tab);
+
+			$query->where($db->quoteName('filename') . 'NOT IN (' . $subquery . ')');
+
 			$db->setQuery($query);
-			$data = $db->loadObjectList();
+			$rows = $db->loadObjectList();
 
 			$db->setDebug(true);
 			$db->lockTable($table);
 			$db->transactionStart();
 
-			foreach ($data as $values)
+			foreach ($rows as $values)
 			{
 				$value = "";
 				$i = 0;

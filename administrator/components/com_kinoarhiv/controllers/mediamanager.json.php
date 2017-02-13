@@ -649,6 +649,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanageritem');
@@ -663,13 +664,15 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if ($all === 1)
 		{
-			$message = 'COM_KA_FILES_DELETED_SUCCESS';
+			$message = 'COM_KA_FILES_N_DELETED_SUCCESS';
 			$files = $model->getTrailerFiles($type, $item_id);
 
-			// Remove screenshot from database
+			// Remove screenshot from database and filesystem
 			if ($type == 'video')
 			{
 				$model->removeTrailerFiles('image', $item_id);
+				JFile::delete($path . $files['trailer_finfo_' . $type]['screenshot']);
+				unset($files['trailer_finfo_' . $type]['screenshot']);
 			}
 
 			if (!$model->removeTrailerFiles($type, $item_id, array_keys($files['trailer_finfo_' . $type])))
@@ -679,14 +682,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			foreach ($files['trailer_finfo_' . $type] as $key => $file)
 			{
-				if ($key === 'screenshot')
-				{
-					$filepath = $path . $file;
-				}
-				else
-				{
-					$filepath = $path . $file[$array_key];
-				}
+				$filepath = $path . $file[$array_key];
 
 				if (is_file($filepath))
 				{
@@ -697,13 +693,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				else
 				{
-					$errors[] = 'File not found: ' . $filepath . '<br />';
+					$errors[] = JText::sprintf('COM_KA_FILE_NOT_FOUND', $filepath) . '<br />';
 				}
 			}
 		}
 		else
 		{
-			$message = 'COM_KA_FILE_DELETED_SUCCESS';
+			$message = 'COM_KA_FILES_N_DELETED_SUCCESS_1';
 			$files = $model->getTrailerFiles($type, $item_id, $item);
 
 			if (!$model->removeTrailerFiles($type, $item_id, $item))
@@ -722,7 +718,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				$errors[] = 'File not found: ' . $filepath . '<br />';
+				$errors[] = JText::sprintf('COM_KA_FILE_NOT_FOUND', $filepath) . '<br />';
 			}
 		}
 
@@ -794,6 +790,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		jimport('administrator.components.com_kinoarhiv.libraries.media', JPATH_ROOT);
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$media = KAMedia::getInstance();
 		$model = $this->getModel('mediamanageritem');
@@ -831,7 +828,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if (empty($videofile))
 		{
-			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_FILE_NOT_FOUND')));
+			echo json_encode(array('success' => false, 'message' => JText::sprintf('COM_KA_FILE_NOT_FOUND', $videofile)));
 
 			return;
 		}
@@ -857,81 +854,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATED')));
-	}
-
-	/**
-	 * Method to copy gallery items from one item to another.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function copyfrom()
-	{
-		if (!KAComponentHelper::checkToken('post'))
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
-
-			return;
-		}
-
-		$user = JFactory::getUser();
-
-		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv'))
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-
-			return;
-		}
-
-		jimport('administrator.components.com_kinoarhiv.helpers.filesystem', JPATH_ROOT);
-
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanager');
-		$errors = array();
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', 0, 'int');
-		$id = $app->input->get('id', 0, 'int');
-		$from_tab = $app->input->get('from_tab', 0, 'int');
-		$from_id = $app->input->get('from_id', 0, 'int');
-
-		// Copy from
-		$src_path = KAContentHelper::getPath($section, $type, $from_tab, $from_id);
-
-		// Copy to
-		$dst_path = KAContentHelper::getPath($section, $type, $tab, $id);
-
-		// Copy selected folders
-		/*if (KAFilesystemHelper::move($src_path, $dst_path, true) === false)
-		{
-			$app->enqueueMessage('Something went wrong! See Joomla logs for details.');
-
-			return false;
-		}*/
-
-		//$result = $model->copyfrom($section, $type, $from_id, $id, $from_tab);
-
-		/*$updated = $model->copyfrom();
-
-		if ($updated)
-		{
-			$result = array('success' => true);
-		}
-		else
-		{
-			$errors = $app->getMessageQueue();
-
-			foreach ($errors as $i => $e)
-			{
-				$message .= $e['message'] . '<br />';
-			}
-
-			$result = array('success' => false, 'message' => $message);
-		}
-
-		echo json_encode($result);*/
 	}
 
 	/**
@@ -976,6 +898,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		if (count($urls_arr) > 0 && !empty($id))
 		{
 			jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
+			jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 			$image = new KAImage;
 
@@ -984,7 +907,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				// Limit number of files
 				if ($max_files != 0)
 				{
-					if  ($max_files == $index)
+					if ($max_files == $index)
 					{
 						break;
 					}

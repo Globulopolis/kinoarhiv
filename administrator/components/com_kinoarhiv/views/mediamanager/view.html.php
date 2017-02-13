@@ -382,6 +382,8 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->form = $this->get('Form');
 		$this->lang_list = KALanguage::listOfLanguages();
+		$this->folder_path = '';
+		$this->folder_path_www = '';
 
 		if (count($errors = $this->get('Errors')))
 		{

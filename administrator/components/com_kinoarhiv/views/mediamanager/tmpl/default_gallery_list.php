@@ -44,7 +44,7 @@ $columns   = 5;
 	<tbody>
 	<?php if (count($this->items) == 0): ?>
 		<tr>
-			<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+			<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_FILES'); ?></td>
 		</tr>
 	<?php else:
 		foreach ($this->items as $i => $item):

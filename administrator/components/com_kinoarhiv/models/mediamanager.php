@@ -191,7 +191,7 @@ class KinoarhivModelMediamanager extends JModelList
 	 *
 	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
-	 * @throws  Exception
+	 * @throws  RuntimeException
 	 * @since   3.0
 	 */
 	protected function getListQuery()
@@ -215,7 +215,7 @@ class KinoarhivModelMediamanager extends JModelList
 
 		if (empty($query))
 		{
-			throw new Exception('Empty JDatabaseQuery in ' . __METHOD__, 500);
+			throw new RuntimeException('Empty JDatabaseQuery in ' . __METHOD__, 500);
 		}
 
 		return $query;

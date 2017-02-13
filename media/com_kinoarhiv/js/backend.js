@@ -95,7 +95,7 @@ jQuery(document).ready(function($){
 		e.preventDefault();
 
 		var $this = $(this),
-			modal = $($this).closest('.modal'),
+			modal = $this.closest('.modal'),
 			input = $('#remote_urls'),
 			token = Kinoarhiv.getFormToken(),
 			data  = {},
@@ -143,49 +143,16 @@ jQuery(document).ready(function($){
 	});
 
 	// Run copy process for gallery items
-	$('.cmd-gallery-copyfrom').click(function(e){
-		e.preventDefault();
-
-		var $this = $(this),
-			token = Kinoarhiv.getFormToken(),
-			data  = {
-				'section':   $('input[name="section"]').val(),
-				'type':      $('input[name="type"]').val(),
-				'tab':       $('input[name="tab"]').val(),
-				'id':        $('input[name="id"]').val(),
-				'from_tab':  $('select[name="from_tab"]').val(),
-				'from_id':   $('#from_id').select2('val')
-			};
-
-		if (data.from_id == 0 || data.from_id == '') {
+	$('#copyForm').submit(function(){
+		if (empty($('#from_id').select2('val'))) {
 			showMsg('fieldset.copy', KA_vars.language.COM_KA_REQUIRED);
 
 			return false;
 		}
 
-		$this.attr('disabled', 'disabled');
-		Kinoarhiv.blockUI('show');
+		$('.cmd-gallery-copyfrom').attr('disabled', 'disabled');
 
-		// Assign data
-		data[token] = 1;
-
-		$.ajax({
-			type: 'POST',
-			url: 'index.php?option=com_kinoarhiv&task=mediamanager.copyfrom&format=json',
-			data: data,
-			dataType: 'json'
-		}).done(function(response){
-			if (!response.success) {
-				showMsg('fieldset.copy', response.message);
-			}
-
-			Kinoarhiv.blockUI();
-			document.location.reload(true);
-		}).fail(function(xhr, status, error){
-			showMsg('fieldset.copy', error);
-			$this.removeAttr('disabled');
-			Kinoarhiv.blockUI();
-		});
+		return true;
 	});
 
 	$('.hasUploader').each(function(index, element){

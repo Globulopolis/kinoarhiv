@@ -77,9 +77,9 @@ Kinoarhiv = window.Kinoarhiv || {};
 				var offset = selector.offset(),
 					top    = offset.top,
 					left   = offset.left,
-					width  = selector.css('width'),
-					height = selector.css('height'),
-					html   = '<div class="modal-backdrop modal-loading" id="mdl' + total + '" style="position: absolute; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + '; height: ' + height + '; z-index: 10001;"><div class="ajax-loading" style="cursor: pointer;" title="Press to close">&nbsp;</div></div>';
+					width  = selector.outerWidth(),
+					height = selector.innerHeight(),
+					html   = '<div class="modal-backdrop modal-loading" id="mdl' + total + '" style="position: absolute; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px; z-index: 10001;"><div class="ajax-loading" style="cursor: pointer;" title="Press to close">&nbsp;</div></div>';
 
 				$(html).insertAfter(selector);
 
@@ -247,7 +247,7 @@ jQuery(document).ready(function($){
 
 			if (!data_url) {
 				if (!empty(ignore_ids)) {
-					ignore_ids = '&ignore[]=' + [ignore_ids].join('&ignore[]=');
+					ignore_ids = '&ignore_ids[]=' + [ignore_ids].join('&ignore_ids[]=');
 				}
 
 				if (!empty(data_lang)) {

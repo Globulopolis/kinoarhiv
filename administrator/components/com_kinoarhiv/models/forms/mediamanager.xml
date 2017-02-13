@@ -20,8 +20,8 @@
 				   size="35"/>
 			<field name="dar" type="text" default="" label="COM_KA_TRAILERS_HEADING_DAR_TITLE"
 				   description="COM_KA_TRAILERS_HEADING_DAR_TITLE_DESC" class="span6" filter="string" size="35"/>
-			<field name="duration" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH" class="input-medium"
-				   datatype="time" timeformat="HH:mm:ss.l"/>
+			<field name="duration" type="datetime" default="" label="COM_KA_FIELD_MOVIE_LENGTH"
+				   description="COM_KA_FIELD_MOVIE_LENGTH_DESC" class="input-medium" datatype="time" timeformat="HH:mm:ss"/>
 			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
 				   size="1"/>
 			<field name="language" type="language" client="site" default="*"

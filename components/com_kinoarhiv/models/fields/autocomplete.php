@@ -347,6 +347,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 			$attr .= $this->element['data-remote'] ? ' data-remote="' . (string) $this->element['data-remote'] . '"' : '';
 			$attr .= $this->element['data-remote-show-all'] == 'true' ? ' data-remote-show-all="true"' : '';
+			$attr .= $this->element['data-ignore-ids'] ? ' data-ignore-ids="[' . (string) $this->element['data-ignore-ids'] . ']"' : '';
 
 			return '<input type="hidden" name="' . $this->name . '" value="' . $value . '"'
 				. ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';

@@ -10,4 +10,4 @@
 
 defined('_JEXEC') or die;
 ?>
-<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('JTOOLBAR_CLOSE'); ?></button>
+<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_KA_CLOSE'); ?></button>

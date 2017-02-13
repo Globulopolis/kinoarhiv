@@ -197,7 +197,7 @@ echo JHtml::_(
 	'uploadVideoModal',
 	array(
 		'title'  => JText::_('COM_KA_LOADING'),
-		'footer' => $this->loadTemplate('trailer_upload_footer')
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
 	),
 	$this->loadTemplate('trailer_upload_body')
 );

@@ -176,7 +176,7 @@ $this->trailer_id = $trailer_id[0];
 								'<input type="hidden" name="ord[]" value="' + key + '" />' +
 							'</td>' +
 							'<td width="4%">' + key + '</td>' +
-							'<td><span class="more' + filename_class + '">' + object.src + '</span>' + file_info_text + '</td>' +
+							'<td class="item-row"><span class="more' + filename_class + '">' + object.src + '</span>' + file_info_text + '</td>' +
 							'<td class="center">' +
 								'<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=video&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=' + key + '&format=raw" class="cmd-file-edit"><span class="icon-pencil"></span></a>&nbsp;' +
 								'<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=video&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=' + key + '&format=json" class="cmd-remove-file"><span class="icon-delete"></span></a>' +
@@ -205,7 +205,7 @@ $this->trailer_id = $trailer_id[0];
 								'<input type="hidden" name="ord[]" value="' + key + '" />' +
 							'</td>' +
 							'<td width="4%">' + key + '</td>' +
-							'<td><span class="more' + filename_class + '">' + object.file + '</span>' + lang + '</td>' +
+							'<td class="item-row"><span class="more' + filename_class + '">' + object.file + '</span>' + lang + '</td>' +
 							'<td width="4%">';
 
 							if (object.default) {
@@ -236,7 +236,7 @@ $this->trailer_id = $trailer_id[0];
 					var filename_class = response[list].is_file == 0 ? ' red' : '';
 
 					html += '<tr>' +
-						'<td><span class="more' + filename_class + '">' + response[list].file + '</span></td>' +
+						'<td class="item-row"><span class="more' + filename_class + '">' + response[list].file + '</span></td>' +
 						'<td class="center" width="9%">' +
 						'<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=chapters&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&format=raw" class="cmd-file-edit"><span class="icon-pencil"></span></a>&nbsp;' +
 							'<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=chapters&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&format=json" class="cmd-remove-file"><span class="icon-delete"></span></a>' +
@@ -376,14 +376,15 @@ $this->trailer_id = $trailer_id[0];
 
 			var $this = $(this),
 				table = $this.closest('table'),
-				remove_all = $this.hasClass('all');
+				remove_all = $this.hasClass('all'),
+				list = table.data('list');
 
 			// Check if at least one file in list
-			if (remove_all && table.find('.item-row').length == 0) {
+			if (remove_all && table.find('.item-row').length < 1) {
 				return;
 			} else {
 				// Check if it's a row with screenshot
-				if (table.find('.screenshot').length == 0) {
+				if (list == 'video' && table.find('.screenshot').length < 1) {
 					return;
 				}
 			}
@@ -400,7 +401,7 @@ $this->trailer_id = $trailer_id[0];
 			}).done(function(response){
 				showMsg('#system-message-container', response.message ? response.message : $(response).text());
 
-				if ($this.data('type') == 'image') {
+				if ((remove_all && list == 'video') || (!remove_all && $this.data('type') == 'image')) {
 					$('.screenshot div', table).remove();
 				}
 

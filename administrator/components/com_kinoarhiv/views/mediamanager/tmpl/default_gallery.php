@@ -123,8 +123,11 @@ echo JHtml::_(
 		),
 		JPATH_COMPONENT
 	)
-);
-echo JHtml::_(
+); ?>
+</form>
+
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="copyForm" autocomplete="off">
+<?php echo JHtml::_(
 	'bootstrap.renderModal',
 	'copyfromModal',
 	array(
@@ -133,6 +136,5 @@ echo JHtml::_(
 		'modalWidth' => '50%'
 	),
 	$this->loadTemplate('copyfrom_body')
-);
-?>
+); ?>
 </form>

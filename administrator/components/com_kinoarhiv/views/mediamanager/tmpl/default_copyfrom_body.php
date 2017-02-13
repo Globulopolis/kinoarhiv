@@ -25,7 +25,7 @@ if ($this->section != 'movie' && $this->section != 'name')
 					<label id="from_id-lbl" for="from_id"><?php echo JText::_('COM_KA_' . strtoupper($this->section) . 'S_GALLERY_COPYFROM_LABEL'); ?><span class="star">&nbsp;*</span></label>
 				</div>
 				<div class="controls copy-from">
-					<input type="hidden" name="from_id" value="" id="from_id" class="hasAutocomplete span12 required" data-allow-clear="true" data-placeholder="<?php echo JText::_('JGLOBAL_SELECT_AN_OPTION'); ?>" data-minimum-input-length="1" data-lang="*" data-content="<?php echo $this->section . 's'; ?>" data-key="id" data-remote="true" required="required" />
+					<input type="hidden" name="from_id" value="" id="from_id" class="hasAutocomplete span12 required" data-allow-clear="true" data-minimum-input-length="1" data-lang="*" data-content="<?php echo $this->section . 's'; ?>" data-key="id" data-remote="true" data-ignore-ids="[<?php echo $this->id; ?>]" required="required" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -46,6 +46,14 @@ if ($this->section != 'movie' && $this->section != 'name')
 					</select>
 				</div>
 			</div>
+			<p class="text-warning"><?php echo JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_DESC'); ?></p>
+
+			<input type="hidden" name="section" value="<?php echo $this->section; ?>" />
+			<input type="hidden" name="type" value="<?php echo $this->type; ?>" />
+			<input type="hidden" name="tab" value="<?php echo $this->tab; ?>" />
+			<input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+			<input type="hidden" name="task" value="mediamanager.copyfrom" />
+			<?php echo JHtml::_('form.token'); ?>
 		</fieldset>
 	</div>
 </div>

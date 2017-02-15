@@ -12,64 +12,63 @@ defined('_JEXEC') or die;
 
 $url = 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=json&section=' . $this->section
 	. '&type=' . $this->type . '&id=' . $this->id . '&item_id=' . $this->trailer_id;
-?>
-<?php echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'video')); ?>
-	<?php echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'video', JText::_('COM_KA_TRAILERS_VIDEO_UPLOAD_TITLE')); ?>
 
-	<div>
-		<input type="hidden" autofocus="autofocus" />
-		<div class="hasUploader" data-url="<?php echo $url; ?>&upload=video"
-			 data-multipart_params="{'<?php echo JSession::getFormToken(); ?>': 1}" data-content-type="video"
-			 data-max_file_size="<?php echo $this->params->get('upload_limit'); ?>" data-multiple_queues="true"
-			 data-filters="[{title: 'Video files', extensions: '<?php echo $this->params->get('upload_mime_video'); ?>'}]"
-			 data-chunk_size="<?php echo $this->params->get('upload_chunk_size'); ?>"
-		>
-			<p>You browser doesn't have Flash, Silverlight or HTML5 support.</p>
-		</div>
-		<?php echo KAComponentHelper::showMsg(
-			JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_VIDEO', $this->params->get('upload_mime_video')),
-			array('type' => 'disable')
-		); ?>
-	</div>
+echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'video'));
+	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'video', JText::_('COM_KA_TRAILERS_VIDEO_UPLOAD_TITLE'));
 
-	<?php echo JHtml::_('bootstrap.endTab'); ?>
-	<?php echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'subtitles', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL')); ?>
+	echo JLayoutHelper::render(
+		'layouts.edit.upload_file_body',
+		array(
+			'params' => $this->params,
+			'url' => $url . '&upload=video',
+			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
+			'content-type' => 'video',
+			'max_file_size' => $this->params->get('upload_limit'),
+			'multiple_queues' => 'true',
+			'filters' => '[{"title": "Video files", extensions: "' . $this->params->get('upload_mime_video') . '"}]',
+			'chunk_size' => $this->params->get('upload_chunk_size'),
+			'info' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_VIDEO', $this->params->get('upload_mime_video'))
+		),
+		JPATH_COMPONENT
+	);
 
-	<div>
-		<input type="hidden" autofocus="autofocus" />
-		<div class="hasUploader" data-url="<?php echo $url; ?>&upload=subtitles"
-		     data-multipart_params="{'<?php echo JSession::getFormToken(); ?>': 1}" data-content-type="subtitles"
-		     data-max_file_size="<?php echo $this->params->get('upload_limit'); ?>" data-multiple_queues="true"
-		     data-filters="[{title: 'Subtitle files', extensions: '<?php echo $this->params->get('upload_mime_subtitles'); ?>'}]"
-		     data-chunk_size="<?php echo $this->params->get('upload_chunk_size'); ?>"
-		>
-			<p>You browser doesn't have Flash, Silverlight or HTML5 support.</p>
-		</div>
-		<?php echo KAComponentHelper::showMsg(
-			JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_SUBTITLES', $this->params->get('upload_mime_subtitles')) . JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_WARN'),
-			array('type' => 'disable')
-		); ?>
-	</div>
+	echo JHtml::_('bootstrap.endTab');
+	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'subtitles', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL'));
 
-	<?php echo JHtml::_('bootstrap.endTab'); ?>
-	<?php echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'chapters', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS')); ?>
+	echo JLayoutHelper::render(
+		'layouts.edit.upload_file_body',
+		array(
+			'params' => $this->params,
+			'url' => $url . '&upload=subtitles',
+			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
+			'content-type' => 'subtitles',
+			'max_file_size' => $this->params->get('upload_limit'),
+			'multiple_queues' => 'true',
+			'filters' => '[{"title": "Subtitle files", extensions: "' . $this->params->get('upload_mime_subtitles') . '"}]',
+			'chunk_size' => $this->params->get('upload_chunk_size'),
+			'info' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_SUBTITLES', $this->params->get('upload_mime_subtitles')) . JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_WARN')
+		),
+		JPATH_COMPONENT
+	);
 
-	<div>
-		<input type="hidden" autofocus="autofocus" />
-		<div class="hasUploader" data-url="<?php echo $url; ?>&upload=chapters"
-		     data-multipart_params="{'<?php echo JSession::getFormToken(); ?>': 1}" data-content-type="chapters"
-		     data-multi_selection="false" data-max_files="1"
-		     data-max_file_size="<?php echo $this->params->get('upload_limit'); ?>" data-multiple_queues="true"
-		     data-filters="[{title: 'Chapter files', extensions: '<?php echo $this->params->get('upload_mime_chapters'); ?>'}]"
-		     data-chunk_size="<?php echo $this->params->get('upload_chunk_size'); ?>"
-		>
-			<p>You browser doesn't have Flash, Silverlight or HTML5 support.</p>
-		</div>
-		<?php echo KAComponentHelper::showMsg(
-			JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_CHAPTERS', $this->params->get('upload_mime_chapters')),
-			array('type' => 'disable')
-		); ?>
-	</div>
+	echo JHtml::_('bootstrap.endTab');
+	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'chapters', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS'));
 
-	<?php echo JHtml::_('bootstrap.endTab'); ?>
-<?php echo JHtml::_('bootstrap.endTabSet'); ?>
+	echo JLayoutHelper::render(
+		'layouts.edit.upload_file_body',
+		array(
+			'params' => $this->params,
+			'url' => $url . '&upload=chapters',
+			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
+			'content-type' => 'chapters',
+			'max_file_size' => $this->params->get('upload_limit'),
+			'multiple_queues' => 'true',
+			'filters' => '[{"title": "Chapter files", extensions: "' . $this->params->get('upload_mime_chapters') . '"}]',
+			'chunk_size' => $this->params->get('upload_chunk_size'),
+			'info' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_CHAPTERS', $this->params->get('upload_mime_chapters'))
+		),
+		JPATH_COMPONENT
+	);
+
+	echo JHtml::_('bootstrap.endTab');
+echo JHtml::_('bootstrap.endTabSet');

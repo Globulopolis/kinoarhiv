@@ -26,13 +26,41 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 *
 	 * @since  3.0
 	 */
-	/*public function upload()
+	public function upload()
 	{
+		// Send headers to prevent caching
+		header('Content-type: application/json');
+		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT', true);
+		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+		header('Cache-Control: no-store, no-cache, must-revalidate');
+		header('Cache-Control: post-check=0, pre-check=0', false);
+		header('Pragma: no-cache');
+
+		// CORS
+		header('Access-Control-Allow-Origin: *');
+
+		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+			header('Access-Control-Max-Age: 10000');
+			header('Access-Control-Allow-Headers: origin, x-csrftoken, content-type, accept');
+		}
+
+		// Remove old files
+		$cleanup_dir = true;
+
+		// Temp file age in seconds
+		$max_file_age = 5 * 3600;
+
+		// Do not limit upload time
+		@set_time_limit(0);
+
 		$app = JFactory::getApplication();
 
-		$app->setHeader('Content-type', 'application/json');
+		$chunk = $app->input->get('chunk', 0, 'int');
+		$chunks = $app->input->get('chunks', 0, 'int');
 
-		if (JSession::checkToken() === false)
+		/*if (KAComponentHelper::checkToken() === false)
 		{
 			$app->setHeader('HTTP/1.0', '500 Server error');
 			$app->sendHeaders();
@@ -41,7 +69,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			jexit();
 		}
 
-		jimport('joomla.filesystem.file');
+		/*jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -124,27 +152,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 			}
 		}
-
-		$app->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT', true);
-		$app->setHeader('Last-Modified', gmdate('D, d M Y H:i:s'), true);
-		$app->setHeader('Cache-Control', 'public, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', true);
-		$app->setHeader('Pragma', 'no-cache', true);
-
-		// CORS
-		$app->setHeader('Access-Control-Allow-Origin', '*', true);
-
-		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-		{
-			$app->setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-			$app->setHeader('Access-Control-Max-Age', 10000);
-			$app->setHeader('Access-Control-Allow-Headers', 'origin, x-csrftoken, content-type, accept');
-		}
-
-		$app->sendHeaders();
-
-		$cleanup_dir = true;
-		$max_file_age = 5 * 3600;
-		@set_time_limit(0);
 
 		$chunk = $app->input->get('chunk', 0, 'int');
 		$chunks = $app->input->get('chunks', 0, 'int');
@@ -470,8 +477,28 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				'id'      => is_array($id) ? json_encode($id) : $id
 			)
 		);
-		die($response);
-	}*/
+		die($response);*/
+	}
+
+	/**
+	 * Check file extention.
+	 *
+	 * @param   string  $file_ext  File extention to check.
+	 * @param   mixed   $allowed   Array of allowed extentions or list separated by commas.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	private function checkFileExt($file_ext, $allowed)
+	{
+		if (!is_array($allowed))
+		{
+			$allowed = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($allowed));
+		}
+
+		return (bool) in_array($file_ext, $allowed);
+	}
 
 	/**
 	 * Save the manually set order of files on trailers edit page.
@@ -857,7 +884,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	}
 
 	/**
-	 * Method to make screenshot from videofile.
+	 * Download image from remote server and store it in filesystem.
 	 *
 	 * @return  void
 	 *
@@ -897,6 +924,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if (count($urls_arr) > 0 && !empty($id))
 		{
+			jimport('joomla.filesystem.file');
 			jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
 			jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
@@ -918,31 +946,83 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($output->code == 200 || $output->code == 301 || $output->code == 304)
 				{
 					$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id) . '/';
-					$filename = basename($url);
-					$file_path = JPath::clean($dest_dir . $filename);
 
-					if (!is_file($file_path) && file_put_contents($file_path, $output->body) !== false)
+					// Put image in Joomla 'temp' dir
+					$temp_file = JPath::clean(JFactory::getConfig()->get('tmp_path') . '/' . uniqid(rand(), true) . '.tmp');
+
+					if (file_put_contents($temp_file, $output->body) !== false)
 					{
+						$image->loadFile($temp_file);
+						$file_prop = $image->getImageFileProperties($temp_file);
+						$file_ext = image_type_to_extension($file_prop->type);
+					}
+					else
+					{
+						echo array('success' => false, 'message' => JText::_('COM_KA_FILE_UPLOAD_ERROR'));
+
+						return;
+					}
+
+					// If image type is image/jpeg change the file ext to more native .jpg instead of .jpeg
+					if (stripos($file_ext, 'jpeg') !== false)
+					{
+						$file_ext = str_ireplace('jpeg', 'jpg', $file_ext);
+					}
+
+					$filename = str_replace('.', '', uniqid(rand(), true)) . $file_ext;
+					$file_path = JPath::clean($dest_dir . $filename);
+					$orig_width = $file_prop->width;
+					$orig_height = $file_prop->height;
+
+					if ($image->isLoaded())
+					{
+						try
+						{
+							$image->resize('100%', '100%');
+						}
+						catch (LogicException $e)
+						{
+							echo array('success' => false, 'message' => $e->getMessage());
+
+							return;
+						}
+
+						// Save image to file
+						try
+						{
+							$image->toFile($file_path, $file_prop->type);
+						}
+						catch (LogicException $e)
+						{
+							echo array('success' => false, 'message' => $e->getMessage());
+
+							return;
+						}
+
 						if ($section == 'movie')
 						{
 							if ($type == 'gallery')
 							{
-								$orig_image = @getimagesize($file_path);
-
 								if ($tab == 1)
 								{
 									$width  = (int) $params->get('size_x_wallpp');
-									$height = ($width * $orig_image[1]) / $orig_image[0];
+									$height = ($width * $orig_height) / $orig_width;
 								}
 								elseif ($tab == 2)
 								{
 									$width  = (int) $params->get('size_x_posters');
-									$height = ($width * $orig_image[1]) / $orig_image[0];
+									$height = ($width * $orig_height) / $orig_width;
 								}
 								elseif ($tab == 3)
 								{
 									$width  = (int) $params->get('size_x_scr');
-									$height = ($width * $orig_image[1]) / $orig_image[0];
+									$height = ($width * $orig_height) / $orig_width;
+								}
+								else
+								{
+									echo array('success' => false, 'message' => JText::_('ERROR'));
+
+									return;
 								}
 
 								// Add watermark
@@ -957,7 +1037,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								}
 
 								$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-								$model->saveImageInDB('movie', $id, $filename, $orig_image, $tab, $frontpage);
+								$model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 							}
 							elseif ($type == 'trailers')
 							{
@@ -969,22 +1049,26 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						{
 							if ($app->input->get('type') == 'gallery')
 							{
-								$orig_image = @getimagesize($file_path);
-
 								if ($tab == 1)
 								{
 									$width = (int) $params->get('size_x_wallpp');
-									$height = ($width * $orig_image[1]) / $orig_image[0];
+									$height = ($width * $orig_height) / $orig_width;
 								}
 								elseif ($tab == 2)
 								{
 									$width = (int) $params->get('size_x_posters');
-									$height = ($width * $orig_image[1]) / $orig_image[0];
+									$height = ($width * $orig_height) / $orig_width;
 								}
 								elseif ($tab == 3)
 								{
 									$width = (int) $params->get('size_x_photo');
-									$height = ($width * $orig_image[1]) / $orig_image[0];
+									$height = ($width * $orig_height) / $orig_width;
+								}
+								else
+								{
+									echo array('success' => false, 'message' => JText::_('ERROR'));
+
+									return;
 								}
 
 								// Add watermark
@@ -999,7 +1083,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								}
 
 								$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-								$model->saveImageInDB('name', $id, $filename, $orig_image, $tab, $frontpage);
+								$model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 							}
 						}
 					}
@@ -1008,6 +1092,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$c = $index + 1;
 						$errors[] = $c . '. ' . $url . '<br />';
 					}
+
+					JFile::delete($temp_file);
 				}
 				else
 				{

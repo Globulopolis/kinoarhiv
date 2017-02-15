@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.4.1 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.5.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -70,7 +70,9 @@ jQuery.trumbowyg = {
     plugins: {},
 
     // SVG Path globally
-    svgPath: null
+    svgPath: null,
+
+    hideButtonTexts: null
 };
 
 
@@ -158,6 +160,8 @@ jQuery.trumbowyg = {
         } else {
             t.lang = $.trumbowyg.langs.en;
         }
+
+        t.hideButtonTexts = $.trumbowyg.hideButtonTexts != null ? $.trumbowyg.hideButtonTexts : options.hideButtonTexts;
 
         // SVG path
         var svgPathOption = $.trumbowyg.svgPath != null ? $.trumbowyg.svgPath : options.svgPath;
@@ -348,6 +352,7 @@ jQuery.trumbowyg = {
         // Defaults Options
         t.o = $.extend(true, {}, {
             lang: 'en',
+            useComposition: true,
 
             fixedBtnPane: false,
             fixedFullWidth: false,
@@ -461,9 +466,9 @@ jQuery.trumbowyg = {
             try {
                 // Disable image resize, try-catch for old IE
                 t.doc.execCommand('enableObjectResizing', false, false);
+                t.doc.execCommand('defaultParagraphSeparator', false, 'p');
             } catch (e) {
             }
-            t.doc.execCommand('defaultParagraphSeparator', false, 'p');
 
             t.buildEditor();
             t.buildBtnPane();
@@ -554,12 +559,13 @@ jQuery.trumbowyg = {
 
             var ctrl = false,
                 composition = false,
+                isCrazyMobile = !!navigator.userAgent.match(/Android/i),
                 debounceButtonPaneStatus;
 
             t.$ed
                 .on('dblclick', 'img', t.o.imgDblClickHandler)
                 .on('keydown', function (e) {
-                    composition = (e.which === 229);
+                    composition = t.o.useComposition && !isCrazyMobile && (e.which === 229);
 
                     if (e.ctrlKey) {
                         ctrl = true;
@@ -572,16 +578,27 @@ jQuery.trumbowyg = {
                         }
                     }
                 })
-                .on('keyup input', function (e) {
-                    if (e.which >= 37 && e.which <= 40) {
+                .on('input', function(e) {
+                    t.semanticCode(false, true);
+                    t.$c.trigger('tbwchange');
+                })
+                .on('keyup', function (e) {
+                    var kc = e.which;
+                    if (isCrazyMobile && (!kc || kc === 229)) {
+                        kc = this.textContent.charCodeAt(this.textContent.length - 1);
+                    }
+                
+                    if (kc >= 37 && kc <= 40) {
                         return;
                     }
 
-                    if (e.ctrlKey && (e.which === 89 || e.which === 90)) {
+                    if (e.ctrlKey && (kc === 89 || kc === 90)) {
                         t.$c.trigger('tbwchange');
-                    } else if (!ctrl && e.which !== 17 && !composition) {
-                        t.semanticCode(false, e.which === 13);
+                    } else if (!ctrl && kc !== 17 && !composition) {
+                        t.semanticCode(false, kc === 13);
                         t.$c.trigger('tbwchange');
+                    } else if (typeof e.which === 'undefined'　&& composition) {
+                        t.semanticCode(false, false, true);
                     }
 
                     setTimeout(function () {
@@ -707,7 +724,9 @@ jQuery.trumbowyg = {
                 $btn = $('<button/>', {
                     type: 'button',
                     class: prefix + btnName + '-button ' + (btn.class || '') + (!hasIcon ? ' ' + prefix + 'textual-button' : ''),
-                    html: t.hasSvg && hasIcon ? '<svg><use xlink:href="' + t.svgPath + '#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' : (btn.text || btn.title || t.lang[btnName] || btnName),
+                    html: t.hasSvg && hasIcon ?
+                      '<svg><use xlink:href="' + t.svgPath + '#' + prefix + (btn.ico || btnName).replace(/([A-Z]+)/g, '-$1').toLowerCase() + '"/></svg>' :
+                      t.hideButtonTexts ? '' : (btn.text || btn.title || t.lang[btnName] || btnName),
                     title: (btn.title || btn.text || textDef) + ((btn.key) ? ' (Ctrl + ' + btn.key + ')' : ''),
                     tabindex: -1,
                     mousedown: function () {
@@ -973,10 +992,12 @@ jQuery.trumbowyg = {
 
                 $(window).trigger('scroll');
 
-                $('body', d).on('mousedown.'+t.eventNamespace, function () {
-                    $('.' + prefix + 'dropdown', d).hide();
-                    $('.' + prefix + 'active', d).removeClass(prefix + 'active');
-                    $('body', d).off('mousedown.'+t.eventNamespace);
+                $('body', d).on('mousedown.'+t.eventNamespace, function (e) {
+                    if (!$dropdown.is(e.target)) {
+                        $('.' + prefix + 'dropdown', d).hide();
+                        $('.' + prefix + 'active', d).removeClass(prefix + 'active');
+                        $('body', d).off('mousedown.'+t.eventNamespace);
+                    }
                 });
             }
         },
@@ -1016,7 +1037,8 @@ jQuery.trumbowyg = {
         // Analyse and update to semantic code
         // @param force : force to sync code from textarea
         // @param full  : wrap text nodes in <p>
-        semanticCode: function (force, full) {
+        // @param keepRange  : leave selection range as it is
+        semanticCode: function (force, full, keepRange) {
             var t = this;
             t.saveRange();
             t.syncCode(force);
@@ -1065,7 +1087,9 @@ jQuery.trumbowyg = {
                     t.$ed.find('p:empty').remove();
                 }
 
-                t.restoreRange();
+                if (!keepRange) {
+                    t.restoreRange();
+                }
 
                 t.syncTextarea();
             }

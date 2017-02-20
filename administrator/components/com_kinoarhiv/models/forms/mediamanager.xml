@@ -33,9 +33,9 @@
 				<option value="1">JPUBLISHED</option>
 				<option value="0">JUNPUBLISHED</option>
 			</field>
-			<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_EMBED" class="span12"
+			<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_UPLOAD_EMBED" class="span12"
 				   rows="5" filter="raw" spellcheck="false"/>
-			<field name="urls" type="textarea" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS" class="span12" rows="5"
+			<field name="urls" type="textarea" label="COM_KA_TRAILERS_UPLOAD_URLS" class="span12" rows="5"
 				   spellcheck="false"/>
 			<field name="item_id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
 				   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
@@ -54,8 +54,8 @@
 		<fieldset name="fileinfo_video">
 			<field name="src" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME"
 				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
-			<field name="type" type="list" label="COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE" filter="string"
-				   description="COM_KA_TRAILERS_HEADING_UPLOAD_URLS_VIDEO_TYPE_DESC"
+			<field name="type" type="list" label="COM_KA_TRAILERS_UPLOAD_URLS_VIDEO_TYPE" filter="string"
+				   description="COM_KA_TRAILERS_UPLOAD_URLS_VIDEO_TYPE_DESC"
 				   default="" class="span6">
 				<option value="">JNONE</option>
 				<option value="video/mp4">video/mp4 (.mp4)</option>
@@ -78,11 +78,11 @@
 		<fieldset name="fileinfo_subtitles">
 			<field name="file" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME"
 				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
-			<field name="lang_code" type="subtitlelanguage" label="COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_SELECT"
+			<field name="lang_code" type="subtitlelanguage" label="COM_KA_TRAILERS_SUBTITLES_LANG_EDIT_SELECT"
 				   filter="string" default="" class="span6">
 				<option value="">JNONE</option>
 			</field>
-			<field name="lang" type="text" default="" label="COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_DESC"
+			<field name="lang" type="text" default="" label="COM_KA_TRAILERS_SUBTITLES_LANG_EDIT_DESC"
 				   class="span6" filter="string"/>
 			<field name="default" type="list" label="JDEFAULT" class="span6" filter="integer" size="1" default="0">
 				<option value="0">JNO</option>

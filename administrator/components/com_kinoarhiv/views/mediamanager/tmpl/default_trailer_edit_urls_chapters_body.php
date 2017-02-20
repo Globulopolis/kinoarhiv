@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 		<div class="form-horizontal">
 			<div class="control-group">
 				<div class="control-label">
-					<label for="urls_url_chapters"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_CHAPTERS'); ?></label>
+					<label for="urls_url_chapters"><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_CHAPTERS'); ?></label>
 				</div>
 				<div class="controls">
 					<input id="urls_url_chapters" class="span12" type="text" size="35" value="" name="urls_url_chapters" required aria-required="true"/>

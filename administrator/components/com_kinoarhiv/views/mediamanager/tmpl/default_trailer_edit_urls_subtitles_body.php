@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 		<div class="form-horizontal">
 			<div class="control-group">
 				<div class="control-label">
-					<label for="urls_url_subtitles"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_SUBTITLES'); ?></label>
+					<label for="urls_url_subtitles"><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_SUBTITLES'); ?></label>
 				</div>
 				<div class="controls">
 					<input id="urls_url_subtitles" class="span12" type="text" size="35" value="" name="urls_url_subtitles" required aria-required="true"/>
@@ -24,7 +24,7 @@ defined('_JEXEC') or die;
 
 			<div class="control-group">
 				<div class="control-label">
-					<label for="urls_url_subtitles_lang"><?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_LANG_EDIT_SELECT'); ?></label>
+					<label for="urls_url_subtitles_lang"><?php echo JText::_('COM_KA_TRAILERS_SUBTITLES_LANG_EDIT_SELECT'); ?></label>
 				</div>
 				<div class="controls">
 					<?php echo JHtml::_('select.genericlist',

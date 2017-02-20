@@ -16,6 +16,29 @@
 .plupload_file_name .plupload_buttons { display: inline-block !important; }
 .plupload_file_name .plupload_upload_status { display: inline-block !important; }
 
+@media (max-width: 480px) {
+	.plupload_filelist .plupload_file_name {
+		width: 200px !important;
+	}
+	.plupload_filelist_footer { height: 44px !important; }
+}
+@media (max-width: 767px) {
+	.plupload_filelist .plupload_file_name {
+		width: 450px !important;
+	}
+	.plupload_filelist_footer { height: 44px !important; }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+	.plupload_filelist .plupload_file_name {
+		width: 450px !important;
+	}
+}
+@media (min-width: 980px) {
+	.plupload_filelist .plupload_file_name {
+		width: auto !important;
+	}
+}
+
 /* jQuery More plugin v2.0.0
 ----------------------------------*/
 .more-hidden {

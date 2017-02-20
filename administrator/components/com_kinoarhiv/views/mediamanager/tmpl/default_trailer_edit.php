@@ -55,7 +55,7 @@ $this->trailer_id = $trailer_id[0];
 					return true;
 				}
 
-				showMsg('#urls_layout_video_form', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
+				showMsg('#urls_layout_video_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
 			} else if ($(this).data('type') == 'subtitles') {
 				var url_subtitle = $('#urls_url_subtitles');
 
@@ -71,7 +71,7 @@ $this->trailer_id = $trailer_id[0];
 					return true;
 				}
 
-				showMsg('#urls_layout_subtitles_form', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
+				showMsg('#urls_layout_subtitles_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
 			} else if ($(this).data('type') == 'chapters') {
 				var url_chapter = $('#urls_url_chapters');
 
@@ -82,7 +82,7 @@ $this->trailer_id = $trailer_id[0];
 					return true;
 				}
 
-				showMsg('#urls_layout_chapters_form', '<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_ERR'); ?>');
+				showMsg('#urls_layout_chapters_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
 			}
 		});
 
@@ -453,6 +453,12 @@ $this->trailer_id = $trailer_id[0];
 				showMsg('#screenshot_layout_create_form', error);
 				$this.removeProp('disabled', 'disabled');
 			});
+		});
+
+		$('#uploadVideoModal a[data-toggle="tab"]').on('show', function(e){
+			var $this = $(this);
+
+			$this.closest('.modal').find('.modal-header h3').text($this.text());
 		});
 
 		// Validate filename in 'fileinfo edit' dialog

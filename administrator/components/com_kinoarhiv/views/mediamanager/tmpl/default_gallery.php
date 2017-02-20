@@ -109,11 +109,11 @@ echo JHtml::_(
 	'bootstrap.renderModal',
 	'imgModalUpload',
 	array(
-		'title'  => JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGES'),
-		'footer' => JLayoutHelper::render('layouts.edit.upload_image_footer', array(), JPATH_COMPONENT)
+		'title'  => JText::_('COM_KA_TRAILERS_UPLOAD_IMAGES'),
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
 	),
 	JLayoutHelper::render(
-		'layouts.edit.upload_image_body',
+		'layouts.edit.upload_image',
 		array(
 			'view'          => $this,
 			'params'        => $this->params,

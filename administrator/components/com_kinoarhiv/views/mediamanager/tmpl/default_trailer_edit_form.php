@@ -13,8 +13,8 @@ defined('_JEXEC') or die;
 use Joomla\String\StringHelper;
 
 $heading_video_modal = JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_VIDEO'));
-$heading_subtl_video = JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES'));
-$heading_chapt_video = JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS'));
+$heading_subtl_video = JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_SUBTITLES'));
+$heading_chapt_video = JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower(JText::_('COM_KA_TRAILERS_CHAPTERS'));
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $this->id); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
 	<!-- At this first hidden input we will remove autofocus -->
@@ -102,7 +102,7 @@ echo JHtml::_(
 		'title' => JText::_('JHELP'),
 		'footer' => '<a class="btn" type="button" data-dismiss="modal">' . JText::_('COM_KA_CLOSE') . '</a>'
 	),
-	JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_URLS_HELP')
+	JText::_('COM_KA_TRAILERS_UPLOAD_URLS_HELP')
 );
 ?>
 

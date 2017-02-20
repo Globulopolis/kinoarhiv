@@ -65,18 +65,18 @@
 			     maximum values.
 			-->
 			<field name="rate_min" type="text" default="" label="COM_KA_RATE" maxlength="2" size="3"
-				   class="search_movies_rate_min" hint="0" filter="integer"/>
+				   class="search_movies_rate_min" hint="0" filter="allnum" validate="number" min="0"/>
 			<field name="rate_max" type="text" default="" label="COM_KA_RATE" maxlength="2" size="3"
-				   class="search_movies_rate_max" hint="10" filter="integer"/>
+				   class="search_movies_rate_max" hint="10" filter="allnum" validate="number" min="0"/>
 			<field name="rate_slider" type="slider" data-default="[0,params::vote_summ_num]" label="COM_KA_RATE"
 				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
 				   data-slider-max="params::vote_summ_num" data-slider-input-min=".search_movies_rate_min"
 				   data-slider-input-max=".search_movies_rate_max" translateLabel="false"/>
 
 			<field name="imdb_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE" maxlength="2"
-				   size="3" class="search_movies_imdbrate_min" hint="0" filter="integer"/>
+				   size="3" class="search_movies_imdbrate_min" hint="0" filter="allnum" validate="number" min="0"/>
 			<field name="imdb_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE" maxlength="2"
-				   size="3" class="search_movies_imdbrate_max" hint="10" filter="integer"/>
+				   size="3" class="search_movies_imdbrate_max" hint="10" filter="allnum" validate="number" min="0"/>
 			<field name="imdb_rate_slider" type="slider" data-default="[6,10]" translateLabel="false"
 				   label="COM_KA_SEARCH_ADV_MOVIES_IMDB_RATE" class="search-rate-slider" data-slider-handle="square"
 				   data-slider-range="true" data-slider-min="0" data-slider-max="10"
@@ -84,27 +84,27 @@
 				   data-slider-input-max=".search_movies_imdbrate_max"/>
 
 			<field name="kp_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_KP_RATE" maxlength="2"
-				   size="3" class="search_movies_kprate_min" hint="0" filter="integer"/>
+				   size="3" class="search_movies_kprate_min" hint="0" filter="allnum" validate="number" min="0"/>
 			<field name="kp_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_KP_RATE" maxlength="2"
-				   size="3" class="search_movies_kprate_max" hint="10" filter="integer"/>
+				   size="3" class="search_movies_kprate_max" hint="10" filter="allnum" validate="number" min="0"/>
 			<field name="kp_rate_slider" type="slider" data-default="[6,10]" label="COM_KA_SEARCH_ADV_MOVIES_KP_RATE"
 				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
 				   data-slider-max="10" data-slider-input-min=".search_movies_kprate_min"
 				   data-slider-input-max=".search_movies_kprate_max" translateLabel="false"/>
 
 			<field name="rt_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_RT_RATE" maxlength="3"
-				   size="3" class="search_movies_rtrate_min" hint="0" filter="integer"/>
+				   size="3" class="search_movies_rtrate_min" hint="0" filter="allnum" validate="number" min="0"/>
 			<field name="rt_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_RT_RATE" maxlength="3"
-				   size="3" class="search_movies_rtrate_max" hint="100" filter="integer"/>
+				   size="3" class="search_movies_rtrate_max" hint="100" filter="allnum" validate="number" min="0"/>
 			<field name="rt_rate_slider" type="slider" data-default="[50,100]" label="COM_KA_SEARCH_ADV_MOVIES_RT_RATE"
 				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
 				   data-slider-max="100" data-slider-input-min=".search_movies_rtrate_min"
 				   data-slider-input-max=".search_movies_rtrate_max" translateLabel="false"/>
 
 			<field name="mc_rate_min" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_MTC_RATE" maxlength="3"
-				   size="3" class="search_movies_metacritic_min" hint="0" filter="integer"/>
+				   size="3" class="search_movies_metacritic_min" hint="0" filter="allnum" validate="number" min="0"/>
 			<field name="mc_rate_max" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_MTC_RATE" maxlength="3"
-				   size="3" class="search_movies_metacritic_max" hint="100" filter="integer"/>
+				   size="3" class="search_movies_metacritic_max" hint="100" filter="allnum" validate="number" min="0"/>
 			<field name="mc_rate_slider" type="slider" data-default="[50,100]" label="COM_KA_SEARCH_ADV_MOVIES_MTC_RATE"
 				   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
 				   data-slider-max="100" data-slider-input-min=".search_movies_metacritic_min"

@@ -313,7 +313,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			case 'save':
 			default:
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=mediamanager&section=' . $section
-					. '&type=' . $type . '&id=' . $id, $message);
+					. '&type=' . $type . '&id=' . $id, $message
+				);
 				break;
 		}
 	}

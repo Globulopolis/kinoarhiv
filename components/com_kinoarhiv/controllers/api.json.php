@@ -32,8 +32,7 @@ class KinoarhivControllerApi extends JControllerLegacy
 			throw new Exception('Access denied', 403);
 		}
 
-		//$model   = $this->getModel('api');
-		$model   = $this->getModel('api', '', array('item_state' => array(1, 0)));
+		$model   = $this->getModel('api', '', array('item_state' => array(1)));
 		$content = $this->input->get('content', '', 'word');
 		$method  = 'get' . ucfirst($content);
 

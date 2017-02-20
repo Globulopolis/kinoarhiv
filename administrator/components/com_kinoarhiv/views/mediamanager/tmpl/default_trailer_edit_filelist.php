@@ -100,7 +100,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
 	<thead>
 		<tr>
 			<th colspan="4">
-				<?php echo JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES'); ?>
+				<?php echo JText::_('COM_KA_TRAILERS_SUBTITLES'); ?>
 				<span class="btn-small hasTooltip icon-help" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_VIDEOFILES_DESC'); ?>"></span>
 			</th>
 			<th width="9%" class="center">
@@ -145,7 +145,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
 	<tfoot>
 		<tr>
 			<td colspan="5">
-				<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=subtitles&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&new=1&format=raw" class="cmd-file-edit"><span class="icon-plus"></span><?php echo JText::_('JTOOLBAR_ADD'); ?></a>&nbsp;&nbsp;<a href="#" class="cmd-upload" data-upload-tab="subtitles"><span class="icon-upload"></span><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL'); ?></a>
+				<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=subtitles&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&new=1&format=raw" class="cmd-file-edit"><span class="icon-plus"></span><?php echo JText::_('JTOOLBAR_ADD'); ?></a>&nbsp;&nbsp;<a href="#" class="cmd-upload" data-upload-tab="subtitles"><span class="icon-upload"></span><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_FILES_SUBTITLES'); ?></a>
 			</td>
 		</tr>
 	</tfoot>
@@ -156,7 +156,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
        data-list="chapters">
 	<thead>
 		<tr>
-			<th><?php echo JText::_('COM_KA_TRAILERS_HEADING_CHAPTERS'); ?></th>
+			<th><?php echo JText::_('COM_KA_TRAILERS_CHAPTERS'); ?></th>
 			<th width="9%" class="center">
 				<a href="index.php?option=com_kinoarhiv&task=api.data&content=trailerFiles&id=<?php echo $this->trailer_id; ?>&data=chapters&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>">
 					<span class="icon-refresh"></span>
@@ -185,7 +185,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
 	<tfoot>
 		<tr>
 			<td colspan="2">
-				<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=chapters&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&new=1&format=raw" class="cmd-file-edit"><span class="icon-plus"></span><?php echo JText::_('JTOOLBAR_ADD'); ?></a>&nbsp;&nbsp;<a href="#" class="cmd-upload" data-upload-tab="chapters"><span class="icon-upload"></span><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS'); ?></a>
+				<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=chapters&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&new=1&format=raw" class="cmd-file-edit"><span class="icon-plus"></span><?php echo JText::_('JTOOLBAR_ADD'); ?></a>&nbsp;&nbsp;<a href="#" class="cmd-upload" data-upload-tab="chapters"><span class="icon-upload"></span><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_FILES_CHAPTERS'); ?></a>
 			</td>
 		</tr>
 	</tfoot>
@@ -205,11 +205,11 @@ echo JHtml::_(
 	'bootstrap.renderModal',
 	'imgModalUpload',
 	array(
-		'title'  => JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGES'),
-		'footer' => JLayoutHelper::render('layouts.edit.upload_image_footer', array(), JPATH_COMPONENT)
+		'title'  => JText::_('COM_KA_TRAILERS_UPLOAD_IMAGES'),
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
 	),
 	JLayoutHelper::render(
-		'layouts.edit.upload_image_body',
+		'layouts.edit.upload_image',
 		array(
 			'view'          => $this,
 			'params'        => $this->params,

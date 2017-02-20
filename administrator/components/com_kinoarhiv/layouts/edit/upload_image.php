@@ -22,7 +22,7 @@ if (isset($data['refresh']) && !empty($data['refresh']))
 }
 else
 {
-	$refresh = json_encode(array());
+	$refresh = '[]';
 }
 
 if (isset($data['remote_upload']) && $data['remote_upload'] === true)
@@ -31,31 +31,39 @@ if (isset($data['remote_upload']) && $data['remote_upload'] === true)
 	$remote_url = $data['remote_url'];
 }
 
-$max_files = isset($data['max_files']) && !empty($data['max_files']) ? 'data-max_files="' . (int) $data['max_files'] . '"' : '';
+$max_files = isset($data['max_files']) && !empty($data['max_files']) ? (int) $data['max_files'] : '';
 ?>
 <div>
 	<?php echo JHtml::_('bootstrap.startTabSet', 'upload_tab', array('active' => 'local')); ?>
-	<?php echo JHtml::_('bootstrap.addTab', 'upload_tab', 'local', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE_LOCAL')); ?>
+	<?php echo JHtml::_('bootstrap.addTab', 'upload_tab', 'local', JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_LOCAL')); ?>
 
 	<input type="hidden" autofocus="autofocus" />
-	<div class="hasUploader" data-url="<?php echo $url; ?>"
-	     data-multipart_params="{'<?php echo JSession::getFormToken(); ?>': 1}" data-content-type="images"
-	     data-multi_selection="false" <?php echo $max_files; ?>
-	     data-max_file_size="<?php echo $data['params']->get('upload_limit'); ?>" data-multiple_queues="true"
-	     data-filters="[{title: 'Images', extensions: '<?php echo $data['params']->get('upload_mime_images'); ?>'}]"
-	     data-chunk_size="<?php echo $data['params']->get('upload_chunk_size'); ?>"
-	>
-		<p>You browser doesn't have Flash, Silverlight or HTML5 support.</p>
-	</div>
+	<?php
+	echo JLayoutHelper::render(
+		'layouts.edit.upload_file_body',
+		array(
+			'params' => $data['params'],
+			'url' => $url,
+			'max_files' => $max_files,
+			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
+			'content-type' => 'images',
+			'max_file_size' => $data['params']->get('upload_limit'),
+			'multiple_queues' => 'true',
+			'filters' => '{"title": "Images", "extensions": "' . $data['params']->get('upload_mime_images') . '"}',
+			'chunk_size' => $data['params']->get('upload_chunk_size')
+		),
+		JPATH_COMPONENT
+	);
+	?>
 
 	<?php echo JHtml::_('bootstrap.endTab'); ?>
 	<?php if ($remote_upload):
-		echo JHtml::_('bootstrap.addTab', 'upload_tab', 'remote', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE_REMOTE')); ?>
+		echo JHtml::_('bootstrap.addTab', 'upload_tab', 'remote', JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_REMOTE')); ?>
 
 		<fieldset class="form-horizontal">
 			<div class="control-group">
 				<div class="control-label">
-					<label for="remote_urls" class="hasPopover" title="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE_URL'); ?>" data-content="<?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE_URL_HELP'); ?>"><?php echo JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_IMAGE_URL'); ?></label>
+					<label for="remote_urls" class="hasPopover" title="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?>" data-content="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL_HELP'); ?>"><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?></label>
 				</div>
 				<div class="controls">
 					<textarea name="remote_urls" id="remote_urls" rows="7" cols="32" class="span12" spellcheck="false" data-url="<?php echo $remote_url; ?>"></textarea>

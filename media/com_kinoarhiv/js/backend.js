@@ -158,24 +158,81 @@ jQuery(document).ready(function($){
 	$('.hasUploader').each(function(index, element){
 		var config = {},
 			id = 'uploader_' + index,
-			content_type = $(element).data('content-type');
+			//content_type = $(element).data('content-type'),
+			error_div = $(element).next('.uploader-info'),
+			filters = $(element).data('filters') || [],
+			max_file_size = $(element).data('max_file_size') || '256kb',
+			prevent_duplicates = $(element).data('prevent_duplicates') || true;
 
 		config.url = $(element).data('url');
-		config.multipart_params = $(element).data('multipart_params');
-		config.multi_selection = $(element).data('multi_selection');
-		config.max_files = $(element).data('max_files');
-		config.max_file_size = $(element).data('max_file_size');
-		config.multiple_queues = $(element).data('multiple_queues');
-		config.filters = $(element).data('filters');
+		config.chunk_size = $(element).data('chunk_size') || 0;
+		config.file_data_name = $(element).data('file_data_name') || 'file';
+
+		// Set filters for 'Select file' dialog
+		if (!empty(filters)) {
+			config.filters = {
+				mime_types: [
+					filters
+				],
+				max_file_size: max_file_size,
+				prevent_duplicates: prevent_duplicates
+			};
+		}
+
 		config.flash_swf_url = $(element).data('flash_swf_url') || KA_vars.uri_root + 'media/com_kinoarhiv/js/plupload/Moxie.swf';
 		config.silverlight_xap_url = $(element).data('silverlight_xap_url') || KA_vars.uri_root + 'media/com_kinoarhiv/js/plupload/Moxie.xap';
-		config.chunk_size = $(element).data('chunk_size');
+		config.max_retries = $(element).data('max_retries') || 0;
+		config.multipart = $(element).data('multipart') || true;
+		config.multi_selection = $(element).data('multi_selection') || true;
+		config.quality = $(element).data('quality') || 90;
+		config.crop = $(element).data('crop') || false;
+		config.runtimes = $(element).data('runtimes') || 'html5,flash,silverlight,html4';
+		config.unique_names = $(element).data('unique_names') || false;
+		config.dragdrop = $(element).data('dragdrop') || true;
+		config.rename = $(element).data('rename') || false;
+		config.crop = $(element).data('crop') || false;
+		config.multiple_queues = $(element).data('multiple_queues') || true;
+
+		// Custom headers to send with the upload. Hash of name/value pairs.
+		if (!empty($(element).data('headers'))) {
+			config.headers = $(element).data('headers');
+		}
+
+		// Whether to send file and additional parameters as Multipart formated message.
+		if (!empty($(element).data('multipart_params'))) {
+			config.multipart_params = $(element).data('multipart_params');
+		}
+
+		// Either comma-separated list or hash of required features that chosen runtime should absolutely possess.
+		if (!empty($(element).data('multipart_params'))) {
+			config.multipart_params = $(element).data('multipart_params');
+		}
+
+		// Enable resizng of images on client-side.
+		if (!empty($(element).data('resize'))) {
+			config.resize = $(element).data('resize');
+		}
+
+		// If image is bigger, it will be resized.
+		if (!empty($(element).data('width'))) {
+			config.width = $(element).data('width');
+		}
+
+		// If image is bigger, it will be resized.
+		if (!empty($(element).data('height'))) {
+			config.height = $(element).data('height');
+		}
+
+		// Max number of files allowed to add in queue.
+		if (!empty($(element).data('max_files'))) {
+			config.max_files = $(element).data('max_files');
+		}
 
 		// Add an ID attribute
 		$(element).attr('id', id);
 
 		config.preinit = {
-			init: function(up, info){
+			Init: function(up, info){
 				$('#' + id)
 					.find('.plupload_buttons a:last')
 					.after('<a class="plupload_button plupload_clear_all" href="#">' + KA_vars.language.JCLEAR + '</a>');
@@ -186,14 +243,16 @@ jQuery(document).ready(function($){
 					$.each(up.files, function(i, file){
 						up.removeFile(file);
 					});
+
+					error_div.html('').hide().removeClass('alert alert-error');
 				});
 			},
 			UploadComplete: function(up, files){
-				if (content_type == 'images') {
+				/*if (content_type == 'images') {
 					$('input[name="file_uploaded"]').val(1);
 				} else if (content_type == 'video' || content_type == 'subtitles' || content_type == 'chapters') {
 					$('table[data-list="' + content_type + '"] .cmd-refresh-filelist').trigger('click');
-				}
+				}*/
 			}
 		};
 
@@ -229,6 +288,16 @@ jQuery(document).ready(function($){
 					// TODO Приводит к ошибке?
 					//$('.cmd-file-remove.scrimage').trigger('click');
 				}
+			},
+			Error: function(up, args) {
+				var error = JSON.parse(args.response);
+
+				if (error_div.is(':hidden')) {
+					error_div.show();
+					error_div.addClass('alert alert-error');
+				}
+
+				error_div.html(error_div.html() + args.file.name + ': ' + error.message + '<br />');
 			}
 		};
 

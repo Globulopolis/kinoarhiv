@@ -25,15 +25,18 @@ echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'vi
 			'content-type' => 'video',
 			'max_file_size' => $this->params->get('upload_limit'),
 			'multiple_queues' => 'true',
-			'filters' => '[{"title": "Video files", extensions: "' . $this->params->get('upload_mime_video') . '"}]',
+			'filters' => '{"title": "Video files", "extensions": "' . $this->params->get('upload_mime_video') . '"}',
 			'chunk_size' => $this->params->get('upload_chunk_size'),
-			'info' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_VIDEO', $this->params->get('upload_mime_video'))
+			'info' => array(
+				'text' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_VIDEO', $this->params->get('upload_mime_video')),
+				'close' => false
+			)
 		),
 		JPATH_COMPONENT
 	);
 
 	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'subtitles', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_SUBTL'));
+	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'subtitles', JText::_('COM_KA_TRAILERS_UPLOAD_FILES_SUBTITLES'));
 
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
@@ -44,15 +47,21 @@ echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'vi
 			'content-type' => 'subtitles',
 			'max_file_size' => $this->params->get('upload_limit'),
 			'multiple_queues' => 'true',
-			'filters' => '[{"title": "Subtitle files", extensions: "' . $this->params->get('upload_mime_subtitles') . '"}]',
+			'filters' => '{"title": "Subtitle files", "extensions": "' . $this->params->get('upload_mime_subtitles') . '"}',
 			'chunk_size' => $this->params->get('upload_chunk_size'),
-			'info' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_SUBTITLES', $this->params->get('upload_mime_subtitles')) . JText::_('COM_KA_TRAILERS_HEADING_SUBTITLES_WARN')
+			'info' => array(
+				'text' => JText::sprintf(
+					'COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_SUBTITLES',
+					$this->params->get('upload_mime_subtitles')
+				) . JText::_('COM_KA_TRAILERS_SUBTITLES_WARN'),
+				'close' => false
+			)
 		),
 		JPATH_COMPONENT
 	);
 
 	echo JHtml::_('bootstrap.endTab');
-	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'chapters', JText::_('COM_KA_TRAILERS_HEADING_UPLOAD_FILES_CHAPTERS'));
+	echo JHtml::_('bootstrap.addTab', 'upload_video_tab', 'chapters', JText::_('COM_KA_TRAILERS_UPLOAD_FILES_CHAPTERS'));
 
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
@@ -61,11 +70,15 @@ echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'vi
 			'url' => $url . '&upload=chapters',
 			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
 			'content-type' => 'chapters',
+			'max_files' => 1,
 			'max_file_size' => $this->params->get('upload_limit'),
 			'multiple_queues' => 'true',
-			'filters' => '[{"title": "Chapter files", extensions: "' . $this->params->get('upload_mime_chapters') . '"}]',
+			'filters' => '{"title": "Chapter files", "extensions": "' . $this->params->get('upload_mime_chapters') . '"}',
 			'chunk_size' => $this->params->get('upload_chunk_size'),
-			'info' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_CHAPTERS', $this->params->get('upload_mime_chapters'))
+			'info' => array(
+				'text' => JText::sprintf('COM_KA_TRAILERS_EDIT_UPLOAD_FILENAME_CONVERT_CHAPTERS', $this->params->get('upload_mime_chapters')),
+				'close' => false
+			)
 		),
 		JPATH_COMPONENT
 	);

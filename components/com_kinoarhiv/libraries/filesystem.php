@@ -277,6 +277,43 @@ class KAFilesystem
 	}
 
 	/**
+	 * Get the folder size in bytes
+	 *
+	 * @param   string   $path   Filesystem path to a folder.
+	 * @param   boolean  $cache  Clear stat cache.
+	 *
+	 * @return   integer   Folder size, false on error.
+	 */
+	public function getFolderSize($path, $cache = true)
+	{
+		if (!$path)
+		{
+			JLog::add(__METHOD__ . ': ' . JText::_('JLIB_FILESYSTEM_ERROR_DELETE_BASE_DIRECTORY'), JLog::WARNING, 'jerror');
+
+			return false;
+		}
+
+		if ($cache)
+		{
+			clearstatcache();
+		}
+
+		$size = 0;
+
+		if (is_readable($path))
+		{
+			foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)) as $file)
+			{
+				$size += $file->getSize();
+			}
+
+			return (int) $size;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get MIME-type of the file
 	 *
 	 * @param   string  $path  Path to a file.

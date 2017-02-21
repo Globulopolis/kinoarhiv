@@ -149,18 +149,18 @@ $columns   = 10;
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>
 					</td>
-					<td class="small icons-list">
+					<td class="icons-list">
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank">
-							<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/picture.png" border="0" />
+							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" />
 						</a>
 						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=trailers&id=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank">
-							<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/film.png" border="0" />
+							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
 						</a>
 						<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
-							<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/music.png" border="0" />
+							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
 						</a>
 						<a href="index.php?option=com_kinoarhiv&view=reviews&mid=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
@@ -168,7 +168,7 @@ $columns   = 10;
 						</a>&nbsp;
 						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone"
 						   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>">
-							<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" />
+							<span class="icon-out-2"></span>
 						</a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all hidden-phone">
 							<li>

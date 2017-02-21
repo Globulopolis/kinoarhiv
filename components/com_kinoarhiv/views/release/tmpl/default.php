@@ -170,7 +170,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 									<a name="row-<?php echo $row->id; ?>"></a>
 								</td>
 								<td>
-									<img class="flag-dd" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>
+									<img class="flag-dd" src="media/com_kinoarhiv/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>
 								</td>
 								<td><?php echo $row->media_type; ?></td>
 								<td><?php if ($row->desc != ''): ?>

@@ -119,7 +119,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 								<div class="name-bd">
 									<?php echo JText::_('COM_KA_NAMES_BIRTHPLACE'); ?>
 									<?php echo !empty($item->birthplace) ? $item->birthplace . ', ' : ''; ?>
-									<img class="ui-icon-country" border="0" alt="<?php echo $item->country; ?>" src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $item->code; ?>.png"> <?php echo $item->country; ?>
+									<img class="ui-icon-country" border="0" alt="<?php echo $item->country; ?>" src="media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png"> <?php echo $item->country; ?>
 								</div>
 							<?php endif; ?>
 							<?php if ($item->genres != ''): ?>

@@ -364,7 +364,7 @@ endif;
 								<?php $cn_count = count($this->item->countries);
 								for ($i = 0, $n = $cn_count; $i < $n; $i++):
 									$country = $this->item->countries[$i]; ?>
-									<img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
+									<img src="media/com_kinoarhiv/images/icons/countries/<?php echo $country->code; ?>.png" border="0" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>" rel="nofollow"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>

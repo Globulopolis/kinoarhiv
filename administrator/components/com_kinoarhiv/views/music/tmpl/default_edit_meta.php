@@ -68,7 +68,7 @@ defined('_JEXEC') or die;
 				<div class="control-label"><?php echo $this->form->getLabel('tags', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('tags', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="<?php echo JRoute::_('index.php?option=com_tags'); ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COM_TAGS'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/tag_edit.png" border="0" /></a></span>
+					<span class="rel-link"><a href="<?php echo JRoute::_('index.php?option=com_tags'); ?>" class="hasTip" title="::<?php echo JText::_('COM_KA_COM_TAGS'); ?>" target="_blank"><span class="icon-edit"></span></a></span>
 				</div>
 			</div>
 			<div class="control-group">

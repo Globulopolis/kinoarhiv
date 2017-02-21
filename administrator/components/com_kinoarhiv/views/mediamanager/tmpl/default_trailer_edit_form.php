@@ -30,16 +30,16 @@ $heading_chapt_video = JText::_('JTOOLBAR_ADD') . ' ' . StringHelper::strtolower
 			<?php if ($field->name == 'form[trailer][urls]'): ?>
 				<div class="urls_form_toolbar">
 					<a href="#urlsVideoModal" title="<?php echo $heading_video_modal; ?>" class="hasTooltip" data-toggle="modal">
-						<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/film.png" border="0"/>
+						<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0"/>
 					</a>
 					<a href="#urlsSubtitlesModal" title="<?php echo $heading_subtl_video; ?>" class="hasTooltip" data-toggle="modal">
-						<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/subtitles.png" border="0"/>
+						<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/subtitles.png" border="0"/>
 					</a>
 					<a href="#urlsChaptersModal" title="<?php echo $heading_chapt_video; ?>" class="hasTooltip" data-toggle="modal">
-						<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/timeline_marker.png" border="0"/>
+						<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/timeline_marker.png" border="0"/>
 					</a>
 					<a href="#urlsHelpModal" title="<?php echo JText::_('JHELP'); ?>" class="hasTooltip" data-toggle="modal">
-						<img src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/images/icons/help.png" border="0"/>
+						<span class="icon-help"></span>
 					</a>
 				</div>
 			<?php endif; ?>

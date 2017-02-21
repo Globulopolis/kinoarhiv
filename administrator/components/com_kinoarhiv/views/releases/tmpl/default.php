@@ -125,7 +125,7 @@ $columns   = 9;
 					</td>
 					<td class="nowrap hidden-phone">
 						<?php if ($item->name != ''): ?>
-							<img class="flag-dd" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $item->code; ?>.png" />
+							<img class="flag-dd" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png" />
 						<?php echo $item->name;
 						else:
 							echo 'N/a';

@@ -204,7 +204,7 @@ class KinoarhivModelGenre extends JModelForm
 		// Automatic handling of alias for empty fields
 		if (in_array($app->input->get('task'), array('genres.apply', 'genres.save', 'genres.save2new')) && (int) $app->input->get('id') == 0)
 		{
-			if ($data['alias'] == null)
+			if ($data['alias'] === null)
 			{
 				if (JFactory::getConfig()->get('unicodeslugs') == 1)
 				{

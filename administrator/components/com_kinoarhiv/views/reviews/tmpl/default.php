@@ -36,7 +36,7 @@ $columns   = 9;
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
 
-		<table class="table table-striped" id="articleList">
+		<table class="table" id="articleList">
 			<thead>
 				<tr>
 					<th width="1%" class="center">
@@ -44,9 +44,6 @@ $columns   = 9;
 					</th>
 					<th width="1%" style="min-width:55px;" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
-					</th>
-					<th width="1%" style="min-width:55px;" class="nowrap center hidden-phone">
-						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_TYPE', 'a.type', $listDirn, $listOrder); ?>
 					</th>
 					<th>
 						<?php echo JText::_('COM_KA_REVIEWS_FIELD_REVIEW'); ?>
@@ -74,7 +71,24 @@ $columns   = 9;
 					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
-				foreach ($this->items as $i => $item): ?>
+				foreach ($this->items as $i => $item):
+					if ($item->type == 1)
+					{
+						$text_class = 'muted';
+					}
+					elseif ($item->type == 2)
+					{
+						$text_class = 'text-success';
+					}
+					elseif ($item->type == 3)
+					{
+						$text_class = 'text-error';
+					}
+					else
+					{
+						$text_class = '';
+					}
+				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
@@ -82,16 +96,8 @@ $columns   = 9;
 					<td class="center hidden-phone">
 						<?php echo JHtml::_('jgrid.published', $item->state, $i, 'reviews.', $this->canEditState, 'cb'); ?>
 					</td>
-					<td class="center hidden-phone">
-						<?php if ($item->type == 2): ?>
-							<img src="components/com_kinoarhiv/assets/images/icons/thumb_up.png" border="0">
-						<?php elseif ($item->type == 3): ?>
-							<img src="components/com_kinoarhiv/assets/images/icons/thumb_down.png" border="0">
-						<?php else: ?>
-						<?php endif; ?>
-					</td>
 					<td>
-						<span><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
+						<span class="<?php echo $text_class; ?>"><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
 						<?php if ($this->canEdit) : ?>
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
 						<?php endif; ?>
@@ -101,12 +107,12 @@ $columns   = 9;
 					</td>
 					<td class="small">
 						<?php echo $item->movie; ?><br />
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&mid=' . $item->movie_id); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&mid=' . $item->movie_id); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->username; ?><br />
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&uid=' . $item->uid); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_USER'); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/search.png" border="0"></a>
-						<a href="<?php echo JRoute::_('index.php?option=com_users&task=user.edit&id=' . $item->uid); ?>" title="<?php echo JText::sprintf('COM_KA_REVIEWS_USERS_EDIT_USER', $item->username); ?>" class="hasTooltip"><img src="components/com_kinoarhiv/assets/images/icons/user_edit.png" border="0"></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&uid=' . $item->uid); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_USER'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_users&task=user.edit&id=' . $item->uid); ?>" title="<?php echo JText::sprintf('COM_KA_REVIEWS_USERS_EDIT_USER', $item->username); ?>" class="hasTooltip"><span class="icon-edit"></span></a>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->ip; ?>

@@ -71,7 +71,7 @@ use Joomla\String\StringHelper;
 							<span class="f-col"><?php echo JText::_('COM_KA_NAMES_BIRTHPLACE_1'); ?></span>
 						<span class="s-col">
 							<?php echo !empty($this->item->birthplace) ? $this->item->birthplace : ''; ?><?php if (!empty($this->item->birthplace) && !empty($this->item->country)): ?>, <?php endif; ?><?php if (!empty($this->item->country)): ?>
-								<img class="ui-icon-country" border="0" alt="<?php echo $this->item->country; ?>" src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/<?php echo $this->item->code; ?>.png">
+								<img class="ui-icon-country" border="0" alt="<?php echo $this->item->country; ?>" src="media/com_kinoarhiv/images/icons/countries/<?php echo $this->item->code; ?>.png">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthcountry]=' . $this->item->birthcountry . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->country; ?></a><?php endif; ?>
 						</span>
 						</div>

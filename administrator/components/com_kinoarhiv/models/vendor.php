@@ -164,7 +164,7 @@ class KinoarhivModelVendor extends JModelForm
 		// Automatic handling of alias for empty fields
 		if (in_array($app->input->get('task'), array('vendors.apply', 'vendors.save', 'vendors.save2new')) && (int) $app->input->get('id') == 0)
 		{
-			if ($data['company_name_alias'] == null)
+			if ($data['company_name_alias'] === null)
 			{
 				if (JFactory::getConfig()->get('unicodeslugs') == 1)
 				{

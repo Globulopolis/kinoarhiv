@@ -26,8 +26,6 @@
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="a.state ASC">JSTATUS_ASC</option>
 			<option value="a.state DESC">JSTATUS_DESC</option>
-			<option value="a.type ASC">COM_KA_REVIEWS_FIELD_TYPE_SORT_ASC</option>
-			<option value="a.type DESC">COM_KA_REVIEWS_FIELD_TYPE_SORT_DESC</option>
 			<option value="a.created ASC">COM_KA_REVIEWS_FIELD_DATE_SORT_ASC</option>
 			<option value="a.created DESC">COM_KA_REVIEWS_FIELD_DATE_SORT_DESC</option>
 			<option value="u.username ASC">COM_KA_REVIEWS_FIELD_USER_SORT_ASC</option>

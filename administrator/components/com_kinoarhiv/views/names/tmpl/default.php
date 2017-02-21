@@ -91,7 +91,7 @@ $columns   = 8;
 					<th>
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_NAME', 'a.name', $listDirn, $listOrder); ?> / <?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_NAME_LATIN', 'a.latin_name', $listDirn, $listOrder); ?>
 					</th>
-					<th width="1%" style="min-width:35px;" class="nowrap center"></th>
+					<th width="5%" style="min-width:35px;" class="nowrap center"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
@@ -157,13 +157,13 @@ $columns   = 8;
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>
 					</td>
-					<td class="small">
-						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=3&id=<?php echo (int)$item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="components/com_kinoarhiv/assets/images/icons/picture.png" border="0" /></a>
-						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+					<td>
+						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=3&id=<?php echo (int) $item->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank"><img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" /></a>
+						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span class="icon-out-2"></span></a>
 						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all hidden-phone">
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CAREERS_TITLE'); ?></a></li>
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
-							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=names&award_type=1&nid=<?php echo (int)$item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo (int) $item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_CAREERS_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo (int) $item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a></li>
+							<li><a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=names&award_type=1&nid=<?php echo (int) $item->id; ?>" target="_blank">&rarr; <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a></li>
 						</ul>
 					</td>
 					<td class="small hidden-phone">

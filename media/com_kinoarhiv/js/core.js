@@ -366,7 +366,7 @@ jQuery(document).ready(function($){
 				} else {
 					var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
 
-					return '<img class="flag-dd" src="' + img_root + 'components/com_kinoarhiv/assets/themes/component/' + KA_vars.params.ka_theme + '/images/icons/countries/' + country_code + '.png"/>' + data.text;
+					return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 				}
 			} else if (content == 'names') {
 				return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
@@ -391,7 +391,7 @@ jQuery(document).ready(function($){
 				} else {
 					var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
 
-					return '<img class="flag-dd" src="' + img_root + 'components/com_kinoarhiv/assets/themes/component/' + KA_vars.params.ka_theme + '/images/icons/countries/' + country_code + '.png"/>' + data.text;
+					return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 				}
 			} else if (content == 'names') {
 				return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;

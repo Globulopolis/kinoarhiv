@@ -122,7 +122,7 @@ else
 
 						<span style="float: right;">
 							<a href="index.php?option=com_kinoarhiv&task=genres.updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo $item->id; ?>&format=json" class="hasTooltip updateStat" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
-								<img src="<?php echo JUri::base(); ?>/components/com_kinoarhiv/assets/images/icons/arrow_refresh_small.png" border="0" />
+								<span class="icon-refresh"></span>
 							</a>
 						</span>
 
@@ -139,7 +139,7 @@ else
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=' . $item_type . '&id=' . $item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS') . ': ' . $this->escape($item->name); ?>"><img src="components/com_kinoarhiv/assets/images/icons/arrow_switch.png" border="0" /></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=' . $item_type . '&id=' . $item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS') . ': ' . $this->escape($item->name); ?>"><span class="icon-out-2"></span></a>
 						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>

@@ -37,17 +37,16 @@ class KAComponentHelperBackend extends JComponentHelper
 			return;
 		}
 
-		JHtml::_('stylesheet', JUri::base() . 'components/com_kinoarhiv/assets/css/style.css');
-		JHtml::_('stylesheet', JUri::base() . 'components/com_kinoarhiv/assets/css/plugins.css');
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins_backend.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles_backend.css');
 
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/js.cookie.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
-		JHtml::_('script', 'media/com_kinoarhiv/js/backend.js');
-		//JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
 
 		// Add some variables into the global scope
 		$js_vars = array(

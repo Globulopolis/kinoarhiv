@@ -185,10 +185,10 @@ $name_id = $input->get('name_id', 0, 'int');
 				}
 			},
 			formatResult: function(data){
-				return "<img class='flag-dd' src='<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
+				return "<img class='flag-dd' src='<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
 			formatSelection: function(data, container){
-				return "<img class='flag-dd' src='<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/countries/" + data.code + ".png'/>" + data.title;
+				return "<img class='flag-dd' src='<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/countries/" + data.code + ".png'/>" + data.title;
 			},
 			escapeMarkup: function(m) { return m; }
 		}).select2('container').find('ul.select2-choices').sortable({

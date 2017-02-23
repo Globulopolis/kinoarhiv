@@ -77,6 +77,15 @@ class KinoarhivViewReviews extends JViewLegacy
 		$app->input->set('hidemainmenu', true);
 	}
 
+	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @param   string  $task  Task
+	 *
+	 * @return  void
+	 *
+	 * @since   1.6
+	 */
 	protected function addToolbar($task = '')
 	{
 		$user = JFactory::getUser();
@@ -86,18 +95,27 @@ class KinoarhivViewReviews extends JViewLegacy
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_FIELD_REVIEW') . ': ' . JText::_('COM_KA_EDIT')), 'comments-2');
 			JToolbarHelper::apply('reviews.apply');
 			JToolbarHelper::save('reviews.save');
-			JToolbarHelper::divider();
 			JToolbarHelper::cancel('reviews.cancel');
 		}
 		else
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_REVIEWS_TITLE')), 'comments-2');
-			JToolbarHelper::editList('reviews.edit');
-			JToolbarHelper::divider();
-			JToolbarHelper::publishList('reviews.publish');
-			JToolbarHelper::unpublishList('reviews.unpublish');
-			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'reviews.remove');
-			JToolbarHelper::divider();
+
+			if ($user->authorise('core.edit', 'com_kinoarhiv'))
+			{
+				JToolbarHelper::editList('reviews.edit');
+			}
+
+			if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
+			{
+				JToolbarHelper::publishList('reviews.publish');
+				JToolbarHelper::unpublishList('reviews.unpublish');
+
+				if ($this->state->get('filter.published') != 2)
+				{
+					JToolbarHelper::archiveList('reviews.archive');
+				}
+			}
 
 			if ($user->authorise('core.create', 'com_kinoarhiv')
 				&& $user->authorise('core.edit', 'com_kinoarhiv')
@@ -108,6 +126,15 @@ class KinoarhivViewReviews extends JViewLegacy
 
 				$dhtml = $layout->render(array('title' => $title));
 				JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+			}
+
+			if ($this->state->get('filter.published') == -2 && $user->authorise('core.delete', 'com_kinoarhiv'))
+			{
+				JToolbarHelper::deleteList('JGLOBAL_CONFIRM_DELETE', 'reviews.remove', 'JTOOLBAR_EMPTY_TRASH');
+			}
+			elseif ($user->authorise('core.edit.state', 'com_kinoarhiv'))
+			{
+				JToolbarHelper::trash('reviews.trash');
 			}
 		}
 	}

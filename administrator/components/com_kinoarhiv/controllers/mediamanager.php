@@ -41,7 +41,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	public function edit($isNew = false)
 	{
 		$view = $this->getView('mediamanager', 'html');
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$view->setModel($model, true);
 
 		if ($isNew === true)
@@ -184,7 +184,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	{
 		JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$id = $this->input->get('id', 0, 'int');
 		$item_id = $this->input->get('item_id', null, 'array');
 		$result = $model->subtitleSetDefault($isDefault);
@@ -246,7 +246,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$section = $app->input->get('section', '', 'word');
 		$type = $app->input->get('type', '', 'word');
 		$id = $app->input->get('id', 0, 'int');
@@ -363,14 +363,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
-		$this->addModelPath(JPATH_ROOT . '/components/com_kinoarhiv/models/');
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$api_model = $this->getModel(
-			'api', '',
+			'apiBackend', '',
 			array(
-				'item_state' => array(0, 1),
+				//'item_state' => array(-2, 0, 1, 2, '*'),
+				'item_state' => '*',
 				'data_lang' => '*',
 				'item_access' => '*'
 			)
@@ -541,7 +541,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$section = $app->input->get('section', '', 'word');
 		$type = $app->input->get('type', '', 'word');
 		$tab = $app->input->get('tab', 0, 'int');

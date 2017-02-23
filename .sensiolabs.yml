@@ -8,6 +8,11 @@ global_exclude_dirs:
     - components/com_kinoarhiv/libraries/vendor
     - media/com_kinoarhiv
 
+exclude_patterns:
+    - administrator/components/com_kinoarhiv/installer.php
+    - administrator/components/com_kinoarhiv/com_kinoarhiv.plugin.php
+    - components/com_kinoarhiv/libraries/pagination.php
+
 rules:
     composer.apc_class_loader_should_be_enabled:
         enabled: true

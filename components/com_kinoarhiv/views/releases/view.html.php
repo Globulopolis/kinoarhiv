@@ -193,7 +193,7 @@ class KinoarhivViewReleases extends JViewLegacy
 		$this->params = $params;
 		$this->user = $user;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display($tpl);
 	}
@@ -205,7 +205,7 @@ class KinoarhivViewReleases extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

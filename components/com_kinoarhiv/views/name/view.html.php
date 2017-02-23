@@ -209,7 +209,7 @@ class KinoarhivViewName extends JViewLegacy
 		$this->item = $item;
 		$this->user = $user;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 
@@ -317,7 +317,7 @@ class KinoarhivViewName extends JViewLegacy
 		$this->filters = $this->getDimensionList();
 		$this->pagination = $pagination;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -429,7 +429,7 @@ class KinoarhivViewName extends JViewLegacy
 		$this->items = $items;
 		$this->pagination = $pagination;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -468,7 +468,7 @@ class KinoarhivViewName extends JViewLegacy
 		$this->item = $item;
 		$this->items = $items;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -508,7 +508,7 @@ class KinoarhivViewName extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

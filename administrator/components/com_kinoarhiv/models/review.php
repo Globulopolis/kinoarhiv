@@ -83,24 +83,22 @@ class KinoarhivModelReview extends JModelForm
 	}
 
 	/**
-	 * Method to change the published state of one or more records.
+	 * Method to change the state of one or more records.
 	 *
-	 * @param   boolean  $isUnpublish  Action state
+	 * @param   array    $ids    Array of item IDs
+	 * @param   integer  $state  Item state
 	 *
 	 * @return  boolean  True on success.
 	 *
 	 * @since   3.0
 	 */
-	public function publish($isUnpublish)
+	public function setItemState($ids, $state)
 	{
-		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
-		$state = $isUnpublish ? 0 : 1;
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__ka_reviews'))
-			->set($db->quoteName('state') . ' = ' . (int) $state)
+			->set($db->quoteName('state') . " = '" . (int) $state . "'")
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);

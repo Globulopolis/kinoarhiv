@@ -38,6 +38,7 @@ class KinoarhivModelMediamanager extends JModelList
 				'dimension', 'g.dimension',
 				'frontpage', 'g.frontpage',
 				'state', 'g.state',
+				'access', 'published',
 				'language', 'g.language');
 		}
 
@@ -46,11 +47,11 @@ class KinoarhivModelMediamanager extends JModelList
 		// Adjust context to support different active filters for gallery and trailers.
 		if ($input->get('type', '', 'word') == 'trailers')
 		{
-			$this->context = 'com_kinoarhiv_mediamanager_trailers';
+			$this->context = 'com_kinoarhiv.mediamanager.trailers';
 		}
 		else
 		{
-			$this->context = 'com_kinoarhiv_mediamanager_' . $input->get('section', '', 'word') . '_gallery';
+			$this->context = 'com_kinoarhiv.mediamanager.' . $input->get('section', '', 'word') . '.gallery';
 		}
 
 		parent::__construct($config);

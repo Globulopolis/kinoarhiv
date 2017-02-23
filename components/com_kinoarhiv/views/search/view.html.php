@@ -46,7 +46,7 @@ class KinoarhivViewSearch extends JViewLegacy
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display($tpl);
 	}
@@ -58,7 +58,7 @@ class KinoarhivViewSearch extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

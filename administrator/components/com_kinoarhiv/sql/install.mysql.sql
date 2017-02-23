@@ -394,7 +394,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_reviews` (
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `type` tinyint(1) NOT NULL DEFAULT '0',
   `ip` varchar(64) NOT NULL DEFAULT '',
-  `state` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0-premod, 1-published',
+  `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT '0-premod, 1-published',
   PRIMARY KEY (`id`),
   KEY `idx_state` (`state`),
   KEY `idx_movie_id` (`movie_id`),

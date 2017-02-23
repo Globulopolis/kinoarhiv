@@ -63,7 +63,7 @@ class KinoarhivViewAwards extends JViewLegacy
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->pagination = $this->get('Pagination');
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display();
 	}
@@ -83,7 +83,7 @@ class KinoarhivViewAwards extends JViewLegacy
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// TODO Fix document title and pathway
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display('award');
 	}
@@ -95,7 +95,7 @@ class KinoarhivViewAwards extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

@@ -142,7 +142,7 @@ class KinoarhivViewNames extends JViewLegacy
 		$this->user = $user;
 		$this->lang = $lang;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display($tpl);
 	}
@@ -154,7 +154,7 @@ class KinoarhivViewNames extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

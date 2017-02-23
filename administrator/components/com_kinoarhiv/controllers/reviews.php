@@ -129,42 +129,98 @@ class KinoarhivControllerReviews extends JControllerLegacy
 	 */
 	public function unpublish()
 	{
-		$this->publish(true);
+		$this->publish(0);
 	}
 
 	/**
 	 * Method to publish a list of items
 	 *
-	 * @param   boolean  $isUnpublish  Action state
+	 * @param   integer  $state  Item state
 	 *
 	 * @return  void
 	 *
 	 * @since   3.0
 	 */
-	public function publish($isUnpublish = false)
+	public function publish($state = 1)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		if (!JFactory::getUser()->authorise('core.edit.state', 'com_kinoarhiv'))
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
-		$model = $this->getModel('review');
-		$result = $model->publish($isUnpublish);
+		$ids = $this->input->get('id', array(), 'array');
+		$url = 'index.php?option=com_kinoarhiv&view=reviews';
 
-		if ($result === false)
+		if (!is_array($ids) || count($ids) < 1)
 		{
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			$this->setRedirect($url, JText::_('JGLOBAL_NO_ITEM_SELECTED'), 'error');
 
 			return;
 		}
 
-		$message = $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED');
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews', $message);
+		$model = $this->getModel('review');
+
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		if ($state == 0)
+		{
+			$message = 'COM_KA_ITEMS_N_UNPUBLISHED';
+		}
+		elseif ($state == 1)
+		{
+			$message = 'COM_KA_ITEMS_N_PUBLISHED';
+		}
+		elseif ($state == 2)
+		{
+			$message = 'COM_KA_ITEMS_N_ARCHIVED';
+		}
+		else
+		{
+			$this->setRedirect($url, JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+
+			return;
+		}
+
+		$result = $model->setItemState($ids, $state);
+
+		if (!$result)
+		{
+			$this->setRedirect($url, JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+
+			return;
+		}
+
+		$this->setRedirect($url, JText::plural($message, count($ids)));
+	}
+
+	/**
+	 * Trash (set enabled = -2) an item.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function trash()
+	{
+		$this->publish(-2);
+	}
+
+	/**
+	 * Archive an item.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function archive()
+	{
+		$this->publish(2);
 	}
 
 	/**

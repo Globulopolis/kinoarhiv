@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelNames extends JModelList
 {
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.names';
 
 	/**
 	 * Constructor.

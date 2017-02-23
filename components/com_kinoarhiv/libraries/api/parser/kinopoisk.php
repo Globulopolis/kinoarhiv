@@ -183,7 +183,7 @@ class KAParserKinopoisk extends KAApi
 			$headers['Referer'] = 'http://www.imdb.com/';
 
 			$response = parent::getRemoteData(
-				'http://www.imdb.com/find?q=' . parent::_urlencode($title) . '&s=tt&exact=true&ref_=fn_tt_ex',
+				'http://www.imdb.com/find?q=' . parent::encodeUrl($title) . '&s=tt&exact=true&ref_=fn_tt_ex',
 				$headers,
 				30,
 				array('curl', 'socket')

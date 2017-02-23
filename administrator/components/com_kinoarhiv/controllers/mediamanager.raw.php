@@ -27,7 +27,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	public function editTrailerFile()
 	{
 		$view = $this->getView('mediamanager', 'raw');
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$view->setModel($model, true);
 		$view->display('trailer_edit_fileinfo');
 	}

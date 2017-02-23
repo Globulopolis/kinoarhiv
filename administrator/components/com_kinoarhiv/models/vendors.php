@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelVendors extends JModelList
 {
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.vendors';
 
 	/**
 	 * Constructor.
@@ -34,7 +34,7 @@ class KinoarhivModelVendors extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'v.id',
 				'company_name', 'v.company_name',
-				'state', 'v.state',
+				'state', 'v.state', 'published',
 				'language', 'v.language',);
 		}
 

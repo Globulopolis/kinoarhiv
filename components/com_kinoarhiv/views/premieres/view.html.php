@@ -198,7 +198,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$this->pagination = $pagination;
 		$this->user = $user;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display($tpl);
 	}
@@ -210,7 +210,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

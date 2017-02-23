@@ -19,6 +19,10 @@ ALTER TABLE `#__ka_music_genres`
 
 UPDATE `#__ka_music_genres` SET `access` = '1';
 
+ALTER TABLE `#__ka_reviews`
+  CHANGE `state` `state` TINYINT(3) DEFAULT 0 NOT NULL
+COMMENT '0-premod, 1-published';
+
 CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(128) NOT NULL DEFAULT '',

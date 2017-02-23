@@ -17,6 +17,8 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelCareers extends JModelList
 {
+	protected $context = 'com_kinoarhiv.careers';
+
 	/**
 	 * Constructor.
 	 *

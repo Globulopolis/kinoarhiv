@@ -610,7 +610,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$item_id = $app->input->get('item_id', 0, 'int');
 		$items = $app->input->get('ord', array(), 'array');
 		$type = $app->input->get('type', '', 'word');
@@ -656,7 +656,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$result = $model->subtitleSetDefault($isDefault);
 
 		if (!$result)
@@ -696,7 +696,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$type = $app->input->get('list', '', 'word');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
@@ -772,7 +772,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$id = $app->input->getInt('id', 0);
 		$item = $app->input->getInt('item', 0);
 		$item_id = $app->input->getInt('item_id', 0);
@@ -866,7 +866,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$trailer_id = $app->input->get('trailer_id', 0, 'int');
 		$subtitle_id = $app->input->get('subtitle_id', 0, 'int');
 
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$result = $model->saveSubtitles('', $trailer_id, $movie_id, $subtitle_id, true);
 
 		echo $result;
@@ -913,7 +913,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$media = KAMedia::getInstance();
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$id = $app->input->get('id', 0, 'int');
 		$item_id = $app->input->get('item_id', null, 'int');
 		$files = $model->getTrailerFiles('video', $item_id);
@@ -1004,7 +1004,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$model = $this->getModel('mediamanageritem');
+		$model = $this->getModel('mediamanagerItem');
 		$errors = array();
 		$urls = $app->input->post->get('urls', '', 'string');
 		$urls_arr = explode("\n", $urls);
@@ -1129,7 +1129,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 									}
 								}
 
-								$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
+								$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
 								$model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 							}
 							elseif ($type == 'trailers')
@@ -1175,7 +1175,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 									}
 								}
 
-								$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
+								$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
 								$model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 							}
 						}

@@ -100,7 +100,7 @@ class KinoarhivModelVendor extends JModelForm
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__ka_vendors'))
-			->set($db->quoteName('state') . ' = ' . (int) $state)
+			->set($db->quoteName('state') . " = '" . (int) $state . "'")
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);

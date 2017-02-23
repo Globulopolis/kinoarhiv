@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelCountries extends JModelList
 {
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.countries';
 
 	/**
 	 * Constructor.
@@ -36,7 +36,8 @@ class KinoarhivModelCountries extends JModelList
 				'name', 'a.name',
 				'code', 'a.code',
 				'state', 'a.state',
-				'language', 'a.language',);
+				'language', 'a.language',
+				'published');
 		}
 
 		parent::__construct($config);

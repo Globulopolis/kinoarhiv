@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelReviews extends JModelList
 {
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.reviews';
 
 	/**
 	 * Constructor.
@@ -36,6 +36,7 @@ class KinoarhivModelReviews extends JModelList
 				'username', 'u.username',
 				'title', 'm.title',
 				'state', 'a.state',
+				'published', 'author_id',
 				'type', 'a.type',
 				'ip', 'a.ip',
 				'created', 'a.created');

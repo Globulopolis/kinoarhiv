@@ -44,7 +44,7 @@ class KinoarhivViewGenres extends JViewLegacy
 		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 
 		parent::display($tpl);
 	}
@@ -56,7 +56,7 @@ class KinoarhivViewGenres extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

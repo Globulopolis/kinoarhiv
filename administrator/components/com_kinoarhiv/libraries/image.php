@@ -35,7 +35,7 @@ class KAImage extends JImage
 	 *
 	 * @since  3.0
 	 */
-	public function _createThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true)
+	public function makeThumbs($directory, $filename, $thumbSizes, $creationMethod = 2, $thumbsFolder = null, $thumbsName = true)
 	{
 		jimport('joomla.filesystem.file');
 		$image = new JImage($directory . DIRECTORY_SEPARATOR . $filename);

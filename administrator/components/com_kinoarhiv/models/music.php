@@ -17,6 +17,8 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelMusic extends JModelList
 {
+	protected $context = 'com_kinoarhiv.music';
+
 	/**
 	 * Constructor.
 	 *
@@ -39,7 +41,8 @@ class KinoarhivModelMusic extends JModelList
 					'title', 'a.title',
 					'access', 'a.access', 'access_level',
 					'ordering', 'a.ordering',
-					'language', 'a.language');
+					'language', 'a.language',
+					'published');
 			}
 		}
 

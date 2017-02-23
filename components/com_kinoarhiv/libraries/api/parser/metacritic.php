@@ -162,10 +162,10 @@ class KAParserMetacritic extends KAApi
 
 		if ($cache->get($cache_id, 'parser_metacritic') === false)
 		{
-			$this->headers['Referer'] = 'http://www.metacritic.com/search/all/' . parent::_urlencode($title) . '/results';
+			$this->headers['Referer'] = 'http://www.metacritic.com/search/all/' . parent::encodeUrl($title) . '/results';
 
 			$response = parent::getRemoteData(
-				'http://www.metacritic.com/search/movie/' . parent::_urlencode($title) . '/results',
+				'http://www.metacritic.com/search/movie/' . parent::encodeUrl($title) . '/results',
 				$this->headers,
 				30
 			);

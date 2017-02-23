@@ -189,7 +189,7 @@ $this->trailer_id = $trailer_id[0];
 				} else if (list == 'subtitles') {
 					if (total == 0) {
 						tbody.find('tr').remove();
-						tbody.prepend('<tr><td colspan="4"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
+						tbody.prepend('<tr><td colspan="5"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
 						Kinoarhiv.showLoading('hide', table);
 
 						return;

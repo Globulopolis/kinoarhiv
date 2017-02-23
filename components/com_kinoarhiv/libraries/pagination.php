@@ -128,7 +128,7 @@ class KAPagination extends JPagination
 		{
 			JHtml::_('bootstrap.tooltip');
 			$title = ' title="' . $item->text . '"';
-			$class = 'hasTip hasTooltip ';
+			$class = 'hasTooltip ';
 		}
 
 		if ($this->app->isAdmin())

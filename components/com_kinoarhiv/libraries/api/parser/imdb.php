@@ -185,7 +185,7 @@ class KAParserImdb extends KAApi
 		{
 			$this->headers['Referer'] = 'http://www.imdb.com/';
 			$response = parent::getRemoteData(
-				'http://www.imdb.com/find?q=' . parent::_urlencode($title) . '&s=tt&exact=true&ref_=fn_tt_ex',
+				'http://www.imdb.com/find?q=' . parent::encodeUrl($title) . '&s=tt&exact=true&ref_=fn_tt_ex',
 				$this->headers,
 				30
 			);

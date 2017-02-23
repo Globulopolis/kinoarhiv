@@ -169,12 +169,12 @@ class KAParserRottentomatoes extends KAApi
 		{
 			if (isset($showall['rottentomatoes']) && $showall['rottentomatoes'] == 1)
 			{
-				$this->headers['Referer'] = 'https://www.rottentomatoes.com/search/?search=' . parent::_urlencode($title);
-				$url = 'https://www.rottentomatoes.com/api/private/v1.0/search?q=' . parent::_urlencode($title) . '&t=movie&page=1';
+				$this->headers['Referer'] = 'https://www.rottentomatoes.com/search/?search=' . parent::encodeUrl($title);
+				$url = 'https://www.rottentomatoes.com/api/private/v1.0/search?q=' . parent::encodeUrl($title) . '&t=movie&page=1';
 			}
 			else
 			{
-				$url = 'https://www.rottentomatoes.com/search/?search=' . parent::_urlencode($title);
+				$url = 'https://www.rottentomatoes.com/search/?search=' . parent::encodeUrl($title);
 			}
 
 			$response = parent::getRemoteData(

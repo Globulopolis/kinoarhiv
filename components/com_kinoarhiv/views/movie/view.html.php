@@ -278,7 +278,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->form = $form;
 		$this->lang = $lang;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 
@@ -330,7 +330,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->item = $item;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = JFactory::getApplication()->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -468,7 +468,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->pagination = $pagination;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -602,7 +602,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->pagination = $pagination;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -739,7 +739,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->pagination = $pagination;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -799,7 +799,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->item = $item;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -869,7 +869,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->user = $user;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -924,7 +924,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->item = $item;
 		$this->metadata = json_decode($item->metadata);
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
@@ -971,7 +971,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

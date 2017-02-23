@@ -164,7 +164,7 @@ class KinoarhivViewRelease extends JViewLegacy
 		$this->item = $item;
 		$this->user = $user;
 
-		$this->_prepareDocument();
+		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 
@@ -178,7 +178,7 @@ class KinoarhivViewRelease extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function _prepareDocument()
+	protected function prepareDocument()
 	{
 		$app = JFactory::getApplication();
 		$menus = $app->getMenu();

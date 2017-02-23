@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelGenres extends JModelList
 {
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.genres';
 
 	/**
 	 * Constructor.
@@ -38,7 +38,8 @@ class KinoarhivModelGenres extends JModelList
 				'access', 'a.access',
 				'stats', 'a.stats',
 				'state', 'a.state',
-				'language', 'a.language');
+				'language', 'a.language',
+				'published');
 		}
 
 		parent::__construct($config);

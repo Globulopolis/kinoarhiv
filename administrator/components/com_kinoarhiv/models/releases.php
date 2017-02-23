@@ -19,7 +19,7 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivModelReleases extends JModelList
 {
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.releases';
 
 	/**
 	 * Constructor.
@@ -37,7 +37,7 @@ class KinoarhivModelReleases extends JModelList
 				'id', 'r.id',
 				'title', 'm.title',
 				'release_date', 'r.release_date',
-				'name', 'c.name',
+				'name', 'c.name', 'country',
 				'media_type', 'r.media_type',
 				'vendor', 'v.company_name',
 				'language', 'r.language',

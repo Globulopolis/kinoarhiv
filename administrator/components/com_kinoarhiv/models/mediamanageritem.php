@@ -214,9 +214,9 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$app = JFactory::getApplication();
 		$type = $app->input->getWord('type', '');
 
-		if ($type == 'video' || $type == 'subtitles' || $type == 'chapters')
+		if ($type == 'video' || $type == 'subtitles' || $type == 'chapters' || $type == 'screenshot')
 		{
-			return $this->getTrailerFiles($type, $app->input->get('item_id', 0, 'int'), $app->input->get('item', 0, 'int'));
+			return $this->getTrailerFiles($type, $app->input->get('item_id', 0, 'int'), $app->input->get('item', '', 'alnum'));
 		}
 
 		$db = $this->getDbo();
@@ -253,138 +253,84 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to get a single record for trailer file. I. e. used in fileinfo_edit template.
 	 *
-	 * @param   string   $type     Content type. Can be 'video', 'subtitles', 'chapters', 'image'.
-	 * @param   integer  $item_id  Trailer ID
-	 * @param   mixed    $item     File ID. If it's an empty value then return all files.
+	 * @param   string   $type         Content type. Can be 'video', 'subtitles', 'chapters', 'screenshot' or list separated by commas.
+	 * @param   integer  $item_id      Trailer ID
+	 * @param   mixed    $item         File ID. If it's an empty value then return all files.
+	 * @param   string   $form_prefix  Fields group prefix. See mediamanager.xml form.
 	 *
 	 * @return  mixed  Array on success, false on failure.
 	 *
 	 * @since  3.0
 	 */
-	public function getTrailerFiles($type, $item_id, $item = '')
+	public function getTrailerFiles($type, $item_id, $item = '', $form_prefix = 'trailer_finfo_')
 	{
 		$db = $this->getDbo();
-		$result = array();
+		$types = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($type));
 
 		// Return an empty array if we request data for new file.
 		$is_new = JFactory::getApplication()->input->getInt('new', 0);
 
 		if ($is_new == 1)
 		{
-			return array('trailer_finfo_' . $type => array());
+			return array(
+				$form_prefix . 'video'      => array(),
+				$form_prefix . 'subtitles'  => array(),
+				$form_prefix . 'chapters'   => array(),
+				$form_prefix . 'screenshot' => array()
+			);
 		}
 
-		if ($type == 'video')
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('screenshot', 'video', 'subtitles', 'chapters')))
+			->from($db->quoteName('#__ka_trailers'))
+			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+
+		$db->setQuery($query);
+
+		try
 		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName(array('screenshot', 'video')))
-				->from($db->quoteName('#__ka_trailers'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$columns = $db->loadAssoc();
-			}
-			catch (Exception $e)
-			{
-				return false;
-			}
-
-			if (!empty($columns))
-			{
-				$result = json_decode($columns['video'], true);
-
-				// Return only one result by ID, all otherwise.
-				if ($item !== '')
-				{
-					$result = $result[$item];
-				}
-				else
-				{
-					$result['screenshot'] = $columns['screenshot'];
-				}
-			}
+			$columns = $db->loadAssoc();
 		}
-		elseif ($type == 'subtitles')
+		catch (Exception $e)
 		{
-			JLoader::register('KALanguage', JPATH_COMPONENT . '/libraries/language.php');
-
-			$query = $db->getQuery(true)
-				->select($db->quoteName('subtitles'))
-				->from($db->quoteName('#__ka_trailers'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$column = $db->loadColumn();
-			}
-			catch (Exception $e)
-			{
-				return false;
-			}
-
-			if (!empty($column))
-			{
-				if ($item !== '')
-				{
-					$column = json_decode($column[0], true);
-					$result = $column[$item];
-				}
-				else
-				{
-					$result = json_decode($column[0], true);
-				}
-			}
+			return false;
 		}
-		elseif ($type == 'chapters')
+
+		$video = json_decode($columns['video'], true);
+		$subtitles = json_decode($columns['subtitles'], true);
+		$chapters = json_decode($columns['chapters'], true);
+
+		// Return only one result by ID, all otherwise.
+		if ($item != '')
 		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName('chapters'))
-				->from($db->quoteName('#__ka_trailers'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-
-			$db->setQuery($query);
-
-			try
+			if ($type == 'video')
 			{
-				$column = $db->loadColumn();
+				$video = $video[$item];
 			}
-			catch (Exception $e)
+			elseif ($type == 'subtitles')
 			{
-				return false;
-			}
-
-			if (!empty($column))
-			{
-				$column = json_decode($column[$item], true);
-				$result = $column;
+				$subtitles = $subtitles[$item];
 			}
 		}
-		elseif ($type == 'image')
+
+		$result = array(
+			$form_prefix . 'video'      => $video,
+			$form_prefix . 'subtitles'  => $subtitles,
+			$form_prefix . 'chapters'   => $chapters,
+			$form_prefix . 'screenshot' => array('file' => $columns['screenshot'])
+		);
+
+		if (count($types) > 0)
 		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName('screenshot'))
-				->from($db->quoteName('#__ka_trailers'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-
-			$db->setQuery($query);
-
-			try
+			foreach ($types as $value)
 			{
-				$column = $db->loadColumn();
-				$result['file'] = $column[0];
+				$keys[] = $form_prefix . $value;
 			}
-			catch (Exception $e)
-			{
-				return false;
-			}
+
+			$result = array_intersect_key($result, array_flip($keys));
 		}
 
-		return array('trailer_finfo_' . $type => $result);
+		return $result;
 	}
 
 	/**
@@ -985,10 +931,9 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			return false;
 		}
 
-		$files = json_decode($result, true);
-
 		if ($type == 'video')
 		{
+			$files = json_decode($result, true);
 			$new_filename = JPath::clean($data['src']);
 			$file = array(
 				'src'        => $new_filename,
@@ -1005,9 +950,12 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			{
 				$files[] = $file;
 			}
+
+			$file_obj = json_encode((object) $files);
 		}
 		elseif ($type == 'subtitles')
 		{
+			$files = json_decode($result, true);
 			$new_filename = JPath::clean($data['file']);
 			$file = array(
 				'file'      => $new_filename,
@@ -1038,9 +986,13 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 					$files[$key]['default'] = false;
 				}
 			}
+
+			$file_obj = json_encode((object) $files);
 		}
 		elseif ($type == 'chapters')
 		{
+			$files = json_decode($result, true);
+
 			if ($is_new == 0)
 			{
 				$old_filename = JPath::clean($files['file']);
@@ -1048,9 +1000,24 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$new_filename = JPath::clean($data['file']);
 			$files['file'] = $new_filename;
+			$file_obj = json_encode((object) $files);
 		}
+		elseif ($type == 'screenshot')
+		{
+			if ($is_new == 0)
+			{
+				$old_filename = JPath::clean($result);
+			}
 
-		$file_obj = json_encode((object) $files);
+			$new_filename = JPath::clean($data['file']);
+			$file_obj = $new_filename;
+		}
+		else
+		{
+			$app->enqueueMessage('Unknow content type', 'error');
+
+			return false;
+		}
 
 		if ($is_new == 0)
 		{

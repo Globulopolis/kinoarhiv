@@ -36,15 +36,10 @@ class JFormFieldSubtitleLanguage extends JFormFieldList
 	 */
 	protected function getOptions()
 	{
-		JLoader::register('KALanguage', JPATH_COMPONENT . '/libraries/language.php');
-
-		$languages = KALanguage::listOfLanguages();
+		jimport('administrator.components.com_kinoarhiv.libraries.language', JPATH_ROOT);
 
 		// Merge any additional options in the XML definition.
-		$options = array_merge(
-			parent::getOptions(),
-			$languages
-		);
+		$options = array_merge(parent::getOptions(), KALanguage::listOfLanguages());
 
 		return $options;
 	}

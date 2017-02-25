@@ -381,13 +381,13 @@ class KinoarhivModelName extends JModelForm
 		// Automatic handling of alias for empty fields
 		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new')) && (!isset($data['id']) || (int) $data['id'] == 0))
 		{
-			if ($data['alias'] == null)
+			if ($data['alias'] === null)
 			{
 				$name = empty($data['latin_name']) ? $data['name'] : $data['latin_name'];
 
 				if (JFactory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$data['alias'] = JFilterOutput::stringURLUnicodeSlug($name);
+					$data['alias'] = JFilterOutput::stringUrlUnicodeSlug($name);
 				}
 				else
 				{

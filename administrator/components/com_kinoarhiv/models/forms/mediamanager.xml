@@ -97,4 +97,11 @@
 				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
 		</fieldset>
 	</fields>
+
+	<fields name="trailer_finfo_screenshot">
+		<fieldset name="fileinfo_screenshot">
+			<field name="file" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_FILENAME"
+				   class="span12 validate-filename" filter="string" required="true" validate="filename" size="35"/>
+		</fieldset>
+	</fields>
 </form>

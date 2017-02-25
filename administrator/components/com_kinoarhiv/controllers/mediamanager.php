@@ -414,18 +414,18 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			elseif ($type == 'trailers')
 			{
-				foreach ($ids as $_id)
+				foreach ($ids as $trailer_id)
 				{
-					$trailer_items = $api_model->getTrailerFiles($_id, 'video, subtitles, chapters');
+					$trailer_items = $model->getTrailerFiles('screenshot, video, subtitles, chapters', $trailer_id, '', '');
 
 					foreach ($trailer_items as $key => $item)
 					{
 						// Remove screenshot
-						if ($key == 'screenshot' && $item['is_file'] == 1)
+						if ($key == 'screenshot')
 						{
 							JFile::delete($path . $item['file']);
 						}
-						elseif ($key == 'chapters' && (!empty($item) && $item['is_file'] == 1))
+						elseif ($key == 'chapters' && !empty($item))
 						{
 							JFile::delete($path . $item['file']);
 						}
@@ -433,14 +433,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						{
 							foreach ($item as $_item)
 							{
-								JFile::delete($path . $_item->src);
+								JFile::delete($path . $_item['src']);
 							}
 						}
 						elseif ($key == 'subtitles' && !empty($item))
 						{
 							foreach ($item as $_item)
 							{
-								JFile::delete($path . $_item->file);
+								JFile::delete($path . $_item['file']);
 							}
 						}
 					}

@@ -281,7 +281,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 
 		$query = $db->getQuery(true)
-			->select($db->quoteName(array('screenshot', 'video', 'subtitles', 'chapters')))
+			->select($db->quoteName(array('movie_id', 'screenshot', 'video', 'subtitles', 'chapters')))
 			->from($db->quoteName('#__ka_trailers'))
 			->where($db->quoteName('id') . ' = ' . (int) $item_id);
 
@@ -296,9 +296,30 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			return false;
 		}
 
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
+		$folder = KAContentHelper::getPath('movie', 'trailers', null, $columns['movie_id']);
 		$video = json_decode($columns['video'], true);
 		$subtitles = json_decode($columns['subtitles'], true);
 		$chapters = json_decode($columns['chapters'], true);
+
+		foreach ($video as $v_key => $v_value)
+		{
+			$video[$v_key] = $v_value;
+			$video[$v_key]['is_file'] = (!is_file($folder . $v_value['src'])) ? 0 : 1;
+		}
+
+		foreach ($subtitles as $s_key => $s_value)
+		{
+			$subtitles[$s_key] = $s_value;
+			$subtitles[$s_key]['is_file'] = (!is_file($folder . $s_value['file'])) ? 0 : 1;
+		}
+
+		foreach ($chapters as $c_key => $c_value)
+		{
+			$chapters[$c_key] = $c_value;
+			$chapters['is_file'] = (!is_file($folder . $c_value)) ? 0 : 1;
+		}
 
 		// Return only one result by ID, all otherwise.
 		if ($item != '')
@@ -317,7 +338,10 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			$form_prefix . 'video'      => $video,
 			$form_prefix . 'subtitles'  => $subtitles,
 			$form_prefix . 'chapters'   => $chapters,
-			$form_prefix . 'screenshot' => array('file' => $columns['screenshot'])
+			$form_prefix . 'screenshot' => array(
+				'file'    => $columns['screenshot'],
+				'is_file' => !is_file($folder . $columns['screenshot']) ? 0 : 1
+			)
 		);
 
 		if (count($types) > 0)

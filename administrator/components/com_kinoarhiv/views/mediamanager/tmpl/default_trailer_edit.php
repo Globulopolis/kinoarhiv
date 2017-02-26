@@ -146,7 +146,7 @@ $this->trailer_id = $trailer_id[0];
 
 				if (list == 'video') {
 					// Update row with screenshot
-					if (!empty(response.screenshot.file)) {
+					if (typeof response.screenshot != 'undefined' && !empty(response.screenshot.file)) {
 						if (!Date.now) {
 							Date.now = function(){
 								return new Date().getTime();

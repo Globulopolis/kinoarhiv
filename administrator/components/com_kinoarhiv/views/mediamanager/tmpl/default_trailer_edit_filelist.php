@@ -31,7 +31,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
 			</th>
 			<th width="12%">
 				<div class="pull-right">
-					<a href="index.php?option=com_kinoarhiv&task=api.data&content=trailerFiles&id=<?php echo $this->trailer_id; ?>&data=video&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><span class="icon-refresh"></span></a>&nbsp;<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=video&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&all=1&format=json" class="cmd-remove-file all hasTooltip" title="<?php echo JText::_('COM_KA_DELETE_ALL'); ?>"><span class="icon-delete"></span></a>
+					<a href="index.php?option=com_kinoarhiv&task=mediamanager.getTrailerFiles&id=<?php echo $this->trailer_id; ?>&data=screenshot,video&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><span class="icon-refresh"></span></a>&nbsp;<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=video&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&all=1&format=json" class="cmd-remove-file all hasTooltip" title="<?php echo JText::_('COM_KA_DELETE_ALL'); ?>"><span class="icon-delete"></span></a>
 				</div>
 			</th>
 		</tr>
@@ -112,7 +112,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
 			</th>
 			<th width="9%">
 				<div class="pull-right">
-					<a href="index.php?option=com_kinoarhiv&task=api.data&content=trailerFiles&id=<?php echo $this->trailer_id; ?>&data=subtitles&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><span class="icon-refresh"></span></a>&nbsp;<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=subtitles&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&all=1&format=json" class="cmd-remove-file all hasTooltip" title="<?php echo JText::_('COM_KA_DELETE_ALL'); ?>"><span class="icon-delete"></span></a>
+					<a href="index.php?option=com_kinoarhiv&task=mediamanager.getTrailerFiles&id=<?php echo $this->trailer_id; ?>&data=subtitles&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><span class="icon-refresh"></span></a>&nbsp;<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=subtitles&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&all=1&format=json" class="cmd-remove-file all hasTooltip" title="<?php echo JText::_('COM_KA_DELETE_ALL'); ?>"><span class="icon-delete"></span></a>
 				</div>
 			</th>
 		</tr>
@@ -170,7 +170,7 @@ $total_chapter_files = !empty($chapter_files) ? count(get_object_vars($chapter_f
 			<th><?php echo JText::_('COM_KA_TRAILERS_CHAPTERS'); ?></th>
 			<th width="9%">
 				<div class="pull-right">
-					<a href="index.php?option=com_kinoarhiv&task=api.data&content=trailerFiles&id=<?php echo $this->trailer_id; ?>&data=chapters&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><span class="icon-refresh"></span></a>
+					<a href="index.php?option=com_kinoarhiv&task=mediamanager.getTrailerFiles&id=<?php echo $this->trailer_id; ?>&data=chapters&format=json" class="cmd-refresh-filelist hasTooltip" title="<?php echo JText::_('JTOOLBAR_REFRESH'); ?>"><span class="icon-refresh"></span></a>
 				</div>
 			</th>
 		</tr>

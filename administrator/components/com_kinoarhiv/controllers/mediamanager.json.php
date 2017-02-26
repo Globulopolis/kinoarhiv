@@ -594,6 +594,31 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	}
 
 	/**
+	 * Method to get list of trailer files.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.1
+	 */
+	public function getTrailerFiles()
+	{
+		$app = JFactory::getApplication();
+		$model = $this->getModel('mediamanagerItem');
+		$id = $app->input->get('id', 0, 'int');
+		$data = $app->input->get('data', '', 'string');
+		$result = $model->getTrailerFiles($data, $id, '', '');
+
+		if (!$result)
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
+
+			return;
+		}
+
+		echo json_encode($result);
+	}
+
+	/**
 	 * Save the manually set order of files on trailers edit page.
 	 *
 	 * @return  void

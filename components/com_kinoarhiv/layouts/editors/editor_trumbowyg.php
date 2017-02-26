@@ -15,7 +15,7 @@ JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/trumbowyg/ui/trumbowyg.min.c
 JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/trumbowyg/plugins/colors/ui/trumbowyg.colors.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/editors/trumbowyg/trumbowyg.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/editors/trumbowyg/plugins/colors/trumbowyg.colors.min.js');
-KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/trumbowyg/lang/');
+KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/trumbowyg/langs/');
 
 $params = $displayData->params;
 $form   = $displayData->form;

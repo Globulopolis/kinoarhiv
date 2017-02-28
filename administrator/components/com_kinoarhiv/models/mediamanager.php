@@ -449,7 +449,7 @@ class KinoarhivModelMediamanager extends JModelList
 	}
 
 	/**
-	 * Method to get a list of articles.
+	 * Method to get a list of items.
 	 * Overridden to add a check for access levels.
 	 *
 	 * @return  mixed  An array of data items on success, false on failure.

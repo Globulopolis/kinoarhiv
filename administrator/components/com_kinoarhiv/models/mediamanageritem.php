@@ -226,10 +226,12 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$query->select(
 			$db->quoteName(
 				array('g.title', 'g.embed_code', 'g.screenshot', 'g.urls', 'g.resolution', 'g.dar', 'g.duration',
-					'g.video', 'g.subtitles', 'g.chapters', 'g.frontpage', 'g.access', 'g.state', 'g.language', 'g.is_movie'
+					'g.frontpage', 'g.access', 'g.state', 'g.language', 'g.is_movie'
 				)
 			)
-		)->select($db->quoteName('g.id', 'item_id') . ',' . $db->quoteName('g.movie_id', 'id'))
+		);
+
+		$query->select($db->quoteName('g.id', 'item_id') . ',' . $db->quoteName('g.movie_id', 'id'))
 			->from($db->quoteName('#__ka_trailers', 'g'));
 
 		$query->select($db->quoteName('m.title', 'movie_title'))
@@ -245,7 +247,23 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$query->where($db->quoteName('g.id') . ' = ' . (int) $item_id[0]);
 
 		$db->setQuery($query);
-		$result['trailer'] = $db->loadObject();
+
+		try
+		{
+			$result['trailer'] = $db->loadObject();
+
+			if ($result['trailer'])
+			{
+				$files = $this->getTrailerFiles('screenshot, video, subtitles, chapters', (int) $item_id[0], '', '');
+				$result['trailer']->video = json_encode($files['video']);
+				$result['trailer']->subtitles = json_encode($files['subtitles']);
+				$result['trailer']->chapters = json_encode($files['chapters']);
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			return array();
+		}
 
 		return $result;
 	}
@@ -373,15 +391,26 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('movie_id', 'screenshot', 'video', 'subtitles', 'chapters')))
+			->from($db->quoteName('#__ka_trailers'))
+			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadAssoc();
+		}
+		catch (RuntimeException $e)
+		{
+			return false;
+		}
+
+		$result = $result[$type];
+
 		if ($type == 'video')
 		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName('video'))
-				->from($db->quoteName('#__ka_trailers'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-
-			$db->setQuery($query);
-			$result = $db->loadResult();
 			$result = json_decode($result, true);
 
 			if (!is_array($item))
@@ -424,13 +453,6 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 		elseif ($type == 'subtitles')
 		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName('subtitles'))
-				->from($db->quoteName('#__ka_trailers'))
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
-
-			$db->setQuery($query);
-			$result = $db->loadResult();
 			$result = json_decode($result, true);
 
 			if (!is_array($item))
@@ -493,7 +515,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				return false;
 			}
 		}
-		elseif ($type == 'image')
+		elseif ($type == 'screenshot')
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_trailers'))

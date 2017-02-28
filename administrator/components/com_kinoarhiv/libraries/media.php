@@ -52,9 +52,9 @@ class KAMedia
 	/**
 	 * Create screenshot from videofile
 	 *
-	 * @param   string  $folder      Path to the folder with file.
-	 * @param   string  $filename    Videofile filename.
-	 * @param   string  $time        Time.
+	 * @param   string  $folder    Path to the folder with file.
+	 * @param   string  $filename  Videofile filename.
+	 * @param   string  $time      Time.
 	 *
 	 * @return  mixed   Array with results or false otherwise
 	 *
@@ -65,94 +65,75 @@ class KAMedia
 		$app = JFactory::getApplication();
 		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path'));
 
-		if ($ffmpeg_path !== '')
+		if (empty($ffmpeg_path))
 		{
-			if (!KAComponentHelper::functionExists('shell_exec'))
-			{
-				$app->enqueueMessage('shell_exec() function not exists or safe mode or suhosin is on!', 'error');
-
-				return false;
-			}
-
-			$check_lib = $this->checkLibrary($this->params->get('ffmpeg_path'));
-
-			if ($check_lib !== true)
-			{
-				$app->enqueueMessage($check_lib[1], 'error');
-
-				return false;
-			}
-
-			$result_filename = $filename . '.png';
-			$video_info = $this->getVideoInfo($folder . $filename);
-
-			if ($video_info === false)
-			{
-				$app->enqueueMessage(JText::_('ERROR'), 'error');
-
-				return false;
-			}
-
-			$video_info = json_decode($video_info);
-			$scr_w = (int) $this->params->get('player_width');
-			$scr_h = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;
-
-			@set_time_limit(0);
-			$cmd = $ffmpeg_path . ' -hide_banner -nostats -i ' . $folder . $filename . ' -ss ' . $time .
-				' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $folder . $result_filename . ' -y';
-
-			if (IS_WIN)
-			{
-				$cmd .= ' 2>&1';
-			}
-			else
-			{
-				$cmd .= ' 2>%1';
-			}
-
-			$output = shell_exec($cmd);
-
-			return array(
-				'filename' => $result_filename,
-				'stdout'   => '<pre>' . $cmd . '<br />' . $output . '</pre>'
-			);
-		}
-		else
-		{
-			$app->enqueueMessage(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND'), 'error');
+			$app->enqueueMessage(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND') . ' ' . $ffmpeg_path, 'error');
 
 			return false;
 		}
-	}
 
-	/**
-	 * Get MIME-type of the file
-	 *
-	 * @param   string  $path  Path to a file.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function detectMime($path)
-	{
-		$mime = 'text/plain';
-
-		if (!empty($path) && is_file($path))
+		if (!KAComponentHelper::functionExists('shell_exec'))
 		{
-			if (KAComponentHelper::functionExists('finfo_open'))
-			{
-				$finfo = finfo_open(FILEINFO_MIME_TYPE);
-				$mime = finfo_file($finfo, $path);
-				finfo_close($finfo);
-			}
-			elseif (KAComponentHelper::functionExists('mime_content_type'))
-			{
-				$mime = mime_content_type($path);
-			}
+			$app->enqueueMessage('shell_exec() function not exists or safe mode or suhosin is On!', 'error');
+
+			return false;
 		}
 
-		return $mime;
+		$check_lib = $this->checkLibrary($this->params->get('ffmpeg_path'));
+
+		if ($check_lib !== true)
+		{
+			$app->enqueueMessage($check_lib[1], 'error');
+
+			return false;
+		}
+
+		$finfo           = pathinfo($folder . $filename);
+		$result_filename = $finfo['filename'] . '.png';
+		$video_info      = $this->getVideoInfo($folder . $filename);
+
+		if ($video_info === false)
+		{
+			$app->enqueueMessage(JText::_('ERROR'), 'error');
+
+			return false;
+		}
+
+		/*
+		 * To avoid some errors with ffmpeg(library doesn't understand folders or files with % in teir names)
+		 * get temp Joomla folder, store screenshot to this folder and when copy to dest path.
+		 */
+		jimport('joomla.filesystem.file');
+
+		$config     = JFactory::getConfig();
+		$tmp_folder = $config->get('tmp_path') . '/';
+		$video_info = json_decode($video_info);
+		$scr_w      = (int) $this->params->get('player_width');
+		$scr_h      = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;
+
+		@set_time_limit(0);
+		$cmd = $ffmpeg_path . ' -hide_banner -nostats -i ' . $folder . $filename . ' -ss ' . $time
+			. ' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $tmp_folder . $result_filename . ' -y';
+
+		if (IS_WIN)
+		{
+			$cmd .= ' 2>&1';
+		}
+		else
+		{
+			$cmd .= ' 2>%1';
+		}
+
+		$output = shell_exec($cmd);
+
+		// Copy screenshot from tmp to dest folder. We need to copy/delete instead of move to avoid bugs on Windows platform.
+		JFile::copy($tmp_folder . $result_filename, $folder . $result_filename);
+		JFile::delete($tmp_folder . $result_filename);
+
+		return array(
+			'filename' => $result_filename,
+			'stdout'   => '<pre>' . $cmd . '<br />' . $output . '</pre>'
+		);
 	}
 
 	/**

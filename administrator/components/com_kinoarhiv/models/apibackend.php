@@ -95,53 +95,11 @@ class KinoarhivModelAPIBackend extends KinoarhivModelAPI
 	private function listQueryMovieImages($tab, $id)
 	{
 		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select(
-			$db->quoteName(
-				array('g.id', 'g.filename', 'g.dimension', 'g.movie_id', 'g.frontpage', 'g.state', 'm.alias', 'm.fs_alias')
-			)
-		);
-
-		$query->from($db->quoteName('#__ka_movies_gallery', 'g'))
-			->leftJoin($db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('g.movie_id'));
-
-		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('g.id', 'g.filename')))
+			->from($db->quoteName('#__ka_movies_gallery', 'g'))
+			->where($db->quoteName('g.type') . ' = ' . (int) $tab)
 			->where($db->quoteName('g.movie_id') . ' = ' . (int) $id);
-
-		// Filter by published state
-		/*$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('g.state = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(g.state = 0 OR g.state = 1)');
-		}
-
-		// Filter by search in title.
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			if (stripos($search, 'id:') === 0)
-			{
-				$query->where('g.id = ' . (int) substr($search, 3));
-			}
-			else
-			{
-				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
-				$query->where('(g.filename LIKE ' . $search . ')');
-			}
-		}
-
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering', 'g.filename');
-		$orderDirn = $this->state->get('list.direction', 'asc');
-
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));*/
 
 		return $query;
 	}
@@ -159,53 +117,11 @@ class KinoarhivModelAPIBackend extends KinoarhivModelAPI
 	private function listQueryNameImages($tab, $id)
 	{
 		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select(
-			$db->quoteName(
-				array('g.id', 'g.filename', 'g.dimension', 'g.name_id', 'g.frontpage', 'g.state', 'n.alias', 'n.fs_alias')
-			)
-		);
-
-		$query->from($db->quoteName('#__ka_names_gallery', 'g'))
-			->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('g.name_id'));
-
-		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('g.id', 'g.filename')))
+			->from($db->quoteName('#__ka_names_gallery', 'g'))
+			->where($db->quoteName('g.type') . ' = ' . (int) $tab)
 			->where($db->quoteName('g.name_id') . ' = ' . (int) $id);
-
-		// Filter by published state
-		/*$published = $this->getState('filter.published');
-
-		if (is_numeric($published))
-		{
-			$query->where('g.state = ' . (int) $published);
-		}
-		elseif ($published === '')
-		{
-			$query->where('(g.state = 0 OR g.state = 1)');
-		}
-
-		// Filter by search in title.
-		$search = $this->getState('filter.search');
-
-		if (!empty($search))
-		{
-			if (stripos($search, 'id:') === 0)
-			{
-				$query->where('g.id = ' . (int) substr($search, 3));
-			}
-			else
-			{
-				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
-				$query->where('(g.filename LIKE ' . $search . ')');
-			}
-		}
-
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering', 'g.filename');
-		$orderDirn = $this->state->get('list.direction', 'asc');
-
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));*/
 
 		return $query;
 	}

@@ -25,4 +25,12 @@ defined('_JEXEC') or die;
 			</div>
 		</div>
 	</form>
+
+	<?php echo JHtml::_('bootstrap.startAccordion', 'stdoutSlide', array('active' => ''));
+		echo JHtml::_('bootstrap.addSlide', 'stdoutSlide', JText::_('STDOUT'), 'slide0'); ?>
+
+		<p></p>
+
+		<?php echo JHtml::_('bootstrap.endSlide');
+	echo JHtml::_('bootstrap.endAccordion'); ?>
 </div>

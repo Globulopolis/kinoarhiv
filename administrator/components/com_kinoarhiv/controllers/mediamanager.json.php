@@ -802,57 +802,75 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$item = $app->input->getInt('item', 0);
 		$item_id = $app->input->getInt('item_id', 0);
 		$all = $app->input->getInt('all', 0);
-		$type = $app->input->getWord('type', '');
 		$path = KAContentHelper::getPath('movie', 'trailers', 0, $id);
-		$array_key = ($type === 'video') ? 'src' : 'file';
 		$errors = array();
 
 		if ($all === 1)
 		{
 			$message = 'COM_KA_FILES_N_DELETED_SUCCESS';
-			$files = $model->getTrailerFiles($type, $item_id);
+			$type = $app->input->getString('type', '');
+			$types = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($type));
+			$files = $model->getTrailerFiles($type, $item_id, '', '');
 
-			// Remove screenshot from database and filesystem
-			if ($type == 'video')
+			foreach ($types as $_type)
 			{
-				$model->removeTrailerFiles('image', $item_id);
-				JFile::delete($path . $files['trailer_finfo_' . $type]['screenshot']);
-				unset($files['trailer_finfo_' . $type]['screenshot']);
-			}
-
-			if (!$model->removeTrailerFiles($type, $item_id, array_keys($files['trailer_finfo_' . $type])))
-			{
-				$errors[] = implode('<br />', $app->getMessageQueue());
-			}
-
-			foreach ($files['trailer_finfo_' . $type] as $key => $file)
-			{
-				$filepath = $path . $file[$array_key];
-
-				if (is_file($filepath))
+				if ($_type == 'screenshot' || $_type == 'chapters')
 				{
-					if (!JFile::delete($filepath))
+					$filepath = $path . $files[$_type]['file'];
+
+					if ($files[$_type]['is_file'] == 1)
 					{
-						$errors[] = 'File not removed: ' . $filepath . '<br />';
+						if (!JFile::delete($filepath))
+						{
+							$errors[] = 'File not removed: ' . $filepath . '<br />';
+						}
+					}
+					else
+					{
+						$errors[] = JText::sprintf('COM_KA_FILE_NOT_FOUND', $filepath) . '<br />';
 					}
 				}
 				else
 				{
-					$errors[] = JText::sprintf('COM_KA_FILE_NOT_FOUND', $filepath) . '<br />';
+					$array_key = ($_type === 'video') ? 'src' : 'file';
+
+					if (!$model->removeTrailerFiles($_type, $item_id, array_keys($files[$_type])))
+					{
+						$errors[] = implode('<br />', $app->getMessageQueue());
+					}
+
+					foreach ($files[$_type] as $file)
+					{
+						$filepath = $path . $file[$array_key];
+
+						if ($file['is_file'] == 1)
+						{
+							if (!JFile::delete($filepath))
+							{
+								$errors[] = 'File not removed: ' . $filepath . '<br />';
+							}
+						}
+						else
+						{
+							$errors[] = JText::sprintf('COM_KA_FILE_NOT_FOUND', $filepath) . '<br />';
+						}
+					}
 				}
 			}
 		}
 		else
 		{
 			$message = 'COM_KA_FILES_N_DELETED_SUCCESS_1';
-			$files = $model->getTrailerFiles($type, $item_id, $item);
+			$type = $app->input->getWord('type', '');
+			$files = $model->getTrailerFiles($type, $item_id, $item, '');
+			$array_key = ($type === 'video') ? 'src' : 'file';
 
 			if (!$model->removeTrailerFiles($type, $item_id, $item))
 			{
 				$errors[] = implode('<br />', $app->getMessageQueue());
 			}
 
-			$filepath = $path . $files['trailer_finfo_' . $type][$array_key];
+			$filepath = $path . $files[$type][$array_key];
 
 			if (is_file($filepath))
 			{
@@ -941,18 +959,18 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$model = $this->getModel('mediamanagerItem');
 		$id = $app->input->get('id', 0, 'int');
 		$item_id = $app->input->get('item_id', null, 'int');
-		$files = $model->getTrailerFiles('video', $item_id);
+		$files = $model->getTrailerFiles('screenshot,video', $item_id, '', '');
 		$path = KAContentHelper::getPath('movie', 'trailers', null, $id);
-		$old_screenshot = $path . $files['trailer_finfo_video']['screenshot'];
+		$old_screenshot = $path . $files['screenshot']['file'];
 
-		unset($files['trailer_finfo_video']['screenshot']);
+		unset($files['screenshot']);
 
 		if (!empty($old_screenshot) && is_file($old_screenshot))
 		{
 			@unlink($old_screenshot);
 		}
 
-		if (count($files['trailer_finfo_video']) < 1)
+		if (count($files['video']) < 1)
 		{
 			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_FILE_ERR')));
 
@@ -962,7 +980,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		// Get the first videofile to process
 		$videofile = '';
 
-		foreach ($files['trailer_finfo_video'] as $file)
+		foreach ($files['video'] as $file)
 		{
 			if (is_file($path . $file['src']))
 			{
@@ -978,7 +996,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		// CReate screenshot
+		// Create screenshot
 		$result = $media->createVideoScreenshot($path, $videofile, $time);
 
 		if (!$result)
@@ -998,7 +1016,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATED')));
+		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATED'), 'stdout' => $result['stdout']));
 	}
 
 	/**

@@ -462,9 +462,17 @@ $this->trailer_id = $trailer_id[0];
 
 				$('table[data-list="video"]').find('.cmd-refresh-filelist').trigger('click');
 				showMsg('#screenshot_layout_create_form', response.message);
+				$('#stdoutSlide .accordion-inner p').html(response.stdout);
 			}).fail(function (xhr, status, error) {
 				showMsg('#screenshot_layout_create_form', error);
 				$this.removeProp('disabled', 'disabled');
+			});
+		});
+
+		$('#stdoutSlide').on('show', function(){
+			$('#createScreenshotModal').animate({
+				'width': '100vw',
+				'margin-left': '-50vw'
 			});
 		});
 

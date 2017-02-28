@@ -116,15 +116,14 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		}
 
 		jimport('joomla.filesystem.file');
-		JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
-		$media = KAMedia::getInstance();
-		$model = $this->getModel('settings');
+		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 
+		$model = $this->getModel('settings');
 		$file = $this->input->files->get('form_upload_config', '', 'array');
 		$file['name'] = JFile::makeSafe($file['name']);
 		$url = 'index.php?option=com_kinoarhiv&view=settings';
 
-		if ($media->detectMime($file['tmp_name']) != 'text/plain' || JFile::getExt($file['name']) != 'json')
+		if (KAFilesystem::getInstance()->detectMime($file['tmp_name']) != 'text/plain' || JFile::getExt($file['name']) != 'json')
 		{
 			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
 

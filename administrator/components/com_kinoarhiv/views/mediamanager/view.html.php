@@ -102,8 +102,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 		$page_title          = $this->get('ItemTitle');
+		$errors              = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
@@ -222,8 +223,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 		$page_title          = $this->get('ItemTitle');
+		$errors              = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
@@ -339,8 +341,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
 		$page_title          = $this->get('ItemTitle');
+		$errors              = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
@@ -369,7 +372,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	 */
 	protected function editMovieTrailer()
 	{
-		jimport('components.com_kinoarhiv.libraries.language', JPATH_ROOT . '/administrator');
+		jimport('administrator.components.com_kinoarhiv.libraries.language', JPATH_ROOT);
 
 		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
@@ -384,8 +387,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->lang_list = KALanguage::listOfLanguages();
 		$this->folder_path = '';
 		$this->folder_path_www = '';
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

@@ -25,7 +25,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 * Method to save image information into DB. Accept gallery items for movie and poster for trailer.
 	 *
 	 * @param   string   $section      Section. (can be: movie, name, trailer, soundtrack)
-	 * @param   integer  $item_id      Item ID.
+	 * @param   integer  $item_id      Item ID(for trailer it's a trailer ID).
 	 * @param   string   $filename     System filename.
 	 * @param   array    $image_sizes  Array with the sizes. array(width, height)
 	 * @param   mixed    $item_type    Item type.
@@ -269,7 +269,58 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	}
 
 	/**
-	 * Method to get a single record for trailer file. I. e. used in fileinfo_edit template.
+	 * Method to get a list of gallery files.
+	 *
+	 * @param   string  $section   Type of the item. Can be 'movie' or 'name'.
+	 * @param   string  $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   array   $item_ids  Items.
+	 *
+	 * @return  object
+	 *
+	 * @throws  RuntimeException
+	 * @since   3.1
+	 */
+	public function getGalleryFiles($section = '', $type = '', $item_ids = array())
+	{
+		$db      = $this->getDbo();
+		$input   = JFactory::getApplication()->input;
+		$section = !empty($section) ? $section : $input->get('section', '', 'word');
+		$type    = !empty($type) ? $type : $input->get('type', '', 'word');
+		$query   = $db->getQuery(true);
+
+		if ($section == 'movie' && $type == 'gallery')
+		{
+			$table = '#__ka_movies_gallery';
+		}
+		elseif ($section == 'name' && $type == 'gallery')
+		{
+			$table = '#__ka_names_gallery';
+		}
+		else
+		{
+			throw new RuntimeException(JText::_('ERROR'), 500);
+		}
+
+		$query->select($db->quoteName(array('id', 'filename')))
+			->from($db->quoteName($table))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $item_ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			throw new RuntimeException($e->getMessage(), 500);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get a single record for trailer file or list of files. I. e. used in fileinfo_edit template.
 	 *
 	 * @param   string   $type         Content type. Can be 'video', 'subtitles', 'chapters', 'screenshot' or list separated by commas.
 	 * @param   integer  $item_id      Trailer ID

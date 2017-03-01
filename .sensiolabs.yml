@@ -51,6 +51,8 @@ rules:
         enabled: true
     php.debug_statements:
         enabled: true
+    php.duplicated_code:
+        enabled: false
     php.dynamically_change_configuration:
         enabled: false
     php.file_contains_more_than_one_class:

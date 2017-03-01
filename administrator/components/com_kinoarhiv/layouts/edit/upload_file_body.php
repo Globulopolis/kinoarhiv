@@ -36,7 +36,7 @@ $attr[] = array_key_exists('dragdrop', $data) ? ' data-dragdrop="' . (bool) $dat
 $attr[] = array_key_exists('rename', $data) ? ' data-rename="' . (bool) $data['rename'] . '"' : '';
 $attr[] = array_key_exists('multiple_queues', $data) ? ' data-multiple_queues="true"' : 'data-multiple_queues="false"';
 
-$attr[] = array_key_exists('content-type', $data) ? ' data-content_type="' . (string) $data['content-type'] . '"' : '';
+$attr[] = array_key_exists('content-type', $data) ? ' data-content-type="' . (string) $data['content-type'] . '"' : '';
 $attr[] = array_key_exists('max_files', $data) && !empty($data['max_files']) ? ' data-max_files="' . (int) $data['max_files'] . '"' : '';
 ?>
 <div>

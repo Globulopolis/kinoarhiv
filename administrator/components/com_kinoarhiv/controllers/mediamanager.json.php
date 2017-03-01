@@ -83,6 +83,23 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$file = $app->input->files->get('file');
 		$filename = basename($file['name']);
 		$file_ext = JFile::getExt($file['name']);
+		$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id);
+		$file_path = JPath::clean($dest_dir . DIRECTORY_SEPARATOR . $filename);
+
+		// Check if file with the same name allready exists
+		if (is_file($file_path))
+		{
+			header('HTTP/1.0 500 Server error', true, 500);
+
+			jexit(
+				json_encode(
+					array(
+						'success' => false,
+						'message' => JText::_('COM_KA_FILE_EXISTS')
+					)
+				)
+			);
+		}
 
 		// Validate filename
 		if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $filename))
@@ -119,9 +136,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				)
 			);
 		}
-
-		$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id);
-		$file_path = $dest_dir . DIRECTORY_SEPARATOR . $filename;
 
 		// Chunking might be enabled
 		$chunk = $app->input->get('chunk', 0, 'int');
@@ -257,9 +271,21 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		if (!$chunks || $chunk == $chunks - 1)
 		{
 			// Strip the temp .part suffix off
-			rename("{$file_path}.part", $file_path);
+			if (!rename("{$file_path}.part", $file_path))
+			{
+				header('HTTP/1.0 500 Server error', true, 500);
 
-			if (!$this->postProcessUpload())
+				jexit(
+					json_encode(
+						array(
+							'success' => false,
+							'message' => JText::_('ERROR')
+						)
+					)
+				);
+			}
+
+			if (!$this->postProcessUploads($dest_dir, $filename))
 			{
 				header('HTTP/1.0 500 Server error', true, 500);
 
@@ -287,53 +313,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		/*// Check if file has been uploaded
 		if (!$chunks || $chunk == $chunks - 1)
 		{
-			// Strip the temp .part suffix off
-			rename("{$file_path}.part", $file_path);
-
-			// Proccess watermarks and thumbnails
-			JLoader::register('KAImage', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'image.php');
-			$image = new KAImage;
-			$section = $app->input->get('section', '', 'word');
-
 			if ($section == 'movie')
 			{
-				if ($app->input->get('type') == 'gallery')
-				{
-					$tab = $app->input->get('tab', 0, 'int');
-					$orig_image = @getimagesize($file_path);
-
-					if ($tab == 1)
-					{
-						$width = (int) $params->get('size_x_wallpp');
-						$height = ($width * $orig_image[1]) / $orig_image[0];
-					}
-					elseif ($tab == 2)
-					{
-						$width = (int) $params->get('size_x_posters');
-						$height = ($width * $orig_image[1]) / $orig_image[0];
-					}
-					elseif ($tab == 3)
-					{
-						$width = (int) $params->get('size_x_scr');
-						$height = ($width * $orig_image[1]) / $orig_image[0];
-					}
-
-					// Add watermark
-					if ($params->get('upload_gallery_watermark_image_on') == 1)
-					{
-						$watermark_img = $params->get('upload_gallery_watermark_image');
-
-						if (!empty($watermark_img) && file_exists($watermark_img))
-						{
-							$image->addWatermark($dest_dir, $filename, $watermark_img);
-						}
-					}
-
-					$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-					$result = $model->saveImageInDB($filename, $orig_image, 'movie', $tab, $item_id, $frontpage);
-					$id = $result;
-				}
-				elseif ($app->input->get('type') == 'trailers')
+				if ($app->input->get('type') == 'trailers')
 				{
 					// Get the movie transliterated alias
 					$fs_alias = $model->getFilesystemAlias($section, $item_id, true);
@@ -414,59 +396,148 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					}
 				}
 			}
-			elseif ($section == 'name')
-			{
-				if ($app->input->get('type') == 'gallery')
-				{
-					$tab = $app->input->get('tab', 0, 'int');
-					$orig_image = @getimagesize($file_path);
-
-					if ($tab == 1)
-					{
-						$width = (int) $params->get('size_x_wallpp');
-						$height = ($width * $orig_image[1]) / $orig_image[0];
-					}
-					elseif ($tab == 2)
-					{
-						$width = (int) $params->get('size_x_posters');
-						$height = ($width * $orig_image[1]) / $orig_image[0];
-					}
-					elseif ($tab == 3)
-					{
-						$width = (int) $params->get('size_x_photo');
-						$height = ($width * $orig_image[1]) / $orig_image[0];
-					}
-
-					// Add watermark
-					if ($params->get('upload_gallery_watermark_image_on') == 1)
-					{
-						$watermark_img = $params->get('upload_gallery_watermark_image');
-
-						if (!empty($watermark_img) && file_exists($watermark_img))
-						{
-							$image->addWatermark($dest_dir, $filename, $watermark_img);
-						}
-					}
-
-					$image->_createThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-					$result = $model->saveImageInDB($filename, $orig_image, 'name', $tab, $item_id, $frontpage);
-					$id = $result;
-				}
-			}
 		}*/
 	}
 
 	/**
 	 * Post process uploaded file.
 	 *
+	 * @param   string  $dest_dir  Path to a folder.
+	 * @param   string  $filename  Filename.
+	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	private function postProcessUpload()
+	private function postProcessUploads($dest_dir, $filename)
 	{
+		$app     = JFactory::getApplication();
+		$section = $app->input->get('section', '', 'word');
+		$type    = $app->input->get('type', '', 'word');
+		$tab     = $app->input->get('tab', 0, 'int');
+
+		if (($section == 'movie' && $type == 'gallery') || ($section == 'name' && $type == 'gallery') || ($section == 'movie' && $type == 'trailers'))
+		{
+			return $this->postProcessImageUploads($dest_dir, $filename, $section, $type, $tab);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Post process uploaded image.
+	 *
+	 * @param   string   $dest_dir  Path to a folder.
+	 * @param   string   $filename  Filename.
+	 * @param   string   $section   Type of the item. Can be 'movie' or 'name'.
+	 * @param   string   $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   integer  $tab       Tab number from gallery(or empty value for 'trailers', 'soundtracks').
+	 *
+	 * @return  mixed  Boolean true on success, array with errors otherwise.
+	 *
+	 * @since   3.1
+	 */
+	private function postProcessImageUploads($dest_dir, $filename, $section, $type, $tab)
+	{
+		jimport('joomla.filesystem.file');
+		jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
+
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$app = JFactory::getApplication();
+		$model = $this->getModel('mediamanagerItem');
+		$file_path = JPath::clean($dest_dir . '/' . $filename);
+		$id = $app->input->get('id', 0, 'int');
 		$frontpage = $app->input->get('frontpage', 0, 'int');
+
+		$image = new KAImage;
+		$image->loadFile($file_path);
+		$image_prop  = $image->getImageFileProperties($file_path);
+		$orig_width  = $image_prop->width;
+		$orig_height = $image_prop->height;
+
+		if ($section == 'movie')
+		{
+			if ($type == 'gallery')
+			{
+				if ($tab == 1)
+				{
+					$width  = (int) $params->get('size_x_wallpp');
+					$height = ($width * $orig_height) / $orig_width;
+				}
+				elseif ($tab == 2)
+				{
+					$width  = (int) $params->get('size_x_posters');
+					$height = ($width * $orig_height) / $orig_width;
+				}
+				elseif ($tab == 3)
+				{
+					$width  = (int) $params->get('size_x_scr');
+					$height = ($width * $orig_height) / $orig_width;
+				}
+				else
+				{
+					return array('success' => false, 'message' => 'Wrong tab');
+				}
+
+				// Add watermark
+				if ($params->get('upload_gallery_watermark_image_on') == 1)
+				{
+					$watermark_img = $params->get('upload_gallery_watermark_image');
+
+					if (!empty($watermark_img) && file_exists($watermark_img))
+					{
+						$image->addWatermark($dest_dir, $filename, $watermark_img);
+					}
+				}
+
+				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
+				$model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+			}
+			elseif ($type == 'trailers')
+			{
+				// Item ID == id field from #__ka_trailers table
+				$model->saveImageInDB('trailer', $app->input->getInt('item_id', 0), $filename);
+			}
+		}
+		elseif ($section == 'name')
+		{
+			if ($type == 'gallery')
+			{
+				if ($tab == 1)
+				{
+					$width = (int) $params->get('size_x_wallpp');
+					$height = ($width * $orig_height) / $orig_width;
+				}
+				elseif ($tab == 2)
+				{
+					$width = (int) $params->get('size_x_posters');
+					$height = ($width * $orig_height) / $orig_width;
+				}
+				elseif ($tab == 3)
+				{
+					$width = (int) $params->get('size_x_photo');
+					$height = ($width * $orig_height) / $orig_width;
+				}
+				else
+				{
+					return array('success' => false, 'message' => 'Wrong tab');
+				}
+
+				// Add watermark
+				if ($params->get('upload_gallery_watermark_image_on') == 1)
+				{
+					$watermark_img = $params->get('upload_gallery_watermark_image');
+
+					if (!empty($watermark_img) && file_exists($watermark_img))
+					{
+						$image->addWatermark($dest_dir, $filename, $watermark_img);
+					}
+				}
+
+				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
+				$model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+			}
+		}
 
 		return true;
 	}
@@ -1183,7 +1254,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						}
 						elseif ($section == 'name')
 						{
-							if ($app->input->get('type') == 'gallery')
+							if ($type == 'gallery')
 							{
 								if ($tab == 1)
 								{

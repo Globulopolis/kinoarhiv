@@ -158,7 +158,7 @@ jQuery(document).ready(function($){
 	$('.hasUploader').each(function(index, element){
 		var config = {},
 			id = 'uploader_' + index,
-			//content_type = $(element).data('content-type'),
+			content_type = $(element).data('content-type'),
 			error_div = $(element).next('.uploader-info'),
 			filters = $(element).data('filters') || [],
 			max_file_size = $(element).data('max_file_size') || '256kb',
@@ -248,11 +248,13 @@ jQuery(document).ready(function($){
 				});
 			},
 			UploadComplete: function(up, files){
-				/*if (content_type == 'images') {
+				if (content_type == 'images') {
 					$('input[name="file_uploaded"]').val(1);
 				} else if (content_type == 'video' || content_type == 'subtitles' || content_type == 'chapters') {
 					$('table[data-list="' + content_type + '"] .cmd-refresh-filelist').trigger('click');
-				}*/
+				} else if (content_type == 'screenshot') {
+					$('table[data-list="video"] .cmd-refresh-filelist').trigger('click');
+				}
 			}
 		};
 

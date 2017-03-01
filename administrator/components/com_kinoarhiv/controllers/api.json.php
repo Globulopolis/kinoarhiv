@@ -32,11 +32,13 @@ class KinoarhivControllerApi extends JControllerLegacy
 			throw new Exception('Access denied', 403);
 		}
 
+		$this->addModelPath(JPATH_ROOT . '/components/com_kinoarhiv/models');
+
 		$model_config = array(
 			'item_state' => array(1, 0)
 		);
 
-		$model   = $this->getModel('apiBackend', '', $model_config);
+		$model   = $this->getModel('api', '', $model_config);
 		$content = $this->input->get('content', '', 'word');
 		$method  = 'get' . ucfirst($content);
 

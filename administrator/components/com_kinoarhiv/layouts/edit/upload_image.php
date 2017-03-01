@@ -11,8 +11,17 @@
 defined('_JEXEC') or die;
 
 $data = $displayData;
-$url = 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=json&section=' . $data['view']->section
-	. '&type=' . $data['view']->type . '&tab=' . $data['view']->tab . '&id=' . $data['view']->id . '&upload=images';
+
+if (isset($data['url']) && !empty($data['url']))
+{
+	$url = $data['url'];
+}
+else
+{
+	$url = 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=json&section=' . $data['view']->section
+		. '&type=' . $data['view']->type . '&tab=' . $data['view']->tab . '&id=' . $data['view']->id . '&upload=images';
+}
+
 $remote_upload = false;
 $remote_url = '';
 
@@ -46,7 +55,7 @@ $max_files = isset($data['max_files']) && !empty($data['max_files']) ? (int) $da
 			'url' => $url,
 			'max_files' => $max_files,
 			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
-			'content-type' => 'images',
+			'content-type' => isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images',
 			'max_file_size' => $data['params']->get('upload_limit'),
 			'multiple_queues' => 'true',
 			'filters' => '{"title": "Images", "extensions": "' . $data['params']->get('upload_mime_images') . '"}',

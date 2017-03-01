@@ -223,7 +223,10 @@ echo JHtml::_(
 		'layouts.edit.upload_image',
 		array(
 			'view'          => $this,
+			'url'           => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=json&section=' . $this->section
+				. '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id . '&item_id=' . $this->trailer_id . '&upload=images',
 			'params'        => $this->params,
+			'content-type'  => 'screenshot',
 			'refresh'       => array('el_parent' => 'table[data-list="video"]', 'el_trigger' => '.cmd-refresh-filelist'),
 			'max_files'     => 1,
 			'remote_upload' => true,

@@ -51,7 +51,7 @@ class KinoarhivModelMediamanager extends JModelList
 		}
 		else
 		{
-			$this->context = 'com_kinoarhiv.mediamanager.' . $input->get('section', '', 'word') . '.gallery';
+			$this->context = 'com_kinoarhiv.mediamanager.' . $input->get('section', '', 'word') . '.gallery.' . $input->get('tab', 0, 'int');
 		}
 
 		parent::__construct($config);

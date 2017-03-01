@@ -366,15 +366,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanagerItem');
-		$api_model = $this->getModel(
-			'apiBackend', '',
-			array(
-				//'item_state' => array(-2, 0, 1, 2, '*'),
-				'item_state' => '*',
-				'data_lang' => '*',
-				'item_access' => '*'
-			)
-		);
 		$section = $app->input->get('section', '', 'word');
 		$type = $app->input->get('type', '', 'word');
 		$tab = $app->input->get('tab', 0, 'int');
@@ -401,15 +392,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		{
 			if ($type == 'gallery')
 			{
-				$gallery_items = $api_model->getGalleryFiles($section, $type, $tab, $id);
+				$gallery_items = $model->getGalleryFiles($section, $type, $ids);
 
 				foreach ($gallery_items as $item)
 				{
-					if (in_array($item->id, $ids))
-					{
-						JFile::delete($path . '/' . $item->filename);
-						JFile::delete($path . '/thumb_' . $item->filename);
-					}
+					JFile::delete($path . '/' . $item->filename);
+					JFile::delete($path . '/thumb_' . $item->filename);
 				}
 			}
 			elseif ($type == 'trailers')
@@ -449,15 +437,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 		elseif ($section == 'name')
 		{
-			$gallery_items = $api_model->getGalleryFiles($section, $type, $tab, $id);
+			$gallery_items = $model->getGalleryFiles($section, $type, $ids);
 
 			foreach ($gallery_items as $item)
 			{
-				if (in_array($item->id, $ids))
-				{
-					JFile::delete($path . '/' . $item->filename);
-					JFile::delete($path . '/thumb_' . $item->filename);
-				}
+				JFile::delete($path . '/' . $item->filename);
+				JFile::delete($path . '/thumb_' . $item->filename);
 			}
 		}
 

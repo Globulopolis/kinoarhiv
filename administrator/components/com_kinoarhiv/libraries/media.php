@@ -106,7 +106,7 @@ class KAMedia
 		jimport('joomla.filesystem.file');
 
 		$config     = JFactory::getConfig();
-		$tmp_folder = $config->get('tmp_path') . '/';
+		$tmp_folder = JPath::clean($config->get('tmp_path') . '/');
 		$video_info = json_decode($video_info);
 		$scr_w      = (int) $this->params->get('player_width');
 		$scr_h      = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;

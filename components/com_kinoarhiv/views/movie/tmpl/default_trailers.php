@@ -34,10 +34,42 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 					$this.width(new_width).height(new_width * $this.attr('data-aspectRatio'));
 				});
 			}).resize();
+
+
 		});
 	</script>
-<?php endif; ?>
+<?php endif;
 
+if ($this->params->get('player_type') == 'videojs')
+{
+	JHtml::_('stylesheet', 'media/com_kinoarhiv/players/videojs/video-js.min.css');
+	JHtml::_('script', 'media/com_kinoarhiv/players/videojs/ie8/videojs-ie8.min.js');
+	JHtml::_('script', 'media/com_kinoarhiv/players/videojs/video.min.js');
+	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/lang');
+	JFactory::getDocument()->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . "media/com_kinoarhiv/players/videojs/video-js.swf';");
+}
+elseif ($this->params->get('player_type') == 'mediaelement')
+{
+	JHtml::_('stylesheet', 'media/com_kinoarhiv/players/mediaelement/mediaelementplayer.min.css');
+	$document->addScriptDeclaration("mejs.i18n.language('" . substr(JFactory::getLanguage()->getTag(), 0, 2) . "');");
+	JHtml::_('script', 'media/com_kinoarhiv/players/mediaelement/mediaelement-and-player.min.js');
+	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/mediaelement/lang', true, true);
+	$document->addScriptDeclaration("
+		jQuery(document).ready(function($){
+			$('video').mediaelementplayer({
+				success: function(player, node){
+					$(player).closest('.mejs__container').attr('lang', mejs.i18n.language());
+				}
+			});
+		});
+	");
+}
+elseif ($this->params->get('player_type') == 'flowplayer')
+{
+	JHtml::_('stylesheet', 'media/com_kinoarhiv/players/flowplayer/skin/skin.css');
+	JHtml::_('script', 'media/com_kinoarhiv/players/flowplayer/flowplayer.min.js');
+}
+?>
 <div class="content movie trailers">
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
@@ -53,6 +85,7 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 		<?php if (isset($this->item->trailers) && $total_trailers > 0):
 			$trailers_obj = $this->item->trailers; ?>
 			<div class="accordion" id="tr_accordion">
+
 				<?php foreach ($trailers_obj as $key => $item_trailer):
 					if (!empty($item_trailer->resolution))
 					{
@@ -99,13 +132,7 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 												</video>
 											</div>
 
-										<?php elseif ($this->params->get('player_type') == 'videojs'):
-											JHtml::_('stylesheet', 'media/com_kinoarhiv/players/videojs/video-js.min.css');
-											JHtml::_('script', 'media/com_kinoarhiv/players/videojs/ie8/videojs-ie8.min.js');
-											JHtml::_('script', 'media/com_kinoarhiv/players/videojs/video.min.js');
-											KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/lang');
-											JFactory::getDocument()->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . "media/com_kinoarhiv/players/videojs/video-js.swf';");
-										?>
+										<?php elseif ($this->params->get('player_type') == 'videojs'): ?>
 
 											<video class="video-js vjs-default-skin vjs-big-play-centered" controls
 												   preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
@@ -130,21 +157,7 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 													<a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
 											</video>
 
-										<?php elseif ($this->params->get('player_type') == 'mediaelement'):
-											JHtml::_('stylesheet', 'media/com_kinoarhiv/players/mediaelement/mediaelementplayer.min.css');
-											$document->addScriptDeclaration("mejs.i18n.language('" . substr(JFactory::getLanguage()->getTag(), 0, 2) . "');");
-											JHtml::_('script', 'media/com_kinoarhiv/players/mediaelement/mediaelement-and-player.min.js');
-											KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/mediaelement/lang', true, true);
-											$document->addScriptDeclaration("
-												jQuery(document).ready(function($){
-													$('video').mediaelementplayer({
-														success: function(player, node){
-															$(player).closest('.mejs__container').attr('lang', mejs.i18n.language());
-														}
-													});
-												});
-											");
-											?>
+										<?php elseif ($this->params->get('player_type') == 'mediaelement'): ?>
 
 											<div style="overflow: hidden; width: 100%;">
 												<video controls="controls" preload="none" poster="<?php echo $item_trailer->screenshot; ?>"
@@ -176,9 +189,6 @@ if (isset($this->item->trailers) && $total_trailers > 0): ?>
 											</div>
 
 										<?php elseif ($this->params->get('player_type') == 'flowplayer'):
-											JHtml::_('stylesheet', 'media/com_kinoarhiv/players/flowplayer/skin/skin.css');
-											JHtml::_('script', 'media/com_kinoarhiv/players/flowplayer/flowplayer.min.js');
-
 											$ratio_raw = explode(':', $item_trailer->dar);
 											$ratio = round($ratio_raw[1] / $ratio_raw[0], 4);
 											?>

@@ -21,7 +21,9 @@ $attr[] = array_key_exists('max_file_size', $data) ? ' data-max_file_size="' . $
 $attr[] = array_key_exists('max_retries', $data) ? ' data-max_retries="' . (int) $data['max_retries'] . '"' : '';
 $attr[] = array_key_exists('multipart', $data) ? ' data-multipart="' . (bool) $data['multipart'] . '"' : '';
 $attr[] = array_key_exists('multipart_params', $data) ? " data-multipart_params='" . $data['multipart_params'] . "'" : '';
-$attr[] = array_key_exists('multi_selection', $data) ? ' data-multi_selection="' . (bool) $data['multi_selection'] . '"' : '';
+$attr[] = array_key_exists('multi_selection', $data) && !$data['multi_selection']
+	? ' data-multi_selection="false"'
+	: ' data-multi_selection="true"';
 $attr[] = array_key_exists('prevent_duplicates', $data) ? ' data-prevent_duplicates="' . (bool) $data['prevent_duplicates'] . '"' : '';
 $attr[] = array_key_exists('required_features', $data) ? ' data-required_features="' . $data['required_features'] . '"' : '';
 $attr[] = array_key_exists('resize', $data) ? ' data-resize="' . $data['resize'] . '"' : '';

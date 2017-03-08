@@ -391,7 +391,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 
 		// Return only one result by ID, all otherwise.
-		if ($item != '')
+		if ($item !== '')
 		{
 			if ($type == 'video')
 			{
@@ -981,28 +981,22 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to save edited data from edit form for video/subtitles/chapters.
 	 *
-	 * @param   array  $data  The form data.
+	 * @param   array  $data     The form data.
+	 * @param   array  $options  Request vars.
 	 *
-	 * @return  string
+	 * @return  boolean
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
-	public function saveFileinfoData($data)
+	public function saveFileinfoData($data, $options = array())
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$type = $app->input->get('list', '', 'word');
+		$type = array_key_exists('list', $options) ? $options['list'] : $app->input->get('list', '', 'word');
 		$id = $app->input->get('id', 0, 'int');
 		$item_id = $app->input->get('item_id', 0, 'int');
 		$item = $app->input->get('item', null, 'int');
-		$is_new = $app->input->get('new', 0, 'int');
-
-		if (empty($item_id) || ($is_new == 0 && is_null($item)))
-		{
-			$app->enqueueMessage('Wrong ID', 'error');
-
-			return false;
-		}
+		$is_new = array_key_exists('new', $options) ? $options['new'] : $app->input->get('new', 0, 'int');
 
 		// Select existing data
 		$query = $db->getQuery(true)
@@ -1018,7 +1012,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			if (empty($result))
 			{
-				return false;
+				$is_new = 1;
 			}
 		}
 		catch (RuntimeException $e)
@@ -1303,172 +1297,6 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 
 		return $result;*/
-	}
-
-	/**
-	 * Method to save information about uploaded videofile into JSON object and store it in database.
-	 *
-	 * @param   string   $filename    Filename to process and store.
-	 * @param   integer  $trailer_id  Trailer ID.
-	 * @param   integer  $movie_id    Movie ID.
-	 *
-	 * @return  mixed   Array of filtered data if valid, false otherwise.
-	 *
-	 * @since   3.0
-	 */
-	public function saveVideo($filename, $trailer_id, $movie_id)
-	{
-		/*$media = KAMedia::getInstance();
-		$db = $this->getDbo();
-
-		$query = $db->getQuery(true)
-			->select($db->quoteName('filename'))
-			->from($db->quoteName('#__ka_trailers'))
-			->where($db->quoteName('id') . ' = ' . (int) $trailer_id);
-
-		$db->setQuery($query);
-		$result = $db->loadResult();
-
-		$result_arr = json_decode($result, true);
-
-		// If not empty and items more than 0 when add to array and store
-		if (!empty($result) && count($result_arr) > 0)
-		{
-			// Checking if file allready exists in DB
-			$file_exists = false;
-
-			foreach ($result_arr as $k => $v)
-			{
-				if ($v['src'] == $filename)
-				{
-					$file_exists = true;
-					break;
-				}
-			}
-
-			if ($file_exists)
-			{
-				return false;
-			}
-			// End
-
-			$files_arr = $result_arr;
-			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $filename);
-			$video_info = json_decode($media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $filename));
-			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $filename, true);
-
-			if (is_array($duration))
-			{
-				$duration = '00:00:00:000';
-			}
-
-			if (is_object($video_info))
-			{
-				$stream_width  = !isset($video_info->streams[0]->width) ? 0 : $video_info->streams[0]->width;
-				$stream_height = !isset($video_info->streams[0]->height) ? 0 : $video_info->streams[0]->height;
-				$stream_dar    = !isset($video_info->streams[0]->display_aspect_ratio) ? '16x9' : $video_info->streams[0]->display_aspect_ratio;
-			}
-			else
-			{
-				$stream_width  = 0;
-				$stream_height = 0;
-				$stream_dar    = '16x9';
-			}
-
-			$files_arr[] = array(
-				'src'        => $filename,
-				'type'       => $mime_type,
-				'resolution' => $stream_width . 'x' . $stream_height
-			);
-
-			$new_obj = ArrayHelper::toObject($files_arr);
-			$query = $db->getQuery(true);
-
-			$query->update($db->quoteName('#__ka_trailers'))
-				->set($db->quoteName('filename') . " = '" . json_encode($new_obj) . "'")
-				->set($db->quoteName('resolution') . " = '" . $stream_width . 'x' . $stream_height . "'")
-				->set($db->quoteName('dar') . " = '" . $stream_dar . "'")
-				->set($db->quoteName('duration') . " = '" . $duration . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $trailer_id);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-			}
-			catch (Exception $e)
-			{
-				return false;
-			}
-		}
-		else
-		{
-			$mime_type = $media->detectMime($this->getPath('movie', 'trailers', 0, $movie_id) . $filename);
-			$video_info = $media->getVideoInfo($this->getPath('movie', 'trailers', 0, $movie_id) . $filename);
-
-			if ($video_info === false)
-			{
-				KAComponentHelper::eventLog(
-					JText::sprintf(
-						'COM_KA_MEDIAMANAGER_FFMPEG_NOTFOUND',
-						JComponentHelper::getParams('com_kinoarhiv')->get('ffmpeg_path') . ', ' . JComponentHelper::getParams('com_kinoarhiv')->get('ffprobe_path')
-					)
-				);
-			}
-
-			$video_info = json_decode($video_info);
-			$duration = $media->getVideoDuration($this->getPath('movie', 'trailers', 0, $movie_id) . $filename, true);
-
-			if (is_array($duration))
-			{
-				$duration = '00:00:00:000';
-			}
-
-			if (is_object($video_info))
-			{
-				$stream_width  = !isset($video_info->streams[0]->width) ? 0 : $video_info->streams[0]->width;
-				$stream_height = !isset($video_info->streams[0]->height) ? 0 : $video_info->streams[0]->height;
-				$stream_dar    = !isset($video_info->streams[0]->display_aspect_ratio) ? '16x9' : $video_info->streams[0]->display_aspect_ratio;
-			}
-			else
-			{
-				$stream_width  = 0;
-				$stream_height = 0;
-				$stream_dar    = '16x9';
-			}
-
-			$files_arr = array(
-				0 => array(
-					'src'        => $filename,
-					'type'       => $mime_type,
-					'resolution' => $stream_width . 'x' . $stream_height
-				)
-			);
-
-			$new_obj = ArrayHelper::toObject($files_arr);
-			$query = $db->getQuery(true);
-
-			$query->update($db->quoteName('#__ka_trailers'))
-				->set($db->quoteName('filename') . " = '" . json_encode($new_obj) . "'")
-				->set($db->quoteName('resolution') . " = '" . $stream_width . 'x' . $stream_height . "'")
-				->set($db->quoteName('dar') . " = '" . $stream_dar . "'")
-				->set($db->quoteName('duration') . " = '" . $duration . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $trailer_id);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-			}
-			catch (Exception $e)
-			{
-				return false;
-			}
-		}
-
-		return true;*/
 	}
 
 	/**

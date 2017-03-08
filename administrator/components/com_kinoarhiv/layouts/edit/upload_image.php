@@ -18,7 +18,7 @@ if (isset($data['url']) && !empty($data['url']))
 }
 else
 {
-	$url = 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=json&section=' . $data['view']->section
+	$url = 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=raw&section=' . $data['view']->section
 		. '&type=' . $data['view']->type . '&tab=' . $data['view']->tab . '&id=' . $data['view']->id . '&upload=images';
 }
 
@@ -41,6 +41,7 @@ if (isset($data['remote_upload']) && $data['remote_upload'] === true)
 }
 
 $max_files = isset($data['max_files']) && !empty($data['max_files']) ? (int) $data['max_files'] : '';
+$token = JSession::getFormToken();
 ?>
 <div>
 	<?php echo JHtml::_('bootstrap.startTabSet', 'upload_tab', array('active' => 'local')); ?>
@@ -54,7 +55,8 @@ $max_files = isset($data['max_files']) && !empty($data['max_files']) ? (int) $da
 			'params' => $data['params'],
 			'url' => $url,
 			'max_files' => $max_files,
-			'multipart_params' => '{"' . JSession::getFormToken() . '": 1}',
+			'multipart_params' => '{"' . $token . '": 1}',
+			'multi_selection' => isset($data['multi_selection']) && $data['multi_selection'] ? $data['multi_selection'] : false,
 			'content-type' => isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images',
 			'max_file_size' => $data['params']->get('upload_limit'),
 			'multiple_queues' => 'true',

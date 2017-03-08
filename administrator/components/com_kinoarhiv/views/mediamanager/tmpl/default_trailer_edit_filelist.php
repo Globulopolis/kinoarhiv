@@ -222,15 +222,16 @@ echo JHtml::_(
 	JLayoutHelper::render(
 		'layouts.edit.upload_image',
 		array(
-			'view'          => $this,
-			'url'           => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=json&section=' . $this->section
+			'view'            => $this,
+			'url'             => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=raw&section=' . $this->section
 				. '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id . '&item_id=' . $this->trailer_id . '&upload=images',
-			'params'        => $this->params,
-			'content-type'  => 'screenshot',
-			'refresh'       => array('el_parent' => 'table[data-list="video"]', 'el_trigger' => '.cmd-refresh-filelist'),
-			'max_files'     => 1,
-			'remote_upload' => true,
-			'remote_url'    => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section='
+			'params'          => $this->params,
+			'content-type'    => 'screenshot',
+			'multi_selection' => false,
+			'refresh'         => array('el_parent' => 'table[data-list="video"]', 'el_trigger' => '.cmd-refresh-filelist'),
+			'max_files'       => 1,
+			'remote_upload'   => true,
+			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section='
 				. $this->section . '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id . '&item_id='
 				. $this->trailer_id . '&max_files=1'
 		),

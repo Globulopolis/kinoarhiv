@@ -346,4 +346,74 @@ class KAFilesystem
 
 		return $mime;
 	}
+
+	/**
+	 * Some mime-types.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.1
+	 */
+	public function mimes()
+	{
+		return array(
+			'swf'   => 'application/x-shockwave-flash',
+			'mid'   => 'audio/midi',
+			'midi'  => 'audio/midi',
+			'mpga'  => 'audio/mpeg',
+			'mp2'   => 'audio/mpeg',
+			'mp3'   => array('audio/mpeg', 'audio/mpg', 'audio/mpeg3', 'audio/mp3'),
+			'aif'   => array('audio/x-aiff', 'audio/aiff'),
+			'aiff'  => array('audio/x-aiff', 'audio/aiff'),
+			'aifc'  => 'audio/x-aiff',
+			'ram'   => 'audio/x-pn-realaudio',
+			'rm'    => 'audio/x-pn-realaudio',
+			'rpm'   => 'audio/x-pn-realaudio-plugin',
+			'ra'    => 'audio/x-realaudio',
+			'rv'    => 'video/vnd.rn-realvideo',
+			'wav'   => array('audio/x-wav', 'audio/wave', 'audio/wav'),
+			'bmp'   => array('image/bmp', 'image/x-bmp', 'image/x-bitmap', 'image/x-xbitmap', 'image/x-win-bitmap', 'image/x-windows-bmp', 'image/ms-bmp', 'image/x-ms-bmp', 'application/bmp', 'application/x-bmp', 'application/x-win-bitmap'),
+			'gif'   => 'image/gif',
+			'jpeg'  => array('image/jpeg', 'image/pjpeg'),
+			'jpg'   => array('image/jpeg', 'image/pjpeg'),
+			'jpe'   => array('image/jpeg', 'image/pjpeg'),
+			'jp2'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'j2k'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'jpf'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'jpg2'  => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'jpx'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'jpm'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'mj2'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'mjp2'  => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
+			'png'   => array('image/png', 'image/x-png'),
+			'xml'   => array('application/xml', 'text/xml', 'text/plain'),
+			'mpeg'  => 'video/mpeg',
+			'mpg'   => 'video/mpeg',
+			'mpe'   => 'video/mpeg',
+			'qt'    => 'video/quicktime',
+			'mov'   => 'video/quicktime',
+			'avi'   => array('video/x-msvideo', 'video/msvideo', 'video/avi', 'application/x-troff-msvideo'),
+			'movie' => 'video/x-sgi-movie',
+			'3g2'   => 'video/3gpp2',
+			'3gp'   => array('video/3gp', 'video/3gpp'),
+			'mp4'   => 'video/mp4',
+			'm4a'   => 'audio/x-m4a',
+			'f4v'   => array('video/mp4', 'video/x-f4v'),
+			'flv'   => 'video/x-flv',
+			'webm'  => 'video/webm',
+			'aac'   => 'audio/x-acc',
+			'm4u'   => 'application/vnd.mpegurl',
+			'm3u'   => 'text/plain',
+			'wmv'   => array('video/x-ms-wmv', 'video/x-ms-asf'),
+			'au'    => 'audio/x-au',
+			'ac3'   => 'audio/ac3',
+			'flac'  => 'audio/x-flac',
+			'ogg'   => array('audio/ogg', 'video/ogg', 'application/ogg'),
+			'oga'   => 'audio/ogg',
+			'ogv'   => array('video/ogg', 'application/ogg'),
+			'wma'   => array('audio/x-ms-wma', 'video/x-ms-asf'),
+			'srt'   => array('text/srt', 'text/plain'),
+			'vtt'   => array('text/vtt', 'text/plain')
+		);
+	}
 }

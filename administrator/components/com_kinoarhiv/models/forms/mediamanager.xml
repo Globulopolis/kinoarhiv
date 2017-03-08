@@ -69,7 +69,7 @@
 				<option value="application/dash+xml">application/dash+xml (.mpd)</option>
 			</field>
 			<field name="resolution" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION"
-				   description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6"
+				   description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6" required="true"
 				   filter="string"/>
 		</fieldset>
 	</fields>

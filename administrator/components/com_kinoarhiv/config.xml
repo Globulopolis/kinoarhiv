@@ -180,7 +180,7 @@
 		<field name="upload_mime_video" type="text" default="mp4,mp4v,mpg4,mpeg,mpg,ogv,qt,mov,wmv,avi,mpd,mkv"
 			   label="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL" description="COM_KA_FIELD_UPLOAD_MIME_VIDEO_LABEL_DESC"
 			   required="true" filter="string" size="64" class="span11"/>
-		<field name="upload_mime_subtitles" type="text" default="vtt,sub,sup,txt,xml,mks,cue"
+		<field name="upload_mime_subtitles" type="text" default="vtt,srt,sub,sup,txt,xml,mks,cue,ass,sbv,json"
 			   label="COM_KA_FIELD_UPLOAD_MIME_SUBTITLES_LABEL" required="true" filter="string" size="64"
 			   class="span11"/>
 		<field name="upload_mime_chapters" type="text" default="vtt,sub,sup,txt,xml,mks,cue"
@@ -196,7 +196,7 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="upload_gallery_watermark_image" type="text"
-			   default="/components/com_kinoarhiv/assets/themes/component/default/images/powered_by.png"
+			   default="media/com_kinoarhiv/images/powered_by.png"
 			   label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC"
 			   filter="string" size="100" class="span11"/>
 	</fieldset>

@@ -51,6 +51,8 @@ rules:
         enabled: true
     php.debug_statements:
         enabled: true
+    php.silenced_error:
+        enabled: false
     php.duplicated_code:
         enabled: false
     php.dynamically_change_configuration:

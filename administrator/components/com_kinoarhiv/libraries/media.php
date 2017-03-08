@@ -143,7 +143,7 @@ class KAMedia
 	 * @param   string  $stream  Stream number. v:0 - first video stream from file.
 	 * @param   string  $format  Output format. See http://ffmpeg.org/ffprobe.html#Writers
 	 *
-	 * @return  mixed   Array with results if error, string otherwise
+	 * @return  string  JSON string.
 	 *
 	 * @since  3.0
 	 */
@@ -166,8 +166,8 @@ class KAMedia
 			return false;
 		}
 
-		$cmd = $this->params->get('ffprobe_path') . ' -v quiet -print_format ' . (string) $format .
-			' -show_streams -select_streams ' . $stream . ' ' . $path;
+		$cmd = JPath::clean($this->params->get('ffprobe_path')) . ' -v quiet -print_format ' . (string) $format .
+			' -show_streams -select_streams ' . $stream . ' "' . $path . '"';
 
 		if (IS_WIN)
 		{
@@ -264,6 +264,24 @@ class KAMedia
 	}
 
 	/**
+	 * Validate subtitle file. Subrip (.srt), WebVTT (.vtt), Substation Alpha (.ass), Youtube Subtitles (.sbv)
+	 * JSON (TED.com) Subtitles (.json)
+	 *
+	 * @param   string  $path      Path to a file.
+	 * @param   string  $filename  Filename.
+	 *
+	 * @return  boolean  True on success
+	 *
+	 * @throws  Exception
+	 *
+	 * @since  3.1
+	 */
+	public function validateSubtitles($path, $filename)
+	{
+		//jimport('components.com_kinoarhiv.libraries.vendor.captioning.src.Captioning.Format', JPATH_ROOT);
+	}
+
+	/**
 	 * Normalize some strings in WEBVTT file and save
 	 *
 	 * @param   string   $path          Path to a file.
@@ -275,7 +293,7 @@ class KAMedia
 	 *
 	 * @throws  Exception
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function normalizeVTT($path, $filename, $replace=true, $new_filename='')
 	{

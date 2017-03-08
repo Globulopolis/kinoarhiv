@@ -28,288 +28,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 */
 	public function upload()
 	{
-		// Send headers to prevent caching
-		header('Content-type: application/json');
-		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT', true);
-		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-		header('Cache-Control: no-store, no-cache, must-revalidate');
-		header('Cache-Control: post-check=0, pre-check=0', false);
-		header('Pragma: no-cache');
-
-		// CORS
-		header('Access-Control-Allow-Origin: *');
-
-		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-		{
-			header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-			header('Access-Control-Max-Age: 10000');
-			header('Access-Control-Allow-Headers: origin, x-csrftoken, content-type, accept');
-		}
-
-		if (KAComponentHelper::checkToken() === false)
-		{
-			header('HTTP/1.0 403 Access denied', true, 403);
-			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-
-			jexit(
-				json_encode(
-					array(
-						'success' => false,
-						'message' => JText::_('JINVALID_TOKEN')
-					)
-				)
-			);
-		}
-
-		@set_time_limit(0);
-
-		jimport('joomla.filesystem.file');
-		jimport('joomla.filesystem.folder');
-		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
-
-		$app = JFactory::getApplication();
-
-		// Remove old files
-		$cleanup_dir = true;
-
-		// Temp file age in seconds
-		$max_file_age = 5 * 3600;
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', null, 'int');
-		$id = $app->input->get('id', null, 'int');
-		$file = $app->input->files->get('file');
-		$filename = basename($file['name']);
-		$file_ext = JFile::getExt($file['name']);
-		$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id);
-		$file_path = JPath::clean($dest_dir . DIRECTORY_SEPARATOR . $filename);
-
-		// Check if file with the same name allready exists
-		if (is_file($file_path))
-		{
-			header('HTTP/1.0 500 Server error', true, 500);
-
-			jexit(
-				json_encode(
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_FILE_EXISTS')
-					)
-				)
-			);
-		}
-
-		// Validate filename
-		if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $filename))
-		{
-			$filename = str_replace('.', '', uniqid(rand(), true)) . '.' . $file_ext;
-		}
-
-		// Validate file extension
-		if (!$this->checkFileExt($file_ext, $params))
-		{
-			header('HTTP/1.0 500 Server error', true, 500);
-
-			jexit(
-				json_encode(
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_TRAILERS_UPLOAD_FILE_EXT_ERR')
-					)
-				)
-			);
-		}
-
-		// Check mime
-		if (!$this->checkMime($file['tmp_name'], $file_ext, $params))
-		{
-			header('HTTP/1.0 500 Server error', true, 500);
-
-			jexit(
-				json_encode(
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_TRAILERS_UPLOAD_FILE_MIME_ERR')
-					)
-				)
-			);
-		}
-
-		// Chunking might be enabled
-		$chunk = $app->input->get('chunk', 0, 'int');
-		$chunks = $app->input->get('chunks', 0, 'int');
-
-		// Create target dir
-		if (!is_dir($dest_dir))
-		{
-			if (!JFolder::create($dest_dir))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('COM_KA_TRAILERS_UPLOAD_FOLDER_CREATE_ERR')
-						)
-					)
-				);
-			}
-		}
-
-		// Remove old temp files
-		if ($cleanup_dir)
-		{
-			if (!is_dir($dest_dir) || !$dir = opendir($dest_dir))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('COM_KA_TRAILERS_UPLOAD_FOLDER_OPEN_ERR')
-						)
-					)
-				);
-			}
-
-			while (($_file = readdir($dir)) !== false)
-			{
-				$tmpfilePath = $dest_dir . DIRECTORY_SEPARATOR . $_file;
-
-				// If temp file is current file proceed to the next
-				if ($tmpfilePath == "{$file_path}.part")
-				{
-					continue;
-				}
-
-				// Remove temp file if it is older than the max age and is not the current file
-				if (preg_match('/\.part$/', $_file) && (filemtime($tmpfilePath) < time() - $max_file_age))
-				{
-					JFile::delete($tmpfilePath);
-				}
-			}
-
-			closedir($dir);
-		}
-
-		// Open temp file
-		if (!$out = @fopen("{$file_path}.part", $chunks ? "ab" : "wb"))
-		{
-			header('HTTP/1.0 500 Server error', true, 500);
-
-			jexit(
-				json_encode(
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_TRAILERS_UPLOAD_STREAM_O_OPEN_ERR')
-					)
-				)
-			);
-		}
-
-		if (!empty($_FILES))
-		{
-			if ($file['error'] || !is_uploaded_file($file['tmp_name']))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('ERROR')
-						)
-					)
-				);
-			}
-
-			// Read binary input stream and append it to temp file
-			if (!$in = @fopen($file['tmp_name'], "rb"))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('COM_KA_TRAILERS_UPLOAD_STREAM_I_OPEN_ERR')
-						)
-					)
-				);
-			}
-		}
-		else
-		{
-			if (!$in = @fopen("php://input", "rb"))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('COM_KA_TRAILERS_UPLOAD_STREAM_I_OPEN_ERR')
-						)
-					)
-				);
-			}
-		}
-
-		while ($buff = fread($in, 4096))
-		{
-			fwrite($out, $buff);
-		}
-
-		@fclose($out);
-		@fclose($in);
-
-		// Check if file has been uploaded
-		if (!$chunks || $chunk == $chunks - 1)
-		{
-			// Strip the temp .part suffix off
-			if (!rename("{$file_path}.part", $file_path))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('ERROR')
-						)
-					)
-				);
-			}
-
-			if (!$this->postProcessUploads($dest_dir, $filename))
-			{
-				header('HTTP/1.0 500 Server error', true, 500);
-
-				jexit(
-					json_encode(
-						array(
-							'success' => false,
-							'message' => JText::_('ERROR')
-						)
-					)
-				);
-			}
-		}
-
-		// Return Success JSON response
-		jexit(
-			json_encode(
-				array(
-					'success' => true,
-					'message' => ''
-				)
-			)
-		);
-
 		/*// Check if file has been uploaded
 		if (!$chunks || $chunk == $chunks - 1)
 		{
@@ -320,22 +38,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					// Get the movie transliterated alias
 					$fs_alias = $model->getFilesystemAlias($section, $item_id, true);
 
-					if ($app->input->get('upload') == 'video')
-					{
-						JLoader::register('KAMedia', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR . 'media.php');
-						$media = KAMedia::getInstance();
-
-						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir . $filename;
-						$ext = JFile::getExt($old_filename);
-						$video_info = json_decode($media->getVideoInfo($rn_dest_dir . $filename));
-						$video_height = isset($video_info->streams[0]) ? $video_info->streams[0]->height : 0;
-						$rn_filename = $fs_alias . '-' . $trailer_id . '-' . $item_id . '.' . $video_height . 'p.' . $ext;
-						rename($old_filename, $rn_dest_dir . $rn_filename);
-
-						$model->saveVideo($rn_filename, $trailer_id, $item_id);
-					}
-					elseif ($app->input->get('upload') == 'subtitles')
+					if ($app->input->get('upload') == 'subtitles')
 					{
 						if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches))
 						{
@@ -369,299 +72,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 							$id = $result;
 						}
 					}
-					elseif ($app->input->get('upload') == 'images')
-					{
-						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir . $filename;
-						$ext = JFile::getExt($old_filename);
-						$rn_filename = $fs_alias . '-' . $trailer_id . '.' . $ext;
-						rename($old_filename, $rn_dest_dir . $rn_filename);
-
-						if ($params->get('upload_gallery_watermark_image_on') == 1)
-						{
-							$watermark_img = $params->get('upload_gallery_watermark_image');
-
-							if (!empty($watermark_img) && file_exists($watermark_img))
-							{
-								$image->addWatermark($dest_dir, $rn_filename, $watermark_img);
-							}
-						}
-
-						list($width, $height) = @getimagesize($rn_dest_dir . $rn_filename);
-						$th_w = (int) $params->get('player_width');
-						$th_h = ($height * $th_w) / $width;
-						$image->_createThumbs($dest_dir, $rn_filename, $th_w . 'x' . $th_h, 1, $dest_dir, null);
-						$result = $model->saveImageInDB($rn_filename, array(), 'trailer', null, $trailer_id);
-						$id = $result['filename'];
-					}
 				}
 			}
 		}*/
-	}
-
-	/**
-	 * Post process uploaded file.
-	 *
-	 * @param   string  $dest_dir  Path to a folder.
-	 * @param   string  $filename  Filename.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.1
-	 */
-	private function postProcessUploads($dest_dir, $filename)
-	{
-		$app     = JFactory::getApplication();
-		$section = $app->input->get('section', '', 'word');
-		$type    = $app->input->get('type', '', 'word');
-		$tab     = $app->input->get('tab', 0, 'int');
-
-		if (($section == 'movie' && $type == 'gallery') || ($section == 'name' && $type == 'gallery') || ($section == 'movie' && $type == 'trailers'))
-		{
-			return $this->postProcessImageUploads($dest_dir, $filename, $section, $type, $tab);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Post process uploaded image.
-	 *
-	 * @param   string   $dest_dir  Path to a folder.
-	 * @param   string   $filename  Filename.
-	 * @param   string   $section   Type of the item. Can be 'movie' or 'name'.
-	 * @param   string   $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
-	 * @param   integer  $tab       Tab number from gallery(or empty value for 'trailers', 'soundtracks').
-	 *
-	 * @return  mixed  Boolean true on success, array with errors otherwise.
-	 *
-	 * @since   3.1
-	 */
-	private function postProcessImageUploads($dest_dir, $filename, $section, $type, $tab)
-	{
-		jimport('joomla.filesystem.file');
-		jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
-		$file_path = JPath::clean($dest_dir . '/' . $filename);
-		$id = $app->input->get('id', 0, 'int');
-		$frontpage = $app->input->get('frontpage', 0, 'int');
-
-		$image = new KAImage;
-		$image->loadFile($file_path);
-		$image_prop  = $image->getImageFileProperties($file_path);
-		$orig_width  = $image_prop->width;
-		$orig_height = $image_prop->height;
-
-		if ($section == 'movie')
-		{
-			if ($type == 'gallery')
-			{
-				if ($tab == 1)
-				{
-					$width  = (int) $params->get('size_x_wallpp');
-					$height = ($width * $orig_height) / $orig_width;
-				}
-				elseif ($tab == 2)
-				{
-					$width  = (int) $params->get('size_x_posters');
-					$height = ($width * $orig_height) / $orig_width;
-				}
-				elseif ($tab == 3)
-				{
-					$width  = (int) $params->get('size_x_scr');
-					$height = ($width * $orig_height) / $orig_width;
-				}
-				else
-				{
-					return array('success' => false, 'message' => 'Wrong tab');
-				}
-
-				// Add watermark
-				if ($params->get('upload_gallery_watermark_image_on') == 1)
-				{
-					$watermark_img = $params->get('upload_gallery_watermark_image');
-
-					if (!empty($watermark_img) && file_exists($watermark_img))
-					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img);
-					}
-				}
-
-				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-				$model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
-			}
-			elseif ($type == 'trailers')
-			{
-				// Item ID == id field from #__ka_trailers table
-				$model->saveImageInDB('trailer', $app->input->getInt('item_id', 0), $filename);
-			}
-		}
-		elseif ($section == 'name')
-		{
-			if ($type == 'gallery')
-			{
-				if ($tab == 1)
-				{
-					$width = (int) $params->get('size_x_wallpp');
-					$height = ($width * $orig_height) / $orig_width;
-				}
-				elseif ($tab == 2)
-				{
-					$width = (int) $params->get('size_x_posters');
-					$height = ($width * $orig_height) / $orig_width;
-				}
-				elseif ($tab == 3)
-				{
-					$width = (int) $params->get('size_x_photo');
-					$height = ($width * $orig_height) / $orig_width;
-				}
-				else
-				{
-					return array('success' => false, 'message' => 'Wrong tab');
-				}
-
-				// Add watermark
-				if ($params->get('upload_gallery_watermark_image_on') == 1)
-				{
-					$watermark_img = $params->get('upload_gallery_watermark_image');
-
-					if (!empty($watermark_img) && file_exists($watermark_img))
-					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img);
-					}
-				}
-
-				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-				$model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Check file extention.
-	 *
-	 * @param   string  $file_ext  File extention to check
-	 * @param   object  &$params   Component parameters.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.1
-	 */
-	private function checkFileExt($file_ext, &$params)
-	{
-		if ($this->input->get('upload') == 'images')
-		{
-			$allowed = $params->get('upload_mime_images');
-		}
-		elseif ($this->input->get('upload') == 'video')
-		{
-			$allowed = $params->get('upload_mime_video');
-		}
-		elseif ($this->input->get('upload') == 'subtitles')
-		{
-			$allowed = $params->get('upload_mime_subtitles');
-		}
-		elseif ($this->input->get('upload') == 'chapters')
-		{
-			$allowed = $params->get('upload_mime_chapters');
-		}
-		elseif ($this->input->get('upload') == 'audio')
-		{
-			$allowed = $params->get('upload_mime_audio');
-		}
-		else
-		{
-			return false;
-		}
-
-		$allowed = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($allowed));
-
-		return (bool) in_array($file_ext, $allowed);
-	}
-
-	/**
-	 * Check file mime-type. Do not check mime by upload type.
-	 *
-	 * @param   string  $path      File mime to check.
-	 * @param   string  $file_ext  File extension.
-	 * @param   object  &$params   Component parameters.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   3.1
-	 */
-	private function checkMime($path, $file_ext, &$params)
-	{
-		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
-		jimport('administrator.components.com_kinoarhiv.helpers.filesystem', JPATH_ROOT);
-
-		if ($this->input->get('upload') == 'images')
-		{
-			$exts = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('upload_mime_images')));
-		}
-		elseif ($this->input->get('upload') == 'video')
-		{
-			$exts = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('upload_mime_video')));
-		}
-		elseif ($this->input->get('upload') == 'subtitles')
-		{
-			$exts = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('upload_mime_subtitles')));
-		}
-		elseif ($this->input->get('upload') == 'chapters')
-		{
-			$exts = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('upload_mime_chapters')));
-		}
-		elseif ($this->input->get('upload') == 'audio')
-		{
-			$exts = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('upload_mime_audio')));
-		}
-		else
-		{
-			return false;
-		}
-
-		$file_mime = KAFilesystem::getInstance()->detectMime($path);
-
-		// Get all allowed extensions from settings and reduce array with mimes to these extensions.
-		$mimes = array_intersect_key(KAFilesystemHelper::mimes(), array_flip($exts));
-
-		if (array_key_exists($file_ext, $mimes))
-		{
-			$mime = $mimes[$file_ext];
-
-			if (is_array($mime))
-			{
-				foreach ($mime as $value)
-				{
-					if ($value == $file_mime)
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-			else
-			{
-				if ($mime == $file_mime)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -854,10 +267,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
+		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
+		$id = $app->input->getInt('id', 0);
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.edit', 'com_kinoarhiv') && !$user->authorise('core.edit.delete', 'com_kinoarhiv'))
+		if (!$user->authorise('core.delete', 'com_kinoarhiv.movie.' . $id))
 		{
 			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
 
@@ -867,9 +282,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 		jimport('joomla.filesystem.file');
 
-		$app = JFactory::getApplication();
 		$model = $this->getModel('mediamanagerItem');
-		$id = $app->input->getInt('id', 0);
 		$item = $app->input->getInt('item', 0);
 		$item_id = $app->input->getInt('item_id', 0);
 		$all = $app->input->getInt('all', 0);
@@ -885,6 +298,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			foreach ($types as $_type)
 			{
+				if (!$model->removeTrailerFiles($_type, $item_id, array_keys($files[$_type])))
+				{
+					$errors[] = implode('<br />', $app->getMessageQueue());
+				}
+
 				if ($_type == 'screenshot' || $_type == 'chapters')
 				{
 					$filepath = $path . $files[$_type]['file'];
@@ -904,11 +322,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				else
 				{
 					$array_key = ($_type === 'video') ? 'src' : 'file';
-
-					if (!$model->removeTrailerFiles($_type, $item_id, array_keys($files[$_type])))
-					{
-						$errors[] = implode('<br />', $app->getMessageQueue());
-					}
 
 					foreach ($files[$_type] as $file)
 					{
@@ -941,7 +354,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				$errors[] = implode('<br />', $app->getMessageQueue());
 			}
 
-			$filepath = $path . $files[$type][$array_key];
+			if ($type == 'screenshot')
+			{
+				$filepath = $path . $files['screenshot']['file'];
+			}
+			else
+			{
+				$filepath = $path . $files[$type][$array_key];
+			}
 
 			if (is_file($filepath))
 			{
@@ -965,26 +385,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			echo json_encode(array('success' => true, 'message' => JText::_($message)));
 		}
 	}
-
-	/*public function saveSubtitles()
-	{
-		if (!KAComponentHelper::checkToken('post'))
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
-
-			return false;
-		}
-
-		$app = JFactory::getApplication();
-		$movie_id = $app->input->get('movie_id', 0, 'int');
-		$trailer_id = $app->input->get('trailer_id', 0, 'int');
-		$subtitle_id = $app->input->get('subtitle_id', 0, 'int');
-
-		$model = $this->getModel('mediamanagerItem');
-		$result = $model->saveSubtitles('', $trailer_id, $movie_id, $subtitle_id, true);
-
-		echo $result;
-	}*/
 
 	/**
 	 * Method to make screenshot from videofile.

@@ -13,6 +13,11 @@
 	display: none !important;
 }
 
+/* Fix 'cancel uploading' image */
+li.plupload_uploading a {
+	background: url('../../plupload/jquery.plupload.queue/img/delete.gif');
+}
+
 .plupload_file_name .plupload_buttons { display: inline-block !important; }
 .plupload_file_name .plupload_upload_status { display: inline-block !important; }
 

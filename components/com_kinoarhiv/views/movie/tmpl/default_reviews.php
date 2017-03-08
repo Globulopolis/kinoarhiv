@@ -54,7 +54,7 @@ defined('_JEXEC') or die;
 					<div class="review-row-title ui-widget ui-widget-content ui-corner-top <?php echo $ui_class; ?>">
 						<span class="number"><?php echo $review_number++; ?>. </span>
 						<span class="username<?php echo $cmd_insert_username; ?>"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
-						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&limitstart=' . $this->pagination->limitstart . '&Itemid=' . $this->itemid) . '#review-' . $review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTip permalink"><img src="components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/link_16.png" border="0"/></a></span>
+						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&limitstart=' . $this->pagination->limitstart . '&Itemid=' . $this->itemid) . '#review-' . $review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTip permalink"><img src="media/com_kinoarhiv/images/icons/link_16.png" border="0"/></a></span>
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
 					<?php if (!$this->user->guest && $this->item->attribs->allow_reviews == 1): ?>

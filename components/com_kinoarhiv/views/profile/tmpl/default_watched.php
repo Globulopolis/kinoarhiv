@@ -59,7 +59,7 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 					$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year)); ?>
 					<div class="title-small">
 						<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a></span>
-						<span style="float: right;"><a class="cmd-wt-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0"/></a></span>
+						<span style="float: right;"><a class="cmd-wt-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?>"><img src="media/com_kinoarhiv/images/icons/delete_16.png" border="0"/></a></span>
 					</div>
 				<?php endforeach; ?>
 				<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>

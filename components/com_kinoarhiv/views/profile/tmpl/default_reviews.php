@@ -43,7 +43,7 @@ defined('_JEXEC') or die;
 				?>
 					<div class="title-small <?php echo $ui_class; ?>">
 						<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="review_ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->movie_id . '&Itemid=' . $this->itemid . '&review=' . $item->id); ?>#review-<?php echo $item->id; ?>"><strong><?php echo $title; ?></strong></a></span>
-						<span style="float: right;"><a class="cmd-r-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.delete&Itemid=' . $this->itemid . '&review_id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><img src="components/com_kinoarhiv/assets/themes/component/default/images/icons/delete_16.png" border="0"/></a></span>
+						<span style="float: right;"><a class="cmd-r-delete" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.delete&Itemid=' . $this->itemid . '&review_id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_DELETE'); ?>"><img src="media/com_kinoarhiv/images/icons/delete_16.png" border="0"/></a></span>
 
 						<div class="small timestamp"><?php echo JText::sprintf('COM_KA_REVIEWS_DATETIME', $item->created, $ip); ?></div>
 						<div class="review"><?php echo $item->review; ?></div>

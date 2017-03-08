@@ -164,7 +164,7 @@ $columns   = 10;
 						</a>
 						<a href="index.php?option=com_kinoarhiv&view=reviews&mid=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
-							<img border="0" src="<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/icons/comments_16.png" />
+							<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
 						</a>&nbsp;
 						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone"
 						   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>">

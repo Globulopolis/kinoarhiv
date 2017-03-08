@@ -190,7 +190,6 @@ jQuery(document).ready(function($){
 		config.unique_names = $(element).data('unique_names') || false;
 		config.dragdrop = $(element).data('dragdrop') || true;
 		config.rename = $(element).data('rename') || false;
-		config.crop = $(element).data('crop') || false;
 		config.multiple_queues = $(element).data('multiple_queues') || true;
 
 		// Custom headers to send with the upload. Hash of name/value pairs.
@@ -204,8 +203,8 @@ jQuery(document).ready(function($){
 		}
 
 		// Either comma-separated list or hash of required features that chosen runtime should absolutely possess.
-		if (!empty($(element).data('multipart_params'))) {
-			config.multipart_params = $(element).data('multipart_params');
+		if (!empty($(element).data('required_features'))) {
+			config.required_features = $(element).data('required_features');
 		}
 
 		// Enable resizng of images on client-side.
@@ -285,21 +284,15 @@ jQuery(document).ready(function($){
 				$('#screenshot_file').show();
 				$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=image&item_id=<?php echo $trailer_id; ?>&file=' + obj.id + '&id=<?php echo $movie_id; ?>&format=json');*/
 			},
-			StateChanged: function(up){
-				if (up.state == plupload.STARTED) {
-					// TODO Приводит к ошибке?
-					//$('.cmd-file-remove.scrimage').trigger('click');
-				}
-			},
-			Error: function(up, args) {
-				var error = JSON.parse(args.response);
+			Error: function(up, response){
+				var error = JSON.parse(response.response);
 
 				if (error_div.is(':hidden')) {
 					error_div.show();
 					error_div.addClass('alert alert-error');
 				}
 
-				error_div.html(error_div.html() + args.file.name + ': ' + error.message + '<br />');
+				error_div.html(error_div.html() + response.file.name + ': ' + error.message + '<br />');
 			}
 		};
 

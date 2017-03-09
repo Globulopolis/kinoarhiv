@@ -190,6 +190,12 @@
 		<field type="spacer" name="sp_image" class="separator" label="COM_KA_FIELD_UPLOAD_IMAGE_SPACER"/>
 		<field name="upload_mime_images" type="text" default="jpg,jpeg,png,gif"
 			   label="COM_KA_FIELD_UPLOAD_MIME_IMAGES_LABEL" required="true" filter="string" size="64" class="span11"/>
+		<field name="upload_quality_images_jpg" type="text" default="75"
+			   label="COM_KA_FIELD_UPLOAD_IMAGES_QUALITY_JPG_LABEL"
+			   description="COM_KA_FIELD_UPLOAD_IMAGES_QUALITY_DESC" required="true" filter="integer"/>
+		<field name="upload_quality_images_png" type="text" default="3"
+			   label="COM_KA_FIELD_UPLOAD_IMAGES_QUALITY_PNG_LABEL"
+			   description="COM_KA_FIELD_UPLOAD_IMAGES_QUALITY_DESC" required="true" filter="integer"/>
 		<field name="upload_gallery_watermark_image_on" type="radio" class="btn-group" default="0"
 			   label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_ON_LABEL" filter="integer">
 			<option value="1">JYES</option>

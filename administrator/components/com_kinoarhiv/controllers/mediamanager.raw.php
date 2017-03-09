@@ -352,11 +352,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			elseif ($upload == 'subtitles')
 			{
-				$result = $this->postProcessSubtitleUploads($dest_dir, $filename);
+				$result = $this->postProcessSubtitleUploads($filename);
 			}
 			elseif ($upload == 'chapters')
 			{
-				$result = $this->postProcessChapterUploads($dest_dir, $filename);
+				$result = $this->postProcessChapterUploads($filename);
 			}
 		}
 
@@ -422,10 +422,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
 					$watermark_img = $params->get('upload_gallery_watermark_image');
+					$options       = array();
+
+					if ($image_prop->type == 2)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
+					}
+					elseif ($image_prop->type == 3)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
+					}
 
 					if (!empty($watermark_img) && file_exists($watermark_img))
 					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img);
+						$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
 					}
 				}
 
@@ -443,10 +453,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
 					$watermark_img = $params->get('upload_gallery_watermark_image');
+					$options       = array();
+
+					if ($image_prop->type == 2)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
+					}
+					elseif ($image_prop->type == 3)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
+					}
 
 					if (!empty($watermark_img) && file_exists($watermark_img))
 					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img);
+						$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
 					}
 				}
 
@@ -482,10 +502,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
 					$watermark_img = $params->get('upload_gallery_watermark_image');
+					$options       = array();
+
+					if ($image_prop->type == 2)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
+					}
+					elseif ($image_prop->type == 3)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
+					}
 
 					if (!empty($watermark_img) && file_exists($watermark_img))
 					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img);
+						$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
 					}
 				}
 
@@ -548,15 +578,55 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	/**
 	 * Post process uploaded subtitles.
 	 *
-	 * @param   string  $dest_dir  Path to a folder.
 	 * @param   string  $filename  Filename.
 	 *
 	 * @return  mixed  Boolean true on success, array with errors otherwise.
 	 *
 	 * @since   3.1
 	 */
-	private function postProcessSubtitleUploads($dest_dir, $filename)
+	private function postProcessSubtitleUploads($filename)
 	{
+		jimport('administrator.components.com_kinoarhiv.libraries.language', JPATH_ROOT);
+
+		$model = $this->getModel('mediamanagerItem');
+		$lang_list = KALanguage::listOfLanguages();
+
+		if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches))
+		{
+			$lang_code = strtolower($matches[1]);
+		}
+		else
+		{
+			$lang_code = 'en';
+		}
+
+		$data   = array(
+			'file'      => $filename,
+			'lang'      => $lang_list[$lang_code],
+			'lang_code' => $lang_code,
+			'default'   => false
+		);
+		$result = $model->saveFileinfoData($data, array('list' => 'subtitles', 'new' => 1));
+
+		return $result;
+	}
+
+	/**
+	 * Post process uploaded chapters.
+	 *
+	 * @param   string  $filename  Filename.
+	 *
+	 * @return  mixed  Boolean true on success, array with errors otherwise.
+	 *
+	 * @since   3.1
+	 */
+	private function postProcessChapterUploads($filename)
+	{
+		$model  = $this->getModel('mediamanagerItem');
+		$data   = array('file' => $filename);
+		$result = $model->saveFileinfoData($data, array('list' => 'chapters', 'new' => 1));
+
+		return $result;
 	}
 
 	/**

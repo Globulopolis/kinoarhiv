@@ -20,64 +20,6 @@ jimport('joomla.filesystem.file');
 class KinoarhivControllerMediamanager extends JControllerLegacy
 {
 	/**
-	 * Method to upload media content and proccess some media items, like images.
-	 *
-	 * @return string  JSON string with result
-	 *
-	 * @since  3.0
-	 */
-	public function upload()
-	{
-		/*// Check if file has been uploaded
-		if (!$chunks || $chunk == $chunks - 1)
-		{
-			if ($section == 'movie')
-			{
-				if ($app->input->get('type') == 'trailers')
-				{
-					// Get the movie transliterated alias
-					$fs_alias = $model->getFilesystemAlias($section, $item_id, true);
-
-					if ($app->input->get('upload') == 'subtitles')
-					{
-						if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches))
-						{
-							$lang_code = strtolower($matches[1]);
-						}
-						else
-						{
-							$lang_code = 'en';
-						}
-
-						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir . $filename;
-						$ext = JFile::getExt($old_filename);
-						$rn_filename = $fs_alias . '-' . $trailer_id . '.subtitles.' . $lang_code . '.' . $ext;
-						rename($old_filename, $rn_dest_dir . $rn_filename);
-
-						$model->saveSubtitles($rn_filename, $trailer_id, $item_id, false);
-					}
-					elseif ($app->input->get('upload') == 'chapters')
-					{
-						$rn_dest_dir = $dest_dir . DIRECTORY_SEPARATOR;
-						$old_filename = $rn_dest_dir . $filename;
-						$ext = JFile::getExt($old_filename);
-						$rn_filename = $fs_alias . '-' . $trailer_id . '.chapters.' . $ext;
-						rename($old_filename, $rn_dest_dir . $rn_filename);
-
-						$result = $model->saveChapters($rn_filename, $trailer_id, $item_id);
-
-						if (is_int($result))
-						{
-							$id = $result;
-						}
-					}
-				}
-			}
-		}*/
-	}
-
-	/**
 	 * Method to get list of trailer files.
 	 *
 	 * @return  array
@@ -636,10 +578,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								if ($params->get('upload_gallery_watermark_image_on') == 1)
 								{
 									$watermark_img = $params->get('upload_gallery_watermark_image');
+									$options = array();
+
+									if ($file_prop->type == 2)
+									{
+										$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
+									}
+									elseif ($file_prop->type == 3)
+									{
+										$options['output_quality'] = (int) $params->get('upload_quality_images_png');
+									}
 
 									if (!empty($watermark_img) && file_exists($watermark_img))
 									{
-										$image->addWatermark($dest_dir, $filename, $watermark_img);
+										$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
 									}
 								}
 
@@ -682,10 +634,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								if ($params->get('upload_gallery_watermark_image_on') == 1)
 								{
 									$watermark_img = $params->get('upload_gallery_watermark_image');
+									$options = array();
+
+									if ($file_prop->type == 2)
+									{
+										$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
+									}
+									elseif ($file_prop->type == 3)
+									{
+										$options['output_quality'] = (int) $params->get('upload_quality_images_png');
+									}
 
 									if (!empty($watermark_img) && file_exists($watermark_img))
 									{
-										$image->addWatermark($dest_dir, $filename, $watermark_img);
+										$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
 									}
 								}
 

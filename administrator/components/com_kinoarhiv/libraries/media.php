@@ -278,7 +278,7 @@ class KAMedia
 	 */
 	public function validateSubtitles($path, $filename)
 	{
-		//jimport('components.com_kinoarhiv.libraries.vendor.captioning.src.Captioning.Format', JPATH_ROOT);
+		// jimport('components.com_kinoarhiv.libraries.vendor.captioning.src.Captioning.Format', JPATH_ROOT);
 	}
 
 	/**

@@ -72,7 +72,7 @@ $columns   = 5;
 					?>
 					</div>
 				</td>
-				<td class="nowrap has-context">
+				<td class="has-context">
 					<?php if (!empty($item->error)): ?>
 						<a href="#" class="hasTooltip error_image" title="<?php echo $item->error; ?>"></a>
 					<?php endif; ?>

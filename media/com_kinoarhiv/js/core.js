@@ -325,7 +325,18 @@ jQuery(document).ready(function($){
 							}
 						});
 					} else {
+						$(element.val().split(',')).each(function () {
+							var i = 0;
 
+							for (i; i < data_count; i++) {
+								if (data_content[i]['value'] == this) {
+									data.push({
+										value: data_content[i]['value'],
+										text: data_content[i]['text']
+									});
+								}
+							}
+						});
 					}
 
 					callback(data);
@@ -375,8 +386,6 @@ jQuery(document).ready(function($){
 				title = !empty(data.text) ? data.text : data.title;
 
 				return formatItemTitle(title, '', year);
-			} else if (content == 'careers') {
-				return remote == true ? data.title : data.text;
 			} else {
 				return data.text;
 			}
@@ -400,8 +409,6 @@ jQuery(document).ready(function($){
 				title = !empty(data.text) ? data.text : data.title;
 
 				return formatItemTitle(title, '', year);
-			} else if (content == 'careers') {
-				return remote == true ? data.title : data.text;
 			} else {
 				return data.text;
 			}

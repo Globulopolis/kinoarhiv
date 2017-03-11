@@ -14,6 +14,7 @@ $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $columns   = 5;
+$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->section . '.' . $this->id);
 ?>
 <table class="table table-striped gallery-list" id="articleList">
 	<thead>
@@ -47,9 +48,7 @@ $columns   = 5;
 			<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_FILES'); ?></td>
 		</tr>
 	<?php else:
-		foreach ($this->items as $i => $item):
-			$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->section . '.' . $item->id);
-			?>
+		foreach ($this->items as $i => $item): ?>
 			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->id; ?>">
 				<td class="center">
 					<?php echo JHtml::_('grid.id', $i, $item->id, false, 'item_id'); ?>

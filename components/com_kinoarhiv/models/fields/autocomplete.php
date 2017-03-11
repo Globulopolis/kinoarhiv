@@ -93,8 +93,12 @@ class JFormFieldAutocomplete extends JFormFieldList
 		$data_lang = $this->element['data-lang'];
 		$attr .= $data_lang ? ' data-lang="' . (string) $data_lang . '"' : '';
 
+		// Get id attribute.
 		$id = $this->id !== false ? $this->id : $this->name;
+
+		// Replace [] if id == field name. So fiel name like form[field] will be form_field
 		$id = str_replace(array('[', ']'), '', $id);
+		$attr .= $id !== '' ? ' id="' . $id . '"' : '';
 		$options = (array) $this->getOptions();
 
 		if (((string) $this->element['data-remote'] == 'false' || (string) $this->element['data-remote'] == '')
@@ -270,7 +274,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					$option_html .= '<option value="' . $element->value . '"' . $option_attr . $selected . '>' . $text . '</option>';
 				}
 
-				$html = '<select' . ($id !== '' ? ' id="' . $id . '"' : '') . ' name="' . $this->name . '" ' . trim($attr) . '>' . $option_html . '</select>';
+				$html = '<select name="' . $this->name . '" ' . trim($attr) . '>' . $option_html . '</select>';
 			}
 			else
 			{
@@ -302,7 +306,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					}
 				}
 
-				// We need to store objects with content for dropdown list in data-* attribute
+				// We need to store objects with content for dropdown list in 'data-content-value' attribute
 				$attr .= " data-content-value='" . json_encode($items) . "'";
 
 				if ($this->multiple && is_array($this->value))
@@ -321,8 +325,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					$value = $this->value;
 				}
 
-				$html = '<input type="hidden" name="' . $this->name . '" value="' . $value . '"'
-					. ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';
+				$html = '<input type="hidden" name="' . $this->name . '" value="' . implode(',', $this->value) . '" ' . trim($attr) . ' />';
 			}
 
 			return $html;
@@ -349,8 +352,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 			$attr .= $this->element['data-remote-show-all'] == 'true' ? ' data-remote-show-all="true"' : '';
 			$attr .= $this->element['data-ignore-ids'] ? ' data-ignore-ids="[' . (string) $this->element['data-ignore-ids'] . ']"' : '';
 
-			return '<input type="hidden" name="' . $this->name . '" value="' . $value . '"'
-				. ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';
+			return '<input type="hidden" name="' . $this->name . '" value="' . $value . '" ' . trim($attr) . ' />';
 		}
 	}
 

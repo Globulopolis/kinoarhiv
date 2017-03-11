@@ -143,10 +143,9 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of countries or country based on filters.
 	 *
-	 * @return  mixed
+	 * @return  object
 	 *
 	 * @since   3.1
-	 * @throws  RuntimeException
 	 */
 	public function getCountries()
 	{
@@ -191,7 +190,9 @@ class KinoarhivModelAPI extends JModelLegacy
 				}
 				catch (RuntimeException $e)
 				{
-					throw new RuntimeException(JText::_('ERROR'), 500);
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
 				}
 			}
 			else
@@ -210,7 +211,9 @@ class KinoarhivModelAPI extends JModelLegacy
 					}
 					catch (RuntimeException $e)
 					{
-						throw new RuntimeException(JText::_('ERROR'), 500);
+						KAComponentHelper::eventLog($e->getMessage());
+
+						return false;
 					}
 				}
 				else
@@ -224,7 +227,9 @@ class KinoarhivModelAPI extends JModelLegacy
 					}
 					catch (RuntimeException $e)
 					{
-						throw new RuntimeException(JText::_('ERROR'), 500);
+						KAComponentHelper::eventLog($e->getMessage());
+
+						return false;
 					}
 				}
 			}
@@ -240,7 +245,9 @@ class KinoarhivModelAPI extends JModelLegacy
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(JText::_('ERROR'), 500);
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
 			}
 		}
 
@@ -250,10 +257,9 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of movies or movie based on filters.
 	 *
-	 * @return  mixed
+	 * @return  object
 	 *
 	 * @since   3.1
-	 * @throws  RuntimeException
 	 */
 	public function getMovies()
 	{
@@ -303,7 +309,9 @@ class KinoarhivModelAPI extends JModelLegacy
 				}
 				catch (RuntimeException $e)
 				{
-					throw new RuntimeException(JText::_('ERROR'), 500);
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
 				}
 			}
 			else
@@ -317,7 +325,9 @@ class KinoarhivModelAPI extends JModelLegacy
 				}
 				catch (RuntimeException $e)
 				{
-					throw new RuntimeException(JText::_('ERROR'), 500);
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
 				}
 			}
 		}
@@ -332,7 +342,9 @@ class KinoarhivModelAPI extends JModelLegacy
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(JText::_('ERROR'), 500);
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
 			}
 		}
 
@@ -342,10 +354,9 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of distributors or distributor based on filters.
 	 *
-	 * @return  mixed
+	 * @return  object
 	 *
 	 * @since   3.1
-	 * @throws  RuntimeException
 	 */
 	public function getVendors()
 	{
@@ -389,7 +400,9 @@ class KinoarhivModelAPI extends JModelLegacy
 				}
 				catch (RuntimeException $e)
 				{
-					throw new RuntimeException(JText::_('ERROR'), 500);
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
 				}
 			}
 			else
@@ -408,7 +421,9 @@ class KinoarhivModelAPI extends JModelLegacy
 					}
 					catch (RuntimeException $e)
 					{
-						throw new RuntimeException(JText::_('ERROR'), 500);
+						KAComponentHelper::eventLog($e->getMessage());
+
+						return false;
 					}
 				}
 				else
@@ -422,7 +437,9 @@ class KinoarhivModelAPI extends JModelLegacy
 					}
 					catch (RuntimeException $e)
 					{
-						throw new RuntimeException(JText::_('ERROR'), 500);
+						KAComponentHelper::eventLog($e->getMessage());
+
+						return false;
 					}
 				}
 			}
@@ -438,7 +455,116 @@ class KinoarhivModelAPI extends JModelLegacy
 			}
 			catch (RuntimeException $e)
 			{
-				throw new RuntimeException(JText::_('ERROR'), 500);
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get list of careers based on filters.
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	public function getCareers()
+	{
+		$id       = $this->input->get('id', 0, 'int');
+		$all      = $this->input->get('showAll', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term     = $this->input->get('term', '', 'string');
+
+		$query = $this->db->getQuery(true)
+			->select('id, title AS text')
+			->from($this->db->quoteName('#__ka_names_career'));
+
+		// Filter by language
+		if ($this->query_lang != '')
+		{
+			$query->where($this->query_lang);
+		}
+
+		if ($all == 0)
+		{
+			if ($id == 0)
+			{
+				if (empty($term))
+				{
+					return array();
+				}
+
+				$query->where('title LIKE "' . $this->db->escape($term) . '%"')
+					->order('ordering ASC');
+				$this->db->setQuery($query);
+
+				try
+				{
+					$result = $this->db->loadObjectList();
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
+				}
+			}
+			else
+			{
+				if ($multiple == 1)
+				{
+					// TODO Convert ID's into string
+					$ids = $this->input->get('id', '', 'string');
+					$query->where('id IN (' . $ids . ')')
+						->order('ordering ASC');
+					$this->db->setQuery($query);
+
+					try
+					{
+						$result = $this->db->loadObjectList();
+					}
+					catch (RuntimeException $e)
+					{
+						KAComponentHelper::eventLog($e->getMessage());
+
+						return false;
+					}
+				}
+				else
+				{
+					$query->where('id = ' . (int) $id);
+					$this->db->setQuery($query);
+
+					try
+					{
+						$result = $this->db->loadObject();
+					}
+					catch (RuntimeException $e)
+					{
+						KAComponentHelper::eventLog($e->getMessage());
+
+						return false;
+					}
+				}
+			}
+		}
+		else
+		{
+			$query->order('ordering ASC');
+			$this->db->setQuery($query);
+
+			try
+			{
+				$result = $this->db->loadObjectList();
+			}
+			catch (RuntimeException $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
 			}
 		}
 

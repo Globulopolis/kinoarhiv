@@ -11,20 +11,23 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox/', true, true);
 KAComponentHelperBackend::loadMediamanagerAssets();
 
-$this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0;
+$this->input   = JFactory::getApplication()->input;
+$this->section = $this->input->get('section', '', 'word');
+$this->type    = $this->input->get('type', '', 'word');
+$this->tab     = $this->input->get('tab', 0, 'int');
+$id            = $this->input->get('id', null, 'array');
+$this->id      = $id[0];
 ?>
-<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/ui.multiselect.js"></script>
-<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.jqGrid.min.js"></script>
-<?php KAComponentHelper::getScriptLanguage('grid.locale-', 'media/com_kinoarhiv/js/i18n/grid/', false); ?>
-<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
-<script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
 <script type="text/javascript">
 	Kinoarhiv.setActiveTab();
 
 	Joomla.submitbutton = function(task) {
-		if (task == 'apply' || task == 'save' || task == 'save2new') {
+		if (task == 'names.apply' || task == 'names.save' || task == 'names.save2new') {
 			if (document.getElementById('form_name_name').value == ''
 				|| document.getElementById('form_name_latin_name').value == ''
 				|| document.getElementById('form_name_alias').value == ''
@@ -42,65 +45,9 @@ $this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->
 
 			return false;
 		}
+
 		Joomla.submitform(task);
 	};
-
-	jQuery(document).ready(function($){
-		// Strongly needed for override fucking bootstrap
-		var bootstrapTooltip = $.fn.tooltip.noConflict();
-		$.fn.bootstrapTlp = bootstrapTooltip;
-		var bootstrapButton = $.fn.button.noConflict();
-		$.fn.bootstrapBtn = bootstrapButton;
-
-		<?php if ($this->id != 0): ?>
-		$('.cmd-rules').click(function(e){
-			e.preventDefault();
-			var dialog = $('<div id="dialog-rules" title="<?php echo JText::_('COM_KA_PERMISSION_SETTINGS'); ?>"><p class="ajax-loading"><?php echo JText::_('COM_KA_LOADING'); ?></p></div>');
-
-			$(dialog).dialog({
-				dialogClass: 'rules-dlg',
-				modal: true,
-				width: 800,
-				height: 520,
-				close: function(event, ui){
-					dialog.remove();
-				},
-				buttons: [
-					{
-						text: '<?php echo JText::_('JTOOLBAR_APPLY'); ?>',
-						id: 'rules-apply',
-						click: function(){
-							blockUI('show');
-							var $this = $(this);
-							$.ajax({
-								type: 'POST',
-								url: $('#rulesForm', this).attr('action') + '&id=' + $('#id').val(),
-								data: $('#rulesForm', this).serialize()
-							}).done(function(response){
-								blockUI();
-								if (response.success) {
-									$this.dialog('close');
-								} else {
-									showMsg('.rules-dlg #rulesForm', response.message);
-								}
-							}).fail(function(xhr, status, error){
-								showMsg('.rules-dlg #rulesForm', error);
-								blockUI();
-							});
-						}
-					},
-					{
-						text: '<?php echo JText::_('JTOOLBAR_CLOSE'); ?>',
-						click: function(){
-							$(this).dialog('close');
-						}
-					}
-				]
-			});
-			dialog.load('index.php?option=com_kinoarhiv&task=loadTemplate&template=rules_edit&model=name&view=names&format=raw');
-		});
-		<?php endif; ?>
-	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
@@ -117,7 +64,7 @@ $this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page1', JText::_('COM_KA_NAMES_TAB_AWARDS')); ?>
 
 				<div id="page1">
-					<?php echo $this->loadTemplate('edit_awards'); ?>
+					<?php //echo $this->loadTemplate('edit_awards'); ?>
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
@@ -174,15 +121,20 @@ $this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->
 									<div class="control-label"><?php echo $this->form->getLabel('state', $this->form_edit_group); ?></div>
 									<div class="controls"><?php echo $this->form->getInput('state', $this->form_edit_group); ?></div>
 								</div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page4', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
+
+				<div id="page4">
+					<div class="row-fluid">
+						<div class="span12">
+							<fieldset class="form-horizontal">
 								<div class="control-group">
-									<div class="control-label"><label><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></label></div>
-									<div class="controls">
-										<?php if ($this->id != 0): ?>
-											<button class="btn btn-small btn-default cmd-rules"><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
-										<?php else: ?>
-											<button class="btn btn-small btn-default" title="<?php echo JText::_('COM_KA_NO_ID'); ?>" disabled><span class="icon-users"></span> <?php echo JText::_('COM_KA_PERMISSION_ACTION_DO'); ?></button>
-										<?php endif; ?>
-									</div>
+									<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules', $this->form_edit_group); ?></div>
 								</div>
 							</fieldset>
 						</div>
@@ -198,7 +150,6 @@ $this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('careers_orig', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('id', $this->form_edit_group)."\n"; ?>
-	<input type="hidden" name="controller" value="names" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo $this->id; ?>" />
 	<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.names.tabs.' . $this->user->get('id') . '.' . $this->id); ?>" />

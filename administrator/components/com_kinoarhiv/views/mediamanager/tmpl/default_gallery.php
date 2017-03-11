@@ -22,7 +22,6 @@ KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/
 		}, function(e){
 			$(this).next('img').stop().fadeOut();
 		}).colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
-		$('.thumbnail a.th_img').colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
 
 		// Reload page if image files uploaded. Require hidden <input>
 		$('#imgModalUpload').on('hidden', function(){

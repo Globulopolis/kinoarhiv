@@ -14,6 +14,8 @@ JHtml::_('behavior.keepalive');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox/', true, true);
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.plugin.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 
 $this->input   = JFactory::getApplication()->input;
 $this->section = $this->input->get('section', '', 'word');

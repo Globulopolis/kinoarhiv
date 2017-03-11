@@ -21,27 +21,15 @@ $columns   = 10;
 	Joomla.submitbutton = function(task) {
 		if (task == 'movies.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
-			return;
-		} else if (task == 'menu') {
-			jQuery('.rel-menu').toggle();
+
 			return;
 		}
+
 		Joomla.submitform(task);
 	};
 
 	jQuery(document).ready(function($){
 		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_MOVIES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
-
-		var toolbar_tools = $('#toolbar-tools');
-		$('.rel-menu').css({
-			left: toolbar_tools.offset().left+'px',
-			top: (toolbar_tools.offset().top + toolbar_tools.height() + 5) + 'px'
-		});
-		$('#relations_menu').menu();
-		$('a.dd-relations').click(function(e){
-			e.preventDefault();
-			$(this).parent().find('ul.dd-relations-menu').toggle();
-		});
 
 		<?php if (count($this->items) > 1): ?>
 		$('#articleList tbody').sortable({
@@ -92,7 +80,7 @@ $columns   = 10;
 					<th>
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'a.title', $listDirn, $listOrder); ?>
 					</th>
-					<th width="7%" style="min-width:35px;" class="nowrap center"></th>
+					<th width="7%" style="min-width:35px;" class="nowrap center hidden-phone hidden-tablet"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
@@ -102,10 +90,10 @@ $columns   = 10;
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort',  'JAUTHOR', 'a.created_by', $listDirn, $listOrder); ?>
 					</th>
-					<th width="10%" class="nowrap hidden-phone">
+					<th width="6%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JDATE', 'a.created', $listDirn, $listOrder); ?>
 					</th>
-					<th width="5%" class="nowrap center">
+					<th width="6%" class="nowrap center">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 				</tr>
@@ -148,42 +136,72 @@ $columns   = 10;
 							<?php endif; ?>
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>
+						<div class="hidden-desktop" style="float: left; clear: both;">
+							<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" />
+							</a>
+							<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=trailers&id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
+							</a>
+							<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
+							</a>
+							<a href="index.php?option=com_kinoarhiv&view=reviews&mid=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
+								<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
+							</a>
+							<div class="dropdown" style="display: inline-block;">
+								<a class="dropdown-toggle hasTooltip" data-toggle="dropdown" href="#" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span	class="icon-out-2"></span></a>
+								<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+									<li>
+										<a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a>
+									</li>
+									<li>
+										<a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a>
+									</li>
+									<li>
+										<a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=movies&award_type=0&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a>
+									</li>
+								</ul>
+							</div>
+						</div>
 					</td>
-					<td class="icons-list">
-						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int) $item->id; ?>"
-						   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank">
-							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" />
-						</a>
-						<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=trailers&id=<?php echo (int) $item->id; ?>"
-						   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank">
-							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
-						</a>
-						<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int) $item->id; ?>"
-						   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
-							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
-						</a>
+					<td class="icons-list hidden-phone hidden-tablet">
+						<p>
+							<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=gallery&tab=3&id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" />
+							</a>
+							<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=trailers&id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
+							</a>
+							<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
+							</a>
+						</p>
 						<a href="index.php?option=com_kinoarhiv&view=reviews&mid=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
 							<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
-						</a>&nbsp;
-						<a href="javascript:void(0);" class="hasTooltip dd-relations hidden-phone"
-						   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>">
-							<span class="icon-out-2"></span>
 						</a>
-						<ul class="dd-relations-menu ui-widget ui-widget-content ui-corner-all hidden-phone">
-							<li>
-								<a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo (int) $item->id; ?>"
-								   target="_blank">&rarr; <?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a>
-							</li>
-							<li>
-								<a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&mid=<?php echo (int) $item->id; ?>"
-								   target="_blank">&rarr; <?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a>
-							</li>
-							<li>
-								<a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=movies&award_type=0&mid=<?php echo (int) $item->id; ?>"
-								   target="_blank">&rarr; <?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a>
-							</li>
-						</ul>
+						<div class="dropdown" style="display: inline-block;">
+							<a class="dropdown-toggle hasTooltip" data-toggle="dropdown" href="#" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span	class="icon-out-2"></span></a>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+								<li>
+									<a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a>
+								</li>
+								<li>
+									<a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a>
+								</li>
+								<li>
+									<a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=movies&award_type=0&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a>
+								</li>
+							</ul>
+						</div>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $this->escape($item->access_level); ?>
@@ -234,24 +252,4 @@ $columns   = 10;
 		<input type="hidden" name="boxchecked" value="0" />
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
-
-	<div class="rel-menu">
-		<ul id="relations_menu">
-			<li>
-				<a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies">
-					<?php echo JText::_('COM_KA_COUNTRIES_TITLE') . ' &harr; ' . JText::_('COM_KA_MOVIES_TITLE'); ?>
-				</a>
-			</li>
-			<li>
-				<a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies">
-					<?php echo JText::_('COM_KA_GENRES_TITLE') . ' &harr; ' . JText::_('COM_KA_MOVIES_TITLE'); ?>
-				</a>
-			</li>
-			<li>
-				<a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=movies&award_type=0">
-					<?php echo JText::_('COM_KA_AWARDS_TITLE') . ' &harr; ' . JText::_('COM_KA_MOVIES_TITLE'); ?>
-				</a>
-			</li>
-		</ul>
-	</div>
 </div>

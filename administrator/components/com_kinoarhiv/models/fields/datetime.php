@@ -48,8 +48,13 @@ class JFormFieldDatetime extends JFormField
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 		KAComponentHelper::getScriptLanguage('datepicker-', 'media/com_kinoarhiv/js/i18n/datepicker/', true, false);
-		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui-timepicker-addon.min.js');
-		KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', 'media/com_kinoarhiv/js/i18n/timepicker/', true, false);
+
+		if (!empty($this->element['datatype']) && $this->element['datatype'] != 'date')
+		{
+			JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui-timepicker-addon.min.js');
+			KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', 'media/com_kinoarhiv/js/i18n/timepicker/', true, false);
+		}
+
 		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
 
 		$attributes = ' ';

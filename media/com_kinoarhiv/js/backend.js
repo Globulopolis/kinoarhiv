@@ -298,4 +298,8 @@ jQuery(document).ready(function($){
 
 		$(element).pluploadQueue(config);
 	});
+
+	if (jQuery.fn.colorbox) {
+		$('.img-preview').colorbox({maxHeight: '95%', maxWidth: '95%', fixed: true, photo: true});
+	}
 });

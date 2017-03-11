@@ -219,8 +219,6 @@ class KinoarhivViewMovies extends JViewLegacy
 			}
 
 			JToolbarHelper::divider();
-			JToolbarHelper::custom('menu', 'tools', 'tools', JText::_('COM_KA_TABLES_RELATIONS'), false);
-			JToolbarHelper::divider();
 
 			if ($user->authorise('core.create', 'com_kinoarhiv')
 				&& $user->authorise('core.edit', 'com_kinoarhiv')

@@ -43,88 +43,6 @@ else
 		});
 
 		<?php if ($this->id != 0): ?>
-		$('.movie-poster-preview').parent().click(function (e) {
-			e.preventDefault();
-
-			$('<div id="dialog-message"><img src="' + $(this).attr('href') + '" border="0" /></div>').dialog({
-				modal: true,
-				minHeight: $(window).height() - 100,
-				minWidth: $(window).height() - 100,
-				maxHeight: $(window).height() - 100,
-				maxWidth: $(window).width() - 100
-			});
-		});
-
-		$('a.file-upload-scr').click(function(e){
-			e.preventDefault();
-
-			$('#image_uploader').pluploadQueue({
-				runtimes: 'html5,flash,silverlight,html4',
-				url: '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&frontpage=1',
-				multipart_params: {
-					'<?php echo JSession::getFormToken(); ?>': 1
-				},
-				max_file_size: '<?php echo $this->params->get('upload_limit'); ?>',
-				unique_names: false,
-				multiple_queues: true,
-				multi_selection: false,
-				max_files: 1,
-				filters: [{title: 'Image files', extensions: '<?php echo $this->params->get('upload_mime_images'); ?>'}],
-				flash_swf_url: '<?php echo JUri::root(); ?>media/com_kinoarhiv/js/mediamanager/Moxie.swf',
-				silverlight_xap_url: '<?php echo JUri::root(); ?>media/com_kinoarhiv/js/mediamanager/Moxie.xap',
-				preinit: {
-					init: function(up, info){
-						$('#image_uploader').find('.plupload_buttons a:last').after('<a class="plupload_button plupload_clear_all" href="#"><?php echo JText::_('JCLEAR'); ?></a>');
-						$('#image_uploader .plupload_clear_all').click(function (e) {
-							e.preventDefault();
-							up.splice();
-							$.each(up.files, function(i, file){
-								up.removeFile(file);
-							});
-						});
-					}
-				},
-				init: {
-					PostInit: function(){
-						$('#image_uploader_container').removeAttr('title', '');
-					},
-					FileUploaded: function(up, file, info){
-						var response = $.parseJSON(info.response),
-							response_obj = $.parseJSON(response.id),
-							url = '<?php echo $poster_url; ?>';
-
-						blockUI('show');
-						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&format=raw',
-							{'_id[]': response_obj.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0}
-						).done(function (response) {
-							var cover_preview = $('img.movie-poster-preview');
-
-							cover_preview.attr('src', url + 'thumb_' + response_obj.filename + '?_=' + new Date().getTime());
-							cover_preview.parent('a').attr('href', url + response_obj.filename + '?_=' + new Date().getTime());
-							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&_id[]=' + response_obj.id + '&format=raw');
-							blockUI();
-							$('#imgModalUpload').modal('hide');
-						}).fail(function (xhr, status, error) {
-							showMsg('#system-message-container', error);
-							blockUI();
-						});
-					},
-					FilesAdded: function(up, files){
-						var max_files = up.getOption('max_files');
-
-						if (up.files.length > max_files) {
-							up.splice(max_files);
-							showMsg(
-								'#imgModalUpload .modal-body',
-								mOxie.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), max_files)
-							);
-						}
-					}
-				}
-			});
-			$('#imgModalUpload').modal();
-		});
-
 		$('a.cmd-scr-delete').click(function (e) {
 			e.preventDefault();
 
@@ -213,7 +131,10 @@ else
 				<div class="control-label"><?php echo $this->form->getLabel('careers', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('careers', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=careers&task=add" target="_blank"><span class="icon-new"></a></span>
+					<span class="rel-link">
+						<a href="index.php?option=com_kinoarhiv&task=careers.add" target="_blank"><span class="icon-new"></span></a>
+					</span>
+
 					<?php if ($this->id != 0): ?>
 						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo $this->id; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
 					<?php endif; ?>
@@ -247,10 +168,22 @@ else
 			</fieldset>
 		</div>
 		<div class="span3">
-			<?php if ($this->id != 0): ?>
-				<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="movie-poster-preview" height="110"/></a>
-				<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-				<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+			<?php if ($this->id): ?>
+
+			<ul class="thumbnails">
+				<li class="span12">
+					<div class="thumbnail center">
+						<a href="<?php echo $this->items->get('poster'); ?>" class="img-preview">
+							<img src="<?php echo $this->items->get('th_poster'); ?>" style="width: 98px; height: 120px;"/>
+						</a>
+						<div class="caption">
+							<a href="#" class="cmd-poster-upload hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
+							<a href="index.php?option=com_kinoarhiv&task=mediamanager.remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=json" class="cmd-poster-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+						</div>
+					</div>
+				</li>
+			</ul>
+
 			<?php endif; ?>
 		</div>
 		<fieldset class="form-horizontal">
@@ -258,7 +191,9 @@ else
 				<div class="control-label"><?php echo $this->form->getLabel('birthcountry', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('birthcountry', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=countries&task=add" target="_blank"><span class="icon-new"></a></span>
+					<span class="rel-link">
+						<a href="index.php?option=com_kinoarhiv&task=countries.add" target="_blank"><span class="icon-new"></span></a>
+					</span>
 				</div>
 			</div>
 		</fieldset>
@@ -271,7 +206,10 @@ else
 				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=genres&task=add" target="_blank"><span class="icon-new"></a></span>
+					<span class="rel-link">
+						<a href="index.php?option=com_kinoarhiv&task=genres.add" target="_blank"><span class="icon-new"></span></a>
+					</span>
+
 					<?php if ($this->id != 0): ?>
 						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo $this->id; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
 					<?php endif; ?>
@@ -285,4 +223,23 @@ else
 	</div>
 </div>
 
-<?php echo JLayoutHelper::render('layouts.edit.upload_image', array(), JPATH_COMPONENT); ?>
+<?php
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'imgModalUpload',
+	array(
+		'title'  => JText::_('COM_KA_TRAILERS_UPLOAD_IMAGES'),
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
+	),
+	JLayoutHelper::render(
+		'layouts.edit.upload_image',
+		array(
+			'view'          => $this,
+			'params'        => $this->params,
+			'remote_upload' => true,
+			'remote_url'    => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section='
+				. $this->section . '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id
+		),
+		JPATH_COMPONENT
+	)
+);

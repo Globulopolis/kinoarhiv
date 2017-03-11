@@ -71,15 +71,6 @@ td.icons-list a:focus {
 	margin: 0 4px 2px 0;
 }
 
-.rel-menu {
-	display: none;
-	position: absolute;
-}
-
-#relations_menu {
-	position: relative;
-}
-
 .searchFilter .input-elm {
 	width: 300px !important;
 }
@@ -102,20 +93,6 @@ td.icons-list a:focus {
 .span12.actors-container, .span12.awards-container {
 	margin-left: 0 !important;
 	margin-top: 3px;
-}
-
-.dd-relations {
-	display: inline-block;
-}
-
-.dd-relations-menu {
-	list-style: none outside none;
-	font-size: 1.2em !important;
-	margin: 0;
-	outline: 0 none;
-	padding: 2px 6px;
-	display: none;
-	position: absolute;
 }
 
 .ajax-loading {

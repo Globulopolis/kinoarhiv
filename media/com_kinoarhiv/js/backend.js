@@ -271,18 +271,31 @@ jQuery(document).ready(function($){
 				}
 			},
 			FileUploaded: function(up, file, info){
-				/*var obj = $.parseJSON(info.response),
-					div_video_scr_a = $('div.video_screenshot').find('#screenshot_file');
+				if (content_type == 'poster') {
+					if (!Date.now) {
+						Date.now = function(){
+							return new Date().getTime();
+						}
+					}
 
-				if (div_video_scr_a.length == 0) {
-					var a = '<a href="<?php echo $this->item->screenshot_folder_www; ?>' + obj.id + '?_=' + new Date().getTime() + '" class="tooltip-img" id="screenshot_file">' + obj.id + '</a>';
-					$('div.video_screenshot div').eq(0).html('').append(a);
-				} else {
-					div_video_scr_a.text(obj.id);
-					div_video_scr_a.attr('href', '<?php echo $this->item->screenshot_folder_www; ?>' + obj.id + '?_=' + new Date().getTime());
+					var response = JSON.parse(info.response),
+						img_folder = $('input[name="img_folder"]').val(),
+						image = new Image(),
+						width = 0;
+
+					image.src = img_folder + 'thumb_' + response.filename + '?_=' + Date.now();
+					image.onload = function(){
+						$('a.img-preview img').attr({
+							width: image.naturalWidth,
+							height: image.naturalHeight,
+							style: 'width: ' + image.naturalWidth + 'px; height: ' + image.naturalHeight + 'px;'
+						});
+					};
+
+					$('input[name="form_name_image_id"]').val(response.insertid);
+					$('a.img-preview').attr('href', img_folder + response.filename + '?_=' + Date.now());
+					$('a.img-preview img').attr('src', img_folder + 'thumb_' + response.filename + '?_=' + Date.now());
 				}
-				$('#screenshot_file').show();
-				$('.cmd-file-remove.scrimage').attr('href', 'index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=image&item_id=<?php echo $trailer_id; ?>&file=' + obj.id + '&id=<?php echo $movie_id; ?>&format=json');*/
 			},
 			Error: function(up, response){
 				var error = JSON.parse(response.response);

@@ -54,6 +54,21 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$id       = $this->input->get('id', 0, 'int');
 		$files    = $this->input->files->get('file', array(), 'array');
 		$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id);
+		$insertid = '';
+
+		if (empty($dest_dir))
+		{
+			header('HTTP/1.0 500 Server error', true, 500);
+
+			jexit(
+				json_encode(
+					array(
+						'success' => false,
+						'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+					)
+				)
+			);
+		}
 
 		// Remove old files
 		$cleanup_dir = true;
@@ -87,6 +102,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		elseif (!empty($_FILES))
 		{
 			$filename = $files['name'];
+		}
+		else
+		{
+			$filename = '';
 		}
 
 		$file_ext = JFile::getExt($filename);
@@ -153,7 +172,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					json_encode(
 						array(
 							'success' => false,
-							'message' => JText::_('COM_KA_TRAILERS_UPLOAD_FOLDER_OPEN_ERR')
+							'message' => JText::sprintf('COM_KA_TRAILERS_UPLOAD_FOLDER_OPEN_ERR', $dest_dir)
 						)
 					)
 				);
@@ -303,14 +322,23 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					)
 				);
 			}
+			else
+			{
+				if ($post_proc !== false)
+				{
+					$insertid = $post_proc;
+				}
+			}
 		}
 
 		// Return Success JSON response
 		jexit(
 			json_encode(
 				array(
-					'success' => true,
-					'message' => ''
+					'success'  => true,
+					'message'  => '',
+					'insertid' => $insertid,
+					'filename' => $filename
 				)
 			)
 		);
@@ -322,7 +350,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 * @param   string  $dest_dir  Path to a folder.
 	 * @param   string  $filename  Filename.
 	 *
-	 * @return  mixed  Boolean true on success, array with errors otherwise.
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -333,7 +361,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$type    = $app->input->get('type', '', 'word');
 		$tab     = $app->input->get('tab', 0, 'int');
 		$upload  = $app->input->get('upload', '', 'word');
-		$result  = true;
 
 		if (($section == 'movie' && $type == 'gallery')
 			|| ($section == 'name' && $type == 'gallery'))
@@ -359,6 +386,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				$result = $this->postProcessChapterUploads($filename);
 			}
 		}
+		else
+		{
+			return false;
+		}
 
 		return $result;
 	}
@@ -372,7 +403,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 * @param   string   $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
 	 * @param   integer  $tab       Tab number from gallery(or empty value for 'trailers', 'soundtracks').
 	 *
-	 * @return  mixed  Boolean true on success, array with errors otherwise.
+	 * @return  mixed  Last insert ID on success, array with errors otherwise.
 	 *
 	 * @since   3.1
 	 */
@@ -387,6 +418,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$file_path = JPath::clean($dest_dir . '/' . $filename);
 		$id        = $app->input->get('id', 0, 'int');
 		$frontpage = $app->input->get('frontpage', 0, 'int');
+		$img_save  = '';
 
 		$image = new KAImage;
 		$image->loadFile($file_path);
@@ -440,7 +472,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 
 				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-				$model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+				$img_save = $model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 			}
 			elseif ($type == 'trailers')
 			{
@@ -471,7 +503,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 
 				// Item ID == id field from #__ka_trailers table
-				$model->saveImageInDB('trailer', $app->input->getInt('item_id', 0), $filename);
+				$img_save = $model->saveImageInDB('trailer', $app->input->getInt('item_id', 0), $filename);
 			}
 		}
 		elseif ($section == 'name')
@@ -520,11 +552,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 
 				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-				$model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+				$img_save = $model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 			}
 		}
 
-		return true;
+		return $img_save;
 	}
 
 	/**

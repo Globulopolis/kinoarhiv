@@ -34,22 +34,17 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 *                                 For trailer: null
 	 * @param   integer  $frontpage    Item published on frontpage.
 	 *
-	 * @return  boolean
+	 * @return  mixed  Last insert ID on success, false otherwise.
 	 *
 	 * @since   3.0
 	 */
 	public function saveImageInDB($section, $item_id, $filename, $image_sizes = array(), $item_type = null, $frontpage = 0)
 	{
-		if (empty($section))
-		{
-			return array('success' => false, 'filename' => $filename, 'id' => 0);
-		}
-
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$result = array();
+		$app         = JFactory::getApplication();
+		$db          = $this->getDbo();
 		$image_sizes = (count($image_sizes) == 0) ? array(0 => 0, 1 => 0) : $image_sizes;
-		$dimension = floor($image_sizes[0]) . 'x' . floor($image_sizes[1]);
+		$dimension   = floor($image_sizes[0]) . 'x' . floor($image_sizes[1]);
+		$insert_id   = '';
 
 		if ($section == 'movie')
 		{
@@ -63,6 +58,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			try
 			{
 				$db->execute();
+				$insert_id = $db->insertid();
 			}
 			catch (RuntimeException $e)
 			{
@@ -79,7 +75,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				$query->update($db->quoteName('#__ka_movies_gallery'))
 					->set($db->quoteName('frontpage') . " = 0")
 					->where($db->quoteName('movie_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 2')
-					->where($db->quoteName('id') . ' != ' . $result['id']);
+					->where($db->quoteName('id') . ' != ' . (int) $insert_id);
 				$db->setQuery($query);
 
 				try
@@ -106,6 +102,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			try
 			{
 				$db->execute();
+				$insert_id = $db->insertid();
 			}
 			catch (RuntimeException $e)
 			{
@@ -122,7 +119,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				$query->update($db->quoteName('#__ka_names_gallery'))
 					->set($db->quoteName('frontpage') . " = 0")
 					->where($db->quoteName('name_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 3')
-					->where($db->quoteName('id') . ' != ' . $result['id']);
+					->where($db->quoteName('id') . ' != ' . (int) $insert_id);
 				$db->setQuery($query);
 
 				try
@@ -157,8 +154,12 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				return false;
 			}
 		}
+		else
+		{
+			return false;
+		}
 
-		return true;
+		return $insert_id;
 	}
 
 	/**

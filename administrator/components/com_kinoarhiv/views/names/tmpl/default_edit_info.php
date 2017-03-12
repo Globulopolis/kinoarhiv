@@ -10,93 +10,10 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
-if (StringHelper::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
-{
-	$poster_url = JUri::root() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1) . '/'
-		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->id . '/photo/';
-}
-else
-{
-	$poster_url = $this->params->get('media_actor_photo_root_www') . '/' . urlencode($this->form->getValue('fs_alias', $this->form_edit_group))
-		. '/' . $this->id . '/photo/';
-}
+$image  = @getimagesize($this->items->get('th_poster'));
+$height = $image[1];
+$width  = $image[0];
 ?>
-<script type="text/javascript">
-	jQuery(document).ready(function($){
-		$('#form_name_name, #form_name_latin_name').blur(function(){
-			$.each($(this), function(i, el){
-				if ($(el).val() != "") {
-					$.ajax({
-						url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=names&multiple=0&format=json',
-						type: 'POST',
-						data: { term: $(el).val(), ignore: [<?php echo $this->id; ?>] },
-						cache: true
-					}).done(function(response){
-						if (response.length > 0) {
-							showMsg('#system-message-container', '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>');
-						}
-					});
-				}
-			});
-		});
-
-		<?php if ($this->id != 0): ?>
-		$('a.cmd-scr-delete').click(function (e) {
-			e.preventDefault();
-
-			if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
-				return false;
-			}
-
-			blockUI('show');
-			$.post($(this).attr('href'), {
-				'<?php echo JSession::getFormToken(); ?>': 1,
-				'reload': 0
-			}, function (response) {
-
-				if (typeof response !== 'object' && response != "") {
-					showMsg('#system-message-container', response);
-				} else {
-					$('img.movie-poster-preview').attr('src', '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
-					$('img.movie-poster-preview').parent('a').attr('href', '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
-				}
-				blockUI();
-			}).fail(function (xhr, status, error) {
-				showMsg('#system-message-container', error);
-				blockUI();
-			});
-		});
-		<?php endif; ?>
-
-		$('.cmd-alias').click(function(e){
-			e.preventDefault();
-
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->id . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
-
-			if ($(this).hasClass('info')) {
-				$(dialog).dialog({
-					modal: true,
-					width: 800,
-					height: $(window).height() - 100,
-					draggable: false,
-					close: function(event, ui){
-						dialog.remove();
-					}
-				});
-			} else if ($(this).hasClass('get-alias')) {
-				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=names&task=getFilesystemAlias&form_name_alias=' + $('#form_name_alias').val() + '&format=json', function(response){
-					if (response.success) {
-						$('#form_name_fs_alias').val(response.data);
-					} else {
-						showMsg('#system-message-container', response.message);
-					}
-				});
-			}
-		});
-	});
-</script>
 <div class="row-fluid">
 	<div class="span6">
 		<fieldset class="form-horizontal">
@@ -136,7 +53,7 @@ else
 					</span>
 
 					<?php if ($this->id != 0): ?>
-						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo $this->id; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=careers&element=names&nid=<?php echo $this->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -173,12 +90,12 @@ else
 			<ul class="thumbnails">
 				<li class="span12">
 					<div class="thumbnail center">
-						<a href="<?php echo $this->items->get('poster'); ?>" class="img-preview">
-							<img src="<?php echo $this->items->get('th_poster'); ?>" style="width: 98px; height: 120px;"/>
+						<a href="<?php echo $this->items->get('poster') . '?_=' . time(); ?>" class="img-preview">
+							<img src="<?php echo $this->items->get('th_poster') . '?_=' . time(); ?>" style="width: <?php echo $width; ?>px; height: <?php echo $height; ?>px;" />
 						</a>
 						<div class="caption">
-							<a href="#" class="cmd-poster-upload hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-							<a href="index.php?option=com_kinoarhiv&task=mediamanager.remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&_id[]=<?php echo $this->form->getValue('gid', $this->form_edit_group); ?>&format=json" class="cmd-poster-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+							<a href="#" class="cmd-upload hasTooltip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
+							<a href="#" class="cmd-remove-file hasTooltip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 						</div>
 					</div>
 				</li>
@@ -211,7 +128,7 @@ else
 					</span>
 
 					<?php if ($this->id != 0): ?>
-						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo $this->id; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
+						<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=names&nid=<?php echo $this->id; ?>" class="hasTooltip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -234,11 +151,15 @@ echo JHtml::_(
 	JLayoutHelper::render(
 		'layouts.edit.upload_image',
 		array(
-			'view'          => $this,
-			'params'        => $this->params,
-			'remote_upload' => true,
-			'remote_url'    => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section='
-				. $this->section . '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id
+			'view'            => $this,
+			'url'             => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=raw&section=name&type=gallery&tab=3&id=' . $this->id . '&frontpage=1&upload=images',
+			'params'          => $this->params,
+			'content-type'    => 'poster',
+			'multi_selection' => false,
+			//'refresh'         => array('el_parent' => 'table[data-list="video"]', 'el_trigger' => '.cmd-refresh-filelist'),
+			'max_files'       => 1,
+			'remote_upload'   => true,
+			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section=name&type=gallery&tab=3&id=' . $this->id . '&max_files=1'
 		),
 		JPATH_COMPONENT
 	)

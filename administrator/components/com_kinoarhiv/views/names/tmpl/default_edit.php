@@ -16,12 +16,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox/', true, true);
 KAComponentHelperBackend::loadMediamanagerAssets();
 
-$this->input   = JFactory::getApplication()->input;
-$this->section = $this->input->get('section', '', 'word');
-$this->type    = $this->input->get('type', '', 'word');
-$this->tab     = $this->input->get('tab', 0, 'int');
-$id            = $this->input->get('id', null, 'array');
-$this->id      = $id[0];
+$this->input = JFactory::getApplication()->input;
+$id          = $this->input->get('id', null, 'array');
+$this->id    = $id[0];
 ?>
 <script type="text/javascript">
 	Kinoarhiv.setActiveTab();
@@ -48,6 +45,111 @@ $this->id      = $id[0];
 
 		Joomla.submitform(task);
 	};
+
+	jQuery(document).ready(function($){
+		// Bind 'show modal' functional for upload
+		$('.cmd-upload').click(function(e){
+			e.preventDefault();
+
+			$('#imgModalUpload').modal('toggle');
+		});
+
+		// Bind 'remove photo' functional
+		$('.cmd-remove-file').click(function(e){
+			e.preventDefault();
+
+			/*if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+				return;
+			}*/
+
+			Kinoarhiv.showLoading('show', $('body'));
+
+			$.ajax({
+				type: 'POST',
+				url: 'index.php?option=com_kinoarhiv&task=mediamanager.remove&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&item_id[]=' + parseInt($('input[name="form_name_image_id"]').val(), 10) + '&format=json',
+				data: {'<?php echo JSession::getFormToken(); ?>': 1}
+			}).done(function(response){
+				showMsg('#system-message-container', response.message ? response.message : $(response).text());
+
+				//table.find('.cmd-refresh-filelist').trigger('click');
+			 	Kinoarhiv.showLoading('hide', $('body'));
+			}).fail(function (xhr, status, error) {
+				showMsg('#system-message-container', error);
+			 	Kinoarhiv.showLoading('hide', $('body'));
+			});
+		});
+
+		$('#form_name_name, #form_name_latin_name').blur(function(){
+			$.each($(this), function(i, el){
+				if ($(el).val() != "") {
+					$.ajax({
+						url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=names&multiple=0&format=json',
+						type: 'POST',
+						data: { term: $(el).val(), ignore: [<?php echo $this->id; ?>] },
+						cache: true
+					}).done(function(response){
+						if (response.length > 0) {
+							showMsg('#system-message-container', '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>');
+						}
+					});
+				}
+			});
+		});
+
+		<?php if ($this->id != 0): ?>
+		$('a.cmd-scr-delete').click(function (e) {
+			e.preventDefault();
+
+			if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+				return false;
+			}
+
+			blockUI('show');
+			$.post($(this).attr('href'), {
+				'<?php echo JSession::getFormToken(); ?>': 1,
+				'reload': 0
+			}, function (response) {
+
+				if (typeof response !== 'object' && response != "") {
+					showMsg('#system-message-container', response);
+				} else {
+					$('img.movie-poster-preview').attr('src', '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
+					$('img.movie-poster-preview').parent('a').attr('href', '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png');
+				}
+				blockUI();
+			}).fail(function (xhr, status, error) {
+				showMsg('#system-message-container', error);
+				blockUI();
+			});
+		});
+		<?php endif; ?>
+
+		$('.cmd-alias').click(function(e){
+			e.preventDefault();
+
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->id . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
+
+			if ($(this).hasClass('info')) {
+				$(dialog).dialog({
+					modal: true,
+					width: 800,
+					height: $(window).height() - 100,
+					draggable: false,
+					close: function(event, ui){
+						dialog.remove();
+					}
+				});
+			} else if ($(this).hasClass('get-alias')) {
+				$.getJSON('<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&controller=names&task=getFilesystemAlias&form_name_alias=' + $('#form_name_alias').val() + '&format=json', function(response){
+					if (response.success) {
+						$('#form_name_fs_alias').val(response.data);
+					} else {
+						showMsg('#system-message-container', response.message);
+					}
+				});
+			}
+		});
+	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
@@ -149,7 +251,9 @@ $this->id      = $id[0];
 
 	<?php echo $this->form->getInput('genres_orig', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('careers_orig', $this->form_edit_group)."\n"; ?>
+	<?php echo $this->form->getInput('image_id', $this->form_edit_group)."\n"; ?>
 	<?php echo $this->form->getInput('id', $this->form_edit_group)."\n"; ?>
+	<input type="hidden" name="img_folder" value="<?php echo $this->items->get('img_folder'); ?>" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo $this->id; ?>" />
 	<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.names.tabs.' . $this->user->get('id') . '.' . $this->id); ?>" />

@@ -121,25 +121,19 @@ class KinoarhivViewNames extends JViewLegacy
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		// Build title
-		$title = '';
+		// Set title
+		$items->set('title', KAContentHelper::formatItemTitle($form->getValue('name', 'name'), $form->getValue('latin_name', 'name')));
 
-		if ($form->getValue('name', 'name') != '')
+		if (substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 		{
-			$title .= $form->getValue('name', 'name');
+			$img_folder = JUri::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/'
+				. urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/';
 		}
-
-		if ($form->getValue('name', 'name') != '' && $form->getValue('latin_name', 'name') != '')
+		else
 		{
-			$title .= ' / ';
+			$img_folder = $params->get('media_actor_photo_root_www') . '/' . urlencode($form->getValue('fs_alias', 'name'))
+				. '/' . $form->getValue('id', 'name') . '/photo/';
 		}
-
-		if ($form->getValue('latin_name', 'name') != '')
-		{
-			$title .= $form->getValue('latin_name', 'name');
-		}
-
-		$items->set('title', $title);
 
 		if ($form->getValue('filename', 'name') == '')
 		{
@@ -154,30 +148,11 @@ class KinoarhivViewNames extends JViewLegacy
 		}
 		else
 		{
-			if (substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-			{
-				$items->set(
-					'poster',
-					JUri::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/' . $form->getValue('filename', 'name')
-				);
-				$items->set(
-					'th_poster',
-					JUri::root() . substr($params->get('media_actor_photo_root_www'), 1) . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/thumb_' . $form->getValue('filename', 'name')
-				);
-			}
-			else
-			{
-				$items->set(
-					'poster',
-					$params->get('media_actor_photo_root_www') . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/' . $form->getValue('filename', 'name')
-				);
-				$items->set(
-					'th_poster',
-					$params->get('media_actor_photo_root_www') . '/' . urlencode($form->getValue('fs_alias', 'name')) . '/' . $form->getValue('id', 'name') . '/photo/thumb_' . $form->getValue('filename', 'name')
-				);
-			}
+			$items->set('poster', $img_folder . $form->getValue('filename', 'name'));
+			$items->set('th_poster', $img_folder . 'thumb_' . $form->getValue('filename', 'name'));
 		}
 
+		$items->set('img_folder', $img_folder);
 		$this->items = $items;
 		$this->form = $form;
 		$this->form_edit_group = 'name';

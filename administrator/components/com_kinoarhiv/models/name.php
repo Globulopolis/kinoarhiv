@@ -128,7 +128,7 @@ class KinoarhivModelName extends JModelForm
 				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('n.language'));
 
 			// Join over the gallery item
-			$query->select($db->quoteName('g.id', 'gid') . ',' . $db->quoteName('g.filename'))
+			$query->select($db->quoteName('g.id', 'image_id') . ',' . $db->quoteName('g.filename'))
 				->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON ' . $db->quoteName('g.name_id') . ' = ' . $db->quoteName('n.id')
 					. ' AND ' . $db->quoteName('g.type') . ' = 3'
 					. ' AND ' . $db->quoteName('g.frontpage') . ' = 1');
@@ -140,8 +140,9 @@ class KinoarhivModelName extends JModelForm
 			$db->setQuery($query);
 			$result['name'] = $db->loadObject();
 
-			$result['name']->genres = $this->getGenres();
-			$result['name']->genres_orig = implode(',', $result['name']->genres['ids']);
+			$result['name']->genres = array();
+			//$result['name']->genres = $this->getGenres();
+			//$result['name']->genres_orig = implode(',', $result['name']->genres['ids']);
 			$result['name']->careers = $this->getCareers();
 			$result['name']->careers_orig = implode(',', $result['name']->careers['ids']);
 

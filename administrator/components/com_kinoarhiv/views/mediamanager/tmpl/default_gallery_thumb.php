@@ -47,7 +47,6 @@ $canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->secti
 									<a href="<?php echo $item->filepath; ?>" class="img-preview" rel="group_<?php echo $this->tab; ?>"><img src="<?php echo $item->th_filepath; ?>" alt="<?php echo $item->dimension; ?>" style="width: <?php echo $width; ?>px; height: <?php echo $height; ?>px;" /></a>
 								</div>
 								<div class="caption">
-									<a href="<?php echo $item->filepath; ?>" class="img-preview" rel="group_<?php echo $this->tab; ?>"><?php echo $item->filename; ?></a>
 									<p>
 										<span><?php echo $item->dimension; ?></span>
 
@@ -58,7 +57,7 @@ $canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->secti
 											<img src="<?php echo $item->th_filepath; ?>" class="tooltip-img-content" />
 										<?php endif; ?>
 										<?php if ($item->folderpath != ''): ?>
-											<br /><span class="small gray more"><?php echo $item->folderpath; ?></span>
+											<br /><span class="small gray more"><?php echo $item->folderpath . $item->filename; ?></span>
 										<?php endif; ?>
 									</p>
 									<div>

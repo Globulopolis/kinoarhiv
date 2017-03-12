@@ -74,21 +74,31 @@ Kinoarhiv = window.Kinoarhiv || {};
 			var total = $('.modal-loading:hidden').length++;
 
 			if (action == 'show') {
+				// For document or body we need to block all visible area in browser window and prepend a div into element.
+				var position = (selector.selector == 'document' || selector.selector == 'body') ? 'fixed' : 'absolute';
 				var offset = selector.offset(),
-					top    = offset.top,
-					left   = offset.left,
+					top    = typeof offset === 'undefined' ? 0 : offset.top,
+					left   = typeof offset === 'undefined' ? 0 : offset.left,
 					width  = selector.outerWidth(),
 					height = selector.innerHeight(),
-					html   = '<div class="modal-backdrop modal-loading" id="mdl' + total + '" style="position: absolute; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px; z-index: 10001;"><div class="ajax-loading" style="cursor: pointer;" title="Press to close">&nbsp;</div></div>';
+					html   = '<div class="modal-backdrop modal-loading" id="mdl' + total + '" style="position: ' + position + '; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px; z-index: 10001;"><div class="ajax-loading" style="cursor: pointer;" title="Press to close">&nbsp;</div></div>';
 
-				$(html).insertAfter(selector);
+				if (selector.selector == 'document' || selector.selector == 'body') {
+					$(html).prependTo(selector);
+				} else {
+					$(html).insertAfter(selector);
+				}
 
 				// Bind 'close' for emergency situations
 				$('.modal-backdrop').on('click', '.ajax-loading', function(){
 					$(this).parent().remove();
 				});
 			} else {
-				selector.next('div#mdl' + total).remove();
+				if (selector.selector == 'document' || selector.selector == 'body') {
+					selector.find('div#mdl' + total).remove();
+				} else {
+					selector.next('div#mdl' + total).remove();
+				}
 			}
 		});
 	};

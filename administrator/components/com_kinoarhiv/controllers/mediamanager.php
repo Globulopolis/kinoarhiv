@@ -361,7 +361,6 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
-		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
 
 		$app = JFactory::getApplication();

@@ -329,6 +329,91 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	}
 
 	/**
+	 * Removes a poster.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function removePoster()
+	{
+		if (!KAComponentHelper::checkToken('post'))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
+
+			return;
+		}
+
+		$user = JFactory::getUser();
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.edit', 'com_kinoarhiv') && !$user->authorise('core.delete', 'com_kinoarhiv'))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
+
+			return;
+		}
+
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		jimport('joomla.filesystem.file');
+
+		$app = JFactory::getApplication();
+		$model = $this->getModel('mediamanagerItem');
+		$section = $app->input->get('section', '', 'word');
+		$type = $app->input->get('type', '', 'word');
+		$tab = $app->input->get('tab', 0, 'int');
+		$id = $app->input->get('id', 0, 'int');
+		$ids = $app->input->get('item_id', array(), 'array');
+		$path = KAContentHelper::getPath($section, $type, $tab, $id);
+
+		if (!is_array($ids) || count($ids) < 1)
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JGLOBAL_NO_ITEM_SELECTED')));
+
+			return;
+		}
+
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		// Delete files
+		if ($section == 'movie')
+		{
+			if ($type == 'gallery')
+			{
+				$gallery_items = $model->getGalleryFiles($section, $type, $ids);
+
+				foreach ($gallery_items as $item)
+				{
+					JFile::delete($path . '/' . $item->filename);
+					JFile::delete($path . '/thumb_' . $item->filename);
+				}
+			}
+		}
+		elseif ($section == 'name')
+		{
+			$gallery_items = $model->getGalleryFiles($section, $type, $ids);
+
+			foreach ($gallery_items as $item)
+			{
+				JFile::delete($path . '/' . $item->filename);
+				JFile::delete($path . '/thumb_' . $item->filename);
+			}
+		}
+
+		$result = $model->remove($section, $type, $tab, $id, $ids);
+
+		if ($result === false)
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('ERROR')));
+
+			return;
+		}
+
+		echo json_encode(array('success' => false, 'message' => JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids))));
+	}
+
+	/**
 	 * Method to make screenshot from videofile.
 	 *
 	 * @return  void
@@ -596,12 +681,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								}
 
 								$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-								$model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+								$insertid = $model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 							}
 							elseif ($type == 'trailers')
 							{
 								// Item ID == movie_id field from #__ka_trailers table
-								$model->saveImageInDB('trailer', $app->input->get('item_id', 0, 'int'), $filename);
+								$insertid = $model->saveImageInDB('trailer', $app->input->get('item_id', 0, 'int'), $filename);
 							}
 						}
 						elseif ($section == 'name')
@@ -652,7 +737,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								}
 
 								$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-								$model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+								$insertid = $model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
 							}
 						}
 					}
@@ -678,7 +763,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				$result = array('success' => true, 'message' => '');
+				$result = array('success' => true, 'message' => '', 'insertid' => $insertid, 'filename' => $filename);
 			}
 		}
 		else

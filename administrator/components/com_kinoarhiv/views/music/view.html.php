@@ -26,8 +26,6 @@ class KinoarhivViewMusic extends JViewLegacy
 
 	protected $params;
 
-	protected $user;
-
 	protected $form_edit_group;
 
 	protected $form_attribs_group;
@@ -35,7 +33,6 @@ class KinoarhivViewMusic extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-		$this->user = JFactory::getUser();
 		$type = $app->input->get('type', 'albums', 'word');
 
 		switch ($type)
@@ -106,12 +103,13 @@ class KinoarhivViewMusic extends JViewLegacy
 		$this->item = $this->get('Item');
 		$app = JFactory::getApplication();
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$errors = $this->get('Errors');
 		jimport('joomla.filesystem.folder');
 		JLoader::register('KAMediaHelper', JPATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'media.php');
 
 		$items = new Registry;
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
@@ -144,7 +142,8 @@ class KinoarhivViewMusic extends JViewLegacy
 
 	protected function addToolbar($task = '')
 	{
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
+		$user = JFactory::getUser();
 
 		if ($task == 'add')
 		{
@@ -186,33 +185,33 @@ class KinoarhivViewMusic extends JViewLegacy
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_MUSIC_TRACKS_TITLE')), 'play');
 			}
 
-			if ($this->user->authorise('core.create', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::addNew('music.add');
 			}
 
-			if ($this->user->authorise('core.edit', 'com_kinoarhiv'))
+			if ($user->authorise('core.edit', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::editList('music.edit');
 				JToolbarHelper::divider();
 			}
 
-			if ($this->user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::publishList('music.publish');
 				JToolbarHelper::unpublishList('music.unpublish');
 			}
 
-			if ($this->user->authorise('core.delete', 'com_kinoarhiv'))
+			if ($user->authorise('core.delete', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'music.remove');
 			}
 
 			JToolbarHelper::divider();
 
-			if ($this->user->authorise('core.create', 'com_kinoarhiv')
-				&& $this->user->authorise('core.edit', 'com_kinoarhiv')
-				&& $this->user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv')
+				&& $user->authorise('core.edit', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');

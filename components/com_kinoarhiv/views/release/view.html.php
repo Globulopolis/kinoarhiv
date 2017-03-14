@@ -54,11 +54,10 @@ class KinoarhivViewRelease extends JViewLegacy
 		}
 
 		// Prepare the data
-		$ka_theme = $this->params->get('ka_theme');
 		$itemid = $this->itemid;
 
 		// Replace country BB-code
-		$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme)
+		$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches)
 		{
 			$html = JText::_($matches[1]);
 

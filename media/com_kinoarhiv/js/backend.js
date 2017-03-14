@@ -13,33 +13,37 @@ Kinoarhiv = window.Kinoarhiv || {};
 
 (function(Kinoarhiv, document){
 	'use strict';
-
 	/**
-	 * Store active tab and activate it. Require hidden input with name 'active_tab' and with cookie name as value.
+	 * Update poster thumbnail.
+	 *
+	 * @param  data  Response from server
 	 *
 	 * @return  void
 	 */
-	Kinoarhiv.setActiveTab = function(){
+	Kinoarhiv.updatePoster = function(data){
 		jQuery(document).ready(function($){
-			var tabs = $('a[data-toggle="tab"]');
-
-			if (tabs.length > 0) {
-				var input = $('input[name="active_tab"]'),
-					active_tab_name = input.val(),
-					active_tab = '#page0',
-					expire = input.data('expire') || 30;
-
-				if (typeof Cookies.get(active_tab_name) == 'undefined') {
-					Cookies.set(active_tab_name, '#page0', {expires: expire});
-				} else {
-					active_tab = Cookies.get(active_tab_name);
-					$('a[href="' + active_tab + '"]').trigger('click');
+			if (!Date.now) {
+				Date.now = function(){
+					return new Date().getTime();
 				}
-
-				tabs.on('shown', function(e){
-					Cookies.set(active_tab_name, $(e.target).attr('href'), {expires: expire});
-				});
 			}
+
+			var response = (typeof data != 'object') ? JSON.parse(data) : data,
+				img_folder = $('input[name="img_folder"]').val(),
+				image = new Image();
+
+			image.src = img_folder + 'thumb_' + response.filename + '?_=' + Date.now();
+			image.onload = function(){
+				$('a.img-preview img').attr({
+					width: image.naturalWidth,
+					height: image.naturalHeight,
+					style: 'width: ' + image.naturalWidth + 'px; height: ' + image.naturalHeight + 'px;'
+				});
+			};
+
+			$('input[name="image_id"]').val(response.insertid);
+			$('a.img-preview').attr('href', img_folder + response.filename + '?_=' + Date.now());
+			$('a.img-preview img').attr('src', img_folder + 'thumb_' + response.filename + '?_=' + Date.now());
 		});
 	};
 }(Kinoarhiv, document));
@@ -99,7 +103,8 @@ jQuery(document).ready(function($){
 			input = $('#remote_urls'),
 			token = Kinoarhiv.getFormToken(),
 			data  = {},
-			refresh = JSON.parse($('input[name="refresh"]').val()) || [];
+			refresh = JSON.parse($('input[name="refresh"]').val()) || [],
+			content_type = input.data('content-type');
 
 		if (input.val() == '') {
 			showMsg('#remote_urls', KA_vars.language.COM_KA_FILE_UPLOAD_ERROR);
@@ -130,6 +135,10 @@ jQuery(document).ready(function($){
 				// Refresh element
 				if (Object.keys(refresh).length > 0) {
 					$(refresh.el_parent).find(refresh.el_trigger).trigger('click');
+				}
+
+				if (content_type == 'poster') {
+					Kinoarhiv.updatePoster(response);
 				}
 			}
 
@@ -272,29 +281,7 @@ jQuery(document).ready(function($){
 			},
 			FileUploaded: function(up, file, info){
 				if (content_type == 'poster') {
-					if (!Date.now) {
-						Date.now = function(){
-							return new Date().getTime();
-						}
-					}
-
-					var response = JSON.parse(info.response),
-						img_folder = $('input[name="img_folder"]').val(),
-						image = new Image(),
-						width = 0;
-
-					image.src = img_folder + 'thumb_' + response.filename + '?_=' + Date.now();
-					image.onload = function(){
-						$('a.img-preview img').attr({
-							width: image.naturalWidth,
-							height: image.naturalHeight,
-							style: 'width: ' + image.naturalWidth + 'px; height: ' + image.naturalHeight + 'px;'
-						});
-					};
-
-					$('input[name="form_name_image_id"]').val(response.insertid);
-					$('a.img-preview').attr('href', img_folder + response.filename + '?_=' + Date.now());
-					$('a.img-preview img').attr('src', img_folder + 'thumb_' + response.filename + '?_=' + Date.now());
+					Kinoarhiv.updatePoster(info.response);
 				}
 			},
 			Error: function(up, response){

@@ -156,10 +156,9 @@ echo JHtml::_(
 			'params'          => $this->params,
 			'content-type'    => 'poster',
 			'multi_selection' => false,
-			//'refresh'         => array('el_parent' => 'table[data-list="video"]', 'el_trigger' => '.cmd-refresh-filelist'),
 			'max_files'       => 1,
 			'remote_upload'   => true,
-			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section=name&type=gallery&tab=3&id=' . $this->id . '&max_files=1'
+			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section=name&type=gallery&tab=3&id=' . $this->id . '&max_files=1&frontpage=1'
 		),
 		JPATH_COMPONENT
 	)

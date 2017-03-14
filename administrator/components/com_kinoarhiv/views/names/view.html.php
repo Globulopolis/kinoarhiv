@@ -33,8 +33,6 @@ class KinoarhivViewNames extends JViewLegacy
 
 	protected $form_attribs_group;
 
-	protected $user;
-
 	/**
 	 * Display the view
 	 *
@@ -47,7 +45,6 @@ class KinoarhivViewNames extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-		$this->user = JFactory::getUser();
 		$task = $app->input->get('task', '', 'cmd');
 
 		switch ($task)
@@ -179,6 +176,8 @@ class KinoarhivViewNames extends JViewLegacy
 	 */
 	protected function addToolbar($task = '')
 	{
+		$user = JFactory::getUser();
+
 		if ($task == 'add')
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
@@ -211,33 +210,33 @@ class KinoarhivViewNames extends JViewLegacy
 		{
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE')), 'users');
 
-			if ($this->user->authorise('core.create', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::addNew('names.add');
 			}
 
-			if ($this->user->authorise('core.edit', 'com_kinoarhiv'))
+			if ($user->authorise('core.edit', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::editList('names.edit');
 				JToolbarHelper::divider();
 			}
 
-			if ($this->user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::publishList('names.publish');
 				JToolbarHelper::unpublishList('names.unpublish');
 			}
 
-			if ($this->user->authorise('core.delete', 'com_kinoarhiv'))
+			if ($user->authorise('core.delete', 'com_kinoarhiv'))
 			{
 				JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'names.remove');
 			}
 
 			JToolbarHelper::divider();
 
-			if ($this->user->authorise('core.create', 'com_kinoarhiv')
-				&& $this->user->authorise('core.edit', 'com_kinoarhiv')
-				&& $this->user->authorise('core.edit.state', 'com_kinoarhiv'))
+			if ($user->authorise('core.create', 'com_kinoarhiv')
+				&& $user->authorise('core.edit', 'com_kinoarhiv')
+				&& $user->authorise('core.edit.state', 'com_kinoarhiv'))
 			{
 				$title = JText::_('JTOOLBAR_BATCH');
 				$layout = new JLayoutFile('joomla.toolbar.batch');

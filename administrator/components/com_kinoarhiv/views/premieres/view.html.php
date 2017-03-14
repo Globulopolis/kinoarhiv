@@ -34,8 +34,9 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state = $this->get('State');
+		$errors = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

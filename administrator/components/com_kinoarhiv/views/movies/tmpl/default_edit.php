@@ -21,8 +21,6 @@ $this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/jquery.searchFilter.min.js"></script>
 <script type="text/javascript" src="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/js/grid.setcolumns.js"></script>
 <script type="text/javascript">
-	Kinoarhiv.setActiveTab();
-
 	Joomla.submitbutton = function(task) {
 		var url, handler;
 		if (task == 'apply' || task == 'save' || task == 'save2new') {
@@ -315,6 +313,5 @@ $this->id = ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->
 	<input type="hidden" name="controller" value="movies" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="id" id="id" value="<?php echo $this->id; ?>" />
-	<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.movies.tabs.' . $this->user->get('id') . '.' . $this->id); ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

@@ -54,7 +54,6 @@ class KinoarhivViewReleases extends JViewLegacy
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$ka_theme = $params->get('ka_theme');
 		$itemid = $this->itemid;
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
@@ -64,7 +63,7 @@ class KinoarhivViewReleases extends JViewLegacy
 			$item->attribs = json_decode($item->attribs);
 
 			// Replace country BB-code
-			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme)
+			$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches)
 			{
 				$html = JText::_($matches[1]);
 

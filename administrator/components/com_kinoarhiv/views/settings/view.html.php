@@ -47,8 +47,9 @@ class KinoarhivViewSettings extends JViewLegacy
 		$this->lang = JFactory::getLanguage();
 		$this->form = $this->get('Form');
 		$this->data = $this->get('Settings');
+		$errors     = $this->get('Errors');
 
-		if (count($errors = $this->get('Errors')))
+		if (count($errors))
 		{
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}

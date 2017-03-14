@@ -14,8 +14,6 @@ JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.modal', 'collapseModal');
 ?>
 <script type="text/javascript">
-	Kinoarhiv.setActiveTab();
-
 	Joomla.submitbutton = function(task) {
 		jQuery(document).ready(function($){
 			var form = $('#adminForm');
@@ -389,7 +387,6 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
 			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="active_tab" value="<?php echo md5('com_kinoarhiv.settings.tabs.' . $this->user->get('id')); ?>" />
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
 	</div>

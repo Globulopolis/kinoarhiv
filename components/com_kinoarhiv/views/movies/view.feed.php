@@ -49,7 +49,6 @@ class KinoarhivViewMovies extends JViewLegacy
 		$feedEmail = $app->get('feed_email', 'author');
 		$siteEmail = $app->get('mailfrom');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$ka_theme = $params->get('ka_theme');
 		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		// Used in preg_replace_callback
@@ -97,7 +96,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			}
 
 			// Replace country BB-code
-			$row->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches) use ($ka_theme)
+			$row->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches)
 			{
 				$html = JText::_($matches[1]);
 

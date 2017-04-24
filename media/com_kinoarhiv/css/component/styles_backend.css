@@ -16,8 +16,7 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	outline: none !important;
 	outline-offset: -2px;
 }
-
-/* */
+/* End */
 
 /* override jqueryUI styles: .ui-widget button */
 .input-append button {
@@ -28,24 +27,12 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	z-index: 10001 !important;
 }
 
-.ui-progressbar {
-	position: relative;
-}
-
-.ui-menu .ui-menu-item a {
-	padding: 2px 0.8em !important;
-}
-
 .form-horizontal .controls {
 	margin-left: 200px !important;
 }
 
 .form-horizontal .settings-paths {
 	text-align: right;
-}
-
-.nav-tabs a:focus {
-	outline: none !important;
 }
 
 label.hasTooltip {
@@ -71,28 +58,9 @@ td.icons-list a:focus {
 	margin: 0 4px 2px 0;
 }
 
-.searchFilter .input-elm {
-	width: 300px !important;
-}
-
-.searchFilter .error th {
-	border: none !important;
-	font-weight: normal !important;
-	padding: 3px 5px;
-}
-
-.toggle-editor {
-	float: left !important;
-}
-
 .rel-link {
 	display: inline-block;
 	margin: 5px 0 0 10px;
-}
-
-.span12.actors-container, .span12.awards-container {
-	margin-left: 0 !important;
-	margin-top: 3px;
 }
 
 .ajax-loading {
@@ -105,14 +73,6 @@ td.icons-list a:focus {
 	-moz-transform: translateX(-50%) translateY(-50%);
 	-webkit-transform: translateX(-50%) translateY(-50%);
 	transform: translateX(-50%) translateY(-50%);
-}
-
-.rel-names-dlg label.hasTip, .rel-awards-dlg label.hasTip {
-	border-bottom: 1px dashed #fff;
-}
-
-.rel-names-dlg a.btn-small, .rel-awards-dlg a.btn-small {
-	margin-top: 3px;
 }
 
 .form_career, .form_name, .rel-form_name {
@@ -208,31 +168,6 @@ span.icon {
 	cursor: default;
 }
 
-#v_sortable, #sub_sortable, #cap_sortable, #chap_sortable {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-
-#v_sortable li, #sub_sortable li, #cap_sortable li, #chap_sortable li {
-	height: 1.8em;
-	cursor: default;
-}
-
-#filelist h3.ui-widget {
-	margin: 0;
-}
-
-#filelist .files {
-	margin-top: 0.5em;
-	margin-bottom: 1em;
-	padding: 0.2em 0.4em;
-}
-
-.t-subtitles {
-	margin-right: 0.5em;
-}
-
 .video_upload_files {
 	margin: 0 3px;
 	padding: 0.2em;
@@ -282,15 +217,6 @@ img.movie-poster-preview, img.album-cover-preview {
 	margin-Left: 0 !important;
 }
 
-.layout_img_upload {
-	display: none;
-	padding: 0.2em !important;
-}
-
-#list_awards a {
-	text-decoration: underline;
-}
-
 .divider {
 	*width: 100%;
 	height: 1px;
@@ -307,8 +233,18 @@ img.movie-poster-preview, img.album-cover-preview {
 	font-size: 1.1em;
 }
 
-.ui-dialog-content .rel-form_award, .ui-dialog-content .form_award,
 .ui-dialog-content .rel-form_vendor, .ui-dialog-content .form_vendor,
 .ui-dialog-content .rel-form_release, .ui-dialog-content .form_vendor {
 	margin-left: 5px !important;
 }
+
+/* Styles for 'desc' field in awards grid view */
+#trv_desc .form-view-label {
+	vertical-align: top;
+}
+
+#trv_desc .form-view-data span {
+	height: 250px;
+	overflow-y: scroll;
+}
+/* End */

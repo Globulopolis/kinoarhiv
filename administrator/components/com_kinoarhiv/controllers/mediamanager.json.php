@@ -121,6 +121,45 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	}
 
 	/**
+	 * Method to publish or unpublish posters(photo) on movie(person) info page(not on posters page).
+	 *
+	 * @return  void
+	 *
+	 * @since  3.1
+	 */
+	public function setFrontpage()
+	{
+		if (!KAComponentHelper::checkToken('post'))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
+
+			return;
+		}
+
+		$user = JFactory::getUser();
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.edit.state', 'com_kinoarhiv'))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
+
+			return;
+		}
+
+		$model = $this->getModel('mediamanager');
+		$result = $model->setFrontpage(1);
+
+		if (!$result)
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_ITEMS_EDIT_ERROR')));
+
+			return;
+		}
+
+		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_EDIT_SET_ONFRONTPAGE')));
+	}
+
+	/**
 	 * Method to save edit data from edit form for video/subtitles/chapters.
 	 *
 	 * @return  void
@@ -228,7 +267,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$item = $app->input->getInt('item', 0);
 		$item_id = $app->input->getInt('item_id', 0);
 		$all = $app->input->getInt('all', 0);
-		$path = KAContentHelper::getPath('movie', 'trailers', 0, $id);
+		$path = KAContentHelper::getPath('movie', 'trailers', null, $id);
 		$errors = array();
 
 		if ($all === 1)
@@ -410,7 +449,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		echo json_encode(array('success' => false, 'message' => JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids))));
+		echo json_encode(array('success' => true, 'message' => JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids))));
 	}
 
 	/**
@@ -499,7 +538,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if (!$result)
 		{
-			echo json_encode(array('success' => false, 'message' => implode('<br />', $app->getMessageQueue())));
+			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -509,7 +549,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if (!$image)
 		{
-			echo json_encode(array('success' => false, 'message' => implode('<br />', $app->getMessageQueue())));
+			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}

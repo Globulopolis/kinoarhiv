@@ -57,7 +57,7 @@ class KinoarhivControllerApi extends JControllerLegacy
 	 * not set or empty when all data will be returned.
 	 * Each variable(action, title/id, data, lucky) is an array for each parser type.
 	 *
-	 * Request json data by ID: index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=movie.info&id[imdb]={movie id}&format=json
+	 * Request json data by ID: index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=movie.info&id[imdb]={movie id}&format=raw
 	 *
 	 * @return  void
 	 *
@@ -66,9 +66,14 @@ class KinoarhivControllerApi extends JControllerLegacy
 	 */
 	public function parser()
 	{
+		header_remove('X-Powered-By');
+		$document = JFactory::getDocument();
+		//$document->setMimeEncoding('application/json');
+		//header('Content-disposition: inline', true);
+
 		if ($this->checkAccess() === false)
 		{
-			throw new Exception('Access denied', 403);
+			//throw new Exception('Access denied', 403);
 		}
 
 		jimport('libraries.api.api', JPATH_COMPONENT);

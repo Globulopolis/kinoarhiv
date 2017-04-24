@@ -44,7 +44,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 		if ((string) $this->element['data-sortable'] == 'true')
 		{
-			JHtml::_('jquery.ui', array('core', 'sortable'));
+			JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 		}
 
 		JHtml::_('script', 'system/html5fallback.js', false, true);
@@ -313,7 +313,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 				{
 					if (!count($this->value))
 					{
-						$value = '';
+						$value = '[]';
 					}
 					else
 					{
@@ -325,7 +325,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					$value = $this->value;
 				}
 
-				$html = '<input type="hidden" name="' . $this->name . '" value="' . implode(',', $this->value) . '" ' . trim($attr) . ' />';
+				$html = '<input type="hidden" name="' . $this->name . '" value="' . $value . '" ' . trim($attr) . ' />';
 			}
 
 			return $html;

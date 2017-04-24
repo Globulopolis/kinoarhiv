@@ -546,7 +546,6 @@ class KinoarhivModelMediamanager extends JModelList
 		$type = $app->input->get('type', '', 'word');
 		$id = $app->input->get('id', null, 'int');
 		$ids = $app->input->get('item_id', array(), 'array');
-		$state = $state ? 0 : 1;
 
 		if ($type == 'gallery')
 		{

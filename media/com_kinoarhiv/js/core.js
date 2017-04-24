@@ -17,7 +17,7 @@ Kinoarhiv = window.Kinoarhiv || {};
 	/**
 	 * Get form token.
 	 *
-	 * @return  string
+	 * @return  {string}
 	 */
 	Kinoarhiv.getFormToken = function(){
 		return jQuery('input[type="hidden"]').filter(function(){
@@ -28,10 +28,10 @@ Kinoarhiv = window.Kinoarhiv || {};
 	/**
 	 * Toggles the check state a group of boxes.
 	 *
-	 * @param   object     Main checkbox
-	 * @param   selector   Checkbox wraper where to find checkbox
+	 * @param   {string}  object    Main checkbox
+	 * @param   {string}  selector  Checkbox wraper where to find checkbox
 	 *
-	 * @return  void
+	 * @return  {void}
 	 */
 	Kinoarhiv.checkall = function(object, selector){
 		jQuery(document).ready(function($){
@@ -46,9 +46,9 @@ Kinoarhiv = window.Kinoarhiv || {};
 	/**
 	 * Block UI interaction.
 	 *
-	 * @param   action   Show or hide block.
+	 * @param   {string}  action  Show or hide block.
 	 *
-	 * @return  void
+	 * @return  {void}
 	 * @deprecated
 	 */
 	Kinoarhiv.blockUI = function(action) {
@@ -64,10 +64,10 @@ Kinoarhiv = window.Kinoarhiv || {};
 	/**
 	 * Block UI and display loader.
 	 *
-	 * @param   action    Show or hide block.
-	 * @param   selector  Object where to attach.
+	 * @param   {string}  action    Show or hide block.
+	 * @param   {object}  selector  Object where to attach.
 	 *
-	 * @return  void
+	 * @return  {void}
 	 */
 	Kinoarhiv.showLoading = function(action, selector) {
 		jQuery(document).ready(function($){
@@ -107,7 +107,8 @@ Kinoarhiv = window.Kinoarhiv || {};
 /*
  * A JavaScript equivalent of PHP's empty. See http://phpjs.org/functions/empty/
  *
- * @return  boolean
+ * @param   {mixed}  mixedVar  Value to test.
+ * @return  {boolean}
  */
 function empty(mixedVar) {
 	var undef,
@@ -138,12 +139,12 @@ function empty(mixedVar) {
  * Format item title. If item have two fields for title, sometimes we need to properly process title if item
  * does not have one of these fields.
  *
- * @param   firstTitle   First item title.
- * @param   secondTitle  Second item title.
- * @param   date         Show date.
- * @param   separator    Separator to split titles.
+ * @param   {string}  firstTitle   First item title.
+ * @param   {string}  secondTitle  Second item title.
+ * @param   {string}  date         Show date.
+ * @param   {string}  separator    Separator to split titles.
  *
- * @return  string
+ * @return  {string}
  */
 function formatItemTitle(firstTitle, secondTitle, date, separator) {
 	var title = '';
@@ -175,13 +176,13 @@ function formatItemTitle(firstTitle, secondTitle, date, separator) {
 /**
  * Create a message and display.
  *
- * @param   selector   Selector.
- * @param   text       Message text.
- * @param   placement  Where to place the message.
- * @param   btn_type   Show button to close or hide.
- * @param   btn_title  Text for close or hide button.
+ * @param   {object}  selector   Selector.
+ * @param   {string}  text       Message text.
+ * @param   {string}  placement  Where to place the message.
+ * @param   {string}  btn_type   Show button to close or hide.
+ * @param   {string}  btn_title  Text for close or hide button.
  *
- * @return  void
+ * @return  {void}
  */
 function showMsg(selector, text, placement, btn_type, btn_title) {
 	placement = (typeof placement == 'undefined') ? 'after' : placement;
@@ -202,10 +203,9 @@ function showMsg(selector, text, placement, btn_type, btn_title) {
 /**
  * Block UI interaction.
  *
- * @param   action   Show or hide block.
+ * @param   {string}  action  Show or hide block.
  *
- * @return  void
- *
+ * @return  {void}
  * @deprecated
  */
 function blockUI(action) {
@@ -217,247 +217,254 @@ function blockUI(action) {
 }
 
 jQuery(document).ready(function($){
-	$('.hasAutocomplete').each(function(index, element){
-		if ($(element).data('select2-disabled')) {
-			return;
-		}
-
-		var $this         = $(element),
-			config        = {},
-			data_url      = $this.data('url'),
-			data_lang     = $this.data('lang') || '',
-			content       = $this.data('content'),
-			multiple      = $this.attr('multiple'),
-			remote        = $this.data('remote'),
-			sortable      = $this.data('sortable'),
-			min_length    = $this.data('minimum-input-length'),
-			max_selection = $this.data('maximum-selection-size'),
-			show_all      = $this.data('remote-show-all'),
-			ignore_ids    = $this.data('ignore-ids') || '',
-			api_root      = KA_vars.api_root || '',
-			img_root      = KA_vars.img_root || '';
-
-		config.placeholder = !empty($this.data('placeholder')) ? $this.data('placeholder') : KA_vars.language.JGLOBAL_SELECT_AN_OPTION;
-		config.allowClear = $this.data('allow-clear');
-
-		if (min_length) {
-			//config['minimumInputLength'] = parseInt(min_length, 10);
-			config.minimumInputLength = parseInt(min_length, 10);
-		}
-
-		if (max_selection) {
-			config.maximumSelectionSize = parseInt(max_selection, 10);
-		}
-
-		if (remote == true || (remote == false && $.inArray(content, ['countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua']))) {
-			// Do not add 'multiple' element to the configuration object if select2 attached to <select>!
-			if (multiple) {
-				config.multiple = true;
+	if (jQuery.fn.select2) {
+		$('.hasAutocomplete').each(function (index, element) {
+			if ($(element).data('select2-disabled')) {
+				return;
 			}
 
-			if (!data_url) {
-				if (!empty(ignore_ids)) {
-					ignore_ids = '&ignore_ids[]=' + [ignore_ids].join('&ignore_ids[]=');
-				}
+			var $this = $(element),
+				config = {},
+				data_url = $this.data('url'),
+				data_lang = $this.data('lang') || '',
+				content = $this.data('content'),
+				multiple = $this.attr('multiple'),
+				remote = $this.data('remote'),
+				sortable = $this.data('sortable'),
+				min_length = $this.data('minimum-input-length'),
+				max_selection = $this.data('maximum-selection-size'),
+				show_all = $this.data('remote-show-all'),
+				ignore_ids = $this.data('ignore-ids') || '',
+				api_root = KA_vars.api_root || '',
+				img_root = KA_vars.img_root || '';
 
-				if (!empty(data_lang)) {
-					data_lang = '&data_lang=' + data_lang;
-				}
+			config.placeholder = !empty($this.data('placeholder')) ? $this.data('placeholder') : KA_vars.language.JGLOBAL_SELECT_AN_OPTION;
+			config.allowClear = $this.data('allow-clear');
 
-				data_url = api_root + 'index.php?option=com_kinoarhiv&task=api.data&content=' + content + '&format=json&tmpl=component&lang=' + KA_vars.language.tag.substr(0, 2) + data_lang + ignore_ids + '&' + Kinoarhiv.getFormToken() + '=1';
+			if (min_length) {
+				//config['minimumInputLength'] = parseInt(min_length, 10);
+				config.minimumInputLength = parseInt(min_length, 10);
 			}
 
-			// Require if ID from query results is not an `id` field.
-			config.id = function(item){
-				return !empty($this.data('key')) ? item[$this.data('key')] : item.value;
-			};
+			if (max_selection) {
+				config.maximumSelectionSize = parseInt(max_selection, 10);
+			}
 
-			config.ajax = {
-				cache: true,
-				url: data_url,
-				quietMillis: 250,
-				data: function (term, page) {
-					return {
-						term: term,
-						showAll: show_all ? 1 : 0,
-						page: page
-					}
-				},
-				results: function (data, page) {
-					var more = (page * 30) < data.total_count;
-
-					return {
-						results: data,
-						more: more
-					};
-				}
-			};
-
-			config.initSelection = function(element, callback){
-				var id = $(element).val();
-
-				if (!empty(id)) {
-					$.ajax(data_url, {
-						data: {
-							id: id,
-							multiple: multiple ? 1 : 0
-						}
-					}).done(function(data){
-						callback(data);
-					});
-				}
-			};
-		} else {
-			// Code bellow required only in configuration: data-remote="false" multiple="true" data-sortable="true"
-			if (sortable == 'true' || sortable) {
-				var data_content = $this.data('content-value'),
-					data_count = data_content.length;
-
+			if (remote == true || (remote == false && $.inArray(content, ['countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua']))) {
+				// Do not add 'multiple' element to the configuration object if select2 attached to <select>!
 				if (multiple) {
 					config.multiple = true;
 				}
 
-				config.initSelection = function(element, callback){
-					var data = [];
-
-					if (content == 'countries') {
-						$(element.val().split(',')).each(function(){
-							var i = 0;
-
-							for (i; i < data_count; i++) {
-								if (data_content[i]['value'] == this) {
-									data.push({
-										value: data_content[i]['value'],
-										text: data_content[i]['text'],
-										code: data_content[i]['code']
-									});
-								}
-							}
-						});
-					} else {
-						$(element.val().split(',')).each(function () {
-							var i = 0;
-
-							for (i; i < data_count; i++) {
-								if (data_content[i]['value'] == this) {
-									data.push({
-										value: data_content[i]['value'],
-										text: data_content[i]['text']
-									});
-								}
-							}
-						});
+				if (!data_url) {
+					if (!empty(ignore_ids)) {
+						ignore_ids = '&ignore_ids[]=' + [ignore_ids].join('&ignore_ids[]=');
 					}
 
-					callback(data);
-				};
+					if (!empty(data_lang)) {
+						data_lang = '&data_lang=' + data_lang;
+					}
+
+					data_url = api_root + 'index.php?option=com_kinoarhiv&task=api.data&content=' + content + '&format=json&tmpl=component&lang=' + KA_vars.language.tag.substr(0, 2) + data_lang + ignore_ids + '&' + Kinoarhiv.getFormToken() + '=1';
+				}
 
 				// Require if ID from query results is not an `id` field.
-				config.id = function(item){
+				config.id = function (item) {
 					return !empty($this.data('key')) ? item[$this.data('key')] : item.value;
 				};
 
-				config.query = function(query){
-					var result = {results: []},
-						i = 0;
-
-					if (content == 'countries') {
-						for (i; i < data_count; i++) {
-							result.results.push({
-								value: data_content[i]['value'],
-								text: data_content[i]['text'],
-								code: data_content[i]['code']
-							});
+				config.ajax = {
+					cache: true,
+					url: data_url,
+					quietMillis: 250,
+					data: function (term, page) {
+						return {
+							term: term,
+							showAll: show_all ? 1 : 0,
+							page: page
 						}
-					} else {
-						result = data_content;
+					},
+					results: function (data, page) {
+						var more = (page * 30) < data.total_count;
+
+						return {
+							results: data,
+							more: more
+						};
+					}
+				};
+
+				config.initSelection = function (element, callback) {
+					var id = $(element).val();
+
+					if (!empty(id)) {
+						$.ajax(data_url, {
+							data: {
+								id: id,
+								multiple: multiple ? 1 : 0
+							},
+							cache: true
+						}).done(function (data) {
+							callback(data);
+						});
+					}
+				};
+			} else {
+				// Code bellow required only in configuration: data-remote="false" multiple="true" data-sortable="true"
+				if (sortable == 'true' || sortable) {
+					var data_content = $this.data('content-value'),
+						data_count = data_content.length;
+
+					if (multiple) {
+						config.multiple = true;
 					}
 
-					query.callback(result);
+					config.initSelection = function (element, callback) {
+						var data = [];
+
+						if (content == 'countries') {
+							$(element.val().split(',')).each(function () {
+								var i = 0;
+
+								for (i; i < data_count; i++) {
+									if (data_content[i]['value'] == this) {
+										data.push({
+											value: data_content[i]['value'],
+											text: data_content[i]['text'],
+											code: data_content[i]['code']
+										});
+									}
+								}
+							});
+						} else {
+							$(element.val().split(',')).each(function () {
+								var i = 0;
+
+								for (i; i < data_count; i++) {
+									if (data_content[i]['value'] == this) {
+										data.push({
+											value: data_content[i]['value'],
+											text: data_content[i]['text']
+										});
+									}
+								}
+							});
+						}
+
+						callback(data);
+					};
+
+					// Require if ID from query results is not an `id` field.
+					config.id = function (item) {
+						return !empty($this.data('key')) ? item[$this.data('key')] : item.value;
+					};
+
+					config.query = function (query) {
+						var result = {results: []},
+							i = 0;
+
+						if (content == 'countries') {
+							for (i; i < data_count; i++) {
+								result.results.push({
+									value: data_content[i]['value'],
+									text: data_content[i]['text'],
+									code: data_content[i]['code']
+								});
+							}
+						} else {
+							result = data_content;
+						}
+
+						query.callback(result);
+					}
 				}
 			}
-		}
 
-		config.formatResult = function(data){
-			var title = '';
+			config.formatResult = function (data) {
+				var title = '';
 
-			if (content == 'countries') {
-				if (data.length < 1) {
-					return '';
+				if (content == 'countries') {
+					if (data.length < 1) {
+						return '';
+					} else {
+						var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
+
+						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
+					}
+				} else if (content == 'names') {
+					return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
+				} else if (content == 'movies') {
+					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
+					title = !empty(data.text) ? data.text : data.title;
+
+					return formatItemTitle(title, '', year);
 				} else {
-					var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
-
-					return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
+					return data.text;
 				}
-			} else if (content == 'names') {
-				return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
-			} else if (content == 'movies') {
-				var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
-				title = !empty(data.text) ? data.text : data.title;
+			};
 
-				return formatItemTitle(title, '', year);
-			} else {
-				return data.text;
-			}
-		};
+			config.formatSelection = function (data) {
+				var title = '';
 
-		config.formatSelection = function(data){
-			var title = '';
+				if (content == 'countries') {
+					if (data.length < 1) {
+						return '';
+					} else {
+						var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
 
-			if (content == 'countries') {
-				if (data.length < 1) {
-					return '';
+						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
+					}
+				} else if (content == 'names') {
+					return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
+				} else if (content == 'movies') {
+					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
+					title = !empty(data.text) ? data.text : data.title;
+
+					return formatItemTitle(title, '', year);
 				} else {
-					var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
-
-					return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
+					return data.text;
 				}
-			} else if (content == 'names') {
-				return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
-			} else if (content == 'movies') {
-				var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
-				title = !empty(data.text) ? data.text : data.title;
+			};
 
-				return formatItemTitle(title, '', year);
-			} else {
-				return data.text;
-			}
-		};
+			config.escapeMarkup = function (markup) {
+				return markup;
+			};
 
-		config.escapeMarkup = function(markup){ return markup; };
+			var select = $this.select2(config);
 
-		var select = $this.select2(config);
-
-		if (sortable == 'true' || sortable) {
-			select.select2('container').find('ul.select2-choices').sortable({
-				containment: 'parent',
-				start: function () {
-					$this.select2('onSortStart');
-				},
-				update: function () {
-					$this.select2('onSortEnd');
-				}
-			});
-		}
-	});
-
-	$('.hasSlider').each(function(index, element){
-		var $this = $(element);
-
-		if ($this.data('slider-disabled')) {
-			return;
-		}
-
-		var slider = $this.slider();
-
-		slider.on('slide', function(e){
-			if (typeof $this.data('slider-input-min') != 'undefined' && $this.data('slider-input-min') != '') {
-				$($this.data('slider-input-min')).val(e.value[0]);
-			}
-
-			if (typeof $this.data('slider-input-max') != 'undefined' && $this.data('slider-input-max') != '') {
-				$($this.data('slider-input-max')).val(e.value[1]);
+			if (sortable == 'true' || sortable) {
+				select.select2('container').find('ul.select2-choices').sortable({
+					containment: 'parent',
+					start: function () {
+						$this.select2('onSortStart');
+					},
+					update: function () {
+						$this.select2('onSortEnd');
+					}
+				});
 			}
 		});
-	});
+	}
+
+	if (jQuery.fn.slider) {
+		$('.hasSlider').each(function (index, element) {
+			var $this = $(element);
+
+			if ($this.data('slider-disabled')) {
+				return;
+			}
+
+			var slider = $this.slider();
+
+			slider.on('slide', function (e) {
+				if (typeof $this.data('slider-input-min') != 'undefined' && $this.data('slider-input-min') != '') {
+					$($this.data('slider-input-min')).val(e.value[0]);
+				}
+
+				if (typeof $this.data('slider-input-max') != 'undefined' && $this.data('slider-input-max') != '') {
+					$($this.data('slider-input-max')).val(e.value[1]);
+				}
+			});
+		});
+	}
 });

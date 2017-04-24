@@ -20,7 +20,6 @@ echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'vi
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
 		array(
-			'params'           => $this->params,
 			'url'              => $url . '&upload=video',
 			'multipart_params' => '{"' . $token . '": 1}',
 			'content-type'     => 'video',
@@ -42,7 +41,6 @@ echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'vi
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
 		array(
-			'params'           => $this->params,
 			'url'              => $url . '&upload=subtitles',
 			'multipart_params' => '{"' . $token . '": 1}',
 			'content-type'     => 'subtitles',
@@ -67,7 +65,6 @@ echo JHtml::_('bootstrap.startTabSet', 'upload_video_tab', array('active' => 'vi
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
 		array(
-			'params'           => $this->params,
 			'url'              => $url . '&upload=chapters',
 			'multipart_params' => '{"' . $token . '": 1}',
 			'content-type'     => 'chapters',

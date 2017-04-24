@@ -10,18 +10,30 @@
 
 defined('_JEXEC') or die;
 
-KAComponentHelperBackend::loadMediamanagerAssets();
-JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select.css');
-JHtml::_('script', 'media/com_kinoarhiv/js/select2.min.js');
-KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select/');
+if ($this->getLayout() !== 'modal')
+{
+	KAComponentHelperBackend::loadMediamanagerAssets();
+	JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select.css');
+	JHtml::_('script', 'media/com_kinoarhiv/js/select2.min.js');
+	KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select/');
+}
+else
+{
+	JHtml::_('script', 'media/system/js/core.js');
+}
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('a.tooltip-img').hover(function(e){
+		var tooltip_img = $('a.tooltip-img');
+
+		tooltip_img.hover(function(e){
 			$(this).next('img').stop().hide().fadeIn();
 		}, function(e){
 			$(this).next('img').stop().fadeOut();
-		}).colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
+		});
+
+		<?php if ($this->getLayout() !== 'modal'): ?>
+		tooltip_img.colorbox({ maxHeight: '95%', maxWidth: '95%', fixed: true });
 
 		// Reload page if image files uploaded. Require hidden <input>
 		$('#imgModalUpload').on('hidden', function(){
@@ -42,11 +54,16 @@ KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/
 			}
 
 			Joomla.submitform(task);
-		}
+		};
+		<?php endif; ?>
 	});
 </script>
+
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<?php if ($this->getLayout() !== 'modal'): ?>
+
 	<div class="btn-group pull-left" style="margin: 0 10px 0 0;">
+
 	<?php if ($this->section == 'movie'): ?>
 		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=3&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 3) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?>
@@ -68,6 +85,7 @@ KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_WALLPP'); ?>
 		</a>
 	<?php endif; ?>
+
 	</div>
 	<div class="btn-group pull-left" style="margin: 0 10px 0 0;">
 		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=<?php echo $this->tab; ?>&id=<?php echo $this->id; ?>&layoutview=list" class="btn <?php echo ($this->layout == 'list') ? 'btn-success' : ''; ?>">
@@ -77,6 +95,9 @@ KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/
 			<span class="icon-grid icon-white"></span>
 		</a>
 	</div>
+
+<?php endif; ?>
+
 	<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 	<div class="clearfix"> </div>
 
@@ -104,36 +125,40 @@ KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/
 	<?php echo JHtml::_('form.token'); ?>
 
 <?php
-echo JHtml::_(
-	'bootstrap.renderModal',
-	'imgModalUpload',
-	array(
-		'title'  => JText::_('COM_KA_TRAILERS_UPLOAD_IMAGES'),
-		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
-	),
-	JLayoutHelper::render(
-		'layouts.edit.upload_image',
+if ($this->getLayout() !== 'modal'):
+	echo JHtml::_(
+		'bootstrap.renderModal',
+		'imgModalUpload',
 		array(
-			'view'          => $this,
-			'params'        => $this->params,
-			'remote_upload' => true,
-			'remote_url'    => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section='
-				. $this->section . '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id
+			'title'  => JText::_('COM_KA_TRAILERS_UPLOAD_IMAGES'),
+			'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
 		),
-		JPATH_COMPONENT
-	)
-); ?>
+		JLayoutHelper::render(
+			'layouts.edit.upload_image',
+			array(
+				'view'          => $this,
+				'params'        => $this->params,
+				'remote_upload' => true,
+				'remote_url'    => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section='
+					. $this->section . '&type=' . $this->type . '&tab=' . $this->tab . '&id=' . $this->id
+			),
+			JPATH_COMPONENT
+		)
+	);
+endif;
+?>
 </form>
 
+<?php if ($this->getLayout() !== 'modal'): ?>
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="copyForm" autocomplete="off">
 <?php echo JHtml::_(
 	'bootstrap.renderModal',
 	'copyfromModal',
 	array(
 		'title'  => JText::_('JTOOLBAR_COPYFROM'),
-		'footer' => $this->loadTemplate('copyfrom_footer'),
-		'modalWidth' => '50%'
+		'footer' => $this->loadTemplate('copyfrom_footer')
 	),
 	$this->loadTemplate('copyfrom_body')
 ); ?>
 </form>
+<?php endif; ?>

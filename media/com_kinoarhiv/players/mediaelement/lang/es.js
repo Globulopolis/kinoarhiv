@@ -6,13 +6,14 @@
  * @author
  *   Jalios (Twitter: @Jalios)
  *   Sascha Greuel (Twitter: @SoftCreatR)
- *   Rafael Miranda (GitHub: @ron666)
+ *   Rafael Miranda (GitHub: @rafa8626)
  *
  * @see core/i18n.js
  */(function (exports) {
 	if (exports.es === undefined) {
 		exports.es = {
 			"mejs.plural-form": 1,			
+			"mejs.download-file": "Descargar archivo",			
 			"mejs.install-flash": "Esta usando un navegador que no tiene activado o instalado el reproductor de Flash. Por favor active el plugin del reproductor de Flash o descargue la versión más reciente en https://get.adobe.com/flashplayer/",			
 			"mejs.fullscreen": "Pantalla completa",			
 			"mejs.play": "Reproducción",

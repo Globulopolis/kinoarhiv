@@ -233,6 +233,93 @@ class KAFilesystem
 	}
 
 	/**
+	 * Moves a folder and files.
+	 *
+	 * @param   mixed    $src   The path to the source folder or an array of paths. If $src is array when the folder content
+	 *                          move into $dest.
+	 * @param   mixed    $dest  The path to the destination folder or an array of paths.
+	 * @param   boolean  $copy  If false when just copy content, copy and remove otherwise.
+	 *
+	 * @return  boolean
+	 */
+	public function move($src, $dest, $copy = false)
+	{
+		if (is_array($src))
+		{
+			foreach ($src as $key => $source)
+			{
+				if (is_array($dest))
+				{
+					$this->moveItem($source, $dest[$key], $copy);
+				}
+				else
+				{
+					$this->moveItem($source, str_replace(basename($dest), '', $dest) . basename($source), $copy);
+				}
+			}
+		}
+		else
+		{
+			$this->moveItem($src, $dest, $copy);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Moves a folder and files.
+	 *
+	 * @param   mixed    $src   The path to the source folder or an array of paths. If $src is array when the folder content
+	 *                          move into $dest.
+	 * @param   mixed    $dest  The path to the destination folder or an array of paths.
+	 * @param   boolean  $copy  If false when just copy content, copy and remove otherwise.
+	 *
+	 * @return  boolean
+	 */
+	private function moveItem($src, $dest, $copy)
+	{
+		jimport('joomla.filesystem.folder');
+		jimport('joomla.filesystem.file');
+
+		// Create target folder only if folder not exists and source folder have a files(folder size more than zero bytes).
+		if (!file_exists($dest) && $this->getFolderSize($src) > 0)
+		{
+			JFolder::create($dest);
+		}
+
+		foreach (glob($src . DIRECTORY_SEPARATOR . '*.*', GLOB_NOSORT) as $filename)
+		{
+			if (JFile::copy($filename, $dest . '/' . basename($filename)))
+			{
+				// Delete source file
+				if (!$copy)
+				{
+					if (!JFile::delete($filename))
+					{
+						JLog::add(__METHOD__ . ': ' . JText::sprintf('JLIB_FILESYSTEM_DELETE_FAILED', $filename), JLog::WARNING, 'jerror');
+						break;
+					}
+				}
+			}
+			else
+			{
+				JLog::add(__METHOD__ . ': ' . JText::_('JLIB_FILESYSTEM_ERROR_COPY_FAILED') . ': ' . $filename, JLog::WARNING, 'jerror');
+				break;
+			}
+		}
+
+		if (!$copy)
+		{
+			if (file_exists($src))
+			{
+				JFolder::delete($src);
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Get file size. See http://php.net/manual/en/function.filesize.php#115792
 	 *
 	 * @param   resource  $handle  Path to a file.
@@ -282,10 +369,12 @@ class KAFilesystem
 	 * @param   string   $path   Filesystem path to a folder.
 	 * @param   boolean  $cache  Clear stat cache.
 	 *
-	 * @return   integer   Folder size, false on error.
+	 * @return  mixed    Folder size, false on error.
 	 */
 	public function getFolderSize($path, $cache = true)
 	{
+		$path = JPath::clean($path);
+
 		if (!$path)
 		{
 			JLog::add(__METHOD__ . ': ' . JText::_('JLIB_FILESYSTEM_ERROR_DELETE_BASE_DIRECTORY'), JLog::WARNING, 'jerror');
@@ -372,7 +461,11 @@ class KAFilesystem
 			'ra'    => 'audio/x-realaudio',
 			'rv'    => 'video/vnd.rn-realvideo',
 			'wav'   => array('audio/x-wav', 'audio/wave', 'audio/wav'),
-			'bmp'   => array('image/bmp', 'image/x-bmp', 'image/x-bitmap', 'image/x-xbitmap', 'image/x-win-bitmap', 'image/x-windows-bmp', 'image/ms-bmp', 'image/x-ms-bmp', 'application/bmp', 'application/x-bmp', 'application/x-win-bitmap'),
+			'bmp'   => array(
+				'image/bmp', 'image/x-bmp', 'image/x-bitmap', 'image/x-xbitmap', 'image/x-win-bitmap',
+				'image/x-windows-bmp', 'image/ms-bmp', 'image/x-ms-bmp', 'application/bmp', 'application/x-bmp',
+				'application/x-win-bitmap'
+			),
 			'gif'   => 'image/gif',
 			'jpeg'  => array('image/jpeg', 'image/pjpeg'),
 			'jpg'   => array('image/jpeg', 'image/pjpeg'),

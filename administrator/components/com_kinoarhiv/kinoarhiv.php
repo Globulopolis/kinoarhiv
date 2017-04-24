@@ -20,7 +20,6 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_kinoarhiv'))
 jimport('administrator.components.com_kinoarhiv.helpers.component', JPATH_ROOT);
 
 KAComponentHelperBackend::setHeadTags();
-JHtml::_('behavior.tabstate');
 
 $controller = JControllerLegacy::getInstance('Kinoarhiv');
 $controller->execute(JFactory::getApplication()->input->get('task'));

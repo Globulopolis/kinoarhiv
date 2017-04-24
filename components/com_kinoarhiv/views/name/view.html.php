@@ -42,8 +42,6 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
-
 		$app = JFactory::getApplication();
 		$this->page = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
@@ -89,6 +87,7 @@ class KinoarhivViewName extends JViewLegacy
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$throttle_enable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		// Build title string
@@ -109,7 +108,7 @@ class KinoarhivViewName extends JViewLegacy
 
 		$item->dates .= ')';
 
-		if ($params->get('throttle_enable', 0) == 0)
+		if ($throttle_enable == 0)
 		{
 			$checking_path = JPath::clean(
 				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename

@@ -52,8 +52,6 @@ class KinoarhivViewPremieres extends JViewLegacy
 			return false;
 		}
 
-		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
-
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$itemid = $this->itemid;

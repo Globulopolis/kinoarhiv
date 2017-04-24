@@ -3,17 +3,17 @@
 	<fieldset name="edit" addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="movie_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_LABEL" filter="integer" required="true"
 			   class="span6" data-content="movies" data-allow-clear="true" data-remote="true" data-lang="*"
-			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
 		<field name="country_id" type="autocomplete" label="COM_KA_FIELD_COUNTRY_LABEL" filter="integer" required="true"
 			   class="span6" data-content="countries" data-allow-clear="true" data-remote="true" data-lang="*"
-			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
 		<field name="vendor_id" type="autocomplete" label="COM_KA_FIELD_RELEASE_VENDOR" filter="integer" required="true"
 			   class="span6" data-content="vendors" data-allow-clear="true" data-remote="true" data-lang="*"
-			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
 		<field name="premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" size="22"

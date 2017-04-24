@@ -54,9 +54,7 @@ class KinoarhivModelSettings extends JModelForm
 	 */
 	public function getSettings()
 	{
-		$result = JComponentHelper::getComponent('com_kinoarhiv');
-
-		return $result;
+		return JComponentHelper::getComponent('com_kinoarhiv');
 	}
 
 	/**
@@ -71,26 +69,10 @@ class KinoarhivModelSettings extends JModelForm
 	public function save($data)
 	{
 		$db = $this->getDbo();
-		$form_rules = $data['rules'];
+		$rules = $data['rules'];
 
 		// Unset rules array because we do not need it in the component parameters
 		unset($data['rules']);
-		$rules = array();
-
-		foreach ($form_rules as $rule => $groups)
-		{
-			foreach ($groups as $group => $value)
-			{
-				if ($value != '')
-				{
-					$rules[$rule][$group] = (int) $value;
-				}
-				else
-				{
-					unset($form_rules[$rule][$group]);
-				}
-			}
-		}
 
 		if ($data['introtext_actors_list_limit'] > 10)
 		{
@@ -187,37 +169,48 @@ class KinoarhivModelSettings extends JModelForm
 			}
 		}
 
-		$data = array_merge($data, $_alphabet);
-
+		$data   = array_merge($data, $_alphabet);
 		$params = json_encode($data);
-		$rules = json_encode($rules);
 
-		$query = $db->getQuery(true);
-
-		$query->update($db->quoteName('#__extensions'))
+		$query = $db->getQuery(true)
+			->update($db->quoteName('#__extensions'))
 			->set($db->quoteName('params') . " = '" . $db->escape($params) . "'")
 			->where(array($db->quoteName('type') . " = 'component'", $db->quoteName('element') . " = 'com_kinoarhiv'"));
 
 		$db->setQuery($query);
-		$result = $db->execute();
 
-		if (!$result)
+		try
 		{
-			$app->enqueueMessage(JText::_('ERROR'), 'error');
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
 
-		if (JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv'))
+		if (JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && $rules)
 		{
-			$query = $db->getQuery(true);
+			$rules = new JAccessRules($rules);
 
-			$query->update($db->quoteName('#__assets'))
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__assets'))
 				->set($db->quoteName('rules') . " = '" . $rules . "'")
 				->where(array($db->quoteName('level') . " = 1", $db->quoteName('parent_id') . " = 1", $db->quoteName('name') . " = 'com_kinoarhiv'"));
 
 			$db->setQuery($query);
-			$db->execute();
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
 		}
 		else
 		{
@@ -226,8 +219,8 @@ class KinoarhivModelSettings extends JModelForm
 			return false;
 		}
 
-		// Clean the component cache.
-		$this->cleanCache('_system');
+		// Clear the cache
+		$this->cleanCache();
 
 		return true;
 	}

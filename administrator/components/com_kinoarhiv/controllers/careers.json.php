@@ -18,30 +18,6 @@ defined('_JEXEC') or die;
 class KinoarhivControllerCareers extends JControllerLegacy
 {
 	/**
-	 * Proxy to KinoarhivControllerCareers::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function apply()
-	{
-		$this->save();
-	}
-
-	/**
-	 * Proxy to KinoarhivControllerCareers::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function save2new()
-	{
-		$this->save();
-	}
-
-	/**
 	 * Method to save a record.
 	 *
 	 * @return  void
@@ -108,8 +84,8 @@ class KinoarhivControllerCareers extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors_arr = $app->getMessageQueue();
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors_arr)));
+			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}

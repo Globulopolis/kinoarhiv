@@ -154,9 +154,16 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 					<table class="table table-striped table-hover uk-table uk-table-striped uk-table-hover release-table" data-sortable>
 						<thead>
 						<tr>
-							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_DATE_TITLE'); ?></th>
-							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"><?php echo JText::_('COM_KA_COUNTRY'); ?></th>
-							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"><?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'); ?></th>
+							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip"
+								data-sorted="true" data-sorted-direction="descending">
+								<?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_DATE_TITLE'); ?>
+							</th>
+							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip">
+								<?php echo JText::_('COM_KA_COUNTRY'); ?>
+							</th>
+							<th title="<?php echo JText::_('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN'); ?>" class="hasTooltip">
+								<?php echo JText::_('COM_KA_RELEASES_MEDIATYPE_TITLE'); ?>
+							</th>
 							<th width="2%" data-sortable="false">&nbsp;</th>
 						</tr>
 						</thead>
@@ -173,8 +180,10 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 									<img class="flag-dd" src="media/com_kinoarhiv/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>
 								</td>
 								<td><?php echo $row->media_type; ?></td>
-								<td><?php if ($row->desc != ''): ?>
-										<span class="icon icon-chevron-down"></span><?php endif; ?>
+								<td>
+									<?php if ($row->desc != ''): ?>
+										<span class="icon icon-chevron-down"></span>
+									<?php endif; ?>
 								</td>
 							</tr>
 							<?php if ($row->desc != ''): ?>
@@ -186,7 +195,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 									</div>
 								</td>
 							</tr>
-						<?php endif; ?>
+							<?php endif; ?>
 						<?php endforeach; ?>
 						</tbody>
 					</table>

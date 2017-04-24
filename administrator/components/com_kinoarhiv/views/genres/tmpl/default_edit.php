@@ -14,7 +14,7 @@ JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 
 $item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') ? 'music' : 'movie';
-$id = $this->form->getValue('id');
+$id = (int) $this->form->getValue('id');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -28,12 +28,18 @@ $id = $this->form->getValue('id');
 	};
 
 	jQuery(document).ready(function($){
+		<?php if ($id != 0): ?>
 		$('#form_stats').after('<a href="#" class="cmd-update-stats hasTooltip" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><span class="icon-refresh"></span></a>');
 		$('a.cmd-update-stats').tooltip();
+		<?php endif; ?>
 
 		$('form').on('click', 'a.cmd-update-stats', function(e){
 			e.preventDefault();
 			var _this = $(this);
+
+			if (empty($('#form_id').val())) {
+				return;
+			}
 
 			$.getJSON('index.php?option=com_kinoarhiv&task=genres.updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo $id != 0 ? $id : ''; ?>&format=json&boxchecked=1&<?php echo JSession::getFormToken(); ?>=1', function(response){
 				if (response.success) {

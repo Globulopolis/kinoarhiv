@@ -18,30 +18,6 @@ defined('_JEXEC') or die;
 class KinoarhivControllerGenres extends JControllerLegacy
 {
 	/**
-	 * Proxy to KinoarhivControllerGenres::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function save2new()
-	{
-		$this->save();
-	}
-
-	/**
-	 * Proxy to KinoarhivControllerGenres::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function apply()
-	{
-		$this->save();
-	}
-
-	/**
 	 * Method to save a record.
 	 *
 	 * @return  mixed
@@ -97,8 +73,8 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors_arr = $app->getMessageQueue();
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors_arr)));
+			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -129,6 +105,15 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		if (!JFactory::getUser()->authorise('core.recount.genre', 'com_kinoarhiv'))
 		{
 			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
+
+			return;
+		}
+
+		$ids = JFactory::getApplication()->input->get('id', array(), 'array');
+
+		if (!is_array($ids) || count($ids) < 1)
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR')));
 
 			return;
 		}

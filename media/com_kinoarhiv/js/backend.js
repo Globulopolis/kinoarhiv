@@ -13,12 +13,13 @@ Kinoarhiv = window.Kinoarhiv || {};
 
 (function(Kinoarhiv, document){
 	'use strict';
+
 	/**
 	 * Update poster thumbnail.
 	 *
-	 * @param  data  Response from server
+	 * @param  {string|object}  data  Response from server.
 	 *
-	 * @return  void
+	 * @return  {void}
 	 */
 	Kinoarhiv.updatePoster = function(data){
 		jQuery(document).ready(function($){
@@ -28,22 +29,69 @@ Kinoarhiv = window.Kinoarhiv || {};
 				}
 			}
 
+			var doc = (!document.querySelector('input[name="img_folder"]')) ? parent.document : document;
+
 			var response = (typeof data != 'object') ? JSON.parse(data) : data,
-				img_folder = $('input[name="img_folder"]').val(),
-				image = new Image();
+				img_folder = doc.querySelector('input[name="img_folder"]').value,
+				image = new Image(),
+				img_preview = doc.querySelector('a.img-preview img');
 
 			image.src = img_folder + 'thumb_' + response.filename + '?_=' + Date.now();
 			image.onload = function(){
-				$('a.img-preview img').attr({
-					width: image.naturalWidth,
-					height: image.naturalHeight,
-					style: 'width: ' + image.naturalWidth + 'px; height: ' + image.naturalHeight + 'px;'
-				});
+				img_preview.width = image.naturalWidth;
+				img_preview.height = image.naturalHeight;
+				img_preview.setAttribute('style', 'width: ' + image.naturalWidth + 'px; height: ' + image.naturalHeight + 'px;');
 			};
 
-			$('input[name="image_id"]').val(response.insertid);
-			$('a.img-preview').attr('href', img_folder + response.filename + '?_=' + Date.now());
-			$('a.img-preview img').attr('src', img_folder + 'thumb_' + response.filename + '?_=' + Date.now());
+			doc.querySelector('input[name="image_id"]').value = response.insertid;
+			doc.querySelector('a.img-preview').setAttribute('href', img_folder + response.filename + '?_=' + Date.now());
+			img_preview.setAttribute('src', img_folder + 'thumb_' + response.filename + '?_=' + Date.now());
+		});
+	};
+
+	/**
+	 * Set poster or photo.
+	 *
+	 * @param   {object}  el        Current clicked element.
+	 * @param   {string}  section   Section. (can be: movie, name, trailer, soundtrack)
+	 * @param   {number}  type      Item type(movie or name). For movie: 2 - poster. For name: 3 - photo.
+	 * @param   {number}  item_id   Item ID(movie or name).
+	 * @param   {number}  file_id   File ID.
+	 * @param   {string}  filename  Filename.
+	 *
+	 * @return  {void}
+	 */
+	Kinoarhiv.selectFrontpageImage = function(el, section, type, item_id, file_id, filename){
+		jQuery(document).ready(function($){
+			var token = Kinoarhiv.getFormToken(),
+				data  = {},
+				msg_div = $(el).closest('#j-main-container').prev(),
+				alert = '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>';
+
+			// Assign token
+			data[token] = 1;
+
+			$.ajax({
+				type: 'POST',
+				url: 'index.php?option=com_kinoarhiv&task=mediamanager.setFrontpage&format=json&section=' + section + '&type=' + type + '&id=' + item_id + '&item_id[]=' + file_id,
+				data: data,
+				dataType: 'json'
+			}).done(function(response){
+				if (!response.success) {
+					msg_div.html(alert + response.message + '</div>');
+
+					return;
+				}
+
+				Kinoarhiv.updatePoster({
+					insertid: file_id,
+					filename: filename
+				});
+
+				msg_div.html('<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>' + response.message + '</div>');
+			}).fail(function(xhr, status, error){
+				msg_div.html(alert + error + '</div>');
+			});
 		});
 	};
 }(Kinoarhiv, document));
@@ -153,10 +201,12 @@ jQuery(document).ready(function($){
 
 	// Run copy process for gallery items
 	$('#copyForm').submit(function(){
-		if (empty($('#from_id').select2('val'))) {
-			showMsg('fieldset.copy', KA_vars.language.COM_KA_REQUIRED);
+		if (jQuery.fn.select2) {
+			if (empty($('#from_id').select2('val'))) {
+				showMsg('fieldset.copy', KA_vars.language.COM_KA_REQUIRED);
 
-			return false;
+				return false;
+			}
 		}
 
 		$('.cmd-gallery-copyfrom').attr('disabled', 'disabled');
@@ -164,142 +214,254 @@ jQuery(document).ready(function($){
 		return true;
 	});
 
-	$('.hasUploader').each(function(index, element){
-		var config = {},
-			id = 'uploader_' + index,
-			content_type = $(element).data('content-type'),
-			error_div = $(element).next('.uploader-info'),
-			filters = $(element).data('filters') || [],
-			max_file_size = $(element).data('max_file_size') || '256kb',
-			prevent_duplicates = $(element).data('prevent_duplicates') || true;
+	if (jQuery.fn.pluploadQueue) {
+		$('.hasUploader').each(function(index, element){
+			var config = {},
+				id = 'uploader_' + index,
+				content_type = $(element).data('content-type'),
+				error_div = $(element).next('.uploader-info'),
+				filters = $(element).data('filters') || [],
+				max_file_size = $(element).data('max_file_size') || '256kb',
+				prevent_duplicates = $(element).data('prevent_duplicates') || true;
 
-		config.url = $(element).data('url');
-		config.chunk_size = $(element).data('chunk_size') || 0;
-		config.file_data_name = $(element).data('file_data_name') || 'file';
+			config.url = $(element).data('url');
+			config.chunk_size = $(element).data('chunk_size') || 0;
+			config.file_data_name = $(element).data('file_data_name') || 'file';
 
-		// Set filters for 'Select file' dialog
-		if (!empty(filters)) {
-			config.filters = {
-				mime_types: [
-					filters
-				],
-				max_file_size: max_file_size,
-				prevent_duplicates: prevent_duplicates
-			};
-		}
+			// Set filters for 'Select file' dialog
+			if (!empty(filters)) {
+				config.filters = {
+					mime_types: [
+						filters
+					],
+					max_file_size: max_file_size,
+					prevent_duplicates: prevent_duplicates
+				};
+			}
 
-		config.flash_swf_url = $(element).data('flash_swf_url') || KA_vars.uri_root + 'media/com_kinoarhiv/js/plupload/Moxie.swf';
-		config.silverlight_xap_url = $(element).data('silverlight_xap_url') || KA_vars.uri_root + 'media/com_kinoarhiv/js/plupload/Moxie.xap';
-		config.max_retries = $(element).data('max_retries') || 0;
-		config.multipart = $(element).data('multipart') || true;
-		config.multi_selection = $(element).data('multi_selection') || true;
-		config.quality = $(element).data('quality') || 90;
-		config.crop = $(element).data('crop') || false;
-		config.runtimes = $(element).data('runtimes') || 'html5,flash,silverlight,html4';
-		config.unique_names = $(element).data('unique_names') || false;
-		config.dragdrop = $(element).data('dragdrop') || true;
-		config.rename = $(element).data('rename') || false;
-		config.multiple_queues = $(element).data('multiple_queues') || true;
+			config.flash_swf_url = $(element).data('flash_swf_url') || KA_vars.uri_root + 'media/com_kinoarhiv/js/plupload/Moxie.swf';
+			config.silverlight_xap_url = $(element).data('silverlight_xap_url') || KA_vars.uri_root + 'media/com_kinoarhiv/js/plupload/Moxie.xap';
+			config.max_retries = $(element).data('max_retries') || 0;
+			config.multipart = $(element).data('multipart') || true;
+			config.multi_selection = $(element).data('multi_selection') || true;
+			config.quality = $(element).data('quality') || 90;
+			config.crop = $(element).data('crop') || false;
+			config.runtimes = $(element).data('runtimes') || 'html5,flash,silverlight,html4';
+			config.unique_names = $(element).data('unique_names') || false;
+			config.dragdrop = $(element).data('dragdrop') || true;
+			config.rename = $(element).data('rename') || false;
+			config.multiple_queues = $(element).data('multiple_queues') || true;
 
-		// Custom headers to send with the upload. Hash of name/value pairs.
-		if (!empty($(element).data('headers'))) {
-			config.headers = $(element).data('headers');
-		}
+			// Custom headers to send with the upload. Hash of name/value pairs.
+			if (!empty($(element).data('headers'))) {
+				config.headers = $(element).data('headers');
+			}
 
-		// Whether to send file and additional parameters as Multipart formated message.
-		if (!empty($(element).data('multipart_params'))) {
-			config.multipart_params = $(element).data('multipart_params');
-		}
+			// Whether to send file and additional parameters as Multipart formated message.
+			if (!empty($(element).data('multipart_params'))) {
+				config.multipart_params = $(element).data('multipart_params');
+			}
 
-		// Either comma-separated list or hash of required features that chosen runtime should absolutely possess.
-		if (!empty($(element).data('required_features'))) {
-			config.required_features = $(element).data('required_features');
-		}
+			// Either comma-separated list or hash of required features that chosen runtime should absolutely possess.
+			if (!empty($(element).data('required_features'))) {
+				config.required_features = $(element).data('required_features');
+			}
 
-		// Enable resizng of images on client-side.
-		if (!empty($(element).data('resize'))) {
-			config.resize = $(element).data('resize');
-		}
+			// Enable resizng of images on client-side.
+			if (!empty($(element).data('resize'))) {
+				config.resize = $(element).data('resize');
+			}
 
-		// If image is bigger, it will be resized.
-		if (!empty($(element).data('width'))) {
-			config.width = $(element).data('width');
-		}
+			// If image is bigger, it will be resized.
+			if (!empty($(element).data('width'))) {
+				config.width = $(element).data('width');
+			}
 
-		// If image is bigger, it will be resized.
-		if (!empty($(element).data('height'))) {
-			config.height = $(element).data('height');
-		}
+			// If image is bigger, it will be resized.
+			if (!empty($(element).data('height'))) {
+				config.height = $(element).data('height');
+			}
 
-		// Max number of files allowed to add in queue.
-		if (!empty($(element).data('max_files'))) {
-			config.max_files = $(element).data('max_files');
-		}
+			// Max number of files allowed to add in queue.
+			if (!empty($(element).data('max_files'))) {
+				config.max_files = $(element).data('max_files');
+			}
 
-		// Add an ID attribute
-		$(element).attr('id', id);
+			// Add an ID attribute
+			$(element).attr('id', id);
 
-		config.preinit = {
-			Init: function(up, info){
-				$('#' + id)
-					.find('.plupload_buttons a:last')
-					.after('<a class="plupload_button plupload_clear_all" href="#">' + KA_vars.language.JCLEAR + '</a>');
-				$('#' + id + ' .plupload_clear_all').click(function(e){
-					e.preventDefault();
+			config.preinit = {
+				Init: function(up, info){
+					$('#' + id)
+						.find('.plupload_buttons a:last')
+						.after('<a class="plupload_button plupload_clear_all" href="#">' + KA_vars.language.JCLEAR + '</a>');
+					$('#' + id + ' .plupload_clear_all').click(function (e) {
+						e.preventDefault();
 
-					up.splice();
-					$.each(up.files, function(i, file){
-						up.removeFile(file);
+						up.splice();
+						$.each(up.files, function(i, file){
+							up.removeFile(file);
+						});
+
+						error_div.html('').hide().removeClass('alert alert-error');
 					});
-
-					error_div.html('').hide().removeClass('alert alert-error');
-				});
-			},
-			UploadComplete: function(up, files){
-				if (content_type == 'images') {
-					$('input[name="file_uploaded"]').val(1);
-				} else if (content_type == 'video' || content_type == 'subtitles' || content_type == 'chapters') {
-					$('table[data-list="' + content_type + '"] .cmd-refresh-filelist').trigger('click');
-				} else if (content_type == 'screenshot') {
-					$('table[data-list="video"] .cmd-refresh-filelist').trigger('click');
+				},
+				UploadComplete: function(up, files){
+					if (content_type == 'images') {
+						$('input[name="file_uploaded"]').val(1);
+					} else if (content_type == 'video' || content_type == 'subtitles' || content_type == 'chapters') {
+						$('table[data-list="' + content_type + '"] .cmd-refresh-filelist').trigger('click');
+					} else if (content_type == 'screenshot') {
+						$('table[data-list="video"] .cmd-refresh-filelist').trigger('click');
+					}
 				}
-			}
-		};
+			};
 
-		config.init = {
-			PostInit: function(){
-				$('#' + id + '_container').removeAttr('title');
-			},
-			FilesAdded: function(up, files){
-				if (config.max_files && (up.files.length > config.max_files)) {
-					up.splice(config.max_files);
-					showMsg(
-						$(element),
-						plupload.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), config.max_files)
-					);
+			config.init = {
+				PostInit: function(){
+					$('#' + id + '_container').removeAttr('title');
+				},
+				FilesAdded: function(up, files){
+					if (config.max_files && (up.files.length > config.max_files)) {
+						up.splice(config.max_files);
+						showMsg(
+							$(element),
+							plupload.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), config.max_files)
+						);
+					}
+				},
+				FileUploaded: function(up, file, info){
+					if (content_type == 'poster') {
+						Kinoarhiv.updatePoster(info.response);
+					}
+				},
+				Error: function(up, response){
+					var error = JSON.parse(response.response);
+
+					if (error_div.is(':hidden')) {
+						error_div.show();
+						error_div.addClass('alert alert-error');
+					}
+
+					error_div.html(error_div.html() + response.file.name + ': ' + error.message + '<br />');
 				}
-			},
-			FileUploaded: function(up, file, info){
-				if (content_type == 'poster') {
-					Kinoarhiv.updatePoster(info.response);
-				}
-			},
-			Error: function(up, response){
-				var error = JSON.parse(response.response);
+			};
 
-				if (error_div.is(':hidden')) {
-					error_div.show();
-					error_div.addClass('alert alert-error');
-				}
-
-				error_div.html(error_div.html() + response.file.name + ': ' + error.message + '<br />');
-			}
-		};
-
-		$(element).pluploadQueue(config);
-	});
+			$(element).pluploadQueue(config);
+		});
+	}
 
 	if (jQuery.fn.colorbox) {
 		$('.img-preview').colorbox({maxHeight: '95%', maxWidth: '95%', fixed: true, photo: true});
+	}
+
+	if (jQuery.fn.jqGrid) {
+		var $body = $('body');
+
+		$('.jqgrid').each(function(index, element){
+			var $this = $(element),
+				width = isNaN(parseInt($this.data('width'), 10)) ? $($this.data('width')).width() : $this.data('width'),
+				height = 0,
+				navgrid = $this.data('navgrid_setup');
+
+			var view_config = {
+				width: width,
+				left: Math.round(($(document).width() / 2) - ($(document).width() / 3)),
+				closeOnEscape: true,
+				beforeShowForm: function(form){
+					document.querySelector('#viewmod' + element.id).style.top = '-108px';
+				}
+			};
+
+			if (isNaN(parseInt($this.data('height'), 10))) {
+				height = Math.round(($(window).height() - $($this.data('height')).offset().top) - 180);
+			} else {
+				height = $this.data('height');
+			}
+
+			$this.jqGrid({
+				url: $this.data('url'),
+				datatype: 'json',
+				height: height < 100 ? 200 : height,
+				width: width,
+				shrinkToFit: true,
+				multiselect: true,
+				rownumbers: true,
+				idPrefix: $this.data('idprefix'),
+				colNames: $this.data('colnames'),
+				colModel: $this.data('colmodel'),
+				caption: '',
+				toppager: $this.data('toppager'),
+				pager: $this.data('pager'),
+				sortname: $this.data('order'),
+				sortorder: $this.data('orderby'),
+				viewrecords: true,
+				rowNum: $this.data('rows'),
+				rowList: $(element).data('rowlist'),
+				ondblClickRow: function(rowid){
+					$this.jqGrid('viewGridRow', rowid, view_config);
+				}
+			}).jqGrid('navGrid', $this.next('div').attr('id'),
+				{
+					// Bottom nav config
+					addfunc: function(){
+						if (!window.open($this.data('add_url'))) {
+							showMsg(
+								'#system-message-container',
+								KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + $this.data('add_url') + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
+							);
+						}
+					},
+					editfunc: function(){
+						var chk = $this.children('tbody').find('input[type="checkbox"]').filter(':checked'),
+							// Get the name of input, and get the last integer value(because it's a real item ID)
+							award_id = chk.attr('name').split('_').slice(-1)[0];
+
+						if (!window.open($this.data('edit_url') + '&award_id=' + award_id)) {
+							showMsg(
+								'#system-message-container',
+								KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + $this.data('edit_url') + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
+							);
+						}
+					},
+					delfunc: function(){
+						if (!confirm(KA_vars.language.COM_KA_DELETE_SELECTED)) {
+							return;
+						}
+
+						var items = $('.cbox', $this).filter(':checked'),
+							data  = {},
+							token = Kinoarhiv.getFormToken();
+
+						data[token]   = 1;
+						data['items'] = items.serializeArray();
+
+						$.post($this.data('del_url'), data, function(response){
+							if (!response.success) {
+								showMsg($this.closest('.ui-jqgrid'), response.message, 'after');
+							}
+
+							$this.trigger('reloadGrid');
+						}).fail(function(xhr, status, error){
+							showMsg('#system-message-container', error);
+						});
+					},
+					addtext: navgrid.btn.lang.addtext, edittext: navgrid.btn.lang.edittext, deltext: navgrid.btn.lang.deltext,
+					searchtext: navgrid.btn.lang.searchtext, refreshtext: navgrid.btn.lang.refreshtext,
+					viewtext: navgrid.btn.lang.viewtext,
+					view: true
+				},
+				{},
+				{},
+				{},
+				{
+					// Search form config
+					width: width,
+					left: Math.round(($(document).width() / 2) - ($(document).width() / 3)),
+					closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
+				},
+				view_config
+			).jqGrid('gridResize', {});
+		});
 	}
 });

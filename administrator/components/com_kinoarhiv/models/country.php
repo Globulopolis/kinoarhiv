@@ -211,8 +211,6 @@ class KinoarhivModelCountry extends JModelForm
 				$session_data['id'] = $db->insertid();
 				$app->setUserState('com_kinoarhiv.countries.' . $user->id . '.edit_data', $session_data);
 			}
-
-			return true;
 		}
 		catch (Exception $e)
 		{
@@ -220,6 +218,11 @@ class KinoarhivModelCountry extends JModelForm
 
 			return false;
 		}
+
+		// Clear the cache
+		$this->cleanCache();
+
+		return true;
 	}
 
 	/**

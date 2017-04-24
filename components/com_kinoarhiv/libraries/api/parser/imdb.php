@@ -296,11 +296,11 @@ class KAParserImdb extends KAApi
 				}
 				elseif ($col == 'awards')
 				{
-					$result['releases'] = $this->getNameAwards($this->getPageById($id, 'awards'));
+					$result['awards'] = $this->getNameAwards($this->getPageById($id, 'awards'));
 				}
-				elseif ($col == 'posters')
+				elseif ($col == 'photo')
 				{
-					$result['posters'] = $this->getNamePhoto($id, $xpath);
+					$result['photo'] = $this->getNamePhoto($id, $xpath);
 				}
 				else
 				{
@@ -325,7 +325,7 @@ class KAParserImdb extends KAApi
 				'filmography'  => $this->getFilmography($xpath),
 				'biography'    => $this->getBiography($id, $xpath),
 				'awards'       => $this->getNameAwards($this->getPageById($id, 'awards')),
-				'posters'      => $this->getNamePhoto($id, $xpath)
+				'photo'        => $this->getNamePhoto($id, $xpath)
 			);
 		}
 
@@ -559,7 +559,7 @@ class KAParserImdb extends KAApi
 					$_time = $matches[1];
 				}
 
-				// TODO Crappy gmdate() isn't working with timestamp more than 86399 and will return 00:00:00. Need to fix.
+				// Crappy gmdate() isn't working with timestamp more than 86399 and will return 00:00:00. Need to fix.
 				return gmdate('H:i:s', $_time);
 			},
 			$duration['datetime']
@@ -1147,20 +1147,71 @@ class KAParserImdb extends KAApi
 				// Check if tables have a rows
 				if ($node->childNodes->length > 0)
 				{
+				$i = 0;
+				echo '<pre>';
 					// Loop through <tr> nodes
-					foreach ($node->childNodes as $index => $tr_node)
+					foreach ($node->childNodes as $index => $tr)
 					{
-						$awards[$key]['awards'][$index]['year'] = trim($tr_node->childNodes->item(0)->nodeValue);
-						$awards[$key]['awards'][$index]['nominated'] = trim($tr_node->childNodes->item(2)->childNodes->item(3)->nodeValue);
-						$desc = trim($tr_node->childNodes->item(4)->childNodes->item(0)->nodeValue);
-						$desc .= "\n" . trim($tr_node->childNodes->item(4)->childNodes->item(2)->nodeValue);
-						$desc .= ' ' . trim($tr_node->childNodes->item(4)->childNodes->item(4)->nodeValue);
-						$awards[$key]['awards'][$index]['desc'] = $desc;
+						//print_r($tr->childNodes->item(2)->childNodes->item(1)->nodeValue);
+						//echo $tr->childNodes->item(0)->getAttribute('class');
+
+						// Check if <td> contain class with 'award_year' value and children <a> has no empty value
+						if (strpos($tr->childNodes->item(0)->getAttribute('class'), 'award_year') !== false
+							&& !empty($tr->childNodes->item(0)->childNodes->item(1)->nodeValue))
+						{
+							$awards[$key]['award'][$index]['year'] = (int) trim($tr->childNodes->item(0)->childNodes->item(1)->nodeValue);
+
+							// Check if <td> contain class with 'award_outcome' value and children <a> has no empty value
+							if ((is_object($tr->childNodes->item(2)) && strpos($tr->childNodes->item(2)->getAttribute('class'), 'award_outcome') !== false)
+								&& !empty($tr->childNodes->item(2)->nodeValue))
+							{
+								$i++;
+								$awards[$key]['award'][$index]['outcome'][$i]['state'] = trim($tr->childNodes->item(2)->childNodes->item(1)->nodeValue);
+
+								if ((is_object($tr->childNodes->item(2)->childNodes->item(3))
+									&& strpos($tr->childNodes->item(2)->childNodes->item(3)->getAttribute('class'), 'award_category') !== false)
+									&& !empty($tr->childNodes->item(2)->childNodes->item(3)->nodeValue))
+								{
+									$awards[$key]['award'][$index]['outcome'][$i]['category'] = trim($tr->childNodes->item(2)->childNodes->item(3)->nodeValue);
+								}
+							}
+						}
+						else
+						{
+						//print_r($tr->childNodes->item(2));
+							if ((is_object($tr->childNodes->item(0))
+								/*&& strpos($tr->childNodes->item(0)->getAttribute('class'), 'award_category') !== false*/)
+								&& !empty($tr->childNodes->item(0)->nodeValue))
+							{
+								$index = $index - $tr->childNodes->item(0)->getAttribute('rowspan');
+								$awards[$key]['award'][$index]['outcome'][]['state'] = trim($tr->childNodes->item(0)->childNodes->item(1)->nodeValue);
+								$awards[$key]['award'][$index]['outcome'][]['category'] = trim($tr->childNodes->item(0)->childNodes->item(1)->nodeValue);
+							}
+						}
+
+						// Check if <td> contain class with 'award_outcome' value and children <a> has no empty value
+						if ((is_object($tr->childNodes->item(2)) && strpos($tr->childNodes->item(2)->getAttribute('class'), 'award_outcome') !== false)
+							&& !empty($tr->childNodes->item(2)->nodeValue))
+						{
+							//$awards[$key]['award'][$index]['outcome']['state'] = trim($tr->childNodes->item(2)->childNodes->item(1)->nodeValue);
+
+							/*if ((is_object($tr->childNodes->item(2)->childNodes->item(3))
+								&& strpos($tr->childNodes->item(2)->childNodes->item(3)->getAttribute('class'), 'award_category') !== false)
+								&& !empty($tr->childNodes->item(2)->childNodes->item(3)->nodeValue))
+							{
+								$awards[$key]['award'][$index]['outcome']['category'] = trim($tr->childNodes->item(2)->childNodes->item(3)->nodeValue);
+							}*/
+						}
+
+						/*$desc = trim($tr->childNodes->item(4)->childNodes->item(0)->nodeValue);
+						$desc .= "\n" . trim($tr->childNodes->item(4)->childNodes->item(2)->nodeValue);
+						$desc .= ' ' . trim($tr->childNodes->item(4)->childNodes->item(4)->nodeValue);
+						$awards[$key]['awards'][$index]['desc'] = $desc;*/
 					}
 				}
 			}
 		}
-
+print_r($awards);
 		return $awards;
 	}
 
@@ -1176,15 +1227,16 @@ class KAParserImdb extends KAApi
 	 */
 	protected function getNamePhoto($id, $xpath)
 	{
-		$nodes = @$xpath->query($this->params->get('imdb.patterns.name.posters.0'));
+		$nodes = @$xpath->query($this->params->get('imdb.patterns.name.photo.0'));
 		$mv_url = $nodes->item(0)->getAttribute('href');
 		$cover_url = $nodes->item(0)->childNodes->item(1)->getAttribute('src');
-		$poster_url = '';
+		$photo_url = '';
 		$config = JFactory::getConfig();
-		$tmp_img_path = JPath::clean($config->get('tmp_path') . '/parser/dl_images/');
-		$tmp_img_path_www = JUri::base() . 'tmp/parser/dl_images/';
-		$filename1 = $id . '_' . basename($cover_url);
+		$tmp_img_path = JPath::clean($config->get('tmp_path') . '/parser/dl_images/imdb/');
+		$tmp_img_path_www = JUri::base() . 'tmp/parser/dl_images/imdb/';
+		$filename1 = basename($cover_url);
 		$filename2 = '';
+		$images = array();
 
 		// Get the media viewer ID from $mv_url for poster.
 		preg_match('@mediaviewer/(\w+)?@is', $mv_url, $ids);
@@ -1192,26 +1244,35 @@ class KAParserImdb extends KAApi
 		if (array_key_exists(1, $ids))
 		{
 			$html = $this->getPageById($id, 'name_photo', array('itemid' => $ids[1]));
-			$dom = new DOMDocument('1.0', 'utf-8');
-			@$dom->loadHTML($html);
-			$mb_xpath = new DOMXPath($dom);
-			$json_raw = @$mb_xpath->query($this->params->get('imdb.patterns.posters.1'))->item(0)->nodeValue;
-			$object = json_decode($json_raw);
 
-			// Check if json is valid for UTF8 symbols.
-			if (json_last_error() == JSON_ERROR_UTF8)
+			if (preg_match('@window.IMDbReactInitialState.push\({\'mediaviewer\':(.*?)\}\);@iU', $html, $js) !== false)
 			{
-				$json_raw = utf8_decode($json_raw);
-				$object = json_decode($json_raw);
-			}
+				$array = json_decode($js[1], true);
 
-			foreach ($object->mediaViewerModel->allImages as $item)
-			{
-				if ($item->id == $ids[1])
+				// Check if json is valid for UTF8 symbols.
+				if (json_last_error() == JSON_ERROR_UTF8)
 				{
-					$poster_url = $item->src;
-					$filename2 = $id . '_' . basename($poster_url);
-					break;
+					$js = utf8_decode($js[1]);
+					$array = json_decode($js, true);
+				}
+
+				if (is_array($array) && array_key_exists('galleries', $array))
+				{
+					foreach ($array['galleries'][$id]['allImages'] as $key => $item)
+					{
+						$images[$key]['cover'] = $item['msrc'];
+						$images[$key]['photo'] = $item['src'];
+
+						// Get the part of filename from main cover to search for photo, because cover and photo should be the same.
+						$cover_part = explode('@', $filename1);
+						$photo_part = explode('@', basename($item['src']));
+
+						if ((isset($cover_part[0]) && isset($photo_part[0])) && ($cover_part[0] == $photo_part[0]))
+						{
+							$photo_url = $item['src'];
+							$filename2 = basename($photo_url);
+						}
+					}
 				}
 			}
 
@@ -1219,6 +1280,7 @@ class KAParserImdb extends KAApi
 			jimport('joomla.filesystem.folder');
 			JFolder::create($tmp_img_path);
 
+			// Get cover
 			// If file not found in 'tmp' folder when request it from remote
 			if (!is_file($tmp_img_path . $filename1))
 			{
@@ -1235,36 +1297,37 @@ class KAParserImdb extends KAApi
 				}
 			}
 
+			// Get photo
 			// If file not found in 'tmp' folder when request it from remote.
 			if (!is_file($tmp_img_path . $filename2))
 			{
-				$response2 = parent::getRemoteData(
-					$poster_url,
-					array(
-						'Referer' => 'http://www.imdb.com/name/' . $id . '/mediaviewer/' . $ids[1]
-					)
-				);
-
-				if ($response2->code == 200)
+				if (!empty($filename2))
 				{
-					file_put_contents($tmp_img_path . $filename2, $response2->body);
+					$response2 = parent::getRemoteData(
+						$photo_url,
+						array(
+							'Referer' => 'http://www.imdb.com/name/' . $id . '/mediaviewer/' . $ids[1]
+						)
+					);
+
+					if ($response2->code == 200)
+					{
+						file_put_contents($tmp_img_path . $filename2, $response2->body);
+					}
 				}
 			}
 		}
 
 		return array(
-			'imdb'  => array(
-				'cover'  => $cover_url,
-				'poster' => $poster_url
-			),
+			'imdb'  => $images,
 			'local' => array(
 				'filesystem' => array(
 					'cover'  => JPath::clean($tmp_img_path . $filename1),
-					'poster' => JPath::clean($tmp_img_path . $filename2)
+					'photo'  => JPath::clean($tmp_img_path . $filename2)
 				),
-				'webserver'  => array(
-					'cover'  => $tmp_img_path_www . $filename1,
-					'poster' => $tmp_img_path_www . $filename2
+				'webserver' => array(
+					'cover' => $tmp_img_path_www . $filename1,
+					'photo' => $tmp_img_path_www . $filename2
 				)
 			)
 		);

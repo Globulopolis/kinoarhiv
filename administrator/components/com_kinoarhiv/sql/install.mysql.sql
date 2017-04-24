@@ -360,12 +360,14 @@ CREATE TABLE IF NOT EXISTS `#__ka_rel_names` (
 CREATE TABLE IF NOT EXISTS `#__ka_rel_names_career` (
   `career_id` int(11) NOT NULL DEFAULT '0',
   `name_id` int(11) NOT NULL DEFAULT '0',
+  `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`career_id`,`name_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_rel_names_genres` (
   `genre_id` int(11) NOT NULL DEFAULT '0',
   `name_id` int(11) NOT NULL DEFAULT '0',
+  `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`genre_id`,`name_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

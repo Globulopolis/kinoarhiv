@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.tabstate');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.modal', 'collapseModal');
 ?>

@@ -43,6 +43,8 @@ li.plupload_uploading a {
 		width: auto !important;
 	}
 }
+/* end plupload
+----------------------------------*/
 
 /* jQuery More plugin v2.0.0
 ----------------------------------*/
@@ -62,9 +64,8 @@ li.plupload_uploading a {
 .more-link img {
 	border: none;
 }
-
-/* Override style to prevent slider overlapping in timepicker */
-.ui-datepicker { width: 20em !important; }
+/* end jQuery More plugin v2.0.0
+----------------------------------*/
 
 /* Timepicker
 ----------------------------------*/
@@ -98,3 +99,20 @@ li.plupload_uploading a {
 .ui-timepicker-div.ui-timepicker-oneLine dl dd.ui_tpicker_microsec:before { content:'.'; display:inline-block; }
 .ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_unit_hide,
 .ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_unit_hide:before{ display: none; }
+
+/* Override style to prevent slider overlapping in timepicker */
+.ui-datepicker { width: 20em !important; }
+/* end Timepicker
+----------------------------------*/
+
+/* free jqGrid */
+.searchFilter .input-elm {
+	width: 300px !important;
+	height: auto;
+}
+
+.ui-jqgrid .ui-pg-table .ui-pg-button {
+	font-weight: normal;
+}
+/* end free jqGrid
+----------------------------------*/

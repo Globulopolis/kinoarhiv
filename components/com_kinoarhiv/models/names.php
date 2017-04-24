@@ -172,6 +172,20 @@ class KinoarhivModelNames extends JModelList
 
 		$query->where('n.state = 1 AND n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND n.access IN (' . $groups . ')');
 
+		if ($params->get('use_alphabet') == 1)
+		{
+			$letter = $app->input->get('letter', '', 'string');
+
+			if ($letter != '')
+			{
+				if (preg_match('#\p{L}#u', $letter, $matches))
+				{
+					// Only any kind of letter from any language.
+					$query->where('n.name LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
+				}
+			}
+		}
+
 		$filters = $this->getFiltersData();
 
 		if ($filters !== false)

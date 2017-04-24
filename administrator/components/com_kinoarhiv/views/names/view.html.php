@@ -29,10 +29,6 @@ class KinoarhivViewNames extends JViewLegacy
 
 	protected $params;
 
-	protected $form_edit_group;
-
-	protected $form_attribs_group;
-
 	/**
 	 * Display the view
 	 *
@@ -50,10 +46,11 @@ class KinoarhivViewNames extends JViewLegacy
 		switch ($task)
 		{
 			case 'add':
-				$this->edit($tpl);
-				break;
 			case 'edit':
-				$this->edit($tpl);
+				$this->edit();
+				break;
+			case 'editNameAwards':
+				$this->editNameAwards('edit_awards');
 				break;
 			default:
 				$this->listItems($tpl);
@@ -97,20 +94,20 @@ class KinoarhivViewNames extends JViewLegacy
 	/**
 	 * Display the view for a name edit.
 	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
 	 * @return  void
 	 *
 	 * @throws  Exception
 	 *
 	 * @since   3.0
 	 */
-	protected function edit($tpl)
+	protected function edit()
 	{
-		$app = JFactory::getApplication();
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
+		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$form = $this->get('Form');
-		$items = new Registry;
+		$form   = $this->get('Form');
+		$items  = new Registry;
 		$errors = $this->get('Errors');
 
 		if (count($errors))
@@ -152,17 +149,45 @@ class KinoarhivViewNames extends JViewLegacy
 		$items->set('img_folder', $img_folder);
 		$this->items = $items;
 		$this->form = $form;
-		$this->form_edit_group = 'name';
-		$this->form_attribs_group = 'attribs';
 		$this->params = $params;
 
 		if ($this->getLayout() !== 'modal')
 		{
-			$this->addToolbar($tpl);
+			$this->addToolbar('edit');
 		}
 
 		parent::display('edit');
 		$app->input->set('hidemainmenu', true);
+	}
+
+	/**
+	 * Display the view for an award edit.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
+	protected function editNameAwards($tpl)
+	{
+		$this->form = $this->get('Form');
+		$errors = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
+
+		if ($this->getLayout() !== 'modal')
+		{
+			$this->addToolbar('edit_awards');
+		}
+
+		parent::display($tpl);
+		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}
 
 	/**
@@ -186,10 +211,11 @@ class KinoarhivViewNames extends JViewLegacy
 			JToolbarHelper::save2new('names.save2new');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('names.cancel');
+			JToolbarHelper::divider();
 		}
 		elseif ($task == 'edit')
 		{
-			if ($this->form->getValue('id', $this->form_edit_group) != 0)
+			if ($this->form->getValue('id', 'name') != 0)
 			{
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . $this->items->get('title')), 'play');
 			}
@@ -205,6 +231,33 @@ class KinoarhivViewNames extends JViewLegacy
 			JToolbarHelper::cancel('names.cancel');
 			JToolbarHelper::divider();
 			JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
+
+			$layout = new JLayoutFile('joomla.toolbar.modal');
+			$dhtml = $layout->render(
+				array('selector' => 'parserModal', 'text' => JText::_('COM_KA_PARSER_TOOLBAR_BUTTON'), 'icon' => 'database')
+			);
+			JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'parser');
+		}
+		elseif ($task == 'edit_awards')
+		{
+			if ($this->form->getValue('id', 'award') != 0)
+			{
+				JToolbarHelper::title(
+					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_AWARDS_LAYOUT_EDIT_TITLE')),
+					'play'
+				);
+			}
+			else
+			{
+				JToolbarHelper::title(
+					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_NAMES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_AW_LAYOUT_ADD_TITLE')),
+					'play'
+				);
+			}
+
+			JToolbarHelper::apply('names.saveNameAwards');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('names.cancel', 'JTOOLBAR_CLOSE');
 		}
 		else
 		{

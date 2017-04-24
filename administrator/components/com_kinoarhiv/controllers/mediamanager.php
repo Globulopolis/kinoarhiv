@@ -57,7 +57,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	}
 
 	/**
-	 * Proxy for $this->setFrontpage(true) method
+	 * Proxy for $this->setFrontpage(0) method
 	 *
 	 * @return void
 	 *
@@ -65,19 +65,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 */
 	public function unsetFrontpage()
 	{
-		$this->setFrontpage(true);
+		$this->setFrontpage(0);
 	}
 
 	/**
 	 * Method to publish or unpublish posters(photo) on movie(person) info page(not on posters page)
 	 *
-	 * @param   boolean  $state  Action state
+	 * @param   integer  $state  Action state
 	 *
 	 * @return  void
 	 *
 	 * @since  3.0
 	 */
-	public function setFrontpage($state = false)
+	public function setFrontpage($state = 1)
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -103,7 +103,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$message = $state ? JText::_('COM_KA_ITEMS_EDIT_UNSET_ONFRONTPAGE') : JText::_('COM_KA_ITEMS_EDIT_SET_ONFRONTPAGE');
+		$message = !$state ? JText::_('COM_KA_ITEMS_EDIT_UNSET_ONFRONTPAGE') : JText::_('COM_KA_ITEMS_EDIT_SET_ONFRONTPAGE');
 		$this->setRedirect($redirect, $message);
 	}
 
@@ -521,7 +521,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		jimport('administrator.components.com_kinoarhiv.helpers.filesystem', JPATH_ROOT);
+		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$app = JFactory::getApplication();
@@ -542,7 +542,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$dst_path = KAContentHelper::getPath($section, $type, $tab, $id);
 
 		// Copy selected folders
-		if (KAFilesystemHelper::move($src_path, $dst_path, true) === false)
+		if (KAFilesystem::getInstance()->move($src_path, $dst_path, true) === false)
 		{
 			$this->setRedirect($url, JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ERROR_FS'), 'error');
 

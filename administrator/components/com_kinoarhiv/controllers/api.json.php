@@ -22,14 +22,16 @@ class KinoarhivControllerApi extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
 	 * @since   3.1
 	 */
 	public function data()
 	{
 		if ($this->checkAccess() === false)
 		{
-			throw new Exception('Access denied', 403);
+			header('HTTP/1.0 403 Forbidden');
+			echo json_encode(array('success' => false, 'message' => '403 Forbidden'));
+
+			return;
 		}
 
 		$this->addModelPath(JPATH_ROOT . '/components/com_kinoarhiv/models');
@@ -38,7 +40,7 @@ class KinoarhivControllerApi extends JControllerLegacy
 			'item_state' => array(1, 0)
 		);
 
-		$model   = $this->getModel('api', '', $model_config);
+		$model   = $this->getModel('API', '', $model_config);
 		$content = $this->input->get('content', '', 'word');
 		$method  = 'get' . ucfirst($content);
 
@@ -48,7 +50,9 @@ class KinoarhivControllerApi extends JControllerLegacy
 		}
 		else
 		{
-			throw new Exception($method . '() not found in class KinoarhivModelAPIBackend', 500);
+			echo json_encode(array('success' => false, 'message' => $method . '() not found in class KinoarhivModelAPI'));
+
+			return;
 		}
 
 		echo json_encode($result);

@@ -228,8 +228,6 @@ class KinoarhivModelVendor extends JModelForm
 				$session_data['id'] = $db->insertid();
 				$app->setUserState('com_kinoarhiv.vendors.' . $user->id . '.edit_data', $session_data);
 			}
-
-			return true;
 		}
 		catch (Exception $e)
 		{
@@ -237,6 +235,11 @@ class KinoarhivModelVendor extends JModelForm
 
 			return false;
 		}
+
+		// Clear the cache
+		$this->cleanCache();
+
+		return true;
 	}
 
 	/**

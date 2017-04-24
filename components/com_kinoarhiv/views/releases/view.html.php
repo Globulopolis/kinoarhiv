@@ -36,8 +36,6 @@ class KinoarhivViewReleases extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
-
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();

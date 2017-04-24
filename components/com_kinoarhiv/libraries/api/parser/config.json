@@ -66,9 +66,8 @@
 					}
 				},
 				"awards": "//div[@class=\"article listo\"]/h3/following-sibling::table",
-				"posters": [
-					"//td[@id=\"img_primary\"]/div/a",
-					"//script[@id=\"imageJson\"]/text()"
+				"photo": [
+					"//td[@id=\"img_primary\"]/div/a"
 				]
 			}
 		},

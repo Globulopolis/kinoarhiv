@@ -193,11 +193,22 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 */
 	protected function loadFormData()
 	{
+		$app  = JFactory::getApplication();
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.trailers.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data))
 		{
 			$data = $this->getItem();
+
+			if (empty($data['trailer']) && $app->input->getWord('type', '') == 'trailers')
+			{
+				$filters = (array) $app->getUserState('com_kinoarhiv.trailers.filter');
+				$data['trailer'] = (object) array(
+					'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
+					'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
+					'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+				);
+			}
 		}
 
 		return $data;
@@ -272,16 +283,18 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to get a list of gallery files.
 	 *
-	 * @param   string  $section   Type of the item. Can be 'movie' or 'name'.
-	 * @param   string  $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
-	 * @param   array   $item_ids  Items.
+	 * @param   string   $section   Type of the item. Can be 'movie' or 'name'.
+	 * @param   string   $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   array    $item_ids  Items.
+	 * @param   boolean  $item      Select gallery items by parent ID(movie id or name id). Default - select by gallery
+	 *                              item ID($item_ids an gallery IDs).
 	 *
 	 * @return  object
 	 *
 	 * @throws  RuntimeException
 	 * @since   3.1
 	 */
-	public function getGalleryFiles($section = '', $type = '', $item_ids = array())
+	public function getGalleryFiles($section = '', $type = '', $item_ids = array(), $item = false)
 	{
 		$db      = $this->getDbo();
 		$input   = JFactory::getApplication()->input;
@@ -302,9 +315,17 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			throw new RuntimeException(JText::_('ERROR'), 500);
 		}
 
-		$query->select($db->quoteName(array('id', 'filename')))
-			->from($db->quoteName($table))
-			->where($db->quoteName('id') . ' IN (' . implode(',', $item_ids) . ')');
+		$query->select($db->quoteName(array('id', 'filename', $section . '_id', 'type')))
+			->from($db->quoteName($table));
+
+		if (!$item)
+		{
+			$query->where($db->quoteName('id') . ' IN (' . implode(',', $item_ids) . ')');
+		}
+		else
+		{
+			$query->where($db->quoteName($section . '_id') . ' IN (' . implode(',', $item_ids) . ')');
+		}
 
 		$db->setQuery($query);
 
@@ -643,7 +664,8 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 					$query->insert($db->quoteName('#__ka_trailers'))
 						->columns(
 							$db->quoteName(
-								array('id', 'movie_id', 'title', 'embed_code', 'screenshot', 'urls', 'resolution',
+								array(
+									'id', 'movie_id', 'title', 'embed_code', 'screenshot', 'urls', 'resolution',
 									'dar', 'duration', 'video', 'subtitles', 'chapters', 'frontpage', 'access',
 									'state', 'language', 'is_movie'
 								)
@@ -683,8 +705,6 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 						$session_data['trailer']['item_id'] = $db->insertid();
 						$app->setUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data', $session_data);
 					}
-
-					return true;
 				}
 				catch (Exception $e)
 				{
@@ -694,6 +714,9 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				}
 			}
 		}
+
+		// Clear the cache
+		$this->cleanCache();
 
 		return true;
 	}
@@ -705,7 +728,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
 	 * @param   integer  $tab      Tab number from gallery(or empty value for 'trailers', 'soundtracks').
 	 * @param   integer  $id       The item ID (movie or name).
-	 * @param   array    $ids      Array of ID to remove(file id).
+	 * @param   array    $ids      Array of IDs to remove(file id).
 	 *
 	 * @return  boolean   True on success, false on error.
 	 *
@@ -713,7 +736,8 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 */
 	public function remove($section, $type, $tab = 0, $id = 0, $ids = array())
 	{
-		$db = $this->getDbo();
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
 
 		if ($section == 'movie')
 		{
@@ -734,7 +758,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			}
 			else
 			{
-				JFactory::getApplication()->enqueueMessage('Wrong type', 'error');
+				$app->enqueueMessage('Wrong type', 'error');
 
 				return false;
 			}
@@ -749,7 +773,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 		else
 		{
-			JFactory::getApplication()->enqueueMessage('Wrong section', 'error');
+			$app->enqueueMessage('Wrong section', 'error');
 
 			return false;
 		}
@@ -762,7 +786,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
-			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
@@ -1056,7 +1080,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		if ($is_new == 0)
 		{
 			// Rename the file
-			$path = KAContentHelper::getPath('movie', 'trailers', 0, $id);
+			$path = KAContentHelper::getPath('movie', 'trailers', null, $id);
 
 			if ($old_filename !== $new_filename)
 			{

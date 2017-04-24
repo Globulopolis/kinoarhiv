@@ -17,7 +17,7 @@ jimport('components.com_kinoarhiv.helpers.component', JPATH_ROOT);
  *
  * @since  3.0
  */
-class KAComponentHelperBackend extends JComponentHelper
+class KAComponentHelperBackend
 {
 	/**
 	 * Include some necessary JS into the HEAD of the document. Don't include if document format is not a html.
@@ -29,7 +29,7 @@ class KAComponentHelperBackend extends JComponentHelper
 	public static function setHeadTags()
 	{
 		$document = JFactory::getDocument();
-		$params = self::getParams('com_kinoarhiv');
+		$params   = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Return nothing because JHtml::script doesn't work for JDocumentRaw
 		if ($document->getType() != 'html')
@@ -44,7 +44,6 @@ class KAComponentHelperBackend extends JComponentHelper
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
-		JHtml::_('script', 'media/com_kinoarhiv/js/js.cookie.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
 
@@ -59,15 +58,18 @@ class KAComponentHelperBackend extends JComponentHelper
 			),
 			'language' => array(
 				'tag'                          => JFactory::getLanguage()->getTag(),
-				'JGLOBAL_SELECT_AN_OPTION'     => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
-				'COM_KA_CLOSE'                 => JText::_('COM_KA_CLOSE'),
-				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED'),
-				'COM_KA_FILE_UPLOAD_ERROR'     => JText::_('COM_KA_FILE_UPLOAD_ERROR'),
-				'COM_KA_FILES_UPLOAD_SUCCESS'  => JText::_('COM_KA_FILES_UPLOAD_SUCCESS'),
-				'COM_KA_REQUIRED'              => JText::_('COM_KA_REQUIRED'),
-				'JCLEAR'                       => JText::_('JCLEAR'),
-				'COM_KA_READ_MORE'             => JText::_('COM_KA_READ_MORE'),
-				'COM_KA_READ_LESS'             => JText::_('COM_KA_READ_LESS'),
+				'JGLOBAL_SELECT_AN_OPTION'     => JText::_('JGLOBAL_SELECT_AN_OPTION', true), // Default placeholder, if not set for Select2,
+				'COM_KA_CLOSE'                 => JText::_('COM_KA_CLOSE', true),
+				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED', true),
+				'COM_KA_FILE_UPLOAD_ERROR'     => JText::_('COM_KA_FILE_UPLOAD_ERROR', true),
+				'COM_KA_FILES_UPLOAD_SUCCESS'  => JText::_('COM_KA_FILES_UPLOAD_SUCCESS', true),
+				'COM_KA_REQUIRED'              => JText::_('COM_KA_REQUIRED', true),
+				'JCLEAR'                       => JText::_('JCLEAR', true),
+				'COM_KA_READ_MORE'             => JText::_('COM_KA_READ_MORE', true),
+				'COM_KA_READ_LESS'             => JText::_('COM_KA_READ_LESS', true),
+				'COM_KA_DELETE_SELECTED'       => JText::_('COM_KA_DELETE_SELECTED', true),
+				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
+				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');
@@ -82,6 +84,7 @@ class KAComponentHelperBackend extends JComponentHelper
 	 */
 	public static function loadMediamanagerAssets()
 	{
+		JHtml::_('jquery.framework');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css');
 		JHtml::_('script', 'media/com_kinoarhiv/plupload/plupload.full.min.js');
 		KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/plupload/i18n');
@@ -95,7 +98,7 @@ class KAComponentHelperBackend extends JComponentHelper
 	 * @param   string   $format  Document type format.
 	 * @param   integer  $count   Number of errors to process.
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	 * @since  3.0
 	 */

@@ -18,30 +18,6 @@ defined('_JEXEC') or die;
 class KinoarhivControllerPremieres extends JControllerLegacy
 {
 	/**
-	 * Proxy to KinoarhivControllerPremieres::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function save2new()
-	{
-		$this->save();
-	}
-
-	/**
-	 * Proxy to KinoarhivControllerPremieres::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function apply()
-	{
-		$this->save();
-	}
-
-	/**
 	 * Method to save a record.
 	 *
 	 * @return  void
@@ -108,8 +84,8 @@ class KinoarhivControllerPremieres extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors_arr = $app->getMessageQueue();
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors_arr)));
+			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -165,49 +141,5 @@ class KinoarhivControllerPremieres extends JControllerLegacy
 		}
 
 		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_SAVED')));
-	}
-
-	/**
-	 * Method to remove an item(s).
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function remove()
-	{
-		if (!KAComponentHelper::checkToken('post'))
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
-
-			return;
-		}
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv'))
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-
-			return;
-		}
-
-		$model = $this->getModel('premiere');
-		$result = $model->remove();
-
-		if ($result === false)
-		{
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
-
-			return;
-		}
-
-		if (!$result)
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_ITEMS_EDIT_ERROR')));
-
-			return;
-		}
-
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
 	}
 }

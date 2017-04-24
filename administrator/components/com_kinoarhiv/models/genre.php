@@ -48,11 +48,22 @@ class KinoarhivModelGenre extends JModelForm
 	 */
 	protected function loadFormData()
 	{
+		$app  = JFactory::getApplication();
 		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.genres.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data))
 		{
 			$data = $this->getItem();
+
+			if (empty($data))
+			{
+				$filters = (array) $app->getUserState('com_kinoarhiv.names.filter');
+				$data = (object) array(
+					'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
+					'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
+					'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+				);
+			}
 		}
 
 		return $data;
@@ -269,8 +280,6 @@ class KinoarhivModelGenre extends JModelForm
 				$session_data['id'] = $db->insertid();
 				$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', $session_data);
 			}
-
-			return true;
 		}
 		catch (Exception $e)
 		{
@@ -278,6 +287,11 @@ class KinoarhivModelGenre extends JModelForm
 
 			return false;
 		}
+
+		// Clear the cache
+		$this->cleanCache();
+
+		return true;
 	}
 
 	/**

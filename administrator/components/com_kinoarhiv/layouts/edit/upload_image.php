@@ -52,7 +52,6 @@ $token = JSession::getFormToken();
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
 		array(
-			'params' => $data['params'],
 			'url' => $url,
 			'max_files' => $max_files,
 			'multipart_params' => '{"' . $token . '": 1}',

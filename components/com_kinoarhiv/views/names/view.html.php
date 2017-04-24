@@ -52,8 +52,6 @@ class KinoarhivViewNames extends JViewLegacy
 			return false;
 		}
 
-		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
-
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$throttle_enable = $this->params->get('throttle_image_enable', 0);

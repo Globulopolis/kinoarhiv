@@ -18,30 +18,6 @@ defined('_JEXEC') or die;
 class KinoarhivControllerCountries extends JControllerLegacy
 {
 	/**
-	 * Proxy to KinoarhivControllerCountries::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function save2new()
-	{
-		$this->save();
-	}
-
-	/**
-	 * Proxy to KinoarhivControllerCountries::save()
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function apply()
-	{
-		$this->save();
-	}
-
-	/**
 	 * Method to save a record.
 	 *
 	 * @return  mixed
@@ -97,8 +73,8 @@ class KinoarhivControllerCountries extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors_arr = $app->getMessageQueue();
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors_arr)));
+			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}

@@ -189,8 +189,6 @@ class KinoarhivModelReview extends JModelForm
 		try
 		{
 			$db->execute();
-
-			return true;
 		}
 		catch (Exception $e)
 		{
@@ -198,6 +196,11 @@ class KinoarhivModelReview extends JModelForm
 
 			return false;
 		}
+
+		// Clear the cache
+		$this->cleanCache();
+
+		return true;
 	}
 
 	/**

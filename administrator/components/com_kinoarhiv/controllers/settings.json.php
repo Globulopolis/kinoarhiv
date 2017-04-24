@@ -60,9 +60,10 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		$result = $model->save($data);
 
 		// Check the return value.
-		if ($result === false)
+		if (!$result)
 		{
-			echo json_encode(array('success' => false, 'message' => JText::sprintf('JERROR_SAVE_FAILED', $model->getError())));
+			$errors = KAComponentHelperBackend::renderErrors(JFactory::getApplication()->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}

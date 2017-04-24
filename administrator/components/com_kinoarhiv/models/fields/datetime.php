@@ -110,7 +110,8 @@ class JFormFieldDatetime extends JFormField
 		}
 
 		$html = '<div class="input-append">
-			<input type="text" name="' . $this->name . '" id="' . $this->id . '" value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" class="' . $class . '" ' . $attributes . ' />
+			<input type="text" name="' . $this->name . '" id="' . $this->id . '"'
+				. ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" class="' . $class . '" ' . $attributes . ' />
 		</div>';
 
 		return $html;

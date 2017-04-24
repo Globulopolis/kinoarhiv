@@ -585,14 +585,17 @@ class KinoarhivModelMovie extends JModelForm
 					{
 						$value->fs_alias = rawurlencode($value->fs_alias);
 
+						// This trick will remove double slash in URL if alias is empty.
+						$value->fs_alias = empty($value->fs_alias) ? '' : $value->fs_alias . '/';
+
 						if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 						{
 							$value->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-								. $value->fs_alias . '/' . $value->id . '/photo/thumb_' . $value->url_photo;
+								. $value->fs_alias . $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 						else
 						{
-							$value->poster = $params->get('media_actor_photo_root_www') . '/' . $value->fs_alias . '/'
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . $value->fs_alias
 								. $value->id . '/photo/thumb_' . $value->url_photo;
 						}
 					}
@@ -614,14 +617,17 @@ class KinoarhivModelMovie extends JModelForm
 						{
 							$value->dub_fs_alias = rawurlencode($value->dub_fs_alias);
 
+							// This trick will remove double slash in URL if alias is empty.
+							$value->dub_fs_alias = empty($value->dub_fs_alias) ? '' : $value->dub_fs_alias . '/';
+
 							if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 							{
 								$value->dub_url_photo = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-									. $value->dub_fs_alias . '/' . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
+									. $value->dub_fs_alias . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
 							}
 							else
 							{
-								$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . $value->dub_fs_alias . '/'
+								$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . $value->dub_fs_alias
 									. $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
 							}
 						}

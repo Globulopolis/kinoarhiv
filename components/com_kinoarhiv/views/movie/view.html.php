@@ -50,8 +50,6 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		JLoader::register('KAContentHelper', JPath::clean(JPATH_COMPONENT . '/helpers/content.php'));
-
 		$app = JFactory::getApplication();
 		$this->page = $app->input->get('page', 'movie', 'cmd');
 		$this->itemid = $app->input->get('Itemid');

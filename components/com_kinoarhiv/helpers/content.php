@@ -106,25 +106,22 @@ class KAContentHelper
 	/**
 	 * Method to get the filesystem path to a file.
 	 *
-	 * @param   string   $section  Type of the item. Can be 'movie' or 'name'.
-	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
-	 * @param   integer  $tab      Tab number from gallery(or empty value for 'trailers', 'soundtracks').
-	 * @param   integer  $id       The item ID (movie or name).
+	 * @param   string  $section  Type of the item. Can be 'movie' or 'name'.
+	 * @param   string  $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   mixed   $tab      Tab number from gallery(or null value for 'trailers', 'soundtracks').
+	 *                            If $tab is array when return array of paths for each type of $tab.
+	 * @param   mixed   $id       The item IDs(movie or name).
 	 *
-	 * @return  string   Absolute filesystem path to a file.
+	 * @return  mixed    Absolute filesystem path to a file, array of paths, false otherwise.
 	 *
 	 * @since   3.0
 	 */
-	public static function getPath($section = '', $type = '', $tab = 0, $id = 0)
+	public static function getPath($section, $type, $tab = 0, $id = 0)
 	{
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$path = JPATH_ROOT . DIRECTORY_SEPARATOR . 'tmp';
+		$path   = JPATH_ROOT . '/tmp';
 		$folder = '';
-		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
-		$type = empty($type) ? $app->input->get('type', '', 'word') : $type;
-		$tab = empty($tab) ? $app->input->get('tab', 0, 'int') : $tab;
-		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
+		$paths  = '';
 
 		if ($section == 'movie')
 		{
@@ -132,23 +129,40 @@ class KAContentHelper
 			{
 				if ($tab == 1)
 				{
-					$path = $params->get('media_wallpapers_root');
+					$path   = $params->get('media_wallpapers_root');
 					$folder = 'wallpapers';
 				}
 				elseif ($tab == 2)
 				{
-					$path = $params->get('media_posters_root');
+					$path   = $params->get('media_posters_root');
 					$folder = 'posters';
 				}
 				elseif ($tab == 3)
 				{
-					$path = $params->get('media_scr_root');
+					$path   = $params->get('media_scr_root');
 					$folder = 'screenshots';
+				}
+				elseif (is_array($tab))
+				{
+					$paths = array(
+						1 => array(
+							'path'   => $params->get('media_wallpapers_root'),
+							'folder' => 'wallpapers'
+						),
+						2 => array(
+							'path'   => $params->get('media_posters_root'),
+							'folder' => 'posters'
+						),
+						3 => array(
+							'path'   => $params->get('media_scr_root'),
+							'folder' => 'screenshots'
+						),
+					);
 				}
 			}
 			elseif ($type == 'trailers')
 			{
-				$path = $params->get('media_trailers_root');
+				$path   = $params->get('media_trailers_root');
 				$folder = '';
 			}
 		}
@@ -158,18 +172,35 @@ class KAContentHelper
 			{
 				if ($tab == 1)
 				{
-					$path = $params->get('media_actor_wallpapers_root');
+					$path   = $params->get('media_actor_wallpapers_root');
 					$folder = 'wallpapers';
 				}
 				elseif ($tab == 2)
 				{
-					$path = $params->get('media_actor_posters_root');
+					$path   = $params->get('media_actor_posters_root');
 					$folder = 'posters';
 				}
 				elseif ($tab == 3)
 				{
-					$path = $params->get('media_actor_photo_root');
+					$path   = $params->get('media_actor_photo_root');
 					$folder = 'photo';
+				}
+				elseif (is_array($tab))
+				{
+					$paths = array(
+						1 => array(
+							'path'   => $params->get('media_actor_wallpapers_root'),
+							'folder' => 'wallpapers'
+						),
+						2 => array(
+							'path'   => $params->get('media_actor_posters_root'),
+							'folder' => 'posters'
+						),
+						3 => array(
+							'path'   => $params->get('media_actor_photo_root'),
+							'folder' => 'photo'
+						),
+					);
 				}
 			}
 		}
@@ -178,8 +209,35 @@ class KAContentHelper
 			return false;
 		}
 
-		$fs_alias = self::getFilesystemAlias($section, $id);
-		$result = JPath::clean($path . DIRECTORY_SEPARATOR . $fs_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $folder);
+		if (is_array($id))
+		{
+			$fs_alias = self::getFilesystemAlias($section, $id);
+			$result = array();
+
+			foreach ($id as $value)
+			{
+				if (is_array($tab))
+				{
+					$result[$value]['parent'] = JPath::clean($paths[1]['path'] . '/' . $fs_alias[$value] . '/' . $value);
+
+					foreach ($tab as $number)
+					{
+						$result[$value][$number] = JPath::clean(
+							$paths[$number]['path'] . '/' . $fs_alias[$value] . '/' . $value . '/' . $paths[$number]['folder']
+						);
+					}
+				}
+				else
+				{
+					$result[$value] = JPath::clean($path . '/' . $fs_alias[$value] . '/' . $value . '/' . $folder);
+				}
+			}
+		}
+		else
+		{
+			$fs_alias = self::getFilesystemAlias($section, array($id));
+			$result = JPath::clean($path . '/' . $fs_alias[$id] . '/' . $id . '/' . $folder);
+		}
 
 		return $result;
 	}
@@ -187,29 +245,35 @@ class KAContentHelper
 	/**
 	 * Method to get an item alias for filesystem.
 	 *
-	 * @param   string   $section        Type of the item. Can be 'movie' or 'name'.
-	 * @param   string   $id             The item ID (movie or name).
-	 * @param   boolean  $content_alias  Return first letter of content alias(`alias` field).
+	 * @param   string  $section  Type of the item. Can be 'movie' or 'name'.
+	 * @param   array   $ids      The item IDs (movie or name).
 	 *
-	 * @return  string  URL safe alias
+	 * @return  mixed   Array with URL safe aliases, false on errors.
 	 *
 	 * @since   3.0
 	 */
-	public static function getFilesystemAlias($section, $id, $content_alias = false)
+	public static function getFilesystemAlias($section, $ids)
 	{
-		$app = JFactory::getApplication();
-		$db = JFactory::getDbo();
-		$result = (object) array();
-		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
-		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
+		$db           = JFactory::getDbo();
+		$unicodeslugs = JFactory::getConfig()->get('unicodeslugs');
+		$results      = array();
+
+		if (!is_array($ids) || count($ids) < 1)
+		{
+			KAComponentHelper::eventLog('Empty IDs!');
+
+			return false;
+		}
 
 		if ($section == 'movie')
 		{
 			$table = '#__ka_movies';
+			$cols  = array('id', 'title', 'alias', 'fs_alias');
 		}
 		elseif ($section == 'name')
 		{
 			$table = '#__ka_names';
+			$cols  = array('id', 'name', 'latin_name', 'alias', 'fs_alias');
 		}
 		else
 		{
@@ -218,51 +282,84 @@ class KAContentHelper
 			return false;
 		}
 
-		$col = $content_alias ? 'alias' : 'fs_alias';
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
 		$query = $db->getQuery(true)
-			->select($db->quoteName($col))
+			->select($db->quoteName($cols))
 			->from($db->quoteName($table))
-			->where($db->quoteName('id') . ' = ' . (int) $id);
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
-		$fs_alias = $db->loadResult();
 
-		if (empty($fs_alias))
+		try
 		{
-			if ($section == 'movie')
-			{
-				$query = $db->getQuery(true)
-					->select($db->quoteName('title'))
-					->from($db->quoteName($table))
-					->where($db->quoteName('id') . ' = ' . (int) $id);
+			$rows = $db->loadAssocList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				$db->setQuery($query);
-				$result = $db->loadResult();
-			}
-			elseif ($section == 'name')
-			{
-				$query = $db->getQuery(true)
-					->select($db->quoteName(array('name', 'latin_name')))
-					->from($db->quoteName($table))
-					->where($db->quoteName('id') . ' = ' . (int) $id);
-
-				$db->setQuery($query);
-				$result = $db->loadObject();
-
-				if (!empty($result->latin_name))
-				{
-					$result = $result->latin_name;
-				}
-				else
-				{
-					$result = $result->name;
-				}
-			}
-
-			$result = JPath::clean($result);
-			$fs_alias = rawurlencode(StringHelper::substr($result, 0, 1));
+			return false;
 		}
 
-		return $fs_alias;
+		foreach ($rows as $row)
+		{
+			$results[$row['id']] = $row['fs_alias'];
+
+			if (empty($row['fs_alias']))
+			{
+				if (empty($row['alias']))
+				{
+					if ($section == 'movie')
+					{
+						$string = $row['title'];
+					}
+					elseif ($section == 'name')
+					{
+						$string = empty($row['latin_name']) ? $row['name'] : $row['latin_name'];
+					}
+					else
+					{
+						return false;
+					}
+
+					if ($unicodeslugs == 1)
+					{
+						$row['alias'] = JFilterOutput::stringUrlUnicodeSlug($string);
+					}
+					else
+					{
+						$row['alias'] = JFilterOutput::stringURLSafe($string);
+					}
+				}
+
+				$results[$row['id']] = rawurlencode(StringHelper::substr($row['alias'], 0, 1));
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Method to format alias. Since 7.1.0 version PHP on Windows now supports UTF-8 in paths.
+	 * See https://github.com/php/php-src/blob/e33ec61f9c1baa73bfe1b03b8c48a824ab2a867e/UPGRADING#L418
+	 *
+	 * TODO rawurldecode() maybe removed in future Kinoarhiv releases. Support of PHP < 7.1 will be dropped in Kinoarhiv.
+	 *
+	 * @param   string  $alias  Raw alias.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.1
+	 */
+	public static function formatFilesystemAlias($alias)
+	{
+		if (IS_WIN && version_compare(PHP_VERSION, '7.1.0', '<'))
+		{
+			$alias = rawurlencode($alias);
+		}
+
+		return $alias;
 	}
 }

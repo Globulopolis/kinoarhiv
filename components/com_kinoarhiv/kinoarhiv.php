@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 $params = JComponentHelper::getParams('com_kinoarhiv');
 JLoader::register('KAComponentHelper', JPath::clean(dirname(__FILE__) . '/helpers/component.php'));
+JLoader::register('KAContentHelper', JPath::clean(dirname(__FILE__) . '/helpers/content.php'));
 
 if ($params->get('offline') == 1)
 {

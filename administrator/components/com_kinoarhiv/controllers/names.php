@@ -10,8 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
 /**
  * Names list controller class
  *
@@ -92,24 +90,16 @@ class KinoarhivControllerNames extends JControllerLegacy
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
+		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
+		$id = $app->input->get('id', 0, 'int');
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.name'))
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.name.' . $id))
 		{
-			if ($document->getType() == 'html')
-			{
-				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-
-				return;
-			}
+			return;
 		}
 
 		$app = JFactory::getApplication();
@@ -119,22 +109,13 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		if (!$form)
 		{
-			if ($document->getType() == 'html')
-			{
-				$app->enqueueMessage($model->getError(), 'error');
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
 
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => $model->getError()));
-
-				return;
-			}
+			return;
 		}
 
 		// Process aliases for columns name
-		if ($app->input->get('quick_save', 0, 'int') == 1)
+		/*if ($app->input->get('quick_save', 0, 'int') == 1)
 		{
 			foreach ($data as $key => $value)
 			{
@@ -142,90 +123,52 @@ class KinoarhivControllerNames extends JControllerLegacy
 				$data['name'][$key] = $value;
 				unset($data['n_' . $key]);
 			}
-		}
+		}*/
 
-		// Store data for use in KinoarhivModelName::loadFormData()
-		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', $data);
 		$validData = $model->validate($form, $data, 'name');
-
-		if (!array_key_exists('id', $data) || empty($data['id']))
-		{
-			$id = $app->input->get('id', array(0), 'array');
-			$id = $id[0];
-		}
-		else
-		{
-			$id = $data['id'];
-		}
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), $document->getType());
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $id);
 
-			if ($document->getType() == 'html')
-			{
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $id);
-
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => $errors));
-
-				return;
-			}
+			return;
 		}
 
-		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.names.' . $user->id . '.data');
+		// Store data for use in KinoarhivModelName::loadFormData()
+		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', $validData);
+		$result = $model->save($validData['name']);
 
 		if (!$result)
 		{
-			if ($document->getType() == 'html')
-			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $id);
+			// Errors enqueue in the model
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $id);
 
-				return;
-			}
-			else
-			{
-				echo json_encode($session_data);
-
-				return;
-			}
+			return;
 		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.names.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
 
 		// Delete session data taken from model
-		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', null);
 
-		if ($document->getType() == 'html')
+		switch ($this->getTask())
 		{
-			$id = $session_data['data']['id'];
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=names.add', $message);
+				break;
 
-			// Set the redirect based on the task.
-			switch ($this->getTask())
-			{
-				case 'save2new':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=add', $message);
-					break;
-				case 'apply':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=names&task=edit&id[]=' . $id, $message);
-					break;
+			case 'apply':
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $session_data['name']['id'], $message);
+				break;
 
-				case 'save':
-				default:
-					$this->setRedirect('index.php?option=com_kinoarhiv&view=names', $message);
-					break;
-			}
-		}
-		else
-		{
-			echo json_encode($session_data);
+			case 'save':
+			default:
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=names', $message);
+				break;
 		}
 	}
 
@@ -281,7 +224,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	}
 
 	/**
-	 * Method to remove an item(s).
+	 * Removes an items.
 	 *
 	 * @return  void
 	 *
@@ -291,29 +234,83 @@ class KinoarhivControllerNames extends JControllerLegacy
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
+
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv.name'))
+		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv'))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
-		$model = $this->getModel('name');
-		$result = $model->remove();
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
+		jimport('joomla.filesystem.folder');
 
-		if ($result === false)
+		$ids = $app->input->get('id', array(), 'array');
+
+		if (!is_array($ids) || count($ids) < 1)
 		{
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::_('JGLOBAL_NO_ITEM_SELECTED'), 'error');
+
+			return;
+		}
+
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		$model = $this->getModel('name');
+		$fs = KAFilesystem::getInstance();
+		$paths = KAContentHelper::getPath('name', 'gallery', array(1, 2, 3), $ids);
+
+		foreach ($paths as $folder)
+		{
+			if (file_exists($folder[1]))
+			{
+				JFolder::delete($folder[1]);
+			}
+
+			if (file_exists($folder[2]))
+			{
+				JFolder::delete($folder[2]);
+			}
+
+			if (file_exists($folder[3]))
+			{
+				JFolder::delete($folder[3]);
+			}
+
+			// Delete parent folder
+			if ($fs->getFolderSize($folder['parent']) == 0)
+			{
+				if (file_exists($folder[3]))
+				{
+					JFolder::delete($folder['parent']);
+				}
+			}
+			else
+			{
+				$app->enqueueMessage(JText::sprintf('COM_KA_UNABLE_TO_DELETE_FOLDER_NOT_EMPTY', $folder['parent']), 'error');
+			}
+		}
+
+		// Call this after removes files, not before.
+		$result = $model->remove($ids);
+
+		if (!$result)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::plural('COM_KA_ITEMS_N_DELETED_ERROR', count($ids)), 'error');
 
 			return;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.names.global.data', null);
+		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.data', null);
+		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
 	}
 
 	/**
@@ -341,23 +338,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names');
-	}
-
-	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function saveOrder()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('names');
-		$result = $model->saveOrder();
-
-		echo json_encode($result);
 	}
 
 	/**
@@ -403,117 +383,84 @@ class KinoarhivControllerNames extends JControllerLegacy
 	}
 
 	/**
-	 * Method to save access rules for an item.
+	 * Display add/edit award form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editNameAwards()
+	{
+		$view = $this->getView('names', 'html');
+		$model = $this->getModel('name');
+		$view->setModel($model, true);
+		$view->display('edit_awards');
+	}
+
+	/**
+	 * Method to save a record for editNameAwards.
 	 *
 	 * @return  mixed
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	public function saveNameAccessRules()
+	public function saveNameAwards()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$app = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$id = $app->input->get('item_id', 0, 'int');
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv'))
-		{
-			return array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR'));
-		}
-
-		$model = $this->getModel('name');
-		$result = $model->saveNameAccessRules();
-
-		echo json_encode($result);
-
-		return true;
-	}
-
-	/**
-	 * Method to get a list of awards for person.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function getAwards()
-	{
-		$model = $this->getModel('name');
-		$result = $model->getAwards();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to save a new award in award_edit layout.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function saveRelAwards()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv'))
+		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
-		$model = $this->getModel('relations');
-		$result = $model->saveRelAwards();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to delete award(s) in awards list on 'awards tab'.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function deleteRelAwards()
-	{
 		$model = $this->getModel('name');
-		$result = $model->deleteRelAwards();
+		$data  = $this->input->post->get('form', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $id;
 
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to encode item alias for using in filesystem paths and url.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	// TODO Should be removed
-	public function getFilesystemAlias()
-	{
-		$input = JFactory::getApplication()->input;
-		$alias = $input->get('form_name_alias', '', 'string');
-
-		if (empty($alias))
+		if (!$form)
 		{
-			echo json_encode(
-				array(
-					'success' => false,
-					'message' => JText::_('COM_KA_FIELD_NAME_FS_ALIAS_GET_ERROR')
-				)
-			);
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
 
 			return;
 		}
 
-		$item_alias = StringHelper::substr(StringHelper::strtolower($alias), 0, 1);
+		$validData = $model->validate($form, $data, 'award');
 
-		echo json_encode(
-			array(
-				'success' => true,
-				'data'    => rawurlencode($item_alias)
-			)
-		);
+		if ($validData === false)
+		{
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveNameAwards($validData['award']);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id', null);
+
+		$award_id = $session_data['award']['id'] ? '&award_id=' . $session_data['award']['id'] : '&award_id=' . $validData['award']['id'];
+
+		$this->setRedirect($url . $award_id, $message);
 	}
 }

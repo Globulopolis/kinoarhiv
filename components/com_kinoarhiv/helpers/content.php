@@ -340,26 +340,4 @@ class KAContentHelper
 
 		return $results;
 	}
-
-	/**
-	 * Method to format alias. Since 7.1.0 version PHP on Windows now supports UTF-8 in paths.
-	 * See https://github.com/php/php-src/blob/e33ec61f9c1baa73bfe1b03b8c48a824ab2a867e/UPGRADING#L418
-	 *
-	 * TODO rawurldecode() maybe removed in future Kinoarhiv releases. Support of PHP < 7.1 will be dropped in Kinoarhiv.
-	 *
-	 * @param   string  $alias  Raw alias.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.1
-	 */
-	public static function formatFilesystemAlias($alias)
-	{
-		if (IS_WIN && version_compare(PHP_VERSION, '7.1.0', '<'))
-		{
-			$alias = rawurlencode($alias);
-		}
-
-		return $alias;
-	}
 }

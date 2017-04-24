@@ -477,7 +477,6 @@ class KinoarhivModelName extends JModelForm
 			}
 		}
 
-		// TODO rawurldecode() maybe removed in future Kinoarhiv releases. Support of PHP < 7.1 will be dropped.
 		if (empty($data['fs_alias']))
 		{
 			$data['fs_alias'] = rawurlencode(StringHelper::substr($data['alias'], 0, 1));

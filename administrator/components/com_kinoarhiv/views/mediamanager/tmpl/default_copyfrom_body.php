@@ -17,7 +17,7 @@ if ($this->section != 'movie' && $this->section != 'name')
 	return;
 }
 ?>
-<div class="row-fluid">
+<div class="container-fluid">
 	<div class="span12">
 		<fieldset class="form-horizontal copy">
 			<div class="control-group">

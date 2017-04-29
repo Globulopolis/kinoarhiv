@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<div class="urlsSubtitlesModal">
+<div class="urlsSubtitlesModal container-fluid">
 	<form id="urls_layout_subtitles_form">
 		<div class="form-horizontal">
 			<div class="control-group">

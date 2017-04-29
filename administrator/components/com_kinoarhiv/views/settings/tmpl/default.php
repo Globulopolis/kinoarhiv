@@ -400,20 +400,22 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 		<h3><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG'); ?></h3>
 	</div>
 	<div class="modal-body modal-upload">
-		<div class="row-fluid">
-			<form method="post" enctype="multipart/form-data" id="adminRestoreConfig">
-				<fieldset class="form-horizontal">
-					<div class="control-group span6">
-						<div class="control-label"><label id="form_upload_config-lbl" class="" for="form_upload_config"><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_FILE'); ?></label></div>
-						<div class="controls">
-							<input id="form_upload_config" type="file" accept=".json" value="" name="form_upload_config" required aria-required="true" />
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<form method="post" enctype="multipart/form-data" id="adminRestoreConfig">
+					<fieldset class="form-horizontal">
+						<div class="control-group span6">
+							<div class="control-label"><label id="form_upload_config-lbl" class="" for="form_upload_config"><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_FILE'); ?></label></div>
+							<div class="controls">
+								<input id="form_upload_config" type="file" accept=".json" value="" name="form_upload_config" required aria-required="true" />
+							</div>
 						</div>
-					</div>
-					<input type="hidden" name="controller" value="settings" />
-					<input type="hidden" name="task" value="settings.restoreConfig" />
-					<?php echo JHtml::_('form.token'); ?>
-				</fieldset>
-			</form>
+						<input type="hidden" name="controller" value="settings" />
+						<input type="hidden" name="task" value="settings.restoreConfig" />
+						<?php echo JHtml::_('form.token'); ?>
+					</fieldset>
+				</form>
+			</div>
 		</div>
 	</div>
 	<div class="modal-footer">

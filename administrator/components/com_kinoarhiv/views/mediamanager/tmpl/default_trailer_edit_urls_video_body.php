@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<div class="urlsVideoModal">
+<div class="urlsVideoModal container-fluid">
 	<form id="urls_layout_video_form">
 		<div class="form-horizontal">
 			<div class="control-group">

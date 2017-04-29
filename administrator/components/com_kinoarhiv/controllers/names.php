@@ -40,7 +40,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	 */
 	public function edit($isNew = false)
 	{
-		$view = $this->getView('names', 'html');
+		$view = $this->getView('name', 'html');
 		$model = $this->getModel('name');
 		$view->setModel($model, true);
 
@@ -104,7 +104,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('name');
-		$data = $this->input->post->get('form', array(), 'array');
+		$data = $this->input->post->get('jform', array(), 'array');
 		$form = $model->getForm($data, false);
 
 		if (!$form)
@@ -114,35 +114,24 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		// Process aliases for columns name
-		/*if ($app->input->get('quick_save', 0, 'int') == 1)
-		{
-			foreach ($data as $key => $value)
-			{
-				$key = substr($key, 2);
-				$data['name'][$key] = $value;
-				unset($data['n_' . $key]);
-			}
-		}*/
-
-		$validData = $model->validate($form, $data, 'name');
+		$validData = $model->validate($form, $data);
 
 		if ($validData === false)
 		{
 			KAComponentHelperBackend::renderErrors($model->getErrors());
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $id);
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' . $id);
 
 			return;
 		}
 
 		// Store data for use in KinoarhivModelName::loadFormData()
 		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', $validData);
-		$result = $model->save($validData['name']);
+		$result = $model->save($validData);
 
 		if (!$result)
 		{
 			// Errors enqueue in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $id);
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' . $id);
 
 			return;
 		}
@@ -158,11 +147,11 @@ class KinoarhivControllerNames extends JControllerLegacy
 		switch ($this->getTask())
 		{
 			case 'save2new':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=names.add', $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.add', $message);
 				break;
 
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $session_data['name']['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' . $session_data['id'], $message);
 				break;
 
 			case 'save':
@@ -391,10 +380,10 @@ class KinoarhivControllerNames extends JControllerLegacy
 	 */
 	public function editNameAwards()
 	{
-		$view = $this->getView('names', 'html');
+		$view = $this->getView('name', 'html');
 		$model = $this->getModel('name');
 		$view->setModel($model, true);
-		$view->display('edit_awards');
+		$view->display('awards');
 	}
 
 	/**
@@ -420,7 +409,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		}
 
 		$model = $this->getModel('name');
-		$data  = $this->input->post->get('form', array(), 'array');
+		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
 		$url   = 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $id;
 
@@ -431,7 +420,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$validData = $model->validate($form, $data, 'award');
+		$validData = $model->validate($form, $data);
 
 		if ($validData === false)
 		{
@@ -441,7 +430,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$result = $model->saveNameAwards($validData['award']);
+		$result = $model->saveNameAwards($validData);
 
 		if (!$result)
 		{
@@ -459,7 +448,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id', null);
 
-		$award_id = $session_data['award']['id'] ? '&award_id=' . $session_data['award']['id'] : '&award_id=' . $validData['award']['id'];
+		$award_id = $session_data['id'] ? '&award_id=' . $session_data['id'] : '&award_id=' . $validData['id'];
 
 		$this->setRedirect($url . $award_id, $message);
 	}

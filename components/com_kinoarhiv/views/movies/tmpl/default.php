@@ -119,7 +119,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						<?php endif; ?>
 					</h1>
 
-					<div class="middle-nav clearfix ui-helper-clearfix">
+					<div class="middle-nav clearfix">
 						<p class="meta">
 							<?php if ($item->attribs->show_author === '' && !empty($item->username)): ?>
 								<?php if ($this->params->get('show_author') == 1): ?>
@@ -175,7 +175,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 				<?php echo $item->event->afterDisplayTitle; ?>
 				<?php echo $item->event->beforeDisplayContent; ?>
 				<div class="clear"></div>
-				<div class="content content-list clearfix ui-helper-clearfix">
+				<div class="content content-list clearfix">
 					<div>
 						<div class="poster">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>">

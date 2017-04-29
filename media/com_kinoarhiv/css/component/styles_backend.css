@@ -35,10 +35,6 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	text-align: right;
 }
 
-label.hasTooltip {
-	border-bottom: 1px dashed #ddd;
-}
-
 .cmd-update-stats {
 	margin-left: 1em;
 }

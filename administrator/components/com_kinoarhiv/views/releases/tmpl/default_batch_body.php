@@ -12,27 +12,29 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR . '/libraries/html/');
 ?>
-<div class="row-fluid">
-	<div class="control-group span6">
-		<div class="controls">
-			<?php echo JHtml::_('kahtml.batch.vendor'); ?>
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="control-group span6">
+			<div class="controls">
+				<?php echo JHtml::_('kahtml.batch.vendor'); ?>
+			</div>
+		</div>
+		<div class="control-group span6">
+			<div class="controls">
+				<?php echo JHtml::_('kahtml.batch.country'); ?>
+			</div>
 		</div>
 	</div>
-	<div class="control-group span6">
-		<div class="controls">
-			<?php echo JHtml::_('kahtml.batch.country'); ?>
+	<div class="row-fluid">
+		<div class="control-group span6">
+			<div class="controls">
+				<?php echo JHtml::_('kahtml.batch.mediatype'); ?>
+			</div>
 		</div>
-	</div>
-</div>
-<div class="row-fluid">
-	<div class="control-group span6">
-		<div class="controls">
-			<?php echo JHtml::_('kahtml.batch.mediatype'); ?>
-		</div>
-	</div>
-	<div class="control-group span6">
-		<div class="controls">
-			<?php echo JHtml::_('batch.language'); ?>
+		<div class="control-group span6">
+			<div class="controls">
+				<?php echo JHtml::_('batch.language'); ?>
+			</div>
 		</div>
 	</div>
 </div>

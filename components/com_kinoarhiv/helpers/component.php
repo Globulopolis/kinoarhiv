@@ -59,9 +59,11 @@ class KAComponentHelper
 			),
 			'language' => array(
 				'tag'                          => JFactory::getLanguage()->getTag(),
-				'JGLOBAL_SELECT_AN_OPTION'     => JText::_('JGLOBAL_SELECT_AN_OPTION'), // Default placeholder, if not set for Select2,
-				'COM_KA_CLOSE'                 => JText::_('COM_KA_CLOSE'),
-				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')
+				'JGLOBAL_SELECT_AN_OPTION'     => JText::_('JGLOBAL_SELECT_AN_OPTION', true), // Default placeholder, if not set for Select2,
+				'COM_KA_CLOSE'                 => JText::_('COM_KA_CLOSE', true),
+				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED', true),
+				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
+				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');

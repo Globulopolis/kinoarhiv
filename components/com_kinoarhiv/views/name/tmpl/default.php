@@ -112,7 +112,7 @@ use Joomla\String\StringHelper;
 		<div class="clear"></div>
 		<?php if (!empty($this->item->desc)): ?>
 			<div class="known">
-				<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_KNOWN'); ?></div>
+				<div class="corner-all header header-small"><?php echo JText::_('COM_KA_KNOWN'); ?></div>
 				<div class="content"><?php echo $this->item->desc; ?></div>
 			</div>
 		<?php endif; ?>
@@ -120,7 +120,7 @@ use Joomla\String\StringHelper;
 
 		<?php if (count($this->item->movies) > 0): ?>
 			<div class="movies-list">
-				<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_NAMES_FILMOGRAPHY'); ?></div>
+				<div class="corner-all header header-small"><?php echo JText::_('COM_KA_NAMES_FILMOGRAPHY'); ?></div>
 				<div class="content">
 					<?php $mi = 0;
 					foreach ($this->item->movies as $movie):

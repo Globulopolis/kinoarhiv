@@ -18,7 +18,7 @@ $item    = $input->getInt('item', null);
 $is_new  = $input->getInt('new', 0);
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv'); ?>" method="post" name="adminFormFile"
-	  id="fileinfo-item-form" class="form-validate">
+	  id="fileinfo-item-form" class="form-validate container-fluid">
 	<div class="form-horizontal">
 		<?php foreach ($this->form->getFieldset('fileinfo_' . $list) as $field): ?>
 			<div class="control-group">

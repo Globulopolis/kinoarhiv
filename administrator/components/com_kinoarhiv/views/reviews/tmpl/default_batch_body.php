@@ -18,16 +18,18 @@ $batch_types = array(
 	3  => JText::_('COM_KA_REVIEWS_TYPE_3')
 );
 ?>
-<div class="row-fluid">
-	<div class="control-group span6">
-		<div class="controls">
-			<label id="batch-type-lbl" for="batch-type"><?php echo JText::_('COM_KA_REVIEWS_FIELD_TYPE_TITLE'); ?></label>
-			<?php echo JHtml::_('select.genericlist', $batch_types, 'batch[type]', null, 'value', 'text', '', 'batch-type'); ?>
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="control-group span6">
+			<div class="controls">
+				<label id="batch-type-lbl" for="batch-type"><?php echo JText::_('COM_KA_REVIEWS_FIELD_TYPE_TITLE'); ?></label>
+				<?php echo JHtml::_('select.genericlist', $batch_types, 'batch[type]', null, 'value', 'text', '', 'batch-type'); ?>
+			</div>
 		</div>
-	</div>
-	<div class="control-group span6">
-		<div class="controls">
-			<?php echo JHtml::_('batch.user'); ?>
+		<div class="control-group span6">
+			<div class="controls">
+				<?php echo JHtml::_('batch.user'); ?>
+			</div>
 		</div>
 	</div>
 </div>

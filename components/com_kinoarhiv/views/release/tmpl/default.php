@@ -52,7 +52,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 		echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="clear"></div>
-		<div class="content content-list clearfix ui-helper-clearfix">
+		<div class="content content-list clearfix">
 			<div>
 				<div class="poster">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>

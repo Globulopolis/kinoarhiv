@@ -110,7 +110,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 		$name       = $app->input->getString('name', '');
 		$latin_name = $app->input->getString('latin_name', '');
 		$alias      = $app->input->getString('alias', '');
-		$fs_alias   = '';
 
 		if (empty($alias))
 		{
@@ -124,9 +123,9 @@ class KinoarhivControllerNames extends JControllerLegacy
 			{
 				$alias = JFilterOutput::stringURLSafe($name);
 			}
-
-			$fs_alias = rawurlencode(StringHelper::substr($alias, 0, 1));
 		}
+
+		$fs_alias = rawurlencode(StringHelper::substr($alias, 0, 1));
 
 		echo json_encode(
 			array('success' => true, 'fs_alias' => $fs_alias)

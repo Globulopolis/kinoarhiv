@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
@@ -31,7 +32,16 @@ class KinoarhivModelName extends JModelForm
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$form = $this->loadForm('com_kinoarhiv.name', 'name', array('control' => 'form', 'load_data' => $loadData));
+		$input = JFactory::getApplication()->input->getCmd('task', '');
+
+		if ($input == 'editNameAwards' || $input == 'saveNameAwards')
+		{
+			$form = $this->loadForm('com_kinoarhiv.name', 'relations_awards', array('control' => 'jform', 'load_data' => $loadData));
+		}
+		else
+		{
+			$form = $this->loadForm('com_kinoarhiv.name', 'name', array('control' => 'jform', 'load_data' => $loadData));
+		}
 
 		if (empty($form))
 		{
@@ -57,14 +67,18 @@ class KinoarhivModelName extends JModelForm
 		{
 			$data = $this->getItem();
 
-			if (empty($data['name']))
+			if ($app->input->getCmd('task', '') == 'add')
 			{
-				$filters = (array) $app->getUserState('com_kinoarhiv.names.filter');
-				$data['name'] = (object) array(
-					'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
-					'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
-					'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
-				);
+				if (empty($data['name']))
+				{
+					echo $app->input->getCmd('task', '');
+					$filters      = (array) $app->getUserState('com_kinoarhiv.names.filter');
+					$data['name'] = (object) array(
+						'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
+						'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
+						'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+					);
+				}
 			}
 		}
 
@@ -85,7 +99,7 @@ class KinoarhivModelName extends JModelForm
 		$app  = JFactory::getApplication();
 		$db   = $this->getDbo();
 		$task = $app->input->get('task', '', 'cmd');
-		$id   = $app->input->get('id', null, 'array');
+		$id   = $app->input->get('id', 0, 'int');
 
 		if ($task == 'editNameAwards')
 		{
@@ -102,7 +116,7 @@ class KinoarhivModelName extends JModelForm
 		)
 		->select($db->quoteName('n.fs_alias', 'fs_alias_orig'))
 		->from($db->quoteName('#__ka_names', 'n'))
-		->where($db->quoteName('n.id') . ' = ' . (int) $id[0]);
+		->where($db->quoteName('n.id') . ' = ' . (int) $id);
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
@@ -118,7 +132,7 @@ class KinoarhivModelName extends JModelForm
 
 		try
 		{
-			$result['name'] = $db->loadObject();
+			$result = $db->loadObject();
 		}
 		catch (RuntimeException $e)
 		{
@@ -127,39 +141,39 @@ class KinoarhivModelName extends JModelForm
 			return array();
 		}
 
-		if (empty($id[0]))
+		if (empty($id))
 		{
 			return $result;
 		}
 
-		$genres = $this->getGenres($id[0]);
+		// Fix for permissions script. See https://github.com/joomla/joomla-cms/issues/15203
+		$result->title = KAContentHelper::formatItemTitle($result->name, $result->latin_name);
+
+		$genres = $this->getGenres($id);
 
 		if ($genres)
 		{
 			$genres = implode(',', $genres['id']);
-			$result['name']->genres = $genres;
-			$result['name']->genres_orig = $genres;
+			$result->genres = $genres;
+			$result->genres_orig = $genres;
 		}
 
-		$careers = $this->getCareers($id[0]);
+		$careers = $this->getCareers($id);
 
 		if ($careers)
 		{
 			$careers = implode(',', $careers['id']);
-			$result['name']->careers = $careers;
-			$result['name']->careers_orig = $careers;
+			$result->careers = $careers;
+			$result->careers_orig = $careers;
 		}
 
-		if (!empty($result['name']->attribs))
-		{
-			$attribs = json_decode($result['name']->attribs, true);
-			$result['name'] = (object) array_merge((array) $result['name'], $attribs);
-		}
+		$registry = new Registry($result->attribs);
+		$result->attribs = $registry->toArray();
 
-		if (!empty($result['name']->metadata))
+		if (!empty($result->metadata))
 		{
-			$metadata = json_decode($result['name']->metadata, true);
-			$result['name'] = (object) array_merge((array) $result['name'], $metadata);
+			$metadata = json_decode($result->metadata, true);
+			$result = (object) array_merge((array) $result, $metadata);
 		}
 
 		return $result;
@@ -265,7 +279,7 @@ class KinoarhivModelName extends JModelForm
 		$id    = $app->input->get('award_id', 0, 'int');
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('id', 'award_id', 'desc', 'year')))
+		$query->select($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
 			->from($db->quoteName('#__ka_rel_awards'))
 			->where($db->quoteName('id') . ' = ' . (int) $id);
 
@@ -273,7 +287,7 @@ class KinoarhivModelName extends JModelForm
 
 		try
 		{
-			$result['award'] = $db->loadObject();
+			$result = $db->loadObject();
 		}
 		catch (RuntimeException $e)
 		{
@@ -331,7 +345,7 @@ class KinoarhivModelName extends JModelForm
 			if (empty($data['id']))
 			{
 				$session_data = $app->getUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id');
-				$session_data['award']['id'] = $db->insertid();
+				$session_data['id'] = $db->insertid();
 				$app->setUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id', $session_data);
 			}
 
@@ -481,26 +495,12 @@ class KinoarhivModelName extends JModelForm
 		{
 			$data['fs_alias'] = rawurlencode(StringHelper::substr($data['alias'], 0, 1));
 		}
-		else
-		{
-			$data['fs_alias'] = rawurlencode(StringHelper::substr($data['fs_alias'], 0, 1));
-		}
 
 		// Get attribs
-		$attribs = json_encode(
-			(object) array(
-				'link_titles'      => $data['link_titles'],
-				'tab_name_wallpp'  => $data['tab_name_wallpp'],
-				'tab_name_posters' => $data['tab_name_posters'],
-				'tab_name_photos'  => $data['tab_name_photos'],
-				'tab_name_awards'  => $data['tab_name_awards']
-			)
-		);
+		$attribs = json_encode($data['attribs']);
 
 		// Get metadata
-		$metadata = json_encode(
-			(object) array('robots' => $data['robots'])
-		);
+		$metadata = json_encode((object) array('robots' => $data['robots']));
 
 		$name = $db->escape(trim($data['name']));
 		$latin_name = $db->escape(trim($data['latin_name']));
@@ -582,7 +582,7 @@ class KinoarhivModelName extends JModelForm
 			{
 				$insertid = $db->insertid();
 				$session_data = $app->getUserState('com_kinoarhiv.names.' . $user->id . '.edit_data');
-				$session_data['name']['id'] = $insertid;
+				$session_data['id'] = $insertid;
 				$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', $session_data);
 			}
 			else
@@ -608,7 +608,7 @@ class KinoarhivModelName extends JModelForm
 
 			if (empty($data['id']))
 			{
-				$asset_id = $this->saveAccessRules(null, 'com_kinoarhiv.name.' . $insertid, $title, $data['rules']);
+				$asset_id = KAComponentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.name.' . $insertid, $title, $data['rules']);
 				$query = $db->getQuery(true)
 					->update($db->quoteName('#__ka_names'))
 					->set($db->quoteName('asset_id') . ' = ' . (int) $asset_id);
@@ -628,7 +628,7 @@ class KinoarhivModelName extends JModelForm
 			}
 			else
 			{
-				$this->saveAccessRules($data['id'], 'com_kinoarhiv.name.' . $data['id'], $title, $data['rules']);
+				KAComponentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.name.' . $data['id'], $title, $data['rules']);
 			}
 		}
 
@@ -855,97 +855,6 @@ class KinoarhivModelName extends JModelForm
 		$db->setDebug(false);
 
 		return (bool) $query_result;
-	}
-
-	/**
-	 * Method to save the access rules.
-	 *
-	 * @param   integer  $id          Item ID.
-	 * @param   string   $asset_name  The unique name for the asset.
-	 * @param   string   $title       The descriptive title for the asset.
-	 * @param   array    $rules       The form data.
-	 *
-	 * @return  mixed  lastInsertID on insert, true on update, false otherwise.
-	 *
-	 * @since   3.1
-	 */
-	public function saveAccessRules($id, $asset_name, $title = '', $rules = array())
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$rules = new JAccessRules($rules);
-
-		if (empty($id))
-		{
-			// Get parent ID.
-			$query = $db->getQuery(true)
-				->select($db->quoteName('id'))
-				->from($db->quoteName('#__assets'))
-				->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
-			$db->setQuery($query);
-
-			try
-			{
-				$parent_id = $db->loadResult();
-			}
-			catch (RuntimeException $e)
-			{
-				$app->enqueueMessage($e->getMessage(), 'error');
-
-				return false;
-			}
-
-			// Get lft, rgt values
-			$query = $db->getQuery(true)
-				->select('MAX(lft)+2 AS lft')
-				->from($db->quoteName('#__assets'));
-			$db->setQuery($query);
-
-			try
-			{
-				$lft = $db->loadResult();
-				$rgt = (int) $lft + 1;
-			}
-			catch (RuntimeException $e)
-			{
-				$app->enqueueMessage($e->getMessage(), 'error');
-
-				return false;
-			}
-
-			$query = $db->getQuery(true)
-				->insert($db->quoteName('#__assets'))
-				->columns($db->quoteName(array_keys($db->getTableColumns('#__assets'))))
-				->values("'', '" . (int) $parent_id . "', '" . $lft . "', '" . $rgt . "', '2', '" . $asset_name . "', "
-					. "'" . $db->escape($title) . "', '" . $rules . "'");
-		}
-		else
-		{
-			$query = $db->getQuery(true)
-				->update($db->quoteName('#__assets'))
-				->set($db->quoteName('rules') . " = '" . $rules . "'")
-				->where($db->quoteName('name') . " = '" . $asset_name . "'");
-		}
-
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-
-			if (empty($id))
-			{
-				return $db->insertid();
-			}
-		}
-		catch (RuntimeException $e)
-		{
-			$app->enqueueMessage($e->getMessage(), 'error');
-
-			return false;
-		}
-
-		return true;
 	}
 
 	/**

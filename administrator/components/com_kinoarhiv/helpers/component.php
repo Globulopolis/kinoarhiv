@@ -140,4 +140,95 @@ class KAComponentHelperBackend
 
 		return true;
 	}
+
+	/**
+	 * Method to save the access rules.
+	 *
+	 * @param   integer  $id          Item ID.
+	 * @param   string   $asset_name  The unique name for the asset.
+	 * @param   string   $title       The descriptive title for the asset.
+	 * @param   array    $rules       The form data.
+	 *
+	 * @return  mixed  lastInsertID on insert, true on update, false otherwise.
+	 *
+	 * @since   3.1
+	 */
+	public static function saveAccessRules($id, $asset_name, $title = '', $rules = array())
+	{
+		$app = JFactory::getApplication();
+		$db = JFactory::getDbo();
+		$rules = new JAccessRules($rules);
+
+		if (empty($id))
+		{
+			// Get parent ID.
+			$query = $db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__assets'))
+				->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
+			$db->setQuery($query);
+
+			try
+			{
+				$parent_id = $db->loadResult();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+
+			// Get lft, rgt values
+			$query = $db->getQuery(true)
+				->select('MAX(lft)+2 AS lft')
+				->from($db->quoteName('#__assets'));
+			$db->setQuery($query);
+
+			try
+			{
+				$lft = $db->loadResult();
+				$rgt = (int) $lft + 1;
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__assets'))
+				->columns($db->quoteName(array_keys($db->getTableColumns('#__assets'))))
+				->values("'', '" . (int) $parent_id . "', '" . $lft . "', '" . $rgt . "', '2', '" . $asset_name . "', "
+					. "'" . $db->escape($title) . "', '" . $rules . "'");
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__assets'))
+				->set($db->quoteName('rules') . " = '" . $rules . "'")
+				->where($db->quoteName('name') . " = '" . $asset_name . "'");
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			if (empty($id))
+			{
+				return $db->insertid();
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
 }

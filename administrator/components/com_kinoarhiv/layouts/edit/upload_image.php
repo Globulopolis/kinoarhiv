@@ -70,17 +70,19 @@ $token = JSession::getFormToken();
 	<?php if ($remote_upload):
 		echo JHtml::_('bootstrap.addTab', 'upload_tab', 'remote', JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_REMOTE')); ?>
 
-		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label">
-					<label for="remote_urls" class="hasPopover" title="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?>" data-content="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL_HELP'); ?>"><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?></label>
+		<div class="container-fluid">
+			<fieldset class="form-horizontal">
+				<div class="control-group">
+					<div class="control-label">
+						<label for="remote_urls" class="hasPopover" title="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?>" data-content="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL_HELP'); ?>"><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?></label>
+					</div>
+					<div class="controls">
+						<textarea name="remote_urls" id="remote_urls" rows="7" cols="32" class="span12" spellcheck="false" data-url="<?php echo $remote_url; ?>" data-content-type="<?php echo isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images'; ?>"></textarea>
+					</div>
 				</div>
-				<div class="controls">
-					<textarea name="remote_urls" id="remote_urls" rows="7" cols="32" class="span12" spellcheck="false" data-url="<?php echo $remote_url; ?>" data-content-type="<?php echo isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images'; ?>"></textarea>
-				</div>
-			</div>
-			<input type="button" class="btn btn-success cmd-remote-urls" value="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>" />
-		</fieldset>
+				<input type="button" class="btn btn-success cmd-remote-urls" value="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>" />
+			</fieldset>
+		</div>
 
 		<?php
 		echo JHtml::_('bootstrap.endTab');

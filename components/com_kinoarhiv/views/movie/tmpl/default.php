@@ -588,20 +588,28 @@ endif;
 
 		<?php if (!empty($this->item->plot)): ?>
 			<div class="plot">
-				<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_PLOT'); ?></div>
+				<h3><?php echo JText::_('COM_KA_PLOT'); ?></h3>
 				<div class="content" itemprop="description"><?php echo $this->item->plot; ?></div>
 			</div>
 		<?php endif; ?>
 
 		<?php if (!empty($this->item->known)): ?>
+			<br />
 			<div class="known">
-				<div class="ui-corner-all ui-widget-header header-small"><?php echo JText::_('COM_KA_KNOWN'); ?></div>
-				<div class="content"><?php echo $this->item->known; ?></div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<h4><a class="accordion-toggle" data-toggle="collapse" data-parent="#desc" href="#showKnownDescription"><?php echo JText::_('COM_KA_KNOWN'); ?></a></h4>
+					</div>
+					<div id="showKnownDescription" class="accordion-body collapse">
+						<div class="content"><?php echo $this->item->known; ?></div>
+					</div>
+				</div>
 			</div>
 		<?php endif; ?>
 
 		<?php if (!empty($this->item->desc)): ?>
-			<div class="ui-widget desc" id="desc">
+			<br />
+			<div class="desc" id="desc">
 				<div class="accordion-group">
 					<div class="accordion-heading">
 						<a class="accordion-toggle" data-toggle="collapse" data-parent="#desc" href="#showTechDescription"><?php echo JText::_('COM_KA_TECH'); ?></a>

@@ -95,7 +95,7 @@ class KAContentHelper
 			$title .= $secondTitle;
 		}
 
-		if (!empty($date) && $date != '0000')
+		if (!empty($date) && ($date != '0000' && $date != '0000-00' && $date != '0000-00-00'))
 		{
 			$title .= ' (' . $date . ')';
 		}

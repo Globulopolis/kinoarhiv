@@ -18,8 +18,7 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 KAComponentHelperBackend::loadMediamanagerAssets();
 
 $this->input = JFactory::getApplication()->input;
-$id          = $this->input->get('id', null, 'array');
-$this->id    = (int) $id[0];
+$this->id    = $this->form->getValue('id');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -90,7 +89,7 @@ $this->id    = (int) $id[0];
 		});
 
 		// Check if person allready exists in DB
-		$('#form_name_name').blur(function(){
+		$('.field_name').blur(function(){
 			if (!empty(this.value)) {
 				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=names&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
 				.done(function(response){
@@ -107,21 +106,18 @@ $this->id    = (int) $id[0];
 
 			$.post('index.php?option=com_kinoarhiv&task=names.getFilesystemAlias&format=json',
 				{
-					'name': $('#form_name_name').val(),
-					'latin_name': $('#form_name_latin_name').val(),
-					'alias': $('#form_name_alias').val()
+					'name': $('.field_name').val(),
+					'latin_name': $('.field_latin_name').val(),
+					'alias': $('.field_alias').val()
 				},
 				function(response){
 					if (response.success) {
-						$('#form_name_fs_alias').val(response.fs_alias);
+						$('.field_fs_alias').val(response.fs_alias);
 					} else {
 						showMsg('#system-message-container', response.message);
 					}
 			});
 		});
-
-		// Wizard
-		$('#wizard').bootstrapWizard({'nextSelector': '.cmd-next', 'previousSelector': '.cmd-prev'});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . (int) $this->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate" autocomplete="off">
@@ -132,7 +128,7 @@ $this->id    = (int) $id[0];
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page0', JText::_('COM_KA_NAMES_TAB_MAIN')); ?>
 
 				<div id="page0">
-					<?php echo $this->loadTemplate('edit_info'); ?>
+					<?php echo $this->loadTemplate('info'); ?>
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
@@ -218,20 +214,20 @@ $this->id    = (int) $id[0];
 						<div class="span6">
 							<fieldset class="form-horizontal">
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('metakey', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('metakey', 'name'); ?></div>
+									<div class="control-label"><?php echo $this->form->getLabel('metakey'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('metakey'); ?></div>
 								</div>
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('metadesc', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('metadesc', 'name'); ?></div>
+									<div class="control-label"><?php echo $this->form->getLabel('metadesc'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('metadesc'); ?></div>
 								</div>
 							</fieldset>
 						</div>
 						<div class="span6">
 							<fieldset class="form-horizontal">
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('robots', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('robots', 'name'); ?></div>
+									<div class="control-label"><?php echo $this->form->getLabel('robots'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('robots'); ?></div>
 								</div>
 							</fieldset>
 						</div>
@@ -245,45 +241,27 @@ $this->id    = (int) $id[0];
 					<div class="row-fluid">
 						<div class="span6">
 							<fieldset class="form-horizontal">
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('ordering', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('ordering', 'name'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('link_titles', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('link_titles', 'name'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('tab_name_wallpp', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('tab_name_wallpp', 'name'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('tab_name_posters', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('tab_name_posters', 'name'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('tab_name_photos', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('tab_name_photos', 'name'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('tab_name_awards', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('tab_name_awards', 'name'); ?></div>
-								</div>
+								<?php foreach ($this->form->getFieldset('basic') as $field): ?>
+									<div class="control-group">
+										<div class="control-label"><?php echo $field->label; ?></div>
+										<div class="controls"><?php echo $field->input; ?></div>
+									</div>
+								<?php endforeach; ?>
 							</fieldset>
 						</div>
 						<div class="span6">
 							<fieldset class="form-horizontal">
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('language', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('language', 'name'); ?></div>
+									<div class="control-label"><?php echo $this->form->getLabel('language'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('language'); ?></div>
 								</div>
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('access', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('access', 'name'); ?></div>
+									<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
 								</div>
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('state', 'name'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('state', 'name'); ?></div>
+									<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
 								</div>
 							</fieldset>
 						</div>
@@ -298,7 +276,10 @@ $this->id    = (int) $id[0];
 						<div class="span12">
 							<fieldset class="form-horizontal">
 								<div class="control-group">
-									<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules', 'name'); ?></div>
+									<div class="controls" style="margin-left: 0 !important;">
+										<?php echo $this->form->getInput('rules'); ?>
+										<input type="hidden" name="jform_title" id="jform_title" value="<?php echo $this->form->getValue('title'); ?>" />
+									</div>
 								</div>
 							</fieldset>
 						</div>
@@ -311,11 +292,22 @@ $this->id    = (int) $id[0];
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('genres_orig', 'name') . "\n"; ?>
-	<?php echo $this->form->getInput('careers_orig', 'name') . "\n"; ?>
-	<?php echo $this->form->getInput('id', 'name') . "\n"; ?>
-	<input type="hidden" name="image_id" value="<?php echo $this->form->getValue('image_id', 'name'); ?>" />
+	<?php echo $this->form->getInput('genres_orig') . "\n"; ?>
+	<?php echo $this->form->getInput('careers_orig') . "\n"; ?>
+	<?php echo $this->form->getInput('id') . "\n"; ?>
+	<input type="hidden" name="image_id" value="<?php echo $this->form->getValue('image_id'); ?>" />
 	<input type="hidden" name="img_folder" value="<?php echo $this->items->get('img_folder'); ?>" />
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
+
+<?php
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'parserModal',
+	array(
+		'title'  => JText::_('COM_KA_PARSER_TOOLBAR_BUTTON'),
+		'footer' => JLayoutHelper::render('layouts.parser.footer', array(), JPATH_COMPONENT)
+	),
+	JLayoutHelper::render('layouts.parser.main', array(), JPATH_COMPONENT)
+);

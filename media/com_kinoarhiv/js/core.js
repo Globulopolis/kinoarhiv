@@ -102,6 +102,25 @@ Kinoarhiv = window.Kinoarhiv || {};
 			}
 		});
 	};
+
+	/**
+	 * Open new browser window.
+	 *
+	 * @param  {string}  url  URL to open.
+	 *
+	 * @return  {void}
+	 */
+	Kinoarhiv.openWindow = function(url){
+		var handler = window.open(url),
+			element = !!document.getElementById('system-message-container') ? '#system-message-container' : 'body';
+
+		if (!handler) {
+			showMsg(
+				element,
+				KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + url + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
+			);
+		}
+	};
 }(Kinoarhiv, document));
 
 /*

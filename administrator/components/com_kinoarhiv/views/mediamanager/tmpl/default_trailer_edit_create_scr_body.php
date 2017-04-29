@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<div class="createScreenshotModal">
+<div class="createScreenshotModal container-fluid">
 	<form id="screenshot_layout_create_form" class="form-validate">
 		<div class="form-horizontal">
 			<div class="control-group">

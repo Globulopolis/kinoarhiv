@@ -40,6 +40,10 @@ div.clear {
 	color: #21b33f;
 }
 
+.muted {
+	color: #999;
+}
+
 .text-center {
 	text-align: center;
 }
@@ -51,6 +55,22 @@ div.clear {
 .small {
 	color: #aaa;
 	font-size: .8em;
+}
+
+.corner-all, .corner-top, .corner-right, .corner-tr {
+	border-top-right-radius: 4px;
+}
+
+.corner-all, .corner-top, .corner-left, .corner-tl {
+	border-top-left-radius: 4px;
+}
+
+.corner-all, .corner-bottom, .corner-right, .corner-br {
+	border-bottom-right-radius: 4px;
+}
+
+.corner-all, .corner-bottom, .corner-left, .corner-bl {
+	border-bottom-left-radius: 4px;
 }
 
 .ka-content .item {
@@ -117,6 +137,13 @@ h3.title {
 .title-small {
 	min-height: 16px;
 	padding: 4px;
+}
+
+.header {
+	border: 1px solid #ddd;
+	background-color: #f9f9f9;
+	font-weight: bold;
+	margin: 4px 0;
 }
 
 .header-small {
@@ -592,7 +619,14 @@ div.rating {
 	padding: 0 6px;
 }
 
+.review-row {
+	font-size: .9em !important;
+}
+
 .review-row-title {
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	color: #333;
 	font-weight: bold;
 	padding: 4px 6px;
 }
@@ -611,13 +645,29 @@ div.rating {
 }
 
 .review-row .review {
+	border: 1px solid #ddd;
+	color: #333;
 	background: none;
 	border-top: none;
+	border-bottom: none;
 	padding: 4px 6px;
 }
 
+.review-row .review.positive {
+	color: #468847 !important;
+}
+
+.review-row .review.negative {
+	color: #b94a48 !important;
+}
+
+.review-row .review.neutral {
+	color: #999 !important;
+}
+
 .review-row .footer {
-	border-top: none;
+	border: 1px solid #ddd;
+	color: #333;
 	margin-bottom: .8em;
 	padding: 4px 6px;
 }

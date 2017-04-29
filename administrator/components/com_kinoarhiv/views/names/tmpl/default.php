@@ -101,6 +101,7 @@ $columns   = 8;
 				foreach ($this->items as $i => $item) :
 					$canEdit   = $user->authorise('core.edit',       'com_kinoarhiv.name.' . $item->id);
 					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.name.' . $item->id);
+					$title     = KAContentHelper::formatItemTitle($item->name, $item->latin_name, $item->date_of_birth);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
@@ -123,25 +124,9 @@ $columns   = 8;
 								<?php $language = $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
 							<?php endif; ?>
 							<?php if ($canEdit): ?>
-								<?php if (!empty($item->name)): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.edit&id[]='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->name); ?></a>
-								<?php endif; ?>
-								<?php if (!empty($item->name) && !empty($item->latin_name)): echo '/'; endif;?>
-								<?php if (!empty($item->latin_name)): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($item->latin_name); ?></a>
-								<?php endif; ?>
-								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - ' . $item->date_of_death : ''; ?>)
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&task=names.edit&id='.$item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo $this->escape($title); ?></a> 
 							<?php else: ?>
-								<span>
-								<?php if (!empty($item->name)): ?>
-									<?php echo $this->escape($item->name); ?>
-								<?php endif; ?>
-								<?php if (!empty($item->name) && !empty($item->latin_name)): echo '/'; endif;?>
-								<?php if (!empty($item->latin_name)): ?>
-									<?php echo $this->escape($item->latin_name); ?>
-								<?php endif; ?>
-								(<?php echo $item->date_of_birth; ?><?php echo ($item->date_of_death != '0000-00-00') ? ' - ' . $item->date_of_death : ''; ?>)
-								</span> 
+								<span><?php echo $this->escape($title); ?></span>
 							<?php endif; ?>
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>

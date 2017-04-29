@@ -223,7 +223,7 @@ elseif ($this->params->get('player_type') == 'flowplayer')
 							</div>
 						</div>
 						<?php if (isset($item_trailer->files['video_links']) && (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)): ?>
-							<div class="ui-widget-content">
+							<div>
 								<div class="video-links">
 									<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
 									<?php foreach ($item_trailer->files['video_links'] as $item): ?>

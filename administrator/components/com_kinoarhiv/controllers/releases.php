@@ -110,17 +110,6 @@ class KinoarhivControllerReleases extends JControllerLegacy
 			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
 		}
 
-		// Process aliases for columns name
-		if ($app->input->get('alias', 0, 'int') == 1)
-		{
-			foreach ($data as $key => $value)
-			{
-				$key = substr($key, 2);
-				$data[$key] = $value;
-				unset($data['r_' . $key]);
-			}
-		}
-
 		$validData = $model->validate($form, $data);
 
 		if ($validData === false)

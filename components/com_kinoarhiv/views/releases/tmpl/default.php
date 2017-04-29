@@ -82,7 +82,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						<?php endif; ?>
 					</h1>
 
-					<div class="middle-nav clearfix ui-helper-clearfix">
+					<div class="middle-nav clearfix">
 						<p class="meta">
 							<?php if ($item->attribs->show_author === '' && !empty($item->username)): ?>
 								<?php if ($this->params->get('show_author') == 1): ?>
@@ -138,7 +138,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 				<?php echo $item->event->afterDisplayTitle; ?>
 				<?php echo $item->event->beforeDisplayContent; ?>
 				<div class="clear"></div>
-				<div class="content content-list clearfix ui-helper-clearfix">
+				<div class="content content-list clearfix">
 					<div>
 						<div class="poster">
 							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>

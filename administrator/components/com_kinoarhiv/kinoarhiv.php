@@ -17,7 +17,7 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_kinoarhiv'))
 
 @ini_set('zend.ze1_compatibility_mode', 'Off');
 
-jimport('administrator.components.com_kinoarhiv.helpers.component', JPATH_ROOT);
+JLoader::register('KAComponentHelperBackend', JPath::clean(dirname(__FILE__) . '/helpers/component.php'));
 
 KAComponentHelperBackend::setHeadTags();
 

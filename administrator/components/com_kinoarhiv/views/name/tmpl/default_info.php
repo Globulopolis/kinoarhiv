@@ -18,26 +18,26 @@ $width  = $image[0];
 	<div class="span6">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('name', 'name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('name', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('name'); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('latin_name', 'name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('latin_name', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('latin_name'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('latin_name'); ?></div>
 			</div>
 			<div class="control-group">
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('alias', 'name'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
 					<div class="controls">
-						<?php echo $this->form->getInput('alias', 'name'); ?>
+						<?php echo $this->form->getInput('alias'); ?>
 					</div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('fs_alias', 'name'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('fs_alias'); ?></div>
 					<div class="controls">
 						<div class="input-append">
-							<?php echo $this->form->getInput('fs_alias', 'name'); ?>
-							<?php echo $this->form->getInput('fs_alias_orig', 'name'); ?>
+							<?php echo $this->form->getInput('fs_alias'); ?>
+							<?php echo $this->form->getInput('fs_alias_orig'); ?>
 							<button class="btn btn-default cmd-get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_NAME_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
 							<button class="btn btn-default" data-toggle="modal" data-target="#helpAliasModal"><i class="icon-help"></i></button>
 						</div>
@@ -45,13 +45,13 @@ $width  = $image[0];
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('birthplace', 'name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('birthplace', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('birthplace'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('birthplace'); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('birthcountry', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('birthcountry'); ?></div>
 				<div class="controls">
-					<?php echo $this->form->getInput('birthcountry', 'name'); ?>
+					<?php echo $this->form->getInput('birthcountry'); ?>
 					<span class="rel-link">
 					<a href="index.php?option=com_kinoarhiv&task=countries.add" target="_blank"><span class="icon-new"></span></a>
 				</span>
@@ -63,20 +63,20 @@ $width  = $image[0];
 		<div class="span9">
 			<fieldset class="form-horizontal">
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('date_of_birth', 'name'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('date_of_birth', 'name'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('date_of_birth'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('date_of_birth'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('date_of_death', 'name'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('date_of_death', 'name'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('date_of_death'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('date_of_death'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('gender', 'name'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('gender', 'name'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('gender'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('gender'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('height', 'name'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('height', 'name'); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('height'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('height'); ?></div>
 				</div>
 			</fieldset>
 		</div>
@@ -106,9 +106,9 @@ $width  = $image[0];
 	<div class="span12">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('careers', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('careers'); ?></div>
 				<div class="controls">
-					<?php echo $this->form->getInput('careers', 'name'); ?>
+					<?php echo $this->form->getInput('careers'); ?>
 					<span class="rel-link">
 					<a href="index.php?option=com_kinoarhiv&task=careers.add" target="_blank"><span class="icon-new"></span></a>
 				</span>
@@ -119,9 +119,9 @@ $width  = $image[0];
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('genres', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('genres'); ?></div>
 				<div class="controls">
-					<?php echo $this->form->getInput('genres', 'name'); ?>
+					<?php echo $this->form->getInput('genres'); ?>
 					<span class="rel-link">
 					<a href="index.php?option=com_kinoarhiv&task=genres.add" target="_blank"><span class="icon-new"></span></a>
 				</span>
@@ -132,8 +132,8 @@ $width  = $image[0];
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('desc', 'name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('desc', 'name'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('desc'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('desc'); ?></div>
 			</div>
 		</fieldset>
 	</div>
@@ -164,7 +164,7 @@ echo JHtml::_(
 );
 
 $path = JPath::clean(
-	$this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias', 'name') . '/' . $this->id . '/'
+	$this->params->get('media_actor_photo_root') . '/' . $this->form->getValue('fs_alias') . '/' . $this->id . '/'
 );
 
 echo JHtml::_(
@@ -174,7 +174,7 @@ echo JHtml::_(
 		'title'  => JText::_('NOTICE'),
 		'footer' => '<a class="btn" data-dismiss="modal">' . JText::_('COM_KA_CLOSE') . '</a>'
 	),
-	'<p>' . JText::sprintf('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', $path) . '</p>'
+	'<div class="container-fluid">' . JText::sprintf('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', $path) . '</div>'
 );
 
 echo JHtml::_(
@@ -187,14 +187,4 @@ echo JHtml::_(
 		'height' => '500',
 		'url' => 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=gallery&tab=3&id=' . $this->id . '&layout=modal&tmpl=component'
 	)
-);
-
-echo JHtml::_(
-	'bootstrap.renderModal',
-	'parserModal',
-	array(
-		'title'  => JText::_('COM_KA_PARSER_TOOLBAR_BUTTON'),
-		'footer' => JLayoutHelper::render('layouts.parser.footer', array(), JPATH_COMPONENT)
-	),
-	JLayoutHelper::render('layouts.parser.main', array(), JPATH_COMPONENT)
 );

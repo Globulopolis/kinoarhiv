@@ -41,7 +41,7 @@ $attr[] = array_key_exists('multiple_queues', $data) ? ' data-multiple_queues="t
 $attr[] = array_key_exists('content-type', $data) ? ' data-content-type="' . (string) $data['content-type'] . '"' : '';
 $attr[] = array_key_exists('max_files', $data) && !empty($data['max_files']) ? ' data-max_files="' . (int) $data['max_files'] . '"' : '';
 ?>
-<div>
+<div class="container-fluid">
 	<input type="hidden" autofocus="autofocus" />
 	<div class="hasUploader" data-url="<?php echo $data['url']; ?>" <?php echo implode('', $attr); ?>>
 		<p>You browser doesn't have Flash, Silverlight or HTML5 support.</p>

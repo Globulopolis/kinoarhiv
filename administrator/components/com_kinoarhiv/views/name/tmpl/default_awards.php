@@ -36,7 +36,7 @@ JHtml::_('behavior.keepalive');
 	<div class="row-fluid form-horizontal-desktop">
 		<div class="span6">
 			<fieldset class="form-horizontal">
-				<?php foreach ($this->form->getFieldset('award_edit') as $field): ?>
+				<?php foreach ($this->form->getFieldset() as $field): ?>
 					<div class="control-group">
 						<div class="control-label"><?php echo $field->label; ?></div>
 						<div class="controls"><?php echo $field->input; ?></div>

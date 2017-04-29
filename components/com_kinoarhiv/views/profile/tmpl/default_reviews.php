@@ -37,7 +37,7 @@ defined('_JEXEC') or die;
 			<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS') . $this->pagination->total; ?></div>
 			<div class="r-list">
 				<?php foreach ($this->items as $i => $item):
-					$ui_class = ($item->state == 0) ? 'ui-state-disabled' : '';
+					$ui_class = ($item->state == 0) ? 'muted' : '';
 					$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));
 					$ip = !empty($item->ip) ? $item->ip : JText::_('COM_KA_REVIEWS_IP_NULL');
 				?>

@@ -67,18 +67,14 @@ class KinoarhivModelName extends JModelForm
 		{
 			$data = $this->getItem();
 
-			if ($app->input->getCmd('task', '') == 'add')
+			if (empty($data) && $app->input->getCmd('task', '') == 'add')
 			{
-				if (empty($data['name']))
-				{
-					echo $app->input->getCmd('task', '');
-					$filters      = (array) $app->getUserState('com_kinoarhiv.names.filter');
-					$data['name'] = (object) array(
-						'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
-						'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
-						'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
-					);
-				}
+				$filters = (array) $app->getUserState('com_kinoarhiv.names.filter');
+				$data = (object) array(
+					'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
+					'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
+					'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+				);
 			}
 		}
 

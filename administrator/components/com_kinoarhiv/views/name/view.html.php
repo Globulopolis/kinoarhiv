@@ -21,10 +21,6 @@ class KinoarhivViewName extends JViewLegacy
 {
 	protected $items;
 
-	protected $pagination;
-
-	protected $state;
-
 	protected $form;
 
 	protected $params;
@@ -67,7 +63,6 @@ class KinoarhivViewName extends JViewLegacy
 	{
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$form   = $this->get('Form');
 		$items  = new Registry;
@@ -120,7 +115,7 @@ class KinoarhivViewName extends JViewLegacy
 		}
 
 		parent::display();
-		$app->input->set('hidemainmenu', true);
+		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}
 
 	/**

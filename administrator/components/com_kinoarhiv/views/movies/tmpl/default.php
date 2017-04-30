@@ -107,6 +107,7 @@ $columns   = 10;
 				foreach ($this->items as $i => $item) :
 					$canEdit   = $user->authorise('core.edit', 'com_kinoarhiv.movie.' . $item->id);
 					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.movie.' . $item->id);
+					$title     = KAContentHelper::formatItemTitle($item->title, '', $item->year);
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
@@ -123,16 +124,21 @@ $columns   = 10;
 					</td>
 					<td class="has-context">
 						<div class="pull-left">
-							<?php if ($item->language == '*'): ?>
-								<?php $language = JText::alt('JALL', 'language'); ?>
-							<?php else: ?>
-								<?php $language = $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
-							<?php endif; ?>
+							<?php
+							if ($item->language == '*')
+							{
+								$language = JText::alt('JALL', 'language');
+							}
+							else
+							{
+								$language = $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED');
+							}
+							?>
 							<?php if ($canEdit): ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
-									<?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' (' . $item->year . ')' : ''; ?></a>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+									<?php echo $this->escape($title); ?></a>
 							<?php else: ?>
-								<span><?php echo $this->escape($item->title); ?><?php echo ($item->year != '0000') ? ' (' . $item->year . ')' : ''; ?></span>
+								<span><?php echo $this->escape($title); ?></span>
 							<?php endif; ?>
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
 						</div>

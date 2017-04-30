@@ -242,7 +242,7 @@ class KinoarhivModelPremieres extends JModelList
 	{
 		$items = parent::getItems();
 
-		if (JFactory::getApplication()->isSite())
+		if (JFactory::getApplication()->isClient('site'))
 		{
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();

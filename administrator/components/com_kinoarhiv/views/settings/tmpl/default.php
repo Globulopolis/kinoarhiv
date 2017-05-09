@@ -164,206 +164,194 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 		<?php echo JHtml::_('bootstrap.startTabSet', 'settings', array('active' => 'page0')); ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page0', JText::_('COM_KA_SETTINGS_TAB')); ?>
 
-			<div id="page0">
-				<div class="row-fluid">
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_GLOBAL_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('global') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_META_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('metadata') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_GLOBAL_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('global') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
-						<fieldset class="form-horizontal paths">
-							<legend><?php echo JText::_('COM_KA_PATHS_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('paths') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls settings-paths"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_META_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('metadata') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<fieldset class="form-horizontal paths">
+						<legend><?php echo JText::_('COM_KA_PATHS_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('paths') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls settings-paths"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
 				</div>
 			</div>
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page1', JText::_('COM_KA_UPLOAD_DOWNLOAD_TAB')); ?>
 
-			<div id="page1">
-				<div class="row-fluid">
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_GALLERY_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('gallery') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_UPLOAD_DOWNLOAD_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('content_dl') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_GALLERY_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('gallery') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
+				</div>
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_UPLOAD_DOWNLOAD_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('content_dl') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
 				</div>
 			</div>
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page2', JText::_('COM_KA_MUSIC_TAB')); ?>
 
-			<div id="page2">
-				<div class="row-fluid">
-					<div class="span6">
-						<?php echo $this->loadTemplate('music_global'); ?>
-					</div>
-					<div class="span6">
-						<?php echo $this->loadTemplate('music_covers'); ?>
-					</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<?php echo $this->loadTemplate('music_global'); ?>
+				</div>
+				<div class="span6">
+					<?php echo $this->loadTemplate('music_covers'); ?>
 				</div>
 			</div>
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page3', JText::_('COM_KA_APPEARANCE_TAB')); ?>
 
-			<div id="page3">
-				<div class="row-fluid">
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_GLOBAL_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('ap_global') as $field): ?>
+			<div class="row-fluid">
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_GLOBAL_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('ap_global') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('ap_nav') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
+				</div>
+				<div class="span6">
+					<?php echo $this->loadTemplate('ap_item'); ?>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_RATE_LABEL'); ?></legend>
+						<div class="span6">
+							<?php foreach ($this->form->getFieldset('ap_rate') as $field): ?>
 								<div class="control-group">
 									<div class="control-label"><?php echo $field->label; ?></div>
 									<div class="controls"><?php echo $field->input; ?></div>
 								</div>
 							<?php endforeach; ?>
-						</fieldset>
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('ap_nav') as $field): ?>
+						</div>
+						<div class="span6">
+							<?php foreach ($this->form->getFieldset('ap_rate_img') as $field): ?>
 								<div class="control-group">
 									<div class="control-label"><?php echo $field->label; ?></div>
 									<div class="controls"><?php echo $field->input; ?></div>
 								</div>
 							<?php endforeach; ?>
-						</fieldset>
-					</div>
-					<div class="span6">
-						<?php echo $this->loadTemplate('ap_item'); ?>
-					</div>
+						</div>
+					</fieldset>
 				</div>
-				<div class="row-fluid">
-					<div class="span12">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_RATE_LABEL'); ?></legend>
-							<div class="span6">
-								<?php foreach ($this->form->getFieldset('ap_rate') as $field): ?>
-									<div class="control-group">
-										<div class="control-label"><?php echo $field->label; ?></div>
-										<div class="controls"><?php echo $field->input; ?></div>
-									</div>
-								<?php endforeach; ?>
-							</div>
-							<div class="span6">
-								<?php foreach ($this->form->getFieldset('ap_rate_img') as $field): ?>
-									<div class="control-group">
-										<div class="control-label"><?php echo $field->label; ?></div>
-										<div class="controls"><?php echo $field->input; ?></div>
-									</div>
-								<?php endforeach; ?>
-							</div>
-						</fieldset>
-					</div>
-				</div>
-				<div class="row-fluid">
-					<div class="span12">
-						<?php echo $this->loadTemplate('ap_alphabet'); ?>
-					</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<?php echo $this->loadTemplate('ap_alphabet'); ?>
 				</div>
 			</div>
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page4', JText::_('COM_KA_REVIEWS_TAB')); ?>
 
-			<div id="page4">
-				<div class="row-fluid">
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></legend>
-							<?php foreach ($this->form->getFieldset('reviews') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_REVIEWS_SETTINGS_SAVE_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('reviews_save') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></legend>
+						<?php foreach ($this->form->getFieldset('reviews') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
+				</div>
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_REVIEWS_SETTINGS_SAVE_LABEL'); ?></legend>
+						<?php foreach ($this->form->getFieldset('reviews_save') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
 				</div>
 			</div>
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page5', JText::_('COM_KA_SEARCH_TAB')); ?>
 
-			<div id="page5">
-				<div class="row-fluid">
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_MOVIES'); ?></legend>
-							<?php foreach ($this->form->getFieldset('search_movies') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_NAMES'); ?></legend>
-							<?php foreach ($this->form->getFieldset('search_names') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
-						</fieldset>
-					</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_MOVIES'); ?></legend>
+						<?php foreach ($this->form->getFieldset('search_movies') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
+				</div>
+				<div class="span6">
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_NAMES'); ?></legend>
+						<?php foreach ($this->form->getFieldset('search_names') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</fieldset>
 				</div>
 			</div>
 
@@ -371,15 +359,13 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 			<?php if ($this->userIsSuperAdmin): ?>
 			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page6', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
 
-			<div id="page6">
-				<div class="row-fluid">
-					<div class="span12">
-						<fieldset class="form-horizontal">
-							<div class="control-group">
-								<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules'); ?></div>
-							</div>
-						</fieldset>
-					</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<fieldset class="form-horizontal">
+						<div class="control-group">
+							<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules'); ?></div>
+						</div>
+					</fieldset>
 				</div>
 			</div>
 

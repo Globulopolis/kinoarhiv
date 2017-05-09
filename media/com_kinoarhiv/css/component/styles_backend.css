@@ -35,10 +35,6 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	text-align: right;
 }
 
-.cmd-update-stats {
-	margin-left: 1em;
-}
-
 /* Styles for icons in movie list */
 td.icons-list a {
 	margin-top: .2em;

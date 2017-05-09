@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies` (
   `rate_sum_loc` int(10) NOT NULL DEFAULT '0',
   `imdb_votesum` varchar(5) NOT NULL DEFAULT '0',
   `imdb_votes` int(11) NOT NULL DEFAULT '0',
-  `imdb_id` int(11) NOT NULL DEFAULT '0',
+  `imdb_id` varchar(128) NOT NULL DEFAULT '0',
   `kp_votesum` varchar(5) NOT NULL DEFAULT '0',
   `kp_votes` int(11) NOT NULL DEFAULT '0',
   `kp_id` int(11) NOT NULL DEFAULT '0',

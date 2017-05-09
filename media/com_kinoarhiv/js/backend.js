@@ -109,9 +109,11 @@ jQuery(document).ready(function($){
 
 	// Create datetime field
 	$('.hasDatetime').each(function(index, element){
-		var $this = $(element);
+		var $this = $(element),
+			input = $this.children('input'),
+			framework = $this.data('framework');
 
-		if ($this.attr('readonly')) {
+		if (input.attr('readonly')) {
 			return;
 		}
 
@@ -119,27 +121,39 @@ jQuery(document).ready(function($){
 			$this.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
 		}
 
-		if ($this.data('type') == 'time') {
-			$this.timepicker({
-				timeFormat: $this.data('time-format'),
-				showOn: 'button'
-			});
-		} else if ($this.data('type') == 'date') {
-			$this.datepicker({
-				dateFormat: $this.data('date-format'),
-				showButtonPanel: true,
-				showOn: 'button'
-			});
-		} else if ($this.data('type') == 'datetime') {
+		if (framework == 'bootstrap') {
 			$this.datetimepicker({
-				dateFormat: $this.data('date-format'),
-				timeFormat: $this.data('time-format'),
-				showButtonPanel: true,
-				showOn: 'button'
+				language: $('html').attr('lang').substr(0, 2),
+				weekStart: 1,
+				todayBtn: true,
+				autoclose: true,
+				todayHighlight: true,
+				startView: 2,
+				keyboardNavigation: false
 			});
-		}
+		} else {
+			if (input.data('type') == 'time') {
+				input.timepicker({
+					timeFormat: $this.data('time-format'),
+					showOn: 'button'
+				});
+			} else if (input.data('type') == 'date') {
+				input.datepicker({
+					dateFormat: $this.data('date-format'),
+					showButtonPanel: true,
+					showOn: 'button'
+				});
+			} else if (input.data('type') == 'datetime') {
+				input.datetimepicker({
+					dateFormat: $this.data('date-format'),
+					timeFormat: $this.data('time-format'),
+					showButtonPanel: true,
+					showOn: 'button'
+				});
+			}
 
-		$this.next('.ui-datepicker-trigger').addClass('btn btn-default').html('<i class="icon-calendar"></i>');
+			input.next('.ui-datepicker-trigger').addClass('btn btn-default').html('<i class="icon-calendar"></i>');
+		}
 	});
 
 	// Process remote images upload
@@ -366,7 +380,6 @@ jQuery(document).ready(function($){
 
 			var view_config = {
 				width: width,
-				left: Math.round(($(document).width() / 2) - ($(document).width() / 3)),
 				closeOnEscape: true,
 				beforeShowForm: function(form){
 					document.querySelector('#viewmod' + element.id).style.top = '-108px';
@@ -457,7 +470,6 @@ jQuery(document).ready(function($){
 				{
 					// Search form config
 					width: width,
-					left: Math.round(($(document).width() / 2) - ($(document).width() / 3)),
 					closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 				},
 				view_config

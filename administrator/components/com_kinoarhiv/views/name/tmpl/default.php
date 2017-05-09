@@ -127,162 +127,152 @@ $this->id    = $this->form->getValue('id');
 			<?php echo JHtml::_('bootstrap.startTabSet', 'names', array('active' => 'page0')); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page0', JText::_('COM_KA_NAMES_TAB_MAIN')); ?>
 
-				<div id="page0">
-					<?php echo $this->loadTemplate('info'); ?>
-				</div>
+				<?php echo $this->loadTemplate('info'); ?>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page1', JText::_('COM_KA_NAMES_TAB_AWARDS')); ?>
 
-				<div id="page1">
-					<?php
-					if ($this->id != 0)
-					{
-						$lang = JFactory::getLanguage();
-						$options = array(
-							'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=nameAwards&format=json&showAll=1'
-								. '&lang=' . substr($lang->getTag(), 0, 2) . '&id=' . $this->id . '&' . JSession::getFormToken() . '=1'),
-							'add_url'  => 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $this->id,
-							'edit_url' => 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $this->id,
-							'del_url'  => 'index.php?option=com_kinoarhiv&task=names.removeNameAwards&format=json&id=' . $this->id,
-							'width' => '#namesContent', 'height' => '#item-form',
-							'order' => 'rel.id', 'orderby' => 'desc',
-							'idprefix' => 'aw_',
-							'rowlist'  => array(5, 10, 15, 20, 25, 30, 50, 100, 200, 500),
-							'colModel' => array(
-								'JGRID_HEADING_ID' => (object) array(
-									'name' => 'id', 'index' => 'rel.id', 'width' => 55, 'title' => false,
-									'sorttype' => 'int',
-									'searchoptions' => (object) array(
-										'sopt' => array('cn', 'eq', 'le', 'ge')
-									)
-								),
-								'COM_KA_FIELD_AW_ID' => (object) array(
-									'name' => 'award_id', 'index' => 'rel.award_id', 'width' => 55, 'title' => false,
-									'sorttype' => 'int',
-									'searchoptions' => (object) array(
-										'sopt' => array('cn', 'eq', 'le', 'ge')
-									)
-								),
-								'COM_KA_FIELD_AW_LABEL' => (object) array(
-									'name' => 'title', 'index' => 'aw.title', 'width' => 350, 'title' => false,
-									'sorttype' => 'text',
-									'searchoptions' => (object) array(
-										'sopt' => array('cn', 'eq', 'bw', 'ew')
-									)
-								),
-								'COM_KA_FIELD_AW_YEAR' => (object) array(
-									'name' => 'year', 'index' => 'rel.year', 'width' => 150, 'title' => false,
-									'sorttype' => 'int',
-									'searchoptions' => (object) array(
-										'sopt' => array('cn', 'eq', 'le', 'ge')
-									)
-								),
-								'COM_KA_FIELD_AW_DESC' => (object) array(
-									'name' => 'desc', 'index' => 'rel.desc', 'width' => 350, 'title' => false,
-									'sortable' => false,
-									'searchoptions' => (object) array(
-										'sopt' => array('cn', 'eq', 'bw', 'ew')
-									)
+				<?php
+				if ($this->id != 0)
+				{
+					$lang = JFactory::getLanguage();
+					$options = array(
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=nameAwards&format=json&showAll=1'
+							. '&lang=' . substr($lang->getTag(), 0, 2) . '&id=' . $this->id . '&' . JSession::getFormToken() . '=1'),
+						'add_url'  => 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $this->id,
+						'edit_url' => 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $this->id,
+						'del_url'  => 'index.php?option=com_kinoarhiv&task=names.removeNameAwards&format=json&id=' . $this->id,
+						'width' => '#j-main-container', 'height' => '#item-form',
+						'order' => 'rel.id', 'orderby' => 'desc',
+						'idprefix' => 'aw_',
+						'rowlist'  => array(5, 10, 15, 20, 25, 30, 50, 100, 200, 500),
+						'colModel' => array(
+							'JGRID_HEADING_ID' => (object) array(
+								'name' => 'id', 'index' => 'rel.id', 'width' => 55, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
 								)
 							),
-							'navgrid' => array(
-								'btn' => array(
-									'lang' => array(
-										'addtext' => JText::_('JTOOLBAR_ADD'), 'edittext' => JText::_('JTOOLBAR_EDIT'),
-										'deltext' => JText::_('JTOOLBAR_REMOVE'), 'searchtext' => JText::_('JSEARCH_FILTER'),
-										'refreshtext' => JText::_('JTOOLBAR_REFRESH'), 'viewtext' => JText::_('JGLOBAL_PREVIEW')
-									)
+							'COM_KA_FIELD_AW_ID' => (object) array(
+								'name' => 'award_id', 'index' => 'rel.award_id', 'width' => 55, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_AW_LABEL' => (object) array(
+								'name' => 'title', 'index' => 'aw.title', 'width' => 350, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							'COM_KA_FIELD_AW_YEAR' => (object) array(
+								'name' => 'year', 'index' => 'rel.year', 'width' => 150, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_AW_DESC' => (object) array(
+								'name' => 'desc', 'index' => 'rel.desc', 'width' => 350, 'title' => false,
+								'sortable' => false,
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
 								)
 							)
-						);
+						),
+						'navgrid' => array(
+							'btn' => array(
+								'lang' => array(
+									'addtext' => JText::_('JTOOLBAR_ADD'), 'edittext' => JText::_('JTOOLBAR_EDIT'),
+									'deltext' => JText::_('JTOOLBAR_REMOVE'), 'searchtext' => JText::_('JSEARCH_FILTER'),
+									'refreshtext' => JText::_('JTOOLBAR_REFRESH'), 'viewtext' => JText::_('JGLOBAL_PREVIEW')
+								)
+							)
+						)
+					);
 
-						echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
-					}
-					else
-					{
-						echo JText::_('COM_KA_NO_ID');
-					}
-					?>
-				</div>
+					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
+				}
+				else
+				{
+					echo JText::_('COM_KA_NO_ID');
+				}
+				?>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page2', JText::_('COM_KA_NAMES_TAB_META')); ?>
 
-				<div id="page2">
-					<div class="row-fluid">
-						<div class="span6">
-							<fieldset class="form-horizontal">
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('metakey'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('metakey'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('metadesc'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('metadesc'); ?></div>
-								</div>
-							</fieldset>
-						</div>
-						<div class="span6">
-							<fieldset class="form-horizontal">
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('robots'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('robots'); ?></div>
-								</div>
-							</fieldset>
-						</div>
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('metakey'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('metakey'); ?></div>
+							</div>
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('metadesc'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('metadesc'); ?></div>
+							</div>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('robots'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('robots'); ?></div>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page3', JText::_('COM_KA_NAMES_TAB_PUB')); ?>
 
-				<div id="page3">
-					<div class="row-fluid">
-						<div class="span6">
-							<fieldset class="form-horizontal">
-								<?php foreach ($this->form->getFieldset('basic') as $field): ?>
-									<div class="control-group">
-										<div class="control-label"><?php echo $field->label; ?></div>
-										<div class="controls"><?php echo $field->input; ?></div>
-									</div>
-								<?php endforeach; ?>
-							</fieldset>
-						</div>
-						<div class="span6">
-							<fieldset class="form-horizontal">
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<?php foreach ($this->form->getFieldset('basic') as $field): ?>
 								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('language'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('language'); ?></div>
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
 								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
-								</div>
-								<div class="control-group">
-									<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-									<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
-								</div>
-							</fieldset>
-						</div>
+							<?php endforeach; ?>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('language'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('language'); ?></div>
+							</div>
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
+							</div>
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'names', 'page4', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
 
-				<div id="page4">
-					<div class="row-fluid">
-						<div class="span12">
-							<fieldset class="form-horizontal">
-								<div class="control-group">
-									<div class="controls" style="margin-left: 0 !important;">
-										<?php echo $this->form->getInput('rules'); ?>
-										<input type="hidden" name="jform_title" id="jform_title" value="<?php echo $this->form->getValue('title'); ?>" />
-									</div>
+				<div class="row-fluid">
+					<div class="span12">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="controls" style="margin-left: 0 !important;">
+									<?php echo $this->form->getInput('rules'); ?>
+									<input type="hidden" name="jform_title" id="jform_title" value="<?php echo $this->form->getValue('title'); ?>" />
 								</div>
-							</fieldset>
-						</div>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 

@@ -67,7 +67,8 @@ ALTER TABLE `#__ka_movies`
   ADD COLUMN `modified_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `modified`,
   ADD COLUMN `publish_up` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `modified_by`,
   ADD COLUMN `publish_down` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `publish_up`,
-  ADD COLUMN `fs_alias` VARCHAR(3) DEFAULT '' NOT NULL AFTER `alias`;
+  ADD COLUMN `fs_alias` VARCHAR(3) DEFAULT '' NOT NULL AFTER `alias`,
+  CHANGE `imdb_id` `imdb_id` VARCHAR(128) DEFAULT '0' NOT NULL;
 
 CREATE TABLE IF NOT EXISTS `#__ka_music_rel_composers` (
   `name_id` int(11) NOT NULL DEFAULT '0',

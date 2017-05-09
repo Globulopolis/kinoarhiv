@@ -29,8 +29,10 @@ $id = (int) $this->form->getValue('id');
 
 	jQuery(document).ready(function($){
 		<?php if ($id != 0): ?>
-		$('#form_stats').after('<a href="#" class="cmd-update-stats hasTooltip" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><span class="icon-refresh"></span></a>');
-		$('a.cmd-update-stats').tooltip();
+		$('#form_stats').wrap('<div class="input-append"/>')
+			 .after('<button class="btn cmd-update-stats hasTooltip" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>"><span class="icon-refresh"></span></button>');
+
+		$('.cmd-update-stats').tooltip();
 		<?php endif; ?>
 
 		$('form').on('click', 'a.cmd-update-stats', function(e){

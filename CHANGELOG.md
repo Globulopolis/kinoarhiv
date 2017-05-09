@@ -8,15 +8,14 @@
 * More userfriendly language strings with the search results count.
 * getDBO changed to getDbo, JURI to JUri on frontend.
 * Removed DIRECTORY_SEPARATOR, use / and JPath::clean instead.
-* Video player is now responsive.
-* Remove jQueryUI dependencies from frontend.
+* Video players is now responsive.
+* Remove jQueryUI dependencies from frontend. CSS still needed.
 * Update Trumbowyg to release.
 * Remove unused jquery.ui.plupload.
 * i18n files for editors moved from js/i18n/ to editor folders.
 * Remove buttons from editor fields in backend.
 * Reduce size of jQuery UI build.
 * Update jQuery Timepicker Addon to 1.6.1
-* Update plupload to 2.1.8
 * Configuration for rating parser moved to config_rating_parser.xml
 * Fixed wrong URL for rating image in updateRateImg()
 * Remove Jwplayer as it's not support video send via PHP script.
@@ -37,7 +36,7 @@
 * Fixed rottentomatoes rating parser.
 * Fixed wrong string build for search in database in KADatabaseHelper::transformOperands()
 * Media content(like images, video, etc.) now can be restricted to numberof user sessions and speed.
-* Update plupload to 2.1.8
+* Update plupload to 2.3.1
 * Update Select2 to 3.5.4
 * Update BxSlider to 4.2.5
 * Update jquery countdown to 2.0.2
@@ -45,7 +44,7 @@
 * Fixed search in grids for awards, premieres, releases in backend for movies and persons.
 * Added 'Clear' button for search forms.
 * Improve usability of updater for ratings from remote sites.
-* Fixed errors when parsin ratings from remote sites(e.g. rottentomatoes).
+* Fixed errors when parsing ratings from remote sites(e.g. rottentomatoes).
 * Fixed 'Save and create' task in 'country edit' template.
 * New layouts.
 * Change JString into String in classes.
@@ -59,9 +58,9 @@
 * Remove unused variables.
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
-* Update VideoJS to 5.10.2
-* Update Mediaelement.js to 2.20.1
-* Fixed bug with undefined variale which may have unexpected results when the user try to delete person from 'cast & crew' table.
+* Update VideoJS to 5.18.4
+* Update Mediaelement.js to 4.1.0
+* Fixed bug with undefined variable which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".
 * Added posibility to edit a music genres.
 * SQL-dump was updated.

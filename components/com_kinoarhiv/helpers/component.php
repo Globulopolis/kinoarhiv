@@ -302,7 +302,7 @@ class KAComponentHelper
 	 *                               Example: $file[]en-US.js or $file[select2_locale_]da.js
 	 * @param   string   $path       Path to folder.
 	 * @param   boolean  $jhtml      Use JHtml::script() to load. Set this to false if need to load JS into raw document.
-	 * @param   boolean  $lowercase  Convert language string to lowercase or not.
+	 * @param   boolean  $lowercase  Convert language string to lowercase or not. If true when en-GB will be en-gb.
 	 *
 	 * @return  void
 	 *

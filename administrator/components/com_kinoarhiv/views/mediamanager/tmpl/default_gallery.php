@@ -37,17 +37,17 @@ else
 
 		// Reload page if image files uploaded. Require hidden <input>
 		$('#imgModalUpload').on('hidden', function(){
-			if (parseInt($('input[name="file_uploaded"]').val(), 10) == 1) {
+			if (parseInt($('input[name="file_uploaded"]').val(), 10) === 1) {
 				document.location.reload();
 			}
 		});
 
 		Joomla.submitbutton = function(task) {
-			if (task == 'mediamanager.upload') {
+			if (task === 'mediamanager.upload') {
 				$('#imgModalUpload').modal('show');
 
 				return false;
-			} else if (task == 'mediamanager.copyfrom') {
+			} else if (task === 'mediamanager.copyfrom') {
 				$('#copyfromModal').modal('show');
 
 				return false;

@@ -29,7 +29,7 @@ $this->trailer_id = $trailer_id[0];
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'mediamanager.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+		if (task === 'mediamanager.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
 			Joomla.submitform(task, document.getElementById('item-form'));
 		}
 	};
@@ -41,10 +41,10 @@ $this->trailer_id = $trailer_id[0];
 
 			var target_form = $('#form_trailer_urls');
 
-			if ($(this).data('type') == 'video') {
+			if ($(this).data('type') === 'video') {
 				var url_video = $('#urls_url_video');
 
-				if (url_video.val() != '') {
+				if (!empty(url_video.val())) {
 					target_form.val(
 						target_form.val()
 						+ (target_form.val() != '' ? "\n" : '')
@@ -56,10 +56,10 @@ $this->trailer_id = $trailer_id[0];
 				}
 
 				showMsg('#urls_layout_video_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
-			} else if ($(this).data('type') == 'subtitles') {
+			} else if ($(this).data('type') === 'subtitles') {
 				var url_subtitle = $('#urls_url_subtitles');
 
-				if (url_subtitle.val() != '') {
+				if (!empty(url_subtitle.val())) {
 					var lang = $('#urls_url_subtitles_lang');
 
 					target_form.val(
@@ -72,10 +72,10 @@ $this->trailer_id = $trailer_id[0];
 				}
 
 				showMsg('#urls_layout_subtitles_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
-			} else if ($(this).data('type') == 'chapters') {
+			} else if ($(this).data('type') === 'chapters') {
 				var url_chapter = $('#urls_url_chapters');
 
-				if (url_chapter.val() != '') {
+				if (!empty(url_chapter.val())) {
 					target_form.val(target_form.val() + "\n" + '[url="' + url_chapter.val() + '" kind="chapters"]');
 					$('#urls_layout_chapters_form')[0].reset();
 
@@ -144,9 +144,9 @@ $this->trailer_id = $trailer_id[0];
 				var total = Object.keys(response[list]).length,
 					sort_handler = total < 2 ? ' inactive tip-top' : '';
 
-				if (list == 'video') {
+				if (list === 'video') {
 					// Update row with screenshot
-					if (typeof response.screenshot != 'undefined' && !empty(response.screenshot.file)) {
+					if (typeof response.screenshot !== 'undefined' && !empty(response.screenshot.file)) {
 						if (!Date.now) {
 							Date.now = function(){
 								return new Date().getTime();
@@ -173,7 +173,7 @@ $this->trailer_id = $trailer_id[0];
 					// Update rows
 					$.each(response[list], function(key, object){
 						var file_info = formatItemTitle(object.type, object.resolution, '', ', '),
-							file_info_text = file_info != "" ? ' <span class="gray">(' + file_info + ')</span>': '',
+							file_info_text = !empty(file_info) ? ' <span class="gray">(' + file_info + ')</span>': '',
 							filename_class = object.is_file == 0 ? ' red' : '';
 
 						html += '<tr>' +
@@ -193,7 +193,7 @@ $this->trailer_id = $trailer_id[0];
 
 					tbody.find('tr').remove();
 					tbody.prepend(html);
-				} else if (list == 'subtitles') {
+				} else if (list === 'subtitles') {
 					if (total == 0) {
 						tbody.find('tr').remove();
 						tbody.prepend('<tr><td colspan="5"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
@@ -203,7 +203,7 @@ $this->trailer_id = $trailer_id[0];
 					}
 
 					$.each(response[list], function(key, object){
-						var lang = object.lang != "" ? ' <span class="gray">(' + object.lang + ')</span>' : '',
+						var lang = !empty(object.lang) ? ' <span class="gray">(' + object.lang + ')</span>' : '',
 							filename_class = object.is_file == 0 ? ' red' : '';
 
 						html += '<tr>' +
@@ -232,7 +232,7 @@ $this->trailer_id = $trailer_id[0];
 
 					tbody.find('tr').remove();
 					tbody.prepend(html);
-				} else if (list == 'chapters') {
+				} else if (list === 'chapters') {
 					if (total == 0) {
 						tbody.find('tr').remove();
 						tbody.prepend('<tr><td colspan="4"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
@@ -304,7 +304,7 @@ $this->trailer_id = $trailer_id[0];
 			var tab = $(this).data('upload-tab'),
 				modal = {};
 
-			if (tab == 'screenshot') {
+			if (tab === 'screenshot') {
 				modal = $('#imgModalUpload');
 			} else {
 				modal = $('#uploadVideoModal');
@@ -372,7 +372,7 @@ $this->trailer_id = $trailer_id[0];
 					showMsg('#fileinfo-item-form', response.message);
 				}
 
-				if (list == 'screenshot') {
+				if (list === 'screenshot') {
 					list = 'video';
 				}
 
@@ -397,7 +397,7 @@ $this->trailer_id = $trailer_id[0];
 				return;
 			} else {
 				// Check if it's a row with screenshot
-				if (list == 'video' && table.find('.screenshot').length < 1) {
+				if (list === 'video' && table.find('.screenshot').length < 1) {
 					return;
 				}
 			}
@@ -414,7 +414,7 @@ $this->trailer_id = $trailer_id[0];
 			}).done(function(response){
 				showMsg('#system-message-container', response.message ? response.message : $(response).text());
 
-				if ((remove_all && list == 'video') || (!remove_all && $this.data('type') == 'image')) {
+				if ((remove_all && list === 'video') || (!remove_all && $this.data('type') === 'image')) {
 					$('.screenshot div', table).remove();
 				}
 
@@ -434,13 +434,13 @@ $this->trailer_id = $trailer_id[0];
 				$screenshot_time = $('#screenshot_time');
 
 			if (!document.formvalidator.isValid(document.getElementById('screenshot_layout_create_form'))
-			|| ($screenshot_time.val() == '00:00:00' || $screenshot_time.val() == '00:00:00.000')) {
+			|| ($screenshot_time.val() === '00:00:00' || $screenshot_time.val() === '00:00:00.000')) {
 				// Due to the formvalidator specifics in Joomla we need to copy error message in new place in modal
 				var msg_container = $('#system-message-container'),
 					msg = $('button', msg_container).siblings('div').text();
 
 				msg_container.html("");
-				msg = (msg != '') ? msg + '<br />' : '';
+				msg = !empty(msg) ? msg + '<br />' : '';
 				showMsg('#screenshot_layout_create_form', msg + '<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR'); ?>');
 
 				return;

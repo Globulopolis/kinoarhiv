@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset addrulepath="administrator/components/com_kinoarhiv/models/rules"
+			  addfieldpath="/components/com_kinoarhiv/models/fields">
+		<field name="vendor_id" type="vendors" default="" label="COM_KA_FIELD_RELEASE_VENDOR" required="true"
+			   class="span10" filter="integer" data-ac-type="vendors" data-sel-size="1" data-allow-clear="true"/>
+		<field name="country_id" type="countries" default="" label="COM_KA_FIELD_COUNTRY_LABEL" required="true"
+			   class="span10" filter="integer" data-ac-type="countries" data-sel-size="1" data-allow-clear="true"/>
+		<field name="release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="inputbox"
+			   datatype="date" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
+		<field name="media_type" type="autocomplete" label="COM_KA_RELEASES_MEDIATYPE_TITLE" data-lang="*"
+			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" class="span12"
+			   data-content="mediatypes" data-allow-clear="true" data-key="id">
+			<option value=""></option>
+		</field>
+		<field name="desc" type="textarea" default="" label="JGLOBAL_DESCRIPTION"
+			   description="COM_KA_FIELD_RELEASE_DESC_LABEL_DESC" class="span12" filter="raw" cols="6" rows="5"/>
+		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<option value="*">JALL</option>
+		</field>
+		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
+			   class="inputbox" size="6" default="0"/>
+		<field name="id" type="text" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
+			   default="0" readonly="true"/>
+		<field name="movie_id" type="text" label="COM_KA_FIELD_MOVIE_ID" description="JGLOBAL_FIELD_ID_DESC" size="10"
+			   default="0" readonly="true"/>
+	</fieldset>
+</form>

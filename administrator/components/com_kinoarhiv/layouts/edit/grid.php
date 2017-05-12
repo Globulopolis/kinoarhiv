@@ -30,8 +30,8 @@ else
 	return false;
 }
 
-$id = str_replace('.', '', uniqid(rand(), true));
-$grid_id = 'grid_' . $id;
+$id       = str_replace('.', '', uniqid(rand(), true));
+$grid_id  = 'grid_' . $id;
 $pager_id = 'grid_pager_' . $id;
 
 if (array_key_exists('id', $data) && !empty($data['id']))
@@ -69,5 +69,5 @@ $attr[] = array_key_exists('add_url', $data) ? " data-add_url='" . $data['add_ur
 $attr[] = array_key_exists('edit_url', $data) ? " data-edit_url='" . $data['edit_url'] . "'" : '';
 $attr[] = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_url'] . "'" : '';
 ?>
-<table id="<?php echo $grid_id; ?>" class="jqgrid" data-url="<?php echo $url; ?>"<?php echo implode('', $attr); ?>></table>
+<table id="<?php echo $grid_id; ?>" class="jqgrid" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
 <div id="<?php echo $pager_id; ?>"></div>

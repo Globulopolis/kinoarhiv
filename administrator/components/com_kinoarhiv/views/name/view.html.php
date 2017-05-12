@@ -42,7 +42,7 @@ class KinoarhivViewName extends JViewLegacy
 		switch ($task)
 		{
 			case 'editNameAwards':
-				$this->editNameAwards('awards');
+				$this->editNameAwards($tpl);
 				break;
 			default:
 				$this->edit();
@@ -127,7 +127,7 @@ class KinoarhivViewName extends JViewLegacy
 	 *
 	 * @throws  Exception
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function editNameAwards($tpl)
 	{
@@ -141,10 +141,11 @@ class KinoarhivViewName extends JViewLegacy
 
 		if ($this->getLayout() !== 'modal')
 		{
-			$this->addToolbar('awards');
+			$this->addToolbar($tpl);
 		}
 
-		parent::display($tpl);
+		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);
+
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}
 
@@ -203,7 +204,7 @@ class KinoarhivViewName extends JViewLegacy
 
 			JToolbarHelper::apply('names.saveNameAwards');
 			JToolbarHelper::divider();
-			JToolbarHelper::cancel('names.cancel', 'JTOOLBAR_CLOSE');
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 		else
 		{

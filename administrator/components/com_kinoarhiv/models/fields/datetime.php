@@ -13,7 +13,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * Form Field class for the Kinoarhiv.
  *
- * Provides a pop up date picker linked to a button.
+ * Provides a pop up date and time picker linked to a button.
  * Optionally may be filtered to use user's or server's time zone.
  *
  * @since  3.0
@@ -45,20 +45,10 @@ class JFormFieldDatetime extends JFormField
 	 */
 	protected function getInput()
 	{
-		JHtml::_('jquery.framework');
-		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
-		KAComponentHelper::getScriptLanguage('datepicker-', 'media/com_kinoarhiv/js/i18n/datepicker/', true, false);
-
-		if (!empty($this->element['datatype']) && $this->element['datatype'] != 'date')
-		{
-			JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui-timepicker-addon.min.js');
-			KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', 'media/com_kinoarhiv/js/i18n/timepicker/', true, false);
-		}
-
-		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
-
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$framework = (string) $this->element['framework'];
+		$html = '';
 		$attributes = ' ';
-		$class = 'hasDatetime ';
 
 		if (!empty($this->size))
 		{
@@ -68,11 +58,6 @@ class JFormFieldDatetime extends JFormField
 		if (!empty($this->maxLength))
 		{
 			$attributes .= 'maxlength="' . $this->maxlength . '" ';
-		}
-
-		if (!empty($this->class))
-		{
-			$class .= $this->class . ' ';
 		}
 
 		if ($this->readonly)
@@ -90,29 +75,57 @@ class JFormFieldDatetime extends JFormField
 			$attributes .= 'required aria-required="true" ';
 		}
 
-		if (!empty($this->element['dateformat']))
-		{
-			$attributes .= 'data-date-format="' . $this->element['dateformat'] . '" ';
-		}
+		$dateformat = !empty($this->element['dateformat']) ? (string) $this->element['dateformat'] : '';
+		$timeformat = !empty($this->element['timeformat']) ? (string) $this->element['timeformat'] : '';
 
-		if (!empty($this->element['timeformat']))
+		if ($framework == 'bootstrap')
 		{
-			$attributes .= 'data-time-format="' . $this->element['timeformat'] . '" ';
-		}
+			JHtml::_('jquery.framework');
+			JHtml::_('bootstrap.framework');
+			JHtml::_('stylesheet', 'media/com_kinoarhiv/css/bootstrap-datetimepicker.min.css');
+			JHtml::_('script', 'media/com_kinoarhiv/js/bootstrap-datetimepicker.min.js');
+			KAComponentHelper::getScriptLanguage('bootstrap-datetimepicker.', 'media/com_kinoarhiv/js/i18n/bootstrap-datetimepicker/');
+			JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
 
-		if (!empty($this->element['datatype']))
-		{
-			$attributes .= 'data-type="' . $this->element['datatype'] . '" ';
+			$html = '<div class="hasDatetime date input-append" data-framework="' . $framework . '"'
+				. ' data-date="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"'
+				. ' data-date-format="' . $dateformat . ' ' . $timeformat . '">
+				<input type="text" name="' . $this->name . '" id="' . $this->id . '" class="' . $this->class . '"'
+					. ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $attributes . '/>
+				<span class="add-on"><i class="icon-calendar"></i></span>
+			</div>';
 		}
 		else
 		{
-			$attributes .= 'data-type="datetime" ';
-		}
+			JHtml::_('jquery.framework');
+			JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
+			JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
+			KAComponentHelper::getScriptLanguage('datepicker-', 'media/com_kinoarhiv/js/i18n/datepicker/');
 
-		$html = '<div class="input-append">
-			<input type="text" name="' . $this->name . '" id="' . $this->id . '"'
-				. ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" class="' . $class . '" ' . $attributes . ' />
-		</div>';
+			if (!empty($this->element['datatype']) && $this->element['datatype'] != 'date')
+			{
+				JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui-timepicker-addon.min.js');
+				KAComponentHelper::getScriptLanguage('jquery-ui-timepicker-', 'media/com_kinoarhiv/js/i18n/timepicker/');
+			}
+
+			JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
+
+			if (!empty($this->element['datatype']))
+			{
+				$attributes .= 'data-type="' . $this->element['datatype'] . '" ';
+			}
+			else
+			{
+				$attributes .= 'data-type="datetime" ';
+			}
+
+			$html = '<div class="hasDatetime date input-append" data-framework="' . $framework . '"'
+				. ' data-date="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"'
+				. ' data-date-format="' . $dateformat . '" data-time-format="' . $timeformat . '">
+				<input type="text" name="' . $this->name . '" id="' . $this->id . '" class="' . $this->class . '"'
+					. ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $attributes . '/>
+			</div>';
+		}
 
 		return $html;
 	}

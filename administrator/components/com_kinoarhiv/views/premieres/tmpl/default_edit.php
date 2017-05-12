@@ -15,12 +15,13 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'premieres.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+		if (task === 'premieres.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
 			Joomla.submitform(task, document.getElementById('item-form'));
 		}
 	};
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $this->form->getValue('id')); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $this->form->getValue('id')); ?>" method="post"
+      name="adminForm" autocomplete="off" id="item-form" class="form-validate">
 	<div id="j-main-container">
 		<fieldset class="form-horizontal">
 			<?php

@@ -53,7 +53,7 @@ Kinoarhiv = window.Kinoarhiv || {};
 	 */
 	Kinoarhiv.blockUI = function(action) {
 		jQuery(document).ready(function($) {
-			if (action == 'show') {
+			if (action === 'show') {
 				$('<div class="modal-backdrop" style="z-index: 10002;"></div>').appendTo(document.body).show();
 			} else {
 				$('.modal-backdrop').remove();
@@ -73,9 +73,9 @@ Kinoarhiv = window.Kinoarhiv || {};
 		jQuery(document).ready(function($){
 			var total = $('.modal-loading:hidden').length++;
 
-			if (action == 'show') {
+			if (action === 'show') {
 				// For document or body we need to block all visible area in browser window and prepend a div into element.
-				var position = (selector.selector == 'document' || selector.selector == 'body') ? 'fixed' : 'absolute';
+				var position = (selector.selector === 'document' || selector.selector === 'body') ? 'fixed' : 'absolute';
 				var offset = selector.offset(),
 					top    = typeof offset === 'undefined' ? 0 : offset.top,
 					left   = typeof offset === 'undefined' ? 0 : offset.left,
@@ -83,7 +83,7 @@ Kinoarhiv = window.Kinoarhiv || {};
 					height = selector.innerHeight(),
 					html   = '<div class="modal-backdrop modal-loading" id="mdl' + total + '" style="position: ' + position + '; top: ' + top + 'px; left: ' + left + 'px; width: ' + width + 'px; height: ' + height + 'px; z-index: 10001;"><div class="ajax-loading" style="cursor: pointer;" title="Press to close">&nbsp;</div></div>';
 
-				if (selector.selector == 'document' || selector.selector == 'body') {
+				if (selector.selector === 'document' || selector.selector === 'body') {
 					$(html).prependTo(selector);
 				} else {
 					$(html).insertAfter(selector);
@@ -94,7 +94,7 @@ Kinoarhiv = window.Kinoarhiv || {};
 					$(this).parent().remove();
 				});
 			} else {
-				if (selector.selector == 'document' || selector.selector == 'body') {
+				if (selector.selector === 'document' || selector.selector === 'body') {
 					selector.find('div#mdl' + total).remove();
 				} else {
 					selector.next('div#mdl' + total).remove();
@@ -169,20 +169,20 @@ function formatItemTitle(firstTitle, secondTitle, date, separator) {
 	var title = '';
 
 	if (!empty(firstTitle)) {
-		if (typeof firstTitle != 'undefined' && !empty(firstTitle)) {
+		if (typeof firstTitle !== 'undefined' && !empty(firstTitle)) {
 			title += firstTitle;
 		}
 
 		if (!empty(firstTitle) && !empty(secondTitle)) {
-			title += (typeof separator != 'undefined' && !empty(separator) ? separator : ' / ');
+			title += (typeof separator !== 'undefined' && !empty(separator) ? separator : ' / ');
 		}
 
-		if (typeof secondTitle != 'undefined' && !empty(secondTitle)) {
+		if (typeof secondTitle !== 'undefined' && !empty(secondTitle)) {
 			title += secondTitle;
 		}
 
 		// Do not validate date format because it's can be in different formats and hard to implement, and actually not necessary here.
-		if (!empty(date) && date != '0000') {
+		if (!empty(date) && date !== '0000') {
 			title += ' (' + date + ')';
 		}
 
@@ -204,10 +204,10 @@ function formatItemTitle(firstTitle, secondTitle, date, separator) {
  * @return  {void}
  */
 function showMsg(selector, text, placement, btn_type, btn_title) {
-	placement = (typeof placement == 'undefined') ? 'after' : placement;
-	btn_type  = (typeof btn_type == 'undefined' || empty(btn_type)) ? 'close' : btn_type;
-	btn_title = (typeof btn_title == 'undefined' || empty(btn_title)) ? KA_vars.language.COM_KA_CLOSE : btn_title;
-	selector  = (typeof selector == 'object') ? selector : jQuery(selector);
+	placement = (typeof placement === 'undefined') ? 'after' : placement;
+	btn_type  = (typeof btn_type === 'undefined' || empty(btn_type)) ? 'close' : btn_type;
+	btn_title = (typeof btn_title === 'undefined' || empty(btn_title)) ? KA_vars.language.COM_KA_CLOSE : btn_title;
+	selector  = (typeof selector === 'object') ? selector : jQuery(selector);
 
 	if (jQuery.fn.aurora) {
 		selector.aurora({
@@ -228,7 +228,7 @@ function showMsg(selector, text, placement, btn_type, btn_title) {
  * @deprecated
  */
 function blockUI(action) {
-	if (action == 'show') {
+	if (action === 'show') {
 		jQuery('<div class="modal-backdrop"></div>').appendTo(document.body).show();
 	} else {
 		jQuery('.modal-backdrop').remove();
@@ -382,7 +382,7 @@ jQuery(document).ready(function($){
 						var result = {results: []},
 							i = 0;
 
-						if (content == 'countries') {
+						if (content === 'countries') {
 							for (i; i < data_count; i++) {
 								result.results.push({
 									value: data_content[i]['value'],
@@ -402,7 +402,7 @@ jQuery(document).ready(function($){
 			config.formatResult = function (data) {
 				var title = '';
 
-				if (content == 'countries') {
+				if (content === 'countries') {
 					if (data.length < 1) {
 						return '';
 					} else {
@@ -410,9 +410,9 @@ jQuery(document).ready(function($){
 
 						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 					}
-				} else if (content == 'names') {
+				} else if (content === 'names') {
 					return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
-				} else if (content == 'movies') {
+				} else if (content === 'movies') {
 					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 
@@ -425,7 +425,7 @@ jQuery(document).ready(function($){
 			config.formatSelection = function (data) {
 				var title = '';
 
-				if (content == 'countries') {
+				if (content === 'countries') {
 					if (data.length < 1) {
 						return '';
 					} else {
@@ -476,11 +476,11 @@ jQuery(document).ready(function($){
 			var slider = $this.slider();
 
 			slider.on('slide', function (e) {
-				if (typeof $this.data('slider-input-min') != 'undefined' && $this.data('slider-input-min') != '') {
+				if (typeof $this.data('slider-input-min') !== 'undefined' && !empty($this.data('slider-input-min'))) {
 					$($this.data('slider-input-min')).val(e.value[0]);
 				}
 
-				if (typeof $this.data('slider-input-max') != 'undefined' && $this.data('slider-input-max') != '') {
+				if (typeof $this.data('slider-input-max') !== 'undefined' && !empty($this.data('slider-input-max'))) {
 					$($this.data('slider-input-max')).val(e.value[1]);
 				}
 			});

@@ -19,7 +19,7 @@ $columns   = 10;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'movies.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (task === 'movies.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 
 			return;

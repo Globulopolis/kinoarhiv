@@ -22,9 +22,9 @@ $this->id    = $this->form->getValue('id');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if ((task == 'names.cancel' || task == 'gallery') || document.formvalidator.isValid(document.getElementById('item-form'))) {
-			if (task == 'gallery') {
-				var tab = (task == 'gallery') ? '&tab=3' : '',
+		if ((task === 'names.cancel' || task === 'gallery') || document.formvalidator.isValid(document.getElementById('item-form'))) {
+			if (task === 'gallery') {
+				var tab = (task === 'gallery') ? '&tab=3' : '',
 					url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=' + task + tab + '<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?>',
 					handler = window.open(url);
 

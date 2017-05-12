@@ -31,7 +31,7 @@ jQuery(document).ready(function($){
 		e.preventDefault();
 
 		var _this = $(this),
-			msg_placement = (typeof _this.data('msg_placement') == 'undefined') ? 'header' : _this.data('msg_placement');
+			msg_placement = (typeof _this.data('msg_placement') === 'undefined') ? 'header' : _this.data('msg_placement');
 
 		$.ajax({
 			url: _this.attr('href') + '&format=json'

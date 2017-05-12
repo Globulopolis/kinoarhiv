@@ -15,7 +15,7 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'releases.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+		if (task === 'releases.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
 			Joomla.submitform(task, document.getElementById('item-form'));
 		}
 	};

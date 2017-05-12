@@ -17,11 +17,11 @@ $id = $this->form->getValue('id');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'awards.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+		if (task === 'awards.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
 			Joomla.submitform(task, document.getElementById('item-form'));
 		}
 
-		if (task == 'relations') {
+		if (task === 'relations') {
 			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=awards&element=movies<?php echo $id != 0 ? '&id=' . $id : ''; ?>';
 		}
 	};

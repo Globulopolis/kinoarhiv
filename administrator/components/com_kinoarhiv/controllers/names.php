@@ -401,7 +401,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		$id = $app->input->get('item_id', 0, 'int');
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
+		if (!$user->authorise('core.create', 'com_kinoarhiv.name.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.name.' . $id))
 		{
 			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 

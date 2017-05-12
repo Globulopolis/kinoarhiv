@@ -19,11 +19,11 @@ $columns   = 6;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(pressbutton) {
-		if (pressbutton == 'countries.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
+		if (pressbutton === 'countries.edit' && jQuery('#articleList :checkbox:checked').length > 1) {
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 			return;
 		}
-		if (pressbutton == 'relations') {
+		if (pressbutton === 'relations') {
 			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies';
 			return;
 		}

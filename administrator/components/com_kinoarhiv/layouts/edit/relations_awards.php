@@ -10,12 +10,14 @@
 
 defined('_JEXEC') or die;
 
+$form = $displayData['form'];
+
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task){
-		if (task == 'names.cancel') {
+		if (task === 'cancel') {
 			window.close();
 		} else {
 			if (document.formvalidator.isValid(document.getElementById('adminForm'))) {
@@ -30,13 +32,12 @@ JHtml::_('behavior.keepalive');
 		});
 	});
 </script>
-<form
-	action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&item_id=' . JFactory::getApplication()->input->getInt('item_id', 0)); ?>"
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&item_id=' . JFactory::getApplication()->input->getInt('item_id', 0)); ?>"
 	method="post" name="adminForm" id="adminForm" autocomplete="off" class="form-validate">
 	<div class="row-fluid form-horizontal-desktop">
 		<div class="span6">
 			<fieldset class="form-horizontal">
-				<?php foreach ($this->form->getFieldset() as $field): ?>
+				<?php foreach ($form->getFieldset() as $field): ?>
 					<div class="control-group">
 						<div class="control-label"><?php echo $field->label; ?></div>
 						<div class="controls"><?php echo $field->input; ?></div>

@@ -1,6 +1,6 @@
 /*!
- * jqGrid 4.13.6 - free jqGrid: https://github.com/free-jqgrid/jqGrid 
- * Date: 2016-12-24
+ * jqGrid 4.14.0 - free jqGrid: https://github.com/free-jqgrid/jqGrid 
+ * Date: 2017-02-26
  */
 
 /* Grid */
@@ -579,6 +579,16 @@ span.ui-jqgrid-cell-wrapper {
 	border-bottom: 0;
 	border-top: 0;
 }
+.ui-pager-control .ui-jqgrid-pg-left {
+	text-align: left;
+}
+.ui-pager-control .ui-jqgrid-pg-center {
+	text-align: center;
+	white-space: pre;
+}
+.ui-pager-control .ui-jqgrid-pg-right {
+	text-align: right;
+}
 .ui-jqgrid .ui-pg-table {
 	position: relative;
 	padding: 0;
@@ -625,6 +635,9 @@ span.ui-jqgrid-cell-wrapper {
 	width: auto;
 	margin: 0;
 	line-height: inherit;
+}
+select.form-control.ui-pg-selbox:not([size]):not([multiple]) {
+	height: auto;
 }
 .ui-jqgrid .ui-pg-table .ui-pg-selbox {
 	display: block;
@@ -693,10 +706,13 @@ span.ui-jqgrid-cell-wrapper {
 	margin: 2px;
 	vertical-align: middle;
 }
-.ui-jqgrid .navtable .ui-pg-div span.ui-pg-button-text,
 .ui-jqgrid .navtable .ui-pg-div span.ui-pg-button-text {
 	padding-left: 0.2em;
 	padding-right: 0.2em;
+}
+.ui-pg-button:hover > .ui-pg-div > .ui-pg-button-text,
+.ui-pg-button.ui-state-hover > .ui-pg-div > .ui-pg-button-text {
+	font-weight: normal;
 }
 .ui-jqgrid .ui-pg-div {
 	text-align: center;
@@ -1248,7 +1264,8 @@ a.clearsearchclass {
 .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
 	font-size: 12px;
 }
-.ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view .fa {
+.ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view .fa,
+.ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-pager .fa {
 	font-size: 14px;
 }
 .ui-jqdialog.ui-jqgrid-bootstrap {

@@ -18,8 +18,8 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 	Joomla.submitbutton = function(task) {
 		jQuery(document).ready(function($){
 			var form = $('#adminForm');
-			if (task != 'settings.cancel' && task != 'settings.save' && task != 'settings.saveConfig'
-				&& task != 'restoreConfigLayout' && task != 'settings.restoreConfig')
+			if (task !== 'settings.cancel' && task !== 'settings.save' && task !== 'settings.saveConfig'
+				&& task !== 'restoreConfigLayout' && task !== 'settings.restoreConfig')
 			{
 				$.post(form.attr('action'), form.serialize() + '&task=' + task + '&format=json', function(response){
 					showMsg('#system-message-container', response.message);
@@ -28,11 +28,11 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 					showMsg('#system-message-container', error);
 				});
 			} else {
-				if (task == 'settings.saveConfig') {
+				if (task === 'settings.saveConfig') {
 					window.location = '<?php echo JUri::base(); ?>index.php?option=com_kinoarhiv&task=settings.saveConfig&format=json';
-				} else if (task == 'restoreConfigLayout') {
+				} else if (task === 'restoreConfigLayout') {
 					$('#collapseModal').modal();
-				} else if (task == 'settings.restoreConfig') {
+				} else if (task === 'settings.restoreConfig') {
 					Joomla.submitform(task, document.getElementById('adminRestoreConfig'));
 				} else {
 					Joomla.submitform(task, document.getElementById('adminForm'));

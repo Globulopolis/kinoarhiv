@@ -31,7 +31,7 @@ Kinoarhiv = window.Kinoarhiv || {};
 
 			var doc = (!document.querySelector('input[name="img_folder"]')) ? parent.document : document;
 
-			var response = (typeof data != 'object') ? JSON.parse(data) : data,
+			var response = (typeof data !== 'object') ? JSON.parse(data) : data,
 				img_folder = doc.querySelector('input[name="img_folder"]').value,
 				image = new Image(),
 				img_preview = doc.querySelector('a.img-preview img');
@@ -117,11 +117,17 @@ jQuery(document).ready(function($){
 			return;
 		}
 
-		if ($this.val() === 'NOW') {
-			$this.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+		if (input.val().toLowerCase() === 'now') {
+			if (empty($this.data('time-format'))) {
+				input.val(new Date().toISOString().slice(0, 10));
+			} else if (empty($this.data('date-format'))) {
+				input.val(new Date().toISOString().slice(11, 19));
+			} else {
+				input.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+			}
 		}
 
-		if (framework == 'bootstrap') {
+		if (framework === 'bootstrap') {
 			$this.datetimepicker({
 				language: $('html').attr('lang').substr(0, 2),
 				weekStart: 1,
@@ -132,18 +138,18 @@ jQuery(document).ready(function($){
 				keyboardNavigation: false
 			});
 		} else {
-			if (input.data('type') == 'time') {
+			if (input.data('type') === 'time') {
 				input.timepicker({
 					timeFormat: $this.data('time-format'),
 					showOn: 'button'
 				});
-			} else if (input.data('type') == 'date') {
+			} else if (input.data('type') === 'date') {
 				input.datepicker({
 					dateFormat: $this.data('date-format'),
 					showButtonPanel: true,
 					showOn: 'button'
 				});
-			} else if (input.data('type') == 'datetime') {
+			} else if (input.data('type') === 'datetime') {
 				input.datetimepicker({
 					dateFormat: $this.data('date-format'),
 					timeFormat: $this.data('time-format'),
@@ -168,7 +174,7 @@ jQuery(document).ready(function($){
 			refresh = JSON.parse($('input[name="refresh"]').val()) || [],
 			content_type = input.data('content-type');
 
-		if (input.val() == '') {
+		if (empty(input.val())) {
 			showMsg('#remote_urls', KA_vars.language.COM_KA_FILE_UPLOAD_ERROR);
 			return false;
 		}
@@ -189,7 +195,7 @@ jQuery(document).ready(function($){
 			if (!response.success) {
 				showMsg('#remote_urls', response.message);
 			} else {
-				showMsg('#remote_urls', response.message != "" ? showMsg('#remote_urls', response.message) : KA_vars.language.COM_KA_FILES_UPLOAD_SUCCESS);
+				showMsg('#remote_urls', !empty(response.message) ? showMsg('#remote_urls', response.message) : KA_vars.language.COM_KA_FILES_UPLOAD_SUCCESS);
 
 				// Set upload state to 1
 				$('input[name="file_uploaded"]').val(1);
@@ -199,7 +205,7 @@ jQuery(document).ready(function($){
 					$(refresh.el_parent).find(refresh.el_trigger).trigger('click');
 				}
 
-				if (content_type == 'poster') {
+				if (content_type === 'poster') {
 					Kinoarhiv.updatePoster(response);
 				}
 			}
@@ -309,7 +315,8 @@ jQuery(document).ready(function($){
 					$('#' + id)
 						.find('.plupload_buttons a:last')
 						.after('<a class="plupload_button plupload_clear_all" href="#">' + KA_vars.language.JCLEAR + '</a>');
-					$('#' + id + ' .plupload_clear_all').click(function (e) {
+
+					$('#' + id + ' .plupload_clear_all').click(function(e){
 						e.preventDefault();
 
 						up.splice();
@@ -321,11 +328,11 @@ jQuery(document).ready(function($){
 					});
 				},
 				UploadComplete: function(up, files){
-					if (content_type == 'images') {
+					if (content_type === 'images') {
 						$('input[name="file_uploaded"]').val(1);
-					} else if (content_type == 'video' || content_type == 'subtitles' || content_type == 'chapters') {
+					} else if (content_type === 'video' || content_type === 'subtitles' || content_type === 'chapters') {
 						$('table[data-list="' + content_type + '"] .cmd-refresh-filelist').trigger('click');
-					} else if (content_type == 'screenshot') {
+					} else if (content_type === 'screenshot') {
 						$('table[data-list="video"] .cmd-refresh-filelist').trigger('click');
 					}
 				}
@@ -345,7 +352,7 @@ jQuery(document).ready(function($){
 					}
 				},
 				FileUploaded: function(up, file, info){
-					if (content_type == 'poster') {
+					if (content_type === 'poster') {
 						Kinoarhiv.updatePoster(info.response);
 					}
 				},
@@ -409,33 +416,30 @@ jQuery(document).ready(function($){
 				sortname: $this.data('order'),
 				sortorder: $this.data('orderby'),
 				viewrecords: true,
-				rowNum: $this.data('rows'),
-				rowList: $(element).data('rowlist'),
+				rowNum: parseInt($this.data('rownum'), 10),
+				rowList: $(element).data('rowlist') || [],
+				pgbuttons: !!$this.data('pgbuttons'),
+				pginput: !!$this.data('pginput'),
+				grouping: !!$(element).data('grouping') || false,
+				groupingView: $(element).data('grouping-view') || {},
 				ondblClickRow: function(rowid){
 					$this.jqGrid('viewGridRow', rowid, view_config);
+				},
+				gridComplete: function(){
+					$(this).find('.jqgroup').addClass('ui-widget-header');
 				}
 			}).jqGrid('navGrid', $this.next('div').attr('id'),
 				{
 					// Bottom nav config
 					addfunc: function(){
-						if (!window.open($this.data('add_url'))) {
-							showMsg(
-								'#system-message-container',
-								KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + $this.data('add_url') + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
-							);
-						}
+						Kinoarhiv.openWindow($this.data('add_url'));
 					},
 					editfunc: function(){
 						var chk = $this.children('tbody').find('input[type="checkbox"]').filter(':checked'),
 							// Get the name of input, and get the last integer value(because it's a real item ID)
-							award_id = chk.attr('name').split('_').slice(-1)[0];
+							id = chk.attr('name').split('_').slice(-1)[0];
 
-						if (!window.open($this.data('edit_url') + '&award_id=' + award_id)) {
-							showMsg(
-								'#system-message-container',
-								KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + $this.data('edit_url') + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
-							);
-						}
+						Kinoarhiv.openWindow($this.data('edit_url') + '&row_id=' + parseInt(id, 10));
 					},
 					delfunc: function(){
 						if (!confirm(KA_vars.language.COM_KA_DELETE_SELECTED)) {

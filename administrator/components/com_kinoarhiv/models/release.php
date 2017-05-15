@@ -154,11 +154,18 @@ class KinoarhivModelRelease extends JModelForm
 		return true;
 	}
 
-	public function remove()
+	/**
+	 * Removes release(s).
+	 *
+	 * @param   array  $ids  Array of items.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.0
+	 */
+	public function remove($ids)
 	{
-		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
 		$query->delete($db->quoteName('#__ka_releases'))
@@ -174,7 +181,7 @@ class KinoarhivModelRelease extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}

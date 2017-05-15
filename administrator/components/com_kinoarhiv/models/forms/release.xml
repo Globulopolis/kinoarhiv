@@ -16,8 +16,8 @@
 			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
-		<field name="release_date" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="span9" size="22"
-			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="date" filter="user_utc" required="true"/>
+		<field name="release_date" default="NOW" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="span9" size="22"
+			   dateformat="yy-mm-dd" datatype="date" required="true"/>
 		<field name="media_type" type="autocomplete" label="COM_KA_RELEASES_MEDIATYPE_TITLE" data-lang="*"
 			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" class="span6"
 			   data-content="mediatypes" data-allow-clear="true" data-key="id">

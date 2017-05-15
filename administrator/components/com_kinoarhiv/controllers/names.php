@@ -448,7 +448,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id', null);
 
-		$award_id = $session_data['id'] ? '&award_id=' . $session_data['id'] : '&award_id=' . $validData['id'];
+		$award_id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
 
 		$this->setRedirect($url . $award_id, $message);
 	}

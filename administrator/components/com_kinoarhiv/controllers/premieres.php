@@ -172,19 +172,27 @@ class KinoarhivControllerPremieres extends JControllerLegacy
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$app = JFactory::getApplication();
+
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv'))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
-		$model = $this->getModel('premiere');
-		$result = $model->remove();
+		$ids = $app->input->get('id', array(), 'array');
 
-		if ($result === false)
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		$model  = $this->getModel('premiere');
+		$result = $model->remove($ids);
+
+		if (!$result)
 		{
+			KAComponentHelperBackend::renderErrors($app->getMessageQueue());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=premieres', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
 			return;

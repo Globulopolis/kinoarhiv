@@ -44,11 +44,16 @@ class JFormRuleDate extends JFormRule
 			return true;
 		}
 
-		$date = DateTime::createFromFormat('Y-m-d', $value);
+		$dateformat = isset($element['dateformat']) ? $element['dateformat'] : 'Y-m-d';
+		$dateformat = str_replace(array('yy', 'mm', 'dd'), array('Y', 'm', 'd'), strtolower($dateformat));
+		$timeformat = isset($element['timeformat']) ? $element['timeformat'] : '';
+		$timeformat = str_replace(array('HH', 'mm', 'ss'), array('H', 'i', 's'), $timeformat);
+		$concat     = !empty($dateformat) && !empty($timeformat) ? ' ' : '';
+		$datetime   = DateTime::createFromFormat($dateformat . $concat . $timeformat, $value);
 
-		if ($date instanceof DateTime)
+		if ($datetime instanceof DateTime)
 		{
-			if ($date > DateTime::createFromFormat('Y-m-d', '1800-01-01') && $date < DateTime::createFromFormat('Y-m-d', '2100-01-01'))
+			if ($datetime > DateTime::createFromFormat('Y-m-d', '1800-01-01') && $datetime < DateTime::createFromFormat('Y-m-d', '2100-01-01'))
 			{
 				return true;
 			}

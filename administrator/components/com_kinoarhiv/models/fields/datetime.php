@@ -47,7 +47,6 @@ class JFormFieldDatetime extends JFormField
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$framework = (string) $this->element['framework'];
-		$html = '';
 		$attributes = ' ';
 
 		if (!empty($this->size))
@@ -75,9 +74,6 @@ class JFormFieldDatetime extends JFormField
 			$attributes .= 'required aria-required="true" ';
 		}
 
-		$dateformat = !empty($this->element['dateformat']) ? (string) $this->element['dateformat'] : '';
-		$timeformat = !empty($this->element['timeformat']) ? (string) $this->element['timeformat'] : '';
-
 		if ($framework == 'bootstrap')
 		{
 			JHtml::_('jquery.framework');
@@ -87,6 +83,8 @@ class JFormFieldDatetime extends JFormField
 			KAComponentHelper::getScriptLanguage('bootstrap-datetimepicker.', 'media/com_kinoarhiv/js/i18n/bootstrap-datetimepicker/');
 			JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
 
+			$dateformat = !empty($this->element['dateformat']) ? (string) $this->element['dateformat'] : '';
+			$timeformat = !empty($this->element['timeformat']) ? (string) $this->element['timeformat'] : '';
 			$html = '<div class="hasDatetime date input-append" data-framework="' . $framework . '"'
 				. ' data-date="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"'
 				. ' data-date-format="' . $dateformat . ' ' . $timeformat . '">
@@ -119,9 +117,20 @@ class JFormFieldDatetime extends JFormField
 				$attributes .= 'data-type="datetime" ';
 			}
 
+			$formats = '';
+
+			if (!empty($this->element['dateformat']))
+			{
+				$formats .= 'data-date-format="' . $this->element['dateformat'] . '" ';
+			}
+
+			if (!empty($this->element['timeformat']))
+			{
+				$formats .= 'data-time-format="' . $this->element['timeformat'] . '" ';
+			}
+
 			$html = '<div class="hasDatetime date input-append" data-framework="' . $framework . '"'
-				. ' data-date="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"'
-				. ' data-date-format="' . $dateformat . '" data-time-format="' . $timeformat . '">
+				. ' data-date="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $formats . '>
 				<input type="text" name="' . $this->name . '" id="' . $this->id . '" class="' . $this->class . '"'
 					. ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $attributes . '/>
 			</div>';

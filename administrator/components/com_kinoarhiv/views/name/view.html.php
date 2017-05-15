@@ -133,6 +133,7 @@ class KinoarhivViewName extends JViewLegacy
 	{
 		$this->form = $this->get('Form');
 		$errors = $this->get('Errors');
+		$id = $this->form->getValue('id');
 
 		if (count($errors))
 		{
@@ -142,6 +143,12 @@ class KinoarhivViewName extends JViewLegacy
 		if ($this->getLayout() !== 'modal')
 		{
 			$this->addToolbar($tpl);
+		}
+
+		// Set default value of the type field for new record to 1(person value).
+		if (empty($id))
+		{
+			$this->form->setValue('type', '', 1);
 		}
 
 		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);

@@ -49,8 +49,8 @@ class KAComponentHelper
 		}
 
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins.css');
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/style.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins.min.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles.min.css');
 
 		// Add some variables into the global scope
 		$js_vars = array(

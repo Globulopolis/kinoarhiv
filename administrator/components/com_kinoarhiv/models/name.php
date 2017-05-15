@@ -272,7 +272,7 @@ class KinoarhivModelName extends JModelForm
 	{
 		$app   = JFactory::getApplication();
 		$db    = $this->getDbo();
-		$id    = $app->input->get('award_id', 0, 'int');
+		$id    = $app->input->get('row_id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))

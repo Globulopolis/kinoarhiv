@@ -38,8 +38,8 @@ class KAComponentHelperBackend
 		}
 
 		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins_backend.css');
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles_backend.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins_backend.min.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles_backend.min.css');
 
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');

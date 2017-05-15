@@ -2,7 +2,7 @@
 <form>
 	<fieldset addrulepath="/components/com_kinoarhiv/models/rules"
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
-		<field name="vendor_id" type="autocomplete" label="COM_KA_FIELD_RELEASE_VENDOR" filter="integer"
+		<field name="vendor_id" type="autocomplete" label="COM_KA_FIELD_PREMIERE_VENDOR" filter="integer"
 			   class="span12" data-content="vendors" data-allow-clear="true" data-remote="true" data-lang="*"
 			   data-minimum-input-length="1" data-key="id" required="true">
 			<option value=""></option>
@@ -12,16 +12,11 @@
 			   data-minimum-input-length="1" data-key="id" required="true">
 			<option value=""></option>
 		</field>
-		<field name="release_date" type="datetime" default="NOW" label="COM_KA_FIELD_RELEASE_DATE_LABEL"
-			   class="inputbox validate-date" datatype="date" size="22" dateformat="yy-mm-dd" validate="date"
-			   required="true"/>
-		<field name="media_type" type="autocomplete" label="COM_KA_RELEASES_MEDIATYPE_TITLE" data-lang="*"
-			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" class="span12"
-			   data-content="mediatypes" data-allow-clear="true" data-key="id">
-			<option value=""></option>
-		</field>
-		<field name="desc" type="textarea" default="" label="JGLOBAL_DESCRIPTION"
-			   description="COM_KA_FIELD_RELEASE_DESC_LABEL_DESC" class="span12" filter="raw" cols="6" rows="5"/>
+		<field name="premiere_date" type="datetime" default="NOW" label="COM_KA_FIELD_PREMIERE_DATE_LABEL"
+			   class="inputbox validate-date" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss"
+			   validate="date" filter="server_utc" required="true"/>
+		<field name="info" type="textarea" default="" label="COM_KA_FIELD_PREMIERE_DESC" class="span12" filter="raw"
+			   cols="6" rows="5"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

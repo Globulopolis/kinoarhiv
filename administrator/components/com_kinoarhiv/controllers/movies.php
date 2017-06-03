@@ -10,9 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
-use Joomla\String\StringHelper;
-
 /**
  * Movies list controller class
  *

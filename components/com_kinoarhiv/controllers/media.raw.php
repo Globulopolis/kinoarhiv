@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivControllerMedia extends JControllerLegacy
 {
+	/**
+	 * Get content from filesystem.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
 	public function view()
 	{
 		$app = JFactory::getApplication();
@@ -50,7 +57,16 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 	}
 
-	private function movie($content)
+	/**
+	 * Get movie content.
+	 *
+	 * @param   string  $content  Content type(image).
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
+	protected function movie($content)
 	{
 		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
@@ -95,7 +111,16 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 	}
 
-	private function name($content)
+	/**
+	 * Get person content.
+	 *
+	 * @param   string  $content  Content type(image).
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
+	protected function name($content)
 	{
 		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
@@ -142,7 +167,16 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 	}
 
-	private function trailer($content)
+	/**
+	 * Get trailer content.
+	 *
+	 * @param   string  $content  Content type(image, video, subtitles, chapters).
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
+	protected function trailer($content)
 	{
 		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 

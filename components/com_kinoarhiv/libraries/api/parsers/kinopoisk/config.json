@@ -1,0 +1,71 @@
+{
+	"headers": {
+		"Cookie": "PHPSESSID=cb0a9a3156d083bcf337ad3c165ba2cc; disable_alert_feature=536870912; last_visit=2016-11-14+13%3A55%3A56; mobile=no; noflash=true; refresh_yandexuid=9243171231479120960; user_country=ru; yandexuid=9243171231479120960; loc=yes; yandex_gid=146; device_id=\"b3fcde885eb5ca44b83b94ade6fbdb4a5d90fc047\"",
+		"Referer": "https://www.kinopoisk.ru/",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0",
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept-Language": "en-GB,en;q=0.5",
+		"Accept-Encoding": "gzip, deflate",
+		"Connection": "keep-alive",
+		"Upgrade-Insecure-Requests": 1,
+		"Cache-Control": "max-age=0"
+	},
+	"patterns": {
+		"ratings": {
+			"rating": "//div[@id=\"block_rating\"]//span[@class=\"rating_ball\"]",
+			"score": "//div[@id=\"block_rating\"]//span[@itemprop=\"ratingCount\"]"
+		},
+		"titles": {
+			"original": "//div[@id=\"headerFilm\"]/h1[@itemprop=\"name\"]/text()",
+			"alternative": "//div[@id=\"headerFilm\"]/span[@itemprop=\"alternativeHeadline\"]/text()"
+		},
+		"year": "//div[@id=\"infoTable\"]/table//td[contains(., 'год')]/following-sibling::td//a[1]/text()",
+		"mpaa": "//div[@class=\"title_wrapper\"]/div[@class=\"subtext\"]/meta[@itemprop=\"contentRating\"]/@content",
+		"metacritic": "//div[@class=\"plot_summary_wrapper\"]//div[@class=\"titleReviewBarItem\"][1]/a",
+		"genres": [
+			"//span[@itemprop=\"genre\"]",
+			"//h4[contains(., 'Genres:')]/following-sibling::a"
+		],
+		"duration": "//time[@itemprop=\"duration\"]",
+		"budget": "//h4[contains(., 'Budget:')]/following-sibling::text()[1]",
+		"countries": "//h4[contains(., 'Country:')]/following-sibling::a",
+		"slogan": "//h4[contains(., 'Taglines:')]/following-sibling::text()[1]",
+		"plot": [
+			"//div[@class=\"plot_summary \"]/div[@itemprop=\"description\"]",
+			"//div[@class=\"article\"]/div[@itemprop=\"description\"]/p/text()"
+		],
+		"cast": {
+			"cast": "//table[@class=\"cast_list\"]//tr[@class]",
+			"directors": "//h4[contains(., 'Directed by')]/following-sibling::table[1]//tr/td[1]",
+			"scenarists": "//h4[contains(., 'Writing Credits')]/following-sibling::table[1]//tr/td[@class=\"name\"]",
+			"producers": "//h4[contains(., 'Produced by')]/following-sibling::table[1]//tr",
+			"music": "//h4[contains(., 'Music by')]/following-sibling::table[1]//tr/td[@class=\"name\"]",
+			"crew": "//h4[contains(., 'Cinematography by')]/following-sibling::table//tr"
+		},
+		"release": "//table[@id=\"release_dates\"]//tr",
+		"posters": [
+			"//div[@class=\"poster\"]",
+			"//script[@id=\"imageJson\"]/text()"
+		],
+		"name": {
+			"name": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//span[@itemprop=\"name\"]",
+			"career": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//span[@itemprop=\"jobTitle\"]",
+			"birthday": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//time[@itemprop=\"birthDate\"]",
+			"birthplace": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//time[@itemprop=\"birthDate\"]//following-sibling::a",
+			"filmography": "//div[@id=\"filmography\"]/div",
+			"bio": {
+				"short": "//div[@id=\"name-bio-text\"]//div[@itemprop=\"description\"]",
+				"full": {
+					"bio": "//h4[contains(., 'Mini Bio')]/following-sibling::div/p[1]",
+					"trivia": "//h4[contains(., 'Trivia')]/following-sibling::*"
+				}
+			},
+			"awards": "//div[@class=\"article listo\"]/h3/following-sibling::table",
+			"posters": [
+				"//td[@id=\"img_primary\"]/div/a",
+				"//script[@id=\"imageJson\"]/text()"
+			]
+		}
+	},
+	"cache_lifetime": 10800
+}

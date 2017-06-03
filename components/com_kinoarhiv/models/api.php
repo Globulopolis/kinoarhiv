@@ -747,6 +747,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 		else
 		{
+			$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'");
 			$query->order($this->db->quoteName('ordering') . ', ' . $this->db->quoteName('title') . ' ASC');
 			$this->db->setQuery($query);
 
@@ -885,15 +886,14 @@ class KinoarhivModelAPI extends JModelLegacy
 		jimport('administrator.components.com_kinoarhiv.helpers.database', JPATH_ROOT);
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$id         = $this->input->get('id', 0, 'int');
-		$page       = $this->input->get('page', 0, 'int');
-		$orderby    = $this->input->get('sidx', '1', 'string');
-		$order      = $this->input->get('sord', 'asc', 'word');
-		$field      = $this->input->get('searchField', '', 'cmd');
-		$term       = $this->input->get('searchString', '', 'string');
-		$operand    = $this->input->get('searchOper', '', 'word');
-		$result     = (object) array();
-		$careers    = array();
+		$id      = $this->input->get('id', 0, 'int');
+		$page    = $this->input->get('page', 0, 'int');
+		$orderby = $this->input->get('sidx', '1', 'string');
+		$order   = $this->input->get('sord', 'asc', 'word');
+		$field   = $this->input->get('searchField', '', 'cmd');
+		$term    = $this->input->get('searchString', '', 'string');
+		$operand = $this->input->get('searchOper', '', 'word');
+		$careers = array();
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName(array('id', 'title')))
@@ -996,7 +996,7 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		foreach ($names as $value)
 		{
-			$name = KAContentHelper::formatItemTitle($value->name, $value->latin_name, $value->date_of_birth);
+			$name     = KAContentHelper::formatItemTitle($value->name, $value->latin_name, $value->date_of_birth);
 			$dub_name = KAContentHelper::formatItemTitle($value->dub_name, $value->dub_latin_name, $value->dub_date_of_birth);
 
 			foreach (explode(',', $value->type) as $k => $type)
@@ -1018,11 +1018,13 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		// The final sorting of array for the grid
 		$k = 0;
+		$result = (object) array('rows' => array());
 
 		foreach ($_result as $row)
 		{
 			foreach ($row as $elem)
 			{
+				$result->rows[$k]['id']   = $elem['name_id'] . '_' . $elem['type_id'];
 				$result->rows[$k]['cell'] = array(
 					'name'     => $elem['name'],
 					'name_id'  => $elem['name_id'],
@@ -1037,8 +1039,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			}
 		}
 
-		$result->page = $page;
-		$result->total = 3;
+		$result->page    = $page;
+		$result->total   = 1;
 		$result->records = count($result->rows);
 
 		return $result;

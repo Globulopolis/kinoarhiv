@@ -54,12 +54,79 @@ class KAParserRottentomatoes extends KAApi
 	public function __construct($config = array())
 	{
 		$this->params = $config;
-		$this->headers = ArrayHelper::fromObject($this->params->get('rottentomatoes.headers'));
+		$this->headers = ArrayHelper::fromObject($this->params->get('headers'));
 
 		// Set up an array with pages
 		$this->urls = array(
-			'main' => 'https://www.rottentomatoes.com/m/[id]'
+			'main' => 'https://www.rottentomatoes.com/m/[id]/'
 		);
+	}
+
+	/**
+	 * Get info about entity.
+	 *
+	 * @param   string  $id      Item ID.
+	 * @param   string  $entity  Entity type.
+	 *
+	 * @since   3.1
+	 *
+	 * @return  mixed
+	 */
+	public function getInfo($id, $entity)
+	{
+		try
+		{
+			$html = $this->getDataById($id);
+		}
+		catch (Exception $e)
+		{
+			return array('error' => $e->getMessage());
+		}
+
+		$dom = new DOMDocument('1.0', 'utf-8');
+		@$dom->loadHTML($html);
+		$xpath = new DOMXPath($dom);
+
+		$json_raw = @$xpath->query($this->params->get('patterns.json_data'))->item(0)->nodeValue;
+		$object = json_decode($json_raw);
+
+		// Check if json is valid for UTF8 symbols.
+		if (json_last_error() == JSON_ERROR_UTF8)
+		{
+			$json_raw = utf8_decode($json_raw);
+			$object = json_decode($json_raw);
+		}
+
+		$t_score = trim(@$xpath->query($this->params->get('patterns.ratings.t_score'))->item(0)->nodeValue);
+		$t_av_rating = trim(@$xpath->query($this->params->get('patterns.ratings.t_av_rating'))->item(0)->nodeValue);
+		$t_reviews_counted = trim(@$xpath->query($this->params->get('patterns.ratings.t_reviews_counted'))->item(0)->nodeValue);
+		$t_fresh = trim(@$xpath->query($this->params->get('patterns.ratings.t_fresh'))->item(0)->nodeValue);
+		$t_rotten = trim(@$xpath->query($this->params->get('patterns.ratings.t_rotten'))->item(0)->nodeValue);
+		$t_consensus = explode('Critics Consensus:', @$xpath->query($this->params->get('patterns.ratings.t_consensus'))->item(0)->nodeValue);
+		$a_score = trim(@$xpath->query($this->params->get('patterns.ratings.a_score'))->item(0)->nodeValue);
+		$a_av_rating = trim(@$xpath->query($this->params->get('patterns.ratings.a_av_rating'))->item(0)->nodeValue);
+		$a_user_ratings = trim(@$xpath->query($this->params->get('patterns.ratings.a_user_ratings'))->item(0)->nodeValue);
+
+		$consensus = array_key_exists(1, $t_consensus) ? trim($t_consensus[1]) : '';
+
+		$result = array(
+			'rating'   => array(
+				'score'           => (int) $t_score,
+				'av_rating'       => $t_av_rating,
+				'reviews_counted' => (int) $t_reviews_counted,
+				'fresh'           => (int) $t_fresh,
+				'rotten'          => (int) $t_rotten,
+				'consensus'       => $consensus
+			),
+			'audience' => array(
+				'score'        => $a_score,
+				'av_rating'    => $a_av_rating,
+				'user_ratings' => $a_user_ratings,
+			),
+			'reviews'  => $object->review
+		);
+
+		return $result;
 	}
 
 	/**
@@ -74,7 +141,7 @@ class KAParserRottentomatoes extends KAApi
 	 */
 	public function getMovieInfo($id, $data = '')
 	{
-		try
+		/*try
 		{
 			$html = $this->getPageById($id);
 		}
@@ -136,7 +203,7 @@ class KAParserRottentomatoes extends KAApi
 			'reviews'     => $object->review
 		);
 
-		return !empty($data) ? array_intersect_key($result, array_flip($cols)) : $result;
+		return !empty($data) ? array_intersect_key($result, array_flip($cols)) : $result;*/
 	}
 
 	/**
@@ -152,7 +219,7 @@ class KAParserRottentomatoes extends KAApi
 	 */
 	public function getMovieSearch($title, $return_id = false)
 	{
-		if (empty($title))
+		/*if (empty($title))
 		{
 			throw new InvalidArgumentException('Wrong search value', 500);
 		}
@@ -287,48 +354,41 @@ class KAParserRottentomatoes extends KAApi
 			}
 		}
 
-		return $result;
+		return $result;*/
 	}
 
 	/**
-	 * Get movie page by ID and store in cache.
+	 * Get movie web-page by ID and store in cache.
 	 *
-	 * @param   string  $id    Movie ID from Rottentomatoes
-	 * @param   string  $page  Page URL
+	 * @param   string  $id       Movie ID from Imdb
+	 * @param   string  $page     Page URL
+	 * @param   array   $options  Custom options
 	 *
 	 * @return  string
 	 *
-	 * @throws  Exception
 	 * @since   3.1
 	 */
-	private function getPageById($id, $page = 'main')
+	private function getDataById($id, $page = 'main', $options = array())
 	{
+		$caching = isset($options['cache']) ? $options['cache'] : true;
 		$cache = JCache::getInstance();
-		$cache->setCaching(true);
-		$cache->setLifeTime($this->params->get('rottentomatoes.cache_lifetime'));
+		$cache->setCaching((bool) $caching);
+		$cache->setLifeTime($this->params->get('cache_lifetime'));
 		$cache_id = $id . '.' . $page;
 
-		if ($cache->get($cache_id, 'parser_rottentomatoes') === false)
+		if ($cache->get($cache_id, 'rottentomatoes') === false)
 		{
 			$response = parent::getRemoteData(
 				str_replace('[id]', $id, $this->urls[$page]),
-				$this->headers,
-				30
+				$this->headers
 			);
 
-			if ($response->code == 200)
-			{
-				$output = $response->body;
-				$cache->store($output, $cache_id, 'parser_rottentomatoes');
-			}
-			else
-			{
-				throw new Exception('HTTP error: ' . $response->code, $response->code);
-			}
+			$output = $response;
+			$cache->store($output, $cache_id, 'rottentomatoes');
 		}
 		else
 		{
-			$output = $cache->get($cache_id, 'parser_rottentomatoes');
+			$output = $cache->get($cache_id, 'rottentomatoes');
 		}
 
 		return $output;

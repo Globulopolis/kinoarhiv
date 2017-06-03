@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 /**
  * Kinoarhiv API class.
  *
@@ -49,6 +51,91 @@ class KinoarhivControllerApi extends JControllerLegacy
 	}
 
 	/**
+	 * Method to update images with rating from movies sites.
+	 *
+	 * @return  void
+	 *
+	 * @since  3.0
+	 */
+	public function updateRatingImage()
+	{
+		jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
+
+		$input    = JFactory::getApplication()->input;
+		$params   = JComponentHelper::getParams('com_kinoarhiv');
+		$document = JFactory::getDocument();
+
+		$document->setMimeEncoding('application/json');
+		header('Content-disposition: inline', true);
+
+		// Movie ID from DB
+		$id      = $input->get('id', 0, 'int');
+		$votes   = $input->get('votes', 0, 'int');
+		$votesum = $input->get('votesum', '', 'string');
+		$source  = $input->get('source', '', 'word');
+
+		if ($source == 'rottentomatoes')
+		{
+			$text = array(
+				0 => array('fontsize' => 10, 'text' => $votesum . '%', 'color' => '#333333'),
+				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
+			);
+		}
+		elseif ($source == 'metacritic')
+		{
+			$text = array(
+				0 => array('fontsize' => 10, 'text' => $votesum, 'color' => '#333333'),
+				1 => array('fontsize' => 7, 'text' => $votes . ' Critics', 'color' => '#555555'),
+			);
+		}
+		elseif ($source == 'kinopoisk')
+		{
+			$text = array(
+				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
+				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
+			);
+		}
+		elseif ($source == 'imdb')
+		{
+			$text = array(
+				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
+				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
+			);
+		}
+		else
+		{
+			echo json_encode(
+				array(
+					'success' => false,
+					'message' => 'Unknown source!'
+				)
+			);
+
+			return;
+		}
+
+		$image = new KAImage;
+		$result = $image->createRateImage($id, $source, $text);
+
+		if (StringHelper::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
+		{
+			$rating_image_www = JUri::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
+		}
+		else
+		{
+			$rating_image_www = $params->get('media_rating_image_root_www');
+		}
+
+		echo json_encode(
+			array(
+				'success' => $result['success'],
+				'message' => $result['message'],
+				'image'   => $rating_image_www . '/' . $source . '/' . $id . '_big.png?' . time()
+			)
+		);
+	}
+
+	/**
 	 * Parser API.
 	 * For json data for movie by title: index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=movie.search&title[imdb]={movie title}&format=json
 	 * where task = controller.method; action = content_type.method; title = {movie title} or id = {movie id};
@@ -65,6 +152,39 @@ class KinoarhivControllerApi extends JControllerLegacy
 	 * @since   3.1
 	 */
 	public function parser()
+	{
+		header_remove('X-Powered-By');
+		$document = JFactory::getDocument();
+		$document->setMimeEncoding('application/json');
+		header('Content-disposition: inline', true);
+
+		jimport('components.com_kinoarhiv.libraries.api.api', JPATH_ROOT);
+
+		$api = KAApi::getInstance();
+		$filter = JFilterInput::getInstance();
+		$parsers = $this->input->get('parser', array(), 'array');
+		$results = array();
+
+		foreach ($parsers as $parser => $items)
+		{
+			$parser = $filter->clean($parser, 'word');
+
+			foreach ($items as $id => $item)
+			{
+				$actions     = $filter->clean($item['action'], 'cmd');
+				//$data_cols   = $filter->clean($item['data'], 'string');
+				$data_arr    = explode('.', $actions);
+				$data_type   = strtolower($filter->clean($data_arr[0], 'word'));
+				$data_action = strtolower($filter->clean($data_arr[1], 'word'));
+				$method      = 'get' . ucfirst($data_action);
+
+				$results[$parser][$id] = $api->getParser($parser)->$method($id, $data_type);
+			}
+		}
+
+		echo json_encode($results);
+	}
+	/*public function parser()
 	{
 		header_remove('X-Powered-By');
 		$document = JFactory::getDocument();
@@ -140,7 +260,7 @@ class KinoarhivControllerApi extends JControllerLegacy
 		}
 
 		echo json_encode($result);
-	}
+	}*/
 
 	/**
 	 * Check if user has access to API.

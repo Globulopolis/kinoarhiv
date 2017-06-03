@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"Cookie": "AMCV_10D31225525FF5790A490D4D%40AdobeOrg=-2017484664%7CMCMID%7C23798747825862785749213166643579824277%7CMCAID%7CNONE; LDCLGFbrowser=a2e0ce19-9244-45ca-8819-1435b1c8d119; gebDnVVAmj=2054151194; sq4YFvJMK2=1; ctk=NTkxMzU4NzNiMmRiYWZiMjk4MzRlMmRmODUxYg%3D%3D; tmpid=1495639861831246; metapv=1; mc_s_s=a_1",
+		"Referer": "http://www.metacritic.com/movie/",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0",
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept-Language": "en-GB,en;q=0.5",
+		"Accept-Encoding": "gzip, deflate",
+		"Connection": "keep-alive",
+		"Upgrade-Insecure-Requests": 1,
+		"Cache-Control": "max-age=0"
+	},
+	"patterns": {
+		"ratings": {
+			"score": "//span[@class=\"metascore_w larger movie mixed\"]",
+			"critics": "//div[@class=\"critic_reviews\"]/div"
+		}
+	},
+	"cache_lifetime": 10800
+}

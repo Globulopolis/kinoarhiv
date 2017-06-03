@@ -396,27 +396,4 @@ class KAComponentHelper
 
 		return (bool) JFactory::getApplication()->input->$method->get($token, '', 'alnum');
 	}
-
-	/**
-	 * Get data from remote server
-	 *
-	 * @param   string   $url        URL
-	 * @param   null     $headers    Headers to send
-	 * @param   integer  $timeout    Request timeout in seconds
-	 * @param   string   $transport  Transport type
-	 *
-	 * @return  JHttpResponse
-	 *
-	 * @since 3.0
-	 * @deprecated 3.1
-	 */
-	public static function getRemoteData($url, $headers = null, $timeout = 30, $transport = 'curl')
-	{
-		$options = new Registry;
-
-		$http = JHttpFactory::getHttp($options, $transport);
-		$response = $http->get($url, $headers, $timeout);
-
-		return $response;
-	}
 }

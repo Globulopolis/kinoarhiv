@@ -14,11 +14,11 @@ use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
 
 /**
- * Parser class for Kinopoisk.ru
+ * Parser class for Imdb.com
  *
  * @since  3.1
  */
-class KAParserKinopoisk extends KAApi
+class KAParserImdbMovie
 {
 	/**
 	 * Parser parameters
@@ -54,22 +54,25 @@ class KAParserKinopoisk extends KAApi
 	public function __construct($config = array())
 	{
 		$this->params = $config;
+		/*$this->headers = ArrayHelper::fromObject($this->params->get('imdb.headers'));
 
 		// Set up an array with pages
 		$this->urls = array(
-			'main'     => 'https://www.kinopoisk.ru/film/[id]/',
-			'rating'   => 'https://rating.kinopoisk.ru/[id].xml',
-			'cast'     => 'https://www.kinopoisk.ru/film/[id]/cast/',
-			'releases' => 'https://www.kinopoisk.ru/film/[id]/dates/'
-		);
-
-		$this->headers = ArrayHelper::fromObject($this->params->get('kinopoisk.headers'));
+			'main'       => 'http://www.imdb.com/title/[id]/?ref_=nv_sr_1',
+			'cast'       => 'http://www.imdb.com/title/[id]/fullcredits?ref_=tt_ql_1',
+			'releases'   => 'http://www.imdb.com/title/[id]/releaseinfo?ref_=ttfc_ql_2',
+			'posters'    => 'http://www.imdb.com/title/[id]/mediaviewer/[itemid]?ref_=tt_ov_i',
+			'name'       => 'http://www.imdb.com/name/[id]/',
+			'name_bio'   => 'http://www.imdb.com/name/[id]/bio?ref_=nm_ov_bio_sm',
+			'awards'     => 'http://www.imdb.com/name/[id]/awards?ref_=nm_awd',
+			'name_photo' => 'http://www.imdb.com/name/[id]/mediaviewer/[itemid]?ref_=nm_ov_ph'
+		);*/
 	}
 
 	/**
 	 * Method to get movie data
 	 *
-	 * @param   string  $id    Movie ID from Kinopoisk
+	 * @param   string  $id    Movie ID from Imdb
 	 * @param   string  $data  List of fields to return
 	 *
 	 * @return  array
@@ -78,8 +81,15 @@ class KAParserKinopoisk extends KAApi
 	 */
 	public function getMovieInfo($id, $data = '')
 	{
+		// Validate ID
+		if (!preg_match('@^tt(\d+)@', $id))
+		{
+			return array('error' => 'Wrong ID format');
+		}
+
 		try
 		{
+			$this->headers['Referer'] = $this->headers['Referer'] . '/title/' . $id . '/?ref_=nv_sr_1';
 			$html = $this->getPageById($id);
 		}
 		catch (Exception $e)
@@ -92,7 +102,7 @@ class KAParserKinopoisk extends KAApi
 		@$dom->loadHTML($html);
 		$xpath = new DOMXPath($dom);
 
-		// Filter results by keys from $_GET['data']['kinopoisk']
+		// Filter results by keys from $_GET['data']['imdb']
 		if (!empty($data))
 		{
 			$filter = JFilterInput::getInstance();
@@ -102,13 +112,7 @@ class KAParserKinopoisk extends KAApi
 			{
 				$col = str_ireplace('_', '', StringHelper::strtolower($filter->clean($col, 'word')));
 
-				if ($col == 'rating')
-				{
-					/*$this->headers['Host'] = 'rating.kinopoisk.ru';
-					$this->headers['Accept-Encoding'] = 'gzip, deflate, br';
-					$result['rating'] = $this->getRating($this->getPageById($id, 'rating'));*/
-				}
-				/*elseif ($col == 'castcrew')
+				if ($col == 'castcrew')
 				{
 					$result['castcrew'] = $this->getCastCrew($this->getPageById($id, 'cast'));
 				}
@@ -118,8 +122,8 @@ class KAParserKinopoisk extends KAApi
 				}
 				elseif ($col == 'posters')
 				{
-					$result['posters'] = $this->getPosters($id, $xpath);
-				}*/
+					$result['posters'] = $this->getMoviePosters($id, $xpath);
+				}
 				else
 				{
 					$method = 'get' . ucfirst($col);
@@ -136,9 +140,9 @@ class KAParserKinopoisk extends KAApi
 			$result = array(
 				'title'         => $this->getTitle($xpath),
 				'year'          => $this->getYear($xpath),
-				/*'genres'        => $this->getGenres($xpath),*/
-				'rating'        => $this->getRating($id),
-				/*'contentrating' => $this->getContentRating($xpath),
+				'genres'        => $this->getGenres($xpath),
+				'rating'        => $this->getRating($xpath),
+				'contentrating' => $this->getContentRating($xpath),
 				'duration'      => $this->getDuration($xpath),
 				'budget'        => $this->getBudget($xpath),
 				'countries'     => $this->getCountries($xpath),
@@ -146,7 +150,7 @@ class KAParserKinopoisk extends KAApi
 				'plot'          => $this->getPlot($xpath),
 				'castcrew'      => $this->getCastCrew($this->getPageById($id, 'cast')),
 				'releases'      => $this->getReleases($this->getPageById($id, 'releases')),
-				'posters'       => $this->getPosters($id, $xpath)*/
+				'posters'       => $this->getMoviePosters($id, $xpath)
 			);
 		}
 
@@ -179,14 +183,11 @@ class KAParserKinopoisk extends KAApi
 
 		if ($cache->get($cache_id, 'parser_imdb') === false)
 		{
-			$headers = ArrayHelper::fromObject($this->params->get('imdb.headers'));
-			$headers['Referer'] = 'http://www.imdb.com/';
-
+			$this->headers['Referer'] = 'http://www.imdb.com/';
 			$response = parent::getRemoteData(
 				'http://www.imdb.com/find?q=' . parent::encodeUrl($title) . '&s=tt&exact=true&ref_=fn_tt_ex',
-				$headers,
-				30,
-				array('curl', 'socket')
+				$this->headers,
+				30
 			);
 
 			if ($response->code == 200)
@@ -235,7 +236,7 @@ class KAParserKinopoisk extends KAApi
 				'id'    => $id,
 				'img'   => $nodes->childNodes->item(0)->childNodes->item(1)->firstChild->getAttribute('src'),
 				'title' => trim($nodes->childNodes->item(2)->nodeValue),
-				'link'  => JRoute::_('index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=getInfo&id[imdb]=' . $id . '&format=json', false)
+				'link'  => JRoute::_('index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=getMovie&id[imdb]=' . $id . '&format=json', false)
 			);
 		}
 
@@ -243,168 +244,30 @@ class KAParserKinopoisk extends KAApi
 	}
 
 	/**
-	 * Get movie page by ID and store in cache.
-	 *
-	 * @param   string  $id       Movie ID from Kinopoisk
-	 * @param   string  $page     Page URL
-	 * @param   array   $options  Custom options
-	 *
-	 * @return  string
-	 *
-	 * @throws  Exception
-	 * @since   3.1
-	 */
-	private function getPageById($id, $page = 'main', $options = array())
-	{
-		$cache = JCache::getInstance();
-		$cache->setCaching(true);
-		$cache->setLifeTime($this->params->get('kinopoisk.cache_lifetime'));
-		$cache_id = $id . '.' . $page;
-
-		if ($cache->get($cache_id, 'parser_kinopoisk') === false)
-		{
-			// ID of the image from mediabrowser
-			$itemid = isset($options['itemid']) ? $options['itemid'] : '';
-			$response = parent::getRemoteData(
-				str_replace(array('[id]', '[itemid]'), array($id, $itemid), $this->urls[$page]),
-				$this->headers
-			);
-
-			if ($response->code == 200)
-			{
-				$output = $response->body;
-				$cache->store($output, $cache_id, 'parser_kinopoisk');
-			}
-			else
-			{
-				throw new Exception('HTTP error: ' . $response->code, $response->code);
-			}
-		}
-		else
-		{
-			$output = $cache->get($cache_id, 'parser_kinopoisk');
-		}
-
-		return $output;
-	}
-
-	/**
 	 * Get rating.
 	 *
-	 * @param   object  $xpath    DOMXPath object instance.
-	 * @param   array   $options  Options
-	 *
-	 * @return  string
-	 *
-	 * @since   3.1
-	 */
-	/*protected function getRating($xpath, $options)
-	{
-		$rating = array('votesum' => 0, 'votes' => 0);
-		$this->cache = (array_key_exists('cache', $options) && $options['cache'] === false) ? false : true;
-
-		// Get rating from Kinopoisk
-		if (array_key_exists('remote', $options) && array_key_exists('kinopoisk', $options))
-		{
-			// Get web-page by ID
-			if (array_key_exists('id', $needle))
-			{
-				$this->urls['rating'] = 'https://www.kinopoisk.ru/rating/' . (int) $needle['id'] . '.xml';
-				$content = $this->getPageById($needle['id']);
-			}
-			else
-			{
-				$content = $this->getSearch($needle['title']);
-			}
-
-			$xml = new SimpleXMLElement($content);
-			$rating['votesum'] = (string) $xml->imdb_rating;
-			$rating['votes'] = (int) $xml->imdb_rating['num_vote'];
-		}
-		elseif (array_key_exists('remote', $options))
-		{
-			$content = $this->getPage($needle);
-			$dom = new DOMDocument('1.0', 'utf-8');
-			@$dom->loadHTML($content);
-			$xpath = new DOMXPath($dom);
-			$rating['votesum'] = @$xpath->query($this->params->get('imdb.patterns.ratings.rating'))->item(0)->nodeValue;
-			$rating['votes'] = @$xpath->query($this->params->get('imdb.patterns.ratings.score'))->item(0)->nodeValue;
-
-			if (!is_numeric($rating['votesum']) && !is_numeric($rating['votes']))
-			{
-				$rating['votesum'] = 0;
-				$rating['votes'] = 0;
-			}
-		}
-		else
-		{
-			jimport('models.api', JPATH_COMPONENT);
-
-			$model = new KinoarhivModelAPI;
-
-			if (array_key_exists('id', $needle))
-			{
-				$rating = $model->getRatingById($needle['id'], 'imdb');
-			}
-			else
-			{
-				// TODO Not implemented in model
-				// $rating = $model->getRatingByTitle($needle['title'], 'imdb');
-			}
-		}
-
-		// Strip all unexpected digit separators
-		$rating['votes'] = str_replace(array(',', '.', ' '), '', $rating['votes']);
-
-		return $rating;
-	}*/
-
-	/**
-	 * Get rating.
-	 *
-	 * @param   string   $id        Movie ID from Kinopoisk.
-	 * @param   boolean  $from_xml  Get content from xml file.
+	 * @param   object  $xpath  DOMXPath object instance.
 	 *
 	 * @return  array
 	 *
 	 * @since   3.1
 	 */
-	protected function getRating($id, $from_xml = false)
+	public function getRating($xpath)
 	{
 		$rating = array('votesum' => 0, 'votes' => 0);
+		$rating['votesum'] = @$xpath->query($this->params->get('patterns.ratings.rating'))->item(0)->nodeValue;
+		$rating['votes'] = @$xpath->query($this->params->get('patterns.ratings.score'))->item(0)->nodeValue;
 
-		if ($from_xml)
+		if (!is_numeric($rating['votesum']) && !is_numeric($rating['votes']))
 		{
-			$this->headers['Host'] = 'rating.kinopoisk.ru';
-			$this->headers['Accept-Encoding'] = 'gzip, deflate, br';
-			$xml = $this->getPageById($id, 'rating');
-			$rating = array('votesum' => 0, 'votes' => 0);
-			$xml = new SimpleXMLElement($xml);
-			$rating['votesum'] = (string) $xml->kp_rating;
-			$rating['votes'] = (int) $xml->kp_rating['num_vote'];
-		}
-		else
-		{
-			$html = $this->getPageById($id);
-			$dom = new DOMDocument('1.0', 'utf-8');
-			@$dom->loadHTML($html);
-			$xpath = new DOMXPath($dom);
-
-			$rating['votesum'] = @$xpath->query($this->params->get('kinopoisk.patterns.ratings.rating'))->item(0)->nodeValue;
-			$rating['votes'] = @$xpath->query($this->params->get('kinopoisk.patterns.ratings.score'))->item(0)->nodeValue;
-
-			if (!is_numeric($rating['votesum']) && !is_numeric($rating['votes']))
-			{
-				$rating['votesum'] = 0;
-				$rating['votes'] = 0;
-			}
+			$rating['votesum'] = 0;
+			$rating['votes'] = 0;
 		}
 
-		// Replace all unexpected digit separators
-		$rating['votesum'] = str_replace(array(',', '.', ' '), '.', $rating['votesum']);
-		$rating['votes'] = (int) str_replace('&nbsp;', '', htmlentities($rating['votes']));
+		// Strip all unexpected digit separators
+		$rating['votes'] = (int) str_replace(array(',', '.', ' '), '', $rating['votes']);
 
-		return $rating;
+		return array('rating' => $rating);
 	}
 
 	/**
@@ -418,14 +281,25 @@ class KAParserKinopoisk extends KAApi
 	 */
 	protected function getTitle($xpath)
 	{
-		$titles_orig = @$xpath->query($this->params->get('kinopoisk.patterns.titles.original'))->item(0)->nodeValue;
-		$titles_alt = @$xpath->query($this->params->get('kinopoisk.patterns.titles.alternative'))->item(0)->nodeValue;
+		$titles_orig = @$xpath->query($this->params->get('imdb.patterns.titles.original'));
+		$titles_alt = @$xpath->query($this->params->get('imdb.patterns.titles.alternative'));
 
-		// Trim \xC2\xA0 will remove &nbsp;
-		$titles = array(
-			'original' => trim($titles_orig, " \t\n\r\0\x0B\xC2\xA0"),
-			'alternative' => trim($titles_alt, " \t\n\r\0\x0B\xC2\xA0")
-		);
+		/* Imdb have(can have) 2 rows with title. First title based on language detected by user IP country, and placed in <div>
+		 * Second title is original movie title and can be placed in <h3> or <div>.
+		 * Check if original title(in <div>) exists, if not when the movie have not yet a localized title.
+		 *
+		 * Trim() \xC2\xA0 will remove &nbsp;
+		 */
+		if ($titles_orig->length > 0)
+		{
+			$titles['original'] = trim($titles_orig->item(0)->nodeValue, " \t\n\r\0\x0B\xC2\xA0");
+			$titles['alternative'] = trim($titles_alt->item(0)->nodeValue, " \t\n\r\0\x0B\xC2\xA0");
+		}
+		else
+		{
+			$titles['original'] = trim($titles_alt->item(0)->nodeValue, " \t\n\r\0\x0B\xC2\xA0");
+			$titles['alternative'] = '';
+		}
 
 		return $titles;
 	}
@@ -441,9 +315,25 @@ class KAParserKinopoisk extends KAApi
 	 */
 	protected function getYear($xpath)
 	{
-		$node = @$xpath->query($this->params->get('kinopoisk.patterns.year'))->item(0)->nodeValue;
+		$year = '';
+		$node = @$xpath->query($this->params->get('imdb.patterns.year.0'))->item(0)->nodeValue;
 
-		return (int) $node;
+		if (!empty($node))
+		{
+			$year = (int) $node;
+		}
+		else
+		{
+			$node = @$xpath->query($this->params->get('imdb.patterns.year.1'))->item(0)->nodeValue;
+
+			if (!empty($node))
+			{
+				preg_match('@\((.+)\)@s', $node, $matches);
+				$year = trim($matches[1]);
+			}
+		}
+
+		return $year;
 	}
 
 	/**
@@ -491,7 +381,7 @@ class KAParserKinopoisk extends KAApi
 			$genres[] = trim($node->nodeValue);
 		}
 
-		return ArrayHelper::arrayUnique($genres);
+		return array_values(ArrayHelper::arrayUnique($genres));
 	}
 
 	/**
@@ -532,7 +422,7 @@ class KAParserKinopoisk extends KAApi
 					$_time = $matches[1];
 				}
 
-				// TODO Crappy gmdate() isn't working with timestamp more than 86399 and will return 00:00:00. Need to fix.
+				// Crappy gmdate() isn't working with timestamp more than 86399 and will return 00:00:00. Need to fix.
 				return gmdate('H:i:s', $_time);
 			},
 			$duration['datetime']
@@ -755,7 +645,7 @@ class KAParserKinopoisk extends KAApi
 	 *
 	 * @since   3.1
 	 */
-	protected function getPosters($id, $xpath)
+	protected function getMoviePosters($id, $xpath)
 	{
 		$nodes = @$xpath->query($this->params->get('imdb.patterns.posters.0'));
 		$mv_url = $nodes->item(0)->childNodes->item(1)->getAttribute('href');
@@ -772,7 +662,7 @@ class KAParserKinopoisk extends KAApi
 
 		if (array_key_exists(1, $ids))
 		{
-			$html = $this->getPageById($id, 'posters');
+			$html = $this->getPageById($id, 'posters', array('itemid' => $ids[1]));
 			$dom = new DOMDocument('1.0', 'utf-8');
 			@$dom->loadHTML($html);
 			$mb_xpath = new DOMXPath($dom);
@@ -796,12 +686,12 @@ class KAParserKinopoisk extends KAApi
 				}
 			}
 
+			// Create '$tmp_img_path' dir
+			jimport('joomla.filesystem.folder');
+			JFolder::create($tmp_img_path);
+
 			if (!is_file($tmp_img_path . $filename1))
 			{
-				jimport('joomla.filesystem.folder');
-
-				JFolder::create($tmp_img_path);
-
 				$response1 = parent::getRemoteData(
 					$cover_url,
 					array(
@@ -817,10 +707,6 @@ class KAParserKinopoisk extends KAApi
 
 			if (!is_file($tmp_img_path . $filename2))
 			{
-				jimport('joomla.filesystem.folder');
-
-				JFolder::create($tmp_img_path);
-
 				$response2 = parent::getRemoteData(
 					$poster_url,
 					array(
@@ -841,8 +727,14 @@ class KAParserKinopoisk extends KAApi
 				'poster' => $poster_url
 			),
 			'local' => array(
-				'cover'  => $tmp_img_path_www . $filename1,
-				'poster' => $tmp_img_path_www . $filename2
+				'filesystem' => array(
+					'cover'  => JPath::clean($tmp_img_path . $filename1),
+					'poster' => JPath::clean($tmp_img_path . $filename2)
+				),
+				'webserver'  => array(
+					'cover'  => $tmp_img_path_www . $filename1,
+					'poster' => $tmp_img_path_www . $filename2
+				)
 			)
 		);
 	}

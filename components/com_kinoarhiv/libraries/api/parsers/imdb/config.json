@@ -1,0 +1,73 @@
+{
+	"headers": {
+		"Cookie": "as=%7B%22n%22%3A%7B%22t%22%3A%5B0%2C0%5D%2C%22tr%22%3A%5B0%2C0%5D%2C%22in%22%3A%5B0%2C0%5D%2C%22ib%22%3A%5B0%2C0%5D%7D%7D; session-id=913-7127626-6967358; session-id-time=1632644885; uu=BCYli5a2ZKI6hQa6NWQK1b7qtlXZi-KulCnDmBC4gDR8vsqLpybU0zgBQSFDKu0zU6HMXscUdk3q%0D%0A1C4KSlSkzJTGiZK2Ix4Z2IhsEoih3O6tdaDg67weQJy9rzAoLJsJVBukZMdXVena6ppEnzWhqyFR%0D%0AbMIyrp_G17dmdGChvlycOCuJM9JbhrMBywNn8S3eW6utEm6t7Y9rK5ObJ0vR1UeO-8uTYJslQxZw%0D%0Alv-fDWUU3pWJ3R6RTBARdQjz37NmHnOPsh4YJ-xYatWJXA1fAlBe-w%0D%0A",
+		"Referer": "http://www.imdb.com",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0",
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept-Language": "en-GB,en;q=0.5",
+		"Accept-Encoding": "gzip, deflate",
+		"Connection": "keep-alive",
+		"Upgrade-Insecure-Requests": 1,
+		"Cache-Control": "max-age=0"
+	},
+	"patterns": {
+		"ratings": {
+			"rating": "//div[@class=\"imdbRating\"]/div[@class=\"ratingValue\"]/strong/span[@itemprop=\"ratingValue\"]",
+			"score": "//div[@class=\"imdbRating\"]/a/span[@itemprop=\"ratingCount\"]"
+		},
+		"titles": {
+			"original": "//div[@class=\"title_wrapper\"]/div[@class=\"originalTitle\"]/text()",
+			"alternative": "//div[@class=\"title_wrapper\"]/h1[@itemprop=\"name\"]/text()"
+		},
+		"year": [
+			"//div[@class=\"title_wrapper\"]/h1[@itemprop=\"name\"]/span[@id=\"titleYear\"]/a",
+			"//div[@class=\"title_wrapper\"]//a[contains(., 'TV Series')]"
+		],
+		"mpaa": "//div[@class=\"title_wrapper\"]/div[@class=\"subtext\"]/meta[@itemprop=\"contentRating\"]/@content",
+		"metacritic": "//div[@class=\"plot_summary_wrapper\"]//div[@class=\"titleReviewBarItem\"][1]/a",
+		"genres": [
+			"//span[@itemprop=\"genre\"]",
+			"//h4[contains(., 'Genres:')]/following-sibling::a"
+		],
+		"duration": "//time[@itemprop=\"duration\"]",
+		"budget": "//h4[contains(., 'Budget:')]/following-sibling::text()[1]",
+		"countries": "//h4[contains(., 'Country:')]/following-sibling::a",
+		"slogan": "//h4[contains(., 'Taglines:')]/following-sibling::text()[1]",
+		"plot": [
+			"//div[@class=\"plot_summary \"]/div[@itemprop=\"description\"]",
+			"//div[@class=\"article\"]/div[@itemprop=\"description\"]/p/text()"
+		],
+		"cast": {
+			"cast": "//table[@class=\"cast_list\"]//tr[@class]",
+			"directors": "//h4[contains(., 'Directed by')]/following-sibling::table[1]//tr/td[1]",
+			"scenarists": "//h4[contains(., 'Writing Credits')]/following-sibling::table[1]//tr/td[@class=\"name\"]",
+			"producers": "//h4[contains(., 'Produced by')]/following-sibling::table[1]//tr",
+			"music": "//h4[contains(., 'Music by')]/following-sibling::table[1]//tr/td[@class=\"name\"]",
+			"crew": "//h4[contains(., 'Cinematography by')]/following-sibling::table//tr"
+		},
+		"release": "//table[@id=\"release_dates\"]//tr",
+		"posters": [
+			"//div[@class=\"poster\"]",
+			"//script[@id=\"imageJson\"]/text()"
+		],
+		"name": {
+			"name": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//span[@itemprop=\"name\"]",
+			"career": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//span[@itemprop=\"jobTitle\"]",
+			"birthday": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//time[@itemprop=\"birthDate\"]",
+			"birthplace": "//table[@id=\"name-overview-widget-layout\"]//tr[1]/td[@id=\"overview-top\"]//time[@itemprop=\"birthDate\"]//following-sibling::a",
+			"filmography": "//div[@id=\"filmography\"]/div",
+			"bio": {
+				"short": "//div[@id=\"name-bio-text\"]//div[@itemprop=\"description\"]",
+				"full": {
+					"bio": "//h4[contains(., 'Mini Bio')]/following-sibling::div/p[1]",
+					"trivia": "//h4[contains(., 'Trivia')]/following-sibling::*"
+				}
+			},
+			"awards": "//div[@class=\"article listo\"]/h3/following-sibling::table",
+			"photo": [
+				"//td[@id=\"img_primary\"]/div/a"
+			]
+		}
+	},
+	"cache_lifetime": 10800
+}

@@ -182,7 +182,7 @@ function formatItemTitle(firstTitle, secondTitle, date, separator) {
 		}
 
 		// Do not validate date format because it's can be in different formats and hard to implement, and actually not necessary here.
-		if (!empty(date) && date !== '0000') {
+		if (!empty(date) && date !== '0000' && date !== '0000-00-00') {
 			title += ' (' + date + ')';
 		}
 

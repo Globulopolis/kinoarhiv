@@ -67,7 +67,7 @@ class KinoarhivControllerApi extends JControllerLegacy
 	 */
 	private function checkAccess()
 	{
-		if (!KAComponentHelper::checkToken() && !KAComponentHelper::checkToken('get'))
+		if (!KAComponentHelper::checkToken('post') && !KAComponentHelper::checkToken('get'))
 		{
 			return false;
 		}

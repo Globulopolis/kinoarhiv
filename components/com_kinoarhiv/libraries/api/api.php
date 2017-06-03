@@ -59,32 +59,31 @@ class KAApi
 	 * @param   string  $name     Parser name or names separated by commas.
 	 * @param   mixed   $options  Parser config array or object.
 	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
-	 *
-	 * @throws  Exception
 	 */
-	public function getParser($name = '', $options = array())
+	public function getParser($name, $options = array())
 	{
-		$path = JPath::clean(__DIR__ . '/parser/' . $name . '.php');
+		$path = __DIR__ . '/parsers/' . $name;
+		$class_path = JPath::clean($path . '/' . $name . '.php');
 		$class = 'KAParser' . ucfirst($name);
 
 		if (!class_exists($class))
 		{
-			if (file_exists($path))
+			if (file_exists($class_path))
 			{
-				require_once $path;
+				require_once $class_path;
 			}
 			else
 			{
-				throw new Exception('Unknown parser type or something went wrong!', 500);
+				return false;
 			}
 		}
 
 		if (empty($options))
 		{
-			$options = $this->getParserConfig();
+			$options = $this->getParserConfig($path . '/config.json');
 		}
 
 		if (!isset(static::$parsers[$name]) || !is_object(static::$parsers[$name]))
@@ -98,8 +97,7 @@ class KAApi
 	/**
 	 * Returns the parser configuration object, only creating it if it doesn't already exist.
 	 *
-	 * @param   string  $filename  Config filename.
-	 * @param   string  $path      Path to the config.
+	 * @param   string  $path  Path to the config.
 	 *
 	 * @return  object
 	 *
@@ -107,18 +105,13 @@ class KAApi
 	 *
 	 * @throws  RuntimeException
 	 */
-	private function getParserConfig($filename = 'config.json', $path = null)
+	private function getParserConfig($path)
 	{
-		if (empty($path))
-		{
-			$path = __DIR__ . '/parser/';
-		}
-
-		$path = JPath::clean($path . $filename);
+		$path = JPath::clean($path);
 
 		if (!is_file($path))
 		{
-			throw new RuntimeException('Cannot find or load parser config file', 500);
+			throw new RuntimeException('Cannot load parser config file.', 500);
 		}
 
 		$config = new Registry;
@@ -134,72 +127,35 @@ class KAApi
 	 * @param   null     $headers  Headers to send
 	 * @param   integer  $timeout  Request timeout in seconds
 	 *
-	 * @return  object
+	 * @return  string|boolean
 	 *
-	 * @since  3.1
+	 * @since   3.1
 	 */
 	public static function getRemoteData($url, $headers = null, $timeout = 30)
 	{
-		jimport('libraries.vendor.Snoopy.Snoopy', JPATH_COMPONENT);
-
-		$http = new Snoopy;
-		$response = (object) array();
-
-		if (is_object($headers))
+		try
 		{
-			$headers = ArrayHelper::fromObject($headers);
+			$response = JHttpFactory::getHttp()->get($url, $headers, $timeout);
+		}
+		catch (RuntimeException $e)
+		{
+			JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_DOWNLOAD_SERVER_CONNECT', $e->getMessage()), JLog::WARNING, 'jerror');
+
+			return false;
 		}
 
-		foreach ($headers as $key => $value)
+		if (302 == $response->code && isset($response->headers['Location']))
 		{
-			if ($key == 'User-Agent')
-			{
-				$http->agent = $value;
-			}
-			elseif ($key == 'Referer')
-			{
-				$http->referer = $value;
-			}
-			elseif ($key == 'Accept')
-			{
-				$http->accept = $value;
-			}
-			elseif ($key == 'Cookie')
-			{
-				$cookies = explode(';', $value);
+			return $response->body;
+		}
+		elseif (200 != $response->code)
+		{
+			JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_DOWNLOAD_SERVER_CONNECT', $response->code), JLog::WARNING, 'jerror');
 
-				foreach ($cookies as $cookie)
-				{
-					$_cookie = explode('=', $cookie);
-					$http->cookies[trim($_cookie[0])] = trim($_cookie[1]);
-				}
-			}
-			else
-			{
-				$http->rawheaders[$key] = $value;
-			}
+			return false;
 		}
 
-		// Set timeout
-		$http->read_timeout = $timeout;
-
-		$http->maxredirs = 0;
-		$http->offsiteok = false;
-
-		// Get a page
-		if ($http->fetch($url))
-		{
-			$response->body = $http->results;
-		}
-		else
-		{
-			$response->error = $http->error;
-		}
-
-		$response->code = (int) $http->status;
-		$response->headers = $http->headers;
-
-		return $response;
+		return $response->body;
 	}
 
 	/**

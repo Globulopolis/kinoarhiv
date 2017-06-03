@@ -12,7 +12,8 @@
 			   dateformat="yy" datatype="date" required="true" validate="year"/>
 		<field name="desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span12" default="" cols="6"
 			   rows="5" filter="JComponentHelper::filterText"/>
-		<field name="type" type="list" default="0" label="COM_KA_TABLES_RELATIONS_AWARDS_TYPE" filter="integer">
+		<field name="type" type="radio" default="0" label="COM_KA_TABLES_RELATIONS_AWARDS_TYPE" filter="integer"
+			   class="btn-group">
 			<option value="0">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_0</option>
 			<option value="1">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_1</option>
 		</field>

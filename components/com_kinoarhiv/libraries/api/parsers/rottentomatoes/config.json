@@ -1,0 +1,28 @@
+{
+	"headers": {
+		"Cookie": "_ga=GA1.2.761530487.1430193377",
+		"Referer": "https://www.rottentomatoes.com/",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0",
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept-Language": "en-GB,en;q=0.5",
+		"Accept-Encoding": "gzip, deflate",
+		"Connection": "keep-alive",
+		"Upgrade-Insecure-Requests": 1,
+		"Cache-Control": "max-age=0"
+	},
+	"patterns": {
+		"ratings": {
+			"t_score": "//div[@class=\"critic-score meter\"][1]/a/span[@class=\"meter-value superPageFontColor\"]/span/text()",
+			"t_av_rating": "//div[@id=\"scoreStats\"][1]/div/span[contains(., 'Average Rating:')]/following-sibling::text()",
+			"t_reviews_counted": "//div[@id=\"scoreStats\"][1]/div/span[contains(., 'Reviews Counted:')]/following-sibling::span",
+			"t_fresh": "//div[@id=\"scoreStats\"][1]/div/span[contains(., 'Fresh:')]/following-sibling::span",
+			"t_rotten": "//div[@id=\"scoreStats\"][1]/div/span[contains(., 'Rotten:')]/following-sibling::span",
+			"t_consensus": "//p[contains(@class, 'critic_consensus')][1]",
+			"a_score": "//div[contains(@class, 'audience-score')][1]//div[@class=\"meter-value\"]",
+			"a_av_rating": "//div[contains(@class, 'audience-info')][1]//span[contains(., 'Average Rating:')]/following-sibling::text()",
+			"a_user_ratings": "//div[contains(@class, 'audience-info')][1]//span[contains(., 'User Ratings:')]/following-sibling::text()"
+		},
+		"json_data": "//script[@id=\"jsonLdSchema\"]/text()"
+	},
+	"cache_lifetime": 10800
+}

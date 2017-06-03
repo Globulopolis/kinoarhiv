@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 5.18.4 <http://videojs.com/>
+ * Video.js 5.19.2 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -2614,6 +2614,9 @@ var AudioTrackButton = function (_TrackButton) {
 
   AudioTrackButton.prototype.createItems = function createItems() {
     var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    // if there's only one audio track, there no point in showing it
+    this.hideThreshold_ = 1;
 
     var tracks = this.player_.audioTracks && this.player_.audioTracks();
 
@@ -5780,6 +5783,7 @@ var TextTrackMenuItem = function (_MenuItem) {
     if (tracks) {
       var changeHandler = Fn.bind(_this, _this.handleTracksChange);
 
+      player.on(['loadstart', 'texttrackchange'], changeHandler);
       tracks.addEventListener('change', changeHandler);
       _this.on('dispose', function () {
         tracks.removeEventListener('change', changeHandler);
@@ -7022,6 +7026,7 @@ var ErrorDisplay = function (_ModalDialog) {
 
 
 ErrorDisplay.prototype.options_ = (0, _mergeOptions2['default'])(_modalDialog2['default'].prototype.options_, {
+  pauseOnOpen: false,
   fillAlways: true,
   temporary: false,
   uncloseable: true
@@ -8547,7 +8552,7 @@ var ModalDialog = function (_Component) {
       // playing state.
       this.wasPlaying_ = !player.paused();
 
-      if (this.wasPlaying_) {
+      if (this.options_.pauseOnOpen && this.wasPlaying_) {
         player.pause();
       }
 
@@ -8614,7 +8619,7 @@ var ModalDialog = function (_Component) {
       this.trigger('beforemodalclose');
       this.opened_ = false;
 
-      if (this.wasPlaying_) {
+      if (this.wasPlaying_ && this.options_.pauseOnOpen) {
         player.play();
       }
 
@@ -8812,6 +8817,7 @@ var ModalDialog = function (_Component) {
 
 
 ModalDialog.prototype.options_ = {
+  pauseOnOpen: true,
   temporary: true
 };
 
@@ -17265,7 +17271,7 @@ var Tech = function (_Component) {
       // passed in
       var script = _document2['default'].createElement('script');
 
-      script.src = this.options_['vtt.js'] || 'https://cdn.rawgit.com/gkatsev/vtt.js/vjs-v0.12.1/dist/vtt.min.js';
+      script.src = this.options_['vtt.js'] || 'https://vjs.zencdn.net/vttjs/0.12.3/vtt.min.js';
       script.onload = function () {
         /**
          * Fired when vtt.js is loaded.
@@ -17345,11 +17351,15 @@ var Tech = function (_Component) {
 
     textTracksChanges();
     tracks.addEventListener('change', textTracksChanges);
+    tracks.addEventListener('addtrack', textTracksChanges);
+    tracks.addEventListener('removetrack', textTracksChanges);
 
     this.on('dispose', function () {
       remoteTracks.off('addtrack', handleAddTrack);
       remoteTracks.off('removetrack', handleRemoveTrack);
       tracks.removeEventListener('change', textTracksChanges);
+      tracks.removeEventListener('addtrack', textTracksChanges);
+      tracks.removeEventListener('removetrack', textTracksChanges);
 
       for (var i = 0; i < tracks.length; i++) {
         var track = tracks[i];
@@ -20329,6 +20339,7 @@ var TextTrack = function (_Track) {
 
       // make sure that `id` is copied over
       cue.id = originalCue.id;
+      cue.originalCue_ = originalCue;
     }
 
     var tracks = this.tech_.textTracks();
@@ -20354,19 +20365,16 @@ var TextTrack = function (_Track) {
 
 
   TextTrack.prototype.removeCue = function removeCue(_removeCue) {
-    var removed = false;
+    var i = this.cues_.length;
 
-    for (var i = 0, l = this.cues_.length; i < l; i++) {
+    while (i--) {
       var cue = this.cues_[i];
 
-      if (cue === _removeCue) {
+      if (cue === _removeCue || cue.originalCue_ && cue.originalCue_ === _removeCue) {
         this.cues_.splice(i, 1);
-        removed = true;
+        this.cues.setCues_(this.cues_);
+        break;
       }
-    }
-
-    if (removed) {
-      this.cues.setCues_(this.cues_);
     }
   };
 
@@ -21236,9 +21244,17 @@ var IS_FIREFOX = exports.IS_FIREFOX = /Firefox/i.test(USER_AGENT);
 var IS_EDGE = exports.IS_EDGE = /Edge/i.test(USER_AGENT);
 var IS_CHROME = exports.IS_CHROME = !IS_EDGE && /Chrome/i.test(USER_AGENT);
 var IS_IE8 = exports.IS_IE8 = /MSIE\s8\.0/.test(USER_AGENT);
-var IE_VERSION = exports.IE_VERSION = function (result) {
-  return result && parseFloat(result[1]);
-}(/MSIE\s(\d+)\.\d/.exec(USER_AGENT));
+var IE_VERSION = exports.IE_VERSION = function () {
+  var result = /MSIE\s(\d+)\.\d/.exec(USER_AGENT);
+  var version = result && parseFloat(result[1]);
+
+  if (!version && /Trident\/7.0/i.test(USER_AGENT) && /rv:11.0/.test(USER_AGENT)) {
+    // IE 11 has a different user agent string than other IE versions
+    version = 11.0;
+  }
+
+  return version;
+}();
 
 var IS_SAFARI = exports.IS_SAFARI = /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE;
 var IS_ANY_SAFARI = exports.IS_ANY_SAFARI = IS_SAFARI || IS_IOS;
@@ -23904,7 +23920,7 @@ setup.autoSetupTimeout(1, videojs);
  *
  * @type {string}
  */
-videojs.VERSION = '5.18.4';
+videojs.VERSION = '5.19.2';
 
 /**
  * The global options object. These are the settings that take effect
@@ -24789,10 +24805,13 @@ function extend() {
 // VTTRegion in Node since we likely want the capability to convert back and
 // forth between JSON. If we don't then it's not that big of a deal since we're
 // off browser.
+
+var window = _dereq_(109);
+
 var vttjs = module.exports = {
   WebVTT: _dereq_(106).WebVTT,
   VTTCue: _dereq_(107).VTTCue,
-  VTTRegion: _dereq_(109).VTTRegion
+  VTTRegion: _dereq_(108).VTTRegion
 };
 
 window.vttjs = vttjs;
@@ -24800,8 +24819,8 @@ window.WebVTT = vttjs.WebVTT;
 
 var cueShim = vttjs.VTTCue;
 var regionShim = vttjs.VTTRegion;
-var oldVTTCue = window.VTTCue;
-var oldVTTRegion = window.VTTRegion;
+var nativeVTTCue = window.VTTCue;
+var nativeVTTRegion = window.VTTRegion;
 
 vttjs.shim = function() {
   window.VTTCue = cueShim;
@@ -24809,15 +24828,15 @@ vttjs.shim = function() {
 };
 
 vttjs.restore = function() {
-  window.VTTCue = oldVTTCue;
-  window.VTTRegion = oldVTTRegion;
+  window.VTTCue = nativeVTTCue;
+  window.VTTRegion = nativeVTTRegion;
 };
 
 if (!window.VTTCue) {
   vttjs.shim();
 }
 
-},{"106":106,"107":107,"109":109}],106:[function(_dereq_,module,exports){
+},{"106":106,"107":107,"108":108,"109":109}],106:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -25958,16 +25977,51 @@ if (!window.VTTCue) {
         }
       }
 
-      // 3.2 WebVTT metadata header syntax
-      function parseHeader(input) {
-        parseOptions(input, function (k, v) {
-          switch (k) {
-          case "Region":
-            // 3.3 WebVTT region metadata header syntax
-            parseRegion(v);
+      // draft-pantos-http-live-streaming-20
+      // https://tools.ietf.org/html/draft-pantos-http-live-streaming-20#section-3.5
+      // 3.5 WebVTT
+      function parseTimestampMap(input) {
+        var settings = new Settings();
+
+        parseOptions(input, function(k, v) {
+          switch(k) {
+          case "MPEGT":
+            settings.integer(k + 'S', v);
+            break;
+          case "LOCA":
+            settings.set(k + 'L', parseTimeStamp(v));
             break;
           }
-        }, /:/);
+        }, /[^\d]:/, /,/);
+
+        self.ontimestampmap && self.ontimestampmap({
+          "MPEGTS": settings.get("MPEGTS"),
+          "LOCAL": settings.get("LOCAL")
+        });
+      }
+
+      // 3.2 WebVTT metadata header syntax
+      function parseHeader(input) {
+        if (input.match(/X-TIMESTAMP-MAP/)) {
+          // This line contains HLS X-TIMESTAMP-MAP metadata
+          parseOptions(input, function(k, v) {
+            switch(k) {
+            case "X-TIMESTAMP-MAP":
+              parseTimestampMap(v);
+              break;
+            }
+          }, /=/);
+        } else {
+          parseOptions(input, function (k, v) {
+            switch (k) {
+            case "Region":
+              // 3.3 WebVTT region metadata header syntax
+              parseRegion(v);
+              break;
+            }
+          }, /:/);
+        }
+
       }
 
       // 5.1 WebVTT file parsing.
@@ -26119,68 +26173,6 @@ if (!window.VTTCue) {
 }(this, (this.vttjs || {})));
 
 },{}],107:[function(_dereq_,module,exports){
-/**
- * Copyright 2013 vtt.js Contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-// If we're in Node.js then require VTTCue so we can extend it, otherwise assume
-// VTTCue is on the global.
-if (typeof module !== "undefined" && module.exports) {
-  this.VTTCue = this.VTTCue || _dereq_(108).VTTCue;
-}
-
-// Extend VTTCue with methods to convert to JSON, from JSON, and construct a
-// VTTCue from an options object. The primary purpose of this is for use in the
-// vtt.js test suite (for testing only properties that we care about). It's also
-// useful if you need to work with VTTCues in JSON format.
-(function(root) {
-
-  root.VTTCue.prototype.toJSON = function() {
-    var cue = {},
-        self = this;
-    // Filter out getCueAsHTML as it's a function and hasBeenReset and displayState as
-    // they're only used when running the processing model algorithm.
-    Object.keys(this).forEach(function(key) {
-      if (key !== "getCueAsHTML" && key !== "hasBeenReset" && key !== "displayState") {
-        cue[key] = self[key];
-      }
-    });
-    return cue;
-  };
-
-  root.VTTCue.create = function(options) {
-    if (!options.hasOwnProperty("startTime") || !options.hasOwnProperty("endTime") ||
-        !options.hasOwnProperty("text")) {
-      throw new Error("You must at least have start time, end time, and text.");
-    }
-    var cue = new root.VTTCue(options.startTime, options.endTime, options.text);
-    for (var key in options) {
-      if (cue.hasOwnProperty(key)) {
-        cue[key] = options[key];
-      }
-    }
-    return cue;
-  };
-
-  root.VTTCue.fromJSON = function(json) {
-    return this.create(JSON.parse(json));
-  };
-
-}(this));
-
-},{"108":108}],108:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -26491,52 +26483,7 @@ if (typeof module !== "undefined" && module.exports) {
   vttjs.VTTCue = VTTCue;
 }(this, (this.vttjs || {})));
 
-},{}],109:[function(_dereq_,module,exports){
-/**
- * Copyright 2013 vtt.js Contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-// If we're in Node.js then require VTTRegion so we can extend it, otherwise assume
-// VTTRegion is on the global.
-if (typeof module !== "undefined" && module.exports) {
-  this.VTTRegion = _dereq_(110).VTTRegion;
-}
-
-// Extend VTTRegion with methods to convert to JSON, from JSON, and construct a
-// VTTRegion from an options object. The primary purpose of this is for use in the
-// vtt.js test suite. It's also useful if you need to work with VTTRegions in
-// JSON format.
-(function(root) {
-
-  root.VTTRegion.create = function(options) {
-    var region = new root.VTTRegion();
-    for (var key in options) {
-      if (region.hasOwnProperty(key)) {
-        region[key] = options[key];
-      }
-    }
-    return region;
-  };
-
-  root.VTTRegion.fromJSON = function(json) {
-    return this.create(JSON.parse(json));
-  };
-
-}(this));
-
-},{"110":110}],110:[function(_dereq_,module,exports){
+},{}],108:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -26676,5 +26623,7 @@ if (typeof module !== "undefined" && module.exports) {
   vttjs.VTTRegion = VTTRegion;
 }(this, (this.vttjs || {})));
 
-},{}]},{},[93])(93)
+},{}],109:[function(_dereq_,module,exports){
+arguments[4][95][0].apply(exports,arguments)
+},{"95":95}]},{},[93])(93)
 });

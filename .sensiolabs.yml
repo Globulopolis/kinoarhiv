@@ -5,6 +5,7 @@ global_exclude_dirs:
     - tests
     - Tests
     - lib/vendor
+    - components/com_kinoarhiv/libraries/api
     - components/com_kinoarhiv/libraries/vendor
     - media/com_kinoarhiv
 
@@ -64,7 +65,7 @@ rules:
         enabled: true
     php.method_too_long:
         enabled: true
-        max_length: 50
+        max_length: 100
         threshold: 5
     php.missing_use_statement:
         enabled: true

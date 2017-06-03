@@ -10,9 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
-
-JLoader::register('KADatabaseHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database.php');
 
 /**
  * Movie item class
@@ -33,22 +32,36 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$form = $this->loadForm('com_kinoarhiv.movie', 'movie', array('control' => 'form', 'load_data' => $loadData));
+		$task      = JFactory::getApplication()->input->getCmd('task', '');
+		$form_name = 'com_kinoarhiv.movie';
+		$form_opts = array('control' => 'jform', 'load_data' => $loadData);
+
+		switch ($task)
+		{
+			case 'editMovieCast':
+			case 'saveMovieCast':
+				$form = $this->loadForm($form_name, 'relations_cast', $form_opts);
+				break;
+			case 'editMovieAwards':
+			case 'saveMovieAwards':
+				$form = $this->loadForm($form_name, 'relations_awards', $form_opts);
+				break;
+			case 'editMoviePremieres':
+			case 'saveMoviePremieres':
+				$form = $this->loadForm($form_name, 'relations_premieres', $form_opts);
+				break;
+			case 'editMovieReleases':
+			case 'saveMovieReleases':
+				$form = $this->loadForm($form_name, 'relations_releases', $form_opts);
+				break;
+			default:
+				$form = $this->loadForm($form_name, 'movie', $form_opts);
+				break;
+		}
 
 		if (empty($form))
 		{
 			return false;
-		}
-
-		$id = JFactory::getApplication()->input->get('id', array(), 'array');
-		$id = (isset($id[0]) && !empty($id[0])) ? $id[0] : 0;
-		$user = JFactory::getUser();
-
-		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_kinoarhiv.movie.' . (int) $id))
-			|| ($id == 0 && !$user->authorise('core.edit.state', 'com_kinoarhiv')))
-		{
-			$form->setFieldAttribute('ordering', 'disabled', 'true', 'movie');
-			$form->setFieldAttribute('state', 'disabled', 'true', 'movie');
 		}
 
 		return $form;
@@ -63,12 +76,25 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function loadFormData()
 	{
-		$data = JFactory::getApplication()->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());
+		$app  = JFactory::getApplication();
+		$data = $app->getUserState('com_kinoarhiv.movies.' . JFactory::getUser()->id . '.edit_data', array());
 
 		if (empty($data))
 		{
 			$data = $this->getItem();
+
+			if (empty($data) && $app->input->getCmd('task', '') == 'add')
+			{
+				$filters = (array) $app->getUserState('com_kinoarhiv.movies.filter');
+				$data = (object) array(
+					'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
+					'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
+					'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+				);
+			}
 		}
+
+		$this->preprocessData('com_kinoarhiv.movie', $data);
 
 		return $data;
 	}
@@ -82,7 +108,103 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getItem()
 	{
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$task = $app->input->get('task', '', 'cmd');
+		$id   = $app->input->get('id', 0, 'int');
+
+		if ($task == 'editMovieCast')
+		{
+			return $this->editMovieCast();
+		}
+		elseif ($task == 'editMovieAwards')
+		{
+			return $this->editMovieAwards();
+		}
+		elseif ($task == 'editMoviePremieres')
+		{
+			return $this->editMoviePremieres();
+		}
+		elseif ($task == 'editMovieReleases')
+		{
+			return $this->editMovieReleases();
+		}
+
+		$query = $db->getQuery(true)->select(
+			$db->quoteName(
+				array('m.id', 'm.asset_id', 'm.parent_id', 'm.title', 'm.alias', 'm.fs_alias', 'm.introtext', 'm.plot',
+					'm.desc', 'm.known', 'm.year', 'm.slogan', 'm.budget', 'm.age_restrict', 'm.ua_rate', 'm.mpaa',
+					'm.length', 'm.rate_loc', 'm.rate_sum_loc', 'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id',
+					'm.kp_votesum', 'm.kp_votes', 'm.kp_id', 'm.rate_fc', 'm.rottentm_id', 'm.metacritics',
+					'm.metacritics_id', 'm.rate_custom', 'm.rate_loc_rounded', 'm.rate_imdb_rounded', 'm.rate_kp_rounded',
+					'm.urls', 'm.buy_urls', 'm.attribs', 'm.created', 'm.created_by', 'm.modified', 'm.modified_by',
+					'm.publish_up', 'm.publish_down', 'm.state', 'm.ordering', 'm.metakey', 'm.metadesc', 'm.access',
+					'm.metadata', 'm.language'
+				)
+			)
+		)
+		->select($db->quoteName('m.fs_alias', 'fs_alias_orig'))
+		->from($db->quoteName('#__ka_movies', 'm'))
+		->where($db->quoteName('m.id') . ' = ' . (int) $id);
+
+		// Join over the language
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('m.language'));
+
+		// Join over the gallery item
+		$query->select($db->quoteName('g.id', 'image_id') . ',' . $db->quoteName('g.filename'))
+			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON ' . $db->quoteName('g.movie_id') . ' = ' . $db->quoteName('m.id')
+				. ' AND ' . $db->quoteName('g.type') . ' = 2'
+				. ' AND ' . $db->quoteName('g.frontpage') . ' = 1');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return array();
+		}
+
+		if (empty($id))
+		{
+			return $result;
+		}
+
+		$genres = $this->getGenres($id);
+
+		if ($genres)
+		{
+			$genres = implode(',', $genres['id']);
+			$result->genres = $genres;
+			$result->genres_orig = $genres;
+		}
+
+		$countries = $this->getCountries($id);
+
+		if ($countries)
+		{
+			$countries = implode(',', $countries['id']);
+			$result->countries = $countries;
+			$result->countries_orig = $countries;
+		}
+
+		$registry = new Registry($result->attribs);
+		$result->attribs = $registry->toArray();
+
+		if (!empty($result->metadata))
+		{
+			$metadata = json_decode($result->metadata, true);
+			$result = (object) array_merge((array) $result, $metadata);
+		}
+
+		return $result;
+
+		/*$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$db = $this->getDbo();
 		$tmpl = $app->input->get('template', '', 'string');
@@ -158,62 +280,736 @@ class KinoarhivModelMovie extends JModelForm
 			$db->setQuery($query);
 			$result = $db->loadObject();
 		}
-		else
+
+		return $result;*/
+	}
+
+	/**
+	 * Get list of genres for field.
+	 *
+	 * @param   integer  $id  Item ID.
+	 *
+	 * @return  mixed    Array with data, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	private function getGenres($id)
+	{
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
+			->from($db->quoteName('#__ka_rel_genres', 'rel'))
+			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON ' . $db->quoteName('g.id') . ' = ' . $db->quoteName('rel.genre_id'))
+			->where($db->quoteName('rel.movie_id') . ' = ' . (int) $id)
+			->order($db->quoteName('rel.ordering') . ' ASC');
+
+		$db->setQuery($query);
+
+		try
 		{
-			$result = array('movie' => (object) array());
+			$_genres = $db->loadAssocList();
+			$genres = array();
 
-			if (count($id) == 0 || empty($id) || empty($id[0]))
+			foreach ($_genres as $key => $id)
 			{
-				return $result;
+				$genres['id'][$key] = $id['id'];
+				$genres['title'][$key] = $id['title'];
 			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
 
-			$query = $db->getQuery(true);
+			return false;
+		}
 
-			$query->select(
-				$db->quoteName(
-					array('m.id', 'm.asset_id', 'm.parent_id', 'm.title', 'm.alias', 'm.fs_alias', 'm.introtext', 'm.plot',
-						'm.desc', 'm.known', 'm.year', 'm.slogan', 'm.budget', 'm.age_restrict', 'm.ua_rate', 'm.mpaa',
-						'm.length', 'm.rate_loc', 'm.rate_sum_loc', 'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id',
-						'm.kp_votesum', 'm.kp_votes', 'm.kp_id', 'm.rate_fc', 'm.rottentm_id', 'm.metacritics',
-						'm.metacritics_id', 'm.rate_custom', 'm.rate_loc_rounded', 'm.rate_imdb_rounded', 'm.rate_kp_rounded',
-						'm.urls', 'm.buy_urls', 'm.attribs', 'm.created', 'm.created_by', 'm.modified', 'm.modified_by',
-						'm.publish_up', 'm.publish_down', 'm.state', 'm.ordering', 'm.metakey', 'm.metadesc', 'm.access',
-						'm.metadata', 'm.language'
-					)
+		return $genres;
+	}
+
+	/**
+	 * Method to get a list of countries.
+	 *
+	 * @param   integer  $id  Item ID.
+	 *
+	 * @return  object
+	 *
+	 * @since   3.0
+	 */
+	private function getCountries($id)
+	{
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('c.id', 'c.name')))
+			->from($db->quoteName('#__ka_rel_countries', 'rel'))
+			->leftJoin($db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('rel.country_id'))
+			->where($db->quoteName('rel.movie_id') . ' = ' . (int) $id)
+			->order($db->quoteName('rel.ordering') . ' ASC');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$_countries = $db->loadAssocList();
+			$countries = array();
+
+			foreach ($_countries as $key => $id)
+			{
+				$countries['id'][$key] = $id['id'];
+				$countries['title'][$key] = $id['name'];
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $countries;
+	}
+
+	/**
+	 * Method to get a single record for cast&crew edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editMovieCast()
+	{
+		$app        = JFactory::getApplication();
+		$db         = $this->getDbo();
+		$id         = $app->input->get('row_id', 0, 'int');
+		$item_id    = $app->input->get('item_id', 0, 'int');
+		$input_name = explode('_', $app->input->getString('input_name', ''));
+		$name_id    = !empty($input_name[1]) ? $input_name[1] : 0;
+		$query      = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(
+				array(
+					'name_id', 'movie_id', 'type', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors',
+					'ordering', 'desc'
 				)
 			)
-			->select($db->quoteName('m.fs_alias', 'fs_alias_orig'))
-			->from($db->quoteName('#__ka_movies', 'm'))
-			->where('m.id = ' . (int) $id[0]);
+		)
+			->from($db->quoteName('#__ka_rel_names'))
+			->where($db->quoteName('name_id') . ' = ' . (int) $name_id)
+			->where($db->quoteName('movie_id') . ' = ' . (int) $item_id)
+			->where('FIND_IN_SET (' . (int) $id . ', ' . $db->quoteName('type') . ')');
 
-			// Join over the language
-			$query->select($db->quoteName('l.title', 'language_title'))
-				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON l.lang_code = m.language');
+		$db->setQuery($query);
 
-			// Join over gallery item
-			$query->select($db->quoteName('g.id', 'gid') . ',' . $db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1');
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
 
-			$db->setQuery($query);
-			$result['movie'] = $db->loadObject();
-
-			$result['movie']->genres = $this->getGenres();
-			$result['movie']->genres_orig = implode(',', $result['movie']->genres['ids']);
-			$result['movie']->countries = $this->getCountries();
-			$result['movie']->tags = $this->getTags();
-
-			if (!empty($result['movie']->attribs))
-			{
-				$result['attribs'] = json_decode($result['movie']->attribs);
-			}
-
-			if (empty($result['movie']->fs_alias))
-			{
-				$result['movie']->fs_alias = strtolower($lang->transliterate(StringHelper::substr($result['movie']->alias, 0, 1)));
-			}
+			return false;
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Method to save the form data for cast edit.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on save.
+	 *
+	 * @since   3.1
+	 */
+	public function saveMovieCast($data)
+	{
+		$app        = JFactory::getApplication();
+		$db         = $this->getDbo();
+		$user       = JFactory::getUser();
+		$id         = $app->input->get('item_id', 0, 'int');
+		$input_name = $app->input->getString('input_name', '');
+		$ids        = explode('_', $input_name);
+		$name_id    = array_key_exists(1, $ids) ? $ids[1] : 0;
+		$old_type   = array_key_exists(2, $ids) ? $ids[2] : 0;
+		$new_type   = $data['type'];
+
+		if ($old_type != $new_type)
+		{
+			if (empty($input_name))
+			{
+				echo 'insert new';
+			}
+			else
+			{
+				echo 'update type';
+			}
+		}
+		else
+		{
+			echo 'update';
+		}
+
+
+
+
+
+		if (empty($input_name))
+		{
+			// Check if person allready exists in relation table and update field `type`, otherwise insert new record.
+			/*$query = $db->getQuery(true)
+				->select('COUNT(name_id)')
+				->from($db->quoteName('#__ka_rel_names'))
+				->where($db->quoteName('name_id') . ' = ' . (int) $data['name_id'] . ' AND ' . $db->quoteName('movie_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$total = $db->loadResult();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+
+			if ($total > 0)
+			{
+				// Update `type` field
+				$query = $db->getQuery(true)
+					->select($db->quoteName('type'))
+					->from($db->quoteName('#__ka_rel_names'))
+					->where($db->quoteName('name_id') . ' = ' . (int) $data['name_id'])
+					->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+				$db->setQuery($query);
+
+				try
+				{
+					$result = $db->loadResult();
+					$types  = explode(',', $result);
+
+					if (is_array($types))
+					{
+						foreach ($types as $type)
+						{
+							if ($data['type'] != $type)
+							{
+								array_push($types, $data['type']);
+							}
+						}
+					}
+				}
+				catch (Exception $e)
+				{
+					$app->enqueueMessage($e->getMessage(), 'error');
+
+					return false;
+				}
+			}
+			else
+			{
+				// Insert new row
+				$query = $db->getQuery(true)
+					->insert($db->quoteName('#__ka_rel_names'))
+					->columns(
+						$db->quoteName(
+							array('name_id', 'movie_id', 'type', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors', 'ordering', 'desc')
+						)
+					)
+					->values(
+						"'" . (int) $data['name_id'] . "', '" . (int) $id . "', '" . (int) $data['type'] . "',"
+						. "'" . $db->escape($data['role']) . "', '" . (int) $data['dub_id'] . "',"
+						. "'" . (int) $data['is_actors'] . "', '" . (int) $data['voice_artists'] . "',"
+						. "'" . (int) $data['is_directors'] . "', '" . (int) $data['ordering'] . "',"
+						. "'" . $db->escape($data['desc']) . "'"
+					);
+			}*/
+		}
+		else
+		{
+			/*$query = $db->getQuery(true)
+				->select($db->quoteName('type'))
+				->from($db->quoteName('#__ka_rel_names'))
+				->where($db->quoteName('name_id') . ' = ' . (int) $name_id)
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$result = $db->loadResult();
+				$types  = explode(',', $result);
+
+				if (is_array($types))
+				{
+					foreach ($types as $type)
+					{
+						if ($data['type'] != $type)
+						{
+							array_push($types, $data['type']);
+						}
+					}
+				}
+			}
+			catch (Exception $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_rel_names'))
+				->set($db->quoteName('name_id') . " = '" . (int) $data['name_id'] . "'")
+				->set($db->quoteName('type') . " = '" . $data['type'] . "'")
+				->set($db->quoteName('role') . " = '" . $db->escape($data['role']) . "'")
+				->set($db->quoteName('dub_id') . " = '" . (int) $data['dub_id'] . "'")
+				->set($db->quoteName('is_actors') . " = '" . (int) $data['is_actors'] . "'")
+				->set($db->quoteName('voice_artists') . " = '" . (int) $data['voice_artists'] . "'")
+				->set($db->quoteName('is_directors') . " = '" . (int) $data['is_directors'] . "'")
+				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->where($db->quoteName('name_id') . ' = ' . (int) $name_id)
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);*/
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			//$db->execute();
+
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($input_name))
+			{
+				$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id');
+				$session_data['name_id'] = $data['name_id'];
+				$session_data['type'] = $_type;
+				$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id', $session_data);
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+	}
+
+	/**
+	 * Build new string with types for cast.
+	 *
+	 * @param   integer  $name_id   Person ID.
+	 * @param   integer  $movie_id  Movie ID.
+	 * @param   integer  $type      Type
+	 *
+	 * @return  string
+	 *
+	 * @since  3.1
+	 */
+	private function updateCastTypeField($name_id, $movie_id, $type)
+	{
+		$db = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('type'))
+			->from($db->quoteName('#__ka_rel_names'))
+			->where($db->quoteName('name_id') . ' = ' . (int) $name_id)
+			->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadResult();
+			$types  = explode(',', $result);
+
+			if (is_array($types))
+			{
+				foreach ($types as $_type)
+				{
+					if ($type != $_type)
+					{
+						array_push($types, $type);
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return implode(',', $types);
+	}
+
+	/**
+	 * Method to get a single record for award edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editMovieAwards()
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('row_id', 0, 'int');
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
+			->from($db->quoteName('#__ka_rel_awards'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to save the form data for award edit.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on save.
+	 *
+	 * @since   3.1
+	 */
+	public function saveMovieAwards($data)
+	{
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$user = JFactory::getUser();
+		$id   = $app->input->get('item_id', 0, 'int');
+
+		if (empty($data['id']))
+		{
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_rel_awards'))
+				->columns($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
+				->values("'', '" . (int) $id . "', '" . (int) $data['award_id'] . "', "
+					. "'" . $db->escape($data['desc']) . "', '" . (int) $data['year'] . "', '0'");
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_rel_awards'))
+				->set($db->quoteName('award_id') . " = '" . (int) $data['award_id'] . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->set($db->quoteName('year') . " = '" . (int) $data['year'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
+			{
+				$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id', $session_data);
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+	}
+
+	/**
+	 * Method to remove award(s) in awards list on 'awards tab'.
+	 *
+	 * @param   array  $ids  Items ID
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.0
+	 */
+	public function removeMovieAwards($ids)
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$db->setDebug(true);
+		$db->lockTable('#__ka_rel_awards');
+		$db->transactionStart();
+		$result = true;
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_rel_awards'))
+				->where('id = ' . (int) $id . ';');
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+				$result = false;
+
+				break;
+			}
+		}
+
+		if (!$result)
+		{
+			try
+			{
+				$db->transactionRollback();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+			}
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		return $result;
+	}
+
+	/**
+	 * Method to get a single record for premiere edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editMoviePremieres()
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('row_id', 0, 'int');
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(
+				array(
+					'id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering'
+				)
+			)
+		)
+			->from($db->quoteName('#__ka_premieres'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to save the form data for premiere edit.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on save.
+	 *
+	 * @since   3.1
+	 */
+	public function saveMoviePremieres($data)
+	{
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$user = JFactory::getUser();
+		$id   = $app->input->get('item_id', 0, 'int');
+
+		if (empty($data['id']))
+		{
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_premieres'))
+				->columns($db->quoteName(array('id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering')))
+				->values("'', '" . (int) $id . "', '" . (int) $data['vendor_id'] . "', '" . $db->escape($data['premiere_date']) . "'"
+					. ", '" . (int) $data['country_id'] . "', '" . $db->escape($data['info']) . "'"
+					. ", '" . $db->escape($data['language']) . "', '" . (int) $data['ordering'] . "'");
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_premieres'))
+				->set($db->quoteName('vendor_id') . " = '" . (int) $data['vendor_id'] . "'")
+				->set($db->quoteName('premiere_date') . " = '" . $db->escape($data['premiere_date']) . "'")
+				->set($db->quoteName('country_id') . " = '" . (int) $data['country_id'] . "'")
+				->set($db->quoteName('info') . " = '" . $db->escape($data['info']) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
+				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
+			{
+				$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id', $session_data);
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+	}
+
+	/**
+	 * Method to get a single record for release edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editMovieReleases()
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('row_id', 0, 'int');
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(
+				array(
+					'id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering'
+				)
+			)
+		)
+			->from($db->quoteName('#__ka_releases'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to save the form data for release edit.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on save.
+	 *
+	 * @since   3.1
+	 */
+	public function saveMovieReleases($data)
+	{
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$user = JFactory::getUser();
+		$id   = $app->input->get('item_id', 0, 'int');
+
+		if (empty($data['id']))
+		{
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_releases'))
+				->columns($db->quoteName(array('id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering')))
+				->values("'', '" . (int) $data['country_id'] . "', '" . (int) $data['vendor_id'] . "', "
+					. "'" . (int) $id . "', '" . (int) $data['media_type'] . "', '" . $db->escape($data['release_date']) . "'"
+					. ", '" . $db->escape($data['desc']) . "', '" . $db->escape($data['language']) . "', '" . (int) $data['ordering'] . "'");
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_releases'))
+				->set($db->quoteName('country_id') . " = '" . (int) $data['country_id'] . "'")
+				->set($db->quoteName('vendor_id') . " = '" . (int) $data['vendor_id'] . "'")
+				->set($db->quoteName('media_type') . " = '" . (int) $data['media_type'] . "'")
+				->set($db->quoteName('release_date') . " = '" . $db->escape($data['release_date']) . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
+				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
+			{
+				$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id');
+				$session_data['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id', $session_data);
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
 	}
 
 	/**
@@ -231,9 +1027,9 @@ class KinoarhivModelMovie extends JModelForm
 		$db = $this->getDbo();
 		$ids = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
-		$query = $db->getQuery(true);
 
-		$query->update($db->quoteName('#__ka_movies'))
+		$query = $db->getQuery(true)
+			->update($db->quoteName('#__ka_movies'))
 			->set($db->quoteName('state') . ' = ' . (int) $state)
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
@@ -251,138 +1047,6 @@ class KinoarhivModelMovie extends JModelForm
 
 			return false;
 		}
-	}
-
-	/**
-	 * Method to get a list of countries.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	protected function getCountries()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', array(), 'array');
-		$result = array('data' => array(), 'ids' => array());
-		$query = $db->getQuery(true);
-
-		$query->select(
-			$db->quoteName('c.id') . ',' . $db->quoteName('c.name', 'title') . ',' . $db->quoteName('c.code') . ',' .
-			$db->quoteName('t.ordering')
-			)
-			->from($db->quoteName('#__ka_countries', 'c'))
-			->join('LEFT', $db->quoteName('#__ka_rel_countries', 't') . ' ON t.country_id = c.id AND t.movie_id = ' . (int) $id[0]);
-
-		$subquery = $db->getQuery(true)
-			->select($db->quoteName('country_id'))
-			->from($db->quoteName('#__ka_rel_countries'))
-			->where($db->quoteName('movie_id') . ' = ' . (int) $id[0]);
-
-		$query->where($db->quoteName('id') . ' IN (' . $subquery . ')')
-			->order($db->quoteName('t.ordering') . ' ASC');
-
-		$db->setQuery($query);
-		$result['data'] = $db->loadObjectList();
-
-		foreach ($result['data'] as $value)
-		{
-			$result['ids'][] = $value->id;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to get a list of genres.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	protected function getGenres()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', array(), 'array');
-		$result = array('data' => array(), 'ids' => array());
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title') . ',' . $db->quoteName('t.ordering'))
-			->from($db->quoteName('#__ka_genres', 'g'))
-			->join('LEFT', $db->quoteName('#__ka_rel_genres', 't') . ' ON t.genre_id = g.id AND t.movie_id = ' . (int) $id[0]);
-
-		$subquery = $db->getQuery(true)
-			->select($db->quoteName('genre_id'))
-			->from($db->quoteName('#__ka_rel_genres'))
-			->where($db->quoteName('movie_id') . ' = ' . (int) $id[0]);
-
-		$query->where($db->quoteName('id') . ' IN (' . $subquery . ')')
-			->order($db->quoteName('t.ordering') . ' ASC');
-
-		$db->setQuery($query);
-		$result['data'] = $db->loadObjectList();
-
-		foreach ($result['data'] as $value)
-		{
-			$result['ids'][] = $value->id;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to get a list of tags.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	protected function getTags()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', array(), 'array');
-
-		if (!empty($id[0]))
-		{
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName('metadata'))
-				->from($db->quoteName('#__ka_movies'))
-				->where($db->quoteName('id') . ' = ' . (int) $id[0]);
-
-			$db->setQuery($query);
-			$metadata = $db->loadResult();
-			$meta_arr = json_decode($metadata);
-
-			if (is_null($meta_arr) || count($meta_arr->tags) == 0)
-			{
-				return array('data' => array(), 'ids' => '');
-			}
-
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName(array('id', 'title')))
-				->from($db->quoteName('#__tags'))
-				->where($db->quoteName('id') . ' IN (' . implode(',', $meta_arr->tags) . ')')
-				->order($db->quoteName('lft') . ' ASC');
-
-			$db->setQuery($query);
-			$result['data'] = $db->loadObjectList();
-
-			foreach ($result['data'] as $value)
-			{
-				$result['ids'][] = $value->id;
-			}
-		}
-		else
-		{
-			$result = array('data' => array(), 'ids' => '');
-		}
-
-		return $result;
 	}
 
 	/**
@@ -1313,416 +1977,6 @@ class KinoarhivModelMovie extends JModelForm
 	}
 
 	/**
-	 * Method to remove awards related to movie.
-	 *
-	 * @return  array
-	 *
-	 * @since   3.0
-	 */
-	public function deleteRelAwards()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$data = $app->input->post->get('data', array(), 'array');
-		$query_result = true;
-
-		if (count($data) <= 0)
-		{
-			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
-		}
-
-		$db->setDebug(true);
-		$db->lockTable('#__ka_rel_awards');
-		$db->transactionStart();
-
-		foreach ($data as $key => $value)
-		{
-			$ids = explode('_', substr($value['name'], 16));
-			$query = $db->getQuery(true);
-
-			$query->delete($db->quoteName('#__ka_rel_awards'))
-				->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
-			$db->setQuery($query . ';');
-
-			if ($db->execute() === false)
-			{
-				$query_result = false;
-				break;
-			}
-		}
-
-		if ($query_result === false)
-		{
-			$db->transactionRollback();
-			$success = false;
-			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
-		}
-		else
-		{
-			$db->transactionCommit();
-			$success = true;
-			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
-		}
-
-		$db->unlockTables();
-		$db->setDebug(false);
-
-		return array('success' => $success, 'message' => $message);
-	}
-
-	/**
-	 * Method to get the list of awards for grid.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	public function getAwards()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'int');
-		$orderby = $app->input->get('sidx', '1', 'string');
-		$order = $app->input->get('sord', 'asc', 'word');
-		$limit = $app->input->get('rows', 50, 'int');
-		$page = $app->input->get('page', 0, 'int');
-		$search_field = $app->input->get('searchField', '', 'string');
-		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
-		$search_string = $app->input->get('searchString', '', 'string');
-		$limitstart = $limit * $page - $limit;
-		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
-		$result = (object) array('rows' => array());
-
-		$query = $db->getQuery(true)
-			->select('COUNT(rel.id)')
-			->from($db->quoteName('#__ka_rel_awards', 'rel'))
-			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON ' . $db->quoteName('aw.id') . ' = ' . $db->quoteName('rel.award_id'))
-			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id . ' AND ' . $db->quoteName('rel.type') . ' = 0');
-
-		if (!empty($search_string))
-		{
-			$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-		}
-
-		$db->setQuery($query);
-		$total = $db->loadResult();
-
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(array('rel.id', 'rel.item_id', 'rel.award_id', 'rel.desc', 'rel.year', 'rel.type', 'aw.title')))
-			->from($db->quoteName('#__ka_rel_awards', 'rel'))
-			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON ' . $db->quoteName('aw.id') . ' = ' . $db->quoteName('rel.award_id'))
-			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id . ' AND ' . $db->quoteName('type') . ' = 0');
-
-		if (!empty($search_string))
-		{
-			$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-		}
-
-		$query->order($db->quoteName($orderby) . ' ' . strtoupper($order))
-			->setLimit($limit, $limitstart);
-
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
-
-		$k = 0;
-
-		foreach ($rows as $elem)
-		{
-			$result->rows[$k]['id'] = $elem->id . '_' . $elem->item_id . '_' . $elem->award_id;
-			$result->rows[$k]['cell'] = array(
-				'id'       => $elem->id,
-				'award_id' => $elem->award_id,
-				'title'    => $elem->title,
-				'year'     => $elem->year,
-				'desc'     => $elem->desc
-			);
-
-			$k++;
-		}
-
-		$result->page = $page;
-		$result->total = $total_pages;
-		$result->records = $total;
-
-		return $result;
-	}
-
-	/**
-	 * Method to get the list of premieres for grid.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	public function getPremieres()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'int');
-		$orderby = $app->input->get('sidx', '1', 'string');
-		$order = $app->input->get('sord', 'asc', 'word');
-		$limit = $app->input->get('rows', 50, 'int');
-		$page = $app->input->get('page', 0, 'int');
-		$search_field = $app->input->get('searchField', '', 'string');
-		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
-		$search_string = trim($app->input->get('searchString', '', 'string'));
-		$limitstart = $limit * $page - $limit;
-		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
-		$result = (object) array('rows' => array());
-
-		$query = $db->getQuery(true)
-			->select('COUNT(p.id)')
-			->from($db->quoteName('#__ka_premieres', 'p'))
-			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('p.vendor_id'))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('p.country_id'))
-			->where($db->quoteName('p.movie_id') . ' = ' . (int) $id);
-
-		if (!empty($search_string))
-		{
-			if ($search_string == JText::_('COM_KA_PREMIERE_WORLD'))
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName('p.country_id'), $search_operand, 0));
-			}
-			else
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-			}
-		}
-
-		$db->setQuery($query);
-		$total = $db->loadResult();
-
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(array('p.id', 'p.movie_id', 'p.premiere_date', 'p.info', 'p.ordering', 'v.company_name', 'v.company_name_intl')))
-			->select($db->quoteName('c.name', 'country'))
-			->from($db->quoteName('#__ka_premieres', 'p'))
-			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('p.vendor_id'))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('p.country_id'))
-			->where($db->quoteName('p.movie_id') . ' = ' . (int) $id);
-
-		if (!empty($search_string))
-		{
-			if ($search_string == JText::_('COM_KA_PREMIERE_WORLD'))
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName('p.country_id'), $search_operand, 0));
-			}
-			else
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-			}
-		}
-
-		$query->order($db->quoteName($orderby) . ' ' . strtoupper($order))
-			->setLimit($limit, $limitstart);
-
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
-
-		$k = 0;
-
-		foreach ($rows as $elem)
-		{
-			$result->rows[$k]['id'] = $elem->id . '_' . $elem->movie_id;
-			$country = !empty($elem->country) ? $elem->country : JText::_('COM_KA_PREMIERE_WORLD');
-			$result->rows[$k]['cell'] = array(
-				'id'                => $elem->id,
-				'company_name'      => $elem->company_name,
-				'company_name_intl' => $elem->company_name_intl,
-				'premiere_date'     => $elem->premiere_date,
-				'country'           => $country,
-				'ordering'          => $elem->ordering
-			);
-
-			$k++;
-		}
-
-		$result->page = $page;
-		$result->total = $total_pages;
-		$result->records = $total;
-
-		return $result;
-	}
-
-	/**
-	 * Method to get the list of releases for grid.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	public function getReleases()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'int');
-		$orderby = $app->input->get('sidx', '1', 'string');
-		$order = $app->input->get('sord', 'asc', 'word');
-		$limit = $app->input->get('rows', 50, 'int');
-		$page = $app->input->get('page', 0, 'int');
-		$search_field = $app->input->get('searchField', '', 'string');
-		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
-		$search_string = $app->input->get('searchString', '', 'string');
-		$limitstart = $limit * $page - $limit;
-		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
-		$result = (object) array('rows' => array());
-
-		$query = $db->getQuery(true)
-			->select('COUNT(r.id)')
-			->from($db->quoteName('#__ka_releases', 'r'))
-			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('r.vendor_id'))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
-			->join('LEFT', $db->quoteName('#__ka_media_types', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('r.media_type'))
-			->where($db->quoteName('r.movie_id') . ' = ' . (int) $id);
-
-		if (!empty($search_string))
-		{
-			if ($search_string == JText::_('COM_KA_RELEASES_WORLD'))
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName('r.country_id'), $search_operand, 0));
-			}
-			else
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-			}
-		}
-
-		$db->setQuery($query);
-		$total = $db->loadResult();
-
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(array('r.id', 'r.movie_id', 'r.release_date', 'r.media_type', 'r.ordering', 'v.company_name', 'v.company_name_intl')))
-			->select($db->quoteName('c.name', 'country'))
-			->select($db->quoteName('m.title', 'media_type_title'))
-			->from($db->quoteName('#__ka_releases', 'r'))
-			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('r.vendor_id'))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
-			->join('LEFT', $db->quoteName('#__ka_media_types', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('r.media_type'))
-			->where($db->quoteName('r.movie_id') . ' = ' . (int) $id);
-
-		if (!empty($search_string))
-		{
-			if ($search_string == JText::_('COM_KA_RELEASES_WORLD'))
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName('r.country_id'), $search_operand, 0));
-			}
-			else
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-			}
-		}
-
-		$query->order($db->quoteName($orderby) . ' ' . strtoupper($order))
-			->setLimit($limit, $limitstart);
-
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
-
-		$k = 0;
-
-		foreach ($rows as $elem)
-		{
-			$result->rows[$k]['id'] = $elem->id . '_' . $elem->movie_id;
-			$country = !empty($elem->country) ? $elem->country : 'N/a';
-			$result->rows[$k]['cell'] = array(
-				'id'                => $elem->id,
-				'company_name'      => $elem->company_name,
-				'company_name_intl' => $elem->company_name_intl,
-				'release_date'      => $elem->release_date,
-				'media_type'        => $elem->media_type_title,
-				'country'           => $country,
-				'ordering'          => $elem->ordering
-			);
-
-			$k++;
-		}
-
-		$result->page = $page;
-		$result->total = $total_pages;
-		$result->records = $total;
-
-		return $result;
-	}
-
-	/**
-	 * Method to save access rules for movie.
-	 *
-	 * @return  array
-	 *
-	 * @since   3.0
-	 */
-	public function saveAccessRules()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$data = $app->input->post->get('form', array(), 'array');
-		$id = $app->input->get('id', null, 'int');
-		$rules = array();
-
-		if (empty($id))
-		{
-			return array('success' => false, 'message' => 'Error');
-		}
-
-		foreach ($data['movie']['rules'] as $rule => $groups)
-		{
-			foreach ($groups as $group => $value)
-			{
-				if ($value != '')
-				{
-					$rules[$rule][$group] = (int) $value;
-				}
-				else
-				{
-					unset($data['rules'][$rule][$group]);
-				}
-			}
-		}
-
-		$rules = json_encode($rules);
-
-		// Get parent id
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('id'))
-			->from($db->quoteName('#__assets'))
-			->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
-
-		$db->setQuery($query);
-		$parent_id = $db->loadResult();
-
-		$query = $db->getQuery(true);
-
-		$query->update($db->quoteName('#__assets'))
-			->set($db->quoteName('rules') . " = '" . $rules . "'")
-			->where($db->quoteName('#__assets') . " = 'com_kinoarhiv.movie." . (int) $id . "' AND " . $db->quoteName('level') . " = 2 AND " . $db->quoteName('parent_id') . " = " . (int) $parent_id);
-
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-
-			return array('success' => true);
-		}
-		catch (Exception $e)
-		{
-			return array('success' => false, 'message' => $e->getMessage());
-		}
-	}
-
-	/**
 	 * Method to remove a movie and associated content from database and disk.
 	 *
 	 * @return  boolean
@@ -2050,7 +2304,7 @@ class KinoarhivModelMovie extends JModelForm
 	 * @param   array   $data   The data to validate.
 	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 * @return  mixed   Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
@@ -2058,6 +2312,12 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function validate($form, $data, $group = null)
 	{
+		// Include the plugins for the delete events.
+		JPluginHelper::importPlugin($this->events_map['validate']);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
+
 		// Filter and validate the form data.
 		$data = $form->filter($data);
 		$return = $form->validate($data, $group);

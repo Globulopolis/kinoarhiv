@@ -113,10 +113,6 @@ jQuery(document).ready(function($){
 			input = $this.children('input'),
 			framework = $this.data('framework');
 
-		if (input.attr('readonly')) {
-			return;
-		}
-
 		if (input.val().toLowerCase() === 'now') {
 			if (empty($this.data('time-format'))) {
 				input.val(new Date().toISOString().slice(0, 10));
@@ -125,6 +121,10 @@ jQuery(document).ready(function($){
 			} else {
 				input.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
 			}
+		}
+
+		if (input.attr('readonly')) {
+			return;
 		}
 
 		if (framework === 'bootstrap') {
@@ -437,9 +437,11 @@ jQuery(document).ready(function($){
 					editfunc: function(){
 						var chk = $this.children('tbody').find('input[type="checkbox"]').filter(':checked'),
 							// Get the name of input, and get the last integer value(because it's a real item ID)
-							id = chk.attr('name').split('_').slice(-1)[0];
+							id = chk.attr('name').split('_').slice(-1)[0],
+							grid_id = $this.attr('id'),
+							input_name = chk.attr('name').replace('jqg_' + grid_id + '_', '');
 
-						Kinoarhiv.openWindow($this.data('edit_url') + '&row_id=' + parseInt(id, 10));
+						Kinoarhiv.openWindow($this.data('edit_url') + '&row_id=' + parseInt(id, 10) + '&input_name=' + input_name);
 					},
 					delfunc: function(){
 						if (!confirm(KA_vars.language.COM_KA_DELETE_SELECTED)) {

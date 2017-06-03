@@ -294,4 +294,116 @@ class KAImage extends JImage
 			$image->toFile($file, IMAGETYPE_PNG, array('quality' => $quality));
 		}
 	}
+
+	/**
+	 * Update rating images.
+	 *
+	 * @param   integer  $id      Movie ID from component database.
+	 * @param   string   $source  Type of source(server).
+	 * @param   array    $data    Array with the ratings and votes.
+	 *
+	 * @return  array
+	 */
+	public function createRateImage($id, $source, $data)
+	{
+		jimport('joomla.filesystem.folder');
+
+		$params  = JComponentHelper::getParams('com_kinoarhiv');
+		$file    = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/images/rating/' . $source . '_blank.png');
+		$dst_dir = JPath::clean($params->get('media_rating_image_root') . '/' . $source . '/');
+		$font    = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/fonts/OpenSans-Regular.ttf');
+
+		if (empty($id))
+		{
+			return array('success' => false, 'message' => 'Empty movie ID!');
+		}
+
+		if (file_exists($file))
+		{
+			list($width, $height) = @getimagesize($file);
+
+			$dst_im = imagecreatetruecolor($width, $height);
+			$src_im = imagecreatefrompng($file);
+			imagealphablending($src_im, true);
+			imagesavealpha($src_im, true);
+
+			if (!isset($data[1]['fontsize']))
+			{
+				$rgb_array = $this->rgb2array('#333333');
+				$color = imagecolorallocate($src_im, $rgb_array['r'], $rgb_array['g'], $rgb_array['b']);
+				imagettftext($src_im, 10, 0, 5, 32, $color, $font, $data[0]['text']);
+			}
+			else
+			{
+				$rgb_array1 = $this->rgb2array($data[0]['color']);
+				$rgb_array2 = $this->rgb2array($data[1]['color']);
+				$color1 = imagecolorallocate($src_im, $rgb_array1['r'], $rgb_array1['g'], $rgb_array1['b']);
+				$color2 = imagecolorallocate($src_im, $rgb_array2['r'], $rgb_array2['g'], $rgb_array2['b']);
+
+				if ($source == 'rottentomatoes')
+				{
+					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
+					$offset_left = count(count_chars($data[0]['text'], 1)) * 10 + 7;
+					imagettftext($src_im, $data[1]['fontsize'], 0, $offset_left, 31, $color2, $font, $data[1]['text']);
+				}
+				elseif ($source == 'metacritic')
+				{
+					imagettftext($src_im, $data[0]['fontsize'], 0, 45, 18, $color1, $font, $data[0]['text']);
+					imagettftext($src_im, $data[1]['fontsize'], 0, 45, 30, $color2, $font, $data[1]['text']);
+				}
+				elseif ($source == 'kinopoisk')
+				{
+					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
+					imagettftext($src_im, $data[1]['fontsize'], 0, 40, 31, $color2, $font, $data[1]['text']);
+				}
+				elseif ($source == 'imdb')
+				{
+					imagettftext($src_im, $data[0]['fontsize'], 0, 55, 18, $color1, $font, $data[0]['text']);
+					imagettftext($src_im, $data[1]['fontsize'], 0, 55, 30, $color2, $font, $data[1]['text']);
+				}
+			}
+
+			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $width, $height, $width, $height);
+
+			JFactory::getDocument()->setMimeEncoding('image/png');
+			JFactory::getApplication()->allowCache(false);
+
+			if (!file_exists($dst_dir))
+			{
+				JFolder::create($dst_dir);
+			}
+
+			$result = imagepng($src_im, $dst_dir . $id . '_big.png', 1);
+			imagedestroy($src_im);
+
+			if ($result === true)
+			{
+				return array('success' => true, 'message' => 'Success');
+			}
+			else
+			{
+				return array('success' => false, 'message' => 'Failed to create an image!');
+			}
+		}
+
+		return array('success' => false, 'message' => 'File with the blank rating image not found at path ' . $file);
+	}
+
+	/**
+	 * Convert HEX color code into rgb.
+	 *
+	 * @param   string  $rgb  HEX color code.
+	 *
+	 * @return  array
+	 */
+	protected function rgb2array($rgb)
+	{
+		$rgb = str_replace('#', '', $rgb);
+
+		return array(
+			'r' => base_convert(substr($rgb, 0, 2), 16, 10),
+			'g' => base_convert(substr($rgb, 2, 2), 16, 10),
+			'b' => base_convert(substr($rgb, 4, 2), 16, 10)
+		);
+	}
 }

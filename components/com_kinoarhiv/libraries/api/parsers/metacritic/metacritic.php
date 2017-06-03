@@ -54,84 +54,71 @@ class KAParserMetacritic extends KAApi
 	public function __construct($config = array())
 	{
 		$this->params = $config;
-		$this->headers = ArrayHelper::fromObject($this->params->get('metacritic.headers'));
+		$this->headers = ArrayHelper::fromObject($this->params->get('headers'));
 
 		// Set up an array with pages
 		$this->urls = array(
-			'main'           => 'http://www.metacritic.com/movie/[id]',
-			'critic_reviews' => 'http://www.metacritic.com/movie/[id]/critic-reviews',
-			'user_reviews'   => 'http://www.metacritic.com/movie/[id]/user-reviews?sort-by=most-helpful&num_items=100'
+			'main' => 'http://www.metacritic.com/movie/[id]/critic-reviews'
 		);
 	}
 
 	/**
-	 * Method to get movie data
+	 * Get info about entity.
 	 *
-	 * @param   string  $id    Movie ID from Metacritic
-	 * @param   string  $data  List of fields to return
-	 *
-	 * @return  array
+	 * @param   string  $id      Item ID.
+	 * @param   string  $entity  Entity type.
 	 *
 	 * @since   3.1
+	 *
+	 * @return  mixed
 	 */
-	public function getMovieInfo($id, $data = '')
+	public function getInfo($id, $entity)
 	{
 		try
 		{
-			$html = $this->getPageById($id);
+			$html = $this->getDataById($id);
 		}
 		catch (Exception $e)
 		{
 			return array('error' => $e->getMessage());
 		}
 
-		$result = array();
+		$filter = JFilterInput::getInstance();
 		$dom = new DOMDocument('1.0', 'utf-8');
 		@$dom->loadHTML($html);
 		$xpath = new DOMXPath($dom);
-		$metascore = (int) @$xpath->query($this->params->get('metacritic.patterns.ratings.m_score'))->item(0)->nodeValue;
-		$metacritics = (int) @$xpath->query($this->params->get('metacritic.patterns.ratings.m_critics'))->item(0)->nodeValue;
-		$userscore = (string) @$xpath->query($this->params->get('metacritic.patterns.ratings.u_score'))->item(0)->nodeValue;
-		$usercritics = (int) @$xpath->query($this->params->get('metacritic.patterns.ratings.u_critics'))->item(0)->nodeValue;
+		$metascore   = (int) @$xpath->query($this->params->get('patterns.ratings.score'))->item(0)->nodeValue;
+		$metacritics = @$xpath->query($this->params->get('patterns.ratings.critics'));
+		$critics = array();
 
-		// Filter results by keys from $_GET['data']['metacritic']
-		if (!empty($data))
+		foreach ($metacritics as $i => $critic)
 		{
-			$filter = JFilterInput::getInstance();
-			$cols = explode(',', $data);
-
-			foreach ($cols as $col)
+			if ($critic->childNodes->item(1)->nodeName == 'div')
 			{
-				$col = str_ireplace('_', '', StringHelper::strtolower($filter->clean($col, 'word')));
+				$critics[$i]['score'] = (int) $critic->childNodes->item(1)->nodeValue;
+				$review_row = $critic->childNodes->item(3);
+				$review_title = $review_row->childNodes->item(1)->childNodes;
+				$critics[$i]['title'] = array(
+					'source' => $filter->clean(trim($review_title->item(0)->nodeValue)),
+					'author' => $filter->clean(trim($review_title->item(1)->nodeValue)),
+					'date'   => preg_replace('/\s+/', ' ', $review_title->item(2)->nodeValue)
+				);
 
-				if ($col == 'criticreviews')
-				{
-					$result['criticreviews'] = $this->getCriticReviews($this->getPageById($id, 'critic_reviews'));
-				}
-				elseif ($col == 'userreviews')
-				{
-					$result['userreviews'] = $this->getUserReviews($this->getPageById($id, 'user_reviews'));
-				}
-				else
-				{
-					if (isset($$col))
-					{
-						$result[$col] = $$col;
-					}
-				}
+				$review_content = $review_row->childNodes->item(3)->childNodes->item(1);
+				$critics[$i]['summary'] = array(
+					'summary' => preg_replace('/\s+/', ' ', $filter->clean(trim($review_content->nodeValue))),
+					'link'    => $review_content->getAttribute('href')
+				);
 			}
 		}
-		else
-		{
-			$result = array(
-				'metascore'     => $metascore,
-				'metacritics'   => $metacritics,
-				'userscore'     => $userscore,
-				'usercritics'   => $usercritics,
-				'criticreviews' => $this->getCriticReviews($this->getPageById($id, 'critic_reviews')),
-				'userreviews'   => $this->getUserReviews($this->getPageById($id, 'user_reviews'))
-			);
-		}
+
+		$result = array(
+			'rating' => array(
+				'score'   => $metascore,
+				'critics' => count($critics)
+			),
+			'critics' => array_values($critics)
+		);
 
 		return $result;
 	}
@@ -232,98 +219,42 @@ class KAParserMetacritic extends KAApi
 	}
 
 	/**
-	 * Get movie page by ID and store in cache.
+	 * Get movie web-page by ID and store in cache.
 	 *
-	 * @param   string  $id    Movie ID from Metacritic
-	 * @param   string  $page  Page URL
+	 * @param   string  $id       Movie ID from Imdb
+	 * @param   string  $page     Page URL
+	 * @param   array   $options  Custom options
 	 *
 	 * @return  string
 	 *
-	 * @throws  Exception
 	 * @since   3.1
 	 */
-	private function getPageById($id, $page = 'main')
+	private function getDataById($id, $page = 'main', $options = array())
 	{
+		$caching = isset($options['cache']) ? $options['cache'] : true;
 		$cache = JCache::getInstance();
-		$cache->setCaching(true);
-		$cache->setLifeTime($this->params->get('metacritic.cache_lifetime'));
+		$cache->setCaching((bool) $caching);
+		$cache->setLifeTime($this->params->get('cache_lifetime'));
 		$cache_id = $id . '.' . $page;
+		$cache_value = $cache->get($cache_id, 'metacritic');
 
-		if ($cache->get($cache_id, 'parser_metacritic') === false)
+		if ($cache_value === false || empty($cache_value))
 		{
+			$this->headers['Referer'] = $this->headers['Referer'] . $id;
 			$response = parent::getRemoteData(
 				str_replace('[id]', $id, $this->urls[$page]),
-				$this->headers,
-				30
+				$this->headers
 			);
 
-			if ($response->code == 200)
-			{
-				$output = $response->body;
-				$cache->store($output, $cache_id, 'parser_metacritic');
-			}
-			else
-			{
-				throw new Exception('HTTP error: ' . $response->code, $response->code);
-			}
+			$output = $response;
+			$cache->store($output, $cache_id, 'metacritic');
 		}
 		else
 		{
-			$output = $cache->get($cache_id, 'parser_metacritic');
+			$output = $cache->get($cache_id, 'metacritic');
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Get critic reviews
-	 *
-	 * @param   string  $html  HTML page.
-	 *
-	 * @return  array
-	 *
-	 * @since   3.1
-	 */
-	protected function getCriticReviews($html)
-	{
-		$filter = JFilterInput::getInstance();
-		$reviews = array();
-		$dom = new DOMDocument('1.0', 'utf-8');
-		@$dom->loadHTML($html);
-		$xpath = new DOMXPath($dom);
-		$critic_nodes = @$xpath->query($this->params->get('metacritic.patterns.reviews.critics'));
-
-		foreach ($critic_nodes as $node)
-		{
-			if (is_object($node->childNodes->item(1)->childNodes->item(1)->childNodes->item(2)))
-			{
-				$date = preg_replace('/\s\s+/', ' ', $node->childNodes->item(1)->childNodes->item(1)->childNodes->item(2)->nodeValue);
-			}
-			else
-			{
-				$date = 'N/A';
-			}
-
-			if (!is_null($node->childNodes->item(1)->childNodes->item(1)->childNodes->item(1)->childNodes->item(1)->attributes))
-			{
-				$url = $node->childNodes->item(1)->childNodes->item(1)->childNodes->item(1)->childNodes->item(1)->getAttribute('href');
-			}
-			else
-			{
-				$url = '';
-			}
-
-			$reviews[] = array(
-				'score'  => (int) $node->childNodes->item(1)->childNodes->item(3)->nodeValue,
-				'source' => $node->childNodes->item(1)->childNodes->item(1)->childNodes->item(0)->nodeValue,
-				'author' => $node->childNodes->item(1)->childNodes->item(1)->childNodes->item(1)->childNodes->item(1)->nodeValue,
-				'date'   => $date,
-				'review' => $filter->clean(trim($node->childNodes->item(3)->nodeValue), 'string'),
-				'url'    => $url
-			);
-		}
-
-		return $reviews;
 	}
 
 	/**

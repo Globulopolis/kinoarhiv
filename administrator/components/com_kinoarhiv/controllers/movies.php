@@ -43,7 +43,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 */
 	public function edit($isNew = false)
 	{
-		$view = $this->getView('movies', 'html');
+		$view = $this->getView('movie', 'html');
 		$model = $this->getModel('movie');
 		$view->setModel($model, true);
 
@@ -212,31 +212,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	}
 
 	/**
-	 * Method to save access rules for an item.
-	 *
-	 * @return  mixed
-	 *
-	 * @since   3.0
-	 */
-	public function saveAccessRules()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv'))
-		{
-			return array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR'));
-		}
-
-		$model = $this->getModel('movie');
-		$result = $model->saveAccessRules();
-
-		echo json_encode($result);
-
-		return true;
-	}
-
-	/**
 	 * Method to unpublish a list of items
 	 *
 	 * @return  void
@@ -333,36 +308,21 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	public function cancel()
 	{
 		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.movie'))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
 		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
-	}
-
-	/**
-	 * Method to get cast and crew list.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function getCast()
-	{
-		$model = $this->getModel('movie');
-		$result = $model->getCast();
-
-		echo json_encode($result);
 	}
 
 	/**
@@ -376,336 +336,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	{
 		$model = $this->getModel('movie');
 		$result = $model->deleteCast();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to get awards list.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function getAwards()
-	{
-		$model = $this->getModel('movie');
-		$result = $model->getAwards();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to get premieres list.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function getPremieres()
-	{
-		$model = $this->getModel('movie');
-		$result = $model->getPremieres();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to get releases list.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function getReleases()
-	{
-		$model = $this->getModel('movie');
-		$result = $model->getReleases();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to delete an award from awards list.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function deleteRelAwards()
-	{
-		$model = $this->getModel('movie');
-		$result = $model->deleteRelAwards();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to update ratings from movies sites.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function getRates()
-	{
-		$app = JFactory::getApplication();
-		$param = $app->input->get('param', '', 'string');
-
-		// Movie ID from Kinopoisk, Rottentomatoes or Metacritic
-		$id = $app->input->get('id', '', 'string');
-
-		// Movie ID from DB
-		$movie_id = $app->input->get('movie_id', 0, 'int');
-
-		$registry = new Registry;
-		$config_rating_parser = JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . '/config_rating_parser.xml');
-
-		if (!is_file($config_rating_parser))
-		{
-			echo json_encode(
-				array(
-					'success'  => false,
-					'votesum'  => 0,
-					'votes'    => 0,
-					'message'  => 'Configuration file not found!',
-					'movie_id' => $movie_id
-				)
-			);
-
-			return;
-		}
-
-		$parser_conf = $registry->loadFile($config_rating_parser, 'XML');
-		$parser_conf = $parser_conf->toArray();
-
-		$success = true;
-		$message = '';
-		$votesum = 0;
-		$votes = 0;
-
-		if ($param == 'imdb_vote' || $param == 'kp_vote')
-		{
-			$response = KAComponentHelper::getRemoteData(
-				'http://www.kinopoisk.ru/rating/' . (int) $id . '.xml',
-				$parser_conf['imdb']['headers'],
-				30
-			);
-
-			$xml = new SimpleXMLElement($response->body);
-
-			if ($param == 'kp_vote')
-			{
-				$votesum = (string) $xml->kp_rating;
-				$votes = (int) $xml->kp_rating['num_vote'];
-			}
-			elseif ($param == 'imdb_vote')
-			{
-				$votesum = (string) $xml->imdb_rating;
-				$votes = (int) $xml->imdb_rating['num_vote'];
-			}
-		}
-		elseif ($param == 'rt_vote')
-		{
-			$response = KAComponentHelper::getRemoteData(
-				'http://www.rottentomatoes.com/m/' . $id . '/',
-				$parser_conf['rottentomatoes']['headers'],
-				30
-			);
-
-			$dom = new DOMDocument('1.0', 'utf-8');
-			@$dom->loadHTML($response->body);
-			$xpath = new DOMXPath($dom);
-			$rating = @$xpath->query($parser_conf['rottentomatoes']['patterns']['rating'])->item(0)->nodeValue;
-			$score = @$xpath->query($parser_conf['rottentomatoes']['patterns']['score'])->item(0)->nodeValue;
-			$rating = (int) $rating;
-			$score = (int) $score;
-
-			if (is_numeric($rating) && is_numeric($score))
-			{
-				$votesum = $rating;
-				$votes = $score;
-			}
-			else
-			{
-				$message = JText::_('ERROR') . ': ' . JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
-				$success = false;
-			}
-		}
-		elseif ($param == 'mc_vote')
-		{
-			$response = KAComponentHelper::getRemoteData(
-				'http://www.metacritic.com/movie/' . $id,
-				$parser_conf['metacritic']['headers'],
-				30
-			);
-
-			$dom = new DOMDocument('1.0', 'utf-8');
-			@$dom->loadHTML($response->body);
-			$xpath = new DOMXPath($dom);
-			$rating = @$xpath->query($parser_conf['metacritic']['patterns']['rating'])->item(0)->nodeValue;
-			$score = @$xpath->query($parser_conf['metacritic']['patterns']['score'])->item(0)->nodeValue;
-			$rating = (int) $rating;
-			$score = (int) $score;
-
-			if (is_numeric($rating) && is_numeric($score))
-			{
-				$votesum = $rating;
-				$votes = $score;
-			}
-			else
-			{
-				$message = JText::_('ERROR') . ': ' . JText::_('COM_KA_FIELD_MOVIE_RATES_EMPTY');
-				$success = false;
-			}
-		}
-
-		echo json_encode(
-			array(
-				'success'  => $success,
-				'votesum'  => $votesum,
-				'votes'    => $votes,
-				'message'  => $message,
-				'movie_id' => $movie_id
-			)
-		);
-	}
-
-	/**
-	 * Method to update images with rating from movies sites.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function updateRateImg()
-	{
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.movie'))
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-			return;
-		}
-
-		$document = JFactory::getDocument();
-		$app = JFactory::getApplication();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
-		// Movie ID from DB
-		$id = $app->input->get('id', 0, 'int');
-		$votes = $app->input->get('votes', 0, 'int');
-		$votesum = $app->input->get('votesum', '', 'string');
-		$cmd = $app->input->get('elem', '', 'string');
-		$text = array();
-		$folder = '';
-
-		if ($cmd == 'rt_vote')
-		{
-			// Rotten Tomatoes
-			$text = array(
-				0 => array('fontsize' => 10, 'text' => $votesum . '%', 'color' => '#333333'),
-				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
-			);
-			$folder = 'rottentomatoes';
-		}
-		elseif ($cmd == 'mc_vote')
-		{
-			// Metacritic
-			$text = array(
-				0 => array('fontsize' => 10, 'text' => $votesum, 'color' => '#333333'),
-				1 => array('fontsize' => 7, 'text' => $votes . ' Critics', 'color' => '#555555'),
-			);
-			$folder = 'metacritic';
-		}
-		elseif ($cmd == 'kp_vote')
-		{
-			// Kinopoisk
-			$text = array(
-				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
-				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
-			);
-			$folder = 'kinopoisk';
-		}
-		elseif ($cmd == 'imdb_vote')
-		{
-			// IMDb
-			$text = array(
-				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
-				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
-			);
-			$folder = 'imdb';
-		}
-
-		JLoader::register('KAImageHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'image.php');
-		$result = KAImageHelper::createRateImage($text);
-
-		if (StringHelper::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
-		{
-			$rating_image_www = JUri::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
-		}
-		else
-		{
-			$rating_image_www = $params->get('media_rating_image_root_www');
-		}
-
-		$document->setMimeEncoding('application/json');
-
-		echo json_encode(
-			array(
-				'success' => $result['success'],
-				'message' => $result['message'],
-				'image' => $rating_image_www . '/' . $folder . '/' . $id . '_big.png?' . time()
-			)
-		);
-	}
-
-	/**
-	 * Method to save a person for cast and crew list.
-	 *
-	 * @return  mixed
-	 *
-	 * @since  3.0
-	 */
-	public function saveRelNames()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.movie'))
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-			return;
-		}
-
-		$model = $this->getModel('relations');
-		$result = $model->saveRelNames();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Method to save an award for awards list.
-	 *
-	 * @return  mixed
-	 *
-	 * @since  3.0
-	 */
-	public function saveRelAwards()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.movie'))
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-			return;
-		}
-
-		$model = $this->getModel('relations');
-		$result = $model->saveRelAwards();
 
 		echo json_encode($result);
 	}
@@ -770,36 +400,335 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	}
 
 	/**
-	 * Method to delete premiere(s) from premieres list.
+	 * Display add/edit cast&crew form.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
-	 * @since  3.0
+	 * @since   3.1
 	 */
-	public function deletePremieres()
+	public function editMovieCast()
 	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('premiere');
-		$result = $model->deletePremieres();
-
-		echo json_encode($result);
+		$view = $this->getView('movie', 'html');
+		$model = $this->getModel('movie');
+		$view->setModel($model, true);
+		$view->display('cast');
 	}
 
 	/**
-	 * Method to delete release(s) from releases list.
+	 * Method to save a person for cast and crew list.
 	 *
 	 * @return  mixed
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
-	public function deleteReleases()
+	public function saveMovieCast()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		$model = $this->getModel('release');
-		$result = $model->deleteReleases();
+		$app  = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$id   = $app->input->get('item_id', 0, 'int');
 
-		echo json_encode($result);
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		$model = $this->getModel('movie');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieCast&item_id=' . $id;
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveMovieCast($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			//$this->setRedirect($url);
+
+			return;
+		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id', null);
+
+		$row_id = '&row_id=' . $session_data['type'];
+		$input_name = '&input_name=cc_' . $session_data['name_id'] . '_' . $session_data['type'];
+
+		//$this->setRedirect($url . $row_id . $input_name, $message);
+	}
+
+	/**
+	 * Display add/edit award form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editMovieAwards()
+	{
+		$view = $this->getView('movie', 'html');
+		$model = $this->getModel('movie');
+		$view->setModel($model, true);
+		$view->display('awards');
+	}
+
+	/**
+	 * Method to save a record for editNameAwards.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function saveMovieAwards()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$id = $app->input->get('item_id', 0, 'int');
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		$model = $this->getModel('movie');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $id;
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveMovieAwards($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id', null);
+
+		$award_id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+
+		$this->setRedirect($url . $award_id, $message);
+	}
+
+	/**
+	 * Display add/edit premiere form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editMoviePremieres()
+	{
+		$view = $this->getView('movie', 'html');
+		$model = $this->getModel('movie');
+		$view->setModel($model, true);
+		$view->display('premieres');
+	}
+
+	/**
+	 * Method to save a record for editMoviePremieres.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function saveMoviePremieres()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$id = $app->input->get('item_id', 0, 'int');
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		$model = $this->getModel('movie');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $id;
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveMoviePremieres($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id', null);
+
+		$id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+
+		$this->setRedirect($url . $id, $message);
+	}
+
+	/**
+	 * Display add/edit release form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editMovieReleases()
+	{
+		$view = $this->getView('movie', 'html');
+		$model = $this->getModel('movie');
+		$view->setModel($model, true);
+		$view->display('releases');
+	}
+
+	/**
+	 * Method to save a record for editMovieReleases.
+	 *
+	 * @return  mixed
+	 *
+	 * @since   3.1
+	 */
+	public function saveMovieReleases()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app  = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$id   = $app->input->get('item_id', 0, 'int');
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		$model = $this->getModel('movie');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $id;
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveMovieReleases($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id', null);
+
+		$id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+
+		$this->setRedirect($url . $id, $message);
 	}
 }

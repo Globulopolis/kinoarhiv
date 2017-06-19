@@ -35,45 +35,4 @@ class KinoarhivController extends JControllerLegacy
 
 		parent::display();
 	}
-
-	/**
-	 * Get some data from DB
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function ajaxData()
-	{
-		$model = $this->getModel('global');
-		$result = $model->getAjaxData();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Load a template file.
-	 *
-	 * @return  string  The output of the the template script.
-	 *
-	 * @since   3.0
-	 * @throws  Exception
-	 */
-	public function loadTemplate()
-	{
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
-
-		$format = $this->input->get('format', 'html', 'word');
-		$template = $this->input->get('template', '', 'string');
-		$model = $this->input->get('model', '', 'cmd');
-		$view = $this->input->get('view', '', 'cmd');
-
-		$view = $this->getView($view, $format);
-		$model = $this->getModel($model);
-		$view->setModel($model, true);
-
-		$view->display($template);
-
-		return $this;
-	}
 }

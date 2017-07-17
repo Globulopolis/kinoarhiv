@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -272,25 +272,28 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 			</div>
 			<div class="row-fluid">
 				<div class="span12">
-					<fieldset class="form-horizontal">
-						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_RATE_LABEL'); ?></legend>
-						<div class="span6">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_RATE_LABEL'); ?></legend>
 							<?php foreach ($this->form->getFieldset('ap_rate') as $field): ?>
 								<div class="control-group">
 									<div class="control-label"><?php echo $field->label; ?></div>
 									<div class="controls"><?php echo $field->input; ?></div>
 								</div>
 							<?php endforeach; ?>
-						</div>
-						<div class="span6">
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<legend>&nbsp;</legend>
 							<?php foreach ($this->form->getFieldset('ap_rate_img') as $field): ?>
 								<div class="control-group">
 									<div class="control-label"><?php echo $field->label; ?></div>
 									<div class="controls"><?php echo $field->input; ?></div>
 								</div>
 							<?php endforeach; ?>
-						</div>
-					</fieldset>
+						</fieldset>
+					</div>
 				</div>
 			</div>
 			<div class="row-fluid">

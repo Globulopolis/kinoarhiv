@@ -260,10 +260,10 @@
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
 		<field name="ka_theme" type="folderlist" default="default"
-			   directory="components/com_kinoarhiv/assets/themes/component/" label="COM_KA_FIELD_AP_KA_THEME_LABEL"
+			   directory="media/com_kinoarhiv/images/themes/" label="COM_KA_FIELD_AP_KA_THEME_LABEL"
 			   description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true"/>
 		<field name="ui_theme" type="folderlist" default="ui-lightness"
-			   directory="components/com_kinoarhiv/assets/themes/ui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL"
+			   directory="media/com_kinoarhiv/jqueryui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL"
 			   description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" hide_default="true"/>
 		<field name="vegas_enable" default="0" type="radio" class="btn-group" label="COM_KA_FIELD_AP_VEGAS_LABEL"
 			   description="COM_KA_FIELD_AP_VEGAS_LABEL_DESC" filter="integer">
@@ -273,8 +273,6 @@
 		<field name="vegas_overlay" type="filelist" default=""
 			   directory="media/com_kinoarhiv/images/overlays/"
 			   label="COM_KA_FIELD_AP_VEGAS_OVERLAY_LABEL" hide_default="true"/>
-		<field name="vegas_overlay_opacity" type="text" default="0.5" label="COM_KA_FIELD_AP_VEGAS_OVERLAY_OP_LABEL"
-			   filter="string" size="3"/>
 		<field name="vegas_bodybg_transparent" default="0" type="radio" class="btn-group"
 			   label="COM_KA_FIELD_AP_VEGAS_BGTRANS_LABEL" filter="integer">
 			<option value="1">JYES</option>
@@ -285,7 +283,7 @@
 			   description="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL_DESC" filter="string" class="span12"/>
 		<field name="vegas_bg" type="textarea" default="" label="COM_KA_FIELD_AP_VEGAS_BG_LABEL"
 			   description="COM_KA_FIELD_AP_VEGAS_BG_LABEL_DESC" rows="3" cols="6" class="span12"/>
-		<field name="vegas_slideshow_delay" type="text" default="2000" label="COM_KA_FIELD_AP_VEGAS_BGDELAY_LABEL"
+		<field name="vegas_slideshow_delay" type="text" default="10" label="COM_KA_FIELD_AP_VEGAS_BGDELAY_LABEL"
 			   filter="integer" size="3"/>
 	</fieldset>
 	<fieldset name="ap_item" label="COM_KA_SETTINGS_AP_ITEM_LABEL">

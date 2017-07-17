@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -55,7 +55,7 @@ $this->id    = $this->form->getValue('id');
 			e.preventDefault();
 
 			var item_id  = parseInt($('input[name="image_id"]').val(), 10),
-				no_cover = '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png';
+				no_cover = '<?php echo JUri::root(); ?>media/com_kinoarhiv/images/themes/<?php echo $this->params->get('ka_theme'); ?>/no_name_cover_f.png';
 
 			if (isNaN(item_id)) {
 				return false;

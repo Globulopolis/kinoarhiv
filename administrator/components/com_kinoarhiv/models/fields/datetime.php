@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('JPATH_PLATFORM') or die;
@@ -96,7 +96,7 @@ class JFormFieldDatetime extends JFormField
 		else
 		{
 			JHtml::_('jquery.framework');
-			JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
+			JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.css');
 			JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 			KAComponentHelper::getScriptLanguage('datepicker-', 'media/com_kinoarhiv/js/i18n/datepicker/');
 

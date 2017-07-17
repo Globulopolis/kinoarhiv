@@ -139,7 +139,7 @@
 					}
 					iCol = $t.p.iPropByName[cmName];
 					if (iCol !== undefined) {
-						return { cm: $t.p.colModel[iCol], iCol: iCol, isAddProp: true };
+						return { cm: $t.p.additionalProperties[iCol], iCol: iCol, isAddProp: true };
 					}
 					return { cm: null, iCol: -1 };
 				},
@@ -440,7 +440,8 @@
 							searchoptions.size = 10;
 						}
 					}
-					var elm = jgrid.createEl.call($t, columns.inputtype, searchoptions,
+					var elm = jgrid.createEl.call($t, columns.inputtype,
+								$.extend({}, searchoptions, searchoptions.attr || {}),
 								"", true, that.p.ajaxSelectOptions || {}, true);
 					$(elm).addClass(getGuiStyles("searchDialog.elem", "input-elm"));
 					//that.createElement(rule, "");
@@ -485,6 +486,14 @@
 					}
 					// data
 					$(".data", trpar).empty().append(elm);
+					if (cm.createColumnIndex && searchoptions.generateDatalist) {
+						var dataListId = "dl_" + elm.id,
+							$datalist = $($t).jqGrid("generateDatalistFromColumnIndex", cm.name);
+						if ($datalist != null && $datalist.length > 0) {
+							$(elm).attr("list", dataListId);
+							$(".data", trpar).append($datalist.attr("id", dataListId));
+						}
+					}
 					jgrid.bindEv.call($t, elm, searchoptions);
 					$(".input-elm", trpar).on("change", searchoptions, function (e) {
 						var elem = e.target, column = e.data.column;
@@ -538,7 +547,8 @@
 				delete editoptions.disabled;
 				var searchoptions = $.extend({}, editoptions, cm.searchoptions || {}, getCmInfo(cm.cmName), { id: jgrid.randId(), name: cm.name });
 				searchoptions.column = cm;
-				var ruleDataInput = jgrid.createEl.call($t, cm.inputtype, searchoptions,
+				var ruleDataInput = jgrid.createEl.call($t, cm.inputtype,
+						$.extend({}, searchoptions, searchoptions.attr || {}),
 						rule.data, true, that.p.ajaxSelectOptions || {}, true);
 				if (rule.op === "nu" || rule.op === "nn" || $.inArray(rule.op, $t.p.customUnaryOperations) >= 0) {
 					$(ruleDataInput).attr("readonly", "true");
@@ -602,13 +612,26 @@
 				// is created previously
 				//ruleDataInput.setAttribute("type", "text");
 				ruleDataTd.append(ruleDataInput);
+				if (cm.createColumnIndex && cm.searchoptions.generateDatalist) {
+					var dataListId = "dl_" + ruleDataInput.id,
+						$datalist = $($t).jqGrid("generateDatalistFromColumnIndex", cm.name);
+					if ($datalist != null && $datalist.length > 0) {
+						$(ruleDataInput).attr("list", dataListId);
+						ruleDataTd.append($datalist.attr("id", dataListId));
+					}
+				}
 				jgrid.bindEv.call($t, ruleDataInput, cm.searchoptions);
 				$(ruleDataInput).addClass(getGuiStyles("searchDialog.elem", "input-elm"))
 					.on("change", function () {
-						rule.data = cm.inputtype === "custom" ? cm.searchoptions.custom_value.call($t, $(this).find(".customelement").first(), "get") : $(this).val();
+						rule.data = cm.inputtype === "custom" ?
+								cm.searchoptions.custom_value.call($t, $(this).find(".customelement").first(), "get") :
+								$(this).val();
 						if ($(this).is("input[type=checkbox]") && !$(this).is(":checked")) {
 							// value of checkbox contains checked value
 							rule.data = $(this).data("offval");
+						}
+						if ($.isArray(rule.data)) {
+							rule.data = rule.data.join(p.inFilterSeparator || ",");
 						}
 						that.onchange(); // signals that the filter has changed
 					});

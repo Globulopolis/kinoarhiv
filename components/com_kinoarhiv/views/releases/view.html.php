@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -98,9 +98,9 @@ class KinoarhivViewReleases extends JViewLegacy
 
 				if (!is_file($checking_path))
 				{
-					$item->poster = JUri::base() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
-						JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png',
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
 						false
 					);
 					$item->poster_width = $dimension->width;

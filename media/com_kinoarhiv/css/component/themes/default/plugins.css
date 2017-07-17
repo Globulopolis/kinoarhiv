@@ -16,7 +16,7 @@
 	position: relative;
 	display: -moz-inline-box;
 	display: inline-block;
-	background: url("../../images/icons/star_sprite_16.gif");
+	background: url("../../../../images/icons/star_sprite_16.gif");
 	height: 16px;
 	outline: none;
 }
@@ -48,7 +48,7 @@
 }
 
 .rateit .rateit-hover {
-	background: url("../../images/icons/star_sprite_16.gif") left -32px;
+	background: url("../../../../images/icons/star_sprite_16.gif") left -32px;
 	color: rgb(239, 197, 41);
 }
 
@@ -57,7 +57,7 @@
 }
 
 .rateit .rateit-selected {
-	background: url("../../images/icons/star_sprite_16.gif") left -16px;
+	background: url("../../../../images/icons/star_sprite_16.gif") left -16px;
 	color: rgb(191,66,66);
 }
 
@@ -66,16 +66,16 @@
 }
 
 .rateit .rateit-preset {
-	background: url("../../images/icons/star_sprite_16.gif") left -48px;
+	background: url("../../../../images/icons/star_sprite_16.gif") left -48px;
 	color: rgb(239, 107, 34);
 }
 
 .rateit .rateit-preset-rtl {
-	background: url("../../images/icons/star_sprite_16.gif") left -48px;
+	background: url("../../../../images/icons/star_sprite_16.gif") left -48px;
 }
 
 .rateit button.rateit-reset {
-	background: url("../../images/icons/delete_sprite_16.gif") 0 0;
+	background: url("../../../../images/icons/delete_sprite_16.gif") 0 0;
 	width: 16px;
 	height: 16px;
 	display: -moz-inline-box;

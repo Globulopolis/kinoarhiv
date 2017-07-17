@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 5.19.2 <http://videojs.com/>
+ * Video.js 5.20.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -489,8 +489,10 @@ var ClickableComponent = function (_Component) {
     if (typeof this.tabIndex_ !== 'undefined') {
       this.el_.setAttribute('tabIndex', this.tabIndex_);
     }
-    this.on('tap', this.handleClick);
-    this.on('click', this.handleClick);
+    this.off(['tap', 'click'], this.handleClick);
+    this.off('focus', this.handleFocus);
+    this.off('blur', this.handleBlur);
+    this.on(['tap', 'click'], this.handleClick);
     this.on('focus', this.handleFocus);
     this.on('blur', this.handleBlur);
     return this;
@@ -510,8 +512,7 @@ var ClickableComponent = function (_Component) {
     if (typeof this.tabIndex_ !== 'undefined') {
       this.el_.removeAttribute('tabIndex');
     }
-    this.off('tap', this.handleClick);
-    this.off('click', this.handleClick);
+    this.off(['tap', 'click'], this.handleClick);
     this.off('focus', this.handleFocus);
     this.off('blur', this.handleBlur);
     return this;
@@ -9328,6 +9329,11 @@ var Player = function (_Component) {
     // Make player easily findable by ID
     Player.players[_this.id_] = _this;
 
+    // Add a major version class to aid css in plugins
+    var majorVersion = '5.20.1'.split('.')[0];
+
+    _this.addClass('vjs-v' + majorVersion);
+
     // When the player is first initialized, trigger activity so components
     // like the control bar show themselves if needed
     _this.userActive(true);
@@ -9748,6 +9754,7 @@ var Player = function (_Component) {
       'textTracks': this.textTracks_,
       'audioTracks': this.audioTracks_,
       'autoplay': this.options_.autoplay,
+      'playsinline': this.options_.playsinline,
       'preload': this.options_.preload,
       'loop': this.options_.loop,
       'muted': this.options_.muted,
@@ -11437,6 +11444,33 @@ var Player = function (_Component) {
   };
 
   /**
+   * Set or unset the playsinline attribute.
+   * Playsinline tells the browser that non-fullscreen playback is preferred.
+   *
+   * @param {boolean} [value]
+   *        - true means that we should try to play inline by default
+   *        - false means that we should use the browser's default playback mode,
+   *          which in most cases is inline. iOS Safari is a notable exception
+   *          and plays fullscreen by default.
+   *
+   * @return {string|Player}
+   *         - the current value of playsinline
+   *         - the player when setting
+   *
+   * @see [Spec]{@link https://html.spec.whatwg.org/#attr-video-playsinline}
+   */
+
+
+  Player.prototype.playsinline = function playsinline(value) {
+    if (value !== undefined) {
+      this.techCall_('setPlaysinline', value);
+      this.options_.playsinline = value;
+      return this;
+    }
+    return this.techGet_('playsinline');
+  };
+
+  /**
    * Get or set the loop attribute on the video element.
    *
    * @param {boolean} [value]
@@ -12084,6 +12118,22 @@ var Player = function (_Component) {
     if (this.tech_) {
       return this.tech_.removeRemoteTextTrack(track);
     }
+  };
+
+  /**
+   * Gets available media playback quality metrics as specified by the W3C's Media
+   * Playback Quality API.
+   *
+   * @see [Spec]{@link https://wicg.github.io/media-playback-quality}
+   *
+   * @return {Object|undefined}
+   *         An object with supported media playback quality metrics or undefined if there
+   *         is no tech or the tech does not support it.
+   */
+
+
+  Player.prototype.getVideoPlaybackQuality = function getVideoPlaybackQuality() {
+    return this.techGet_('getVideoPlaybackQuality');
   };
 
   /**
@@ -13726,7 +13776,7 @@ var Flash = function (_Tech) {
     // Otherwise this adds a CDN url.
     // The CDN also auto-adds a swf URL for that specific version.
     if (!options.swf) {
-      var ver = '5.3.0';
+      var ver = '5.4.0';
 
       options.swf = '//vjs.zencdn.net/swf/' + ver + '/video-js.swf';
     }
@@ -14017,6 +14067,29 @@ var Flash = function (_Tech) {
 
   Flash.prototype.enterFullScreen = function enterFullScreen() {
     return false;
+  };
+
+  /**
+   * Gets available media playback quality metrics as specified by the W3C's Media
+   * Playback Quality API.
+   *
+   * @see [Spec]{@link https://wicg.github.io/media-playback-quality}
+   *
+   * @return {Object}
+   *         An object with supported media playback quality metrics
+   */
+
+
+  Flash.prototype.getVideoPlaybackQuality = function getVideoPlaybackQuality() {
+    var videoPlaybackQuality = this.el_.vjs_getProperty('getVideoPlaybackQuality');
+
+    if (_window2['default'].performance && typeof _window2['default'].performance.now === 'function') {
+      videoPlaybackQuality.creationTime = _window2['default'].performance.now();
+    } else if (_window2['default'].performance && _window2['default'].performance.timing && typeof _window2['default'].performance.timing.navigationStart === 'number') {
+      videoPlaybackQuality.creationTime = _window2['default'].Date.now() - _window2['default'].performance.timing.navigationStart;
+    }
+
+    return videoPlaybackQuality;
   };
 
   return Flash;
@@ -15045,7 +15118,7 @@ var Html5 = function (_Tech) {
     }
 
     // Update specific tag settings, in case they were overridden
-    var settingsAttrs = ['autoplay', 'preload', 'loop', 'muted'];
+    var settingsAttrs = ['autoplay', 'preload', 'loop', 'muted', 'playsinline'];
 
     for (var i = settingsAttrs.length - 1; i >= 0; i--) {
       var attr = settingsAttrs[i];
@@ -15668,6 +15741,79 @@ var Html5 = function (_Tech) {
     }
   };
 
+  /**
+   * Get the value of `playsinline` from the media element. `playsinline` indicates
+   * to the browser that non-fullscreen playback is preferred when fullscreen
+   * playback is the native default, such as in iOS Safari.
+   *
+   * @method Html5#playsinline
+   * @return {boolean}
+   *         - The value of `playsinline` from the media element.
+   *         - True indicates that the media should play inline.
+   *         - False indicates that the media should not play inline.
+   *
+   * @see [Spec]{@link https://html.spec.whatwg.org/#attr-video-playsinline}
+   */
+
+
+  Html5.prototype.playsinline = function playsinline() {
+    return this.el_.hasAttribute('playsinline');
+  };
+
+  /**
+   * Set the value of `playsinline` from the media element. `playsinline` indicates
+   * to the browser that non-fullscreen playback is preferred when fullscreen
+   * playback is the native default, such as in iOS Safari.
+   *
+   * @method Html5#setPlaysinline
+   * @param {boolean} playsinline
+   *         - True indicates that the media should play inline.
+   *         - False indicates that the media should not play inline.
+   *
+   * @see [Spec]{@link https://html.spec.whatwg.org/#attr-video-playsinline}
+   */
+
+
+  Html5.prototype.setPlaysinline = function setPlaysinline(value) {
+    if (value) {
+      this.el_.setAttribute('playsinline', 'playsinline');
+    } else {
+      this.el_.removeAttribute('playsinline');
+    }
+  };
+
+  /**
+   * Gets available media playback quality metrics as specified by the W3C's Media
+   * Playback Quality API.
+   *
+   * @see [Spec]{@link https://wicg.github.io/media-playback-quality}
+   *
+   * @return {Object}
+   *         An object with supported media playback quality metrics
+   */
+
+
+  Html5.prototype.getVideoPlaybackQuality = function getVideoPlaybackQuality() {
+    if (typeof this.el().getVideoPlaybackQuality === 'function') {
+      return this.el().getVideoPlaybackQuality();
+    }
+
+    var videoPlaybackQuality = {};
+
+    if (typeof this.el().webkitDroppedFrameCount !== 'undefined' && typeof this.el().webkitDecodedFrameCount !== 'undefined') {
+      videoPlaybackQuality.droppedVideoFrames = this.el().webkitDroppedFrameCount;
+      videoPlaybackQuality.totalVideoFrames = this.el().webkitDecodedFrameCount;
+    }
+
+    if (_window2['default'].performance && typeof _window2['default'].performance.now === 'function') {
+      videoPlaybackQuality.creationTime = _window2['default'].performance.now();
+    } else if (_window2['default'].performance && _window2['default'].performance.timing && typeof _window2['default'].performance.timing.navigationStart === 'number') {
+      videoPlaybackQuality.creationTime = _window2['default'].Date.now() - _window2['default'].performance.timing.navigationStart;
+    }
+
+    return videoPlaybackQuality;
+  };
+
   return Html5;
 }(_tech2['default']);
 
@@ -15740,7 +15886,7 @@ Html5.canControlVolume = function () {
 Html5.canControlPlaybackRate = function () {
   // Playback rate API is implemented in Android Chrome, but doesn't do anything
   // https://github.com/videojs/video.js/issues/3180
-  if (browser.IS_ANDROID && browser.IS_CHROME) {
+  if (browser.IS_ANDROID && browser.IS_CHROME && browser.CHROME_VERSION < 58) {
     return false;
   }
   // IE will error if Windows Media Player not installed #3315
@@ -17257,7 +17403,7 @@ var Tech = function (_Component) {
     // signals that the Tech is ready at which point Tech.el_ is part of the DOM
     // before inserting the WebVTT script
     if (_document2['default'].body.contains(this.el())) {
-      var vtt = _dereq_(105);
+      var vtt = _dereq_(99);
 
       // load via require if available and vtt.js script location was not passed in
       // as an option. novtt builds will turn the above require call into an empty object
@@ -17556,6 +17702,23 @@ var Tech = function (_Component) {
   };
 
   /**
+   * Gets available media playback quality metrics as specified by the W3C's Media
+   * Playback Quality API.
+   *
+   * @see [Spec]{@link https://wicg.github.io/media-playback-quality}
+   *
+   * @return {Object}
+   *         An object with supported media playback quality metrics
+   *
+   * @abstract
+   */
+
+
+  Tech.prototype.getVideoPlaybackQuality = function getVideoPlaybackQuality() {
+    return {};
+  };
+
+  /**
    * A method to set a poster from a `Tech`.
    *
    * @abstract
@@ -17563,6 +17726,24 @@ var Tech = function (_Component) {
 
 
   Tech.prototype.setPoster = function setPoster() {};
+
+  /**
+   * A method to check for the presence of the 'playsinine' <video> attribute.
+   *
+   * @abstract
+   */
+
+
+  Tech.prototype.playsinline = function playsinline() {};
+
+  /**
+   * A method to set or unset the 'playsinine' <video> attribute.
+   *
+   * @abstract
+   */
+
+
+  Tech.prototype.setPlaysinline = function setPlaysinline() {};
 
   /*
    * Check if the tech can support the given mime-type.
@@ -17987,7 +18168,7 @@ _component2['default'].registerComponent('MediaTechController', Tech);
 Tech.registerTech('Tech', Tech);
 exports['default'] = Tech;
 
-},{"105":105,"46":46,"5":5,"63":63,"65":65,"66":66,"70":70,"72":72,"76":76,"79":79,"83":83,"86":86,"87":87,"88":88,"90":90,"94":94,"95":95}],63:[function(_dereq_,module,exports){
+},{"46":46,"5":5,"63":63,"65":65,"66":66,"70":70,"72":72,"76":76,"79":79,"83":83,"86":86,"87":87,"88":88,"90":90,"94":94,"95":95,"99":99}],63:[function(_dereq_,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -19970,7 +20151,7 @@ var _track2 = _interopRequireDefault(_track);
 
 var _url = _dereq_(92);
 
-var _xhr = _dereq_(99);
+var _xhr = _dereq_(105);
 
 var _xhr2 = _interopRequireDefault(_xhr);
 
@@ -20392,7 +20573,7 @@ TextTrack.prototype.allowedEvents_ = {
 
 exports['default'] = TextTrack;
 
-},{"67":67,"73":73,"75":75,"78":78,"83":83,"86":86,"87":87,"92":92,"95":95,"99":99}],73:[function(_dereq_,module,exports){
+},{"105":105,"67":67,"73":73,"75":75,"78":78,"83":83,"86":86,"87":87,"92":92,"95":95}],73:[function(_dereq_,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21168,7 +21349,7 @@ exports['default'] = VideoTrack;
 'use strict';
 
 exports.__esModule = true;
-exports.BACKGROUND_SIZE_SUPPORTED = exports.TOUCH_ENABLED = exports.IS_ANY_SAFARI = exports.IS_SAFARI = exports.IE_VERSION = exports.IS_IE8 = exports.IS_CHROME = exports.IS_EDGE = exports.IS_FIREFOX = exports.IS_NATIVE_ANDROID = exports.IS_OLD_ANDROID = exports.ANDROID_VERSION = exports.IS_ANDROID = exports.IOS_VERSION = exports.IS_IOS = exports.IS_IPOD = exports.IS_IPHONE = exports.IS_IPAD = undefined;
+exports.BACKGROUND_SIZE_SUPPORTED = exports.TOUCH_ENABLED = exports.IS_ANY_SAFARI = exports.IS_SAFARI = exports.IE_VERSION = exports.IS_IE8 = exports.CHROME_VERSION = exports.IS_CHROME = exports.IS_EDGE = exports.IS_FIREFOX = exports.IS_NATIVE_ANDROID = exports.IS_OLD_ANDROID = exports.ANDROID_VERSION = exports.IS_ANDROID = exports.IOS_VERSION = exports.IS_IOS = exports.IS_IPOD = exports.IS_IPHONE = exports.IS_IPAD = undefined;
 
 var _dom = _dereq_(81);
 
@@ -21243,6 +21424,14 @@ var IS_NATIVE_ANDROID = exports.IS_NATIVE_ANDROID = IS_ANDROID && ANDROID_VERSIO
 var IS_FIREFOX = exports.IS_FIREFOX = /Firefox/i.test(USER_AGENT);
 var IS_EDGE = exports.IS_EDGE = /Edge/i.test(USER_AGENT);
 var IS_CHROME = exports.IS_CHROME = !IS_EDGE && /Chrome/i.test(USER_AGENT);
+var CHROME_VERSION = exports.CHROME_VERSION = function () {
+  var match = USER_AGENT.match(/Chrome\/(\d+)/);
+
+  if (match && match[1]) {
+    return parseFloat(match[1]);
+  }
+  return null;
+}();
 var IS_IE8 = exports.IS_IE8 = /MSIE\s8\.0/.test(USER_AGENT);
 var IE_VERSION = exports.IE_VERSION = function () {
   var result = /MSIE\s(\d+)\.\d/.exec(USER_AGENT);
@@ -23722,7 +23911,7 @@ var _extend = _dereq_(43);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _xhr = _dereq_(99);
+var _xhr = _dereq_(105);
 
 var _xhr2 = _interopRequireDefault(_xhr);
 
@@ -23920,7 +24109,7 @@ setup.autoSetupTimeout(1, videojs);
  *
  * @type {string}
  */
-videojs.VERSION = '5.19.2';
+videojs.VERSION = '5.20.1';
 
 /**
  * The global options object. These are the settings that take effect
@@ -24342,7 +24531,7 @@ if (typeof define === 'function' && define.amd) {
 
 exports['default'] = videojs;
 
-},{"42":42,"43":43,"5":5,"51":51,"52":52,"56":56,"62":62,"64":64,"72":72,"77":77,"78":78,"80":80,"81":81,"82":82,"83":83,"84":84,"86":86,"87":87,"88":88,"89":89,"90":90,"92":92,"94":94,"95":95,"99":99}],94:[function(_dereq_,module,exports){
+},{"105":105,"42":42,"43":43,"5":5,"51":51,"52":52,"56":56,"62":62,"64":64,"72":72,"77":77,"78":78,"80":80,"81":81,"82":82,"83":83,"84":84,"86":86,"87":87,"88":88,"89":89,"90":90,"92":92,"94":94,"95":95}],94:[function(_dereq_,module,exports){
 (function (global){
 var topLevel = typeof global !== 'undefined' ? global :
     typeof window !== 'undefined' ? window : {}
@@ -24408,383 +24597,6 @@ module.exports = function tsml (sa) {
   return s
 }
 },{}],99:[function(_dereq_,module,exports){
-"use strict";
-var window = _dereq_(95)
-var isFunction = _dereq_(100)
-var parseHeaders = _dereq_(103)
-var xtend = _dereq_(104)
-
-module.exports = createXHR
-createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
-createXHR.XDomainRequest = "withCredentials" in (new createXHR.XMLHttpRequest()) ? createXHR.XMLHttpRequest : window.XDomainRequest
-
-forEachArray(["get", "put", "post", "patch", "head", "delete"], function(method) {
-    createXHR[method === "delete" ? "del" : method] = function(uri, options, callback) {
-        options = initParams(uri, options, callback)
-        options.method = method.toUpperCase()
-        return _createXHR(options)
-    }
-})
-
-function forEachArray(array, iterator) {
-    for (var i = 0; i < array.length; i++) {
-        iterator(array[i])
-    }
-}
-
-function isEmpty(obj){
-    for(var i in obj){
-        if(obj.hasOwnProperty(i)) return false
-    }
-    return true
-}
-
-function initParams(uri, options, callback) {
-    var params = uri
-
-    if (isFunction(options)) {
-        callback = options
-        if (typeof uri === "string") {
-            params = {uri:uri}
-        }
-    } else {
-        params = xtend(options, {uri: uri})
-    }
-
-    params.callback = callback
-    return params
-}
-
-function createXHR(uri, options, callback) {
-    options = initParams(uri, options, callback)
-    return _createXHR(options)
-}
-
-function _createXHR(options) {
-    if(typeof options.callback === "undefined"){
-        throw new Error("callback argument missing")
-    }
-
-    var called = false
-    var callback = function cbOnce(err, response, body){
-        if(!called){
-            called = true
-            options.callback(err, response, body)
-        }
-    }
-
-    function readystatechange() {
-        if (xhr.readyState === 4) {
-            setTimeout(loadFunc, 0)
-        }
-    }
-
-    function getBody() {
-        // Chrome with requestType=blob throws errors arround when even testing access to responseText
-        var body = undefined
-
-        if (xhr.response) {
-            body = xhr.response
-        } else {
-            body = xhr.responseText || getXml(xhr)
-        }
-
-        if (isJson) {
-            try {
-                body = JSON.parse(body)
-            } catch (e) {}
-        }
-
-        return body
-    }
-
-    function errorFunc(evt) {
-        clearTimeout(timeoutTimer)
-        if(!(evt instanceof Error)){
-            evt = new Error("" + (evt || "Unknown XMLHttpRequest Error") )
-        }
-        evt.statusCode = 0
-        return callback(evt, failureResponse)
-    }
-
-    // will load the data & process the response in a special response object
-    function loadFunc() {
-        if (aborted) return
-        var status
-        clearTimeout(timeoutTimer)
-        if(options.useXDR && xhr.status===undefined) {
-            //IE8 CORS GET successful response doesn't have a status field, but body is fine
-            status = 200
-        } else {
-            status = (xhr.status === 1223 ? 204 : xhr.status)
-        }
-        var response = failureResponse
-        var err = null
-
-        if (status !== 0){
-            response = {
-                body: getBody(),
-                statusCode: status,
-                method: method,
-                headers: {},
-                url: uri,
-                rawRequest: xhr
-            }
-            if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
-                response.headers = parseHeaders(xhr.getAllResponseHeaders())
-            }
-        } else {
-            err = new Error("Internal XMLHttpRequest Error")
-        }
-        return callback(err, response, response.body)
-    }
-
-    var xhr = options.xhr || null
-
-    if (!xhr) {
-        if (options.cors || options.useXDR) {
-            xhr = new createXHR.XDomainRequest()
-        }else{
-            xhr = new createXHR.XMLHttpRequest()
-        }
-    }
-
-    var key
-    var aborted
-    var uri = xhr.url = options.uri || options.url
-    var method = xhr.method = options.method || "GET"
-    var body = options.body || options.data
-    var headers = xhr.headers = options.headers || {}
-    var sync = !!options.sync
-    var isJson = false
-    var timeoutTimer
-    var failureResponse = {
-        body: undefined,
-        headers: {},
-        statusCode: 0,
-        method: method,
-        url: uri,
-        rawRequest: xhr
-    }
-
-    if ("json" in options && options.json !== false) {
-        isJson = true
-        headers["accept"] || headers["Accept"] || (headers["Accept"] = "application/json") //Don't override existing accept header declared by user
-        if (method !== "GET" && method !== "HEAD") {
-            headers["content-type"] || headers["Content-Type"] || (headers["Content-Type"] = "application/json") //Don't override existing accept header declared by user
-            body = JSON.stringify(options.json === true ? body : options.json)
-        }
-    }
-
-    xhr.onreadystatechange = readystatechange
-    xhr.onload = loadFunc
-    xhr.onerror = errorFunc
-    // IE9 must have onprogress be set to a unique function.
-    xhr.onprogress = function () {
-        // IE must die
-    }
-    xhr.onabort = function(){
-        aborted = true;
-    }
-    xhr.ontimeout = errorFunc
-    xhr.open(method, uri, !sync, options.username, options.password)
-    //has to be after open
-    if(!sync) {
-        xhr.withCredentials = !!options.withCredentials
-    }
-    // Cannot set timeout with sync request
-    // not setting timeout on the xhr object, because of old webkits etc. not handling that correctly
-    // both npm's request and jquery 1.x use this kind of timeout, so this is being consistent
-    if (!sync && options.timeout > 0 ) {
-        timeoutTimer = setTimeout(function(){
-            if (aborted) return
-            aborted = true//IE9 may still call readystatechange
-            xhr.abort("timeout")
-            var e = new Error("XMLHttpRequest timeout")
-            e.code = "ETIMEDOUT"
-            errorFunc(e)
-        }, options.timeout )
-    }
-
-    if (xhr.setRequestHeader) {
-        for(key in headers){
-            if(headers.hasOwnProperty(key)){
-                xhr.setRequestHeader(key, headers[key])
-            }
-        }
-    } else if (options.headers && !isEmpty(options.headers)) {
-        throw new Error("Headers cannot be set on an XDomainRequest object")
-    }
-
-    if ("responseType" in options) {
-        xhr.responseType = options.responseType
-    }
-
-    if ("beforeSend" in options &&
-        typeof options.beforeSend === "function"
-    ) {
-        options.beforeSend(xhr)
-    }
-
-    // Microsoft Edge browser sends "undefined" when send is called with undefined value.
-    // XMLHttpRequest spec says to pass null as body to indicate no body
-    // See https://github.com/naugtur/xhr/issues/100.
-    xhr.send(body || null)
-
-    return xhr
-
-
-}
-
-function getXml(xhr) {
-    if (xhr.responseType === "document") {
-        return xhr.responseXML
-    }
-    var firefoxBugTakenEffect = xhr.responseXML && xhr.responseXML.documentElement.nodeName === "parsererror"
-    if (xhr.responseType === "" && !firefoxBugTakenEffect) {
-        return xhr.responseXML
-    }
-
-    return null
-}
-
-function noop() {}
-
-},{"100":100,"103":103,"104":104,"95":95}],100:[function(_dereq_,module,exports){
-module.exports = isFunction
-
-var toString = Object.prototype.toString
-
-function isFunction (fn) {
-  var string = toString.call(fn)
-  return string === '[object Function]' ||
-    (typeof fn === 'function' && string !== '[object RegExp]') ||
-    (typeof window !== 'undefined' &&
-     // IE8 and below
-     (fn === window.setTimeout ||
-      fn === window.alert ||
-      fn === window.confirm ||
-      fn === window.prompt))
-};
-
-},{}],101:[function(_dereq_,module,exports){
-var isFunction = _dereq_(100)
-
-module.exports = forEach
-
-var toString = Object.prototype.toString
-var hasOwnProperty = Object.prototype.hasOwnProperty
-
-function forEach(list, iterator, context) {
-    if (!isFunction(iterator)) {
-        throw new TypeError('iterator must be a function')
-    }
-
-    if (arguments.length < 3) {
-        context = this
-    }
-    
-    if (toString.call(list) === '[object Array]')
-        forEachArray(list, iterator, context)
-    else if (typeof list === 'string')
-        forEachString(list, iterator, context)
-    else
-        forEachObject(list, iterator, context)
-}
-
-function forEachArray(array, iterator, context) {
-    for (var i = 0, len = array.length; i < len; i++) {
-        if (hasOwnProperty.call(array, i)) {
-            iterator.call(context, array[i], i, array)
-        }
-    }
-}
-
-function forEachString(string, iterator, context) {
-    for (var i = 0, len = string.length; i < len; i++) {
-        // no such thing as a sparse string.
-        iterator.call(context, string.charAt(i), i, string)
-    }
-}
-
-function forEachObject(object, iterator, context) {
-    for (var k in object) {
-        if (hasOwnProperty.call(object, k)) {
-            iterator.call(context, object[k], k, object)
-        }
-    }
-}
-
-},{"100":100}],102:[function(_dereq_,module,exports){
-
-exports = module.exports = trim;
-
-function trim(str){
-  return str.replace(/^\s*|\s*$/g, '');
-}
-
-exports.left = function(str){
-  return str.replace(/^\s*/, '');
-};
-
-exports.right = function(str){
-  return str.replace(/\s*$/, '');
-};
-
-},{}],103:[function(_dereq_,module,exports){
-var trim = _dereq_(102)
-  , forEach = _dereq_(101)
-  , isArray = function(arg) {
-      return Object.prototype.toString.call(arg) === '[object Array]';
-    }
-
-module.exports = function (headers) {
-  if (!headers)
-    return {}
-
-  var result = {}
-
-  forEach(
-      trim(headers).split('\n')
-    , function (row) {
-        var index = row.indexOf(':')
-          , key = trim(row.slice(0, index)).toLowerCase()
-          , value = trim(row.slice(index + 1))
-
-        if (typeof(result[key]) === 'undefined') {
-          result[key] = value
-        } else if (isArray(result[key])) {
-          result[key].push(value)
-        } else {
-          result[key] = [ result[key], value ]
-        }
-      }
-  )
-
-  return result
-}
-},{"101":101,"102":102}],104:[function(_dereq_,module,exports){
-module.exports = extend
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-function extend() {
-    var target = {}
-
-    for (var i = 0; i < arguments.length; i++) {
-        var source = arguments[i]
-
-        for (var key in source) {
-            if (hasOwnProperty.call(source, key)) {
-                target[key] = source[key]
-            }
-        }
-    }
-
-    return target
-}
-
-},{}],105:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -24805,13 +24617,10 @@ function extend() {
 // VTTRegion in Node since we likely want the capability to convert back and
 // forth between JSON. If we don't then it's not that big of a deal since we're
 // off browser.
-
-var window = _dereq_(109);
-
 var vttjs = module.exports = {
-  WebVTT: _dereq_(106).WebVTT,
-  VTTCue: _dereq_(107).VTTCue,
-  VTTRegion: _dereq_(108).VTTRegion
+  WebVTT: _dereq_(100).WebVTT,
+  VTTCue: _dereq_(101).VTTCue,
+  VTTRegion: _dereq_(103).VTTRegion
 };
 
 window.vttjs = vttjs;
@@ -24836,7 +24645,7 @@ if (!window.VTTCue) {
   vttjs.shim();
 }
 
-},{"106":106,"107":107,"108":108,"109":109}],106:[function(_dereq_,module,exports){
+},{"100":100,"101":101,"103":103}],100:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -26172,7 +25981,69 @@ if (!window.VTTCue) {
 
 }(this, (this.vttjs || {})));
 
-},{}],107:[function(_dereq_,module,exports){
+},{}],101:[function(_dereq_,module,exports){
+/**
+ * Copyright 2013 vtt.js Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// If we're in Node.js then require VTTCue so we can extend it, otherwise assume
+// VTTCue is on the global.
+if (typeof module !== "undefined" && module.exports) {
+  this.VTTCue = this.VTTCue || _dereq_(102).VTTCue;
+}
+
+// Extend VTTCue with methods to convert to JSON, from JSON, and construct a
+// VTTCue from an options object. The primary purpose of this is for use in the
+// vtt.js test suite (for testing only properties that we care about). It's also
+// useful if you need to work with VTTCues in JSON format.
+(function(root) {
+
+  root.VTTCue.prototype.toJSON = function() {
+    var cue = {},
+        self = this;
+    // Filter out getCueAsHTML as it's a function and hasBeenReset and displayState as
+    // they're only used when running the processing model algorithm.
+    Object.keys(this).forEach(function(key) {
+      if (key !== "getCueAsHTML" && key !== "hasBeenReset" && key !== "displayState") {
+        cue[key] = self[key];
+      }
+    });
+    return cue;
+  };
+
+  root.VTTCue.create = function(options) {
+    if (!options.hasOwnProperty("startTime") || !options.hasOwnProperty("endTime") ||
+        !options.hasOwnProperty("text")) {
+      throw new Error("You must at least have start time, end time, and text.");
+    }
+    var cue = new root.VTTCue(options.startTime, options.endTime, options.text);
+    for (var key in options) {
+      if (cue.hasOwnProperty(key)) {
+        cue[key] = options[key];
+      }
+    }
+    return cue;
+  };
+
+  root.VTTCue.fromJSON = function(json) {
+    return this.create(JSON.parse(json));
+  };
+
+}(this));
+
+},{"102":102}],102:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -26483,7 +26354,52 @@ if (!window.VTTCue) {
   vttjs.VTTCue = VTTCue;
 }(this, (this.vttjs || {})));
 
-},{}],108:[function(_dereq_,module,exports){
+},{}],103:[function(_dereq_,module,exports){
+/**
+ * Copyright 2013 vtt.js Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// If we're in Node.js then require VTTRegion so we can extend it, otherwise assume
+// VTTRegion is on the global.
+if (typeof module !== "undefined" && module.exports) {
+  this.VTTRegion = _dereq_(104).VTTRegion;
+}
+
+// Extend VTTRegion with methods to convert to JSON, from JSON, and construct a
+// VTTRegion from an options object. The primary purpose of this is for use in the
+// vtt.js test suite. It's also useful if you need to work with VTTRegions in
+// JSON format.
+(function(root) {
+
+  root.VTTRegion.create = function(options) {
+    var region = new root.VTTRegion();
+    for (var key in options) {
+      if (region.hasOwnProperty(key)) {
+        region[key] = options[key];
+      }
+    }
+    return region;
+  };
+
+  root.VTTRegion.fromJSON = function(json) {
+    return this.create(JSON.parse(json));
+  };
+
+}(this));
+
+},{"104":104}],104:[function(_dereq_,module,exports){
 /**
  * Copyright 2013 vtt.js Contributors
  *
@@ -26623,7 +26539,376 @@ if (!window.VTTCue) {
   vttjs.VTTRegion = VTTRegion;
 }(this, (this.vttjs || {})));
 
+},{}],105:[function(_dereq_,module,exports){
+"use strict";
+var window = _dereq_(95)
+var isFunction = _dereq_(106)
+var parseHeaders = _dereq_(109)
+var xtend = _dereq_(110)
+
+module.exports = createXHR
+createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
+createXHR.XDomainRequest = "withCredentials" in (new createXHR.XMLHttpRequest()) ? createXHR.XMLHttpRequest : window.XDomainRequest
+
+forEachArray(["get", "put", "post", "patch", "head", "delete"], function(method) {
+    createXHR[method === "delete" ? "del" : method] = function(uri, options, callback) {
+        options = initParams(uri, options, callback)
+        options.method = method.toUpperCase()
+        return _createXHR(options)
+    }
+})
+
+function forEachArray(array, iterator) {
+    for (var i = 0; i < array.length; i++) {
+        iterator(array[i])
+    }
+}
+
+function isEmpty(obj){
+    for(var i in obj){
+        if(obj.hasOwnProperty(i)) return false
+    }
+    return true
+}
+
+function initParams(uri, options, callback) {
+    var params = uri
+
+    if (isFunction(options)) {
+        callback = options
+        if (typeof uri === "string") {
+            params = {uri:uri}
+        }
+    } else {
+        params = xtend(options, {uri: uri})
+    }
+
+    params.callback = callback
+    return params
+}
+
+function createXHR(uri, options, callback) {
+    options = initParams(uri, options, callback)
+    return _createXHR(options)
+}
+
+function _createXHR(options) {
+    if(typeof options.callback === "undefined"){
+        throw new Error("callback argument missing")
+    }
+
+    var called = false
+    var callback = function cbOnce(err, response, body){
+        if(!called){
+            called = true
+            options.callback(err, response, body)
+        }
+    }
+
+    function readystatechange() {
+        if (xhr.readyState === 4) {
+            loadFunc()
+        }
+    }
+
+    function getBody() {
+        // Chrome with requestType=blob throws errors arround when even testing access to responseText
+        var body = undefined
+
+        if (xhr.response) {
+            body = xhr.response
+        } else {
+            body = xhr.responseText || getXml(xhr)
+        }
+
+        if (isJson) {
+            try {
+                body = JSON.parse(body)
+            } catch (e) {}
+        }
+
+        return body
+    }
+
+    var failureResponse = {
+                body: undefined,
+                headers: {},
+                statusCode: 0,
+                method: method,
+                url: uri,
+                rawRequest: xhr
+            }
+
+    function errorFunc(evt) {
+        clearTimeout(timeoutTimer)
+        if(!(evt instanceof Error)){
+            evt = new Error("" + (evt || "Unknown XMLHttpRequest Error") )
+        }
+        evt.statusCode = 0
+        return callback(evt, failureResponse)
+    }
+
+    // will load the data & process the response in a special response object
+    function loadFunc() {
+        if (aborted) return
+        var status
+        clearTimeout(timeoutTimer)
+        if(options.useXDR && xhr.status===undefined) {
+            //IE8 CORS GET successful response doesn't have a status field, but body is fine
+            status = 200
+        } else {
+            status = (xhr.status === 1223 ? 204 : xhr.status)
+        }
+        var response = failureResponse
+        var err = null
+
+        if (status !== 0){
+            response = {
+                body: getBody(),
+                statusCode: status,
+                method: method,
+                headers: {},
+                url: uri,
+                rawRequest: xhr
+            }
+            if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
+                response.headers = parseHeaders(xhr.getAllResponseHeaders())
+            }
+        } else {
+            err = new Error("Internal XMLHttpRequest Error")
+        }
+        return callback(err, response, response.body)
+    }
+
+    var xhr = options.xhr || null
+
+    if (!xhr) {
+        if (options.cors || options.useXDR) {
+            xhr = new createXHR.XDomainRequest()
+        }else{
+            xhr = new createXHR.XMLHttpRequest()
+        }
+    }
+
+    var key
+    var aborted
+    var uri = xhr.url = options.uri || options.url
+    var method = xhr.method = options.method || "GET"
+    var body = options.body || options.data || null
+    var headers = xhr.headers = options.headers || {}
+    var sync = !!options.sync
+    var isJson = false
+    var timeoutTimer
+
+    if ("json" in options) {
+        isJson = true
+        headers["accept"] || headers["Accept"] || (headers["Accept"] = "application/json") //Don't override existing accept header declared by user
+        if (method !== "GET" && method !== "HEAD") {
+            headers["content-type"] || headers["Content-Type"] || (headers["Content-Type"] = "application/json") //Don't override existing accept header declared by user
+            body = JSON.stringify(options.json)
+        }
+    }
+
+    xhr.onreadystatechange = readystatechange
+    xhr.onload = loadFunc
+    xhr.onerror = errorFunc
+    // IE9 must have onprogress be set to a unique function.
+    xhr.onprogress = function () {
+        // IE must die
+    }
+    xhr.ontimeout = errorFunc
+    xhr.open(method, uri, !sync, options.username, options.password)
+    //has to be after open
+    if(!sync) {
+        xhr.withCredentials = !!options.withCredentials
+    }
+    // Cannot set timeout with sync request
+    // not setting timeout on the xhr object, because of old webkits etc. not handling that correctly
+    // both npm's request and jquery 1.x use this kind of timeout, so this is being consistent
+    if (!sync && options.timeout > 0 ) {
+        timeoutTimer = setTimeout(function(){
+            aborted=true//IE9 may still call readystatechange
+            xhr.abort("timeout")
+            var e = new Error("XMLHttpRequest timeout")
+            e.code = "ETIMEDOUT"
+            errorFunc(e)
+        }, options.timeout )
+    }
+
+    if (xhr.setRequestHeader) {
+        for(key in headers){
+            if(headers.hasOwnProperty(key)){
+                xhr.setRequestHeader(key, headers[key])
+            }
+        }
+    } else if (options.headers && !isEmpty(options.headers)) {
+        throw new Error("Headers cannot be set on an XDomainRequest object")
+    }
+
+    if ("responseType" in options) {
+        xhr.responseType = options.responseType
+    }
+
+    if ("beforeSend" in options &&
+        typeof options.beforeSend === "function"
+    ) {
+        options.beforeSend(xhr)
+    }
+
+    xhr.send(body)
+
+    return xhr
+
+
+}
+
+function getXml(xhr) {
+    if (xhr.responseType === "document") {
+        return xhr.responseXML
+    }
+    var firefoxBugTakenEffect = xhr.status === 204 && xhr.responseXML && xhr.responseXML.documentElement.nodeName === "parsererror"
+    if (xhr.responseType === "" && !firefoxBugTakenEffect) {
+        return xhr.responseXML
+    }
+
+    return null
+}
+
+function noop() {}
+
+},{"106":106,"109":109,"110":110,"95":95}],106:[function(_dereq_,module,exports){
+module.exports = isFunction
+
+var toString = Object.prototype.toString
+
+function isFunction (fn) {
+  var string = toString.call(fn)
+  return string === '[object Function]' ||
+    (typeof fn === 'function' && string !== '[object RegExp]') ||
+    (typeof window !== 'undefined' &&
+     // IE8 and below
+     (fn === window.setTimeout ||
+      fn === window.alert ||
+      fn === window.confirm ||
+      fn === window.prompt))
+};
+
+},{}],107:[function(_dereq_,module,exports){
+var isFunction = _dereq_(106)
+
+module.exports = forEach
+
+var toString = Object.prototype.toString
+var hasOwnProperty = Object.prototype.hasOwnProperty
+
+function forEach(list, iterator, context) {
+    if (!isFunction(iterator)) {
+        throw new TypeError('iterator must be a function')
+    }
+
+    if (arguments.length < 3) {
+        context = this
+    }
+    
+    if (toString.call(list) === '[object Array]')
+        forEachArray(list, iterator, context)
+    else if (typeof list === 'string')
+        forEachString(list, iterator, context)
+    else
+        forEachObject(list, iterator, context)
+}
+
+function forEachArray(array, iterator, context) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            iterator.call(context, array[i], i, array)
+        }
+    }
+}
+
+function forEachString(string, iterator, context) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        iterator.call(context, string.charAt(i), i, string)
+    }
+}
+
+function forEachObject(object, iterator, context) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            iterator.call(context, object[k], k, object)
+        }
+    }
+}
+
+},{"106":106}],108:[function(_dereq_,module,exports){
+
+exports = module.exports = trim;
+
+function trim(str){
+  return str.replace(/^\s*|\s*$/g, '');
+}
+
+exports.left = function(str){
+  return str.replace(/^\s*/, '');
+};
+
+exports.right = function(str){
+  return str.replace(/\s*$/, '');
+};
+
 },{}],109:[function(_dereq_,module,exports){
-arguments[4][95][0].apply(exports,arguments)
-},{"95":95}]},{},[93])(93)
+var trim = _dereq_(108)
+  , forEach = _dereq_(107)
+  , isArray = function(arg) {
+      return Object.prototype.toString.call(arg) === '[object Array]';
+    }
+
+module.exports = function (headers) {
+  if (!headers)
+    return {}
+
+  var result = {}
+
+  forEach(
+      trim(headers).split('\n')
+    , function (row) {
+        var index = row.indexOf(':')
+          , key = trim(row.slice(0, index)).toLowerCase()
+          , value = trim(row.slice(index + 1))
+
+        if (typeof(result[key]) === 'undefined') {
+          result[key] = value
+        } else if (isArray(result[key])) {
+          result[key].push(value)
+        } else {
+          result[key] = [ result[key], value ]
+        }
+      }
+  )
+
+  return result
+}
+},{"107":107,"108":108}],110:[function(_dereq_,module,exports){
+module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+},{}]},{},[93])(93)
 });

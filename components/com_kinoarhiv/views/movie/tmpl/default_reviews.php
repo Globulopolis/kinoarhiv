@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -57,15 +57,15 @@ defined('_JEXEC') or die;
 				<div class="review-row">
 					<a name="review-<?php echo $review->id; ?>"></a>
 
-					<div class="review-row-title corner-top">
+					<div class="review-title corner-top">
 						<span class="number"><?php echo $review_number++; ?>. </span>
 						<span class="username<?php echo $cmd_insert_username; ?>"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
 						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&limitstart=' . $this->pagination->limitstart . '&Itemid=' . $this->itemid) . '#review-' . $review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTip permalink"><img src="media/com_kinoarhiv/images/icons/link_16.png" border="0"/></a></span>
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
 					<?php if (!$this->user->guest && $this->item->attribs->allow_reviews == 1): ?>
-						<div class="review <?php echo $ui_class; ?>"><?php echo $review->review; ?></div>
-						<div class="corner-bottom footer">
+						<div class="review review-content <?php echo $ui_class; ?>"><?php echo $review->review; ?></div>
+						<div class="review-footer corner-bottom">
 							<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
 							<?php if ($this->user->authorise('core.delete.reviews', 'com_kinoarhiv') && $review->uid == $this->user->get('id')): ?>
 								<a href="<?php echo JRoute::_(
@@ -76,7 +76,7 @@ defined('_JEXEC') or die;
 							<?php endif; ?>
 						</div>
 					<?php else: ?>
-						<div class="corner-bottom footer"><?php echo $review->review; ?></div>
+						<div class="review-footer corner-bottom review-content"><?php echo $review->review; ?></div>
 					<?php endif; ?>
 				</div>
 			<?php endfor; ?>

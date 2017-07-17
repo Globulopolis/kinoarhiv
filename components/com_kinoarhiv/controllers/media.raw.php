@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -89,7 +89,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				$path = JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png';
+				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
 			}
 
 			try
@@ -145,7 +145,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			if (!file_exists($path) && !is_file($path))
 			{
 				$no_cover = ($gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-				$path = JPATH_COMPONENT . '/assets/themes/component/' . $params->get('ka_theme') . '/images/' . $no_cover . '.png';
+				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png';
 			}
 
 			try

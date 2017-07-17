@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -91,11 +91,11 @@ class KinoarhivViewName extends JViewLegacy
 		{
 			$items->set(
 				'poster',
-				JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
+				JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_name_cover_f.png'
 			);
 			$items->set(
 				'th_poster',
-				JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
+				JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_name_cover_f.png'
 			);
 		}
 		else

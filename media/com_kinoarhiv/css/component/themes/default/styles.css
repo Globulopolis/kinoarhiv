@@ -1,13 +1,12 @@
 /* Default style */
 .loading {
-	background: url("../../images/icons/loading.gif") no-repeat center center;
-}
-.ka-content form {
-	margin: 0;
+	background: url("../../../../images/icons/loading.gif") no-repeat center center;
 }
 
-.content.movie {
-	padding: 5px;
+.ka-content {
+	background-color: #fff;
+	border-radius: 4px;
+	padding: 8px 15px;
 }
 
 .ui-widget {
@@ -118,7 +117,7 @@ span.cn-list, span.gn-list, span.dc-list, span.cast-list {
 }
 
 .feed-link {
-	background: url("../../images/icons/feed_24.png") no-repeat left center;
+	background: url("../../../../images/icons/feed_24.png") no-repeat left center;
 	height: 24px;
 	padding-top: 8px;
 	padding-left: 24px;
@@ -152,7 +151,7 @@ h3.title {
 }
 
 .title .brand {
-	background: url("../../images/icons/movie_24.png") no-repeat left center;
+	background: url("../../../../images/icons/movie_24.png") no-repeat left center;
 	padding-left: 28px;
 }
 
@@ -167,22 +166,22 @@ h3.title {
 }
 
 .favorite a.add {
-	background: url("../../images/icons/favorite_add_16.png") no-repeat;
+	background: url("../../../../images/icons/favorite_add_16.png") no-repeat;
 	padding: 0 0 2px 20px;
 }
 
 .favorite a.delete {
-	background: url("../../images/icons/favorite_delete_16.png") no-repeat;
+	background: url("../../../../images/icons/favorite_delete_16.png") no-repeat;
 	padding: 0 0 2px 20px;
 }
 
 .watched a.add {
-	background: url("../../images/icons/watched_add_16.png") no-repeat;
+	background: url("../../../../images/icons/watched_add_16.png") no-repeat;
 	padding: 0 0 2px 20px;
 }
 
 .watched a.delete {
-	background: url("../../images/icons/watched_delete_16.png") no-repeat;
+	background: url("../../../../images/icons/watched_delete_16.png") no-repeat;
 	padding: 0 0 2px 20px;
 }
 
@@ -225,67 +224,67 @@ h3.title {
 }
 
 .tab-about {
-	background: url("../../images/icons/tab_about_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_about_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-reviews {
-	background: url("../../images/icons/tab_review_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_review_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-wallpp {
-	background: url("../../images/icons/tab_wallpp_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_wallpp_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-posters, .tab-photo {
-	background: url("../../images/icons/tab_posters_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_posters_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-screenshots {
-	background: url("../../images/icons/tab_screenshots_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_screenshots_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-awards {
-	background: url("../../images/icons/tab_awards_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_awards_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-trailers {
-	background: url("../../images/icons/tab_trailers_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_trailers_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-sound {
-	background: url("../../images/icons/tab_sound_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_sound_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-favorite {
-	background: url("../../images/icons/favorite_16.png") no-repeat left center;
+	background: url("../../../../images/icons/favorite_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-watched {
-	background: url("../../images/icons/watched_16.png") no-repeat left center;
+	background: url("../../../../images/icons/watched_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .tab-votes {
-	background: url("../../images/icons/votes_16.png") no-repeat left center;
+	background: url("../../../../images/icons/votes_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .subtab-movie {
-	background: url("../../images/icons/movie_16.png") no-repeat left center;
+	background: url("../../../../images/icons/movie_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
 .subtab-name {
-	background: url("../../images/icons/tab_names_16.png") no-repeat left center;
+	background: url("../../../../images/icons/tab_names_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 
@@ -494,12 +493,12 @@ span[lang=vi] q:after { content: "\00BB"; }
 }
 
 .ui-icon-next {
-	background: url("../../images/icons/arrow_right_16.png") no-repeat;
+	background: url("../../../../images/icons/arrow_right_16.png") no-repeat;
 	padding-left: 18px;
 }
 
 .ui-icon-bullet-arrow-down {
-	background: url("../../images/icons/bullet_arrow_down_16.png") no-repeat;
+	background: url("../../../../images/icons/bullet_arrow_down_16.png") no-repeat;
 	padding-left: 18px;
 }
 
@@ -623,24 +622,24 @@ div.rating {
 	font-size: .9em !important;
 }
 
-.review-row-title {
+.review-title {
 	background-color: #f9f9f9;
 	border: 1px solid #ddd;
 	color: #333;
 	font-weight: bold;
-	padding: 4px 6px;
+	padding: 8px 15px;
 }
 
-.review-row-title img {
+.review-title img {
 	vertical-align: middle;
 }
 
-.review-row-title .number {
-	background: url("../../images/icons/comment_16.png") no-repeat;
+.review-title .number {
+	background: url("../../../../images/icons/comment_16.png") no-repeat;
 	padding-left: 18px;
 }
 
-.review-row-title .date {
+.review-title .date {
 	float: right;
 }
 
@@ -650,7 +649,11 @@ div.rating {
 	background: none;
 	border-top: none;
 	border-bottom: none;
-	padding: 4px 6px;
+	padding: 8px 15px;
+}
+
+.review-content {
+	border-top: none !important;
 }
 
 .review-row .review.positive {
@@ -665,11 +668,11 @@ div.rating {
 	color: #999 !important;
 }
 
-.review-row .footer {
+.review-footer {
 	border: 1px solid #ddd;
 	color: #333;
 	margin-bottom: .8em;
-	padding: 4px 6px;
+	padding: 4px 15px;
 }
 
 .cmd-insert-username:hover {
@@ -930,7 +933,7 @@ div.rating {
 }
 
 .thumb li.size {
-	background: url("../../images/icons/bullet_picture.png") no-repeat left center;
+	background: url("../../../../images/icons/bullet_picture.png") no-repeat left center;
 	padding-left: 16px;
 }
 

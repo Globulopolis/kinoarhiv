@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -43,13 +43,12 @@ class KAComponentHelper
 
 		if ($params->get('vegas_enable') == 1)
 		{
-			JHtml::_('script', 'media/com_kinoarhiv/js/vegas.min.js');
-			JHtml::_('stylesheet', 'media/com_kinoarhiv/css/vegas.min.css');
+			self::setPageBackground($params);
 		}
 
-		JHtml::_('stylesheet', 'components/com_kinoarhiv/assets/themes/ui/' . $params->get('ui_theme') . '/jquery-ui.css');
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins.min.css');
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles.min.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/plugins.min.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/styles.min.css');
 
 		// Add some variables into the global scope
 		$js_vars = array(
@@ -394,5 +393,48 @@ class KAComponentHelper
 		$token = JSession::getFormToken();
 
 		return (bool) JFactory::getApplication()->input->$method->get($token, '', 'alnum');
+	}
+
+	/**
+	 * Set page background on each compinent page using Vegas.
+	 *
+	 * @param   object  &$params  Component parameters.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public static function setPageBackground(&$params)
+	{
+		JHtml::_('script', 'media/com_kinoarhiv/js/vegas.min.js');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/vegas.min.css');
+
+		$document = JFactory::getDocument();
+		$items = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('vegas_bg')));
+		$slides = array();
+
+		foreach ($items as $item)
+		{
+			$slides[]['src'] = $item;
+		}
+
+		$document->addScriptDeclaration('
+			jQuery(document).ready(function($){
+				$("body").vegas({
+					slides: ' . json_encode($slides) . ',
+					delay: ' . (int) $params->get('vegas_slideshow_delay') * 1000 . ',
+					overlay: "' . JUri::base() . 'media/com_kinoarhiv/images/overlays/' . $params->get('vegas_overlay') . '"
+				});
+			});
+		');
+
+		if ($params->get('vegas_bodybg_transparent') == 1)
+		{
+			$document->addScriptDeclaration('
+				jQuery(document).ready(function($){
+					$("' . $params->get('vegas_bodybg_selector') . '").css("background-color", "transparent");
+				});
+			');
+		}
 	}
 }

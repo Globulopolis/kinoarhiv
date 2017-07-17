@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -24,34 +24,6 @@ else
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
-<script type="text/javascript">
-	//<![CDATA[
-	jQuery(document).ready(function ($) {
-		<?php if ($this->params->get('vegas_enable') == 1):
-		$src = explode(',', $this->params->get('vegas_bg'));
-
-			if (count($src) > 0): ?>
-		$.vegas('slideshow', {
-			delay: <?php echo (int) $this->params->get('vegas_slideshow_delay'); ?>,
-			backgrounds: [
-				<?php foreach ($src as $image): ?>
-				{src: '<?php echo trim($image); ?>', fade: 500},
-				<?php endforeach; ?>
-			]
-			<?php else: ?>
-			$.vegas({
-				src: '<?php echo trim($image); ?>'
-				<?php endif; ?>
-			})<?php if ($this->params->get('vegas_overlay') != '-1'): ?>('overlay', {
-			src: '<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/themes/component/default/images/overlays/<?php echo $this->params->get('vegas_overlay'); ?>',
-			opacity: <?php echo $this->params->get('vegas_overlay_opacity'); ?>
-		})<?php endif; ?>;
-		<?php if ($this->params->get('vegas_bodybg_transparent') == 1): ?>$('<?php echo $this->params->get('vegas_bodybg_selector'); ?>').css('background-color', 'transparent');
-		<?php endif; ?>
-		<?php endif; ?>
-	});
-	//]]>
-</script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);

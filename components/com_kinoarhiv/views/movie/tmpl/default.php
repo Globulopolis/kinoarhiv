@@ -2,10 +2,10 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *
- * @copyright   Copyright (C) 2010 Libra.ms. All rights reserved.
+ *  
+ * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
- * @url            http://киноархив.com/
+ * @url         http://киноархив.com
  */
 
 defined('_JEXEC') or die;
@@ -62,7 +62,8 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 
 if (isset($this->item->slides) && !empty($this->item->slides)):
 	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1):
-		JHtml::_('script', 'components/com_kinoarhiv/assets/js/jquery.bxslider.min.js');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/jquery.bxslider.min.css');
+		JHtml::_('script', 'media/com_kinoarhiv/js/jquery.bxslider.min.js');
 	endif;
 endif;
 ?>
@@ -217,7 +218,7 @@ endif;
 		}).resize();
 	});
 </script>
-<div class="content movie" itemscope itemtype="http://schema.org/Movie">
+<div class="uk-article ka-content" itemscope itemtype="http://schema.org/Movie">
 	<meta itemprop="contentRating" content="MPAA <?php echo strtoupper($this->item->mpaa); ?>">
 	<meta itemprop="duration" content="<?php echo $this->item->_length; ?>">
 	<meta itemprop="isFamilyFriendly" content="<?php echo ($this->item->mpaa == 'g' || $this->item->mpaa == 'pg') ? 'True' : 'False';?>">

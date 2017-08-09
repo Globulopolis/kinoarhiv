@@ -82,7 +82,6 @@ class KinoarhivViewAwards extends JViewLegacy
 		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
-		// TODO Fix document title and pathway
 		$this->prepareDocument();
 
 		parent::display('award');
@@ -97,20 +96,39 @@ class KinoarhivViewAwards extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
+		$id      = $app->input->get('id', null, 'int');
 
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_AWARDS_TITLE');
+		if (!empty($id))
+		{
+			$title_awards = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_AWARDS_TITLE');
+			$title = $title_awards . ' - ' . $this->item->title;
 
-		// Create a new pathway object
-		$path = (object) array(
-			'name' => $title,
-			'link' => 'index.php?option=com_kinoarhiv&view=awards&Itemid=' . $this->itemid
-		);
+			// Create a new pathway object
+			$path[] = (object) array(
+				'name' => $title_awards,
+				'link' => 'index.php?option=com_kinoarhiv&view=awards&Itemid=' . $this->itemid
+			);
+			$path[] = (object) array(
+				'name' => $this->item->title,
+				'link' => 'index.php?option=com_kinoarhiv&view=awards&id=' . (int) $this->item->id . '&Itemid=' . $this->itemid
+			);
+		}
+		else
+		{
+			$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_AWARDS_TITLE');
 
-		$pathway->setPathway(array($path));
+			// Create a new pathway object
+			$path[] = (object) array(
+				'name' => $title,
+				'link' => 'index.php?option=com_kinoarhiv&view=awards&Itemid=' . $this->itemid
+			);
+		}
+
+		$pathway->setPathway($path);
 		$this->document->setTitle($title);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')

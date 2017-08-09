@@ -398,13 +398,13 @@ class KAComponentHelper
 	/**
 	 * Set page background on each compinent page using Vegas.
 	 *
-	 * @param   object  &$params  Component parameters.
+	 * @param   object  $params  Component parameters.
 	 *
 	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public static function setPageBackground(&$params)
+	public static function setPageBackground($params)
 	{
 		JHtml::_('script', 'media/com_kinoarhiv/js/vegas.min.js');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/vegas.min.css');

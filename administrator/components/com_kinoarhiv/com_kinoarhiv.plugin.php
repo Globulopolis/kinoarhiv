@@ -27,15 +27,18 @@ class jc_com_kinoarhiv extends JCommentsPlugin
 	public function getObjectTitle($id)
 	{
 		$db = JFactory::getDbo();
-		$db->setQuery("SELECT title, year FROM #__ka_movies WHERE id = " . (int) $id);
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('title', 'year')))
+			->from($db->quoteName('#__ka_movies'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
 		$item = $db->loadObject();
 
-		if (!empty($item->year) && $item->year != '0000')
-		{
-			$item->title = $item->title . ' (' . $item->year . ')';
-		}
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		return $item->title;
+		return KAContentHelper::formatItemTitle($item->title, '', $item->year);
 	}
 
 	/**
@@ -49,25 +52,7 @@ class jc_com_kinoarhiv extends JCommentsPlugin
 	{
 		$link = '';
 
-		/*$quickFaqRouterPath = JPATH_SITE.DS.'components'.DS.'com_quickfaq'.DS.'helpers'.DS.'route.php';
-
-		if (is_file($quickFaqRouterPath)) {
-			require_once ($quickFaqRouterPath);
-
-			$db = JFactory::getDbo();
-
-			$query = 'SELECT CASE WHEN CHAR_LENGTH(i.alias) THEN CONCAT_WS(\':\', i.id, i.alias) ELSE i.id END as slug,'
-					. ' CASE WHEN CHAR_LENGTH(c.alias) THEN CONCAT_WS(\':\', c.id, c.alias) ELSE c.id END as categoryslug'
-					. ' FROM #__quickfaq_items AS i'
-					. ' LEFT JOIN #__quickfaq_cats_item_relations AS rel ON rel.itemid = i.id'
-					. ' LEFT JOIN #__quickfaq_categories AS c ON c.id = rel.catid'
-					. ' WHERE i.id = '.$id
-			;
-			$db->setQuery($query);
-			$row = $db->loadObject();
-
-			$link = JRoute::_(QuickfaqHelperRoute::getItemRoute($row->slug, $row->categoryslug));
-		}*/
+		// Not yet implemented
 
 		return $link;
 	}
@@ -77,14 +62,20 @@ class jc_com_kinoarhiv extends JCommentsPlugin
 	 *
 	 * @param   integer  $id  Item ID.
 	 *
-	 * @return  string
+	 * @return  integer
 	 */
 	public function getObjectOwner($id)
 	{
 		$db = JFactory::getDbo();
-		$db->setQuery("SELECT created_by FROM #__ka_movies WHERE id = " . (int) $id);
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('created_by'))
+			->from($db->quoteName('#__ka_movies'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
 		$userid = $db->loadResult();
 
-		return $userid;
+		return (int) $userid;
 	}
 }

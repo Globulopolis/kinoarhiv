@@ -54,7 +54,7 @@ class KAPagination extends JPagination
 		}
 
 		// Build the select list.
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			$html = JHtml::_(
 				'select.genericlist',
@@ -80,65 +80,5 @@ class KAPagination extends JPagination
 		}
 
 		return $html;
-	}
-
-	/**
-	 * Create the html for a list footer
-	 *
-	 * @param   array  $list  Pagination list data structure.
-	 *
-	 * @return  string  HTML for a list start, previous, next,end
-	 *
-	 * @since   3.0
-	 */
-	protected function _list_render($list)
-	{
-		// Reverse output rendering for right-to-left display.
-		$html = '<ul class="uk-pagination">';
-		$html .= '<li class="pagination-start">' . $list['start']['data'] . '</li>';
-		$html .= '<li class="pagination-prev">' . $list['previous']['data'] . '</li>';
-
-		foreach ($list['pages'] as $page)
-		{
-			$html .= '<li>' . $page['data'] . '</li>';
-		}
-
-		$html .= '<li class="pagination-next">' . $list['next']['data'] . '</li>';
-		$html .= '<li class="pagination-end">' . $list['end']['data'] . '</li>';
-		$html .= '</ul>';
-
-		return $html;
-	}
-
-	/**
-	 * Method to create an active pagination link to the item
-	 *
-	 * @param   JPaginationObject  $item  The object with which to make an active link.
-	 *
-	 * @return  string  HTML link
-	 *
-	 * @since   3.0
-	 */
-	protected function _item_active(JPaginationObject $item)
-	{
-		$title = '';
-		$class = '';
-
-		if (!is_numeric($item->text))
-		{
-			JHtml::_('bootstrap.tooltip');
-			$title = ' title="' . $item->text . '"';
-			$class = 'hasTooltip ';
-		}
-
-		if ($this->app->isAdmin())
-		{
-			return '<a' . $title . ' href="#" onclick="document.adminForm.' . $this->prefix
-			. 'limitstart.value=' . ($item->base > 0 ? $item->base : '0') . '; Joomla.submitform();return false;">' . $item->text . '</a>';
-		}
-		else
-		{
-			return '<a' . $title . ' href="' . $item->link . '" class="' . $class . 'pagenav">' . $item->text . '</a>';
-		}
 	}
 }

@@ -13,15 +13,24 @@ defined('_JEXEC') or die;
 @set_time_limit(0);
 
 /**
- * Installer script class
+ * Installation class to perform additional changes during install/uninstall/update
  *
  * @since  3.0
  */
-class com_kinoarhivInstallerScript
+class Com_KinoarhivInstallerScript
 {
-	public function install($parent)
+	/**
+	 * Function to perform changes during install
+	 *
+	 * @param   JInstallerAdapterComponent  $installer  The class calling this method
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
+	public function install($installer)
 	{
-		$db = JFactory::getDbo();
+		$db   = JFactory::getDbo();
 		$form = $this->loadForm();
 		$data = array();
 
@@ -33,6 +42,7 @@ class com_kinoarhivInstallerScript
 			$name_fieldsets[] = $fieldset->name;
 		}
 
+		// Fill paths to folders
 		foreach ($name_fieldsets as $fieldset_name)
 		{
 			foreach ($form->getFieldset($fieldset_name) as $field)
@@ -67,18 +77,29 @@ class com_kinoarhivInstallerScript
 		}
 
 		$data['use_alphabet'] = 0;
-
 		$params = json_encode($data);
 
-		$db->setQuery("UPDATE " . $db->quoteName('#__extensions')
-			. "\n SET `params` = '" . $db->escape($params) . "'"
-			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
+		$query = $db->getQuery(true)
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('params') . " = '" . $db->escape($params) . "'")
+			->where($db->quoteName('element') . " = 'com_kinoarhiv'")
+			->where($db->quoteName('type') . " = 'component'");
+
+		$db->setQuery($query);
 		$db->execute();
 
-		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv');
+		// Call JInstaller->setRedirectURL()
+		$installer->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&view=settings');
 	}
 
-	public function update($parent)
+	/**
+	 * Method to update component.
+	 *
+	 * @param   JInstallerAdapterComponent  $installer  The class calling this method.
+	 *
+	 * @return  void
+	 */
+	public function update($installer)
 	{
 		$db = JFactory::getDbo();
 		$form = $this->loadForm();
@@ -111,42 +132,69 @@ class com_kinoarhivInstallerScript
 
 		$params = json_encode($params);
 
-		$db->setQuery("UPDATE " . $db->quoteName('#__extensions')
-			. "\n SET `params` = '" . $db->escape($params) . "'"
-			. "\n WHERE `element` = 'com_kinoarhiv' AND `type` = 'component'");
+		$query = $db->getQuery(true)
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('params') . " = '" . $db->escape($params) . "'")
+			->where($db->quoteName('element') . " = 'com_kinoarhiv'")
+			->where($db->quoteName('type') . " = 'component'");
+
+		$db->setQuery($query);
 		$db->execute();
 		/* End of loading and updating component parameters */
 
-		// Run DB update if installed version lower than 3.0.6
-		if (version_compare($parent->get('manifest')->version, '3.0.5', '>') && version_compare($parent->get('manifest')->version, '3.0.6', '='))
-		{
-			$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv&controller=update&version=306');
+		$this->updateDatabase();
 
-			return true;
-		}
-
-		$parent->getParent()->setRedirectURL('index.php?option=com_kinoarhiv');
+		// Call JInstaller->setRedirectURL()
+		$installer->getParent()->setRedirectURL('index.php?option=com_kinoarhiv');
 	}
 
-	public function getParams($name = '')
+	/**
+	 * Method to update Database
+	 *
+	 * @return  void
+	 */
+	protected function updateDatabase()
+	{
+		if (JFactory::getDbo()->getServerType() === 'mysql')
+		{
+			return;
+		}
+	}
+
+	/**
+	 * Get component parameters.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.0
+	 */
+	public function getParams()
 	{
 		$db = JFactory::getDbo();
 
-		$db->setQuery("SELECT `params` FROM `#__extensions` WHERE `type` = 'component' AND `name` = 'Kinoarhiv'");
+		$query = $db->getQuery(true)
+			->select($db->quoteName('params'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('type') . " = 'component'")
+			->where($db->quoteName('name') . " = 'Kinoarhiv'");
+
+		$db->setQuery($query);
 		$params = json_decode($db->loadResult(), true);
 
-		return !empty($name) ? $params[$name] : $params;
+		return $params;
 	}
 
+	/**
+	 * Get component parameters.
+	 *
+	 * @return  JForm  JForm instance.
+	 *
+	 * @since   3.0
+	 */
 	private function loadForm()
 	{
 		JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/');
 		$form = JForm::getInstance('com_kinoarhiv.config', 'config', array('control' => 'jform', 'load_data' => array()), true, '/config');
-
-		if (empty($form))
-		{
-			throw new Exception('Could not load config.xml file!');
-		}
 
 		return $form;
 	}

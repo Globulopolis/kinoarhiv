@@ -27,9 +27,9 @@ if ($params->get('offline') == 1)
 		'params'    => array()
 	);
 
-	if ($user->get('isRoot'))
+	if ($user->authorise('core.admin'))
 	{
-		echo KAComponentHelper::showMsg(JText::_('COM_KA_OFFLINE_MESSAGE'), array('icon' => 'alert', 'type' => 'error')) . "<br />";
+		echo KAComponentHelper::showMsg(JText::_('COM_KA_OFFLINE_MESSAGE'), 'alert-block alert-error', false, JText::_('NOTICE')) . "<br />";
 	}
 	else
 	{

@@ -1,6 +1,6 @@
 /*!
 
-   Flowplayer v7.0.1 (Tuesday, 31. January 2017 12:24PM) | flowplayer.org/license
+   Flowplayer v7.0.4 (Friday, 28. April 2017 01:12PM) | flowplayer.org/license
 
 */
 /*! (C) WebReflection Mit Style License */
@@ -784,10 +784,11 @@ function findFromSourcesByType(sources, type) {
 }
 
 var videoTagCache;
-var createVideoTag = function(video, autoplay, preload, useCache) {
+var createVideoTag = function(video, autoplay, preload, useCache, inline, subtitles) {
   if (typeof autoplay === 'undefined') autoplay = true;
   if (typeof preload === 'undefined') preload = 'none';
   if (typeof useCache === 'undefined') useCache = true;
+  if (typeof inline === 'undefined') inline = true;
   if (useCache && videoTagCache) {
     videoTagCache.type = getType(video.type);
     videoTagCache.src = video.src;
@@ -798,11 +799,36 @@ var createVideoTag = function(video, autoplay, preload, useCache) {
   var el  = document.createElement('video');
   el.src = video.src;
   el.type = getType(video.type);
-  el.className = 'fp-engine';
+  var className = 'fp-engine ';
+  if (subtitles && subtitles.length) className += 'native-subtitles';
+  el.className = className;
   if (flowplayer.support.autoplay) el.autoplay = autoplay ? 'autoplay' : false;
   if (flowplayer.support.dataload) el.preload = preload;
-  el.setAttribute('webkit-playsinline', 'true');
-  el.setAttribute('playsinline', 'true');
+  if (inline) {
+    el.setAttribute('webkit-playsinline', 'true');
+    el.setAttribute('playsinline', 'true');
+  }
+  if (subtitles && subtitles.length) {
+    var setMode = function(mode) {
+      var tracks = el.textTracks;
+      if (!tracks.length) return;
+      tracks[0].mode = mode;
+    };
+    if (subtitles.some(function(st) { return !common.isSameDomain(st.src); })) common.attr(el, 'crossorigin', 'anonymous');
+    if (typeof el.textTracks.addEventListener === 'function') el.textTracks.addEventListener('addtrack', function() {
+      setMode('disabled');
+      setMode('showing');
+    });
+    subtitles.forEach(function(st) {
+      el.appendChild(common.createElement('track', {
+        kind: 'subtitles',
+        srclang: st.srclang || 'en',
+        label: st.label || 'en',
+        src: st.src,
+        'default': st['default']
+      }));
+    });
+  }
   if (useCache) videoTagCache = el;
   return el;
 };
@@ -841,13 +867,22 @@ engine = function(player, root) {
       },
 
       load: function(video) {
-         var container = common.find('.fp-player', root)[0], reload = false;
+         var container = common.find('.fp-player', root)[0], reload = false, created = false;
          if (conf.splash && !api) {
-           api = createVideoTag(video);
+           api = createVideoTag(
+             video,
+             undefined,
+             undefined,
+             undefined,
+             !conf.disableInline,
+             flowplayer.support.subtitles && conf.nativesubtitles && video.subtitles
+           );
            common.prepend(container, api);
+           created = true;
          } else if (!api) {
-           api = createVideoTag(video, !!video.autoplay || !!conf.autoplay, conf.clip.preload || 'metadata', false);
+           api = createVideoTag(video, !!video.autoplay || !!conf.autoplay, conf.clip.preload || true, false);
            common.prepend(container, api);
+           created = true;
          } else {
            common.addClass(api, 'fp-engine');
            common.find('source,track', api).forEach(common.removeNode);
@@ -885,8 +920,9 @@ engine = function(player, root) {
 
          self._listeners = listen(api, common.find("source", api).concat(api), video) || self._listeners;
 
-        if (reload) api.load();
-        if (api.paused && (video.autoplay || conf.autoplay || conf.splash)) api.play();
+         if (reload || (created && !conf.splash)) api.load();
+         if (support.iOS.iPad && support.iOS.chrome) api.load();
+         if (api.paused && (video.autoplay || conf.autoplay || conf.splash)) api.play();
       },
 
       pause: function() {
@@ -972,8 +1008,8 @@ engine = function(player, root) {
         }, false);
       };
 
-      if (api && api.textTracks.length) Array.prototype.forEach.call(api.textTracks, listenMetadata);
-      if (typeof api.textTracks.addEventListener === 'function') api.textTracks.addEventListener('addtrack', function(tev) {
+      if (api && api.textTracks && api.textTracks.length) Array.prototype.forEach.call(api.textTracks, listenMetadata);
+      if (api && api.textTracks && typeof api.textTracks.addEventListener === 'function') api.textTracks.addEventListener('addtrack', function(tev) {
         listenMetadata(tev.track);
       }, false);
       if (player.conf.dvr || player.dvr || video.dvr) {
@@ -992,6 +1028,7 @@ engine = function(player, root) {
 
       Object.keys(EVENTS).forEach(function(type) {
         var flow = EVENTS[type];
+        if (type === 'webkitendfullscreen' && player.conf.disableInline) flow = 'unload';
         if (!flow) return;
         var l = function(e) {
           video = api.listeners[instanceId];
@@ -1264,6 +1301,7 @@ var flowplayer = _dereq_('../flowplayer')
 
 
 flowplayer(function(api, root) {
+  if (api.conf.chromecast === false) return;
   scriptjs('https://www.gstatic.com/cv/js/sender/v1/cast_sender.js');
   window['__onGCastApiAvailable'] = function(loaded) {
     if (!loaded) return;
@@ -1761,10 +1799,12 @@ flowplayer(function(player, root) {
          if (flag) {
             ['requestFullScreen', 'webkitRequestFullScreen', 'mozRequestFullScreen', 'msRequestFullscreen'].forEach(function(fName) {
                if (typeof wrapper[fName] === 'function') {
-                  wrapper[fName](Element.ALLOW_KEYBOARD_INPUT);
-                  if (IS_SAFARI && !document.webkitCurrentFullScreenElement && !document.mozFullScreenElement) { // Element.ALLOW_KEYBOARD_INPUT not allowed
+                 wrapper[fName](Element.ALLOW_KEYBOARD_INPUT);
+                 setTimeout(function() {
+                   if (IS_SAFARI && !document.webkitCurrentFullScreenElement && !document.mozFullScreenElement) { // Element.ALLOW_KEYBOARD_INPUT not allowed
                      wrapper[fName]();
-                  }
+                   }
+                 });
                   return false;
                }
             });
@@ -1952,7 +1992,7 @@ flowplayer(function(api, root) {
         top: common.offset(triggerElement).top + common.height(triggerElement)
       };
     }
-    if (!coordinates) return;
+    if (!coordinates) return common.css(menu, 'top', 'auto');
     coordinates.rightFallbackOffset = coordinates.rightFallbackOffset || 0;
     var top = coordinates.top - common.offset(ui).top
       , left = coordinates.left - common.offset(ui).left
@@ -1966,6 +2006,9 @@ flowplayer(function(api, root) {
 
   api.hideMenu = function(menu) {
     common.toggleClass(menu, 'fp-active', false);
+    common.css(menu, {
+      top: '-9999em'
+    });
   };
 });
 
@@ -2074,8 +2117,6 @@ if (flowplayer.support.touch || isIeMobile) {
       }
       common.addClass(root, 'is-touch');
       if (player.sliders && player.sliders.timeline) player.sliders.timeline.disableAnimation();
-
-      if (!flowplayer.support.inlineVideo || player.conf.native_fullscreen) player.conf.nativesubtitles = true;
 
       // fake mouseover effect with click
       var hasMoved = false;
@@ -2201,8 +2242,8 @@ flowplayer(function(player, root) {
       if (typeof i === 'number' && !player.conf.playlist[i]) return player;
       else if (typeof i != 'number') return player.load.apply(null, arguments);
       var arg = extend({index: i}, player.conf.playlist[i]);
-      if (i === player.video.index) return player.load(arg, function() { player.resume(); });
       player.off('beforeresume.fromfirst'); // Don't start from beginning if clip explicitely chosen
+      if (i === player.video.index) return player.load(arg, function() { player.resume(); });
       player.load(arg, function() {
         player.video.index = i;
       });
@@ -2229,15 +2270,16 @@ flowplayer(function(player, root) {
       return player;
    };
 
-   player.setPlaylist = function(items) {
+   player.setPlaylist = function(items, keepCurrentIndex) {
      player.conf.playlist = items;
-     delete player.video.index;
+     if (!keepCurrentIndex) delete player.video.index;
      generatePlaylist();
      return player;
    };
 
    player.addPlaylistItem = function(item) {
-     return player.setPlaylist(player.conf.playlist.concat([item]));
+     delete player.video.is_last;
+     return player.setPlaylist(player.conf.playlist.concat([item]), true);
    };
 
    player.removePlaylistItem = function(idx) {
@@ -2312,6 +2354,7 @@ flowplayer(function(player, root) {
          var href = item.sources[0].src;
          plEl.appendChild(common.createElement('a', {
             href: href,
+            className: player.video.index === i ? klass : undefined,
             'data-index': i
          }));
       });
@@ -2612,9 +2655,12 @@ flowplayer(function(p, root) {
   var currentPoint, wrap,
       subtitleControl, subtitleMenu;
 
+  if (!flowplayer.support.inlineVideo || p.conf.native_fullscreen) p.conf.nativesubtitles = true;
+
   var createSubtitleControl = function() {
-    subtitleControl = common.createElement('strong', { className: 'fp-cc' }, 'CC');
-    subtitleMenu = common.createElement('div', {className: 'fp-menu fp-subtitle-menu'}, '<strong>Closed Captions</strong>');
+    subtitleControl = subtitleControl || common.createElement('strong', { className: 'fp-cc' }, 'CC');
+    subtitleMenu = subtitleMenu || common.createElement('div', {className: 'fp-menu fp-subtitle-menu'}, '<strong>Closed Captions</strong>');
+    common.find('a', subtitleMenu).forEach(common.removeNode);
     subtitleMenu.appendChild(common.createElement('a', {'data-subtitle-index': -1}, 'No subtitles'));
     (p.video.subtitles || []).forEach(function(st, i) {
       var srcLang = st.srclang || 'en',
@@ -2628,8 +2674,8 @@ flowplayer(function(p, root) {
   };
 
   bean.on(root, 'click', '.fp-cc', function() {
-    //TODO fix
-    common.toggleClass(subtitleMenu, 'fp-active');
+    if (common.hasClass(subtitleMenu, 'fp-active')) p.hideMenu();
+    else p.showMenu(subtitleMenu);
   });
 
   bean.on(root, 'click', '.fp-subtitle-menu [data-subtitle-index]', function(ev) {
@@ -2640,40 +2686,16 @@ flowplayer(function(p, root) {
   });
 
   var createUIElements = function() {
-    wrap = common.find('.fp-subtitle', root)[0];
+    wrap = common.find('.fp-captions', root)[0];
     wrap = wrap || common.appendTo(common.createElement('div', {'class': 'fp-captions'}), common.find('.fp-player', root)[0]);
     Array.prototype.forEach.call(wrap.children, common.removeNode);
-    common.find('.fp-subtitle-menu', root).forEach(common.removeNode);
     createSubtitleControl();
   };
 
 
   p.on('ready',  function(ev, player, video) {
     var conf = player.conf;
-    if (flowplayer.support.subtitles && conf.nativesubtitles && player.engine.engineName == 'html5') {
-      var setMode = function(mode) {
-        var tracks = common.find('video', root)[0].textTracks;
-        if (!tracks.length) return;
-        tracks[0].mode = mode;
-      };
-      if (!video.subtitles || !video.subtitles.length) return;
-      var videoTag = common.find('video.fp-engine', root)[0];
-      if (video.subtitles.some(function(st) { return !common.isSameDomain(st.src); })) common.attr(videoTag, 'crossorigin', 'anonymous');
-      if (typeof videoTag.textTracks.addEventListener === 'function') videoTag.textTracks.addEventListener('addtrack', function() {
-        setMode('disabled');
-        setMode('showing');
-      });
-      video.subtitles.forEach(function(st) {
-        videoTag.appendChild(common.createElement('track', {
-          kind: 'subtitles',
-          srclang: st.srclang || 'en',
-          label: st.label || 'en',
-          src: st.src,
-          'default': st['default']
-        }));
-      });
-      return;
-    }
+    if (flowplayer.support.subtitles && conf.nativesubtitles && player.engine.engineName == 'html5') return;
 
     player.subtitles = [];
 
@@ -2720,6 +2742,10 @@ flowplayer(function(p, root) {
 
   });
 
+  p.on('unload', function () {
+    common.find('.fp-captions', root).forEach(common.removeNode);
+  });
+
   var setActiveSubtitleClass = function(idx) {
     common.toggleClass(common.find('a.fp-selected', subtitleMenu)[0], 'fp-selected');
     common.toggleClass(common.find('a[data-subtitle-index="' + idx + '"]', subtitleMenu)[0], 'fp-selected');
@@ -2753,9 +2779,10 @@ flowplayer(function(p, root) {
         p.addCuepoint({ time: entry.endTime, subtitleEnd: entry.title, visible: false });
 
         // initial cuepoint
-        if (entry.startTime === 0 && !p.video.time) {
+        if (entry.startTime === 0 && !p.video.time && !p.splash) {
           p.trigger("cuepoint", [p, cue]);
         }
+        if (p.splash) p.one('ready', function() { p.trigger('cuepoint', [p, cue]); });
       });
     }, function() {
       p.trigger("error", {code: 8, url: url });
@@ -2823,11 +2850,16 @@ var flowplayer = _dereq_('../flowplayer'),
         browser: b,
         iOS: {
           iPhone: IS_IPHONE,
-          iPad: IS_IPAD,
-          version: IOS_VER
+          iPad: IS_IPAD || IS_IPAD_CHROME,
+          version: IOS_VER,
+          chrome: IS_IPAD_CHROME
         },
+        android: IS_ANDROID ? {
+          firefox: IS_ANDROID_FIREFOX,
+          version: ANDROID_VER
+        } : false,
         subtitles: !!video.addTextTrack,
-        fullscreen: typeof document.webkitCancelFullScreen == 'function' && !/Mac OS X 10_5.+Version\/5\.0\.\d Safari/.test(UA) ||
+        fullscreen: typeof document.webkitFullscreenEnabled === 'boolean' ? document.webkitFullscreenEnabled : (typeof document.webkitCancelFullScreen == 'function' && !/Mac OS X 10_5.+Version\/5\.0\.\d Safari/.test(UA)) ||
               document.mozFullScreenEnabled ||
               typeof document.exitFullscreen == 'function' ||
               typeof document.msExitFullscreen == 'function',
@@ -3050,7 +3082,7 @@ flowplayer(function(api, root) {
                 .replace('{{ LOADING_ROUNDED_FILL }}', LOADING_ROUNDED_FILL)
                 .replace('{{ LOADING_SHARP_FILL }}', LOADING_SHARP_FILL)
                 .replace('{{ LOADING_SHARP_OUTLINE }}', LOADING_SHARP_OUTLINE)
-                .replace(/url\(#/g, 'url(' + window.location.href.replace(window.location.hash, "") + '#')
+                .replace(/url\(#/g, 'url(' + window.location.href.replace(window.location.hash, "").replace(/\#$/g, '') + '#')
    );
    root.appendChild(ui);
    function find(klass) {
@@ -3160,21 +3192,23 @@ flowplayer(function(api, root) {
       if (max < 1) common.css(buffer, "width", (max * 100) + "%");
       else common.css(buffer, 'width', '100%');
    }).on("speed", function(e, api, val) {
-     common.text(speedFlash, val + "x");
-     common.addClass(speedFlash, 'fp-shown');
-     speedAnimationTimers = speedAnimationTimers.filter(function(to) {
-       clearTimeout(to);
-       return false;
-     });
-     speedAnimationTimers.push(setTimeout(function() {
-      common.addClass(speedFlash, 'fp-hilite');
-      speedAnimationTimers.push(setTimeout(function() {
-        common.removeClass(speedFlash, 'fp-hilite');
+     if (api.video.time) {
+       common.text(speedFlash, val + "x");
+       common.addClass(speedFlash, 'fp-shown');
+       speedAnimationTimers = speedAnimationTimers.filter(function(to) {
+         clearTimeout(to);
+         return false;
+       });
+       speedAnimationTimers.push(setTimeout(function() {
+        common.addClass(speedFlash, 'fp-hilite');
         speedAnimationTimers.push(setTimeout(function() {
-          common.removeClass(speedFlash, 'fp-shown');
-        }, 300));
-      }, 1000));
-     }));
+          common.removeClass(speedFlash, 'fp-hilite');
+          speedAnimationTimers.push(setTimeout(function() {
+            common.removeClass(speedFlash, 'fp-shown');
+          }, 300));
+        }, 1000));
+       }));
+     }
 
    }).on("buffered", function() {
      common.css(buffer, 'width', '100%');
@@ -3247,6 +3281,17 @@ flowplayer(function(api, root) {
 
 
    // hover
+   }).one('resume ready', function() {
+     var videoTag = common.find('video.fp-engine', root)[0];
+     if (!videoTag) return;
+     if (!common.width(videoTag) || !common.height(videoTag)) {
+       var oldOverflow = root.style.overflow;
+       root.style.overflow = 'visible';
+       setTimeout(function() {
+         if (oldOverflow) root.style.overflow = oldOverflow;
+         else root.style.removeProperty('overflow');
+       });
+     }
    });
    //Interaction events
    bean.on(root, "mouseenter mouseleave", function(e) {
@@ -3723,7 +3768,7 @@ var flowplayer = module.exports = function(fn, opts, callback) {
 
 extend(flowplayer, {
 
-   version: '7.0.1',
+   version: '7.0.4',
 
    engines: [],
 
@@ -3770,8 +3815,8 @@ extend(flowplayer, {
       live: false,
       livePositionOffset: 120,
 
-      swf: "//releases.flowplayer.org/7.0.1/flowplayer.swf",
-      swfHls: "//releases.flowplayer.org/7.0.1/flowplayerhls.swf",
+      swf: "//releases.flowplayer.org/7.0.4/flowplayer.swf",
+      swfHls: "//releases.flowplayer.org/7.0.4/flowplayerhls.swf",
 
       speeds: [0.25, 0.5, 1, 1.5, 2],
 
@@ -3805,7 +3850,9 @@ extend(flowplayer, {
       ],
       playlist: [],
 
-      hlsFix: isSafari && safariVersion < 8
+      hlsFix: isSafari && safariVersion < 8,
+
+      disableInline: false
 
    },
    // Expose utilities for plugins

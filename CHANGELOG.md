@@ -1,4 +1,9 @@
 ## HEAD (Unreleased)
+* Fixed error for offline mode.
+* Update HTMLPurifier to latest.
+* KAComponentHelper::showMsg() now uses bootstrap alerts instead of jqueryui.
+* Remove unused slider max value.
+* Slider template moved to layout.
 * Add i18n to videojs, mediaelement template.
 * Fixed error in trailer display template
 * Change urls for kinopoisk and rottentomatoes to https
@@ -9,7 +14,7 @@
 * getDBO changed to getDbo, JURI to JUri on frontend.
 * Removed DIRECTORY_SEPARATOR, use / and JPath::clean instead.
 * Video players is now responsive.
-* Remove jQueryUI dependencies from frontend. CSS still needed.
+* Remove jQueryUI dependencies from frontend. CSS still needed for aurora plugin.
 * Update Trumbowyg to release.
 * Remove unused jquery.ui.plupload.
 * i18n files for editors moved from js/i18n/ to editor folders.
@@ -58,8 +63,8 @@
 * Remove unused variables.
 * Improve display title on some views for some materials.
 * Fixed errors with undefined variables and array keys in autocomplete fields when the ID of the item isn't defined.
-* Update VideoJS to 5.18.4
-* Update Mediaelement.js to 4.1.0
+* Update VideoJS
+* Update Mediaelement.js
 * Fixed bug with undefined variable which may have unexpected results when the user try to delete person from 'cast & crew' table.
 * Added "Links to buy".
 * Added posibility to edit a music genres.

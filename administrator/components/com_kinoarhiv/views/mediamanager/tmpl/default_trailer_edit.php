@@ -172,7 +172,7 @@ $this->trailer_id = $trailer_id[0];
 
 					// Update rows
 					$.each(response[list], function(key, object){
-						var file_info = formatItemTitle(object.type, object.resolution, '', ', '),
+						var file_info = Kinoarhiv.formatItemTitle(object.type, object.resolution, '', ', '),
 							file_info_text = !empty(file_info) ? ' <span class="gray">(' + file_info + ')</span>': '',
 							filename_class = object.is_file == 0 ? ' red' : '';
 

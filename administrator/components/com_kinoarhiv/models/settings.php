@@ -119,15 +119,6 @@ class KinoarhivModelSettings extends JModelForm
 			$data['slider_min_item'] = 1;
 		}
 
-		if ($data['slider_max_item'] > 100)
-		{
-			$data['slider_max_item'] = 100;
-		}
-		elseif ($data['slider_max_item'] < 10)
-		{
-			$data['slider_max_item'] = 10;
-		}
-
 		$app = JFactory::getApplication();
 		$alphabet = $app->input->post->get('letters', array(), 'array');
 		$filter = JFilterInput::getInstance();

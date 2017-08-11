@@ -86,17 +86,6 @@ JHtml::_('bootstrap.modal', 'collapseModal');
 				}
 			}
 		});
-		$('#jform_slider_max_item').spinner({
-			spin: function(event, ui){
-				if (ui.value > 100) {
-					$(this).spinner('value', 10);
-					return false;
-				} else if (ui.value < 10) {
-					$(this).spinner('value', 100);
-					return false;
-				}
-			}
-		});
 
 		// For movie alphabet
 		var cloned_m_rows = $('.movie-ab .letters-lang').length;

@@ -221,7 +221,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					echo KAComponentHelper::showMsg(
 						JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')),
-						array('icon' => 'alert'),
+						'alert-error',
 						true
 					);
 				}

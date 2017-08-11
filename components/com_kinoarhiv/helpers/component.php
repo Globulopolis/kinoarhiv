@@ -68,39 +68,32 @@ class KAComponentHelper
 	}
 
 	/**
-	 * Return html structure for message. jQueryUI stylesheets required.
+	 * Return html structure for message.
 	 *
-	 * @param   string   $text   Text to display. Translated string.
-	 * @param   array    $extra  Array of optional elements. $extra['icon'] - the icon type; $extra['type'] - the type of
-	 *                           message. Can be 'highlight', 'error', 'disabled', 'default'.
-	 * @param   boolean  $close  Show close link.
+	 * @param   string   $text        Text to display. Translated string.
+	 * @param   string   $class       See http://getbootstrap.com/2.3.2/components.html#alerts
+	 * @param   boolean  $close       Show close link.
+	 * @param   string   $block_text  Text for display in block mode.
 	 *
 	 * @return  string
 	 *
 	 * @since  3.0
 	 */
-	public static function showMsg($text, $extra = array(), $close = false)
+	public static function showMsg($text, $class = 'alert-info', $close = false, $block_text = '')
 	{
-		$icon = !isset($extra['icon']) ? 'info' : $extra['icon'];
-		$type = !isset($extra['type']) ? 'highlight' : $extra['type'];
+		if (stripos($class, 'alert-block') !== false && !empty($block_text))
+		{
+			$text = '<h4>' . $block_text . '</h4>' . $text;
+		}
+
+		$html = '<div class="alert ' . (string) $class . '">';
 
 		if ($close)
 		{
-			$close_str = ' <a href="" class="ui-icon ui-icon-close" style="display: inline-block;" onclick="jQuery(this).closest(\'.ui-message\').remove(); return false;"></a>';
-		}
-		else
-		{
-			$close_str = '';
+			$html .= '<button type="button" class="close" data-dismiss="alert">&times;</button>';
 		}
 
-		$html = '<div class="ui-message"><div class="ui-widget">
-			<div class="ui-corner-all ui-state-' . $type . '" style="padding: 0 0.5em;">
-				<div style="margin: 5px ! important;">
-					<span class="ui-icon ui-icon-' . $icon . '" style="float: left; margin-right: 0.3em;"></span>
-					<span style="overflow: hidden; display: block;">' . $text . $close_str . '</span>
-				</div>
-			</div>
-		</div></div>';
+		$html .= $text . '</div>';
 
 		return $html;
 	}
@@ -197,7 +190,7 @@ class KAComponentHelper
 			{
 				if ($silent == 'ui')
 				{
-					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), array('icon' => 'alert', 'type' => 'error'));
+					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'alert-error');
 
 					if ($user->get('isRoot'))
 					{
@@ -227,7 +220,7 @@ class KAComponentHelper
 			{
 				if ($silent == 'ui')
 				{
-					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), array('icon' => 'alert', 'type' => 'error'));
+					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'alert-error');
 
 					if ($user->get('isRoot'))
 					{

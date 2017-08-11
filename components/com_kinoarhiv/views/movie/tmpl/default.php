@@ -59,13 +59,6 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.plugin.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.countdown.min.js');
 KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/js/i18n/countdown');
-
-if (isset($this->item->slides) && !empty($this->item->slides)):
-	if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1):
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/jquery.bxslider.min.css');
-		JHtml::_('script', 'media/com_kinoarhiv/js/jquery.bxslider.min.js');
-	endif;
-endif;
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
@@ -164,21 +157,6 @@ endif;
 
 			$.colorbox({html: '<div class="overlay">' + _this.next('div').html() + '</div>'});
 		});
-
-		<?php if (isset($this->item->slides) && !empty($this->item->slides)):
-			if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
-		$('.bxslider').bxSlider({
-			pager: false,
-			minSlides: <?php echo (int) $this->params->get('slider_min_item'); ?>,
-			maxSlides: <?php echo count($this->item->slides); ?>,
-			slideWidth: <?php echo (int) $this->params->get('size_x_scr'); ?>,
-			slideMargin: 5,
-			infiniteLoop: false
-		});
-
-		$('.screenshot-slider li a').colorbox({returnFocus: false, maxHeight: '90%', maxWidth: '90%', rel: 'slideGroup', photo: true});
-			<?php endif;
-		endif; ?>
 
 		$('.countdown-premiere').each(function(){
 			var el = $(this);
@@ -556,19 +534,16 @@ endif;
 			<div class="clear"></div>
 		<?php endif; ?>
 
-		<?php if (isset($this->item->slides) && !empty($this->item->slides)):
-			if (($this->item->attribs->slider == '' && $this->params->get('slider') == 1) || $this->item->attribs->slider == 1): ?>
-				<div class="screenshot-slider">
-					<ul class="bxslider">
-						<?php foreach ($this->item->slides as $slide): ?>
-							<li>
-								<a href="<?php echo $slide->image; ?>" target="_blank" rel="slideGroup"><img src="<?php echo $slide->th_image; ?>" width="<?php echo $slide->th_image_width; ?>" height="<?php echo $slide->th_image_height; ?>"/></a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
-			<?php endif;
-		endif; ?>
+		<?php
+		echo JLayoutHelper::render('layouts.content.images_slider',
+			array(
+				'params'  => $this->params,
+				'items'   => $this->item->slides,
+				'attribs' => $this->item->attribs->slider
+			),
+			JPATH_COMPONENT
+		);
+		?>
 
 		<?php
 		if ($total_trailers > 0 || $total_movies > 0)

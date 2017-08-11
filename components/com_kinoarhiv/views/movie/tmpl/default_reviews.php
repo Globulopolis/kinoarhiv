@@ -112,11 +112,20 @@ defined('_JEXEC') or die;
 				JPATH_COMPONENT
 			);
 		else:
-			echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_DISABLED'));
+			echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_DISABLED'), 'alert-error');
 		endif;
 	else: ?>
 	<br/>
-		<div><?php echo KAComponentHelper::showMsg(JText::sprintf(JText::_('COM_KA_REVIEWS_AUTHREQUIRED'), '<a href="' . JRoute::_('index.php?option=com_users&view=registration') . '">' . JText::_('COM_KA_REGISTER') . '</a>', '<a href="' . JRoute::_('index.php?option=com_users&view=login') . '">' . JText::_('COM_KA_LOGIN') . '</a>')); ?></div>
+		<div><?php
+		echo KAComponentHelper::showMsg(
+			JText::sprintf(
+				JText::_('COM_KA_REVIEWS_AUTHREQUIRED'),
+				'<a href="' . JRoute::_('index.php?option=com_users&view=registration') . '">' . JText::_('COM_KA_REGISTER') . '</a>',
+				'<a href="' . JRoute::_('index.php?option=com_users&view=login') . '">' . JText::_('COM_KA_LOGIN') . '</a>'
+			)
+		);
+		?>
+		</div>
 	<?php endif;
 	endif; ?>
 </div>

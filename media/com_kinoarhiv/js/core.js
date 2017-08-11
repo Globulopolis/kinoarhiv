@@ -121,6 +121,44 @@ Kinoarhiv = window.Kinoarhiv || {};
 			);
 		}
 	};
+
+	/**
+	 * Format item title. If item have two fields for title, sometimes we need to properly process title if item
+	 * does not have one of these fields.
+	 *
+	 * @param   {string}  firstTitle   First item title.
+	 * @param   {string}  secondTitle  Second item title.
+	 * @param   {string}  date         Show date.
+	 * @param   {string}  separator    Separator to split titles.
+	 *
+	 * @return  {string}
+	 */
+	Kinoarhiv.formatItemTitle = function(firstTitle, secondTitle, date, separator) {
+		var title = '';
+
+		if (!empty(firstTitle)) {
+			if (typeof firstTitle !== 'undefined' && !empty(firstTitle)) {
+				title += firstTitle;
+			}
+
+			if (!empty(firstTitle) && !empty(secondTitle)) {
+				title += (typeof separator !== 'undefined' && !empty(separator) ? separator : ' / ');
+			}
+
+			if (typeof secondTitle !== 'undefined' && !empty(secondTitle)) {
+				title += secondTitle;
+			}
+
+			// Do not validate date format because it's can be in different formats and hard to implement, and actually not necessary here.
+			if (!empty(date) && date !== '0000' && date !== '0000-00-00') {
+				title += ' (' + date + ')';
+			}
+
+			return title;
+		} else {
+			return '';
+		}
+	}
 }(Kinoarhiv, document));
 
 /*
@@ -155,44 +193,6 @@ function empty(mixedVar) {
 }
 
 /**
- * Format item title. If item have two fields for title, sometimes we need to properly process title if item
- * does not have one of these fields.
- *
- * @param   {string}  firstTitle   First item title.
- * @param   {string}  secondTitle  Second item title.
- * @param   {string}  date         Show date.
- * @param   {string}  separator    Separator to split titles.
- *
- * @return  {string}
- */
-function formatItemTitle(firstTitle, secondTitle, date, separator) {
-	var title = '';
-
-	if (!empty(firstTitle)) {
-		if (typeof firstTitle !== 'undefined' && !empty(firstTitle)) {
-			title += firstTitle;
-		}
-
-		if (!empty(firstTitle) && !empty(secondTitle)) {
-			title += (typeof separator !== 'undefined' && !empty(separator) ? separator : ' / ');
-		}
-
-		if (typeof secondTitle !== 'undefined' && !empty(secondTitle)) {
-			title += secondTitle;
-		}
-
-		// Do not validate date format because it's can be in different formats and hard to implement, and actually not necessary here.
-		if (!empty(date) && date !== '0000' && date !== '0000-00-00') {
-			title += ' (' + date + ')';
-		}
-
-		return title;
-	} else {
-		return '';
-	}
-}
-
-/**
  * Create a message and display.
  *
  * @param   {object}  selector   Selector.
@@ -216,22 +216,6 @@ function showMsg(selector, text, placement, btn_type, btn_title) {
 			button: btn_type,
 			button_title: '[' + btn_title + ']'
 		});
-	}
-}
-
-/**
- * Block UI interaction.
- *
- * @param   {string}  action  Show or hide block.
- *
- * @return  {void}
- * @deprecated
- */
-function blockUI(action) {
-	if (action === 'show') {
-		jQuery('<div class="modal-backdrop"></div>').appendTo(document.body).show();
-	} else {
-		jQuery('.modal-backdrop').remove();
 	}
 }
 
@@ -411,12 +395,12 @@ jQuery(document).ready(function($){
 						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 					}
 				} else if (content === 'names') {
-					return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
+					return remote == true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
 				} else if (content === 'movies') {
 					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 
-					return formatItemTitle(title, '', year);
+					return Kinoarhiv.formatItemTitle(title, '', year);
 				} else {
 					return data.text;
 				}
@@ -434,12 +418,12 @@ jQuery(document).ready(function($){
 						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 					}
 				} else if (content == 'names') {
-					return remote == true ? formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
+					return remote == true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
 				} else if (content == 'movies') {
 					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 
-					return formatItemTitle(title, '', year);
+					return Kinoarhiv.formatItemTitle(title, '', year);
 				} else {
 					return data.text;
 				}

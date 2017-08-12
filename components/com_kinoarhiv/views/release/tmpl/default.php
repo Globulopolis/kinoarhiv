@@ -62,90 +62,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 					<div class="separator"></div>
 					<div class="plot"><?php echo $this->item->plot; ?></div>
 
-					<?php if ($this->params->get('ratings_show_frontpage') == 1): ?>
-						<div class="separator"></div>
-						<div class="ratings-frontpage">
-							<?php if (!empty($this->item->rate_custom)): ?>
-								<div><?php echo $this->item->rate_custom; ?></div>
-							<?php else: ?>
-								<?php if ($this->params->get('ratings_show_img') == 1): ?>
-									<div style="display: inline-block;">
-										<?php if ($this->params->get('ratings_img_imdb') != 0 && !empty($this->item->imdb_id))
-										{
-											if (file_exists($this->params->get('media_rating_image_root') . '/imdb/' . $this->item->id . '_big.png'))
-											{ ?>
-												<a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $this->item->id; ?>_big.png" border="0"/></a>
-											<?php }
-										} ?>
-										<?php if ($this->params->get('ratings_img_kp') != 0 && !empty($this->item->kp_id)): ?>
-											<a href="https://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank">
-												<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
-													<img src="<?php echo $rating_image_www; ?>/kinopoisk/<?php echo $this->item->id; ?>_big.png" border="0"/>
-												<?php else: ?>
-													<img src="https://www.kinopoisk.ru/rating/<?php echo $this->item->kp_id; ?>.gif" border="0" style="padding-left: 1px;"/>
-												<?php endif; ?>
-											</a>
-										<?php endif; ?>
-										<?php if ($this->params->get('ratings_img_rotten') != 0 && !empty($this->item->rottentm_id)): ?>
-											<?php if (file_exists($this->params->get('media_rating_image_root') . '/rottentomatoes/' . $this->item->id . '_big.png')): ?>
-												<a href="https://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $this->item->id; ?>_big.png" border="0"/></a>
-											<?php endif; ?>
-										<?php endif; ?>
-										<?php if ($this->params->get('ratings_img_metacritic') != 0 && !empty($this->item->metacritics_id)): ?>
-											<?php if (file_exists($this->params->get('media_rating_image_root') . '/metacritic/' . $this->item->id . '_big.png')): ?>
-												<a href="http://www.metacritic.com/movie/<?php echo $this->item->metacritics_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/metacritic/<?php echo $this->item->id; ?>_big.png" border="0"/></a>
-											<?php endif; ?>
-										<?php endif; ?>
-									</div>
-								<?php else: ?>
-									<?php if (!empty($this->item->imdb_votesum) && !empty($this->item->imdb_votes)): ?>
-										<div id="rate-imdb">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span>
-											<span class="b"><a href="http://www.imdb.com/title/tt<?php echo $this->item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank"><?php echo $this->item->imdb_votesum; ?>
-													(<?php echo $this->item->imdb_votes; ?>)</a></span></div>
-									<?php else: ?>
-										<div id="rate-imdb">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
-										</div>
-									<?php endif; ?>
-									<?php if (!empty($this->item->kp_votesum) && !empty($this->item->kp_votes)): ?>
-										<div id="rate-kp">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span>
-											<span class="b"><a href="https://www.kinopoisk.ru/film/<?php echo $this->item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->kp_votesum; ?>
-													(<?php echo $this->item->kp_votes; ?>)</a></span></div>
-									<?php else: ?>
-										<div id="rate-kp">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
-										</div>
-									<?php endif; ?>
-									<?php if (!empty($this->item->rate_fc)): ?>
-										<div id="rate-rt">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span>
-											<span class="b"><a href="https://www.rottentomatoes.com/m/<?php echo $this->item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->rate_fc; ?>
-													%</a></span></div>
-									<?php else: ?>
-										<div id="rate-rt">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
-										</div>
-									<?php endif; ?>
-									<?php if (!empty($this->item->metacritics)): ?>
-										<div id="rate-rt">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span>
-											<span class="b"><a href="http://www.metacritic.com/movie/<?php echo $this->item->metacritics_id; ?>/" rel="nofollow" target="_blank"><?php echo $this->item->metacritics; ?>
-													%</a></span></div>
-									<?php else: ?>
-										<div id="rate-rt">
-											<span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
-										</div>
-									<?php endif; ?>
-								<?php endif; ?>
-							<?php endif; ?>
-							<div class="local-rt<?php echo $this->item->rate_loc_label_class; ?>">
-								<div class="rateit" data-rateit-value="<?php echo $this->item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int) $this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>
-								&nbsp;<?php echo $this->item->rate_loc_label; ?>
-							</div>
-						</div>
-					<?php endif; ?>
+					<?php if ($this->params->get('ratings_show_frontpage') == 1):
+						echo JLayoutHelper::render(
+							'layouts.content.ratings',
+							array('params' => $this->params, 'item' => $this->item),
+							JPATH_COMPONENT
+						);
+					endif; ?>
 				</div>
 			</div>
 			<?php if (count($this->item->items) > 0): ?>

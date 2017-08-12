@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Ratings tempate now moved to layout.
 * Fixed error for offline mode.
 * Update HTMLPurifier to latest.
 * KAComponentHelper::showMsg() now uses bootstrap alerts instead of jqueryui.

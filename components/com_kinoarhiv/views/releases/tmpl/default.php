@@ -10,17 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
-if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
-{
-	$rating_image_www = JUri::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
-}
-else
-{
-	$rating_image_www = $this->params->get('media_rating_image_root_www');
-}
-
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
@@ -119,65 +108,14 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 							<div class="text"><?php echo $item->text; ?></div>
 							<div class="separator"></div>
 							<div class="plot"><?php echo $item->plot; ?></div>
-							<?php if ($this->params->get('ratings_show_frontpage') == 1): ?>
-								<div class="separator"></div>
-								<div class="ratings-frontpage">
-									<?php if (!empty($item->rate_custom)): ?>
-										<div><?php echo $item->rate_custom; ?></div>
-									<?php else: ?>
-										<?php if ($this->params->get('ratings_show_img') == 1): ?>
-											<div style="text-align: center; display: inline-block;">
-												<?php if (!empty($item->imdb_id))
-												{
-													if (file_exists($this->params->get('media_rating_image_root') . '/imdb/' . $item->id . '_big.png'))
-													{ ?>
-														<a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0"/></a>
-													<?php }
-												} ?>
-												<?php if (!empty($item->kp_id)): ?>
-													<a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank">
-														<?php if ($this->params->get('ratings_img_kp_remote') == 0): ?>
-															<img src="<?php echo $rating_image_www; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" border="0"/>
-														<?php else: ?>
-															<img src="https://www.kinopoisk.ru/rating/<?php echo $item->kp_id; ?>.gif" border="0" style="padding-left: 1px;"/>
-														<?php endif; ?>
-													</a>
-												<?php endif; ?>
-												<?php if (!empty($item->rottentm_id)): ?>
-													<?php if (file_exists($this->params->get('media_rating_image_root') . '/rottentomatoes/' . $item->id . '_big.png')): ?>
-														<a href="https://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $rating_image_www; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0"/></a>
-													<?php endif; ?>
-												<?php endif; ?>
-											</div>
-										<?php else: ?>
-											<?php if (!empty($item->imdb_votesum) && !empty($item->imdb_votes)): ?>
-												<div id="rate-imdb">
-													<span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span>
-													<span class="b"><a href="http://www.imdb.com/title/tt<?php echo $item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank"><?php echo $item->imdb_votesum; ?>
-															(<?php echo $item->imdb_votes; ?>)</a></span></div>
-											<?php else: ?>
-												<div id="rate-imdb">
-													<span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
-												</div>
-											<?php endif; ?>
-											<?php if (!empty($item->kp_votesum) && !empty($item->kp_votes)): ?>
-												<div id="rate-kp">
-													<span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span>
-													<span class="b"><a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->kp_votesum; ?>
-															(<?php echo $item->kp_votes; ?>)</a></span></div>
-											<?php else: ?>
-												<div id="rate-kp">
-													<span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
-												</div>
-											<?php endif; ?>
-										<?php endif; ?>
-									<?php endif; ?>
-									<div class="local-rt<?php echo $item->rate_loc_label_class; ?>">
-										<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int) $this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>
-										&nbsp;<?php echo $item->rate_loc_label; ?>
-									</div>
-								</div>
-							<?php endif; ?>
+
+							<?php if ($this->params->get('ratings_show_frontpage') == 1):
+								echo JLayoutHelper::render(
+									'layouts.content.ratings',
+									array('params' => $this->params, 'item' => $item),
+									JPATH_COMPONENT
+								);
+							endif; ?>
 						</div>
 
 						<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>

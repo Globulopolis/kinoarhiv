@@ -165,11 +165,13 @@ class KinoarhivViewMovie extends JViewLegacy
 			$plural = $lang->getPluralSuffixes($item->rate_loc);
 			$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
 			$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
+			$item->rate_loc_label_class = ' has-rating';
 		}
 		else
 		{
 			$item->rate_loc_c = 0;
 			$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
+			$item->rate_loc_label_class = ' no-rating';
 		}
 
 		// Process slides

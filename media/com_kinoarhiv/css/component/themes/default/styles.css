@@ -1018,11 +1018,15 @@ div.rating {
 	float: left;
 }
 
-.ratings a {
+#rate-imdb, #rate-kp, #rate-rt, #rate-mc {
+	padding-top: .5em;
+}
+
+.ratings-frontpage a {
 	display: inline-block;
 }
 
-.ratings img {
+.ratings-frontpage img {
 	margin-bottom: 5px;
 }
 

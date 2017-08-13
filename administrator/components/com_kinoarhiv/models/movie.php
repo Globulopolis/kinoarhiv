@@ -1743,182 +1743,6 @@ class KinoarhivModelMovie extends JModelForm
 	}
 
 	/**
-	 * Method to get the list of cast and crew for grid.
-	 *
-	 * @return  object
-	 *
-	 * @since   3.0
-	 */
-	public function getCast()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'int');
-		$orderby = $app->input->get('sidx', '1', 'string');
-		$order = $app->input->get('sord', 'asc', 'word');
-		$page = $app->input->get('page', 0, 'int');
-		$search_field = $app->input->get('searchField', '', 'string');
-		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
-		$search_string = $app->input->get('searchString', '', 'string');
-		$result = (object) array();
-		$result->rows = array();
-		$careers = array();
-
-		$query = $db->getQuery(true)
-			->select($db->quoteName(array('id', 'title')))
-			->from($db->quoteName('#__ka_names_career'))
-			->order($db->quoteName('ordering') . ' ASC');
-
-		$db->setQuery($query);
-		$_careers = $db->loadObjectList();
-
-		foreach ($_careers as $career)
-		{
-			$careers[$career->id] = $career->title;
-		}
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('n.id', 'name_id') . ',' . $db->quoteName('n.name') . ',' . $db->quoteName('n.latin_name'))
-			->select($db->quoteName(array('t.type', 't.role', 't.ordering')))
-			->select($db->quoteName('d.id', 'dub_id') . ',' . $db->quoteName('d.name', 'dub_name') . ',' . $db->quoteName('d.latin_name', 'dub_latin_name'))
-			->select("GROUP_CONCAT(" . $db->quoteName('r.role') . " SEPARATOR ', ') AS " . $db->quoteName('dub_role'))
-			->from($db->quoteName('#__ka_names', 'n'))
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id)
-			->join('LEFT', $db->quoteName('#__ka_names', 'd') . ' ON ' . $db->quoteName('d.id') . ' = ' . $db->quoteName('t.dub_id'))
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 'r') . ' ON ' . $db->quoteName('r.dub_id') . ' = ' . $db->quoteName('n.id'));
-
-		$where_subquery = $db->getQuery(true)
-			->select($db->quoteName('name_id'))
-			->from($db->quoteName('#__ka_rel_names'))
-			->where($db->quoteName('movie_id') . ' = ' . (int) $id);
-
-		$query->where($db->quoteName('n.id') . ' IN (' . $where_subquery . ')');
-
-		if (!empty($search_string))
-		{
-			if ($search_field == 'n.name' || $search_field == 'd.name')
-			{
-				$query->where("(" . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)) . " OR " . KADatabaseHelper::transformOperands($db->quoteName('n.latin_name'), $search_operand, $db->escape($search_string)) . ")");
-			}
-			else
-			{
-				$query->where(KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)));
-			}
-		}
-
-		$query->group($db->quoteName('n.id'));
-
-		// Preventing 'ordering asc/desc, ordering asc/desc' duplication
-		if (strpos($orderby, 'ordering') !== false)
-		{
-			$query->order($db->quoteName('t.ordering') . ' ASC');
-		}
-		else
-		{
-			// We need this if grid grouping is used. At the first(0) index - grouping field
-			$ord_request = explode(',', $orderby);
-
-			if (count($ord_request) > 1)
-			{
-				$query->order($db->quoteName(trim($ord_request[1])) . ' ' . strtoupper($order) . ', ' . $db->quoteName('t.ordering') . ' ASC');
-			}
-			else
-			{
-				$query->order($db->quoteName(trim($orderby)) . ' ' . strtoupper($order) . ', ' . $db->quoteName('t.ordering') . ' ASC');
-			}
-		}
-
-		$db->setQuery($query);
-		$names = $db->loadObjectList();
-
-		// Presorting based on the type of career person
-		$i = 0;
-		$_result = array();
-
-		foreach ($names as $value)
-		{
-			$name = '';
-
-			if (!empty($value->name))
-			{
-				$name .= $value->name;
-			}
-
-			if (!empty($value->name) && !empty($value->latin_name))
-			{
-				$name .= ' / ';
-			}
-
-			if (!empty($value->latin_name))
-			{
-				$name .= $value->latin_name;
-			}
-
-			$dub_name = '';
-
-			if (!empty($value->dub_name))
-			{
-				$dub_name .= $value->dub_name;
-			}
-
-			if (!empty($value->dub_name) && !empty($value->dub_latin_name))
-			{
-				$dub_name .= ' / ';
-			}
-
-			if (!empty($value->dub_latin_name))
-			{
-				$dub_name .= $value->dub_latin_name;
-			}
-
-			foreach (explode(',', $value->type) as $k => $type)
-			{
-				$_result[$type][$i] = array(
-					'name'     => $name,
-					'name_id'  => $value->name_id,
-					'role'     => $value->role,
-					'dub_name' => $dub_name,
-					'dub_id'   => $value->dub_id,
-					'ordering' => $value->ordering,
-					'type'     => $careers[$type],
-					'type_id'  => $type
-				);
-
-				$i++;
-			}
-		}
-
-		// The final sorting of the array for the grid
-		$k = 0;
-
-		foreach ($_result as $row)
-		{
-			foreach ($row as $elem)
-			{
-				$result->rows[$k]['id'] = $elem['name_id'] . '_' . $id . '_' . $elem['type_id'];
-				$result->rows[$k]['cell'] = array(
-					'name'     => $elem['name'],
-					'name_id'  => $elem['name_id'],
-					'role'     => $elem['role'],
-					'dub_name' => $elem['dub_name'],
-					'dub_id'   => $elem['dub_id'],
-					'ordering' => $elem['ordering'],
-					'type'     => $elem['type']
-				);
-
-				$k++;
-			}
-		}
-
-		$result->page = $page;
-		$result->total = 1;
-		$result->records = count($result->rows);
-
-		return $result;
-	}
-
-	/**
 	 * Method to remove cast and crew.
 	 *
 	 * @return  array
@@ -1977,94 +1801,88 @@ class KinoarhivModelMovie extends JModelForm
 	}
 
 	/**
-	 * Method to remove a movie and associated content from database and disk.
+	 * Removes an item.
+	 *
+	 * @param   array  $ids  Array of ID to remove.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.0
 	 */
-	public function remove()
+	public function remove($ids = array())
 	{
-		jimport('joomla.filesystem.folder');
-		jimport('joomla.filesystem.file');
-
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
-		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		// Remove award relations
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_rel_awards'))
+		// Remove associated awards
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_rel_awards'))
 			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ') AND ' . $db->quoteName('type') . ' = 0');
+
 		$db->setQuery($query);
 
 		try
 		{
 			$db->execute();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove country relations
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_rel_countries'))
+		// Remove associated countries
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_rel_countries'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
 		{
 			$db->execute();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove genre relations
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_rel_genres'))
+		// Remove associated genres
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_rel_genres'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
 		{
 			$db->execute();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove name relations
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_rel_names'))
+		// Remove associated names
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_rel_names'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
 		{
 			$db->execute();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove releases
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_releases'))
+		// Remove associated releases
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_releases'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
@@ -2073,15 +1891,30 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
 
-			return false;
+		// Remove associated premieres
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_premieres'))
+			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		// Remove reviews
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_reviews'))
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_reviews'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
@@ -2090,15 +1923,14 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		// Remove favorited and watched movies
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_user_marked_movies'))
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_user_marked_movies'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
@@ -2107,15 +1939,14 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		// Remove user votes
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_user_votes'))
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_user_votes'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
@@ -2124,32 +1955,14 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove premieres
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_premieres'))
-			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		// Remove tags mapping
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__contentitem_tag_map'))
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__contentitem_tag_map'))
 			->where($db->quoteName('content_item_id') . ' IN (' . implode(',', $ids) . ')');
+
 		$db->setQuery($query);
 
 		try
@@ -2158,108 +1971,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove media items
-		$query = $db->getQuery(true);
-		$query->select('id, fs_alias')
-			->from($db->quoteName('#__ka_movies'))
-			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-
-		$db->setQuery($query);
-		$items = $db->loadObjectList();
-
-		foreach ($items as $item)
-		{
-			// Delete root folders
-			if (file_exists($params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
-			{
-				JFolder::delete($params->get('media_posters_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
-			}
-
-			if (file_exists($params->get('media_scr_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
-			{
-				JFolder::delete($params->get('media_scr_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
-			}
-
-			if (file_exists($params->get('media_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
-			{
-				JFolder::delete($params->get('media_wallpapers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
-			}
-
-			if (file_exists($params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id))
-			{
-				JFolder::delete($params->get('media_trailers_root') . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->id);
-			}
-
-			// Delete rating images
-			if (file_exists($params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'imdb' . DIRECTORY_SEPARATOR . $item->id . '_big.png'))
-			{
-				JFile::delete($params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'imdb' . DIRECTORY_SEPARATOR . $item->id . '_big.png');
-			}
-
-			if (file_exists($params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'kinopoisk' . DIRECTORY_SEPARATOR . $item->id . '_big.png'))
-			{
-				JFile::delete($params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'kinopoisk' . DIRECTORY_SEPARATOR . $item->id . '_big.png');
-			}
-
-			if (file_exists($params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'rottentomatoes' . DIRECTORY_SEPARATOR . $item->id . '_big.png'))
-			{
-				JFile::delete($params->get('media_rating_image_root') . DIRECTORY_SEPARATOR . 'rottentomatoes' . DIRECTORY_SEPARATOR . $item->id . '_big.png');
-			}
-		}
-
-		// Remove movie(s) from DB
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_movies'))
-			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_movies_gallery'))
-			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->setError($e->getMessage());
-
-			return false;
-		}
-
-		// Remove trailers. It will not remove a media content.
-		$query = $db->getQuery(true);
-		$query->delete($db->quoteName('#__ka_trailers'))
-			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->setError($e->getMessage());
-
-			return false;
+			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
 		// Remove access rules
@@ -2270,9 +1982,10 @@ class KinoarhivModelMovie extends JModelForm
 
 		foreach ($ids as $id)
 		{
-			$query = $db->getQuery(true);
-			$query->delete($db->quoteName('#__assets'))
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__assets'))
 				->where($db->quoteName('name') . " = 'com_kinoarhiv.movie." . (int) $id . "' AND " . $db->quoteName('level') . " = 2");
+
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)
@@ -2294,7 +2007,40 @@ class KinoarhivModelMovie extends JModelForm
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		return $query_result;
+		// Remove movie(s) from DB
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_movies'))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove gallery items
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_movies_gallery'))
+			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

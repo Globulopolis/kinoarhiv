@@ -270,29 +270,114 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		$user = JFactory::getUser();
+		$app = JFactory::getApplication();
+
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv.movie'))
+		if (!$user->authorise('core.delete', 'com_kinoarhiv'))
 		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
 			return;
 		}
 
-		$model = $this->getModel('movie');
-		$result = $model->remove();
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
+		jimport('joomla.filesystem.folder');
 
-		if ($result === false)
+		$ids = $app->input->get('id', array(), 'array');
+
+		if (!is_array($ids) || count($ids) < 1)
 		{
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::_('JGLOBAL_NO_ITEM_SELECTED'), 'error');
+
+			return;
+		}
+
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$model  = $this->getModel('movie');
+		$fs     = KAFilesystem::getInstance();
+		$paths  = KAContentHelper::getPath('movie', 'gallery', array(1, 2, 3), $ids);
+
+		// Remove gallery images
+		foreach ($paths as $folder)
+		{
+			if (file_exists($folder[1]))
+			{
+				JFolder::delete($folder[1]);
+			}
+
+			if (file_exists($folder[2]))
+			{
+				JFolder::delete($folder[2]);
+			}
+
+			if (file_exists($folder[3]))
+			{
+				JFolder::delete($folder[3]);
+			}
+
+			// Delete parent folder
+			if ($fs->getFolderSize($folder['parent']) == 0)
+			{
+				if (file_exists($folder[3]))
+				{
+					JFolder::delete($folder['parent']);
+				}
+			}
+			else
+			{
+				$app->enqueueMessage(JText::sprintf('COM_KA_UNABLE_TO_DELETE_FOLDER_NOT_EMPTY', $folder['parent']), 'error');
+			}
+		}
+
+		// Remove rating images
+		foreach ($ids as $id)
+		{
+			$imdb           = JPath::clean($params->get('media_rating_image_root') . '/imdb/' . $id . '_big.png');
+			$kinopoisk      = JPath::clean($params->get('media_rating_image_root') . '/kinopoisk/' . $id . '_big.png');
+			$rottentomatoes = JPath::clean($params->get('media_rating_image_root') . '/rottentomatoes/' . $id . '_big.png');
+			$metacritic     = JPath::clean($params->get('media_rating_image_root') . '/metacritic/' . $id . '_big.png');
+
+			if (file_exists($imdb))
+			{
+				JFile::delete($imdb);
+			}
+
+			if (file_exists($kinopoisk))
+			{
+				JFile::delete($kinopoisk);
+			}
+
+			if (file_exists($rottentomatoes))
+			{
+				JFile::delete($rottentomatoes);
+			}
+
+			if (file_exists($metacritic))
+			{
+				JFile::delete($metacritic);
+			}
+		}
+
+		// Call this after removes files, not before.
+		$result = $model->remove($ids);
+
+		if (!$result)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::plural('COM_KA_ITEMS_N_DELETED_ERROR', count($ids)), 'error');
 
 			return;
 		}
 
 		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.movies.global.data', null);
+		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data', null);
+		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
 	}
 
 	/**

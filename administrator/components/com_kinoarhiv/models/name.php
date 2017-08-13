@@ -867,7 +867,7 @@ class KinoarhivModelName extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 
-		// Remove awards
+		// Remove associated awards
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ka_rel_awards'))
 			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ') AND ' . $db->quoteName('type') . ' = 1');
@@ -883,7 +883,7 @@ class KinoarhivModelName extends JModelForm
 			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove genres
+		// Remove associated genres
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ka_rel_names_genres'))
 			->where($db->quoteName('name_id') . ' IN (' . implode(',', $ids) . ')');
@@ -899,7 +899,7 @@ class KinoarhivModelName extends JModelForm
 			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove careers
+		// Remove associated careers
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ka_rel_names_career'))
 			->where($db->quoteName('name_id') . ' IN (' . implode(',', $ids) . ')');
@@ -931,7 +931,7 @@ class KinoarhivModelName extends JModelForm
 			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
-		// Remove assets
+		// Remove access rules
 		$query_result = true;
 		$db->setDebug(true);
 		$db->lockTable('#__assets');

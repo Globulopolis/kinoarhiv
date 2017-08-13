@@ -23,6 +23,10 @@ $columns   = 10;
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 
 			return;
+		} else if (task === 'movies.remove') {
+			if (!confirm('<?php echo JText::_('COM_KA_MOVIES_REMOVE_TRAILERS_BEFORE', false, false); ?>')) {
+				return;
+			}
 		}
 
 		Joomla.submitform(task);

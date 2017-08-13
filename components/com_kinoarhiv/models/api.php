@@ -199,7 +199,6 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				if ($multiple == 1)
 				{
-					// TODO Convert ID's into string
 					$ids = $this->input->get('id', '', 'string');
 					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
 						->order($this->db->quoteName('name') . ' ASC');
@@ -602,7 +601,6 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				if ($multiple == 1)
 				{
-					// TODO Convert ID's into string
 					$ids = $this->input->get('id', '', 'string');
 					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
 						->order($this->db->quoteName('company_name') . ' ASC');
@@ -709,10 +707,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				if ($multiple == 1)
 				{
-					// TODO Convert ID's into string
 					$ids = $this->sanitizeIDList($this->input->get('id', '', 'string'));
-
-					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
 						->order('FIELD(id, ' . $ids . ')');
 					$this->db->setQuery($query);
 
@@ -818,10 +814,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				if ($multiple == 1)
 				{
-					// TODO Convert ID's into string
 					$ids = $this->sanitizeIDList($this->input->get('id', '', 'string'));
-
-					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
 						->order('FIELD(id, ' . $ids . ')');
 					$this->db->setQuery($query);
 
@@ -939,19 +933,19 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		$query->where($this->db->quoteName('n.id') . ' IN (' . $where_subquery . ')');
 
-		if (!empty($search_string))
+		if (!empty($term))
 		{
 			if ($field == 'n.name' || $field == 'd.name')
 			{
 				$query->where("("
-					. KADatabaseHelper::transformOperands($this->db->quoteName($field), $operand, $this->db->escape($search_string))
+					. KADatabaseHelper::transformOperands($this->db->quoteName($field), $operand, $this->db->escape($term))
 					. " OR "
-					. KADatabaseHelper::transformOperands($this->db->quoteName('n.latin_name'), $operand, $this->db->escape($search_string))
+					. KADatabaseHelper::transformOperands($this->db->quoteName('n.latin_name'), $operand, $this->db->escape($term))
 				. ")");
 			}
 			else
 			{
-				$query->where(KADatabaseHelper::transformOperands($this->db->quoteName($field), $operand, $this->db->escape($search_string)));
+				$query->where(KADatabaseHelper::transformOperands($this->db->quoteName($field), $operand, $this->db->escape($term)));
 			}
 		}
 

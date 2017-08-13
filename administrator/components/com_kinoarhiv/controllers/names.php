@@ -227,7 +227,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		$app = JFactory::getApplication();
 
 		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.delete', 'com_kinoarhiv'))
+		if (!$user->authorise('core.delete', 'com_kinoarhiv'))
 		{
 			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 

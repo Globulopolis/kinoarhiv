@@ -70,7 +70,7 @@ rules:
     php.neglected_tests:
         enabled: true
     php.object_parameter_not_type_hinted:
-        enabled: true
+        enabled: false
     php.php_magic_methods:
         enabled: true
     php.php_syntax_error:

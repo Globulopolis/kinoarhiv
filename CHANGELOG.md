@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Added option to disable links parsing for introtext.
 * Ratings tempate now moved to layout.
 * Fixed error for offline mode.
 * Update HTMLPurifier to latest.

@@ -308,6 +308,11 @@
 			<option value="0">JNO</option>
 		</field>
 
+		<field name="introtext_links" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_AP_INTROTEXT_LINKS_LABEL"
+			   description="COM_KA_FIELD_AP_INTROTEXT_LINKS_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="limit_text" type="text" default="250" label="COM_KA_FIELD_AP_LIMITTEXT_LABEL"
 			   description="COM_KA_FIELD_AP_LIMITTEXT_LABEL_DESC" required="true" filter="integer" size="6"/>
 		<field name="introtext_actors_list_limit" type="text" default="10"

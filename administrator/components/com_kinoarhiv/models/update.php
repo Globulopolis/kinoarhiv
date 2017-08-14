@@ -48,7 +48,12 @@ class KinoarhivModelUpdate extends JModelLegacy
 
 				$attribs = json_encode($attribs);
 
-				$db->setQuery("UPDATE " . $db->quoteName('#__ka_movies') . " SET `attribs` = '" . $db->escape($attribs) . "' WHERE `id` = " . (int) $row->id . ";");
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__ka_movies'))
+					->set($db->quoteName('attribs') . " = '" . $db->escape($attribs) . "'")
+					->where($db->quoteName('id') . ' = ' . (int) $row->id . ';');
+
+				$db->setQuery($query);
 				$result = $db->execute();
 
 				if ($result === false)

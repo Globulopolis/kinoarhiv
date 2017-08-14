@@ -27,10 +27,6 @@ select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="c
 	z-index: 10001 !important;
 }
 
-.form-horizontal .controls {
-	margin-left: 200px !important;
-}
-
 .form-horizontal .settings-paths {
 	text-align: right;
 }

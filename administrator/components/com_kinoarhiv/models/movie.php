@@ -333,7 +333,7 @@ class KinoarhivModelMovie extends JModelForm
 	 *
 	 * @param   integer  $id  Item ID.
 	 *
-	 * @return  object
+	 * @return  array
 	 *
 	 * @since   3.0
 	 */
@@ -366,7 +366,7 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			$app->enqueueMessage($e->getMessage(), 'error');
 
-			return false;
+			return array();
 		}
 
 		return $countries;

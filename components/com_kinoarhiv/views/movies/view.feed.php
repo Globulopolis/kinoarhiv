@@ -119,7 +119,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_(JUri::base() . 'index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid) . '" title="$2">$2</a>', $matches[2]);
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
 
 				return $html . $name;
 			},

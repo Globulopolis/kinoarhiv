@@ -58,6 +58,7 @@ class KinoarhivViewMovies extends JViewLegacy
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$itemid = $this->itemid;
 		$throttle_enable = $this->params->get('throttle_image_enable', 0);
+		$introtext_links = $this->params->get('introtext_links', 1);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -85,11 +86,18 @@ class KinoarhivViewMovies extends JViewLegacy
 			);
 
 			// Replace person BB-code
-			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid)
+			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid, $introtext_links)
 			{
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid, false) . '" title="$2">$2</a>', $matches[2]);
+				if ($introtext_links)
+				{
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid, false) . '" title="$2">$2</a>', $matches[2]);
+				}
+				else
+				{
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
+				}
 
 				return $html . $name;
 			},

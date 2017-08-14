@@ -90,121 +90,74 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
+		$app = JFactory::getApplication();
 		$user = JFactory::getUser();
+		$id = $app->input->get('id', 0, 'int');
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.movie'))
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
 		{
-			if ($document->getType() == 'html')
-			{
-				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
 
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-
-				return;
-			}
+			return;
 		}
 
 		$app = JFactory::getApplication();
 		$model = $this->getModel('movie');
-		$data = $this->input->post->get('form', array(), 'array');
+		$data = $this->input->post->get('jform', array(), 'array');
 		$form = $model->getForm($data, false);
 
 		if (!$form)
 		{
-			if ($document->getType() == 'html')
-			{
-				$app->enqueueMessage($model->getError(), 'error');
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
 
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => $model->getError()));
-
-				return;
-			}
+			return;
 		}
 
-		// Store data for use in KinoarhivModelMovie::loadFormData()
-		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', $data);
-		$validData = $model->validate($form, $data, 'movie');
+		$validData = $model->validate($form, $data);
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), $document->getType());
+			KAComponentHelperBackend::renderErrors($model->getErrors());
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $id);
 
-			if ($document->getType() == 'html')
-			{
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $data['id']);
-
-				return;
-			}
-			else
-			{
-				echo json_encode(array('success' => false, 'message' => $errors));
-
-				return;
-			}
+			return;
 		}
 
+		// Store data for use in KinoarhivModelMovie::loadFormData()
+		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.movies.' . $user->id . '.data');
 
 		if (!$result)
 		{
-			if ($document->getType() == 'html')
-			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+			// Errors enqueue in the model
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $id);
 
-				// TODO id key should be changed to avoid a notice about undefined index
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $data['id']);
-
-				return;
-			}
-			else
-			{
-				echo json_encode($session_data);
-
-				return;
-			}
+			return;
 		}
+
+		$session_data = $app->getUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
 
 		// Delete session data taken from model
-		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', null);
 
-		if ($document->getType() == 'html')
+		switch ($this->getTask())
 		{
-			$id = $session_data['data']['id'];
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.add', $message);
+				break;
 
-			// Set the redirect based on the task.
-			switch ($this->getTask())
-			{
-				case 'save2new':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=add', $message);
-					break;
-				case 'apply':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=movies&task=edit&id[]=' . $id, $message);
-					break;
+			case 'apply':
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $session_data['id'], $message);
+				break;
 
-				case 'save':
-				default:
-					$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', $message);
-					break;
-			}
-		}
-		else
-		{
-			echo json_encode($session_data);
+			case 'save':
+			default:
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', $message);
+				break;
 		}
 	}
 

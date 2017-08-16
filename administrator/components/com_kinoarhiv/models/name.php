@@ -465,8 +465,8 @@ class KinoarhivModelName extends JModelForm
 	{
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
 		$user = JFactory::getUser();
 
 		// Automatic handling of alias for empty fields
@@ -600,7 +600,7 @@ class KinoarhivModelName extends JModelForm
 		// Update the rules.
 		if ($user->authorise('core.edit.access', 'com_kinoarhiv') && isset($data['rules']))
 		{
-			$title = KAContentHelper::formatItemTitle($name, $latin_name);
+			$title = $db->escape(KAContentHelper::formatItemTitle($name, $latin_name));
 
 			if (empty($data['id']))
 			{
@@ -651,6 +651,8 @@ class KinoarhivModelName extends JModelForm
 	 * @param   string  $new_alias  New name alias.
 	 *
 	 * @return  boolean
+	 *
+	 * @since   3.1
 	 */
 	private function moveMediaItems($id, $old_alias, $new_alias)
 	{
@@ -664,11 +666,11 @@ class KinoarhivModelName extends JModelForm
 		jimport('joomla.filesystem.folder');
 		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$filesystem  = KAFilesystem::getInstance();
-		$path_poster = $params->get('media_actor_posters_root');
-		$path_wallpp = $params->get('media_actor_wallpapers_root');
-		$path_photo  = $params->get('media_actor_photo_root');
+		$params            = JComponentHelper::getParams('com_kinoarhiv');
+		$filesystem        = KAFilesystem::getInstance();
+		$path_poster       = $params->get('media_actor_posters_root');
+		$path_wallpp       = $params->get('media_actor_wallpapers_root');
+		$path_photo        = $params->get('media_actor_photo_root');
 		$old_folder_poster = JPath::clean($path_poster . '/' . $old_alias . '/' . $id . '/posters');
 		$old_folder_wallpp = JPath::clean($path_wallpp . '/' . $old_alias . '/' . $id . '/wallpapers');
 		$old_folder_photo  = JPath::clean($path_photo . '/' . $old_alias . '/' . $id . '/photo');
@@ -684,7 +686,7 @@ class KinoarhivModelName extends JModelForm
 			$app->enqueueMessage('Error while moving the files from media folders into new location! See log for more information.', 'error');
 		}
 
-		// Removes parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
+		// Remove parent folder for posters/wallpapers/photo. Delete only if folder(s) is empty.
 		$_poster_path = JPath::clean($path_poster . '/' . $old_alias . '/' . $id);
 		$_wallpp_path = JPath::clean($path_wallpp . '/' . $old_alias . '/' . $id);
 		$_photo_path  = JPath::clean($path_photo . '/' . $old_alias . '/' . $id);
@@ -711,13 +713,13 @@ class KinoarhivModelName extends JModelForm
 	 * Save genres to relation table.
 	 *
 	 * @param   integer  $id      Item ID.
-	 * @param   array    $genres  Arrary with genre ID. array(0 => '1,2,3')
+	 * @param   string   $genres  Comma separated string with genre ID.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	public function saveGenres($id, $genres)
+	protected function saveGenres($id, $genres)
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
@@ -754,7 +756,7 @@ class KinoarhivModelName extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_rel_names_genres'))
 				->columns($db->quoteName(array('genre_id', 'name_id', 'ordering')))
-				->values("'" . (int) $genre_id . "','" . (int) $id . "', '" . $key . "'");
+				->values("'" . (int) $genre_id . "', '" . (int) $id . "', '" . $key . "'");
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)
@@ -784,13 +786,13 @@ class KinoarhivModelName extends JModelForm
 	 * Save careers to relation table.
 	 *
 	 * @param   integer  $id       Item ID.
-	 * @param   array    $careers  Arrary with career ID.
+	 * @param   string   $careers  Comma separated string with career ID.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	public function saveCareers($id, $careers)
+	protected function saveCareers($id, $careers)
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
@@ -821,13 +823,13 @@ class KinoarhivModelName extends JModelForm
 			}
 		}
 
-		foreach ($careers as $career_id)
+		foreach ($careers as $key => $career_id)
 		{
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__ka_rel_names_career'))
-				->columns($db->quoteName(array('career_id', 'name_id')))
-				->values("'" . (int) $career_id . "','" . (int) $id . "'");
+				->columns($db->quoteName(array('career_id', 'name_id', 'ordering')))
+				->values("'" . (int) $career_id . "', '" . (int) $id . "', '" . $key . "'");
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)

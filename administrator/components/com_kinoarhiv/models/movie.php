@@ -203,85 +203,6 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		return $result;
-
-		/*$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-		$db = $this->getDbo();
-		$tmpl = $app->input->get('template', '', 'string');
-		$id = $app->input->get('id', array(), 'array');
-
-		if ($tmpl == 'crew_edit')
-		{
-			$movie_id = $app->input->get('movie_id', 0, 'int');
-			$name_id = $app->input->get('name_id', 0, 'int');
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName(array('name_id', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors')))
-				->select($db->quoteName('ordering', 'r_ordering') . ',' . $db->quoteName('desc', 'r_desc'))
-				->from($db->quoteName('#__ka_rel_names'))
-				->where($db->quoteName('name_id') . ' = ' . (int) $name_id . ' AND ' . $db->quoteName('movie_id') . ' = ' . (int) $movie_id);
-
-			$db->setQuery($query);
-			$result = $db->loadObject();
-
-			if (!empty($result))
-			{
-				$result->type = $app->input->get('career_id', 0, 'int');
-			}
-		}
-		elseif ($tmpl == 'awards_edit')
-		{
-			$award_id = $app->input->get('award_id', 0, 'int');
-			$query = $db->getQuery(true);
-
-			$query->select(
-				$db->quoteName('id', 'rel_aw_id') . ',' . $db->quoteName('item_id') . ',' . $db->quoteName('award_id') . ',' .
-				$db->quoteName('desc', 'aw_desc') . ',' . $db->quoteName('year', 'aw_year')
-				)
-				->from($db->quoteName('#__ka_rel_awards'))
-				->where('id = ' . (int) $award_id);
-
-			$db->setQuery($query);
-			$result = $db->loadObject();
-		}
-		elseif ($tmpl == 'premieres_edit')
-		{
-			$premiere_id = $app->input->get('premiere_id', 0, 'int');
-			$query = $db->getQuery(true);
-
-			$query->select(
-				$db->quoteName('p.id', 'premiere_id') . ',' . $db->quoteName('p.vendor_id', 'p_vendor_id') . ',' .
-				$db->quoteName('p.premiere_date', 'p_premiere_date') . ',' . $db->quoteName('p.country_id', 'p_country_id') . ',' .
-				$db->quoteName('p.info', 'p_info') . ',' . $db->quoteName('p.language', 'p_language') . ',' .
-				$db->quoteName('p.ordering', 'p_ordering')
-				)
-				->from($db->quoteName('#__ka_premieres', 'p'))
-				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON l.lang_code = p.language')
-				->where('p.id = ' . (int) $premiere_id);
-
-			$db->setQuery($query);
-			$result = $db->loadObject();
-		}
-		elseif ($tmpl == 'releases_edit')
-		{
-			$release_id = $app->input->get('release_id', 0, 'int');
-			$query = $db->getQuery(true);
-
-			$query->select(
-				$db->quoteName('r.id', 'release_id') . ',' . $db->quoteName('r.vendor_id', 'r_vendor_id') . ',' .
-				$db->quoteName('r.release_date', 'r_release_date') . ',' . $db->quoteName('r.country_id', 'r_country_id') . ',' .
-				$db->quoteName('r.media_type', 'r_media_type') . ',' . $db->quoteName('r.desc', 'r_desc') . ',' .
-				$db->quoteName('r.language', 'r_language') . ',' . $db->quoteName('r.ordering', 'r_ordering')
-				)
-				->from($db->quoteName('#__ka_releases', 'r'))
-				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON l.lang_code = r.language')
-				->where('r.id = ' . (int) $release_id);
-
-			$db->setQuery($query);
-			$result = $db->loadObject();
-		}
-
-		return $result;*/
 	}
 
 	/**
@@ -607,17 +528,77 @@ class KinoarhivModelMovie extends JModelForm
 	}
 
 	/**
-	 * Build new string with types for cast.
+	 * Method to remove cast and crew.
+	 *
+	 * @param   array  $ids  Array with IDs. In form array(array('name_id', 'type'), ...)
+	 *
+	 * @return  array
+	 *
+	 * @since   3.0
+	 */
+	public function removeMovieCast($ids)
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$data = $app->input->post->get('data', array(), 'array');
+		$query_result = true;
+
+		if (count($data) <= 0)
+		{
+			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
+		}
+
+		$db->setDebug(true);
+		$db->lockTable('#__ka_rel_names');
+		$db->transactionStart();
+
+		foreach ($data as $key => $value)
+		{
+			$ids = explode('_', $value['name']);
+			$query = $db->getQuery(true);
+
+			$query->delete($db->quoteName('#__ka_rel_names'))
+				->where('name_id = ' . (int) $ids[3] . ' AND movie_id = ' . (int) $ids[4] . ' AND FIND_IN_SET("' . (int) $ids[5] . '", type)');
+			$db->setQuery($query . ';');
+
+			if ($db->execute() === false)
+			{
+				$query_result = false;
+				break;
+			}
+		}
+
+		if ($query_result === false)
+		{
+			$db->transactionRollback();
+			$success = false;
+			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
+		}
+		else
+		{
+			$db->transactionCommit();
+			$success = true;
+			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		return array('success' => $success, 'message' => $message);
+	}
+
+	/**
+	 * Add new cast type to person.
 	 *
 	 * @param   integer  $name_id   Person ID.
 	 * @param   integer  $movie_id  Movie ID.
-	 * @param   integer  $type      Type
+	 * @param   integer  $new_type  Type
 	 *
 	 * @return  string
 	 *
-	 * @since  3.1
+	 * @since   3.1
 	 */
-	private function updateCastTypeField($name_id, $movie_id, $type)
+	private function updateCastTypeField($name_id, $movie_id, $new_type)
 	{
 		$db = $this->getDbo();
 
@@ -638,9 +619,9 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				foreach ($types as $_type)
 				{
-					if ($type != $_type)
+					if ($new_type != $_type)
 					{
-						array_push($types, $type);
+						array_push($types, $new_type);
 					}
 				}
 			}
@@ -1052,7 +1033,7 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Method to save an item data.
 	 *
-	 * @param   object  $data  Form data
+	 * @param   array  $data  Form data
 	 *
 	 * @return  boolean
 	 *
@@ -1061,57 +1042,12 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$date = JFactory::getDate();
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$date   = JFactory::getDate();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
-		$attribs = $data['attribs'];
-		$data = $data['movie'];
-		$title = trim($data['title']);
-		$data['modified'] = $date->toSql();
-
-		// Check if movie with this title allready exists
-		if (empty($id))
-		{
-			$query = $db->getQuery(true);
-
-			$query->select('COUNT(id)')
-				->from($db->quoteName('#__ka_movies'))
-				->where($db->quoteName('title') . " LIKE '" . $db->escape($title) . "%'");
-
-			$db->setQuery($query);
-			$count = $db->loadResult();
-
-			if ($count > 0)
-			{
-				$this->setError(JText::_('COM_KA_MOVIES_EXISTS'));
-
-				$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data',
-					array(
-						'success' => false,
-						'message' => JText::_('COM_KA_MOVIES_EXISTS')
-					)
-				);
-
-				return false;
-			}
-
-			if (!(int) $data['created'])
-			{
-				$data['created'] = $date->toSql();
-			}
-
-			if (empty($data['created_by']))
-			{
-				$data['created_by'] = $user->get('id');
-			}
-		}
-		else
-		{
-			$data['modified_by'] = $user->get('id');
-		}
+		$title  = trim($data['title']);
 
 		// Automatic handling of alias for empty fields
 		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new')) && (!isset($data['id']) || (int) $data['id'] == 0))
@@ -1127,31 +1063,55 @@ class KinoarhivModelMovie extends JModelForm
 					$data['alias'] = JFilterOutput::stringURLSafe($data['title']);
 				}
 			}
-
-			if (empty($data['fs_alias']))
-			{
-				$data['fs_alias'] = rawurlencode(StringHelper::substr($data['alias'], 0, 1));
-			}
 		}
 
-		$created_by = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
-		$modified_by = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
-		$metadata = array(
-			'tags'   => json_decode('[' . $data['tags'] . ']', true),
-			'robots' => $data['robots']
-		);
-		$attribs = json_encode($attribs);
+		if (empty($data['fs_alias']))
+		{
+			$data['fs_alias'] = rawurlencode(StringHelper::substr($data['alias'], 0, 1));
+		}
+
+		// Get attribs
+		$attribs = json_encode($data['attribs']);
+
+		// Get metadata
+		$metadata = json_encode((object) array('robots' => $data['robots']));
+
+		// Prepare some data
 		$year = str_replace(' ', '', $data['year']);
 		$rate_loc_rounded = ((int) $data['rate_loc'] > 0 && (int) $data['rate_sum_loc'] > 0) ? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
 		$rate_imdb_rounded = $data['imdb_votesum'] > 0 ? round($data['imdb_votesum'], 0) : 0;
 		$rate_kp_rounded = $data['kp_votesum'] > 0 ? round($data['kp_votesum'], 0) : 0;
-		$query = $db->getQuery(true);
+		$introtext = $this->createIntroText($data, $params, $data['id']);
+		$created_by = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
+		$modified_by = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
+		$data['modified'] = $date->toSql();
 
-		if (empty($id))
+		if (empty($data['id']))
 		{
+			// Check if movie with this title allready exists
 			$query = $db->getQuery(true);
 
-			$query->insert($db->quoteName('#__ka_movies'))
+			$query->select('COUNT(id)')
+				->from($db->quoteName('#__ka_movies'))
+				->where($db->quoteName('title') . " = '" . $db->escape($title) . "'");
+
+			$db->setQuery($query);
+			$count = $db->loadResult();
+
+			if ($count > 0)
+			{
+				$app->enqueueMessage(JText::_('COM_KA_MOVIES_EXISTS'), 'error');
+
+				return false;
+			}
+
+			if (empty($data['created']))
+			{
+				$data['created'] = $date->toSql();
+			}
+
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_movies'))
 				->columns(
 					$db->quoteName(
 						array('id', 'asset_id', 'parent_id', 'title', 'alias', 'fs_alias', 'introtext', 'plot', 'desc',
@@ -1164,50 +1124,82 @@ class KinoarhivModelMovie extends JModelForm
 						)
 					)
 				)
-				->values("'', '0', '" . (int) $data['parent_id'] . "', '" . $db->escape($title) . "', '" . $data['alias'] . "'")
-				->values("'" . $data['fs_alias'] . "', '', '" . $db->escape($data['plot']) . "', '" . $db->escape($data['desc']) . "'")
-				->values("'" . $db->escape($data['known']) . "', '" . $db->escape($year) . "', '" . $db->escape($data['slogan']) . "'")
-				->values("'" . $data['budget'] . "', '" . $data['age_restrict'] . "', '" . $data['ua_rate'] . "'")
-				->values("'" . $data['mpaa'] . "', '" . $data['length'] . "', '" . (int) $data['rate_loc'] . "'")
-				->values("'" . (int) $data['rate_sum_loc'] . "', '" . $data['imdb_votesum'] . "', '" . (int) $data['imdb_votes'] . "'")
-				->values("'" . (int) $data['imdb_id'] . "', '" . $data['kp_votesum'] . "', '" . (int) $data['kp_votes'] . "'")
-				->values("'" . (int) $data['kp_id'] . "', '" . (int) $data['rate_fc'] . "', '" . $data['rottentm_id'] . "'")
-				->values("'" . (int) $data['metacritics'] . "', '" . $data['metacritics_id'] . "', '" . $db->escape($data['rate_custom']) . "'")
-				->values("'" . $rate_loc_rounded . "', '" . $rate_imdb_rounded . "', '" . $rate_kp_rounded . "'")
-				->values("'" . $db->escape($data['urls']) . "', '" . $db->escape($data['buy_urls']) . "', '" . $attribs . "'")
-				->values("'" . $data['created'] . "', '" . $created_by . "', '" . $data['modified'] . "', '" . $modified_by . "'")
-				->values("'" . $data['publish_up'] . "', '" . $data['publish_down'] . "', '" . $data['state'] . "'")
-				->values("'" . (int) $data['ordering'] . "', '" . $db->escape($data['metakey']) . "', '" . $db->escape($data['metadesc']) . "'")
-				->values("'" . (int) $data['access'] . "', '" . json_encode($metadata) . "', '" . $data['language'] . "'");
+				->values(
+					"'', '0', '" . (int) $data['parent_id'] . "', '" . $db->escape($title) . "', "
+					. "'" . $data['alias'] . "', '" . $data['fs_alias'] . "', '" . $db->escape($introtext) . "', "
+					. "'" . $db->escape($data['plot']) . "', '" . $db->escape($data['desc']) . "', "
+					. "'" . $db->escape($data['known']) . "', '" . $db->escape($year) . "', "
+					. "'" . $db->escape($data['slogan']) . "', '" . $data['budget'] . "', "
+					. "'" . $data['age_restrict'] . "', '" . $data['ua_rate'] . "', '" . $data['mpaa'] . "', "
+					. "'" . $data['length'] . "', '" . (int) $data['rate_loc'] . "', "
+					. "'" . (int) $data['rate_sum_loc'] . "', '" . $data['imdb_votesum'] . "', "
+					. "'" . (int) $data['imdb_votes'] . "', '" . (int) $data['imdb_id'] . "', "
+					. "'" . $data['kp_votesum'] . "', '" . (int) $data['kp_votes'] . "', "
+					. "'" . (int) $data['kp_id'] . "', '" . (int) $data['rate_fc'] . "', "
+					. "'" . $data['rottentm_id'] . "', '" . (int) $data['metacritics'] . "', "
+					. "'" . $data['metacritics_id'] . "', '" . $db->escape($data['rate_custom']) . "', "
+					. "'" . $rate_loc_rounded . "', '" . $rate_imdb_rounded . "', '" . $rate_kp_rounded . "', "
+					. "'" . $db->escape($data['urls']) . "', '" . $db->escape($data['buy_urls']) . "', "
+					. "'" . $attribs . "', '" . $data['created'] . "', '" . $created_by . "', "
+					. "'" . $data['modified'] . "', '" . $modified_by . "', '" . $data['publish_up'] . "', "
+					. "'" . $data['publish_down'] . "', '" . $data['state'] . "', "
+					. "'" . (int) $data['ordering'] . "', '" . $db->escape($data['metakey']) . "', "
+					. "'" . $db->escape($data['metadesc']) . "', '" . (int) $data['access'] . "', "
+					. "'" . $metadata . "', '" . $data['language'] . "'"
+				);
 		}
 		else
 		{
-			$query->update($db->quoteName('#__ka_movies'))
-				->set($db->quoteName('parent_id') . " = '" . (int) $data['parent_id'] . "'," . $db->quoteName('title') . " = '" . $db->escape($title) . "'")
-				->set($db->quoteName('alias') . " = '" . $data['alias'] . "'," . $db->quoteName('fs_alias') . " = '" . $data['fs_alias'] . "'," . $db->quoteName('plot') . " = '" . $db->escape($data['plot']) . "'")
-				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'," . $db->quoteName('known') . " = '" . $db->escape($data['known']) . "'")
-				->set($db->quoteName('year') . " = '" . (int) $year . "'," . $db->quoteName('slogan') . " = '" . $db->escape($data['slogan']) . "'")
-				->set($db->quoteName('budget') . " = '" . $data['budget'] . "'," . $db->quoteName('age_restrict') . " = '" . $data['age_restrict'] . "'")
-				->set($db->quoteName('ua_rate') . " = '" . $data['ua_rate'] . "'," . $db->quoteName('mpaa') . " = '" . $data['mpaa'] . "'")
-				->set($db->quoteName('length') . " = '" . $data['length'] . "'," . $db->quoteName('rate_loc') . " = '" . (int) $data['rate_loc'] . "'")
-				->set($db->quoteName('rate_sum_loc') . " = '" . (int) $data['rate_sum_loc'] . "'," . $db->quoteName('imdb_votesum') . " = '" . $data['imdb_votesum'] . "'")
-				->set($db->quoteName('imdb_votes') . " = '" . (int) $data['imdb_votes'] . "'," . $db->quoteName('imdb_id') . " = '" . (int) $data['imdb_id'] . "'")
-				->set($db->quoteName('kp_votesum') . " = '" . $data['kp_votesum'] . "'," . $db->quoteName('kp_votes') . " = '" . (int) $data['kp_votes'] . "'")
-				->set($db->quoteName('kp_id') . " = '" . (int) $data['kp_id'] . "'," . $db->quoteName('rate_fc') . " = '" . (int) $data['rate_fc'] . "'")
-				->set($db->quoteName('rottentm_id') . " = '" . $data['rottentm_id'] . "'," . $db->quoteName('metacritics') . " = '" . (int) $data['metacritics'] . "'")
-				->set($db->quoteName('metacritics_id') . " = '" . $data['metacritics_id'] . "'," . $db->quoteName('rate_custom') . " = '" . $db->escape($data['rate_custom']) . "'")
-				->set($db->quoteName('rate_loc_rounded') . " = '" . $rate_loc_rounded . "'," . $db->quoteName('rate_imdb_rounded') . " = '" . $rate_imdb_rounded . "'")
-				->set($db->quoteName('rate_kp_rounded') . " = '" . $rate_kp_rounded . "'," . $db->quoteName('urls') . " = '" . $db->escape($data['urls']) . "'")
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_movies'))
+				->set($db->quoteName('parent_id') . " = '" . (int) $data['parent_id'] . "'")
+				->set($db->quoteName('title') . " = '" . $db->escape($title) . "'")
+				->set($db->quoteName('alias') . " = '" . $data['alias'] . "'")
+				->set($db->quoteName('fs_alias') . " = '" . $data['fs_alias'] . "'")
+				->set($db->quoteName('introtext') . " = '" . $db->escape($introtext) . "'")
+				->set($db->quoteName('plot') . " = '" . $db->escape($data['plot']) . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->set($db->quoteName('known') . " = '" . $db->escape($data['known']) . "'")
+				->set($db->quoteName('year') . " = '" . (int) $year . "'")
+				->set($db->quoteName('slogan') . " = '" . $db->escape($data['slogan']) . "'")
+				->set($db->quoteName('budget') . " = '" . $data['budget'] . "'")
+				->set($db->quoteName('age_restrict') . " = '" . $data['age_restrict'] . "'")
+				->set($db->quoteName('ua_rate') . " = '" . $data['ua_rate'] . "'")
+				->set($db->quoteName('mpaa') . " = '" . $data['mpaa'] . "'")
+				->set($db->quoteName('length') . " = '" . $data['length'] . "'")
+				->set($db->quoteName('rate_loc') . " = '" . (int) $data['rate_loc'] . "'")
+				->set($db->quoteName('rate_sum_loc') . " = '" . (int) $data['rate_sum_loc'] . "'")
+				->set($db->quoteName('imdb_votesum') . " = '" . $data['imdb_votesum'] . "'")
+				->set($db->quoteName('imdb_votes') . " = '" . (int) $data['imdb_votes'] . "'")
+				->set($db->quoteName('imdb_id') . " = '" . (int) $data['imdb_id'] . "'")
+				->set($db->quoteName('kp_votesum') . " = '" . $data['kp_votesum'] . "'")
+				->set($db->quoteName('kp_votes') . " = '" . (int) $data['kp_votes'] . "'")
+				->set($db->quoteName('kp_id') . " = '" . (int) $data['kp_id'] . "'")
+				->set($db->quoteName('rate_fc') . " = '" . (int) $data['rate_fc'] . "'")
+				->set($db->quoteName('rottentm_id') . " = '" . $data['rottentm_id'] . "'")
+				->set($db->quoteName('metacritics') . " = '" . (int) $data['metacritics'] . "'")
+				->set($db->quoteName('metacritics_id') . " = '" . $data['metacritics_id'] . "'")
+				->set($db->quoteName('rate_custom') . " = '" . $db->escape($data['rate_custom']) . "'")
+				->set($db->quoteName('rate_loc_rounded') . " = '" . $rate_loc_rounded . "'")
+				->set($db->quoteName('rate_imdb_rounded') . " = '" . $rate_imdb_rounded . "'")
+				->set($db->quoteName('rate_kp_rounded') . " = '" . $rate_kp_rounded . "'")
+				->set($db->quoteName('urls') . " = '" . $db->escape($data['urls']) . "'")
 				->set($db->quoteName('buy_urls') . " = '" . $db->escape($data['buy_urls']) . "'")
-				->set($db->quoteName('attribs') . " = '" . $attribs . "'," . $db->quoteName('created') . " = '" . $data['created'] . "'")
-				->set($db->quoteName('created_by') . " = '" . $created_by . "'," . $db->quoteName('modified') . " = '" . $data['modified'] . "'")
-				->set($db->quoteName('modified_by') . " = '" . $modified_by . "'," . $db->quoteName('publish_up') . " = '" . $data['publish_up'] . "'")
+				->set($db->quoteName('attribs') . " = '" . $attribs . "'")
+				->set($db->quoteName('created') . " = '" . $data['created'] . "'")
+				->set($db->quoteName('created_by') . " = '" . $created_by . "'")
+				->set($db->quoteName('modified') . " = '" . $data['modified'] . "'")
+				->set($db->quoteName('modified_by') . " = '" . $modified_by . "'")
+				->set($db->quoteName('publish_up') . " = '" . $data['publish_up'] . "'")
 				->set($db->quoteName('publish_down') . " = '" . $data['publish_down'] . "'")
-				->set($db->quoteName('state') . " = '" . $data['state'] . "'," . $db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
-				->set($db->quoteName('metakey') . " = '" . $db->escape($data['metakey']) . "'," . $db->quoteName('metadesc') . " = '" . $db->escape($data['metadesc']) . "'")
-				->set($db->quoteName('access') . " = '" . (int) $data['access'] . "'," . $db->quoteName('metadata') . " = '" . json_encode($metadata) . "'")
+				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
+				->set($db->quoteName('ordering') . " = '" . (int) $data['ordering'] . "'")
+				->set($db->quoteName('metakey') . " = '" . $db->escape($data['metakey']) . "'")
+				->set($db->quoteName('metadesc') . " = '" . $db->escape($data['metadesc']) . "'")
+				->set($db->quoteName('access') . " = '" . (int) $data['access'] . "'")
+				->set($db->quoteName('metadata') . " = '" . $metadata . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $id);
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
 
 		$db->setQuery($query);
@@ -1216,71 +1208,75 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			$db->execute();
 
-			if (empty($id))
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
 			{
-				$id = $db->insertid();
-
-				// Create access rules
-				$query = $db->getQuery(true)
-					->select($db->quoteName('id'))
-					->from($db->quoteName('#__assets'))
-					->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
-
-				$db->setQuery($query);
-				$parent_id = $db->loadResult();
-
-				$query = $db->getQuery(true)
-					->select('MAX(lft)+2 AS lft, MAX(rgt)+2 AS rgt')
-					->from($db->quoteName('#__assets'));
-
-				$db->setQuery($query);
-				$lft_rgt = $db->loadObject();
-
-				$query = $db->getQuery(true)
-					->insert($db->quoteName('#__assets'))
-					->columns($db->quoteName(array('id', 'parent_id', 'lft', 'rgt', 'level', 'name', 'title', 'rules')))
-					->values("'', '" . $parent_id . "', '" . $lft_rgt->lft . "', '" . $lft_rgt->rgt . "', '2', 'com_kinoarhiv.movie." . $id . "', '" . $db->escape($data['title']) . "', '{}'");
-
-				$db->setQuery($query);
-				$db->execute();
-				$asset_id = $db->insertid();
-
-				$query = $db->getQuery(true)
-					->update($db->quoteName('#__ka_movies'))
-					->set($db->quoteName('asset_id') . " = '" . (int) $asset_id . "'")
-					->where($db->quoteName('id') . " = " . (int) $id);
-
-				$db->setQuery($query);
-				$db->execute();
+				$insertid = $db->insertid();
+				$session_data = $app->getUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data');
+				$session_data['id'] = $insertid;
+				$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', $session_data);
 			}
 			else
 			{
 				// Alias was changed? Move all linked items into new filesystem location.
 				if ($data['fs_alias'] != $data['fs_alias_orig'])
 				{
-					$this->moveMediaItems($id, $data['fs_alias_orig'], $data['fs_alias'], $params);
+					$this->moveMediaItems($data['id'], $data['fs_alias_orig'], $data['fs_alias']);
 				}
 			}
-
-			$this->updateTagMapping($data['tags'], $id);
-			$this->createIntroText($data, $params, $id);
-			$this->updateGenresStat($data['genres_orig'], $data['genres']);
-
-			$app->setUserState('com_kinoarhiv.movies.data.' . $user->id . '.id', $id);
-			$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data',
-				array(
-					'success' => true,
-					'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'),
-					'data'    => array('id' => $id, 'title' => $title)
-				)
-			);
 		}
 		catch (Exception $e)
 		{
-			$this->setError($e->getMessage());
+			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
 		}
+
+		// Update the rules.
+		if ($user->authorise('core.edit.access', 'com_kinoarhiv') && isset($data['rules']))
+		{
+			$title = $db->escape($title);
+
+			if (empty($data['id']))
+			{
+				$asset_id = KAComponentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.movie.' . $insertid, $title, $data['rules']);
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__ka_movies'))
+					->set($db->quoteName('asset_id') . ' = ' . (int) $asset_id);
+
+				$db->setQuery($query);
+
+				try
+				{
+					$db->execute();
+				}
+				catch (Exception $e)
+				{
+					$app->enqueueMessage($e->getMessage(), 'error');
+
+					return false;
+				}
+			}
+			else
+			{
+				KAComponentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.movie.' . $data['id'], $title, $data['rules']);
+			}
+		}
+
+		// Update countries.
+		if (!empty($data['countries']) && ($data['countries_orig'] != $data['countries'][0]))
+		{
+			$this->saveCountries($data['id'], $data['countries'][0]);
+		}
+
+		// Update genres.
+		if (!empty($data['genres']) && ($data['genres_orig'] != $data['genres'][0]))
+		{
+			$this->saveGenres($data['id'], $data['genres'][0]);
+		}
+
+		$this->updateGenresStat($data['genres_orig'], $data['genres']);
+		$this->updateTagMapping($data['id'], $data['tags']);
 
 		return true;
 	}
@@ -1288,155 +1284,71 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Create intro text for movie
 	 *
-	 * @param   array    $data    Movie info array
+	 * @param   array    $data    Movie info
 	 * @param   object   $params  Component parameters
 	 * @param   integer  $id      Item ID
 	 *
-	 * @return  boolean
+	 * @return  string
+	 *
+	 * @since   3.1
 	 */
-	protected function createIntroText($data, $params, $id)
+	private function createIntroText($data, $params, $id)
 	{
-		$db = $this->getDbo();
-		$query_result = true;
-		$intro_countries = '';
-		$intro_genres = '';
-		$intro_directors = '';
-		$intro_cast = '';
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		// Proccess intro text for country IDs and store in relation table
+		$db = $this->getDbo();
+		$introtext = array();
+
+		// Process intro text for countries
 		if (!empty($data['countries']))
 		{
 			$query = $db->getQuery(true)
 				->select($db->quoteName(array('name', 'code')))
 				->from($db->quoteName('#__ka_countries'))
-				->where($db->quoteName('id') . ' IN (' . $data['countries'] . ')');
+				->where($db->quoteName('id') . ' IN (' . implode(',', $data['countries']) . ')');
 
 			$db->setQuery($query);
 			$countries = $db->loadObjectList();
 
-			$ln_str = count($countries) > 1 ? 'COM_KA_COUNTRIES' : 'COM_KA_COUNTRY';
+			$language_const = count($countries) > 1 ? 'COM_KA_COUNTRIES' : 'COM_KA_COUNTRY';
+			$countries_str = '';
 
 			foreach ($countries as $cn)
 			{
-				$intro_countries .= '[cn=' . $cn->code . ']' . $cn->name . '[/cn], ';
+				$countries_str .= '[cn=' . $cn->code . ']' . $cn->name . '[/cn], ';
 			}
 
-			$intro_countries = '<span class="cn-list">[country ln=' . $ln_str . ']: ' . StringHelper::substr($intro_countries, 0, -2) . '[/country]</span>';
-
-			$countries_new_arr = explode(',', $data['countries']);
-
-			$db->setDebug(true);
-			$db->lockTable('#__ka_rel_countries');
-			$db->transactionStart();
-
-			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__ka_rel_countries'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
-
-			$db->setQuery($query);
-			$db->execute();
-
-			foreach ($countries_new_arr as $ordering => $country_id)
-			{
-				$query = $db->getQuery(true);
-
-				$query->insert($db->quoteName('#__ka_rel_countries'))
-					->columns($db->quoteName(array('country_id', 'movie_id', 'ordering')))
-					->values("'" . (int) $country_id . "', '" . (int) $id . "', '" . (int) $ordering . "'");
-
-				$db->setQuery($query . ';');
-
-				if ($db->execute() === false)
-				{
-					$query_result = false;
-					break;
-				}
-			}
-
-			if ($query_result === false)
-			{
-				$db->transactionRollback();
-				$this->setError('Commit for "' . $db->getPrefix() . '_ka_rel_countries" failed!');
-			}
-			else
-			{
-				$db->transactionCommit();
-			}
-
-			$db->unlockTables();
-			$db->setDebug(false);
+			$introtext[] = '<span class="cn-list">[country ln=' . $language_const . ']: ' . StringHelper::substr($countries_str, 0, -2) . '[/country]</span>';
 		}
 
-		// Proccess intro text for genres IDs and store in relation table
+		// Process intro text for genres
 		if (!empty($data['genres']))
 		{
 			$query = $db->getQuery(true)
 				->select($db->quoteName('name'))
 				->from($db->quoteName('#__ka_genres'))
-				->where($db->quoteName('id') . ' IN (' . $data['genres'] . ')');
+				->where($db->quoteName('id') . ' IN (' . implode(',', $data['genres']) . ')');
 
 			$db->setQuery($query);
 			$genres = $db->loadObjectList();
 
-			$ln_str = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
+			$language_const = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
+			$genres_str = '';
 
 			foreach ($genres as $genre)
 			{
-				$intro_genres .= $genre->name . ', ';
+				$genres_str .= $genre->name . ', ';
 			}
 
-			$intro_genres = '<span class="gn-list">[genres ln=' . $ln_str . ']: ' . StringHelper::substr($intro_genres, 0, -2) . '[/genres]</span>';
-
-			$genres_new_arr = explode(',', $data['genres']);
-
-			$db->setDebug(true);
-			$db->lockTable('#__ka_rel_genres');
-			$db->transactionStart();
-
-			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__ka_rel_genres'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
-
-			$db->setQuery($query);
-			$db->execute();
-
-			foreach ($genres_new_arr as $ordering => $genre_id)
-			{
-				$query = $db->getQuery(true);
-
-				$query->insert($db->quoteName('#__ka_rel_genres'))
-					->columns($db->quoteName(array('genre_id', 'movie_id', 'ordering')))
-					->values("'" . (int) $genre_id . "', '" . (int) $id . "', '" . (int) $ordering . "'");
-
-				$db->setQuery($query . ';');
-
-				if ($db->execute() === false)
-				{
-					$query_result = false;
-					break;
-				}
-			}
-
-			if ($query_result === false)
-			{
-				$db->transactionRollback();
-				$this->setError('Commit for "' . $db->getPrefix() . '_ka_rel_genres" failed!');
-			}
-			else
-			{
-				$db->transactionCommit();
-			}
-
-			$db->unlockTables();
-			$db->setDebug(false);
+			$introtext[] = '<span class="gn-list">[genres ln=' . $language_const . ']: ' . StringHelper::substr($genres_str, 0, -2) . '[/genres]</span>';
 		}
 
+		// Process directors and cast
 		if (!empty($id))
 		{
 			// Start processing intro text for director(s) IDs
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName(array('rel.name_id', 'n.name', 'n.latin_name')))
+			$query = $db->getQuery(true)
+				->select($db->quoteName(array('rel.name_id', 'n.name', 'n.latin_name')))
 				->from($db->quoteName('#__ka_rel_names', 'rel'))
 				->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('rel.name_id'))
 				->where($db->quoteName('rel.movie_id') . ' = ' . $id . ' AND ' . $db->quoteName('rel.is_directors') . ' = 1')
@@ -1448,33 +1360,25 @@ class KinoarhivModelMovie extends JModelForm
 			}
 
 			$db->setQuery($query);
-			$names_d = $db->loadObjectList();
+			$directors = $db->loadObjectList();
 
-			if (count($names_d) > 0)
+			if (count($directors) > 0)
 			{
-				$ln_str = count($names_d) > 1 ? 'COM_KA_DIRECTORS' : 'COM_KA_DIRECTOR';
+				$language_const = count($directors) > 1 ? 'COM_KA_DIRECTORS' : 'COM_KA_DIRECTOR';
+				$directors_str  = '';
 
-				foreach ($names_d as $director)
+				foreach ($directors as $director)
 				{
-					$n = !empty($director->name) ? $director->name : '';
-
-					if (!empty($director->name) && !empty($director->latin_name))
-					{
-						$n .= ' / ';
-					}
-
-					$n .= !empty($director->latin_name) ? $director->latin_name : '';
-					$intro_directors .= '[name=' . $director->name_id . ']' . $n . '[/name], ';
+					$directors_str .= '[name=' . $director->name_id . ']' . KAContentHelper::formatItemTitle($director->name, $director->latin_name) . '[/name], ';
 				}
 
-				$intro_directors = '<span class="dc-list">[names ln=' . $ln_str . ']: ' . StringHelper::substr($intro_directors, 0, -2) . '[/names]</span>';
+				$introtext[] = '<span class="dc-list">[names ln=' . $language_const . ']: ' . StringHelper::substr($directors_str, 0, -2) . '[/names]</span>';
 			}
 			// End
 
-			// Start processing intro text for cast IDs
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName(array('rel.name_id', 'n.name', 'n.latin_name')))
+			// Start processing intro text for cast
+			$query = $db->getQuery(true)
+				->select($db->quoteName(array('rel.name_id', 'n.name', 'n.latin_name')))
 				->from($db->quoteName('#__ka_rel_names', 'rel'))
 				->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('rel.name_id'))
 				->where('rel.movie_id = ' . $id . ' AND rel.is_actors = 1 AND rel.voice_artists = 0')
@@ -1486,68 +1390,194 @@ class KinoarhivModelMovie extends JModelForm
 			}
 
 			$db->setQuery($query);
-			$names = $db->loadObjectList();
+			$cast = $db->loadObjectList();
 
-			if (count($names) > 0)
+			if (count($cast) > 0)
 			{
-				foreach ($names as $name)
+				$cast_str  = '';
+
+				foreach ($cast as $name)
 				{
-					$n = !empty($name->name) ? $name->name : '';
-
-					if (!empty($name->name) && !empty($name->latin_name))
-					{
-						$n .= ' / ';
-					}
-
-					$n .= !empty($name->latin_name) ? $name->latin_name : '';
-					$intro_cast .= '[name=' . $name->name_id . ']' . $n . '[/name], ';
+					$cast_str .= '[name=' . $name->name_id . ']' . KAContentHelper::formatItemTitle($name->name, $name->latin_name) . '[/name], ';
 				}
 
-				$intro_cast = '<span class="cast-list">[names ln=COM_KA_CAST]: ' . StringHelper::substr($intro_cast, 0, -2) . '[/names]</span>';
+				$introtext[] = '<span class="cast-list">[names ln=COM_KA_CAST]: ' . StringHelper::substr($cast_str, 0, -2) . '[/names]</span>';
 			}
 			// End
 		}
 
-		$query = $db->getQuery(true);
+		return implode('<br />', $introtext);
+	}
 
-		$query->update($db->quoteName('#__ka_movies'))
-			->set($db->quoteName('introtext') . " = '" . $db->escape($intro_countries . $intro_genres . $intro_directors . $intro_cast) . "'")
-			->where($db->quoteName('id') . ' = ' . (int) $id);
+	/**
+	 * Save careers to relation table.
+	 *
+	 * @param   integer  $id         Item ID.
+	 * @param   string   $countries  Comma separated string with countries ID.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	protected function saveCountries($id, $countries)
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$countries = explode(',', $countries);
+		$query_result = true;
 
-		$db->setQuery($query);
+		$db->setDebug(true);
+		$db->lockTable('#__ka_rel_countries');
+		$db->transactionStart();
 
-		try
+		if (!empty($id))
 		{
-			$db->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->setError($e->getMessage());
-			$query_result = false;
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_rel_countries'))
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
 		}
 
-		return $query_result;
+		foreach ($countries as $key => $country_id)
+		{
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_rel_countries'))
+				->columns($db->quoteName(array('country_id', 'movie_id', 'ordering')))
+				->values("'" . (int) $country_id . "', '" . (int) $id . "', '" . $key . "'");
+			$db->setQuery($query . ';');
+
+			if ($db->execute() === false)
+			{
+				$query_result = false;
+				break;
+			}
+		}
+
+		if ($query_result === false)
+		{
+			$db->transactionRollback();
+			$app->enqueueMessage('Failed to update countries!', 'error');
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		return (bool) $query_result;
+	}
+
+	/**
+	 * Save genres to relation table.
+	 *
+	 * @param   integer  $id      Item ID.
+	 * @param   string   $genres  Comma separated string with genre ID.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	protected function saveGenres($id, $genres)
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$genres = explode(',', $genres);
+		$query_result = true;
+
+		$db->setDebug(true);
+		$db->lockTable('#__ka_rel_genres');
+		$db->transactionStart();
+
+		if (!empty($id))
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_rel_genres'))
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+		}
+
+		foreach ($genres as $key => $genre_id)
+		{
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_rel_genres'))
+				->columns($db->quoteName(array('genre_id', 'movie_id', 'ordering')))
+				->values("'" . (int) $genre_id . "', '" . (int) $id . "', '" . $key . "'");
+			$db->setQuery($query . ';');
+
+			if ($db->execute() === false)
+			{
+				$query_result = false;
+				break;
+			}
+		}
+
+		if ($query_result === false)
+		{
+			$db->transactionRollback();
+			$app->enqueueMessage('Failed to update genres!', 'error');
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+		$db->setDebug(false);
+
+		return (bool) $query_result;
 	}
 
 	/**
 	 * Method to update tags mapping.
 	 *
-	 * @param   mixed  $ids       New tags IDs. Array of IDs or string with IDs separated by commas.
-	 * @param   int    $movie_id  Movie ID
+	 * @param   int     $item_id     Item ID
+	 * @param   mixed   $ids         New tags IDs. Array of IDs or string with IDs separated by commas.
+	 * @param   string  $type_alias  Type alias. In form: component_name.item_type
 	 *
 	 * @return  boolean   True on success
+	 *
+	 * @since   3.1
 	 */
-	protected function updateTagMapping($ids, $movie_id)
+	protected function updateTagMapping($item_id, $ids, $type_alias = 'com_kinoarhiv.movie')
 	{
-		$db = $this->getDbo();
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+		$ids = (!is_array($ids)) ? explode(',', $ids) : $ids;
 
 		if (!empty($ids))
 		{
-			$ids = (!is_array($ids)) ? explode(',', $ids) : $ids;
-
+			// Remove existing tags from mapping table
 			$query = $db->getQuery(true)
 				->delete($db->quoteName('#__contentitem_tag_map'))
-				->where($db->quoteName('content_item_id') . ' = ' . (int) $movie_id);
+				->where($db->quoteName('content_item_id') . ' = ' . (int) $item_id);
 			$db->setQuery($query);
 
 			try
@@ -1556,7 +1586,7 @@ class KinoarhivModelMovie extends JModelForm
 			}
 			catch (Exception $e)
 			{
-				$this->setError($e->getMessage());
+				$app->enqueueMessage($e->getMessage(), 'error');
 
 				return false;
 			}
@@ -1566,13 +1596,13 @@ class KinoarhivModelMovie extends JModelForm
 				return true;
 			}
 
-			$query = $db->getQuery(true);
-			$query->insert($db->quoteName('#__contentitem_tag_map'))
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__contentitem_tag_map'))
 				->columns($db->quoteName(array('type_alias', 'core_content_id', 'content_item_id', 'tag_id', 'tag_date', 'type_id')));
 
 			foreach ($ids as $tag_id)
 			{
-				$query->values("'com_kinoarhiv.movie','0','" . (int) $movie_id . "','" . (int) $tag_id . "','" . $query->currentTimestamp() . "','0'");
+				$query->values("'" . (string) $type_alias . "', '0', '" . (int) $item_id . "', '" . (int) $tag_id . "', " . $query->currentTimestamp() . ", '0'");
 			}
 
 			$db->setQuery($query);
@@ -1583,7 +1613,7 @@ class KinoarhivModelMovie extends JModelForm
 			}
 			catch (Exception $e)
 			{
-				$this->setError($e->getMessage());
+				$app->enqueueMessage($e->getMessage(), 'error');
 
 				return false;
 			}
@@ -1593,92 +1623,78 @@ class KinoarhivModelMovie extends JModelForm
 	}
 
 	/**
-	 * Method to move all media items which is linked to the movie into a new location, if movie alias was changed.
+	 * Method to move all media items to new location, if alias was changed.
 	 *
-	 * @param   int     $id         Movie ID.
-	 * @param   string  $old_alias  Old movie filesystem alias.
-	 * @param   string  $new_alias  New movie filesystem alias.
-	 * @param   object  $params     Component parameters.
+	 * @param   int     $id         Item ID.
+	 * @param   string  $old_alias  Old name alias.
+	 * @param   string  $new_alias  New name alias.
 	 *
-	 * @return  boolean   True on success
+	 * @return  boolean
+	 *
+	 * @since   3.1
 	 */
-	protected function moveMediaItems($id, $old_alias, $new_alias, $params)
+	private function moveMediaItems($id, $old_alias, $new_alias)
 	{
+		$app = JFactory::getApplication();
+
 		if (empty($id) || empty($old_alias) || empty($new_alias))
 		{
-			$this->setError('Movie ID or alias cannot be empty!');
-
 			return false;
 		}
-		else
+
+		jimport('joomla.filesystem.folder');
+		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
+
+		$params            = JComponentHelper::getParams('com_kinoarhiv');
+		$filesystem        = KAFilesystem::getInstance();
+		$path_poster       = $params->get('media_posters_root');
+		$path_wallpp       = $params->get('media_wallpapers_root');
+		$path_scr          = $params->get('media_scr_root');
+		$old_folder_poster = JPath::clean($path_poster . '/' . $old_alias . '/' . $id . '/posters');
+		$old_folder_wallpp = JPath::clean($path_wallpp . '/' . $old_alias . '/' . $id . '/wallpapers');
+		$old_folder_scr    = JPath::clean($path_scr . '/' . $old_alias . '/' . $id . '/screenshots');
+		$new_folder_poster = JPath::clean($path_poster . '/' . $new_alias . '/' . $id . '/posters');
+		$new_folder_wallpp = JPath::clean($path_wallpp . '/' . $new_alias . '/' . $id . '/wallpapers');
+		$new_folder_scr    = JPath::clean($path_scr . '/' . $new_alias . '/' . $id . '/screenshots');
+
+		if (!$filesystem->move(
+			array($old_folder_poster, $old_folder_wallpp, $old_folder_scr),
+			array($new_folder_poster, $new_folder_wallpp, $new_folder_scr)
+		))
 		{
-			jimport('joomla.filesystem.folder');
-			JLoader::register('KAFilesystemHelper', JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'filesystem.php');
+			$app->enqueueMessage('Error while moving the files from media folders into new location! See log for more information.', 'error');
+		}
 
-			// Move gallery items
-			$path_poster = $params->get('media_posters_root');
-			$path_wallpp = $params->get('media_wallpapers_root');
-			$path_screen = $params->get('media_scr_root');
-			$old_folder_poster = $path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'posters';
-			$old_folder_wallpp = $path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'wallpapers';
-			$old_folder_screen = $path_screen . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'screenshots';
-			$new_folder_poster = $path_poster . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'posters';
-			$new_folder_wallpp = $path_wallpp . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'wallpapers';
-			$new_folder_screen = $path_screen . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'screenshots';
+		// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
+		$_poster_path = JPath::clean($path_poster . '/' . $old_alias . '/' . $id);
+		$_wallpp_path = JPath::clean($path_wallpp . '/' . $old_alias . '/' . $id);
+		$_scr_path    = JPath::clean($path_scr . '/' . $old_alias . '/' . $id);
 
-			if (!KAFilesystemHelper::move(
-				array(JPath::clean($old_folder_poster), JPath::clean($old_folder_wallpp), JPath::clean($old_folder_screen)),
-				array(JPath::clean($new_folder_poster), JPath::clean($new_folder_wallpp), JPath::clean($new_folder_screen))
-				))
-			{
-				$this->setError('Error while moving the files from media folders into new location! See log for more information.');
-				KAComponentHelper::eventLog('Error while moving the files from media folders into new location! See log for more information.');
-			}
+		if (file_exists($_poster_path) && $filesystem->getFolderSize($_poster_path) === 0)
+		{
+			JFolder::delete($_poster_path);
+		}
 
-			// Remove parent folder for posters/wallpapers/screenshots. Delete only if folder(s) is empty.
-			if (KAFilesystemHelper::getFolderSize($path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id) === 0)
-			{
-				if (file_exists($path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id))
-				{
-					JFolder::delete($path_poster . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id);
-				}
-			}
+		if (file_exists($_wallpp_path) && $filesystem->getFolderSize($_wallpp_path) === 0)
+		{
+			JFolder::delete($_wallpp_path);
+		}
 
-			if (KAFilesystemHelper::getFolderSize($path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id) === 0)
-			{
-				if (file_exists($path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id))
-				{
-					JFolder::delete($path_wallpp . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id);
-				}
-			}
+		if (file_exists($_scr_path) && $filesystem->getFolderSize($_scr_path) === 0)
+		{
+			JFolder::delete($_scr_path);
+		}
 
-			if (KAFilesystemHelper::getFolderSize($path_screen . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id) === 0)
-			{
-				if (file_exists($path_screen . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id))
-				{
-					JFolder::delete($path_screen . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id);
-				}
-			}
+		// Move trailers into new location
+		$path_trailers       = $params->get('media_trailers_root');
+		$old_folder_trailers = JPath::clean($path_trailers . '/' . $old_alias . '/' . $id);
+		$new_folder_trailers = JPath::clean($path_trailers . '/' . $new_alias . '/' . $id);
 
-			// Move trailers and their content
-			$path_trailers = $params->get('media_trailers_root');
-			$old_folder_trailers = $path_trailers . DIRECTORY_SEPARATOR . $old_alias . DIRECTORY_SEPARATOR . $id;
-			$new_folder_trailers = $path_trailers . DIRECTORY_SEPARATOR . $new_alias . DIRECTORY_SEPARATOR . $id;
+		if (!$filesystem->move($old_folder_trailers, $new_folder_trailers))
+		{
+			$app->enqueueMessage('Error while moving the files from trailer folders into new location! See log for more information.', 'error');
 
-			if (KAFilesystemHelper::move(JPath::clean($old_folder_trailers), JPath::clean($new_folder_trailers), true))
-			{
-				if (KAFilesystemHelper::getFolderSize($old_folder_trailers) === 0)
-				{
-					if (file_exists($old_folder_trailers))
-					{
-						JFolder::delete($old_folder_trailers);
-					}
-				}
-			}
-			else
-			{
-				$this->setError('Error while moving the files from trailer folders into new location! See log for more information.');
-			}
+			return false;
 		}
 
 		return true;
@@ -1691,6 +1707,8 @@ class KinoarhivModelMovie extends JModelForm
 	 * @param   string  $new  New genres list.
 	 *
 	 * @return  mixed   True on success, exception otherwise
+	 *
+	 * @since   3.1
 	 */
 	protected function updateGenresStat($old, $new)
 	{
@@ -1710,10 +1728,10 @@ class KinoarhivModelMovie extends JModelForm
 
 			$query->update($db->quoteName('#__ka_genres'));
 
-			$subquery = $db->getQuery(true)
-				->select('COUNT(genre_id)')
-				->from($db->quoteName('#__ka_rel_genres'))
-				->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id);
+				$subquery = $db->getQuery(true)
+					->select('COUNT(genre_id)')
+					->from($db->quoteName('#__ka_rel_genres'))
+					->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id);
 
 			$query->set($db->quoteName('stats') . ' = (' . $subquery . ')')
 				->where($db->quoteName('id') . ' = ' . (int) $genre_id);
@@ -1729,7 +1747,7 @@ class KinoarhivModelMovie extends JModelForm
 		if ($query_result === false)
 		{
 			$db->transactionRollback();
-			$this->setError('Commit failed!');
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_KA_GENRES_TITLE') . ': ' . JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR'), 'error');
 		}
 		else
 		{
@@ -1740,64 +1758,6 @@ class KinoarhivModelMovie extends JModelForm
 		$db->setDebug(false);
 
 		return $query_result;
-	}
-
-	/**
-	 * Method to remove cast and crew.
-	 *
-	 * @return  array
-	 *
-	 * @since   3.0
-	 */
-	public function deleteCast()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$data = $app->input->post->get('data', array(), 'array');
-		$query_result = true;
-
-		if (count($data) <= 0)
-		{
-			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
-		}
-
-		$db->setDebug(true);
-		$db->lockTable('#__ka_rel_names');
-		$db->transactionStart();
-
-		foreach ($data as $key => $value)
-		{
-			$ids = explode('_', $value['name']);
-			$query = $db->getQuery(true);
-
-			$query->delete($db->quoteName('#__ka_rel_names'))
-				->where('name_id = ' . (int) $ids[3] . ' AND movie_id = ' . (int) $ids[4] . ' AND FIND_IN_SET("' . (int) $ids[5] . '", type)');
-			$db->setQuery($query . ';');
-
-			if ($db->execute() === false)
-			{
-				$query_result = false;
-				break;
-			}
-		}
-
-		if ($query_result === false)
-		{
-			$db->transactionRollback();
-			$success = false;
-			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
-		}
-		else
-		{
-			$db->transactionCommit();
-			$success = true;
-			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
-		}
-
-		$db->unlockTables();
-		$db->setDebug(false);
-
-		return array('success' => $success, 'message' => $message);
 	}
 
 	/**

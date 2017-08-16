@@ -66,10 +66,7 @@ class KinoarhivControllerAwards extends JControllerLegacy
 			return;
 		}
 
-		// Store data for use in KinoarhivModelAward::loadFormData()
-		$app->setUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data');
 
 		if (!$result)
 		{
@@ -82,6 +79,6 @@ class KinoarhivControllerAwards extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data', null);
 
-		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $session_data));
+		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $validData));
 	}
 }

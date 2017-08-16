@@ -204,10 +204,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.movies.global.data', null);
-
 		$message = $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED');
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', $message);
 	}
@@ -327,7 +323,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
@@ -354,25 +349,9 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
-	}
-
-	/**
-	 * Method to delete an item from cast and crew list.
-	 *
-	 * @return  string
-	 *
-	 * @since  3.0
-	 */
-	public function deleteCast()
-	{
-		$model = $this->getModel('movie');
-		$result = $model->deleteCast();
-
-		echo json_encode($result);
 	}
 
 	/**

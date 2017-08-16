@@ -66,10 +66,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 			return;
 		}
 
-		// Store data for use in KinoarhivModelCareer::loadFormData()
-		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data');
 
 		if (!$result)
 		{
@@ -82,7 +79,7 @@ class KinoarhivControllerCareers extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.careers.' . $user->id . '.edit_data', null);
 
-		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $session_data));
+		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $validData));
 	}
 
 	/**

@@ -70,7 +70,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 			e.preventDefault();
 
 			var item_id  = parseInt($('input[name="image_id"]').val(), 10),
-				no_cover = '<?php echo JUri::root(); ?>components/com_kinoarhiv/assets/themes/component/<?php echo $this->params->get('ka_theme'); ?>/images/no_movie_cover.png';
+				no_cover = '<?php echo JUri::root(); ?>media/com_kinoarhiv/images/themes/<?php echo $this->params->get('ka_theme'); ?>/no_movie_cover.png';
 
 			if (isNaN(item_id)) {
 				return false;
@@ -228,7 +228,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 			<?php echo JHtml::_('bootstrap.startTabSet', 'movies', array('active' => 'page0')); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'movies', 'page0', JText::_('COM_KA_MOVIES_TAB_MAIN')); ?>
 
-					<?php // echo $this->loadTemplate('info'); ?>
+					<?php echo $this->loadTemplate('info'); ?>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'movies', 'page1', JText::_('COM_KA_MOVIES_TAB_RATE')); ?>

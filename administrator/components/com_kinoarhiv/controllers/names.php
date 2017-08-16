@@ -204,10 +204,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.names.global.data', null);
-
 		$message = $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED');
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names', $message);
 	}
@@ -296,7 +292,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 		}
 
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
@@ -323,7 +318,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 		}
 
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.data', null);
 		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', null);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names');

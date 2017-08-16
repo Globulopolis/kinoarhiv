@@ -233,14 +233,16 @@ class KAFilesystem
 	}
 
 	/**
-	 * Moves a folder and files.
+	 * Moves folder and files.
 	 *
 	 * @param   mixed    $src   The path to the source folder or an array of paths. If $src is array when the folder content
 	 *                          move into $dest.
 	 * @param   mixed    $dest  The path to the destination folder or an array of paths.
-	 * @param   boolean  $copy  If false when just copy content, copy and remove otherwise.
+	 * @param   boolean  $copy  If true when just copy content, copy and remove otherwise.
 	 *
 	 * @return  boolean
+	 *
+	 * @since   3.0
 	 */
 	public function move($src, $dest, $copy = false)
 	{
@@ -272,9 +274,11 @@ class KAFilesystem
 	 * @param   mixed    $src   The path to the source folder or an array of paths. If $src is array when the folder content
 	 *                          move into $dest.
 	 * @param   mixed    $dest  The path to the destination folder or an array of paths.
-	 * @param   boolean  $copy  If false when just copy content, copy and remove otherwise.
+	 * @param   boolean  $copy  If true when just copy content, copy and remove otherwise.
 	 *
 	 * @return  boolean
+	 *
+	 * @since   3.0
 	 */
 	private function moveItem($src, $dest, $copy)
 	{
@@ -370,6 +374,8 @@ class KAFilesystem
 	 * @param   boolean  $cache  Clear stat cache.
 	 *
 	 * @return  mixed    Folder size, false on error.
+	 *
+	 * @since   3.0
 	 */
 	public function getFolderSize($path, $cache = true)
 	{

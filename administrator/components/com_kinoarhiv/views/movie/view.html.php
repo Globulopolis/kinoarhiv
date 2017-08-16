@@ -97,11 +97,11 @@ class KinoarhivViewMovie extends JViewLegacy
 		{
 			$items->set(
 				'poster',
-				JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
+				JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png'
 			);
 			$items->set(
 				'th_poster',
-				JUri::root() . 'components/com_kinoarhiv/assets/themes/component/' . $params->get('ka_theme') . '/images/no_movie_cover.png'
+				JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png'
 			);
 		}
 		else

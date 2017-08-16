@@ -66,10 +66,7 @@ class KinoarhivControllerPremieres extends JControllerLegacy
 			return;
 		}
 
-		// Store data for use in KinoarhivModelPremiere::loadFormData()
-		$app->setUserState('com_kinoarhiv.premieres.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.premieres.' . $user->id . '.data');
 
 		if (!$result)
 		{
@@ -82,7 +79,7 @@ class KinoarhivControllerPremieres extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.premieres.' . $user->id . '.edit_data', null);
 
-		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $session_data));
+		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $validData));
 	}
 
 	/**

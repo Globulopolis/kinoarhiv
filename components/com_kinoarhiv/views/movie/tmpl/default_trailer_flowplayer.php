@@ -36,8 +36,8 @@ if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) 
 
 								<div class="flowplayer fp-full is-splash" data-ratio="<?php echo $ratio; ?>"
 								     data-splash="<?php echo $item_trailer->screenshot; ?>"
-								     data-swf="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayer.swf"
-								     data-swfHls="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayerhls.swf">
+								     data-swf="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayer.swf"
+								     data-swfHls="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayerhls.swf">
 									<video>
 										<?php foreach ($item_trailer->files['video'] as $item): ?>
 											<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
@@ -104,8 +104,8 @@ if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0
 
 								<div class="flowplayer fp-full is-splash" data-ratio="<?php echo $ratio; ?>"
 								     data-splash="<?php echo $item_movie->screenshot; ?>"
-								     data-swf="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayer.swf"
-								     data-swfHls="<?php echo JUri::base(); ?>components/com_kinoarhiv/assets/players/flowplayer/flowplayerhls.swf">
+								     data-swf="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayer.swf"
+								     data-swfHls="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayerhls.swf">
 									<video>
 										<?php foreach ($item_movie->files['video'] as $item): ?>
 											<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>

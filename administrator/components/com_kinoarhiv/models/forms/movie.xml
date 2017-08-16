@@ -114,8 +114,7 @@
 			<option value="index, nofollow">JGLOBAL_INDEX_NOFOLLOW</option>
 			<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
 		</field>
-		<field name="tags" type="tag" label="JTAG" description="JTAG_DESC" class="span12" multiple="true">
-		</field>
+		<field name="tags" type="tag" label="JTAG" description="JTAG_DESC" class="span12" multiple="true"/>
 		<field name="publish_up" type="datetime" default="NOW" label="COM_KA_FIELD_PUBLISH_UP_LABEL"
 			   description="COM_KA_FIELD_PUBLISH_UP_DESC" class="inputbox" datatype="datetime" size="22"
 			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="server_utc"/>

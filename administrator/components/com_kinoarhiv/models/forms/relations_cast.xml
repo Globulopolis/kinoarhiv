@@ -38,7 +38,7 @@
 		</field>
 		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
 			   class="inputbox" size="6" default="0"/>
-		<field name="desc" type="editor" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC"
-			   filter="JComponentHelper::filterText" buttons="false"/>
+		<field name="desc" type="textarea" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" cols="60" rows="6"
+			   class="span6" filter="JComponentHelper::filterText"/>
 	</fieldset>
 </form>

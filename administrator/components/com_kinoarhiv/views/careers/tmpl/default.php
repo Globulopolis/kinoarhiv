@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
@@ -49,7 +50,7 @@ $columns   = 7;
 				return $helper;
 			},
 			update: function(){
-				$.post('index.php?option=com_kinoarhiv&task=careers.saveOrder&format=json', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
+				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=careers&tmpl=component', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
 						showMsg('#system-message-container', response.message);
 					}
@@ -116,9 +117,9 @@ $columns   = 7;
 						}
 						?>
 						<span class="sortable-handler<?php echo $iconClass ?>"><span class="icon-menu"></span></span>
-					<?php if ($canChange && $saveOrder) : ?>
-						<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
-					<?php endif; ?>
+						<?php if ($canChange && $saveOrder) : ?>
+							<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+						<?php endif; ?>
 					</td>
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>

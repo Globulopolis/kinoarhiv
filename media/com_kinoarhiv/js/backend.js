@@ -394,7 +394,7 @@ jQuery(document).ready(function($){
 			};
 
 			if (isNaN(parseInt($this.data('height'), 10))) {
-				height = Math.round(($(window).height() - $($this.data('height')).offset().top) - 180);
+				height = Math.round(($(window).height() - $($this.data('height')).offset().top) - 140);
 			} else {
 				height = $this.data('height');
 			}

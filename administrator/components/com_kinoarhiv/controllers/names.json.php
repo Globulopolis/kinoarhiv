@@ -85,23 +85,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 	}
 
 	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function saveOrder()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('names');
-		$result = $model->saveOrder();
-
-		echo json_encode($result);
-	}
-
-	/**
 	 * Method to remove award(s) in awards list on 'awards tab'.
 	 *
 	 * @return  string

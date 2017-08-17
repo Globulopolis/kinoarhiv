@@ -196,10 +196,14 @@ class KinoarhivModelMovie extends JModelForm
 		$registry = new Registry($result->attribs);
 		$result->attribs = $registry->toArray();
 
-		if (!empty($result->metadata))
+		$registry = new Registry($result->metadata);
+		$result->metadata = $registry->toArray();
+
+		if ($id)
 		{
-			$metadata = json_decode($result->metadata, true);
-			$result = (object) array_merge((array) $result, $metadata);
+			$tags = new JHelperTags;
+			$tags->getTagIds($result->id, 'com_kinoarhiv.movie');
+			$result->tags = $tags;
 		}
 
 		return $result;
@@ -1133,7 +1137,7 @@ class KinoarhivModelMovie extends JModelForm
 					. "'" . $data['age_restrict'] . "', '" . $data['ua_rate'] . "', '" . $data['mpaa'] . "', "
 					. "'" . $data['length'] . "', '" . (int) $data['rate_loc'] . "', "
 					. "'" . (int) $data['rate_sum_loc'] . "', '" . $data['imdb_votesum'] . "', "
-					. "'" . (int) $data['imdb_votes'] . "', '" . (int) $data['imdb_id'] . "', "
+					. "'" . (int) $data['imdb_votes'] . "', '" . $data['imdb_id'] . "', "
 					. "'" . $data['kp_votesum'] . "', '" . (int) $data['kp_votes'] . "', "
 					. "'" . (int) $data['kp_id'] . "', '" . (int) $data['rate_fc'] . "', "
 					. "'" . $data['rottentm_id'] . "', '" . (int) $data['metacritics'] . "', "
@@ -1171,7 +1175,7 @@ class KinoarhivModelMovie extends JModelForm
 				->set($db->quoteName('rate_sum_loc') . " = '" . (int) $data['rate_sum_loc'] . "'")
 				->set($db->quoteName('imdb_votesum') . " = '" . $data['imdb_votesum'] . "'")
 				->set($db->quoteName('imdb_votes') . " = '" . (int) $data['imdb_votes'] . "'")
-				->set($db->quoteName('imdb_id') . " = '" . (int) $data['imdb_id'] . "'")
+				->set($db->quoteName('imdb_id') . " = '" . $data['imdb_id'] . "'")
 				->set($db->quoteName('kp_votesum') . " = '" . $data['kp_votesum'] . "'")
 				->set($db->quoteName('kp_votes') . " = '" . (int) $data['kp_votes'] . "'")
 				->set($db->quoteName('kp_id') . " = '" . (int) $data['kp_id'] . "'")
@@ -1406,7 +1410,7 @@ class KinoarhivModelMovie extends JModelForm
 			// End
 		}
 
-		return implode('<br />', $introtext);
+		return implode('', $introtext);
 	}
 
 	/**

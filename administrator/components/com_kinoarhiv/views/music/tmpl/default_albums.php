@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));

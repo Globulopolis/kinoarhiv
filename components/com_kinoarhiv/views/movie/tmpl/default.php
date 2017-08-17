@@ -395,17 +395,15 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?>
 							| <?php echo $this->item->_length; ?></span>
 					</div>
-					<?php if ($this->item->attribs->show_tags == 1 && isset($this->item->tags)):
-						if (count($this->item->tags) > 0): ?>
-							<div>
-								<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
-								<span class="s-col">
-									<?php foreach ($this->item->tags as $tag): ?>
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->tag_title; ?>"><?php echo $tag->tag_title; ?></a>
-									<?php endforeach; ?>
-								</span>
-							</div>
-						<?php endif; ?>
+					<?php if (count($this->item->tags->itemTags) > 0): ?>
+					<div>
+						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
+						<span class="s-col">
+						<?php foreach ($this->item->tags->itemTags as $tag): ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->title; ?>"><?php echo $tag->title; ?></a>
+						<?php endforeach; ?>
+						</span>
+					</div>
 					<?php endif; ?>
 				</div>
 			</div>

@@ -11,10 +11,12 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+$saveOrder = $listOrder == 'a.ordering';
 $columns   = 9;
 ?>
 <script type="text/javascript">
@@ -46,7 +48,7 @@ $columns   = 9;
 				return $helper;
 			},
 			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&task=releases.saveOrder&format=json', $('#articleList tbody .order input.ord').serialize() + '&<?php echo JSession::getFormToken(); ?>=1&movie_id=' + $(ui.item).find('input[name="movie_id"]').val(), function(response){
+				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=releases&tmpl=component', $('#articleList tbody .order input.ord').serialize() + '&<?php echo JSession::getFormToken(); ?>=1&movie_id=' + $(ui.item).find('input[name="movie_id"]').val(), function(response){
 					if (!response.success) {
 						showMsg('#system-message-container', response.message);
 					}
@@ -101,15 +103,27 @@ $columns   = 9;
 					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
-				foreach ($this->items as $i => $item) :
-					$canEdit = $user->authorise('core.edit', 'com_kinoarhiv');
+				foreach ($this->items as $i => $item):
+					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv');
+					$canEdit   = $user->authorise('core.edit', 'com_kinoarhiv');
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
-						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv')) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
-						<span class="i"><?php echo (int) $item->ordering; ?></span>
-						<input type="hidden" name="ord[]" class="ord" value="<?php echo $item->id; ?>" />
-						<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
+						<?php
+						if (!$canChange)
+						{
+							$iconClass = ' inactive';
+						}
+						elseif (!$saveOrder)
+						{
+							$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::tooltipText('JORDERINGDISABLED');
+						}
+						?>
+						<span class="sortable-handler<?php echo $iconClass ?>"><span class="icon-menu"></span></span>
+						<?php if ($canChange && $saveOrder) : ?>
+							<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+							<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
+						<?php endif; ?>
 					</td>
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>

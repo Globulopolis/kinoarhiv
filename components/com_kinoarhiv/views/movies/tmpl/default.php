@@ -150,8 +150,11 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						</div>
 						<div class="introtext">
 							<div class="text"><?php echo $item->text; ?></div>
+
+							<?php if (!empty($item->plot)): ?>
 							<div class="separator"></div>
 							<div class="plot"><?php echo $item->plot; ?></div>
+							<?php endif; ?>
 
 							<?php if ($this->params->get('ratings_show_frontpage') == 1):
 								echo JLayoutHelper::render(

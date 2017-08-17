@@ -85,23 +85,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	}
 
 	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.0
-	 */
-	public function saveOrder()
-	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$model = $this->getModel('movies');
-		$result = $model->saveOrder();
-
-		echo json_encode($result);
-	}
-
-	/**
 	 * Removes cast in cast&crew list on 'cast&crew tab'.
 	 *
 	 * @return  string

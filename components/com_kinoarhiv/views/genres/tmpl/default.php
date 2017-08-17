@@ -16,7 +16,9 @@ defined('_JEXEC') or die;
 
 	for ($i = 0; $i < $items; $i++):
 		$item = $this->items[$i]; ?>
-		<div class="genre-item"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo ucfirst($item->name); ?></a> (<?php echo $item->stats; ?>)</div>
+		<span class="genre-item">
+			<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo ucfirst($item->name); ?></a> <span class="badge badge-info pull-right"><?php echo $item->stats; ?></span>
+		</span>
 	<?php endfor; ?>
 	</div>
 	<div class="clear"></div>

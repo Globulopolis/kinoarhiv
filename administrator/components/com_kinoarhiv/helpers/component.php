@@ -42,7 +42,6 @@ class KAComponentHelperBackend
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles_backend.min.css');
 
 		JHtml::_('jquery.framework');
-		JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');

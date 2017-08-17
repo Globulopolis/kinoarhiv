@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.tooltip');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox/', true, true);

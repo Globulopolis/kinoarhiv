@@ -11,10 +11,12 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+$saveOrder = $listOrder == 'a.ordering';
 $columns   = 8;
 ?>
 <script type="text/javascript">
@@ -48,7 +50,7 @@ $columns   = 8;
 				return $helper;
 			},
 			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&task=names.saveOrder&format=json', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
+				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=names&tmpl=component', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
 					if (!response.success) {
 						showMsg('#system-message-container', response.message);
 					}
@@ -105,8 +107,20 @@ $columns   = 8;
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
-						<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv.name.' . $item->id)) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
-						<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+						<?php
+						if (!$canChange)
+						{
+							$iconClass = ' inactive';
+						}
+						elseif (!$saveOrder)
+						{
+							$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::tooltipText('JORDERINGDISABLED');
+						}
+						?>
+						<span class="sortable-handler<?php echo $iconClass ?>"><span class="icon-menu"></span></span>
+						<?php if ($canChange && $saveOrder) : ?>
+							<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+						<?php endif; ?>
 					</td>
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>

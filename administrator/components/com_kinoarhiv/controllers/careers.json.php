@@ -81,43 +81,4 @@ class KinoarhivControllerCareers extends JControllerLegacy
 
 		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $validData));
 	}
-
-	/**
-	 * Method to save the submitted ordering values for records.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.1
-	 */
-	public function saveOrder()
-	{
-		if (!KAComponentHelper::checkToken('post'))
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
-
-			return;
-		}
-
-		$data = $this->input->post->get('ord', array(), 'array');
-
-		// Sorting required at least two items in list
-		if (count($data) < 2)
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO')));
-
-			return;
-		}
-
-		$model = $this->getModel('careers');
-		$result = $model->saveOrder($data);
-
-		if (!$result)
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_ERROR')));
-
-			return;
-		}
-
-		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_SAVED')));
-	}
 }

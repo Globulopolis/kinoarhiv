@@ -98,8 +98,17 @@ div.clear {
 
 .content .introtext {
 	float: left;
-	margin: 0.3em 0.5em 1em 1em;
+	margin: .3em .5em 1em 1em;
 	width: 78%;
+}
+
+.introtext .text {
+	margin-bottom: .5em;
+}
+
+.introtext .plot {
+	margin-top: .5em;
+	margin-bottom: .5em;
 }
 
 @media (max-width: 979px) {
@@ -198,11 +207,14 @@ h3.title {
 }
 
 .genre-list .genre-item {
-	border: 1px solid #ccc;
 	float: left;
 	margin: 2px;
 	padding: 2px 6px;
-	width: 120px;
+	width: 150px;
+}
+
+.genre-list .genre-item:hover {
+	background: #f0f0f0;
 }
 
 .tabs a {
@@ -380,7 +392,7 @@ h3.title {
 }
 
 .movie-info > div:hover, .name-info > div:hover {
-	background: #efefef;
+	background: #f0f0f0;
 }
 
 .movie-info .f-col, .name-info .f-col {

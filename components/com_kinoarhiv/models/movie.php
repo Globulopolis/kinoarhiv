@@ -170,12 +170,9 @@ class KinoarhivModelMovie extends JModelForm
 			// Get tags
 			if ($result->attribs->show_tags == 1)
 			{
-				// Check for an errors
-				if (isset($result->metadata) && !empty($result->metadata))
-				{
-					$metadata = json_decode($result->metadata);
-					$result->tags = $this->getTags(implode(',', $metadata->tags));
-				}
+				$tags = new JHelperTags;
+				$tags->getItemTags('com_kinoarhiv.movie', $result->id);
+				$result->tags = $tags;
 			}
 		}
 
@@ -454,48 +451,6 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		$result->attribs = isset($result->attribs) ? json_decode($result->attribs) : "{}";
-
-		return $result;
-	}
-
-	/**
-	 * Method
-	 *
-	 * @param   mixed  $ids  Tag ID or array of tags IDs
-	 *
-	 * @return object
-	 *
-	 * @since  3.0
-	 */
-	protected function getTags($ids)
-	{
-		$db = $this->getDbo();
-
-		if (empty($ids))
-		{
-			return (object) array();
-		}
-
-		if (is_array($ids))
-		{
-			$ids = implode(',', $ids);
-		}
-
-		$query = $db->getQuery(true)
-			->select('id AS tag_id, title AS tag_title, alias AS tag_alias')
-			->from($db->quoteName('#__tags'))
-			->where('id IN (' . $ids . ')');
-
-		$db->setQuery($query);
-
-		try
-		{
-			$result = $db->loadObjectList();
-		}
-		catch (Exception $e)
-		{
-			$result = array();
-		}
 
 		return $result;
 	}
@@ -1103,7 +1058,6 @@ class KinoarhivModelMovie extends JModelForm
 		return $result;
 	}
 
-
 	/**
 	 * Method to get one trailer for movie
 	 *
@@ -1517,7 +1471,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		if ($id == 0)
 		{
-			return array();
+			return (object) array();
 		}
 
 		$result = $this->getMovieData();

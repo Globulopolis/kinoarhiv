@@ -138,7 +138,7 @@ class KinoarhivModelMovie extends JModelForm
 				->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
 
 			$query->select('v.vote AS my_vote, v._datetime')
-				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v') . ' ON v.movie_id = m.id AND v.uid = ' . $user->get('id'));
+				->join('LEFT', $db->quoteName('#__ka_user_votes_movies', 'v') . ' ON v.movie_id = m.id AND v.uid = ' . $user->get('id'));
 		}
 
 		$query->select('user.name AS username')
@@ -1496,15 +1496,83 @@ class KinoarhivModelMovie extends JModelForm
 	 *
 	 * @since  3.0
 	 */
-	public function getSoundtracks()
+	public function getSoundtrackAlbums()
 	{
 		$db = $this->getDbo();
+		$user = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$app = JFactory::getApplication();
-		$id = $app->input->get('id', 0, 'int');
+		$movie_id = $app->input->get('id', 0, 'int');
+
+		if ($movie_id == 0)
+		{
+			return (object) array();
+		}
 
 		$result = $this->getMovieData();
 
-		$result->soundtracks = array();
+		// Get albums for movie
+		$query = $db->getQuery(true)
+			->select(
+				$db->quoteName(
+					array(
+						'a.id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.length', 'a.isrc',
+						'a.rate', 'a.rate_sum', 'a.cover_filename', 'a.covers_path', 'a.covers_path_www',
+						'a.tracks_path', 'a.tracks_preview_path', 'a.buy_url', 'a.attribs', 'n.name', 'n.latin_name'
+					)
+				)
+			)
+			->select($db->quoteName('a.year', 'date'))
+			->select('YEAR(' . $db->quoteName('a.year') . ') AS ' . $db->quoteName('year'))
+			->select($db->quoteName('n.id', 'artist_id'))
+			->from($db->quoteName('#__ka_music_albums', 'a'));
+
+			$subquery1 = $db->getQuery(true)
+				->select($db->quoteName('album_id'))
+				->from($db->quoteName('#__ka_music_rel_movies'))
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
+
+			$subquery2 = $db->getQuery(true)
+				->select($db->quoteName('name_id'))
+				->from($db->quoteName('#__ka_music_rel_composers'))
+				->where('album_id = a.id');
+
+		if (!$user->get('guest'))
+		{
+			$query->select('v.vote AS my_vote, v._datetime')
+				->join('LEFT', $db->quoteName('#__ka_user_votes_albums', 'v') . ' ON v.album_id = a.id AND v.uid = ' . $user->get('id'));
+		}
+
+		$query->join('LEFT', $db->quoteName('#__ka_music_rel_movies', 'rel') . ' ON a.id = rel.album_id')
+			->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id = (' . $subquery2 . ')')
+			->where('a.id IN (' . $subquery1 . ') AND a.state = 1 AND a.access IN (' . $groups . ')')
+			->order('rel.ordering ASC');
+
+		$db->setQuery($query);
+		$result->albums = $db->loadObjectList();
+
+		// Get tracks for albums
+		$query = $db->getQuery(true)
+			->select(
+				$db->quoteName(
+					array(
+						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
+						't.performer', 't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename'
+					)
+				)
+			)
+			->from($db->quoteName('#__ka_music', 't'));
+
+			$subquery = $db->getQuery(true)
+				->select($db->quoteName('album_id'))
+				->from($db->quoteName('#__ka_music_rel_movies'))
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
+
+		$query->where('t.album_id IN (' . $subquery . ')')
+			->order('t.track_number ASC');
+
+		$db->setQuery($query);
+		$result->tracks = $db->loadObjectList();
 
 		return $result;
 	}
@@ -1577,7 +1645,7 @@ class KinoarhivModelMovie extends JModelForm
 				// Remove vote and update rating
 				$query_vote = $db->getQuery(true)
 					->select('v.vote, r.rate_loc, r.rate_sum_loc')
-					->from($db->quoteName('#__ka_user_votes', 'v'))
+					->from($db->quoteName('#__ka_user_votes_movies', 'v'))
 					->join('LEFT', $db->quoteName('#__ka_movies', 'r') . ' ON r.id = v.movie_id')
 					->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
 
@@ -1602,7 +1670,7 @@ class KinoarhivModelMovie extends JModelForm
 						$m_query = $db->execute();
 
 						$query = $db->getQuery(true)
-							->delete($db->quoteName('#__ka_user_votes'))
+							->delete($db->quoteName('#__ka_user_votes_movies'))
 							->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
 
 						$db->setQuery($query);
@@ -1630,14 +1698,14 @@ class KinoarhivModelMovie extends JModelForm
 			}
 			else
 			{
-				// Update rating and insert or update user vote in #__ka_user_votes
+				// Update rating and insert or update user vote in #__ka_user_votes_movies
 				// Check if value in range from 1 to 'vote_summ_num'
 				if ($value >= 1 || $value <= $params->get('vote_summ_num'))
 				{
 					// At first we check if user allready voted and when just update the rating and vote
 					$query = $db->getQuery(true)
 						->select('v.vote, r.rate_loc, r.rate_sum_loc')
-						->from($db->quoteName('#__ka_user_votes', 'v'))
+						->from($db->quoteName('#__ka_user_votes_movies', 'v'))
 						->join('LEFT', $db->quoteName('#__ka_movies', 'r') . ' ON r.id = v.movie_id')
 						->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
 
@@ -1661,7 +1729,7 @@ class KinoarhivModelMovie extends JModelForm
 							$m_query = $db->execute();
 
 							$query = $db->getQuery(true)
-								->update($db->quoteName('#__ka_user_votes'))
+								->update($db->quoteName('#__ka_user_votes_movies'))
 								->set("vote = '" . (int) $value . "', _datetime = NOW()")
 								->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
 
@@ -1709,7 +1777,7 @@ class KinoarhivModelMovie extends JModelForm
 							$m_query = $db->execute();
 
 							$query = $db->getQuery(true)
-								->insert($db->quoteName('#__ka_user_votes'))
+								->insert($db->quoteName('#__ka_user_votes_movies'))
 								->columns($db->quoteName(array('uid', 'movie_id', 'vote', '_datetime')))
 								->values("'" . $user->get('id') . "', '" . $movie_id . "', '" . $value . "', NOW()");
 

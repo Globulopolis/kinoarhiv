@@ -238,6 +238,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_rel_genres` (
 CREATE TABLE IF NOT EXISTS `#__ka_music_rel_movies` (
   `movie_id` int(11) NOT NULL,
   `album_id` int(11) NOT NULL,
+  `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`movie_id`,`album_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -447,13 +448,21 @@ CREATE TABLE IF NOT EXISTS `#__ka_user_marked_names` (
   PRIMARY KEY (`uid`,`name_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `#__ka_user_votes` (
+CREATE TABLE IF NOT EXISTS `#__ka_user_votes_movies` (
   `uid` int(11) NOT NULL,
   `movie_id` int(11) NOT NULL,
   `vote` smallint(2) NOT NULL DEFAULT '0',
   `_datetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`uid`,`movie_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__ka_user_votes_albums` (
+  `uid` INT(11) NOT NULL,
+  `album_id` INT(11) NOT NULL,
+  `vote` SMALLINT(2) NOT NULL DEFAULT '0',
+  `_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`uid`,`album_id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_vendors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -27,7 +27,7 @@ use Joomla\String\StringHelper;
 		<div class="info">
 			<div class="left-col">
 				<div class="poster">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&tab=photo&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->item->title; ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->item->title; ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/></a>
 				</div>
 			</div>
 			<div class="right-col">
@@ -109,19 +109,27 @@ use Joomla\String\StringHelper;
 				</div>
 			</div>
 		</div>
-		<div class="clear"></div>
+
 		<?php if (!empty($this->item->desc)): ?>
+			<div class="clear"></div>
+			<br />
 			<div class="known">
-				<div class="corner-all header header-small"><?php echo JText::_('COM_KA_KNOWN'); ?></div>
-				<div class="content"><?php echo $this->item->desc; ?></div>
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<h4><a class="accordion-toggle" data-toggle="collapse" data-parent="#desc" href="#showKnownDescription"><?php echo JText::_('COM_KA_KNOWN'); ?></a></h4>
+					</div>
+					<div id="showKnownDescription" class="accordion-body collapse">
+						<div class="content"><?php echo $this->item->desc; ?></div>
+					</div>
+				</div>
 			</div>
 		<?php endif; ?>
 		<div class="clear"></div>
 
 		<?php if (count($this->item->movies) > 0): ?>
-			<div class="movies-list">
-				<div class="corner-all header header-small"><?php echo JText::_('COM_KA_NAMES_FILMOGRAPHY'); ?></div>
-				<div class="content">
+			<div class="movies-list-row">
+				<div class="movies-list-title corner-top"><?php echo JText::_('COM_KA_NAMES_FILMOGRAPHY'); ?></div>
+				<div class="movies-list-footer corner-bottom movies-list-content">
 					<?php $mi = 0;
 					foreach ($this->item->movies as $movie):
 						$mi++; ?>

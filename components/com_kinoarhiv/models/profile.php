@@ -85,7 +85,7 @@ class KinoarhivModelProfile extends JModelList
 
 			$sel_subquery = $db->getQuery(true)
 				->select('COUNT(uid)')
-				->from($db->quoteName('#__ka_user_votes'))
+				->from($db->quoteName('#__ka_user_votes_movies'))
 				->where('movie_id = m.id');
 
 			$query->select($db->quoteName(array('m.id', 'm.title', 'm.alias', 'm.rate_loc', 'm.rate_sum_loc', 'm.year')))
@@ -94,11 +94,11 @@ class KinoarhivModelProfile extends JModelList
 
 			// Join over user votes
 			$query->select('v.vote AS my_vote, v._datetime')
-				->join('LEFT', $db->quoteName('#__ka_user_votes', 'v') . ' ON v.uid = ' . (int) $user->get('id') . ' AND v.movie_id = m.id');
+				->join('LEFT', $db->quoteName('#__ka_user_votes_movies', 'v') . ' ON v.uid = ' . (int) $user->get('id') . ' AND v.movie_id = m.id');
 
 			$subquery = $db->getQuery(true)
 				->select('movie_id')
-				->from($db->quoteName('#__ka_user_votes'))
+				->from($db->quoteName('#__ka_user_votes_movies'))
 				->where('uid = ' . $user->get('id'));
 
 			$query->where('state = 1 AND id IN (' . $subquery . ') AND `access` IN (' . $groups . ')')

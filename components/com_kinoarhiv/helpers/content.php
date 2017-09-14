@@ -340,4 +340,43 @@ class KAContentHelper
 
 		return $results;
 	}
+
+	/**
+	 * Method to get a front cover for music album
+	 *
+	 * @param   object  $data  Item data. Should contain three fields from albums table - id, fs_alias, filename,
+	 *                        covers_path, covers_path_www, cover_filename.
+	 *
+	 * @return  mixed  Array on success, false otherwise.
+	 *
+	 * @since   3.1
+	 */
+	public static function getAlbumCover($data)
+	{
+		$params          = JComponentHelper::getParams('com_kinoarhiv');
+		$path            = $params->get('media_music_images_root') . '/' . $data->fs_alias . '/' . $data->id . '/';
+		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$covers          = array('poster' => '', 'th_poster' => '');
+
+		// Search cover in default location from component settings
+		if (is_file(JPath::clean($path . $data->filename)))
+		{
+			if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
+			{
+				$covers['poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . '/'
+					. urlencode($data->fs_alias) . '/' . $data->id . '/' . $data->filename;
+				$covers['th_poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . '/'
+					. urlencode($data->fs_alias) . '/' . $data->id . '/' . 'thumb_' . $data->filename;
+			}
+			else
+			{
+				$covers['poster'] = $params->get('media_music_images_root_www') . '/' . urlencode($data->fs_alias)
+					. '/' . $data->id . '/' . $data->filename;
+				$covers['th_poster'] = $params->get('media_music_images_root_www') . '/' . urlencode($data->fs_alias)
+					. '/' . $data->id . '/' . 'thumb_' . $data->filename;
+			}
+		}
+
+		return $covers;
+	}
 }

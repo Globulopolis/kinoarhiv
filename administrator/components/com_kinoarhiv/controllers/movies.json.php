@@ -131,7 +131,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		$model = $this->getModel('movie');
-		$result = $model->removeMovieCast($new_ids);
+		$result = $model->removeMovieCast($id, $new_ids);
 
 		if (!$result)
 		{

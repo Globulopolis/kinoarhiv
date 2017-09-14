@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
+use Joomla\Registry\Registry;
 
 /**
  * Movie View class
@@ -51,48 +52,27 @@ class KinoarhivViewMovie extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();
-		$this->page = $app->input->get('page', 'movie', 'cmd');
+		$this->page = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid');
 
-		switch ($this->page)
+		if (method_exists($this, $this->page))
 		{
-			case 'cast':
-				$this->cast();
-				break;
-			case 'wallpapers':
-				$this->wallpp();
-				break;
-			case 'posters':
-				$this->posters();
-				break;
-			case 'screenshots':
-				$this->screenshots();
-				break;
-			case 'awards':
-				$this->awards();
-				break;
-			case 'trailers':
-				$this->trailers();
-				break;
-			case 'soundtracks':
-				$this->sound();
-				break;
-			default:
-				$this->info($tpl);
-				break;
+			$this->{$this->page}();
+		}
+		else
+		{
+			$this->info();
 		}
 	}
 
 	/**
 	 * Method to get and show movie info data.
 	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
 	 * @return  mixed  A string if successful, otherwise a Error object.
 	 *
 	 * @since  3.0
 	 */
-	protected function info($tpl)
+	protected function info()
 	{
 		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
@@ -281,7 +261,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 
-		parent::display($tpl);
+		parent::display();
 	}
 
 	/**
@@ -347,7 +327,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 *
 	 * @since  3.0
 	 */
-	protected function wallpp()
+	protected function wallpapers()
 	{
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -470,7 +450,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
-			JText::_('COM_KA_MOVIE_TAB_WALLPP'),
+			JText::_('COM_KA_MOVIE_TAB_WALLPAPERS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=wallpapers&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 
@@ -739,7 +719,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
-			JText::_('COM_KA_MOVIE_TAB_SCRSHOTS'),
+			JText::_('COM_KA_MOVIE_TAB_SCREENSHOTS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=screenshots&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 
@@ -876,11 +856,21 @@ class KinoarhivViewMovie extends JViewLegacy
 		parent::display('trailers');
 	}
 
-	protected function sound()
+	/**
+	 * Method to get and show soundtracks and albums.
+	 *
+	 * @return  mixed
+	 *
+	 * @since  3.1
+	 */
+	protected function soundtracks()
 	{
+		$this->user = JFactory::getUser();
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$item = $this->get('Soundtracks');
+		$lang = JFactory::getLanguage();
+		$item = $this->get('SoundtrackAlbums');
+		$albums = $item->albums;
 
 		if (count($errors = $this->get('Errors')) || is_null($item))
 		{
@@ -896,6 +886,28 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 
 		$item->text = '';
+
+		foreach ($albums as $key => $album)
+		{
+			if (!empty($album->rate) && !empty($album->rate_sum))
+			{
+				$plural = $lang->getPluralSuffixes($album->rate);
+				$albums[$key]->rate_loc_c = round($album->rate_sum / $album->rate, (int) $params->get('vote_summ_precision'));
+				$albums[$key]->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $albums[$key]->rate_loc_c, (int) $params->get('vote_summ_num'), $album->rate);
+				$albums[$key]->rate_loc_label_class = ' has-rating';
+			}
+			else
+			{
+				$albums[$key]->rate_loc_c = 0;
+				$albums[$key]->rate_loc_label = JText::_('COM_KA_RATE_NO');
+				$albums[$key]->rate_loc_label_class = ' no-rating';
+			}
+
+			//$albums[$key]->attribs = !empty($album->attribs) ? json_decode($album->attribs) : array();
+			$registry = new Registry($album->attribs);
+			$albums[$key]->attribs = $registry->toArray();
+		}
+
 		$item->event = new stdClass;
 		$item->params = new JObject;
 		$item->params->set(
@@ -924,7 +936,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
-			JText::_('COM_KA_MOVIE_TAB_SOUND'),
+			JText::_('COM_KA_MOVIE_TAB_SOUNDTRACKS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=soundtracks&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 
@@ -983,7 +995,8 @@ class KinoarhivViewMovie extends JViewLegacy
 		);
 
 		$pathway->setPathway(array($path));
-		$this->document->setTitle(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year));
+		$title_add = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_MOVIE_TAB_' . StringHelper::ucwords($this->page));
+		$this->document->setTitle(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . $title_add);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

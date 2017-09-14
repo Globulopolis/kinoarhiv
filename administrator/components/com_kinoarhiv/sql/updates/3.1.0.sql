@@ -122,6 +122,8 @@ INSERT IGNORE INTO `#__ka_vendors`(`id`,`company_name`,`company_name_alias`,`des
 
 ALTER TABLE `#__ka_rel_names_genres` ADD COLUMN `ordering` INT(11) DEFAULT 0 NOT NULL AFTER `name_id`;
 ALTER TABLE `#__ka_rel_names_career` ADD COLUMN `ordering` INT(11) DEFAULT 0 NOT NULL AFTER `name_id`;
+ALTER TABLE `#__ka_music_rel_movies` ADD COLUMN `ordering` INT(11) NOT NULL AFTER `album_id`;
+RENAME TABLE `#__ka_user_votes` TO `#__ka_user_votes_movies`;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

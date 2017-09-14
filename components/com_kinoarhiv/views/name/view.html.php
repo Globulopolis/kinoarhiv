@@ -46,20 +46,13 @@ class KinoarhivViewName extends JViewLegacy
 		$this->page = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
-		switch ($this->page)
+		if (method_exists($this, $this->page))
 		{
-			case 'wallpapers':
-				$this->wallpp();
-				break;
-			case 'photos':
-				$this->photo();
-				break;
-			case 'awards':
-				$this->awards();
-				break;
-			default:
-				$this->info($tpl);
-				break;
+			$this->{$this->page}();
+		}
+		else
+		{
+			$this->info($tpl);
 		}
 	}
 
@@ -215,7 +208,7 @@ class KinoarhivViewName extends JViewLegacy
 		parent::display($tpl);
 	}
 
-	protected function wallpp()
+	protected function wallpapers()
 	{
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -320,14 +313,14 @@ class KinoarhivViewName extends JViewLegacy
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
-			JText::_('COM_KA_MOVIE_TAB_WALLPP'),
+			JText::_('COM_KA_MOVIE_TAB_WALLPAPERS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=name&page=wallpapers&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 
 		parent::display('wallpp');
 	}
 
-	protected function photo()
+	protected function photos()
 	{
 		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -432,7 +425,7 @@ class KinoarhivViewName extends JViewLegacy
 		$pathway = $app->getPathway();
 		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
 		$pathway->addItem(
-			JText::_('COM_KA_NAMES_TAB_PHOTO'),
+			JText::_('COM_KA_NAMES_TAB_PHOTOS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=name&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 
@@ -523,7 +516,8 @@ class KinoarhivViewName extends JViewLegacy
 		);
 
 		$pathway->setPathway(array($path));
-		$this->document->setTitle($this->item->title);
+		$title_add = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_NAMES_TAB_' . StringHelper::ucwords($this->page));
+		$this->document->setTitle($this->item->title . $title_add);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

@@ -613,7 +613,7 @@ div.rating {
 	margin-right: .5em;
 }
 
-.known, .plot, .desc, .reviews, .movies-list, .urls {
+.known, .plot, .desc, .reviews, .movies-list-row, .urls {
 	margin-top: 1em;
 }
 
@@ -626,7 +626,7 @@ div.rating {
 	padding: 4px 6px;
 }
 
-.plot .content, .known .content, .desc .content, .r-row .content, .movies-list .content, .urls .content {
+.plot .content, .known .content, .desc .content, .r-row .content, .movies-list-content, .urls .content {
 	padding: 0 6px;
 }
 
@@ -1015,19 +1015,47 @@ div.rating {
 	margin: 1em;
 }
 
-.movies-list .item {
-	border-bottom: 1px dashed #ccc;
+.movies-list-row {
+	font-size: .9em !important;
+}
+
+.movies-list-title {
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	color: #333;
+	font-size: 1.2em;
+	font-weight: bold;
+	padding: 8px 15px;
+}
+
+.movies-list-content {
+	border-top: none !important;
+}
+
+.movies-list-footer {
+	border: 1px solid #ddd;
+	color: #333;
+	margin-bottom: .8em;
+	padding: 4px 15px;
+}
+
+.movies-list-row .item {
+	border-bottom: 1px solid #ddd;
 	margin: .5em 0;
 	padding: .2em 0;
 }
 
-.movies-list .item .number {
+.movies-list-row .item .number {
 	float: left;
 	width: 2em;
 }
 
-.movies-list .item .data {
+.movies-list-row .item .data {
 	float: left;
+}
+
+.movies-list-row .role {
+	color: #787d81;
 }
 
 #rate-imdb, #rate-kp, #rate-rt, #rate-mc {

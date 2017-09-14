@@ -106,11 +106,11 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 							<div class="separator"></div>
 							<div class="tabs">
 								<?php if (($item->attribs->tab_name_wallpp == '' && $this->params->get('tab_name_wallpp') == 1) || $item->attribs->tab_name_wallpp == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=wallpapers&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-wallpp"><?php echo JText::_('COM_KA_NAMES_TAB_WALLPP'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=wallpapers&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-wallpp"><?php echo JText::_('COM_KA_NAMES_TAB_WALLPAPERS'); ?></a>
 								<?php endif; ?>
 
 								<?php if (($item->attribs->tab_name_photos == '' && $this->params->get('tab_name_photos') == 1) || $item->attribs->tab_name_photos == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-posters"><?php echo JText::_('COM_KA_NAMES_TAB_PHOTO'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-posters"><?php echo JText::_('COM_KA_NAMES_TAB_PHOTOS'); ?></a>
 								<?php endif; ?>
 
 								<?php if (($item->attribs->tab_name_awards == '' && $this->params->get('tab_name_awards') == 1) || $item->attribs->tab_name_awards == 1): ?>

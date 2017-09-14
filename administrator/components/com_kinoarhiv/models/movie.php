@@ -534,15 +534,31 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Method to remove cast and crew.
 	 *
-	 * @param   array  $ids  Array with IDs. In form array(array('name_id', 'type'), ...)
+	 * @param   integer  $id   Movie ID.
+	 * @param   array    $ids  Array with IDs. In form array(array('name_id'=>, 'type'=>), ...)
 	 *
 	 * @return  array
 	 *
 	 * @since   3.0
 	 */
-	public function removeMovieCast($ids)
+	public function removeMovieCast($id, $ids)
 	{
-		$app = JFactory::getApplication();
+		if (empty($ids))
+		{
+			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
+		}
+
+		$db = $this->getDbo();
+
+		// Get all rows with selected person.
+		$query = $db->getQuery(true)
+			->select($db->quoteName('type'))
+			->from($db->quoteName('#__ka_rel_names'))
+			->where($db->quoteName('movie_id') . ' = ' . (int) $id)
+			->where($db->quoteName('name_id') . ' IN (' . $names . ')');
+
+		return;
+		/*$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$data = $app->input->post->get('data', array(), 'array');
 		$query_result = true;
@@ -588,7 +604,7 @@ class KinoarhivModelMovie extends JModelForm
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		return array('success' => $success, 'message' => $message);
+		return array('success' => $success, 'message' => $message);*/
 	}
 
 	/**
@@ -1908,7 +1924,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		// Remove user votes
 		$query = $db->getQuery(true)
-			->delete($db->quoteName('#__ka_user_votes'))
+			->delete($db->quoteName('#__ka_user_votes_movies'))
 			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);

@@ -115,7 +115,7 @@ class KinoarhivViewMovies extends JViewLegacy
 
 
 			// Replace person BB-code
-			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid)
+			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches)
 			{
 				$html = JText::_($matches[1]);
 

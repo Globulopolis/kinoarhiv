@@ -101,10 +101,3 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 	</article>
 	<?php echo $this->item->event->afterDisplayContent; ?>
 </div>
-
-
-<?php
-echo '<pre>';
-print_r($this->item->albums);
-print_r($this->item->tracks);
-echo '</pre>';

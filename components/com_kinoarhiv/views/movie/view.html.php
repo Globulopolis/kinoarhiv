@@ -903,7 +903,6 @@ class KinoarhivViewMovie extends JViewLegacy
 				$albums[$key]->rate_loc_label_class = ' no-rating';
 			}
 
-			//$albums[$key]->attribs = !empty($album->attribs) ? json_decode($album->attribs) : array();
 			$registry = new Registry($album->attribs);
 			$albums[$key]->attribs = $registry->toArray();
 		}

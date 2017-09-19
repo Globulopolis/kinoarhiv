@@ -25,8 +25,17 @@ $form   = $displayData->form;
 		var editor = $('#form_review').trumbowyg({
 			lang: '<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>',
 			removeformatPasted: true,
-			btns: [ 'formatting', 'btnGrp-design', 'btnGrp-justify', 'btnGrp-lists', ['foreColor', 'backColor'], 'viewHTML' ],
-			resetCss: true
+			btns: [
+				['formatting'],
+				['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+				['strong', 'em', 'del'],
+				['foreColor', 'backColor'],
+				['viewHTML'],
+				['removeformat'],
+				['fullscreen']
+			],
+			resetCss: true,
+			svgPath: '<?php echo JUri::base(); ?>media/com_kinoarhiv/editors/trumbowyg/ui/icons.svg'
 		});
 
 		// Insert username into editor

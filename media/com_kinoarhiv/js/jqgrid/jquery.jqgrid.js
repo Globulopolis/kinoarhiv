@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.14.1 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.15.0 - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2017, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2017-05-29
+ * Date: 2017-09-18
  */
 //jsHint options
 /*jshint eqnull:true */
@@ -381,7 +381,7 @@
 
 	$.extend(true, jgrid, {
 		/** @const */
-		version: "4.14.1",
+		version: "4.15.0",
 		/** @const */
 		productName: "free jqGrid",
 		defaults: {},
@@ -988,9 +988,17 @@
 			// Trident/7.0 - IE11
 			// Version tokens MSIE might not reflect the actual version of the browser
 			// If Compatibility View is enabled for a webpage or the browser mode is set to an earlier version
-			var rv = -1, match = /(MSIE) ([0-9]{1,}[.0-9]{0,})/.exec(navigator.userAgent);
-			if (match != null && match.length === 3) {
-				rv = parseFloat(match[2] || -1);
+			var rv = -1, match;
+			if (navigator.appName === "Microsoft Internet Explorer") {
+				match = /(MSIE) ([0-9]{1,}[.0-9]{0,})/.exec(navigator.userAgent);
+				if (match != null && match.length === 3) {
+					rv = parseFloat(match[2] || -1);
+				}
+			} else if (navigator.appName === "Netscape") {
+				match = /rv:([0-9]{1,}[.0-9]{0,})/.exec(navigator.userAgent);
+				if (match != null && match.length === 2) {
+					rv = parseFloat(match[1] || -1);
+				}
 			}
 			return rv;
 		},
@@ -1123,9 +1131,7 @@
 					var props = ["AmPm", "dayNames", "masks", "monthNames", "userLocalTime", "parseRe", "S", "srcformat"],
 						root1 = options || {},
 						root2 = (jgrid.formatter || {}).date || {},
-						root3 = p == null || p.locale == null ?
-								{} :
-								((locales[p.locale] || {}).formatter || {}).date,
+						root3 = ((locales[(p || $.jgrid.defaults).locale] || {}).formatter || {}).date,
 						iProp, nProps = props.length, result = {}, prop;
 					for (iProp = 0; iProp < nProps; iProp++) {
 						prop = props[iProp];
@@ -1961,7 +1967,7 @@
 						$.each(data, function (index, v) {
 							ab = by !== "" ? jgrid.getAccessor(v, by) : v;
 							if (ab === undefined) { ab = ""; }
-							ab = findSortKey(ab, v);
+							ab = findSortKey.call(context, ab, v);
 							_sortData.push({ vSort: ab, data: v, index: index });
 						});
 						if ($.isFunction(sfunc)) {
@@ -2793,6 +2799,7 @@
 					lastsort: 0,
 					selrow: null,
 					singleSelectClickMode: "toggle",
+					selectOnContextMenu: true,
 					beforeSelectRow: null,
 					onSelectRow: null,
 					onSortCol: null,
@@ -2876,7 +2883,7 @@
 					altclass: "ui-priority-secondary",
 					viewsortcols: [false, "vertical", true],
 					resizeclass: "",
-					autoencode: false, // true is better for the most cases, but we hold old value to have better backwards compatibility
+					autoencode: true, // one can use false to have better backwards compatibility, but one have to prevent Cross Site Scripting (XSS) manually
 					autoEncodeOnEdit: false,
 					remapColumns: [],
 					cmNamesInputOrder: [],
@@ -2921,6 +2928,10 @@
 					guiStyle: guiStyle,
 					locale: locale,
 					multiSort: false,
+					showSortOrder: true,
+					sortOrderPosition: "afterSortIcons", // "afterSortIcons", "beforeSortIcons"
+					multiSortOrder: "lastClickedFirstSorted", // "lastClickedLastSorted", "lastClickedFirstSorted" or callback reodering function
+					maxSortColumns: 3,
 					treeIcons: {
 						commonIconClass: getIcon("treeGrid.common"),
 						plusLtr: getIcon("treeGrid.plusLtr"),
@@ -3377,6 +3388,7 @@
 			// TODO: replace altclass : "ui-priority-secondary",
 			// set default buttonicon : "ui-icon-newwin" of navButtonAdd: fa-external-link, fa-desktop or other
 			// change the order in $.extend to allows to set icons using $.jgrid (for example $.jgrid.nav). It will be ovewritten currently by p.navOptions which we set above.
+			jgrid.msie = jgrid.msiever() > 0;
 			var gv = $("<div class='" + getGuiStyles("gView", "ui-jqgrid-view") + "' role='grid' aria-multiselectable='" + !!p.multiselect + "'></div>"),
 				isMSIE = jgrid.msie, dir;
 			p.direction = trim(p.direction.toLowerCase());
@@ -3565,6 +3577,12 @@
 									((icon != null && icon !== "") ? icon : p.treeIcons.leaf) + " tree-leaf" :
 									(isExpanded ? p.treeIcons.minus + " tree-minus" : p.treeIcons.plus + " tree-plus");
 						//normalizeTreeGridProperties(rdata); // ??? don't needed more probably
+						if (!isLeaf && icon && typeof icon === "string") {
+							var icons = icon.split(",");
+							if (icons.length === 2) {
+								iconClass = isExpanded ? icons[0] : icons [1];
+							}
+						}
 
 						v = "<div class='tree-wrap' style='width:" + ((lftpos + 1) * levelOffset) +
 							"px;'><div class='" +
@@ -3758,7 +3776,7 @@
 				refreshIndex = function () {
 					var datalen = p.data.length, idname, i, val, item;
 
-					if (p.keyName === false || p.loadonce) {
+					if (p.keyName === false || (p.loadonce && p.dataTypeOrg)) {
 						idname = p.localReader.id;
 					} else {
 						idname = p.keyName;
@@ -4943,7 +4961,7 @@
 				multiSort = function (iCol1, obj) {
 					var sort1 = "", cm = p.colModel[iCol1], so,
 						disabledClasses = getGuiStyles("states.disabled"),
-						$selTh = p.frozenColumns ? $(obj) : $(ts.grid.headers[iCol1].el),
+						$selTh = p.frozenColumns ? $(ts.grid.headers[iCol1].el).add($(obj)) : $(ts.grid.headers[iCol1].el),
 						$iconsSpan = $selTh.find("span.s-ico"),
 						$iconAsc = $iconsSpan.children("span.ui-icon-asc"),
 						$iconDesc = $iconsSpan.children("span.ui-icon-desc"),
@@ -4970,12 +4988,79 @@
 					}
 
 					getSortNames(sortNames, sortDirs, cm);
+					if (typeof p.sortname === "string" && p.sortname !== "" && p.sortname.split(",").length < sortNames.length) {
+						var removeSorting = function (sortNameToRemove) {
+								each(p.colModel, function () {
+									var indexInSortNames, thDivIdSelector = "#jqgh_" + jgrid.jqID(p.id + "_" + this.name),
+										$thDiv = $(thDivIdSelector);
+									if (this.lso && (this.index || this.name) === sortNameToRemove) {
+										if (typeof sortNames.indexOf === "function") {
+											indexInSortNames = sortNames.indexOf(sortNameToRemove);
+										} else {
+											// old web browser
+											for (indexInSortNames = 0; indexInSortNames < sortNames.length; indexInSortNames++) {
+												if (sortNames[indexInSortNames] === sortNameToRemove) {
+													break;
+												}
+											}
+											if (indexInSortNames === sortNames.length) {
+												indexInSortNames = -1;
+											}
+										}
+										if (indexInSortNames >= 0) {
+											sortNames.splice(indexInSortNames, 1);
+											this.lso = "";
+										}
+									}
+									if (p.frozenColumns) {
+										$thDiv = $thDiv.add($(grid.fhDiv).find(thDivIdSelector));
+									}
+									$thDiv.children(".s-ico")[this.lso ? "show" : "hide"]();
+								});
+							};
+						if (p.multiSortOrder === "lastClickedFirstSorted" && sortNames.length > 1) {
+							sortNames.unshift(sortNames[sortNames.length - 1]);
+							sortNames.pop();
+							while (sortNames.length > p.maxSortColumns) {
+								removeSorting(sortNames[sortNames.length - 1]); //sortNames.pop() and a little more
+							}
+						} else if (isFunction(p.multiSortOrder)) {
+							sortNames = p.multiSortOrder.call(ts, {
+								sortNames: sortNames,
+								cm: cm,
+								sortDirs: sortDirs,
+								removeSorting: removeSorting
+							}) || sortNames;
+						}
+					}
 					each(sortNames, function () {
 						if (sort1.length > 0) { sort1 += ", "; }
 						sort1 += this + " " + sortDirs[this];
 						p.sortorder = sortDirs[this];
 					});
 					p.sortname = sort1.substring(0, sort1.length - p.sortorder.length - 1);
+					if (p.showSortOrder) {
+						// reset multisort indexes
+						each(p.colModel, function () {
+							if (this.sortable) {
+								var sortIndex = inArray(this.name, sortNames),
+									thDivIdSelector = "#jqgh_" + jgrid.jqID(p.id + "_" + this.name),
+									$thDiv = $(thDivIdSelector);
+
+								if (p.frozenColumns) {
+									$thDiv = $thDiv.add($(grid.fhDiv).find(thDivIdSelector));
+								}
+
+								$thDiv
+									.children(".ui-jqgrid-sort-order")
+									.html(sortIndex < 0 ?
+											"&nbsp;" :
+											isFunction(p.formatSortOrder) ?
+												p.formatSortOrder.call(ts, { cm: this, sortIndex: sortIndex }) :
+												sortIndex + 1);
+							}
+						});
+					}
 				},
 				sortData = function (index, idxcol, reload, sor, obj, e) {
 					var self = this, mygrid = self.grid, cm = p.colModel[idxcol], disabledClasses = getGuiStyles("states.disabled");
@@ -4990,25 +5075,27 @@
 						} else {
 							p.sortorder = cm.firstsortorder || "asc";
 						}
-						// first set new value of lso:
-						// "asc" -> "asc-desc", new sorting to "desc"
-						// "desc" -> "desc-asc", new sorting to "asc"
-						// "asc-desc" or "desc-asc" -> "", no new sorting ""
-						// "" -> cm.firstsortorder || "asc"
-						if (cm.lso) {
-							if (cm.lso === "asc") {
-								cm.lso += "-desc";
-							} else if (cm.lso === "desc") {
-								cm.lso += "-asc";
-							} else if ((cm.lso === "asc-desc" || cm.lso === "desc-asc") && (p.threeStateSort || p.multiSort)) {
-								cm.lso = "";
-							}
-						} else {
-							cm.lso = cm.firstsortorder || "asc";
+					} else {
+						p.sortorder = cm.firstsortorder || "asc";
+					}
+
+					// first set new value of lso:
+					// "asc" -> "asc-desc", new sorting to "desc"
+					// "desc" -> "desc-asc", new sorting to "asc"
+					// "asc-desc" or "desc-asc" -> "", no new sorting ""
+					// "" -> cm.firstsortorder || "asc"
+					if (cm.lso) {
+						if (cm.lso === "asc") {
+							cm.lso += "-desc";
+						} else if (cm.lso === "desc") {
+							cm.lso += "-asc";
+						} else if ((cm.lso === "asc-desc" || cm.lso === "desc-asc") && (p.threeStateSort || p.multiSort)) {
+							cm.lso = "";
 						}
 					} else {
-						cm.lso = p.sortorder = cm.firstsortorder || "asc";
+						cm.lso = cm.firstsortorder || "asc";
 					}
+
 					if (!reload) {
 						p.page = 1;
 					}
@@ -5076,8 +5163,6 @@
 								p.columnsToReResizing.push(idxcol);
 							}
 						}
-						// the index looks like "jqgh_" + p.id + "_" + colIndex (like "jqgh_list_invdate")
-						index = index.substring(5 + p.id.length + 1); // bad to be changed!?!
 						p.sortname = cm.index || index;
 					}
 					if (!feedback.call(self, "onSortCol", p.sortname, idxcol, p.sortorder, e || {})) {
@@ -5192,7 +5277,7 @@
 			for (iCol = 0; iCol < p.colModel.length; iCol++) {
 				cmi = p.colModel[iCol];
 				colTemplate = typeof cmi.template === "string" ?
-						(jgridCmTemplate != null && (typeof jgridCmTemplate[cmi.template] === "object" || $.isFunction(jgridCmTemplate[cmi.template])) ?
+						(jgridCmTemplate != null && (typeof jgridCmTemplate[cmi.template] === "object" || isFunction(jgridCmTemplate[cmi.template])) ?
 								jgridCmTemplate[cmi.template] : {}) :
 						cmi.template;
 				if (isFunction(colTemplate)) {
@@ -5325,12 +5410,11 @@
 						labelStyle = "text-align:left;";
 						break;
 					case "right":
-						labelStyle = "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon + "px;");
+						labelStyle = "text-align:right;";
 						break;
 					case "likeData":
 						labelStyle = cmi.align === undefined || cmi.align === "left" ?
-								"text-align:left;" :
-								(cmi.align === "right" ? "text-align:right;" + (cmi.sortable === false ? "" : "padding-right:" + p.autoResizing.widthOfVisiblePartOfSortIcon + "px;") : "");
+								"text-align:left;" : (cmi.align === "right" ? "text-align:right;" : "");
 						break;
 					default:
 						labelStyle = "";
@@ -5339,7 +5423,7 @@
 				thead += "<div id='jqgh_" + p.id + "_" + cmi.name + "'" +
 					(isMSIE ? " class='ui-th-div-ie'" : "") +
 					(labelStyle === "" ? "" : " style='" + labelStyle + "'") + " role='columnheader'>";
-				headerText = cmi.autoResizable && cmi.formatter !== "actions" ?
+				headerText = (cmi.autoResizable && cmi.formatter !== "actions") || cmi.rotated ?
 							"<span class='" + p.autoResizing.wrapperClassName + "'>" + p.colNames[iCol] + "</span>" :
 							p.colNames[iCol];
 				if (p.sortIconsBeforeText) {
@@ -5535,6 +5619,16 @@
 									$iconsSpan.children("span.ui-icon-" + notLso).hide();
 								}
 							}
+							if (p.showSortOrder) {
+								sotmp = inArray(nm, sortarr);
+								$iconsSpan[p.sortOrderPosition === "beforeSortIcons" ? "before" : "after"]("<span class='ui-jqgrid-sort-order'>" +
+									(sotmp < 0 ?
+										"&nbsp;" :
+										isFunction(p.formatSortOrder) ?
+											p.formatSortOrder.call(ts, { cm: this, sortIndex: sotmp }) :
+											sotmp + 1) +
+									"</span>");
+							}
 						} else {
 							var notSortOrder = p.sortorder === "desc" ? "asc" : "desc";
 							if (p.viewsortcols[0]) {
@@ -5595,7 +5689,8 @@
 					}
 					var iColByName = getColumnHeaderIndex(this);
 					if (iColByName != null) {
-						sortData.call(ts, $("div", this)[0].id, iColByName, r, d, this, e);
+						// the $("div", this)[0].id looks like "jqgh_" + p.id + "_" + colIndex (like "jqgh_list_invdate")
+						sortData.call(ts, $("div", this)[0].id.substring(5 + p.id.length + 1), iColByName, r, d, this, e);
 					}
 					return false;
 				});
@@ -5673,8 +5768,7 @@
 						$(ptr).removeClass(hoverStateClasses);
 					});
 			}
-			var ri, ci, tdHtml,
-				getTdFromTarget = function (target) {
+			var getTdFromTarget = function (target) {
 					var $td, $tr, $table;
 					do {
 						$td = $(target).closest("td");
@@ -5692,8 +5786,7 @@
 			$self0.before(grid.hDiv)
 				.click(function (e) {
 					var highlightClass = getGuiStyles("states.select"), target = e.target,
-						$td = getTdFromTarget.call(ts, target),
-						$tr = $td.parent();
+						$td = getTdFromTarget.call(ts, target), $tr = $td.parent();
 					// we uses ts.rows context below to be sure that we don't process the clicks in the subgrid
 					// probably one can change the rule and to step over the parents till one will have
 					// "tr.jqgrow>td" AND the parent of parent (the table element) will be ts.
@@ -5702,25 +5795,27 @@
 					if ($tr.length === 0 || hasOneFromClasses($tr, disabledStateClasses)) {
 						return;
 					}
-					ri = $tr[0].id;
-					var scb = $(target).hasClass("cbox") &&
-							$(target).is(":enabled") &&
-							!hasOneFromClasses(target, disabledStateClasses),
-						cSel = feedback.call(ts, "beforeSelectRow", ri, e),
+					var ri = $tr[0].id, ci = $td[0].cellIndex,
+						scb = $(target).hasClass("cbox") &&
+							$(target).is(":enabled") && !hasOneFromClasses(target, disabledStateClasses),
+						cSel = feedback.call(ts, "beforeSelectRow", ri, e), alreadySelected = false,
 						editingInfo = jgrid.detectRowEditing.call(ts, ri),
 						locked = editingInfo != null && editingInfo.mode !== "cellEditing"; // editingInfo.savedRow.ic
 					if (target.tagName === "A" || (locked && !scb)) { return; }
-					ci = $td[0].cellIndex;
-					tdHtml = $td.html();
-					feedback.call(ts, "onCellSelect", ri, ci, tdHtml, e);
+					feedback.call(ts, "onCellSelect", ri, ci, $td.html(), e);
 					if (p.cellEdit === true) {
-						if (p.multiselect && scb && cSel) {
+						if (cSel && p.noCellSelection && (!p.multiselect || (scb && !p.multiboxonly))) {
 							setSelection.call($self0, ri, true, e);
-						} else {
-							ri = $tr[0].rowIndex;
-							try { $j.editCell.call($self0, ri, ci, true); } catch (ignore) { }
+							alreadySelected = true;
 						}
-						return;
+
+						try {
+							$j.editCell.call($self0, $tr[0].rowIndex, ci, true);
+						} catch (ignore) { }
+
+						if (!p.noCellSelection) {
+							return;
+						}
 					}
 					if (!cSel) {
 						if (scb) {
@@ -5732,7 +5827,7 @@
 					}
 					if (!p.multikey) {
 						if (p.multiselect && p.multiboxonly) {
-							if (scb) {
+							if (scb && !alreadySelected) {
 								setSelection.call($self0, ri, true, e);
 							} else {
 								var frz = p.frozenColumns ? p.id + "_frozen" : "";
@@ -5746,11 +5841,15 @@
 									}
 								});
 								clearArray(p.selarrrow); // p.selarrrow = [];
-								setSelection.call($self0, ri, true, e);
+								if (!alreadySelected) {
+									setSelection.call($self0, ri, true, e);
+								}
 							}
 						} else {
 							var oldSelRow = p.selrow;
-							setSelection.call($self0, ri, true, e);
+							if (!alreadySelected) {
+								setSelection.call($self0, ri, true, e);
+							}
 							if (p.singleSelectClickMode === "toggle" && !p.multiselect && oldSelRow === ri) {
 								if (ts.grid.fbRows) {
 									$tr = $tr.add(
@@ -5764,7 +5863,7 @@
 							}
 						}
 					} else {
-						if (e[p.multikey]) {
+						if (e[p.multikey] && !alreadySelected) {
 							setSelection.call($self0, ri, true, e);
 						} else if (p.multiselect && scb) {
 							scb = $("#jqg_" + jqID(p.id) + "_" + ri).is(":checked");
@@ -5838,7 +5937,7 @@
 				.on("contextmenu", function (e) {
 					var $td = getTdFromTarget.call(ts, e.target), $tr = $td.parent(), rowid = $tr.attr("id");
 					if ($td.length === 0) { return; }
-					if (!p.multiselect) {
+					if (!p.multiselect && p.selrow !== rowid && p.selectOnContextMenu === true) {
 						// TODO: replace $self0 and ts below to method which use $(this) in case of click
 						// on the grid and the table of the main grid if one click inside the FROZEN column
 						setSelection.call($self0, rowid, true, e);
@@ -6353,7 +6452,7 @@
 		},*/
 		setSelection: function (selection, onsr, e) {
 			return this.each(function () {
-				var $t = this, $self = $($t), p = $t.p, stat, pt, ner, ia, tpsr, csr, $tr,
+				var $t = this, $self = $($t), p = $t.p, stat, pt, ner, ia, tpsr, csr, $tr, editingInfo,
 					getGuiStyles = base.getGuiStyles, getGridRowById = base.getGridRowById,
 					highlightClass = getGuiStyles.call($self, "states.select"),
 					disabledClasses = getGuiStyles.call($self, "states.disabled"),
@@ -6438,11 +6537,12 @@
 					//unselect selectall checkbox when deselecting a specific row
 					$t.setHeadCheckBox(false);
 					p.selrow = pt.id;
+					editingInfo = jgrid.detectRowEditing.call($t, pt.id);
 					ia = $.inArray(p.selrow, p.selarrrow);
 					if (ia === -1) {
 						stat = true;
 						p.selarrrow.push(p.selrow);
-					} else if (jgrid.detectRowEditing.call($t, pt.id) !== null) {
+					} else if (editingInfo !== null && (editingInfo.mode === "inlineEditing" || !$(e.target).hasClass("cbox"))) {
 						// the row is editing and selected now. The checkbox is clicked
 						stat = true; // set to force the checkbox stay selected
 					} else {
@@ -6623,9 +6723,9 @@
 			return resall || res;
 		},
 		delRowData: function (rowid) {
-			var success = false, rowInd, ia, nextRow;
+			var success = false;
 			this.each(function () {
-				var $t = this, p = $t.p;
+				var $t = this, p = $t.p, editingInfo = $.jgrid.detectRowEditing.call($t, rowid), rowInd, ia, nextRow;
 				rowInd = base.getGridRowById.call($($t), rowid);
 				if (!rowInd) { return false; }
 				if (p.subGrid) {
@@ -6633,6 +6733,20 @@
 					if (nextRow.hasClass("ui-subgrid")) {
 						nextRow.remove();
 					}
+				}
+				if (editingInfo != null) {
+					try {
+						if (editingInfo.mode === "inlineEditing" && base.restoreRow != null) {
+							base.restoreRow.call($($t), rowid);
+						} else if (editingInfo.mode === "cellEditing" && base.restoreCell != null) {
+							base.restoreCell.call($($t), editingInfo.savedRow.id, editingInfo.savedRow.ic);
+						}
+					} catch (ignore) { }
+				}
+				if (rowInd.rowIndex === p.iRow) { // delete row with selected/edited cell
+					// reset cell editing parameters in case of selected cells, but not editing
+					p.iRow = -1;
+					p.iCol = -1;
 				}
 				$(rowInd).remove();
 				p.records--;
@@ -6706,6 +6820,9 @@
 								}
 								title = cm.title ? { "title": vl } : {};
 								vl = t.formatter(rowid, vl, i, data, "edit", newData);
+								if (cm.formatter === "select") {
+									title = cm.title ? { "title": stripHtml(vl) } : {};
+								}
 								var $dataFiled = $td;
 								if (p.treeGrid === true && nm === p.ExpandColumn) {
 									$dataFiled = $dataFiled.children("span.cell-wrapperleaf,span.cell-wrapper").first();
@@ -6779,7 +6896,8 @@
 
 				if (p.iColByName[idname] >= 0) {
 					$self.jqGrid("setCell", oldRowId, idname, newId);
-				} else if (p.datatype === "local" && p._index[oldId] !== undefined) {
+				}
+				if (p.datatype === "local" && p._index[oldId] !== undefined) {
 					p._index[newId] = p._index[oldId];
 					localData = p.data[p._index[oldId]];
 					delete p._index[oldId];
@@ -7046,6 +7164,132 @@
 			});
 			return action === "get" ? res : success;
 		},
+		resetColumnResizerHeight: function () {
+			return this.each(function () {
+				if ($.jgrid.msie) {
+					// IE don't calculate height: 100%; in the CSS rule
+					// 		.ui-jqgrid .ui-jqgrid-labels > .ui-th-column > .ui-jqgrid-resize { ... }
+					// One have to set the height of the span.ui-jqgrid-resize explicitly
+					// to the height of the row/th
+					var $th, $resizer, i, headers = this.grid.headers, headerHeight;
+					for (i = 0; i < headers.length; i++) {
+						$th = $(headers[i].el);
+						headerHeight = $th.height();
+						if (headerHeight) {
+							$resizer = $th.children(".ui-jqgrid-resize");
+							if ($resizer.length > 0 && Math.abs(headerHeight - $resizer.height()) > 0.5) {
+								$th.children(".ui-jqgrid-resize").height(headerHeight);
+							}
+						}
+					}
+				}
+			});
+		},
+		rotateColumnHeaders: function (columnNameOrIndexes, headerHeight) {
+			return this.each(function () {
+				// TODO: reorder columns via drag&drop
+				var $self = $(this), p = this.p, i, iCol, th, $th, thHeight, columnNameOrIndex,
+					$thDiv, $inconsDiv, $textWrapper, $sortOrder, widthIcon, widthText,
+					thPaddingLeft, thPaddingRight, thPaddingTop, thPaddingBottom,
+					nColFrozen = p.frozenColumns && $.isFunction(base.getNumberOfFrozenColumns) ? $self.jqGrid("getNumberOfFrozenColumns") : 0,
+					removeInconsDiv = function () {
+						$inconsDiv.detach();
+						/*$inconsDiv.each(function () {
+							this.parentNode.removeChild(this);
+						});*/
+						$sortOrder.detach();
+						/*$sortOrder.each(function () {
+							this.parentNode.removeChild(this);
+						});*/
+					},
+					appendInconsDiv = function () {
+						$thDiv.each(function (index) {
+							if (index < $inconsDiv.length) {
+								$(this).append($inconsDiv[index]);
+							}
+							if (index < $sortOrder.length) {
+								$(this).append($sortOrder[index]);
+							}
+						});
+					};
+
+				if (!$.isArray(columnNameOrIndexes)) {
+					columnNameOrIndexes = [columnNameOrIndexes];
+				}
+
+				for (i = 0; i < columnNameOrIndexes.length; i++) {
+					columnNameOrIndex = columnNameOrIndexes[i];
+					iCol = isNaN(columnNameOrIndex) ?
+						p.iColByName[columnNameOrIndex] :
+						parseInt(columnNameOrIndex, 10);
+					if (iCol >= 0) {
+						th = this.grid.headers[iCol].el;
+						$th = iCol < nColFrozen ?
+								$(th).add($(this.grid.fhDiv.find("#" + jqID(th.id)))) :
+								$(th);
+						$thDiv = $th.children("div");
+						$inconsDiv = $thDiv.children("span.s-ico");
+						$sortOrder = $thDiv.children("span.ui-jqgrid-sort-order");
+						$textWrapper = $thDiv.children("span." + p.autoResizing.wrapperClassName);
+						if ($textWrapper.length < 1) {
+							removeInconsDiv();
+							$thDiv.wrapInner("<span class='" + p.autoResizing.wrapperClassName + "'></span>");
+							$textWrapper = $thDiv.children("span." + p.autoResizing.wrapperClassName);
+							appendInconsDiv();
+						}
+						widthIcon = $inconsDiv.outerWidth(true);
+						widthText = $textWrapper.outerWidth();
+						thPaddingTop = parseFloat($th.css("padding-top") || 0);
+						thPaddingBottom = parseFloat($th.css("padding-bottom") || 0);
+						thPaddingLeft = parseFloat($th.css("padding-left") || 0);
+						thPaddingRight = parseFloat($th.css("padding-right") || 0);
+
+						if (p.showSortOrder) {
+							widthIcon += widthIcon * 0.5; // one can improve the calculation later !!!
+						}
+						thHeight = headerHeight === undefined || headerHeight === 0 ?
+							widthText + widthIcon + thPaddingLeft + thPaddingRight :
+							headerHeight;
+						$th.height(thHeight);
+						$th.css({
+							paddingTop: thPaddingRight + "px",
+							paddingBottom: thPaddingLeft + "px",
+							paddingLeft: thPaddingTop + "px",
+							paddingRight: thPaddingBottom + "px"
+						});
+						//thHeight = Math.max($th.parent().height(), thHeight);
+						// we must set width of column header div BEFOR adding class "ui-jqgrid-rotate" to
+						// prevent text cutting based on the current column width
+						$thDiv.css("min-width", (thHeight - thPaddingLeft - thPaddingRight) + "px")
+									.addClass("ui-jqgrid-rotate")
+									.css({ bottom: 0 });
+						p.colModel[iCol].rotated = true;
+					}
+				}
+				$self.jqGrid("resetColumnResizerHeight");
+				if (p.frozenColumns) {
+					setTimeout(function () {
+						$self.triggerHandler("jqGridResetFrozenHeights", {
+							header: {
+								resizeDiv: true,
+								resizedRows: {
+									iRowStart: 0,
+									iRowEnd: -1 // -1 means "till the end"
+								}
+							},
+							resizeFooter: true,
+							body: {
+								resizeDiv: true,
+								resizedRows: {
+									iRowStart: -1, // -1 means don't recalculate heights or rows
+									iRowEnd: -1
+								}
+							}
+						});
+					}, 0);
+				}
+			});
+		},
 		showHideCol: function (colname, show, options) {
 			return this.each(function () {
 				var $t = this, $self = $($t), grid = $t.grid, fndh = false, p = $t.p, brd = jgrid.cell_width ? 0 : p.cellLayout, cw;
@@ -7064,7 +7308,8 @@
 
 				$(p.colModel).each(function (iCol) {
 					var setDisplayCssOnRows = function (rows) {
-							var iRow, nRow, row, cell;
+							var iRow, nRow, row, cell, $cell, $thDiv, $inconsDiv, $textWrapper, heightText, widthText, heightIcon, widthIcon,
+								thHeight, thPaddingTop, thPaddingBottom, thPaddingLeft, thPaddingRight;
 							for (iRow = 0, nRow = rows.length; iRow < nRow; iRow++) {
 								row = rows[iRow];
 								cell = row.cells[iCol];
@@ -7080,12 +7325,47 @@
 									 * but still see that cell.style.display is changed. As the workaround we first temporary set
 									 * height of the cell from 0 to 1px, then changes "display" style and finally reset height to 0
 									 */
+									$cell = $(cell);
 									if (iRow === 0 && $(row).hasClass("jqgfirstrow")) {
-										$(cell).css("height", "1px");
-										$(cell).css("display", show);
-										$(cell).css("height", "0");
+										$cell.css("height", "1px");
+										$cell.css("display", show);
+										$cell.css("height", "0");
 									} else {
-										$(cell).css("display", show);
+										$cell.css("display", show);
+									}
+									if (sw && cell != null && cell.tagName.toUpperCase() === "TH" && $cell.hasClass("ui-th-column")) {
+										$thDiv = $cell.children("div");
+										if ($thDiv.hasClass("ui-jqgrid-rotate")) {
+											$inconsDiv = $thDiv.children("span.s-ico");
+											$textWrapper = $thDiv.children("span." + p.autoResizing.wrapperClassName),
+											heightText = $textWrapper.outerHeight(),
+											widthText = $textWrapper.outerWidth(),
+											heightIcon = $inconsDiv.outerHeight(),
+											widthIcon = $inconsDiv.outerWidth(true);
+
+											if ($textWrapper.length > 0) {
+												thPaddingTop = parseFloat($cell.css("padding-top") || 0);
+												thPaddingBottom = parseFloat($cell.css("padding-bottom") || 0);
+												thPaddingLeft = parseFloat($cell.css("padding-left") || 0);
+												thPaddingRight = parseFloat($cell.css("padding-right") || 0);
+												if (p.showSortOrder) {
+													widthIcon += widthIcon * 0.5; // one can improve the calculation later !!!
+												}
+												thHeight = widthText + widthIcon + thPaddingLeft + thPaddingRight;
+												$cell.height(thHeight);
+												$cell.css({
+													paddingTop: thPaddingRight + "px",
+													paddingBottom: thPaddingLeft + "px",
+													paddingLeft: thPaddingTop + "px",
+													paddingRight: thPaddingBottom + "px"
+												});
+												//thHeight = Math.max($cell.parent().height(), thHeight);
+												// we must set width of column header div BEFOR adding class "ui-jqgrid-rotate" to
+												// prevent text cutting based on the current column width
+												$thDiv.css("min-width", (thHeight - thPaddingLeft - thPaddingRight) + "px")
+															.css({ bottom: 0 });
+											}
+										}
 									}
 								}
 								// to follow HTML standards exactly one should probably add hidden column in
@@ -7486,7 +7766,7 @@
 				if (iCol >= 0) {
 					$th = $($t.grid.headers[iCol].el);
 					if (p.frozenColumns) {
-						$th = $th.add($t.grid.fhDiv.find(".ui-jqgrid-htable tr.ui-jqgrid-labels th.ui-th-column").eq(iCol));
+						$th = $th.add($t.grid.fhDiv.find("#" + jqID($th)));
 					}
 					if (nData) {
 						$th.each(function () {
@@ -7723,7 +8003,7 @@
 				$self.on("keydown.jqGrid", function (event) {
 					var tr = $(this).find("tr[tabindex=0]")[0],
 						editingInfo = jgrid.detectRowEditing.call($t, $(event.target).closest("tr.jqgrow").attr("id")),
-						moveVerical = function (siblingProperty) {
+						moveVertical = function (siblingProperty) {
 							do {
 								tr = tr[siblingProperty];
 								if (tr === null) { return; }
@@ -7764,10 +8044,10 @@
 					if (tr && editingInfo === null) {
 						switch (event.keyCode) {
 							case 38: // up key
-								moveVerical("previousSibling");
+								moveVertical("previousSibling");
 								break;
 							case 40: // down key
-								moveVerical("nextSibling");
+								moveVertical("nextSibling");
 								break;
 							case 37: // left key
 								moveHorizontal("Left");
@@ -7796,10 +8076,11 @@
 		getLocalRow: function (rowid) {
 			var ret = false, ind;
 			this.each(function () {
-				if (rowid !== undefined) {
-					ind = this.p._index[stripPref(this.p.idPrefix, rowid)];
+				var p = this.p;
+				if (rowid !== undefined && p != null && p._index != null && p.data != null) {
+					ind = p._index[stripPref(p.idPrefix, rowid)];
 					if (ind >= 0) {
-						ret = this.p.data[ind];
+						ret = p.data[ind];
 					}
 				}
 			});
@@ -7867,13 +8148,13 @@
 				p = self.p,
 				cm = p.colModel[iCol],
 				$th = $(self.grid.headers[iCol].el),
-				$thDiv = $th.find(">div"),
-				thPaddingLeft = parseFloat($th.css("padding-left") || 0),  // typically 2
-				thPaddingRight = parseFloat($th.css("padding-right") || 0),// typically 2
-				$incosDiv = $thDiv.find("span.s-ico"),
-				$wrapper = $thDiv.find(">." + p.autoResizing.wrapperClassName),
-				wrapperOuterWidth = $wrapper.outerWidth(),
-				wrapperCssWidth = parseFloat($wrapper.css("width") || 0),
+				$thDiv = $th.children("div"),
+				thPaddingLeft = parseFloat($th.css((cm.rotated ? "padding-top" : "padding-left")) || 0),  // typically 2
+				thPaddingRight = parseFloat($th.css((cm.rotated ? "padding-bottom" : "padding-right")) || 0),// typically 2
+				$incosDiv = $thDiv.children("span.s-ico"),
+				$wrapper = $thDiv.children("." + p.autoResizing.wrapperClassName),
+				wrapperOuterWidth = cm.rotated ? $wrapper.outerHeight() : $wrapper.outerWidth(),
+				wrapperCssWidth = parseFloat($wrapper.css(cm.rotated ? "height" : "width") || 0),
 				widthOuter = 0,
 				colWidth = 0,
 				compact = (cm.autoResizing != null && cm.autoResizable.compact !== undefined) ? cm.autoResizable.compact : p.autoResizing.compact,
@@ -7883,7 +8164,9 @@
 				return -1; // do nothing
 			}
 			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
-				colWidth = $incosDiv.outerWidth(true);
+				colWidth = cm.rotated ?
+						$incosDiv.outerHeight(true) :
+						$incosDiv.outerWidth(true) + $thDiv.children(".ui-jqgrid-sort-order").outerWidth(true);
 				if (!p.sortIconsBeforeText) {
 					colWidth -= p.direction === "rtl" ?
 						parseFloat($incosDiv.css("padding-left") || 0) +
@@ -7892,9 +8175,13 @@
 						parseFloat($incosDiv.css("margin-right") || 0);
 				}
 			}
-			colWidth += wrapperOuterWidth + thPaddingLeft +
-					(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
-					parseFloat($thDiv.css("margin-left") || 0) + parseFloat($thDiv.css("margin-right") || 0);
+			if (cm.rotated) {
+				colWidth = Math.max(colWidth, wrapperOuterWidth + thPaddingLeft + thPaddingRight);
+			} else {
+				colWidth += wrapperOuterWidth + thPaddingLeft +
+						(wrapperCssWidth === wrapperOuterWidth ? thPaddingLeft + thPaddingRight : 0) +
+						parseFloat($thDiv.css("margin-left") || 0) + parseFloat($thDiv.css("margin-right") || 0);
+			}
 			for (iRow = 0, rows = self.rows; iRow < rows.length; iRow++) {
 				row = rows[iRow];
 				cell = row.cells[iCol];
@@ -8019,7 +8306,18 @@
 	// begin module grid.celledit
 	var getTdByColumnIndex = function (tr, iCol) {
 			var $t = this, frozenRows = $t.grid.fbRows;
-			return $((frozenRows != null && frozenRows[0].cells.length > iCol ? frozenRows[tr.rowIndex] : tr).cells[iCol]);
+			tr = frozenRows != null && frozenRows[0].cells.length > iCol ? frozenRows[tr.rowIndex] : tr;
+			return tr != null && tr.cells != null ? $(tr.cells[iCol]) : $();
+		},
+		safeHeightSet = function ($elem, newHeight) {
+			var height = $elem.height();
+			if (Math.abs(height - newHeight) >= 1 && newHeight > 0) {
+				$elem.height(newHeight);
+				height = $elem.height();
+				if (Math.abs(newHeight - height) >= 1) {
+					$elem.height(newHeight + Math.round((newHeight - height)));
+				}
+			}
 		};
 	jgrid.extend({
 		editCell: function (iRow, iCol, ed) {
@@ -8045,7 +8343,7 @@
 					$self.jqGrid("GridNav");
 				}
 				// check to see if we have already edited cell
-				if (savedRow.length > 0) {
+				if (savedRow.length > 0 && $trOld.length > 0) {
 					// prevent second click on that field and enable selects
 					if (ed === true) {
 						if (iRow === iRowOld && iCol === iColOld) {
@@ -8079,12 +8377,14 @@
 				var highlightClasses = $self.jqGrid("getGuiStyles", "states.select", "edit-cell"),
 					hoverClasses = $self.jqGrid("getGuiStyles", "states.hover", "selected-row");
 				if (editable === true && ed === true && !$td.hasClass("not-editable-cell")) {
-					if (iColOld >= 0 && iRowOld >= 0) {
-						getTdByColumnIndex.call($t, $trOld[0], iColOld).removeClass(highlightClasses);
-						$trOld.removeClass(hoverClasses);
+					if (!p.noCellSelection) {
+						if (iColOld >= 0 && iRowOld >= 0) {
+							getTdByColumnIndex.call($t, $trOld[0], iColOld).removeClass(highlightClasses);
+							$trOld.removeClass(hoverClasses);
+						}
+						$td.addClass(highlightClasses);
+						$tr.addClass(hoverClasses);
 					}
-					$td.addClass(highlightClasses);
-					$tr.addClass(hoverClasses);
 					if (!cm.edittype) {
 						cm.edittype = "text";
 					}
@@ -8127,9 +8427,12 @@
 						$(elc).width($td.width() - $td.children("div.tree-wrap").outerWidth());
 					}
 					jgrid.bindEv.call($t, elc, opt);
+					if (p.frozenColumns && iCol < $self.jqGrid("getNumberOfFrozenColumns")) {
+						safeHeightSet($($t.rows[tr.rowIndex].cells[iCol]), $td.height());
+					}
 					setTimeout(function () {
 						$(elc).focus();
-					}, 1);
+					}, 0);
 					$("input, select, textarea", $td).on("keydown", function (e) {
 						if (e.keyCode === 27) {
 							if ($("input.hasDatepicker", $td).length > 0) {
@@ -8162,12 +8465,14 @@
 					});
 					feedback.call($t, "afterEditCell", rowid, nm, tmp, iRow, iCol);
 				} else {
-					if (iColOld >= 0 && iRowOld >= 0) {
-						getTdByColumnIndex.call($t, $trOld[0], iColOld).removeClass(highlightClasses);
-						$trOld.removeClass(hoverClasses);
+					if (!p.noCellSelection) {
+						if (iColOld >= 0 && iRowOld >= 0) {
+							getTdByColumnIndex.call($t, $trOld[0], iColOld).removeClass(highlightClasses);
+							$trOld.removeClass(hoverClasses);
+						}
+						$td.addClass(highlightClasses);
+						$tr.addClass(hoverClasses);
 					}
-					$td.addClass(highlightClasses);
-					$tr.addClass(hoverClasses);
 					tmp = $td.html().replace(/&#160;/ig, "");
 					feedback.call($t, "onSelectCell", rowid, nm, tmp, iRow, iCol);
 				}
@@ -8186,7 +8491,7 @@
 					edit = $self.jqGrid("getGridRes", "edit"), bClose = edit.bClose,
 					savedRow = p.savedRow, fr = savedRow.length >= 1 ? 0 : null;
 				if (fr !== null) {
-					var tr = $t.rows[iRow], rowid = tr.id, $tr = $(tr), cm = p.colModel[iCol], nm = cm.name, vv,
+					var tr = $t.rows[iRow], rowid = tr != null ? tr.id : null, $tr = tr != null ? $(tr) : $(), cm = p.colModel[iCol], nm = cm.name, vv,
 						$td = getTdByColumnIndex.call($t, tr, iCol), valueText = {},
 						v = jgrid.getEditedValue.call($t, $td, cm, valueText);
 
@@ -8298,6 +8603,11 @@
 								$td.addClass("dirty-cell");
 								$tr.addClass("edited");
 								feedback.call($t, "afterSaveCell", rowid, nm, v, iRow, iCol);
+								if (p.frozenColumns && iCol < $self.jqGrid("getNumberOfFrozenColumns")) {
+									try {
+										$t.rows[tr.rowIndex].cells[iCol].style.height = "";
+									} catch (ignore) { }
+								}
 								savedRow.splice(0, 1);
 								delete p.editingInfo[rowid];
 							}
@@ -8337,20 +8647,27 @@
 						} catch (ignore) { }
 					}
 					cm = p.colModel[iCol];
-					if (p.treeGrid === true && cm.name === p.ExpandColumn) {
+					if (p.treeGrid === true && cm != null && cm.name === p.ExpandColumn) {
 						$td.children("span.cell-wrapperleaf,span.cell-wrapper").empty();
 					} else {
 						$td.empty();
 					}
 					$td.attr("tabindex", "-1");
 					v = savedRow[0].v;
-					formatoptions = cm.formatoptions || {};
-					if (cm.formatter === "date" && formatoptions.sendFormatted !== true) {
-						// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
-						// Floating point separator for example
-						v = $.unformat.date.call($t, v, cm);
+					if (cm != null) {
+						formatoptions = cm.formatoptions || {};
+						if (cm.formatter === "date" && formatoptions.sendFormatted !== true) {
+							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+							// Floating point separator for example
+							v = $.unformat.date.call($t, v, cm);
+						}
+						$($t).jqGrid("setCell", rowid, iCol, v, false, false, true);
+						if (p.frozenColumns && iCol < $($t).jqGrid("getNumberOfFrozenColumns")) {
+							try {
+								$t.rows[tr.rowIndex].cells[iCol].style.height = "";
+							} catch (ignore) { }
+						}
 					}
-					$($t).jqGrid("setCell", rowid, iCol, v, false, false, true);
 					feedback.call($t, "afterRestoreCell", rowid, v, iRow, iCol);
 					savedRow.splice(0, 1);
 					delete p.editingInfo[rowid];
@@ -8447,7 +8764,7 @@
 							pRot = tr.offsetTop;
 
 						if (tp === "vd") {
-							if (nRot >= ch) {
+							if (nRot >= st + ch) {
 								bDiv.scrollTop = bDiv.scrollTop + tr.clientHeight;
 							}
 						}
@@ -8941,6 +9258,8 @@
 						"attr",
 						"custom_element",
 						"custom_value",
+						"generateValue",
+						"postData",
 						"selectFilled",
 						"rowId",
 						"column",
@@ -9401,14 +9720,14 @@
 					cm = colModel[i];
 					if (cm.index === colname || cm.name === colname) {
 						if (p.frozenColumns === true && cm.frozen === true) {
-							sobj = grid.fhDiv.find("#" + p.id + "_" + colname);
+							sobj = grid.fhDiv.find("#" + jqID(p.id + "_" + colname));
 						}
 						if (!sobj || sobj.length === 0) {
 							sobj = grid.headers[i].el;
 						}
 						sort = cm.sortable;
 						if (typeof sort !== "boolean" || sort) {
-							self.sortData("jqgh_" + p.id + "_" + colname, i, reload, sor, sobj);
+							self.sortData(cm.index || cm.name, i, reload, sor, sobj);
 						}
 						break;
 					}
@@ -9795,10 +10114,10 @@
 									case "currency":
 										var prefix = getFormaterOption("prefix"),
 											suffix = getFormaterOption("suffix");
-										if (prefix && prefix.length) {
+										if (prefix && prefix.length && v.substr(0, prefix.length) === prefix) {
 											v = v.substr(prefix.length);
 										}
-										if (suffix && suffix.length) {
+										if (suffix && suffix.length && v.length > suffix.length && v.substr(v.length - suffix.length, suffix.length) === suffix) {
 											v = v.substr(0, v.length - suffix.length);
 										}
 										v = cutThousandsSeparator(v)
@@ -10623,8 +10942,7 @@
 						// The text will be over the cVisibleColumns columns
 						$colHeader = $("<th>")
 							.addClass(thClasses)
-							.css({ "height": "22px", "border-top": "0 none" })
-							.html(titleText);
+							.html(titleText || "&nbsp;");
 						if (cVisibleColumns > 0) {
 							$colHeader.attr("colspan", String(cVisibleColumns));
 						}
@@ -10665,26 +10983,6 @@
 				$tr.insertAfter($trLastWithLabels);
 				$htable.prepend($theadInTable);
 
-				if (o.useColSpanStyle) {
-					// Increase the height of resizing span of visible headers
-					$htable.find("span.ui-jqgrid-resize").each(function () {
-						var $parent = $(this).parent();
-						if ($parent.is(":visible")) {
-							this.style.cssText = "height:" + $parent.height() + "px !important;cursor:col-resize;";
-						}
-					});
-
-					// Set position of the sortable div (the main lable)
-					// with the column header text to the middle of the cell.
-					// One should not do this for hidden headers.
-					$htable.find(".ui-th-column>div").each(function () {
-						var $ts = $(this), $parent = $ts.parent();
-						if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)") && !($ts.hasClass("ui-jqgrid-rotate") || $ts.hasClass("ui-jqgrid-rotateOldIE"))) {
-							// !!! it seems be wrong now
-							$ts.css("top", ($parent.height() - $ts.outerHeight(true)) / 2 + "px");
-						}
-					});
-				}
 				$(ts).triggerHandler("jqGridAfterSetGroupHeaders");
 			});
 		},
@@ -10712,8 +11010,8 @@
 				if (!grid || p == null || p.frozenColumns === true) { return; }
 				var cm = p.colModel, i, len = cm.length, maxfrozen = -1, frozen = false, frozenIds = [], $colHeaderRow,// nonFrozenIds = [],
 					tid = jqID(p.id), // one can use p.idSel and remove "#"
-					hoverClasses = getGuiStyles.call($t, "states.hover"),
-					disabledClass = getGuiStyles.call($t, "states.disabled");
+					hoverClasses = getGuiStyles.call($t, "states.hover");
+
 				// TODO treeGrid and grouping  Support
 				// TODO: allow to edit columns AFTER frozen columns
 				if (p.subGrid === true || p.treeGrid === true || p.scroll) {
@@ -10733,7 +11031,9 @@
 				}
 				if (p.sortable) {
 					$colHeaderRow = $(grid.hDiv).find(".ui-jqgrid-htable .ui-jqgrid-labels");
-					$colHeaderRow.sortable("destroy");
+					try {
+						$colHeaderRow.sortable("destroy");
+					} catch (ignore) { }
 					$self.jqGrid("setGridParam", {
 						sortable: {
 							options: {
@@ -10839,21 +11139,6 @@
 						$(ftbl).width(1);
 						$(grid.fsDiv).append(ftbl);
 					}
-					// sorting stuff
-					$self.on("jqGridSortCol.setFrozenColumns", function (e, index, idxcol) {
-						var previousSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + p.lastsort + ")", grid.fhDiv), newSelectedTh = $("tr.ui-jqgrid-labels:last th:eq(" + idxcol + ")", grid.fhDiv);
-
-						$("span.ui-grid-ico-sort", previousSelectedTh).addClass(disabledClass);
-						$(previousSelectedTh).attr("aria-selected", "false");
-						$("span.ui-icon-" + p.sortorder, newSelectedTh).removeClass(disabledClass);
-						$(newSelectedTh).attr("aria-selected", "true");
-						if (!p.viewsortcols[0]) {
-							if (p.lastsort !== idxcol) {
-								$("span.s-ico", previousSelectedTh).hide();
-								$("span.s-ico", newSelectedTh).show();
-							}
-						}
-					});
 
 					// data stuff
 					//TODO support for setRowData
@@ -10903,7 +11188,7 @@
 								// first try with thead for the hdiv
 								$frozenRows = $hDiv.children("table").children("thead").children("tr");
 								$rows = $(hDivBase).children("div").children("table").children("thead").children("tr");
-								if ($rows.length === 0) {
+								if ($rows.length === 0 && $hDiv.children("table").length > 0) {
 									// then use tbody for bdiv
 									$frozenRows = $($hDiv.children("table")[0].rows);
 									$rows = $($(hDivBase).children("div").children("table")[0].rows);
@@ -11057,7 +11342,9 @@
 						myResize(o || fullResize);
 					});
 					if (!grid.hDiv.loading) {
-						$self.triggerHandler("jqGridAfterGridComplete");
+						setTimeout(function () {
+							$self.triggerHandler("jqGridAfterGridComplete");
+						}, 0);
 					}
 					p.frozenColumns = true;
 				}
@@ -12983,14 +13270,22 @@
 									$(nm, fmid).val(tmp);
 									break;
 								case "select":
-									var opv = tmp.split(",");
-									opv = $.map(opv, function (n) { return $.trim(n); });
+									var valuesToSelect = tmp.split(",");
+									valuesToSelect = $.map(valuesToSelect, function (n) { return $.trim(n); });
+									// first of all we try to select options testing the valuesToSelect,
+									// we will remove the values from valuesToSelect, which will be found by value
+									// In the next step we go through all options once more time and select the options
+									// testing there by text. In other words selection by text will be used only for
+									// values from valuesToSelect, which not exist as option by value
 									$(nm + " option", fmid).each(function () {
-										var selOpt = this, $selOpt = $(selOpt), optVal = $.trim($selOpt.val()), optText = $.trim($selOpt.text());
-										if (!cm[i].editoptions.multiple && ($.trim(tmp) === optText || opv[0] === optText || opv[0] === optVal)) {
+										var selOpt = this, $selOpt = $(selOpt), optVal = $.trim($selOpt.val()), iVal;
+										if (!cm[i].editoptions.multiple && valuesToSelect[0] === optVal) {
+											valuesToSelect.splice(0, 1);
 											selOpt.selected = true;
 										} else if (cm[i].editoptions.multiple) {
-											if ($.inArray(optText, opv) > -1 || $.inArray(optVal, opv) > -1) {
+											iVal = $.inArray(optVal, valuesToSelect);
+											if (iVal > -1) {
+												valuesToSelect.splice(iVal, 1);
 												selOpt.selected = true;
 											} else {
 												selOpt.selected = false;
@@ -12998,7 +13293,24 @@
 										} else {
 											selOpt.selected = false;
 										}
+										if (valuesToSelect.length === 0) { return false; }
 									});
+									if (valuesToSelect.length > 0) {
+										$(nm + " option", fmid).each(function () {
+											var selOpt = this, $selOpt = $(selOpt), optText = $.trim($selOpt.text()), iVal;
+											if (!cm[i].editoptions.multiple && ($.trim(tmp) === optText || valuesToSelect[0] === optText)) {
+												valuesToSelect.splice(0, 1);
+												selOpt.selected = true;
+											} else if (cm[i].editoptions.multiple) {
+												iVal = $.inArray(optText, valuesToSelect);
+												if (iVal > -1) {
+													valuesToSelect.splice(iVal, 1);
+													selOpt.selected = true;
+												}
+											}
+											if (valuesToSelect.length === 0) { return false; }
+										});
+									}
 									break;
 								case "checkbox":
 									tmp = String(tmp);
@@ -13963,7 +14275,9 @@
 							ajaxDelOptions: {},
 							processing: false,
 							serializeDelData: null,
-							useDataProxy: false
+							useDataProxy: false,
+							delui: "disable", // "enable", "enable" or "block"
+							deltext: getGridRes.call($self, "defaults.deltext") || "Deleting..."
 						},
 						base.getGridRes.call($self, "del"),
 						jgrid.del || {},
@@ -14061,6 +14375,7 @@
 									data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd) : postd,
 									complete: function (jqXHR, textStatus) {
 										var i;
+										$self.jqGrid("progressBar", { method: "hide", loadtype: o.delui });
 										$("#dData", dtbl + "_2").removeClass(activeClass);
 										if ((jqXHR.status >= 300 && jqXHR.status !== 304) || (jqXHR.status === 0 && jqXHR.readyState === 4)) {
 											ret[0] = false;
@@ -14119,6 +14434,7 @@
 								}
 							}
 							if (ret[0]) {
+								$self.jqGrid("progressBar", { method: "show", loadtype: o.delui, htmlcontent: o.deltext });
 								if (o.useDataProxy) {
 									var dpret = p.dataProxy.call($t, ajaxOptions, "del_" + gridId);
 									if (dpret === undefined) {
@@ -14252,8 +14568,8 @@
 										left = documentElement.clientWidth;
 										top = documentElement.clientHeight;
 									}
-									left = left / 2 - parseInt(o.alertwidth, 10) / 2 - offsetGbox.left;
-									top = top / 2 - 25 - offsetGbox.top;
+									left = left / 2 - parseInt(o.alertwidth, 10) / 2 - offsetGbox.left + w.scrollX;
+									top = top / 2 - 25 - offsetGbox.top + w.scrollY;
 								}
 								jgrid.createModal.call($t, alertIDs,
 									"<div class='" + getGuiStyles.call($t, "dialog.body") + "'><div>" + o.alerttext + "</div></div>",
@@ -18512,6 +18828,24 @@
 			args.unshift("");
 			args.unshift(this.p);
 			return jgrid.feedback.apply(this, args);
+		},
+		getNodeIcons = function (p, item) {
+			var icons = item[p.treeReader.icon_field],
+				treeIcons = p.treeIcons,
+				iconCollapsed = treeIcons.plus + " tree-plus",
+				iconExpanded = treeIcons.minus + " tree-minus";
+			if (icons && typeof icons === "string") {
+				icons = icons.split(",");
+				if (icons.length === 2) {
+					iconExpanded = icons[0];
+					iconCollapsed = icons[1];
+				}
+			}
+			return {
+				expanded: iconExpanded,
+				collapsed: iconCollapsed,
+				common: treeIcons.commonIconClass
+			};
 		};
 	jgrid.extend({
 		setTreeNode: function () {
@@ -18832,39 +19166,52 @@
 		},
 		expandNode: function (rc) {
 			return this.each(function () {
-				var $t = this, p = $t.p;
+				var $t = this, p = $t.p, id, rc1, icons;
 				if (!$t.grid || !p.treeGrid) { return; }
-				var expanded = p.treeReader.expanded_field, parent = p.treeReader.parent_id_field, loaded = p.treeReader.loaded,
-					level = p.treeReader.level_field,
-					lft = p.treeReader.left_field,
-					rgt = p.treeReader.right_field;
+				var treeReader = p.treeReader;
 
-				if (!rc[expanded]) {
-					var id = getAccessor(rc, p.localReader.id);
+				if (!rc[treeReader.expanded_field]) {
+					id = getAccessor(rc, p.localReader.id);
 					if (!treeGridFeedback.call($t, "beforeExpandNode", { rowid: id, item: rc })) { return; }
-					var rc1 = $("#" + p.idPrefix + jqID(id), $t.grid.bDiv)[0],
-						position = p._index[id];
-					if (p.treedatatype === "local" || base.isNodeLoaded.call($($t), p.data[position])) {
-						rc[expanded] = true;
-						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.commonIconClass).addClass(p.treeIcons.minus + " tree-minus");
-					} else if (!$t.grid.hDiv.loading) {
-						rc[expanded] = true;
-						$("div.treeclick", rc1).removeClass(p.treeIcons.plus + " tree-plus").addClass(p.treeIcons.commonIconClass).addClass(p.treeIcons.minus + " tree-minus");
+					rc1 = $("#" + p.idPrefix + jqID(id), $t.grid.bDiv)[0];
+
+					rc[treeReader.expanded_field] = true;
+					icons = getNodeIcons(p, rc);
+					$("div.treeclick", rc1).removeClass(icons.collapsed).addClass(icons.common).addClass(icons.expanded);
+					if (p.treedatatype !== "local" && !base.isNodeLoaded.call($($t), p.data[p._index[id]]) && !$t.grid.hDiv.loading) {
 						// set the value which will be used during processing of the server response
 						// in readInput
 						p.treeANode = rc1.rowIndex;
 						p.datatype = p.treedatatype;
 						base.setGridParam.call($($t), {
 							postData: p.treeGridModel === "nested" ?
-									{ nodeid: id, n_level: rc[level], n_left: rc[lft], n_right: rc[rgt] } :
-									{ nodeid: id, n_level: rc[level], parentid: rc[parent] }
+									{
+										nodeid: id,
+										n_level: rc[treeReader.level_field],
+										n_left: rc[treeReader.left_field],
+										n_right: rc[treeReader.right_field]
+									} :
+									{
+										nodeid: id,
+										n_level: rc[treeReader.level_field],
+										parentid: rc[treeReader.parent_id_field]
+									}
 						});
 						$($t).trigger("reloadGrid");
-						rc[loaded] = true;
+						rc[treeReader.loaded] = true;
 						base.setGridParam.call($($t), {
 							postData: p.treeGridModel === "nested" ?
-									{ nodeid: "", n_level: "", n_left: "", n_right: "" } :
-									{ nodeid: "", n_level: "", parentid: "" }
+									{
+										nodeid: "",
+										n_level: "",
+										n_left: "",
+										n_right: ""
+									} :
+									{
+										nodeid: "",
+										n_level: "",
+										parentid: ""
+									}
 						});
 					}
 					treeGridFeedback.call($t, "afterExpandNode", { rowid: id, item: rc });
@@ -18873,18 +19220,19 @@
 		},
 		collapseNode: function (rc) {
 			return this.each(function () {
-				var $t = this, p = $t.p;
+				var $t = this, p = $t.p, icons;
 				if (!$t.grid || !p.treeGrid) { return; }
 				var expanded = p.treeReader.expanded_field;
 				if (rc[expanded]) {
 					var id = getAccessor(rc, p.localReader.id);
 					if (!treeGridFeedback.call($t, "beforeCollapseNode", { rowid: id, item: rc })) { return; }
 					rc[expanded] = false;
+					icons = getNodeIcons(p, rc);
 					$("#" + p.idPrefix + jqID(id), $t.grid.bDiv) // $tr
 						.find("div.treeclick")
-						.removeClass(p.treeIcons.minus + " tree-minus")
-						.addClass(p.treeIcons.commonIconClass)
-						.addClass(p.treeIcons.plus + " tree-plus");
+						.removeClass(icons.expanded)
+						.addClass(icons.common)
+						.addClass(icons.collapsed);
 					if (p.unloadNodeOnCollapse === true || ($.isFunction(p.unloadNodeOnCollapse) && p.unloadNodeOnCollapse.call($t, rc))) {
 						rc[p.treeReader.loaded] = false;
 						$($t).jqGrid("delTreeNode", id, true);
@@ -18987,6 +19335,7 @@
 			return this.each(function () {
 				if (!data) { return; }
 				var $t = this, p = $t.p, $self = $($t), getInd = base.getInd,
+					iconExpanded = p.treeIcons.minus + " tree-minus",
 					method, parentindex, parentdata, parentlevel, iRow, rowind = parentid, leaf, maxright,
 					expanded = p.treeReader.expanded_field, isLeaf = p.treeReader.leaf_field, level = p.treeReader.level_field,
 					parent = p.treeReader.parent_id_field,
@@ -19034,7 +19383,7 @@
 						$($t.rows[prow])
 							.find("span.cell-wrapperleaf").removeClass("cell-wrapperleaf").addClass("cell-wrapper")
 							.end()
-							.find("div.tree-leaf").removeClass(p.treeIcons.leaf + " tree-leaf").addClass(p.treeIcons.commonIconClass).addClass(p.treeIcons.minus + " tree-minus");
+							.find("div.tree-leaf").removeClass(p.treeIcons.leaf + " tree-leaf").addClass(p.treeIcons.commonIconClass).addClass(iconExpanded);
 						p.data[parentindex][isLeaf] = false;
 						parentdata[loaded] = true;
 					}

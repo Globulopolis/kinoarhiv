@@ -271,3 +271,8 @@ table[data-sortable] th[data-sorted-direction="ascending"]:after {
 	line-height: 24px;
 	margin-bottom: 0;
 }
+
+/* Fix button style for Trumbowyg editor toolbar */
+.trumbowyg-button-pane button {
+	vertical-align: inherit;
+}

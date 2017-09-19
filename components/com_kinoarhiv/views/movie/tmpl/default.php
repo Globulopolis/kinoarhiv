@@ -68,15 +68,13 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 			$(this).attr('title', v);
 		});
 		$('.rate .rateit').bind('rated reset', function (e) {
-			var _this = $(this);
-			var value = _this.rateit('value');
+			var $this = $(this),
+				value = $this.rateit('value'),
+				url   = $this.data('url');
 
 			$.ajax({
 				type: 'POST',
-				url: '<?php echo JRoute::_(
-					'index.php?option=com_kinoarhiv&view=movie&task=vote&id=' . $this->item->id . '&Itemid=' . $this->itemid . '&format=raw',
-					false
-				); ?>',
+				url: url,
 				data: {'value': value}
 			}).done(function (response) {
 				var my_votes = $('.rate .my_votes'),
@@ -86,7 +84,7 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 					my_votes.show();
 				}
 
-				if (value != 0) {
+				if (value !== 0) {
 					if (my_vote.is(':hidden')) {
 						my_vote.show();
 					}
@@ -414,46 +412,17 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 			<p><?php echo $this->item->buy_urls; ?></p>
 		</div>
 
-		<?php if (($this->item->attribs->allow_votes == '' && $this->params->get('allow_votes') == 1) || $this->item->attribs->allow_votes == 1): ?>
-			<?php if (!$this->user->get('guest') && $this->params->get('allow_votes') == 1): ?>
-				<?php if ($this->params->get('ratings_show_local') == 1): ?>
-					<div class="clear"></div>
-					<div class="rate">
-						<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br/>
-						<select id="rate_field" autocomplete="off">
-							<?php for ($i = 0, $n = (int) $this->params->get('vote_summ_num') + 1; $i < $n; $i++): ?>
-								<option value="<?php echo $i; ?>"<?php echo ($i == round($this->item->rate_loc_label)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
-							<?php endfor; ?>
-						</select>
-
-						<div class="rateit" data-rateit-value="<?php echo round($this->item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field"></div>
-						&nbsp;<span><?php echo $this->item->rate_loc_label; ?></span>
-
-						<div class="my_votes" style="<?php echo ($this->item->my_vote == 0) ? 'display: none;' : ''; ?>">
-							<div class="my_vote"><?php echo JText::sprintf('COM_KA_RATE_MY', $this->item->my_vote, (int) $this->params->get('vote_summ_num')); ?>
-								&nbsp;<span class="small">(<?php echo JHtml::_('date', $this->item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>
-									)</span></div>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $this->itemid); ?>" class="small"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
-						</div>
-					</div>
-				<?php endif; ?>
-			<?php else: ?>
-				<?php if ($this->params->get('ratings_show_local') == 1): ?>
-					<div class="clear"></div>
-					<div class="rate">
-						<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br/>
-
-						<div class="rateit" data-rateit-value="<?php echo $this->item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int) $this->params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>
-						&nbsp;<?php echo $this->item->rate_loc_label; ?>
-
-						<?php if ($this->params->get('allow_votes') == 1): ?>
-							<div><?php echo KAComponentHelper::showMsg(JText::sprintf(JText::_('COM_KA_VOTES_AUTHREQUIRED'), '<a href="' . JRoute::_('index.php?option=com_users&view=registration') . '">' . JText::_('COM_KA_REGISTER') . '</a>', '<a href="' . JRoute::_('index.php?option=com_users&view=login') . '">' . JText::_('COM_KA_LOGIN') . '</a>')); ?></div>
-						<?php endif; ?>
-					</div>
-				<?php endif; ?>
-			<?php endif; ?>
-			<div class="clear"></div>
-		<?php endif; ?>
+		<?php
+		echo JLayoutHelper::render('layouts.content.votes_movie',
+			array(
+				'params'  => $this->params,
+				'item'    => $this->item,
+				'guest'   => $this->user->get('guest'),
+				'itemid'  => $this->itemid
+			),
+			JPATH_COMPONENT
+		);
+		?>
 
 		<?php
 		echo JLayoutHelper::render('layouts.content.images_slider',

@@ -10,10 +10,11 @@
 
 defined('_JEXEC') or die;
 
-$params = $displayData['params'];
-$item   = $displayData['item'];
-$guest  = $displayData['guest'];
-$itemid = $displayData['itemid'];
+$params   = $displayData['params'];
+$item     = $displayData['item'];
+$guest    = $displayData['guest'];
+$itemid   = $displayData['itemid'];
+$auth_msg = isset($displayData['auth_msg']) ? true : false;
 ?>
 <?php if (($item->attribs['allow_votes'] == '' && $params->get('allow_votes') == 1) || $item->attribs['allow_votes'] == 1): ?>
 	<?php if (!$guest && $params->get('allow_votes') == 1): ?>
@@ -49,8 +50,16 @@ $itemid = $displayData['itemid'];
 				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>
 				&nbsp;<?php echo $item->rate_loc_label; ?>
 
-				<?php if ($params->get('allow_votes') == 1): ?>
-					<div><?php echo KAComponentHelper::showMsg(JText::sprintf(JText::_('COM_KA_VOTES_AUTHREQUIRED'), '<a href="' . JRoute::_('index.php?option=com_users&view=registration') . '">' . JText::_('COM_KA_REGISTER') . '</a>', '<a href="' . JRoute::_('index.php?option=com_users&view=login') . '">' . JText::_('COM_KA_LOGIN') . '</a>')); ?></div>
+				<?php if ($params->get('allow_votes') == 1 && $auth_msg): ?>
+					<div>
+					<?php echo KAComponentHelper::showMsg(
+						JText::sprintf(
+							JText::_('COM_KA_VOTES_AUTHREQUIRED'),
+							'<a href="' . JRoute::_('index.php?option=com_users&view=registration') . '">' . JText::_('COM_KA_REGISTER') . '</a>',
+							'<a href="' . JRoute::_('index.php?option=com_users&view=login') . '">' . JText::_('COM_KA_LOGIN') . '</a>'
+						)
+					); ?>
+					</div>
 				<?php endif; ?>
 			</div>
 		<?php endif; ?>

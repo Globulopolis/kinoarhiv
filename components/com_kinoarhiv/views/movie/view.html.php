@@ -893,7 +893,12 @@ class KinoarhivViewMovie extends JViewLegacy
 			{
 				$plural = $lang->getPluralSuffixes($album->rate);
 				$albums[$key]->rate_loc_c = round($album->rate_sum / $album->rate, (int) $params->get('vote_summ_precision'));
-				$albums[$key]->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $albums[$key]->rate_loc_c, (int) $params->get('vote_summ_num'), $album->rate);
+				$albums[$key]->rate_loc_label = JText::sprintf(
+					'COM_KA_RATE_LOCAL_' . $plural[0],
+					$albums[$key]->rate_loc_c,
+					(int) $params->get('vote_summ_num'),
+					$album->rate
+				);
 				$albums[$key]->rate_loc_label_class = ' has-rating';
 			}
 			else
@@ -903,6 +908,7 @@ class KinoarhivViewMovie extends JViewLegacy
 				$albums[$key]->rate_loc_label_class = ' no-rating';
 			}
 
+			$albums[$key]->cover = KAContentHelper::getAlbumCover($album);
 			$registry = new Registry($album->attribs);
 			$albums[$key]->attribs = $registry->toArray();
 		}

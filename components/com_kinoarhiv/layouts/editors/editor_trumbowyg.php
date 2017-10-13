@@ -24,7 +24,6 @@ $form   = $displayData->form;
 	jQuery(document).ready(function($){
 		var editor = $('#form_review').trumbowyg({
 			lang: '<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>',
-			removeformatPasted: true,
 			btns: [
 				['formatting'],
 				['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],

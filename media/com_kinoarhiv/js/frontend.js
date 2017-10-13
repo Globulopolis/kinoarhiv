@@ -17,7 +17,7 @@ jQuery(document).ready(function($){
 	}
 
 	if ($.fn.colorbox) {
-		$('.thumb .item a').colorbox({
+		$('.thumb .item a, .album-art').colorbox({
 			maxHeight: '90%',
 			maxWidth: '90%',
 			photo: true

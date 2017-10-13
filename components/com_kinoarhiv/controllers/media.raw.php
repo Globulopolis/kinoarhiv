@@ -26,7 +26,6 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 */
 	public function view()
 	{
-		$app = JFactory::getApplication();
 		$element = $this->input->get('element', '', 'word');
 		$content = $this->input->get('content', '', 'word');
 
@@ -51,9 +50,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			$app->setHeader('HTTP/1.0', '404 Not Found');
-			$app->sendHeaders();
-			exit(0);
+			header('HTTP/1.0 404 Not Found');
+			die();
 		}
 	}
 
@@ -78,7 +76,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($id == 0)
 		{
-			exit(0);
+			die();
 		}
 
 		if ($content === 'image')
@@ -107,7 +105,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			exit(0);
+			die();
 		}
 	}
 
@@ -132,7 +130,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($id == 0)
 		{
-			exit(0);
+			die();
 		}
 
 		if ($content === 'image')
@@ -163,7 +161,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			exit(0);
+			die();
 		}
 	}
 
@@ -189,16 +187,15 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($id == 0)
 		{
-			exit(0);
+			die();
 		}
 
 		$model = $this->getModel('movie');
 
 		if (!$model->getTrailerAccessLevel($item_id))
 		{
-			$app->setHeader('HTTP/1.0', '403 Forbidden');
-			$app->sendHeaders();
-			exit(0);
+			header('HTTP/1.0 403 Forbidden');
+			die();
 		}
 
 		if ($content === 'image')
@@ -228,18 +225,16 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		{
 			if (KAComponentHelper::checkToken('get') === false)
 			{
-				$app->setHeader('HTTP/1.0', '403 Forbidden');
-				$app->sendHeaders();
-				exit(0);
+				header('HTTP/1.0 403 Forbidden');
+				die();
 			}
 
 			$path = $this->getVideoPath(urldecode($fs_alias), $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				$app->setHeader('HTTP/1.0', '404 Not Found');
-				$app->sendHeaders();
-				exit(0);
+				header('HTTP/1.0 404 Not Found');
+				die();
 			}
 
 			try
@@ -263,9 +258,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				$app->setHeader('HTTP/1.0', '404 Not Found');
-				$app->sendHeaders();
-				exit(0);
+				header('HTTP/1.0 404 Not Found');
+				die();
 			}
 
 			try
@@ -283,7 +277,61 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			exit(0);
+			die();
+		}
+	}
+
+	/**
+	 * Get music album content.
+	 *
+	 * @param   string  $content  Content type.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.0
+	 */
+	protected function music($content)
+	{
+		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
+
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$id = $this->input->get('id', 0, 'int');
+		$fs_alias = $this->input->get('fa', '', 'string');
+		$filename = $this->input->get('fn', '', 'string');
+		$thumbnail = $this->input->get('thumbnail', 0, 'int');
+
+		if ($id == 0)
+		{
+			die();
+		}
+
+		if ($content === 'image')
+		{
+			$type = $this->input->get('type', 2, 'int');
+			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
+			$path = $this->getImagePath('music', $type, $fs_alias, $id, $filename);
+
+			if (!file_exists($path) && !is_file($path))
+			{
+				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			}
+
+			try
+			{
+				KAFilesystem::getInstance()->sendFile(
+					$path,
+					$params->get('throttle_image_enable'),
+					array('seconds' => $params->get('throttle_image_sec'), 'bytes' => $params->get('throttle_image_bytes'))
+				);
+			}
+			catch (Exception $e)
+			{
+				echo $e->getMessage();
+			}
+		}
+		else
+		{
+			die();
 		}
 	}
 
@@ -344,6 +392,10 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		elseif ($content === 'trailer')
 		{
 			$path = $params->get('media_trailers_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
+		}
+		elseif ($content === 'music')
+		{
+			$path = $params->get('media_music_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
 		}
 
 		return JPath::clean($path . $filename);

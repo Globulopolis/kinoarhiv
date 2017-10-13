@@ -1,5 +1,5 @@
 /**
- * This file provide basic support for kinoarhiv components used in backend only.
+ * This file provide basic support for Kinoarhiv component and used in backend only.
  *
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv

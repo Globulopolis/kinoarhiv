@@ -423,7 +423,6 @@ class KAContentHelper
 						'&fa=' . urlencode($data->fs_alias) . '&fn=' . $filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
 					);
 					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folder_part . 'thumb_' . $filename), false);
-					print_r($covers);
 
 					break;
 				}

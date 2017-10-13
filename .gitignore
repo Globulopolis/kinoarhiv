@@ -243,3 +243,9 @@ README.md
 CONTRIBUTING.md
 *jcomments*
 LICENSE.txt
+
+/node_modules/
+gulpfile.js
+package.json
+
+stubs.php

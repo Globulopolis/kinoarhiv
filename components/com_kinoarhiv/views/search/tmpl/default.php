@@ -17,8 +17,8 @@ if (JFactory::getDocument()->getType() == 'html')
 else
 {
 	echo '<style type="text/css">
-		@import url("media/com_kinoarhiv/css/select.css");
-		@import url("media/com_kinoarhiv/css/bootstrap-slider.css");
+		@import url("media/com_kinoarhiv/css/select2.min.css");
+		@import url("media/com_kinoarhiv/css/bootstrap-slider.min.css");
 	</style>
 	<script src="media/com_kinoarhiv/js/bootstrap-slider.min.js" type="text/javascript"></script>
 	<script src="media/com_kinoarhiv/js/select2.min.js" type="text/javascript"></script>

@@ -38,7 +38,7 @@ class JFormFieldSlider extends JFormField
 
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'system/html5fallback.js', false, true);
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/bootstrap-slider.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/bootstrap-slider.min.css');
 		JHtml::_('script', 'media/com_kinoarhiv/js/bootstrap-slider.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 

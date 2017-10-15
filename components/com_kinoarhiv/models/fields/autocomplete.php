@@ -48,7 +48,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 		}
 
 		JHtml::_('script', 'system/html5fallback.js', false, true);
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select2.min.css');
 		JHtml::_('script', 'media/com_kinoarhiv/js/select2.min.js');
 		KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');

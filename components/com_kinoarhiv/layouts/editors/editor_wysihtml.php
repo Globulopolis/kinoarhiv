@@ -10,17 +10,29 @@
 
 defined('_JEXEC') or die;
 
+$params = $displayData->params;
+$form   = $displayData->form;
+
 JHtml::_('jquery.framework');
 JHtml::_('bootstrap.framework');
-JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.min.js');
-JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.all-commands.min.js');
-JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.toolbar.min.js');
+
+if ($params->get('use_cdn', 0) == 1)
+{
+	$document = JFactory::getDocument();
+	$document->addScript('https://cdn.jsdelivr.net/npm/wysihtml@0.6.0-beta1/dist/minified/wysihtml.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/wysihtml@0.6.0-beta1/dist/minified/wysihtml.all-commands.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/wysihtml@0.6.0-beta1/dist/minified/wysihtml.toolbar.min.js');
+}
+else
+{
+	JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.min.js');
+	JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.all-commands.min.js');
+	JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/wysihtml.toolbar.min.js');
+}
+
 JHtml::_('script', 'media/com_kinoarhiv/editors/wysihtml/parser_rules/advanced_custom.js');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/wysihtml/themes/default/default.css');
 KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/wysihtml/lang/');
-
-$params = $displayData->params;
-$form   = $displayData->form;
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -67,8 +79,8 @@ $form   = $displayData->form;
 
 			var review = $(this).closest('.review-row');
 			var quoted_text = review.find('.review').html(),
-				quoted_link = review.find('.review-row-title a.permalink').attr('href'),
-				username = review.find('.review-row-title span.username').text();
+				quoted_link = review.find('.review-title a.permalink').attr('href'),
+				username = review.find('.review-title span.username').text();
 
 			editor.focus();
 			editor.composer.commands.exec(

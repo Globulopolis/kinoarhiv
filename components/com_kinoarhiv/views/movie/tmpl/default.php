@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
 
-$total_trailers = count($this->item->trailer);
-$total_movies = count($this->item->movie);
+$total_trailers = count(get_object_vars($this->item->trailer));
+$total_movies = count(get_object_vars($this->item->movie));
 $this->tr_collapsed = ' in';
 $this->mov_collapsed = ' in';
 
@@ -436,7 +436,7 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 		?>
 
 		<?php
-		if ($total_trailers > 0 || $total_movies > 0)
+		if (($total_trailers > 0 || $total_movies > 0) && ($this->params->get('watch_trailer') == 1 || $this->params->get('watch_movie') == 1))
 		{
 			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $this->params->get('player_type');
 

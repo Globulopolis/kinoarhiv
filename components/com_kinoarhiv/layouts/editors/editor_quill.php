@@ -18,43 +18,41 @@ JHtml::_('jquery.framework');
 if ($params->get('use_cdn', 0) == 1)
 {
 	$document = JFactory::getDocument();
-	$document->addScript('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/trumbowyg.min.js');
-	$document->addScript('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/plugins/colors/trumbowyg.colors.min.js');
-	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/trumbowyg/langs/');
-	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/ui/trumbowyg.min.css');
-	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/plugins/colors/ui/trumbowyg.colors.min.css');
+	$document->addScript('https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js');
+	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.min.css');
 }
 else
 {
-	JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/trumbowyg/ui/trumbowyg.min.css');
-	JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/trumbowyg/plugins/colors/ui/trumbowyg.colors.min.css');
-	JHtml::_('script', 'media/com_kinoarhiv/editors/trumbowyg/trumbowyg.min.js');
-	JHtml::_('script', 'media/com_kinoarhiv/editors/trumbowyg/plugins/colors/trumbowyg.colors.min.js');
-	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/trumbowyg/langs/');
+	JHtml::_('script', 'media/com_kinoarhiv/editors/quill/quill.min.js');
+	JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/quill/themes/quill.snow.css');
 }
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		var editor = $('#form_review').trumbowyg({
-			lang: '<?php echo substr(JFactory::getLanguage()->getTag(), 0, 2); ?>',
-			btns: [
-				['formatting'],
-				['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-				['strong', 'em', 'del'],
-				['foreColor', 'backColor'],
-				['viewHTML'],
-				['removeformat'],
-				['fullscreen']
-			],
-			resetCss: true,
-			svgPath: '<?php echo JUri::base(); ?>media/com_kinoarhiv/editors/trumbowyg/ui/icons.svg'
+		var editor = new Quill('#form_review', {
+			theme: 'snow',
+			modules: {
+				toolbar: [
+					[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+					[{ 'font': [] }],
+					['bold', 'italic', 'underline', 'strike'],
+					[{ 'align': [] }],
+					[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+					['blockquote'],
+					[{ 'color': [] }, { 'background': [] }],
+					['clean']
+				]
+			}
 		});
 
 		// Insert username into editor
 		$('.cmd-insert-username').click(function(){
-			var username = $(this).text();
+			var username = $(this).text() + '\n';
 
-			editor.trumbowyg('html', '<strong>' + username + '</strong><br />');
+			editor.setContents([
+				{insert: username, attributes: {bold: true}}
+			]);
+			editor.focus();
 		});
 
 		// Insert cite into editor
@@ -66,28 +64,27 @@ else
 				quoted_link = review.find('.review-title a.permalink').attr('href'),
 				username = review.find('.review-title span.username').text();
 
-			editor.trumbowyg(
-				'html',
+			editor.clipboard.dangerouslyPasteHTML(
 				'<a href="' + quoted_link + '"><strong>' + username + '</strong><?php echo JText::_('COM_KA_REVIEWS_QUOTEWROTE'); ?>:</a>'
-					+ '<br /><blockquote cite="' + quoted_link + '">' + quoted_text + '</blockquote><br />'
+				+ '<br /><blockquote cite="' + quoted_link + '">' + quoted_text + '</blockquote><br />\n'
 			);
+			editor.focus();
 		});
 
-		$('.cmd-reset').click(function(){
-			editor.trumbowyg('empty');
-
-			return true;
-		});
+		Quill.prototype.getHtml = function() {
+			return this.container.querySelector('.ql-editor').innerHTML;
+		};
 
 		$('form.editor').submit(function(e){
-			var editor_text = editor.trumbowyg('html'),
-				min_length = <?php echo (int) $params->get('reviews_length_min'); ?>,
+			var min_length = <?php echo (int) $params->get('reviews_length_min'); ?>,
 				max_length = <?php echo (int) $params->get('reviews_length_max'); ?>,
 				submit = $('input[type="submit"]', this);
 
+			editor.enable(false);
 			submit.attr('disabled', true);
+			$('#form_review_raw').val(editor.getHtml());
 
-			if (editor_text.length < min_length || editor_text.length > max_length) {
+			if (editor.getLength() < min_length || editor.getLength() > max_length) {
 				showMsg(
 					$('.cmd-reset', this),
 					'<?php echo JText::sprintf(
@@ -96,6 +93,7 @@ else
 						(int) $params->get('reviews_length_max')
 					); ?>'
 				);
+				editor.enable();
 
 				window.setTimeout(function(){
 					submit.removeAttr('disabled');
@@ -111,8 +109,11 @@ else
 	});
 </script>
 <div style="clear: both;">&nbsp;</div>
-<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="review-form" class="form-horizontal uk-form editor">
-	<div class="editor-container"><?php echo $form->getInput('review'); ?></div>
+<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="review-form" class="uk-form editor">
+	<div style="margin: 10px 0;">
+		<input name="form[review]" id="form_review_raw" type="hidden"/>
+		<div id="form_review" style="height: 300px;"></div>
+	</div>
 	<div class="select-type"><?php echo $form->getLabel('type'); ?><?php echo $form->getInput('type'); ?></div>
 	<div class="clear"></div>
 	<?php

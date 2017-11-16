@@ -226,6 +226,10 @@ class KinoarhivViewMovie extends JViewLegacy
 				}
 			}
 		}
+		else
+		{
+			$item->slides = (object) array();
+		}
 
 		$item->event = new stdClass;
 		$item->params = new JObject;

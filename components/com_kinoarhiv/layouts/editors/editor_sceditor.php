@@ -10,23 +10,40 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('jquery.framework');
-JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/jquery.sceditor.min.js');
-JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/sceditor/themes/square.min.css');
-KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/sceditor/lang/');
-JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/plugins/format.js');
-JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/plugins/undo.js');
-
 $params = $displayData->params;
 $form   = $displayData->form;
+
+JHtml::_('jquery.framework');
+
+if ($params->get('use_cdn', 0) == 1)
+{
+	$document = JFactory::getDocument();
+	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/sceditor.min.js');
+	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/sceditor/lang/');
+	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/plugins/format.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/plugins/undo.min.js');
+	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/themes/square.min.css');
+}
+else
+{
+	JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/sceditor.min.js');
+	JHtml::_('stylesheet', 'media/com_kinoarhiv/editors/sceditor/themes/square.min.css');
+	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/sceditor/lang/');
+	JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/plugins/format.js');
+	JHtml::_('script', 'media/com_kinoarhiv/editors/sceditor/plugins/undo.js');
+}
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		var editor = $('#form_review').sceditor({
+		var editor_input = document.getElementById('form_review');
+
+		// Init editor
+		sceditor.create(editor_input, {
+			format: 'xhtml',
 			plugins: 'format,undo',
 			toolbar: 'bold,italic,underline|left,center,right,justify|bulletlist,orderedlist|font,size,format|quote|undo,maximize,source',
 			height: '300',
-			style: '<?php echo JUri::base(); ?>media/com_kinoarhiv/editors/sceditor/themes/default_editor.css',
+			style: '<?php echo JUri::base(); ?>media/com_kinoarhiv/editors/sceditor/themes/content/default.css',
 			emoticonsEnabled: false
 		});
 
@@ -34,7 +51,7 @@ $form   = $displayData->form;
 		$('.cmd-insert-username').click(function(){
 			var username = $(this).text();
 
-			editor.sceditor('instance').focus().insert('<strong>' + username + '</strong><br />');
+			sceditor.instance(editor_input).focus().insert('<strong>' + username + '</strong><br />');
 		});
 
 		// Insert cite into editor
@@ -43,17 +60,17 @@ $form   = $displayData->form;
 
 			var review = $(this).closest('.review-row');
 			var quoted_text = review.find('.review').html(),
-				quoted_link = review.find('.review-row-title a.permalink').attr('href'),
-				username = review.find('.review-row-title span.username').text();
+				quoted_link = review.find('.review-title a.permalink').attr('href'),
+				username = review.find('.review-title span.username').text();
 
-			editor.sceditor('instance').focus().insert(
+			sceditor.instance(editor_input).focus().insert(
 				'<a href="' + quoted_link + '"><strong>' + username + '</strong><?php echo JText::_('COM_KA_REVIEWS_QUOTEWROTE'); ?>:</a>'
 					+ '<br /><blockquote cite="' + quoted_link + '">' + quoted_text + '</blockquote><br />'
 			);
 		});
 
 		$('form.editor').submit(function(e){
-			var editor_inst = editor.sceditor('instance'),
+			var editor_inst = sceditor.instance(editor_input),
 				editor_text = editor_inst.val(),
 				min_length = <?php echo (int) $params->get('reviews_length_min'); ?>,
 				max_length = <?php echo (int) $params->get('reviews_length_max'); ?>,

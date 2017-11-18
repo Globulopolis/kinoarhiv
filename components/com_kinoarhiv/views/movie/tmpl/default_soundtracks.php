@@ -119,7 +119,6 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 						endforeach; ?>
 						</table>
 					</div>
-					<br />
 				</li>
 			<?php endforeach; ?>
 			</ul>

@@ -1192,4 +1192,12 @@ div.rating {
 
 .release-table {
 	 table-layout: fixed;
- }
+}
+
+.media-list li.media {
+	margin: 1em 0 1em 0;
+}
+
+.snd-list .media-body {
+	padding-left: .5em;
+}

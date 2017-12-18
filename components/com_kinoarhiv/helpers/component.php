@@ -46,7 +46,7 @@ class KAComponentHelper
 			self::setPageBackground($params);
 		}
 
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/ui.aurora-' . $params->get('ui_theme') . '.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/plugins.min.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/styles.min.css');
 

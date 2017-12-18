@@ -178,7 +178,6 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	{
 		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
 
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $this->input->get('id', 0, 'int');
 		$item_id = $this->input->get('item_id', 0, 'int');

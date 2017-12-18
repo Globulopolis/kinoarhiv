@@ -2,13 +2,13 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid 4.15.0 - free jqGrid: https://github.com/free-jqgrid/jqGrid
+ * @license jqGrid 4.15.2 - free jqGrid: https://github.com/free-jqgrid/jqGrid
  * Copyright (c) 2008-2014, Tony Tomov, tony@trirand.com
  * Copyright (c) 2014-2017, Oleg Kiriljuk, oleg.kiriljuk@ok-soft-gmbh.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2017-09-18
+ * Date: 2017-10-30
  */
 //jsHint options
 /*jshint eqnull:true */
@@ -381,7 +381,7 @@
 
 	$.extend(true, jgrid, {
 		/** @const */
-		version: "4.15.0",
+		version: "4.15.2",
 		/** @const */
 		productName: "free jqGrid",
 		defaults: {},
@@ -1705,7 +1705,11 @@
 					ret = obj;
 					while (ret != null && i--) {
 						p = prm.shift();
-						ret = ret[p];
+						if (ret.hasOwnProperty(p)) {
+							ret = ret[p];
+						} else {
+							ret = undefined;
+						}
 					}
 				}
 			} catch (ignore) { }
@@ -5685,7 +5689,7 @@
 					if (t.length !== 1) { return; }
 					if (!p.viewsortcols[2]) {
 						r = true;
-						d = t.hasClass("ui-icon-desc") ? "desc" : "asc";
+						d = t.hasClass("ui-icon-desc") ? "asc" : "desc";
 					}
 					var iColByName = getColumnHeaderIndex(this);
 					if (iColByName != null) {
@@ -5796,16 +5800,19 @@
 						return;
 					}
 					var ri = $tr[0].id, ci = $td[0].cellIndex,
-						scb = $(target).hasClass("cbox") &&
+						checkboxClicked = $(target).hasClass("cbox") &&
 							$(target).is(":enabled") && !hasOneFromClasses(target, disabledStateClasses),
-						cSel = feedback.call(ts, "beforeSelectRow", ri, e), alreadySelected = false,
+						selectionAllowed = feedback.call(ts, "beforeSelectRow", ri, e), alreadySelected = false,
 						editingInfo = jgrid.detectRowEditing.call(ts, ri),
 						locked = editingInfo != null && editingInfo.mode !== "cellEditing"; // editingInfo.savedRow.ic
-					if (target.tagName === "A" || (locked && !scb)) { return; }
+					if (target.tagName === "A" || (locked && !checkboxClicked)) { return; }
 					feedback.call(ts, "onCellSelect", ri, ci, $td.html(), e);
 					if (p.cellEdit === true) {
-						if (cSel && p.noCellSelection && (!p.multiselect || (scb && !p.multiboxonly))) {
+						if (selectionAllowed && p.multiselect && checkboxClicked) {
 							setSelection.call($self0, ri, true, e);
+							if (checkboxClicked && !p.noCellSelection) {
+								return;
+							}
 							alreadySelected = true;
 						}
 
@@ -5813,12 +5820,12 @@
 							$j.editCell.call($self0, $tr[0].rowIndex, ci, true);
 						} catch (ignore) { }
 
-						if (!p.noCellSelection) {
+						if (!p.multiselect || !p.noCellSelection || (p.multiboxonly && alreadySelected)) {
 							return;
 						}
 					}
-					if (!cSel) {
-						if (scb) {
+					if (!selectionAllowed) {
+						if (checkboxClicked) {
 							// selection is not allowed by beforeSelectRow, but the multiselect
 							// checkbox is clicked.
 							$(target).prop("checked", false);
@@ -5827,7 +5834,7 @@
 					}
 					if (!p.multikey) {
 						if (p.multiselect && p.multiboxonly) {
-							if (scb && !alreadySelected) {
+							if (checkboxClicked && !alreadySelected) {
 								setSelection.call($self0, ri, true, e);
 							} else {
 								var frz = p.frozenColumns ? p.id + "_frozen" : "";
@@ -5865,9 +5872,9 @@
 					} else {
 						if (e[p.multikey] && !alreadySelected) {
 							setSelection.call($self0, ri, true, e);
-						} else if (p.multiselect && scb) {
-							scb = $("#jqg_" + jqID(p.id) + "_" + ri).is(":checked");
-							$("#jqg_" + jqID(p.id) + "_" + ri).prop("checked", !scb);
+						} else if (p.multiselect && checkboxClicked) {
+							checkboxClicked = $("#jqg_" + jqID(p.id) + "_" + ri).is(":checked");
+							$("#jqg_" + jqID(p.id) + "_" + ri).prop("checked", !checkboxClicked);
 						}
 					}
 					// it's important don't use return false in the event handler
@@ -8152,6 +8159,7 @@
 				thPaddingLeft = parseFloat($th.css((cm.rotated ? "padding-top" : "padding-left")) || 0),  // typically 2
 				thPaddingRight = parseFloat($th.css((cm.rotated ? "padding-bottom" : "padding-right")) || 0),// typically 2
 				$incosDiv = $thDiv.children("span.s-ico"),
+				$sortOrder = $thDiv.children(".ui-jqgrid-sort-order"),
 				$wrapper = $thDiv.children("." + p.autoResizing.wrapperClassName),
 				wrapperOuterWidth = cm.rotated ? $wrapper.outerHeight() : $wrapper.outerWidth(),
 				wrapperCssWidth = parseFloat($wrapper.css(cm.rotated ? "height" : "width") || 0),
@@ -8166,7 +8174,7 @@
 			if (!compact || $incosDiv.is(":visible") || ($incosDiv.css("display") !== "none")) {  //|| p.viewsortcols[0]
 				colWidth = cm.rotated ?
 						$incosDiv.outerHeight(true) :
-						$incosDiv.outerWidth(true) + $thDiv.children(".ui-jqgrid-sort-order").outerWidth(true);
+						$incosDiv.outerWidth(true) + ($sortOrder.length > 0 ? $sortOrder.outerWidth(true) : 0);
 				if (!p.sortIconsBeforeText) {
 					colWidth -= p.direction === "rtl" ?
 						parseFloat($incosDiv.css("padding-left") || 0) +
@@ -13345,14 +13353,14 @@
 				function setNullsOrUnformat() {
 					var url = o.url || p.editurl;
 					$.each(colModel, function (i, cm) {
-						var cmName = cm.name, value = postdata[cmName];
-						if (cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
-							// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
-							// Floating point separator for example
-							postdata[cmName] = $.unformat.date.call($t, value, cm);
-						}
-						if (url !== "clientArray" && cm.editoptions && cm.editoptions.NullIfEmpty === true) {
-							if (postdata.hasOwnProperty(cmName) && value === "") {
+						var cmName = cm.name;
+						if (postdata.hasOwnProperty(cmName)) {
+							if (cm.formatter === "date" && (cm.formatoptions == null || cm.formatoptions.sendFormatted !== true)) {
+								// TODO: call all other predefined formatters!!! Not only formatter: "date" have the problem.
+								// Floating point separator for example
+								postdata[cmName] = $.unformat.date.call($t, postdata[cmName], cm);
+							}
+							if (url !== "clientArray" && cm.editoptions && cm.editoptions.NullIfEmpty === true && postdata[cmName] === "") {
 								postdata[cmName] = "null";
 							}
 						}
@@ -14271,13 +14279,14 @@
 							//jqModal : true,
 							closeOnEscape: false,
 							delData: {},
+							idSeparator: ",",
 							onClose: null,
 							ajaxDelOptions: {},
 							processing: false,
 							serializeDelData: null,
 							useDataProxy: false,
 							delui: "disable", // "enable", "enable" or "block"
-							deltext: getGridRes.call($self, "defaults.deltext") || "Deleting..."
+							deltext: base.getGridRes.call($self, "defaults.deltext") || "Deleting..."
 						},
 						base.getGridRes.call($self, "del"),
 						jgrid.del || {},
@@ -14301,7 +14310,7 @@
 				if (!$.isArray(rowids)) { rowids = [String(rowids)]; }
 				if ($(themodalSelector)[0] !== undefined) {
 					if (!deleteFeedback("beforeInitData", $(dtbl))) { return; }
-					$("#DelData>td", dtbl).text(rowids.join()).data("rowids", rowids);
+					$("#DelData>td", dtbl).text(rowids.join(o.idSeparator)).data("rowids", rowids);
 					$("#DelError", dtbl).hide();
 					if (o.processing === true) {
 						o.processing = false;
@@ -14324,7 +14333,7 @@
 					tbl += "<table class='DelTable'><tbody>";
 					// error data
 					tbl += "<tr id='DelError' style='display:none'><td class='" + errorClass + "'></td></tr>";
-					tbl += "<tr id='DelData' style='display:none'><td >" + rowids.join() + "</td></tr>";
+					tbl += "<tr id='DelData' style='display:none'><td >" + rowids.join(o.idSeparator) + "</td></tr>";
 					tbl += "<tr><td class='delmsg'>" + o.msg + "</td></tr>";
 					// buttons at footer
 					tbl += "</tbody></table></div></div>";
@@ -14350,8 +14359,8 @@
 							postdata = $delData.text(), //the pair is name=val1,val2,...
 							formRowIds = $delData.data("rowids"),
 							cs = {};
-						if ($.isFunction(o.onclickSubmit)) { cs = o.onclickSubmit.call($t, o, postdata) || {}; }
-						if ($.isFunction(o.beforeSubmit)) { ret = o.beforeSubmit.call($t, postdata) || ret; }
+						if ($.isFunction(o.onclickSubmit)) { cs = o.onclickSubmit.call($t, o, postdata, formRowIds) || {}; }
+						if ($.isFunction(o.beforeSubmit)) { ret = o.beforeSubmit.call($t, postdata, formRowIds) || ret; }
 						if (ret[0] && !o.processing) {
 							o.processing = true;
 							opers = p.prmNames;
@@ -14366,13 +14375,13 @@
 									postdata[pk] = jgrid.stripPref(p.idPrefix, postdata[pk]);
 								}
 							}
-							postd[idname] = postdata.join();
+							postd[idname] = postdata.join(o.idSeparator);
 							$(this).addClass(activeClass);
 							var url = o.url || p.editurl,
 								ajaxOptions = $.extend({
-									url: $.isFunction(url) ? url.call($t, postd[idname], postd, o) : url,
+									url: $.isFunction(url) ? url.call($t, postd[idname], postd, o, formRowIds) : url,
 									type: o.mtype,
-									data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd) : postd,
+									data: $.isFunction(o.serializeDelData) ? o.serializeDelData.call($t, postd, formRowIds) : postd,
 									complete: function (jqXHR, textStatus) {
 										var i;
 										$self.jqGrid("progressBar", { method: "hide", loadtype: o.delui });
@@ -14388,7 +14397,7 @@
 											// data is posted successful
 											// execute aftersubmit with the returned data from server
 											if ($.isFunction(o.afterSubmit)) {
-												ret = o.afterSubmit.call($t, jqXHR, postd) || [true];
+												ret = o.afterSubmit.call($t, jqXHR, postd, formRowIds) || [true];
 											}
 										}
 										if (ret[0] === false) {
@@ -14409,7 +14418,7 @@
 												$self.trigger("reloadGrid", [$.extend({}, o.reloadGridOptions || {})]);
 											}
 											setTimeout(function () {
-												deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl));
+												deleteFeedback("afterComplete", jqXHR, postdata, $(dtbl), formRowIds);
 											}, 50);
 										}
 										o.processing = false;
@@ -16740,11 +16749,11 @@
 									// both belongs no header group then the column could be NOT in
 									// selectedList. I find better to insert the item AFTER the hidden
 									// or non-movable columns (like "rn", "subgrid" column or other)
-									while (iCol >= 0 && iCol < p.colModel.length &&
+									while (iCol >= 0 && iCol < p.colModel.length && iCol !== iColItem &&
 											(p.colModel[iCol].hidden || p.colModel[iCol].hidedlg) &&
-											inGroup != null &&
+											(inGroup == null ||
 											//inGroup[iCol] !== undefined && inGroup[iColItem] !== undefined &&
-											inGroup[iCol] === inGroup[iColItem]) {
+											inGroup[iCol] === inGroup[iColItem])) {
 										iCol++;
 									}
 									that.newColOrder.splice(iCol, 0, p.colModel[iColItem].name);
@@ -20418,7 +20427,7 @@
 	$FnFmatter.select = function (cellval, opts) {
 		var ret = [], colModel = opts.colModel, defaultValue,
 			op = $.extend({}, colModel.editoptions || {}, colModel.formatoptions || {}),
-			oSelect = op.value, sep = op.separator || ":", delim = op.delimiter || ";";
+			oSelect = typeof op.value === "function" ? op.value() : op.value, sep = op.separator || ":", delim = op.delimiter || ";";
 		if (oSelect) {
 			var msl = op.multiple === true ? true : false, scell = [], sv,
 			mapFunc = function (n, j) { if (j > 0) { return n; } };
@@ -20465,7 +20474,7 @@
 		// jqGrid specific
 		var colModel = opts.colModel, $fnDefaultFormat = $FnFmatter.defaultFormat,
 			op = $.extend({}, colModel.editoptions || {}, colModel.formatoptions || {}),
-			oSelect = op.value, sep = op.separator || ":", delim = op.delimiter || ";",
+			oSelect = typeof op.value === "function" ? op.value() : op.value, sep = op.separator || ":", delim = op.delimiter || ";",
 			defaultValue, defaultValueDefined = op.defaultValue !== undefined,
 			isMultiple = op.multiple === true ? true : false, sv, so, i, nOpts, selOptions = {},
 			mapFunc = function (n, j) { if (j > 0) { return n; } };
@@ -20776,7 +20785,7 @@
 			delim = op.delimiter === undefined ? ";" : op.delimiter;
 
 		if (op.value) {
-			var oSelect = op.value,
+			var oSelect = typeof op.value === "function" ? op.value() : op.value,
 				msl = op.multiple === true ? true : false,
 				scell = [], sv, mapFunc = function (n, k) { if (k > 0) { return n; } };
 			if (msl) { scell = cell.split(","); scell = $.map(scell, function (n) { return $.trim(n); }); }

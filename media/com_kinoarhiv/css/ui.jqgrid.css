@@ -1,6 +1,6 @@
 /*!
- * jqGrid 4.15.0 - free jqGrid: https://github.com/free-jqgrid/jqGrid 
- * Date: 2017-09-18
+ * jqGrid 4.15.2 - free jqGrid: https://github.com/free-jqgrid/jqGrid 
+ * Date: 2017-10-30
  */
 
 /* Grid */
@@ -10,7 +10,7 @@
 	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
 	-ms-touch-action: none;
-	touch-action: none;
+	touch-action: manipulation;
 }
 .ui-jqgrid div {
 	line-height: normal;
@@ -756,6 +756,16 @@ select.form-control.ui-pg-selbox:not([size]):not([multiple]) {
 }
 
 /* Subgrid */
+.subgrid-data > .tablediv > .ui-jqgrid {
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+}
+.subgrid-data > .tablediv > .ui-jqgrid > .ui-jqgrid-view {
+    -moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
 .ui-jqgrid .ui-jqgrid-btable .jqgrow > .ui-sgcollapsed {
 	text-align: center;
 	vertical-align: middle;

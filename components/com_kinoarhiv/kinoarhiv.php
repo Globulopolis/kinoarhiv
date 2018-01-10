@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 @ini_set('zend.ze1_compatibility_mode', 'Off');
+header_remove('X-Powered-By');
 
 $params = JComponentHelper::getParams('com_kinoarhiv');
 JLoader::register('KAComponentHelper', JPath::clean(dirname(__FILE__) . '/helpers/component.php'));

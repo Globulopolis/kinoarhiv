@@ -377,8 +377,6 @@ jQuery(document).ready(function($){
 	}
 
 	if (jQuery.fn.jqGrid) {
-		var $body = $('body');
-
 		$('.jqgrid').each(function(index, element){
 			var $this = $(element),
 				width = isNaN(parseInt($this.data('width'), 10)) ? $($this.data('width')).width() : $this.data('width'),

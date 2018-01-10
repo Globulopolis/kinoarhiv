@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -23,7 +23,7 @@ class KinoarhivController extends JControllerLegacy
 	 * @param   boolean  $cachable   If true, the view output will be cached.
 	 * @param   array    $urlparams  An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
 	 *
-	 * @return  JController  This object to support chaining.
+	 * @return  object  This object to support chaining.
 	 *
 	 * @since   3.0
 	 */
@@ -54,145 +54,87 @@ class KinoarhivController extends JControllerLegacy
 	/**
 	 * Method to mark movie, person as favorite
 	 *
-	 * @return mixed
+	 * @return  void
 	 *
-	 * @throws Exception
+	 * @throws  Exception
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function favorite()
 	{
-		$user = JFactory::getUser();
-		$document = JFactory::getDocument();
-
-		if ($user->guest)
+		if (JFactory::getUser()->guest)
 		{
-			if ($document->getType() == 'raw' || $document->getType() == 'json')
-			{
-				$document->setMimeEncoding('application/json');
+			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
 
-				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-			}
-			else
-			{
-				throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
-			}
+		$movie_ids = $this->input->get('ids', array(), 'array');
 
-			return false;
+		if (!empty($movie_ids))
+		{
+			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		}
 
 		$view = $this->input->get('view', 'movies', 'cmd');
 		$model = $this->getModel($view);
 		$result = $model->favorite();
+		$tab = $this->input->get('tab', '', 'cmd');
+		$page = $this->input->get('page', '', 'cmd');
+		$id = $this->input->get('id', 0, 'int');
+		$_id = ($id != 0) ? '&id=' . $id : '';
+		$tab = !empty($tab) ? '&tab=' . $tab : '';
+		$page = !empty($page) ? '&page=' . $page : '';
+		$return = $this->input->get('return', 'movies', 'cmd');
+		$url = JRoute::_(
+			'index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id
+				. '&Itemid=' . $this->input->get('Itemid', 0, 'int'),
+			false
+		);
 
-		if ($document->getType() == 'raw' || $document->getType() == 'json')
-		{
-			$document->setMimeEncoding('application/json');
+		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
 
-			echo json_encode($result);
-		}
-		else
-		{
-			$tab = $this->input->get('tab', '', 'cmd');
-			$page = $this->input->get('page', '', 'cmd');
-			$id = $this->input->get('id', 0, 'int');
-			$_id = ($id != 0) ? '&id=' . $id : '';
-			$tab = !empty($tab) ? '&tab=' . $tab : '';
-			$page = !empty($page) ? '&page=' . $page : '';
-			$return = $this->input->get('return', 'movies', 'cmd');
-			$url = JRoute::_('index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id . '&Itemid=' . $this->input->get('Itemid', 0, 'int'), false);
-
-			$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
-
-			$this->setRedirect($url);
-		}
+		$this->setRedirect($url);
 	}
 
 	/**
 	 * Method to mark movie as watched
 	 *
-	 * @return mixed
+	 * @return  void
 	 *
-	 * @throws Exception
+	 * @throws  Exception
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function watched()
 	{
-		$user = JFactory::getUser();
-		$document = JFactory::getDocument();
-
-		if ($user->guest)
+		if (JFactory::getUser()->guest)
 		{
-			if ($document->getType() == 'raw' || $document->getType() == 'json')
-			{
-				$document->setMimeEncoding('application/json');
+			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
 
-				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-			}
-			else
-			{
-				throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
-			}
+		$movie_ids = $this->input->get('ids', array(), 'array');
 
-			return false;
+		if (!empty($movie_ids))
+		{
+			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		}
 
 		$model = $this->getModel('movies');
 		$result = $model->watched();
+		$tab = $this->input->get('tab', '', 'cmd');
+		$page = $this->input->get('page', '', 'cmd');
+		$id = $this->input->get('id', 0, 'int');
+		$_id = ($id != 0) ? '&id=' . $id : '';
+		$tab = !empty($tab) ? '&tab=' . $tab : '';
+		$page = !empty($page) ? '&page=' . $page : '';
+		$return = $this->input->get('return', 'movies', 'cmd');
+		$url = JRoute::_(
+			'index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id
+			. '&Itemid=' . $this->input->get('Itemid', 0, 'int'),
+			false
+		);
 
-		if ($document->getType() == 'raw' || $document->getType() == 'json')
-		{
-			$document->setMimeEncoding('application/json');
+		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
 
-			echo json_encode($result);
-		}
-		else
-		{
-			$view = $this->input->get('view', 'movies', 'cmd');
-			$tab = $this->input->get('tab', '', 'cmd');
-
-			if ($view == 'movies')
-			{
-				$url = JRoute::_('index.php?option=com_kinoarhiv&Itemid=' . $this->input->get('Itemid', 0, 'int'), false);
-			}
-			else
-			{
-				$id = $this->input->get('id', 0, 'int');
-				$_id = ($id != 0) ? '&id=' . $id : '';
-				$tab = !empty($tab) ? '&tab=' . $tab : '';
-
-				$url = JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $tab . $_id . '&Itemid=' . $this->input->get('Itemid', 0, 'int'), false);
-			}
-
-			$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
-
-			$this->setRedirect($url);
-		}
-	}
-
-	/**
-	 * Method to process user votes
-	 *
-	 * @return  mixed
-	 *
-	 * @since  3.0
-	 */
-	public function vote()
-	{
-		$user = JFactory::getUser();
-		JFactory::getDocument()->setMimeEncoding('application/json');
-
-		if ($user->guest)
-		{
-			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
-
-			return false;
-		}
-
-		$model = $this->getModel('movie');
-		$result = $model->voted();
-
-		echo json_encode($result);
+		$this->setRedirect($url);
 	}
 }

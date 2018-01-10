@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -364,8 +364,8 @@ class KinoarhivModelNames extends JModelList
 				{
 					$query = $db->getQuery(true)
 						->insert($db->quoteName('#__ka_user_marked_names'))
-						->columns('uid, name_id, favorite')
-						->values("'" . $user->get('id') . "', '" . (int) $name_id . "', '1'");
+						->columns('uid, name_id, favorite, favorite_added')
+						->values("'" . $user->get('id') . "', '" . (int) $name_id . "', '1', NOW()");
 
 					$db->setQuery($query);
 				}
@@ -373,7 +373,7 @@ class KinoarhivModelNames extends JModelList
 				{
 					$query = $db->getQuery(true)
 						->update($db->quoteName('#__ka_user_marked_names'))
-						->set("favorite = '1'")
+						->set("favorite = '1', favorite_added = NOW()")
 						->where('uid = ' . $user->get('id') . ' AND name_id = ' . (int) $name_id);
 
 					$db->setQuery($query);
@@ -383,7 +383,7 @@ class KinoarhivModelNames extends JModelList
 				{
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_ADDED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=delete&Itemid=' . $itemid . '&id=' . $name_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=delete&Itemid=' . $itemid . '&id=' . $name_id . '&format=json', false);
 					$text = JText::_('COM_KA_REMOVEFROM_FAVORITE');
 				}
 				else
@@ -407,7 +407,7 @@ class KinoarhivModelNames extends JModelList
 				{
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_REMOVED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&view=names&action=add&Itemid=' . $itemid . '&id=' . $name_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=add&Itemid=' . $itemid . '&id=' . $name_id . '&format=json', false);
 					$text = JText::_('COM_KA_ADDTO_FAVORITE');
 				}
 				else
@@ -447,7 +447,7 @@ class KinoarhivModelNames extends JModelList
 
 						$success = true;
 						$message = JText::_('COM_KA_FAVORITE_REMOVED');
-						$url = JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid=' . $itemid . '&id=' . $name_id, false);
+						$url = JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=add&Itemid=' . $itemid . '&id=' . $name_id . '&format=json', false);
 						$text = JText::_('COM_KA_ADDTO_FAVORITE');
 					}
 					else

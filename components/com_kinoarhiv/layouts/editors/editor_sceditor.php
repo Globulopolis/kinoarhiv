@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -80,16 +80,20 @@ else
 			submit.attr('disabled', true);
 
 			if (editor_text.length < min_length || editor_text.length > max_length) {
-				showMsg(
-					$('.cmd-reset', this),
-					'<?php echo JText::sprintf(
-						JText::_('COM_KA_EDITOR_EMPTY'),
-						(int) $params->get('reviews_length_min'),
-						(int) $params->get('reviews_length_max')
-					); ?>'
+				Aurora.message(
+					[{
+						text: '<?php echo JText::sprintf(
+							JText::_('COM_KA_EDITOR_EMPTY'),
+							(int) $params->get('reviews_length_min'),
+							(int) $params->get('reviews_length_max')
+						); ?>',
+						type: 'alert'
+					}],
+					'#review-form',
+					{place: 'insertAfter', replace: true}
 				);
-				editor_inst.readOnly(false);
 
+				editor_inst.readOnly(false);
 				window.setTimeout(function(){
 					submit.removeAttr('disabled');
 				}, 5000);

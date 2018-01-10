@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -14,9 +14,6 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		$('.rateit').bind('over', function (e, v) {
-			$(this).attr('title', v);
-		});
 		$('.rate .rateit').bind('rated reset', function (e) {
 			var _this = $(this);
 			var value = _this.rateit('value');

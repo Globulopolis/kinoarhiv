@@ -10,6 +10,7 @@
  */
 
 Kinoarhiv = window.Kinoarhiv || {};
+var KA_vars = {};
 
 (function(Kinoarhiv, document){
 	'use strict';
@@ -253,7 +254,7 @@ jQuery(document).ready(function($){
 				config.maximumSelectionSize = parseInt(max_selection, 10);
 			}
 
-			if (remote == true || (remote == false && $.inArray(content, ['countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua']))) {
+			if (remote === true || (remote === false && $.inArray(content, ['countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua']))) {
 				// Do not add 'multiple' element to the configuration object if select2 attached to <select>!
 				if (multiple) {
 					config.multiple = true;
@@ -314,7 +315,7 @@ jQuery(document).ready(function($){
 				};
 			} else {
 				// Code bellow required only in configuration: data-remote="false" multiple="true" data-sortable="true"
-				if (sortable == 'true' || sortable) {
+				if (sortable === 'true' || sortable) {
 					var data_content = $this.data('content-value'),
 						data_count = data_content.length;
 
@@ -325,7 +326,7 @@ jQuery(document).ready(function($){
 					config.initSelection = function (element, callback) {
 						var data = [];
 
-						if (content == 'countries') {
+						if (content === 'countries') {
 							$(element.val().split(',')).each(function () {
 								var i = 0;
 
@@ -390,14 +391,14 @@ jQuery(document).ready(function($){
 					if (data.length < 1) {
 						return '';
 					} else {
-						var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
+						var country_code = (remote === true || (sortable === 'true' || sortable)) ? data.code : $(data.element).data('country-code');
 
 						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 					}
 				} else if (content === 'names') {
-					return remote == true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
+					return remote === true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
 				} else if (content === 'movies') {
-					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
+					var year = (remote === true || (sortable === 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 
 					return Kinoarhiv.formatItemTitle(title, '', year);
@@ -413,14 +414,14 @@ jQuery(document).ready(function($){
 					if (data.length < 1) {
 						return '';
 					} else {
-						var country_code = (remote == true || (sortable == 'true' || sortable)) ? data.code : $(data.element).data('country-code');
+						var country_code = (remote === true || (sortable === 'true' || sortable)) ? data.code : $(data.element).data('country-code');
 
 						return '<img class="flag-dd" src="' + img_root + 'media/com_kinoarhiv/images/icons/countries/' + country_code + '.png"/>' + data.text;
 					}
-				} else if (content == 'names') {
-					return remote == true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
-				} else if (content == 'movies') {
-					var year = (remote == true || (sortable == 'true' || sortable)) ? data.year : $(data.element).data('year');
+				} else if (content === 'names') {
+					return remote === true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
+				} else if (content === 'movies') {
+					var year = (remote === true || (sortable === 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 
 					return Kinoarhiv.formatItemTitle(title, '', year);
@@ -435,7 +436,7 @@ jQuery(document).ready(function($){
 
 			var select = $this.select2(config);
 
-			if (sortable == 'true' || sortable) {
+			if (sortable === 'true' || sortable) {
 				select.select2('container').find('ul.select2-choices').sortable({
 					containment: 'parent',
 					start: function () {

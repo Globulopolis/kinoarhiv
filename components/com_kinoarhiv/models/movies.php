@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -540,12 +540,6 @@ class KinoarhivModelMovies extends JModelList
 		$movie_id = $app->input->get('id', 0, 'int');
 		$movie_ids = $app->input->get('ids', array(), 'array');
 		$result = '';
-
-		if (!empty($movie_ids))
-		{
-			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		}
-
 		$itemid = $app->input->get('Itemid', 0, 'int');
 		$success = false;
 		$url = '';
@@ -574,8 +568,8 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$query = $db->getQuery(true)
 						->insert($db->quoteName('#__ka_user_marked_movies'))
-						->columns($db->quoteName(array('uid', 'movie_id', 'favorite', 'watched')))
-						->values("'" . $user->get('id') . "', '" . (int) $movie_id . "', '1', '0')");
+						->columns($db->quoteName(array('uid', 'movie_id', 'favorite', 'favorite_added', 'watched', 'watched_added')))
+						->values("'" . $user->get('id') . "', '" . (int) $movie_id . "', '1', NOW(), '0', '" . $db->getNullDate() . "'");
 
 					$db->setQuery($query);
 				}
@@ -583,7 +577,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$query = $db->getQuery(true)
 						->update($db->quoteName('#__ka_user_marked_movies'))
-						->set("favorite = '1'")
+						->set("favorite = '1', favorite_added = NOW()")
 						->where('uid = ' . $user->get('id') . ' AND movie_id = ' . (int) $movie_id);
 
 					$db->setQuery($query);
@@ -593,7 +587,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_ADDED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=favorite&action=delete&Itemid=' . $itemid . '&id=' . $movie_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=movies.favorite&action=delete&Itemid=' . $itemid . '&id=' . $movie_id . '&format=json', false);
 					$text = JText::_('COM_KA_REMOVEFROM_FAVORITE');
 				}
 				else
@@ -617,7 +611,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$success = true;
 					$message = JText::_('COM_KA_FAVORITE_REMOVED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=favorite&action=add&Itemid=' . $itemid . '&id=' . $movie_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=movies.favorite&action=add&Itemid=' . $itemid . '&id=' . $movie_id . '&format=json', false);
 					$text = JText::_('COM_KA_ADDTO_FAVORITE');
 				}
 				else
@@ -657,7 +651,7 @@ class KinoarhivModelMovies extends JModelList
 
 						$success = true;
 						$message = JText::_('COM_KA_FAVORITE_REMOVED');
-						$url = JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=favorite&action=add&Itemid=' . $itemid . '&id=' . $movie_id, false);
+						$url = JRoute::_('index.php?option=com_kinoarhiv&task=movies.favorite&action=add&Itemid=' . $itemid . '&id=' . $movie_id . '&format=json', false);
 						$text = JText::_('COM_KA_ADDTO_FAVORITE');
 					}
 					else
@@ -685,7 +679,7 @@ class KinoarhivModelMovies extends JModelList
 	}
 
 	/**
-	 * Method to add a movie into watched
+	 * Add a movie into watched
 	 *
 	 * @return array
 	 *
@@ -702,12 +696,6 @@ class KinoarhivModelMovies extends JModelList
 		$movie_id = $app->input->get('id', 0, 'int');
 		$movie_ids = $app->input->get('ids', array(), 'array');
 		$result = '';
-
-		if (!empty($movie_ids))
-		{
-			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		}
-
 		$itemid = $app->input->get('Itemid', 0, 'int');
 		$success = false;
 		$url = '';
@@ -736,8 +724,8 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$query = $db->getQuery(true)
 						->insert($db->quoteName('#__ka_user_marked_movies'))
-						->columns($db->quoteName(array('uid', 'movie_id', 'favorite', 'watched')))
-						->values("'" . $user->get('id') . "', '" . (int) $movie_id . "', '0', '1')");
+						->columns($db->quoteName(array('uid', 'movie_id', 'favorite', 'favorite_added', 'watched', 'watched_added')))
+						->values("'" . $user->get('id') . "', '" . (int) $movie_id . "', '0', '" . $db->getNullDate() . "', '1', NOW()");
 
 					$db->setQuery($query);
 				}
@@ -745,7 +733,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$query = $db->getQuery(true)
 						->update($db->quoteName('#__ka_user_marked_movies'))
-						->set("watched = '1'")
+						->set("watched = '1', watched_added = NOW()")
 						->where('uid = ' . $user->get('id') . ' AND movie_id = ' . (int) $movie_id);
 
 					$db->setQuery($query);
@@ -755,7 +743,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$success = true;
 					$message = JText::_('COM_KA_WATCHED_ADDED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=delete&Itemid=' . $itemid . '&id=' . $movie_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=movies.watched&action=delete&Itemid=' . $itemid . '&id=' . $movie_id . '&format=json', false);
 					$text = JText::_('COM_KA_REMOVEFROM_WATCHED');
 				}
 				else
@@ -779,7 +767,7 @@ class KinoarhivModelMovies extends JModelList
 				{
 					$success = true;
 					$message = JText::_('COM_KA_WATCHED_REMOVED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=add&Itemid=' . $itemid . '&id=' . $movie_id, false);
+					$url = JRoute::_('index.php?option=com_kinoarhiv&task=movies.watched&action=add&Itemid=' . $itemid . '&id=' . $movie_id . '&format=json', false);
 					$text = JText::_('COM_KA_ADDTO_WATCHED');
 				}
 				else
@@ -819,7 +807,7 @@ class KinoarhivModelMovies extends JModelList
 
 						$success = true;
 						$message = JText::_('COM_KA_WATCHED_REMOVED');
-						$url = JRoute::_('index.php?option=com_kinoarhiv&task=watched&action=add&Itemid=' . $itemid . '&id=' . $movie_id, false);
+						$url = JRoute::_('index.php?option=com_kinoarhiv&task=movies.watched&action=add&Itemid=' . $itemid . '&id=' . $movie_id . '&format=json', false);
 						$text = JText::_('COM_KA_ADDTO_WATCHED');
 					}
 					else

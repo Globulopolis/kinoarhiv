@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -39,12 +39,14 @@ if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) 
 									<?php foreach ($item_trailer->files['video'] as $item): ?>
 										<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 									<?php endforeach; ?>
+
 									<?php if (count($item_trailer->files['subtitles']) > 0):
 										foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
 											<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>"
 												   label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 										<?php endforeach;
 									endif; ?>
+
 									<?php if (count($item_trailer->files['chapters']) > 0): ?>
 										<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
 									<?php endif; ?>
@@ -54,10 +56,8 @@ if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) 
 								<div style="height: <?php echo $item_trailer->player_height; ?>px; text-align: center;">
 									<img src="<?php echo $item_trailer->screenshot; ?>" style="height: <?php echo $item_trailer->player_height; ?>px; width: <?php echo $item_trailer->player_height; ?>px;"/></div>
 							<?php endif; ?>
-							<?php if (isset($item_trailer->files['video_links'])
-								&& (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)
-							):
-								?>
+
+							<?php if (isset($item_trailer->files['video_links']) && (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)): ?>
 								<div class="video-links">
 									<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
 									<?php foreach ($item_trailer->files['video_links'] as $item): ?>
@@ -136,4 +136,5 @@ if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0
 			</div>
 		</div>
 	</div>
-<?php endif; ?>
+<?php
+endif;

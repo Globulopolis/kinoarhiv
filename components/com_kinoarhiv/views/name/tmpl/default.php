@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -36,9 +36,9 @@ use Joomla\String\StringHelper;
 						<?php if ($this->params->get('link_favorite') == 1): ?>
 							<div class="favorite">
 								<?php if ($this->item->favorite == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite delete" data-msg_placement=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id . '&format=json'); ?>" class="cmd-favorite delete" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite add" data-msg_placement=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id . '&format=json'); ?>" class="cmd-favorite add" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>

@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -39,8 +39,9 @@ class KinoarhivModelProfile extends JModelList
 
 			if ($tab == '' || $tab == 'movies')
 			{
-				$query->select($db->quoteName(array('id', 'title', 'alias', 'year')))
-					->from($db->quoteName('#__ka_movies'));
+				$query->select(array('m.id', 'm.title', 'm.alias', 'm.year', 'f.favorite_added', 'f.watched_added'))
+					->from($db->quoteName('#__ka_movies', 'm'))
+					->leftJoin($db->quoteName('#__ka_user_marked_movies', 'f') . ' ON f.movie_id = m.id');
 
 				$subquery = $db->getQuery(true)
 					->select('movie_id')
@@ -48,12 +49,14 @@ class KinoarhivModelProfile extends JModelList
 					->where('uid = ' . $user->get('id') . ' AND favorite = 1');
 
 				$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+					->group('id')
 					->order($db->quoteName('created') . ' DESC');
 			}
 			elseif ($tab == 'names')
 			{
-				$query->select($db->quoteName(array('id', 'name', 'latin_name', 'alias', 'date_of_birth')))
-					->from($db->quoteName('#__ka_names'));
+				$query->select(array('n.id', 'n.name', 'n.latin_name', 'n.alias', 'n.date_of_birth', 'f.favorite_added'))
+					->from($db->quoteName('#__ka_names', 'n'))
+					->leftJoin($db->quoteName('#__ka_user_marked_names', 'f') . ' ON f.name_id = n.id');
 
 				$subquery = $db->getQuery(true)
 					->select('name_id')
@@ -61,6 +64,7 @@ class KinoarhivModelProfile extends JModelList
 					->where('uid = ' . $user->get('id') . ' AND favorite = 1');
 
 				$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+					->group('id')
 					->order($db->quoteName('ordering') . ' DESC');
 			}
 		}
@@ -68,8 +72,9 @@ class KinoarhivModelProfile extends JModelList
 		{
 			$query = $db->getQuery(true);
 
-			$query->select($db->quoteName(array('id', 'title', 'alias', 'year')))
-				->from($db->quoteName('#__ka_movies'));
+			$query->select(array('m.id', 'm.title', 'm.alias', 'm.year', 'w.watched_added'))
+				->from($db->quoteName('#__ka_movies', 'm'))
+				->leftJoin($db->quoteName('#__ka_user_marked_movies', 'w') . ' ON w.movie_id = m.id');
 
 			$subquery = $db->getQuery(true)
 				->select('movie_id')
@@ -77,6 +82,7 @@ class KinoarhivModelProfile extends JModelList
 				->where('uid = ' . $user->get('id') . ' AND watched = 1');
 
 			$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+				->group('id')
 				->order($db->quoteName('created') . ' DESC');
 		}
 		elseif ($page == 'votes')

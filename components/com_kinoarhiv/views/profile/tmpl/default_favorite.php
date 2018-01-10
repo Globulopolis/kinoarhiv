@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -13,28 +13,30 @@ defined('_JEXEC') or die;
 if ($this->tab == 'names')
 {
 	$view = 'name';
+	$th_first_title = 'COM_KA_SEARCH_ADV_MOVIES_NAMES_LABEL';
+	$total = JText::plural('COM_KA_PROFILE_N_TOTAL_NAMES', $this->pagination->total);
 }
 else
 {
 	$view = 'movie';
+	$th_first_title = 'COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL';
+	$total = JText::plural('COM_KA_PROFILE_N_TOTAL_MOVIES', $this->pagination->total);
 }
-
-$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
 		$('#checkall-toggle').click(function () {
 			if ($(this).is(':checked')) {
-				$('.fav-list .title-small :checkbox').prop('checked', true);
+				$('.fav-list tbody :checkbox').prop('checked', true);
 			} else {
-				$('.fav-list .title-small :checkbox').prop('checked', false);
+				$('.fav-list tbody :checkbox').prop('checked', false);
 			}
 		});
 
 		$('#adminForm').submit(function (e) {
 			var items = $('input', this).filter(':checked');
 
-			if (items.length == 0 || items.length < 0) {
+			if (items.length === 0 || items.length < 0) {
 				return false;
 			}
 		});
@@ -48,8 +50,16 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 	</div>
 	<?php if (count($this->items) > 0): ?>
 		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
-			<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . $this->pagination->total . JText::_('COM_KA_PROFILE_TOTAL_' . strtoupper($this->tab) . '_' . $plural[0]); ?></div>
-			<div class="fav-list">
+			<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . $total; ?></div>
+			<table class="table table-striped fav-list">
+				<thead>
+					<tr>
+						<th></th>
+						<th><?php echo JText::_($th_first_title); ?></th>
+						<th><?php echo JText::_('JDATE'); ?></th>
+					</tr>
+				</thead>
+				<tbody>
 				<?php foreach ($this->items as $i => $item):
 					if ($this->tab == 'names'):
 						$year = $item->date_of_birth != '0000-00-00' ? JHtml::_('date', $item->date_of_birth) : '';
@@ -57,14 +67,29 @@ $plural = $this->lang->getPluralSuffixes($this->pagination->total);
 					else:
 						$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));
 					endif; ?>
-					<div class="title-small">
-						<span><input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]"> <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a></span>
-						<span style="float: right;"><a class="cmd-favorite remove" data-msg_placement=".fav-list" data-remove="div" href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $this->tab . '&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id); ?>" title="<?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?>"><img src="media/com_kinoarhiv/images/icons/delete_16.png" border="0"/></a></span>
-					</div>
+					<tr>
+						<td width="2%">
+							<input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]" title="<?php echo JText::_('JSELECT')?>" />
+						</td>
+						<td>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a>
+						</td>
+						<td width="17%">
+							<?php echo $item->favorite_added == '0000-00-00 00:00:00' ? 'N/a' : $item->favorite_added; ?>
+						</td>
+					</tr>
 				<?php endforeach; ?>
-				<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle"><label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
-			</div>
-			<br/>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3">
+							<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle">
+							<label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+
 			<input type="hidden" name="boxchecked" value="0"/>
 			<input type="hidden" name="option" value="com_kinoarhiv"/>
 			<input type="hidden" name="view" value="<?php echo $this->tab; ?>"/>

@@ -24,37 +24,70 @@ jQuery(document).ready(function($){
 		});
 	}
 
+	$('.rateit').bind('over', function (e, v) {
+		$(this).attr('title', v);
+	});
+
+	$('.rate .rateit').bind('rated reset', function (e) {
+		var $this = $(this),
+			value = $this.rateit('value'),
+			url   = $this.data('url'),
+			place = $('.my_vote').next();
+
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: {'value': value}
+		}).done(function (response) {
+			var my_votes = $('.rate .my_votes'),
+				my_vote  = $('.rate .my_vote');
+
+			if (my_votes.is(':hidden')) {
+				my_votes.show();
+			}
+
+			if (value !== 0) {
+				if (my_vote.is(':hidden')) {
+					my_vote.show();
+				}
+				$('.rate .my_vote span.small').text(KA_vars.language.COM_KA_RATE_MY_CURRENT + value);
+			} else {
+				$('.rate .my_vote span').text('').parent().hide();
+			}
+
+			Aurora.message([{text: response.message, type: 'success'}], place, {place: 'insertAfter', replace: true});
+		}).fail(function (xhr, status, error) {
+			Aurora.message([{text: error, type: 'error'}], place, {place: 'insertAfter', replace: true});
+		});
+	});
+
 	// Add support for UIkit tooltips
 	$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 
-	$('.cmd-favorite').click(function(e){
+	$('.cmd-favorite, .cmd-watched').click(function(e){
 		e.preventDefault();
 
-		var _this = $(this),
-			msg_placement = (typeof _this.data('msg_placement') === 'undefined') ? 'header' : _this.data('msg_placement');
+		var $this = $(this),
+			place = typeof $this.data('ka-msg-place') === 'undefined' ? '#system-message-container' : $this.closest($this.data('ka-msg-place'));
 
 		$.ajax({
-			url: _this.attr('href') + '&format=json'
+			url: $this.attr('href')
 		}).done(function (response) {
 			if (response.success) {
-				showMsg(_this.closest(msg_placement), response.message);
-				_this.text(response.text);
-				_this.attr('href', response.url);
+				Aurora.message([{text: response.message, type: 'success'}], place, {place: 'insertAfter', replace: true});
+				$this.text(response.text);
+				$this.attr('href', response.url);
 
-				if (_this.hasClass('remove')) {
-					_this.closest(_this.data('remove')).remove();
+				if ($this.hasClass('delete')) {
+					$this.removeClass('delete').addClass('add');
 				} else {
-					if (_this.hasClass('delete')) {
-						_this.removeClass('delete').addClass('add');
-					} else {
-						_this.removeClass('add').addClass('delete');
-					}
+					$this.removeClass('add').addClass('delete');
 				}
 			} else {
-				showMsg(_this.closest(msg_placement), KA_vars.language.JERROR_AN_ERROR_HAS_OCCURRED);
+				Aurora.message([{text: KA_vars.language.JERROR_AN_ERROR_HAS_OCCURRED, type: 'error'}], place, {place: 'insertAfter', replace: true});
 			}
 		}).fail(function (xhr, status, error) {
-			showMsg(_this.closest(msg_placement), error);
+			Aurora.message([{text: error, type: 'error'}], place, {place: 'insertAfter', replace: true});
 		});
 	});
 });

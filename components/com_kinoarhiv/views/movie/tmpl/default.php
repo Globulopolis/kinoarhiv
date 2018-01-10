@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -62,69 +62,6 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
-		<?php if (!$this->user->guest): ?>
-		<?php if ($this->params->get('allow_votes') == 1): ?>
-		$('.rateit').bind('over', function (e, v) {
-			$(this).attr('title', v);
-		});
-		$('.rate .rateit').bind('rated reset', function (e) {
-			var $this = $(this),
-				value = $this.rateit('value'),
-				url   = $this.data('url');
-
-			$.ajax({
-				type: 'POST',
-				url: url,
-				data: {'value': value}
-			}).done(function (response) {
-				var my_votes = $('.rate .my_votes'),
-					my_vote  = $('.rate .my_vote');
-
-				if (my_votes.is(':hidden')) {
-					my_votes.show();
-				}
-
-				if (value !== 0) {
-					if (my_vote.is(':hidden')) {
-						my_vote.show();
-					}
-					$('.rate .my_vote span.small').text('<?php echo JText::_('COM_KA_RATE_MY_CURRENT'); ?>' + value);
-				} else {
-					$('.rate .my_vote span').text('').parent().hide();
-				}
-				showMsg($('.my_vote').next(), response.message);
-			}).fail(function (xhr, status, error) {
-				showMsg($('.my_vote').next(), error);
-			});
-		});
-		<?php endif; ?>
-		<?php if ($this->params->get('link_watched') == 1): ?>
-		$('.watched a').click(function (e) {
-			e.preventDefault();
-			var _this = $(this);
-
-			$.ajax({
-				url: _this.attr('href') + '&format=raw'
-			}).done(function (response) {
-				if (response.success) {
-					_this.text(response.text);
-					_this.attr('href', response.url);
-					if (_this.hasClass('delete')) {
-						_this.removeClass('delete').addClass('add');
-					} else {
-						_this.removeClass('add').addClass('delete');
-					}
-					showMsg($('.mark-links'), response.message);
-				} else {
-					showMsg($('.mark-links'), '<?php echo JText::_('JERROR_AN_ERROR_HAS_OCCURRED'); ?>');
-				}
-			}).fail(function (xhr, status, error) {
-				showMsg($('.mark-links'), error);
-			});
-		});
-		<?php endif; ?>
-		<?php endif; ?>
-
 		$('#mpaa').click(function (e) {
 			e.preventDefault();
 			$.colorbox({
@@ -234,18 +171,18 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 						<?php if ($this->params->get('link_watched') == 1): ?>
 							<div class="watched">
 								<?php if ($this->item->watched == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watched&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="delete"><?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.watched&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>&format=json" class="cmd-watched delete" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_WATCHED'); ?></a>
 								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=watched&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="add"><?php echo JText::_('COM_KA_ADDTO_WATCHED'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.watched&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>&format=json" class="cmd-watched add" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_ADDTO_WATCHED'); ?></a>
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>
 						<?php if ($this->params->get('link_favorite') == 1): ?>
 							<div class="favorite">
 								<?php if ($this->item->favorite == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite delete" data-msg_placement=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>&format=json" class="cmd-favorite delete" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite add" data-msg_placement=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>&format=json" class="cmd-favorite add" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>

@@ -8,7 +8,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-ALTER TABLE `#__ka_music_genres` 
+ALTER TABLE `#__ka_music_genres`
   CHANGE `title` `name` VARCHAR (255) CHARSET utf8 COLLATE utf8_general_ci DEFAULT '' NOT NULL,
   ADD COLUMN `stats` INT (6) DEFAULT 0 NOT NULL AFTER `alias`,
   ADD COLUMN `access` SMALLINT (1) DEFAULT 0 NOT NULL AFTER `state`,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
   KEY `idx_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `#__ka_music_albums` 
+ALTER TABLE `#__ka_music_albums`
   ADD COLUMN `asset_id` INT (10) UNSIGNED NOT NULL AFTER `id`,
   ADD COLUMN `buy_url` VARCHAR (255) NOT NULL AFTER `tracks_preview_path`,
   ADD COLUMN `fs_alias` VARCHAR (3) NOT NULL COMMENT 'Is the same as alias but only in latin charset' AFTER `alias`,
@@ -62,7 +62,7 @@ ALTER TABLE `#__ka_music_albums`
   ADD INDEX `idx_state` (`state`),
   ADD INDEX `idx_language` (`language`);
 
-ALTER TABLE `#__ka_movies` 
+ALTER TABLE `#__ka_movies`
   ADD COLUMN `buy_urls` TEXT NOT NULL AFTER `urls`,
   ADD COLUMN `modified_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `modified`,
   ADD COLUMN `publish_up` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `modified_by`,
@@ -123,6 +123,9 @@ INSERT IGNORE INTO `#__ka_vendors`(`id`,`company_name`,`company_name_alias`,`des
 ALTER TABLE `#__ka_rel_names_genres` ADD COLUMN `ordering` INT(11) DEFAULT 0 NOT NULL AFTER `name_id`;
 ALTER TABLE `#__ka_rel_names_career` ADD COLUMN `ordering` INT(11) DEFAULT 0 NOT NULL AFTER `name_id`;
 ALTER TABLE `#__ka_music_rel_movies` ADD COLUMN `ordering` INT(11) NOT NULL AFTER `album_id`;
+ALTER TABLE `#__ka_user_marked_movies` ADD COLUMN `favorite_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `favorite`, ADD COLUMN `watched_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `watched`;
+ALTER TABLE `#__ka_user_marked_names` ADD COLUMN `favorite_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `favorite`;
+
 RENAME TABLE `#__ka_user_votes` TO `#__ka_user_votes_movies`;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

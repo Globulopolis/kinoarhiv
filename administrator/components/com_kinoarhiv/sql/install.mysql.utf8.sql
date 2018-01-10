@@ -435,7 +435,9 @@ CREATE TABLE IF NOT EXISTS `#__ka_user_marked_movies` (
   `uid` int(11) NOT NULL,
   `movie_id` int(11) NOT NULL,
   `favorite` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `favorite_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
   `watched` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `watched_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
   PRIMARY KEY (`uid`,`movie_id`),
   KEY `idx_favorite` (`favorite`),
   KEY `idx_watched` (`watched`)
@@ -445,6 +447,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_user_marked_names` (
   `uid` int(11) NOT NULL,
   `name_id` int(11) NOT NULL,
   `favorite` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `favorite_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
   PRIMARY KEY (`uid`,`name_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

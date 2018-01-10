@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -115,6 +115,7 @@ class KAContentHelper
 	 * @return  mixed    Absolute filesystem path to a file, array of paths, false otherwise.
 	 *
 	 * @since   3.0
+	 * @throws  \Exception
 	 */
 	public static function getPath($section, $type, $tab = 0, $id = 0)
 	{
@@ -251,6 +252,7 @@ class KAContentHelper
 	 * @return  mixed   Array with URL safe aliases, false on errors.
 	 *
 	 * @since   3.0
+	 * @throws  \Exception
 	 */
 	public static function getFilesystemAlias($section, $ids)
 	{
@@ -350,6 +352,7 @@ class KAContentHelper
 	 * @return  mixed  Array on success, false otherwise.
 	 *
 	 * @since   3.1
+	 * @throws  \Exception
 	 */
 	public static function getAlbumCover($data)
 	{

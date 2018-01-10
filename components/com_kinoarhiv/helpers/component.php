@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -28,7 +28,7 @@ class KAComponentHelper
 	{
 		$document = JFactory::getDocument();
 
-		if ($document->getType() != 'html')
+		if ($document->getType() !== 'html')
 		{
 			return;
 		}
@@ -37,7 +37,8 @@ class KAComponentHelper
 		JHtml::_('bootstrap.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/frontend.min.js');
-		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
+		//JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/aurora.min.js');
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -46,7 +47,8 @@ class KAComponentHelper
 			self::setPageBackground($params);
 		}
 
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/ui.aurora-' . $params->get('ui_theme') . '.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/aurora.min.css');
+		//JHtml::_('stylesheet', 'media/com_kinoarhiv/css/ui.aurora-' . $params->get('ui_theme') . '.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/plugins.min.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/styles.min.css');
 
@@ -62,6 +64,7 @@ class KAComponentHelper
 				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED', true),
 				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
 				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
+				'COM_KA_RATE_MY_CURRENT'       => JText::_('COM_KA_RATE_MY_CURRENT', true),
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');
@@ -107,7 +110,8 @@ class KAComponentHelper
 	 *
 	 * @return  string
 	 *
-	 * @since  3.0
+	 * @since   3.0
+	 * @throws  \Exception
 	 */
 	public static function cleanHTML($text, $tags = '', $extra = array())
 	{
@@ -157,9 +161,8 @@ class KAComponentHelper
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
-	 *
-	 * @since  3.0
+	 * @since   3.0
+	 * @throws  \Exception
 	 */
 	public static function eventLog($message, $silent = true)
 	{
@@ -244,7 +247,8 @@ class KAComponentHelper
 	 *
 	 * @return  mixed   False if url is empty, void otherwise
 	 *
-	 * @since  3.0
+	 * @since   3.0
+	 * @throws  \Exception
 	 */
 	public static function doRedirect($url = null, $message = null, $messageType = 'message')
 	{
@@ -380,6 +384,7 @@ class KAComponentHelper
 	 * @return  boolean  True if found and valid, false otherwise.
 	 *
 	 * @since   3.0
+	 * @throws  \Exception
 	 */
 	public static function checkToken($method = 'post')
 	{

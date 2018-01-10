@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -87,8 +87,6 @@ class KinoarhivViewProfile extends JViewLegacy
 		$this->params = $params;
 		$this->items = $items;
 		$this->pagination = $pagination;
-		$this->lang = JFactory::getLanguage();
-
 		$pathway = $app->getPathway();
 
 		if ($this->page == '')
@@ -143,7 +141,6 @@ class KinoarhivViewProfile extends JViewLegacy
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items = $items;
 		$this->pagination = $pagination;
-		$this->lang = JFactory::getLanguage();
 
 		$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_WATCHED'));
 		$pathway = $app->getPathway();

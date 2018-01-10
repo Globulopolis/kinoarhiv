@@ -2,7 +2,7 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
+ *
  * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
@@ -29,7 +29,7 @@ $auth_msg = isset($displayData['auth_msg']) ? true : false;
 				</select>
 
 				<div class="rateit" data-rateit-value="<?php echo round($item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field"
-					 data-url="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=vote&id=' . $item->id . '&Itemid=' . $itemid . '&format=raw', false); ?>"></div>
+					 data-url="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.vote&id=' . $item->id . '&Itemid=' . $itemid . '&format=json', false); ?>"></div>
 				&nbsp;<span><?php echo $item->rate_loc_label; ?></span>
 
 				<div class="my_votes" style="<?php echo ($item->my_vote == 0) ? 'display: none;' : ''; ?>">

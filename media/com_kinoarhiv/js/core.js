@@ -203,6 +203,7 @@ function empty(mixedVar) {
  * @param   {string}  btn_title  Text for close or hide button.
  *
  * @return  {void}
+ * @deprecated  Use Aurora.message() instead
  */
 function showMsg(selector, text, placement, btn_type, btn_title) {
 	placement = (typeof placement === 'undefined') ? 'after' : placement;

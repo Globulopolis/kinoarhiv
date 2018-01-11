@@ -10,31 +10,13 @@
 
 defined('_JEXEC') or die;
 ?>
-<script type="text/javascript">
-	jQuery(document).ready(function ($) {
-		$('#checkall-toggle').click(function () {
-			if ($(this).is(':checked')) {
-				$('.wt-list tbody :checkbox').prop('checked', true);
-			} else {
-				$('.wt-list tbody :checkbox').prop('checked', false);
-			}
-		});
-
-		$('#adminForm').submit(function (e) {
-			var items = $('input', this).filter(':checked');
-
-			if (items.length === 0 || items.length < 0) {
-				return false;
-			}
-		});
-	});
-</script>
 <div class="uk-article ka-content user-profile watched">
 	<?php echo $this->loadTemplate('tabs'); ?>
+
 	<?php if (count($this->items) > 0): ?>
-		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
+		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="profileForm" autocomplete="off">
 			<div class="total-watched"><?php echo JText::_('COM_KA_PROFILE_TOTAL_WATCHED') . JText::plural('COM_KA_PROFILE_N_TOTAL_MOVIES', $this->pagination->total); ?></div>
-			<table class="table table-striped wt-list">
+			<table class="table table-striped items-list">
 				<thead>
 				<tr>
 					<th></th>

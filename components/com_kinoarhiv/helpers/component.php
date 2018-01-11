@@ -37,7 +37,6 @@ class KAComponentHelper
 		JHtml::_('bootstrap.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/frontend.min.js');
-		//JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/aurora.min.js');
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
@@ -48,7 +47,6 @@ class KAComponentHelper
 		}
 
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/aurora.min.css');
-		//JHtml::_('stylesheet', 'media/com_kinoarhiv/css/ui.aurora-' . $params->get('ui_theme') . '.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/plugins.min.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/styles.min.css');
 
@@ -65,6 +63,7 @@ class KAComponentHelper
 				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
 				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
 				'COM_KA_RATE_MY_CURRENT'       => JText::_('COM_KA_RATE_MY_CURRENT', true),
+				'JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST' => JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST', true),
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');

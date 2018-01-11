@@ -17,7 +17,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 		$('.rate .rateit').bind('rated reset', function (e) {
 			var _this = $(this);
 			var value = _this.rateit('value');
-			var id = _this.data('rateit-item');
+			var id = _this.data('rateit-id');
 
 			$.ajax({
 				type: 'POST',
@@ -74,7 +74,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 									<option value="<?php echo $i; ?>"<?php echo ($i == round($item->rate_loc_label)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
 								<?php endfor; ?>
 							</select><?php echo JText::_('COM_KA_RATE_MY_VOTE'); ?>
-							<div class="rateit" data-rateit-value="<?php echo round($item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field_<?php echo $item->id; ?>" data-rateit-item="<?php echo $item->id; ?>"></div>
+							<div class="rateit" data-rateit-value="<?php echo round($item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field_<?php echo $item->id; ?>" data-rateit-id="<?php echo $item->id; ?>"></div>
 							<?php if ($item->my_vote != 0): ?>
 								&nbsp;
 								<span class="rate_loc_my"><?php echo JText::sprintf('COM_KA_RATE_MY', $item->my_vote, (int) $this->params->get('vote_summ_num')); ?></span>&nbsp;

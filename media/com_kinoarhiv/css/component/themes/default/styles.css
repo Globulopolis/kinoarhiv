@@ -317,11 +317,6 @@ h3.title {
 	border-top: 1px solid #ccc;
 	color: #777;
 	margin-top: 5px;
-	padding-left: 22px;
-}
-
-.user-profile .review {
-	margin-left: 22px;
 }
 
 .mark-links {
@@ -649,15 +644,15 @@ div.rating {
 	border-top: none !important;
 }
 
-.review-row .review.positive {
+.review-row .positive {
 	color: #468847 !important;
 }
 
-.review-row .review.negative {
+.review-row .negative {
 	color: #b94a48 !important;
 }
 
-.review-row .review.neutral {
+.review-row .neutral {
 	color: #999 !important;
 }
 

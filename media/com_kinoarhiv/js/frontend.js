@@ -61,6 +61,22 @@ jQuery(document).ready(function($){
 		});
 	});
 
+	$('#checkall-toggle').click(function(){
+		if ($(this).is(':checked')) {
+			$('.items-list tbody :checkbox').prop('checked', true);
+		} else {
+			$('.items-list tbody :checkbox').prop('checked', false);
+		}
+	});
+
+	$('#profileForm').submit(function(e){
+		if ($('input', this).filter(':checked').length === 0) {
+			Aurora.message([{text: KA_vars.language.JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST, type: 'error'}], '#profileForm', {place: 'insertAfter', replace: true});
+
+			return false;
+		}
+	});
+
 	// Add support for UIkit tooltips
 	$('.hasTip, .hasTooltip').attr('data-uk-tooltip', '');
 

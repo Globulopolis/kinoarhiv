@@ -23,35 +23,17 @@ else
 	$total = JText::plural('COM_KA_PROFILE_N_TOTAL_MOVIES', $this->pagination->total);
 }
 ?>
-<script type="text/javascript">
-	jQuery(document).ready(function ($) {
-		$('#checkall-toggle').click(function () {
-			if ($(this).is(':checked')) {
-				$('.fav-list tbody :checkbox').prop('checked', true);
-			} else {
-				$('.fav-list tbody :checkbox').prop('checked', false);
-			}
-		});
-
-		$('#adminForm').submit(function (e) {
-			var items = $('input', this).filter(':checked');
-
-			if (items.length === 0 || items.length < 0) {
-				return false;
-			}
-		});
-	});
-</script>
 <div class="uk-article ka-content user-profile favorite">
 	<?php echo $this->loadTemplate('tabs'); ?>
+
 	<div class="subtabs breadcrumb">
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid); ?>" class="subtab-movie<?php echo ($this->tab == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid); ?>" class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
 	</div>
 	<?php if (count($this->items) > 0): ?>
-		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="adminForm" autocomplete="off">
+		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="profileForm" autocomplete="off">
 			<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . $total; ?></div>
-			<table class="table table-striped fav-list">
+			<table class="table table-striped items-list">
 				<thead>
 					<tr>
 						<th></th>

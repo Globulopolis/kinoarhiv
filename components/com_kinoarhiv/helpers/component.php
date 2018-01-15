@@ -3,7 +3,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -51,7 +51,7 @@ class KAComponentHelper
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/themes/' . $params->get('ka_theme') . '/styles.min.css');
 
 		// Add some variables into the global scope
-		$js_vars = array(
+		$jsVars = array(
 			'params' => array(
 				'ka_theme' => $params->get('ka_theme')
 			),
@@ -62,11 +62,11 @@ class KAComponentHelper
 				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED', true),
 				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
 				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
-				'COM_KA_RATE_MY_CURRENT'       => JText::_('COM_KA_RATE_MY_CURRENT', true),
 				'JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST' => JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST', true),
+				'COM_KA_REMOVE_SELECTED'       => JText::_('COM_KA_REMOVE_SELECTED', true),
 			)
 		);
-		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');
+		$document->addScriptDeclaration('var KA_vars = ' . json_encode($jsVars) . ';');
 	}
 
 	/**

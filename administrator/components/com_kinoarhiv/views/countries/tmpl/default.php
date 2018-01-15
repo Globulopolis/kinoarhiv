@@ -2,8 +2,8 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *  
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ *
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -80,7 +80,7 @@ $columns   = 6;
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=countries.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>
 							<?php else : ?>
-								<span><?php echo $this->escape($item->name); ?></span> 
+								<span><?php echo $this->escape($item->name); ?></span>
 							<?php endif; ?>
 						</div>
 					</td>

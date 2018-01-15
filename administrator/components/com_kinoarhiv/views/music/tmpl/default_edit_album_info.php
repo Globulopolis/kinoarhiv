@@ -2,8 +2,8 @@
 /**
  * @package     Kinoarhiv.Administrator
  * @subpackage  com_kinoarhiv
- *  
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ *
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -153,7 +153,7 @@ else
 
 			blockUI('show');
 			$.post($(this).attr('href'), { '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }, function(response){
-				
+
 				if (typeof response !== 'object' && response != "") {
 					showMsg('#system-message-container', response);
 				} else {

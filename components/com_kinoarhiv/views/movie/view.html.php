@@ -2,8 +2,8 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ *
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -143,13 +143,13 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 		{
 			$plural = $lang->getPluralSuffixes($item->rate_loc);
-			$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-			$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c, (int) $params->get('vote_summ_num'), $item->rate_loc);
+			$item->rate_loc = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
+			$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc, (int) $params->get('vote_summ_num'));
 			$item->rate_loc_label_class = ' has-rating';
 		}
 		else
 		{
-			$item->rate_loc_c = 0;
+			$item->rate_loc = 0;
 			$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
 			$item->rate_loc_label_class = ' no-rating';
 		}

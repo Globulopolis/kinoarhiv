@@ -3,7 +3,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -14,8 +14,9 @@ defined('_JEXEC') or die;
 	<?php echo $this->loadTemplate('tabs'); ?>
 
 	<?php if (count($this->items) > 0): ?>
+		<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS') . $this->pagination->total; ?></div>
+
 		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="profileForm" autocomplete="off">
-			<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS') . $this->pagination->total; ?></div>
 			<table class="table table-striped items-list">
 				<thead>
 				<tr>
@@ -69,7 +70,6 @@ defined('_JEXEC') or die;
 				</tfoot>
 			</table>
 
-			<input type="hidden" name="boxchecked" value="0"/>
 			<input type="hidden" name="option" value="com_kinoarhiv"/>
 			<input type="hidden" name="task" value="reviews.delete"/>
 			<input type="hidden" name="return" value="profile"/>

@@ -2,8 +2,8 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ *
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -130,7 +130,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 
 					</div>
 					<div class="links">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTip" title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTooltip" title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
 							<span class="icon-chevron-right"></span></a>
 					</div>
 				</div>

@@ -3,7 +3,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -21,6 +21,7 @@ class KinoarhivModelProfile extends JModelList
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return  JDatabaseQuery
+	 * @throws  Exception
 	 *
 	 * @since   3.0
 	 */
@@ -89,13 +90,7 @@ class KinoarhivModelProfile extends JModelList
 		{
 			$query = $db->getQuery(true);
 
-			$sel_subquery = $db->getQuery(true)
-				->select('COUNT(uid)')
-				->from($db->quoteName('#__ka_user_votes_movies'))
-				->where('movie_id = m.id');
-
 			$query->select($db->quoteName(array('m.id', 'm.title', 'm.alias', 'm.rate_loc', 'm.rate_sum_loc', 'm.year')))
-				->select('(' . $sel_subquery . ') AS total_voted')
 				->from($db->quoteName('#__ka_movies', 'm'));
 
 			// Join over user votes
@@ -108,6 +103,7 @@ class KinoarhivModelProfile extends JModelList
 				->where('uid = ' . $user->get('id'));
 
 			$query->where('state = 1 AND id IN (' . $subquery . ') AND `access` IN (' . $groups . ')')
+				->where("v.vote != 0 AND v._datetime != '" . $db->getNullDate() . "'")
 				->order($db->quoteName('_datetime') . ' DESC');
 		}
 		elseif ($page == 'reviews')

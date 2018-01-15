@@ -1,9 +1,9 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -18,11 +18,9 @@ defined('_JEXEC') or die;
 class KinoarhivControllerNames extends JControllerLegacy
 {
 	/**
-	 * Mark movie, person as favorite
+	 * Mark person as favorite
 	 *
 	 * @return  void
-	 *
-	 * @throws  Exception
 	 *
 	 * @since   3.0
 	 */
@@ -31,7 +29,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		if (JFactory::getUser()->guest)
 		{
 			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			jexit();
 		}
 
 		$model = $this->getModel('names');

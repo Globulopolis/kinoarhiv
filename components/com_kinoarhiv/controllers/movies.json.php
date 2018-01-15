@@ -1,9 +1,9 @@
 <?php
 /**
- * @package     Kinoarhiv.Administrator
+ * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -18,11 +18,9 @@ defined('_JEXEC') or die;
 class KinoarhivControllerMovies extends JControllerLegacy
 {
 	/**
-	 * Mark movie, person as favorite
+	 * Mark movie favorite
 	 *
 	 * @return  void
-	 *
-	 * @throws  Exception
 	 *
 	 * @since   3.0
 	 */
@@ -31,7 +29,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (JFactory::getUser()->guest)
 		{
 			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			jexit();
 		}
 
 		$model = $this->getModel('movies');
@@ -45,8 +43,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
-	 *
 	 * @since   3.0
 	 */
 	public function watched()
@@ -54,7 +50,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (JFactory::getUser()->guest)
 		{
 			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			jexit();
 		}
 
 		$model = $this->getModel('movies');
@@ -64,11 +60,9 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	}
 
 	/**
-	 * Method to process user votes
+	 * Process user votes
 	 *
 	 * @return  void
-	 *
-	 * @throws  Exception
 	 *
 	 * @since   3.0
 	 */
@@ -77,11 +71,57 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (JFactory::getUser()->guest)
 		{
 			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			jexit();
 		}
 
-		$model = $this->getModel('movie');
-		$result = $model->voted();
+		if (!KAComponentHelper::checkToken('get'))
+		{
+			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+			jexit();
+		}
+
+		$id     = $this->input->get('id', 0, 'int');
+		$value  = $this->input->get('value', 0, 'int');
+		$model  = $this->getModel('movies');
+		$result = $model->vote($id, $value);
+
+		echo json_encode($result);
+	}
+
+	/**
+	 * Removes user votes
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
+	public function votesRemove()
+	{
+		if (JFactory::getUser()->guest)
+		{
+			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+			jexit();
+		}
+
+		if (!KAComponentHelper::checkToken('get'))
+		{
+			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+			jexit();
+		}
+
+		$ids = $this->input->get('id', array(), 'array');
+
+		if (!is_array($ids) || count($ids) < 1)
+		{
+			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+			jexit();
+		}
+
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		$model = $this->getModel('movies');
+		$result = $model->votesRemove($ids);
 
 		echo json_encode($result);
 	}

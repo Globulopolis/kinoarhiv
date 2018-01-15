@@ -3,7 +3,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -14,29 +14,36 @@ $params   = $displayData['params'];
 $item     = $displayData['item'];
 $guest    = $displayData['guest'];
 $itemid   = $displayData['itemid'];
-$auth_msg = isset($displayData['auth_msg']) ? true : false;
+$authMsg = isset($displayData['auth_msg']) ? true : false;
+$voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 ?>
 <?php if (($item->attribs->allow_votes == '' && $params->get('allow_votes') == 1) || $item->attribs->allow_votes == 1): ?>
 	<?php if (!$guest && $params->get('allow_votes') == 1): ?>
 		<?php if ($params->get('ratings_show_local') == 1): ?>
 			<div class="clear"></div>
 			<div class="rate">
-				<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br/>
+				<p><strong><?php echo JText::_('COM_KA_RATE'); ?></strong></p>
 				<select id="rate_field" autocomplete="off">
 					<?php for ($i = 0, $n = (int) $params->get('vote_summ_num') + 1; $i < $n; $i++): ?>
-						<option value="<?php echo $i; ?>"<?php echo ($i == round($item->rate_loc_label)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
+						<option value="<?php echo $i; ?>"<?php echo ($i == round($item->rate_loc)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
 					<?php endfor; ?>
 				</select>
 
-				<div class="rateit" data-rateit-value="<?php echo round($item->rate_loc_label); ?>" data-rateit-backingfld="#rate_field"
-					 data-url="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=movies.vote&id=' . $item->id . '&Itemid=' . $itemid . '&format=json', false); ?>"></div>
+				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc; ?>" data-rateit-backingfld="#rate_field"
+					 data-rateit-min="0" data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>"
+					 data-rateit-url="<?php echo JRoute::_($voteURL, false); ?>" data-rateit-content="movies"
+					 data-rateit-id="<?php echo $item->id; ?>"></div>
 				&nbsp;<span><?php echo $item->rate_loc_label; ?></span>
 
 				<div class="my_votes" style="<?php echo ($item->my_vote == 0) ? 'display: none;' : ''; ?>">
-					<div class="my_vote"><?php echo JText::sprintf('COM_KA_RATE_MY', $item->my_vote, (int) $params->get('vote_summ_num')); ?>
-						&nbsp;<span class="small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>
-							)</span></div>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $itemid); ?>" class="small"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<div class="my_vote">
+						<span class="vote_rate">
+							<?php echo JText::_('COM_KA_RATE_MY'); ?>
+							<?php echo JText::sprintf('COM_KA_RATE_LOCAL_MORE', $item->my_vote, (int) $params->get('vote_summ_num')); ?>
+						</span>
+						&nbsp;<span class="vote_date small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span>
+					</div>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $itemid); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
 				</div>
 			</div>
 		<?php endif; ?>
@@ -46,10 +53,12 @@ $auth_msg = isset($displayData['auth_msg']) ? true : false;
 			<div class="rate">
 				<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br/>
 
-				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>
+				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc; ?>" data-rateit-min="0"
+					 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"
+					 data-rateit-readonly="true"></div>
 				&nbsp;<?php echo $item->rate_loc_label; ?>
 
-				<?php if ($params->get('allow_votes') == 1 && $auth_msg): ?>
+				<?php if ($params->get('allow_votes') == 1 && $authMsg): ?>
 					<div>
 						<?php echo KAComponentHelper::showMsg(
 							JText::sprintf(

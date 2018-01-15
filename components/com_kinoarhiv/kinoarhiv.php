@@ -3,7 +3,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -21,7 +21,7 @@ if ($params->get('offline') == 1)
 	$document = JFactory::getDocument();
 	$user = JFactory::getUser();
 
-	$doc_params = array(
+	$documentParams = array(
 		'template'  => 'system',
 		'file'      => 'offline.php',
 		'directory' => JPATH_THEMES,
@@ -34,10 +34,10 @@ if ($params->get('offline') == 1)
 	}
 	else
 	{
-		$document->parse($doc_params);
+		$document->parse($documentParams);
 		header('HTTP/1.1 503 Service Unavailable');
 
-		echo $document->render(false, $doc_params);
+		echo $document->render(false, $documentParams);
 		jexit();
 	}
 }

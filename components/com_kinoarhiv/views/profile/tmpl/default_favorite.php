@@ -3,7 +3,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -31,8 +31,9 @@ else
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid); ?>" class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
 	</div>
 	<?php if (count($this->items) > 0): ?>
+		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . $total; ?></div>
+
 		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="profileForm" autocomplete="off">
-			<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . $total; ?></div>
 			<table class="table table-striped items-list">
 				<thead>
 					<tr>
@@ -72,10 +73,9 @@ else
 				</tfoot>
 			</table>
 
-			<input type="hidden" name="boxchecked" value="0"/>
 			<input type="hidden" name="option" value="com_kinoarhiv"/>
 			<input type="hidden" name="view" value="<?php echo $this->tab; ?>"/>
-			<input type="hidden" name="task" value="favorite"/>
+			<input type="hidden" name="task" value="movies.favorite"/>
 			<input type="hidden" name="page" value="favorite"/>
 			<input type="hidden" name="action" value="delete"/>
 			<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>

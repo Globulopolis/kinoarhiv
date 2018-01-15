@@ -10,6 +10,8 @@
  */
 
 Kinoarhiv = window.Kinoarhiv || {};
+
+// This object will be filled from PHP script. See KAComponentHelper::setHeadTags()
 var KA_vars = {};
 
 (function(Kinoarhiv, document){

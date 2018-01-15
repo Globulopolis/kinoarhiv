@@ -2,8 +2,8 @@
 /**
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
- *  
- * @copyright   Copyright (C) 2017 Libra.ms. All rights reserved.
+ *
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
@@ -115,7 +115,7 @@ class KinoarhivModelMovie extends JModelForm
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
-		$language_in = 'language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')';
+		$langQueryIN = 'language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')';
 
 		$query = $db->getQuery(true);
 
@@ -126,7 +126,7 @@ class KinoarhivModelMovie extends JModelForm
 					. "m.metadesc, m.attribs, m.state, m.metadata, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, "
 					. "DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
 		)
-		->from($db->quoteName('#__ka_movies', 'm'));
+			->from($db->quoteName('#__ka_movies', 'm'));
 
 		// Join over gallery item
 		$query->select($db->quoteName('g.filename'))
@@ -143,7 +143,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		$query->select('user.name AS username')
 			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by')
-			->where('m.id = ' . (int) $id . ' AND m.state = 1 AND access IN (' . $groups . ') AND ' . $language_in);
+			->where('m.id = ' . (int) $id . ' AND m.state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN);
 
 		$db->setQuery($query);
 
@@ -213,7 +213,7 @@ class KinoarhivModelMovie extends JModelForm
 				->from($db->quoteName('#__ka_rel_genres'))
 				->where('movie_id = ' . (int) $id);
 
-		$query_genres->where('id IN (' . $subquery_genres . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $language_in)
+		$query_genres->where('id IN (' . $subquery_genres . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
 			->order('ordering ASC');
 
 		$db->setQuery($query_genres);
@@ -254,7 +254,7 @@ class KinoarhivModelMovie extends JModelForm
 				->from($db->quoteName('#__ka_rel_names'))
 				->where('movie_id = ' . (int) $id);
 
-		$query_crew->where('id IN (' . $subquery_crew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $language_in)
+		$query_crew->where('id IN (' . $subquery_crew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
 			->order('t.ordering ASC');
 
 		$db->setQuery($query_crew);
@@ -1603,212 +1603,6 @@ class KinoarhivModelMovie extends JModelForm
 
 			$db->setQuery($query);
 			$result = $db->loadAssocList();
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to process user votes
-	 *
-	 * @return array
-	 *
-	 * @since  3.0
-	 */
-	public function voted()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$movie_id = $app->input->get('id', 0, 'int');
-		$value = $app->input->get('value', -1, 'int');
-		$error_message = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
-
-		$query_attribs = $db->getQuery(true)
-			->select('attribs')
-			->from($db->quoteName('#__ka_movies'))
-			->where('id = ' . (int) $movie_id);
-
-		$db->setQuery($query_attribs);
-		$attribs = json_decode($db->loadResult());
-
-		if (($attribs->allow_votes == '' && $params->get('allow_votes') == 1) || $attribs->allow_votes == 1)
-		{
-			if ($value == '-1')
-			{
-				// Something went wrong
-				$result = $error_message;
-			}
-			elseif ($value == 0)
-			{
-				// Remove vote and update rating
-				$query_vote = $db->getQuery(true)
-					->select('v.vote, r.rate_loc, r.rate_sum_loc')
-					->from($db->quoteName('#__ka_user_votes_movies', 'v'))
-					->join('LEFT', $db->quoteName('#__ka_movies', 'r') . ' ON r.id = v.movie_id')
-					->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
-
-				$db->setQuery($query_vote);
-				$vote_result = $db->loadObject();
-
-				if (!empty($vote_result->vote))
-				{
-					$rate_loc = $vote_result->rate_loc - 1;
-					$rate_sum_loc = $vote_result->rate_sum_loc - $vote_result->vote;
-					$rate_loc_rounded = round($vote_result->rate_sum_loc / $vote_result->rate_loc, 0);
-
-					try
-					{
-						$query = $db->getQuery(true)
-							->update($db->quoteName('#__ka_movies'))
-							->set("rate_loc = '" . (int) $rate_loc . "', rate_sum_loc = '" . (int) $rate_sum_loc . "'")
-							->set("rate_loc_rounded = '" . (int) $rate_loc_rounded . "'")
-							->where('id = ' . (int) $movie_id);
-
-						$db->setQuery($query);
-						$m_query = $db->execute();
-
-						$query = $db->getQuery(true)
-							->delete($db->quoteName('#__ka_user_votes_movies'))
-							->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
-
-						$db->setQuery($query);
-						$v_query = $db->execute();
-
-						if ($m_query && $v_query)
-						{
-							$result = array('success' => true, 'message' => JText::_('COM_KA_RATE_REMOVED'));
-						}
-						else
-						{
-							$result = $error_message;
-						}
-					}
-					catch (Exception $e)
-					{
-						$result = $error_message;
-						KAComponentHelper::eventLog($e->getMessage());
-					}
-				}
-				else
-				{
-					$result = array('success' => false, 'message' => JText::_('COM_KA_RATE_NOTRATED'));
-				}
-			}
-			else
-			{
-				// Update rating and insert or update user vote in #__ka_user_votes_movies
-				// Check if value in range from 1 to 'vote_summ_num'
-				if ($value >= 1 || $value <= $params->get('vote_summ_num'))
-				{
-					// At first we check if user allready voted and when just update the rating and vote
-					$query = $db->getQuery(true)
-						->select('v.vote, r.rate_loc, r.rate_sum_loc')
-						->from($db->quoteName('#__ka_user_votes_movies', 'v'))
-						->join('LEFT', $db->quoteName('#__ka_movies', 'r') . ' ON r.id = v.movie_id')
-						->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
-
-					$db->setQuery($query);
-					$vote_result = $db->loadObject();
-
-					if (!empty($vote_result->vote))
-					{
-						// User allready voted
-						$rate_sum_loc = ($vote_result->rate_sum_loc - $vote_result->vote) + $value;
-						$rate_loc_rounded = round($rate_sum_loc / $vote_result->rate_loc, 0);
-
-						try
-						{
-							$query = $db->getQuery(true)
-								->update($db->quoteName('#__ka_movies'))
-								->set("rate_sum_loc = '" . (int) $rate_sum_loc . "', rate_loc_rounded = '" . (int) $rate_loc_rounded . "'")
-								->where('id = ' . (int) $movie_id);
-
-							$db->setQuery($query);
-							$m_query = $db->execute();
-
-							$query = $db->getQuery(true)
-								->update($db->quoteName('#__ka_user_votes_movies'))
-								->set("vote = '" . (int) $value . "', _datetime = NOW()")
-								->where('movie_id = ' . (int) $movie_id . ' AND uid = ' . $user->get('id'));
-
-							$db->setQuery($query);
-							$v_query = $db->execute();
-
-							if ($m_query && $v_query)
-							{
-								$result = array('success' => true, 'message' => JText::_('COM_KA_RATE_RATED'));
-							}
-							else
-							{
-								$result = $error_message;
-							}
-						}
-						catch (Exception $e)
-						{
-							$result = $error_message;
-							KAComponentHelper::eventLog($e->getMessage());
-						}
-					}
-					else
-					{
-						$query = $db->getQuery(true)
-							->select('rate_loc, rate_sum_loc')
-							->from($db->quoteName('#__ka_movies'))
-							->where('id = ' . (int) $movie_id);
-
-						$db->setQuery($query);
-						$vote_result = $db->loadObject();
-
-						$rate_loc = (int) $vote_result->rate_loc + 1;
-						$rate_sum_loc = (int) $vote_result->rate_sum_loc + (int) $value;
-						$rate_loc_rounded = round($rate_sum_loc / $rate_loc, 0);
-
-						try
-						{
-							$query = $db->getQuery(true)
-								->update($db->quoteName('#__ka_movies'))
-								->set("rate_loc = '" . (int) $rate_loc . "', rate_sum_loc = '" . (int) $rate_sum_loc . "'")
-								->set("rate_loc_rounded = '" . (int) $rate_loc_rounded . "'")
-								->where('id = ' . (int) $movie_id);
-
-							$db->setQuery($query);
-							$m_query = $db->execute();
-
-							$query = $db->getQuery(true)
-								->insert($db->quoteName('#__ka_user_votes_movies'))
-								->columns($db->quoteName(array('uid', 'movie_id', 'vote', '_datetime')))
-								->values("'" . $user->get('id') . "', '" . $movie_id . "', '" . $value . "', NOW()");
-
-							$db->setQuery($query);
-							$v_query = $db->execute();
-
-							if ($m_query && $v_query)
-							{
-								$result = array('success' => true, 'message' => JText::_('COM_KA_RATE_RATED'));
-							}
-							else
-							{
-								$result = $error_message;
-							}
-						}
-						catch (Exception $e)
-						{
-							$result = $error_message;
-							KAComponentHelper::eventLog($e->getMessage());
-						}
-					}
-				}
-				else
-				{
-					$result = $error_message;
-				}
-			}
-		}
-		else
-		{
-			$result = $error_message;
 		}
 
 		return $result;

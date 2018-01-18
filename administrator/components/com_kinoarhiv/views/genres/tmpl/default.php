@@ -20,12 +20,10 @@ $columns   = 7;
 if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music')
 {
 	$item_type = 'music';
-	$upd_stat_text = 'COM_KA_GENRES_MUSIC_STATS_UPDATED_COUNT';
 }
 else
 {
 	$item_type = 'movie';
-	$upd_stat_text = 'COM_KA_GENRES_STATS_UPDATED_COUNT';
 }
 ?>
 <script type="text/javascript">
@@ -42,25 +40,10 @@ else
 		}
 		Joomla.submitform(pressbutton);
 	};
-
-	jQuery(document).ready(function($){
-		$('a.updateStat').click(function(e){
-			e.preventDefault();
-			var $this = $(this);
-
-			$.getJSON($this.attr('href') + '&boxchecked=1&<?php echo JSession::getFormToken(); ?>=1', function(response){
-				if (response.success) {
-					$this.closest('td').find('span.total').text(response.total);
-					showMsg('#system-message-container', response.message + '&nbsp;' + response.total + '<?php echo JText::_($upd_stat_text); ?>');
-				} else {
-					showMsg('#system-message-container', response.message);
-				}
-			});
-		});
-	});
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres&type=' . $item_type); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres&type=' . $item_type); ?>"
+	  method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
@@ -117,11 +100,13 @@ else
 						</div>
 					</td>
 					<td class="small hidden-phone">
-						<span class="total"><?php echo $item->stats; ?></span>&nbsp;
+						<span id="total_<?php echo $item->id; ?>"><?php echo $item->stats; ?></span>&nbsp;
 						<?php if ($this->canUpdateStat) : ?>
 
 						<span style="float: right;">
-							<a href="index.php?option=com_kinoarhiv&task=genres.updateStat&type=<?php echo $item_type; ?>&id[]=<?php echo $item->id; ?>&format=json" class="hasTooltip updateStat" title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
+							<a href="#" class="hasTooltip cmd-update-genre-stat" data-gs-type="<?php echo $item_type; ?>"
+							   data-gs-id="<?php echo $item->id; ?>" data-gs-update="#total_<?php echo $item->id; ?>"
+							   title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
 								<span class="icon-refresh"></span>
 							</a>
 						</span>

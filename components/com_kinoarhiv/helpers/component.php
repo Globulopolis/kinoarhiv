@@ -115,41 +115,41 @@ class KAComponentHelper
 	public static function cleanHTML($text, $tags = '', $extra = array())
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$cache_path = JPath::clean(JPATH_CACHE . '/kinoarhiv/DefinitionCache/Serializer');
+		$cachePath = JPath::clean(JPATH_CACHE . '/kinoarhiv/DefinitionCache/Serializer');
 
 		require_once JPath::clean(JPATH_COMPONENT . '/libraries/vendor/htmlpurifier/HTMLPurifier.standalone.php');
 
-		$purifier_config = HTMLPurifier_Config::createDefault();
+		$purifierConfig = HTMLPurifier_Config::createDefault();
 
-		if (!file_exists($cache_path))
+		if (!file_exists($cachePath))
 		{
-			if (!mkdir($cache_path, 0777, true))
+			if (!mkdir($cachePath, 0777, true))
 			{
-				self::eventLog('Failed to create definition cache folder at path: "' . $cache_path . '"');
+				self::eventLog('Failed to create definition cache folder at path: "' . $cachePath . '"');
 			}
 		}
 
-		$purifier_config->set('Cache.SerializerPath', $cache_path);
+		$purifierConfig->set('Cache.SerializerPath', $cachePath);
 
 		if (empty($tags))
 		{
 			$tags = $params->get('html_allowed_tags');
 		}
 
-		$purifier_config->set('HTML.Allowed', $tags);
+		$purifierConfig->set('HTML.Allowed', $tags);
 
 		if (count($extra) > 0)
 		{
 			foreach ($extra as $key => $value)
 			{
-				$purifier_config->set($key, $value);
+				$purifierConfig->set($key, $value);
 			}
 		}
 
-		$purifier = new HTMLPurifier($purifier_config);
-		$clean_html = $purifier->purify($text);
+		$purifier = new HTMLPurifier($purifierConfig);
+		$cleanHTML = $purifier->purify($text);
 
-		return $clean_html;
+		return $cleanHTML;
 	}
 
 	/**
@@ -415,23 +415,23 @@ class KAComponentHelper
 			$slides[]['src'] = $item;
 		}
 
-		$document->addScriptDeclaration('
-			jQuery(document).ready(function($){
+		$document->addScriptDeclaration(
+			'jQuery(document).ready(function($){
 				$("body").vegas({
 					slides: ' . json_encode($slides) . ',
 					delay: ' . (int) $params->get('vegas_slideshow_delay') * 1000 . ',
 					overlay: "' . JUri::base() . 'media/com_kinoarhiv/images/overlays/' . $params->get('vegas_overlay') . '"
 				});
-			});
-		');
+			});'
+		);
 
 		if ($params->get('vegas_bodybg_transparent') == 1)
 		{
-			$document->addScriptDeclaration('
-				jQuery(document).ready(function($){
+			$document->addScriptDeclaration(
+				'jQuery(document).ready(function($){
 					$("' . $params->get('vegas_bodybg_selector') . '").css("background-color", "transparent");
-				});
-			');
+				});'
+			);
 		}
 	}
 }

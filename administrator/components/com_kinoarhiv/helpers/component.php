@@ -40,14 +40,16 @@ class KAComponentHelperBackend
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins_backend.min.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles_backend.min.css');
+		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/aurora.min.css');
 
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
+		JHtml::_('script', 'media/com_kinoarhiv/js/aurora.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
 
 		// Add some variables into the global scope
-		$js_vars = array(
+		$jsVars = array(
 			'api_root' => JUri::base(), // We need to request API controller from backend not from frontend.
 			'img_root' => JUri::root(),
 			'uri_root' => JUri::root(),
@@ -71,7 +73,7 @@ class KAComponentHelperBackend
 				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
 			)
 		);
-		$document->addScriptDeclaration('var KA_vars = ' . json_encode($js_vars) . ';');
+		$document->addScriptDeclaration('var KA_vars = ' . json_encode($jsVars) . ';');
 	}
 
 	/**

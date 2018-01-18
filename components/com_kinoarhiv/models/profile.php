@@ -27,69 +27,144 @@ class KinoarhivModelProfile extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
-		$page = $app->input->get('page', '', 'cmd');
+		$app  = JFactory::getApplication();
+		$page = $app->input->get('page', '', 'word');
+		$tab  = $app->input->get('tab', '', 'word');
 
-		if ($page == 'favorite')
+		switch ($page)
 		{
-			$tab = $app->input->get('tab', '', 'cmd');
-			$query = $db->getQuery(true);
-
-			if ($tab == '' || $tab == 'movies')
-			{
-				$query->select(array('m.id', 'm.title', 'm.alias', 'm.year', 'f.favorite_added', 'f.watched_added'))
-					->from($db->quoteName('#__ka_movies', 'm'))
-					->leftJoin($db->quoteName('#__ka_user_marked_movies', 'f') . ' ON f.movie_id = m.id');
-
-				$subquery = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_user_marked_movies'))
-					->where('uid = ' . $user->get('id') . ' AND favorite = 1');
-
-				$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
-					->group('id')
-					->order($db->quoteName('created') . ' DESC');
-			}
-			elseif ($tab == 'names')
-			{
-				$query->select(array('n.id', 'n.name', 'n.latin_name', 'n.alias', 'n.date_of_birth', 'f.favorite_added'))
-					->from($db->quoteName('#__ka_names', 'n'))
-					->leftJoin($db->quoteName('#__ka_user_marked_names', 'f') . ' ON f.name_id = n.id');
-
-				$subquery = $db->getQuery(true)
-					->select('name_id')
-					->from($db->quoteName('#__ka_user_marked_names'))
-					->where('uid = ' . $user->get('id') . ' AND favorite = 1');
-
-				$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
-					->group('id')
-					->order($db->quoteName('ordering') . ' DESC');
-			}
+			case 'favorite':
+				$query = $this->getFavorited($tab);
+				break;
+			case 'watched':
+				$query = $this->getWatched();
+				break;
+			case 'votes':
+				$query = $this->getVoted($tab);
+				break;
+			case 'reviews':
+				$query = $this->getReviewed();
+				break;
+			default:
+				$query = null;
 		}
-		elseif ($page == 'watched')
-		{
-			$query = $db->getQuery(true);
 
-			$query->select(array('m.id', 'm.title', 'm.alias', 'm.year', 'w.watched_added'))
+		return $query;
+	}
+
+	/**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @param   string  $content  Content type. Can be 'movies', 'names', 'albums'.
+	 *
+	 * @return  JDatabaseQuery
+	 *
+	 * @since   3.1
+	 */
+	protected function getFavorited($content)
+	{
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$query  = $db->getQuery(true);
+
+		if ($content == '' || $content == 'movies')
+		{
+			$query->select(array('m.id', 'm.title', 'm.alias', 'm.year', 'f.favorite_added', 'f.watched_added'))
 				->from($db->quoteName('#__ka_movies', 'm'))
-				->leftJoin($db->quoteName('#__ka_user_marked_movies', 'w') . ' ON w.movie_id = m.id');
+				->leftJoin($db->quoteName('#__ka_user_marked_movies', 'f') . ' ON f.movie_id = m.id');
 
 			$subquery = $db->getQuery(true)
 				->select('movie_id')
 				->from($db->quoteName('#__ka_user_marked_movies'))
-				->where('uid = ' . $user->get('id') . ' AND watched = 1');
+				->where('uid = ' . $user->get('id') . ' AND favorite = 1');
 
 			$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
 				->group('id')
 				->order($db->quoteName('created') . ' DESC');
 		}
-		elseif ($page == 'votes')
+		elseif ($content == 'names')
 		{
-			$query = $db->getQuery(true);
+			$query->select(array('n.id', 'n.name', 'n.latin_name', 'n.alias', 'n.date_of_birth', 'f.favorite_added'))
+				->from($db->quoteName('#__ka_names', 'n'))
+				->leftJoin($db->quoteName('#__ka_user_marked_names', 'f') . ' ON f.name_id = n.id');
 
+			$subquery = $db->getQuery(true)
+				->select('name_id')
+				->from($db->quoteName('#__ka_user_marked_names'))
+				->where('uid = ' . $user->get('id') . ' AND favorite = 1');
+
+			$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+				->group('id')
+				->order($db->quoteName('ordering') . ' DESC');
+		}
+		elseif ($content == 'albums')
+		{
+			$query->select(array('a.id', 'a.title', 'a.alias', 'a.year', 'f.favorite_added'))
+				->from($db->quoteName('#__ka_music_albums', 'a'))
+				->leftJoin($db->quoteName('#__ka_user_marked_albums', 'f') . ' ON f.album_id = a.id');
+
+			$subquery = $db->getQuery(true)
+				->select('album_id')
+				->from($db->quoteName('#__ka_user_marked_albums'))
+				->where('uid = ' . $user->get('id') . ' AND favorite = 1');
+
+			$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+				->group('id')
+				->order($db->quoteName('created') . ' DESC');
+		}
+
+		return $query;
+	}
+
+	/**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @return  JDatabaseQuery
+	 *
+	 * @since   3.1
+	 */
+	protected function getWatched()
+	{
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$query  = $db->getQuery(true);
+
+		$query->select(array('m.id', 'm.title', 'm.alias', 'm.year', 'w.watched_added'))
+			->from($db->quoteName('#__ka_movies', 'm'))
+			->leftJoin($db->quoteName('#__ka_user_marked_movies', 'w') . ' ON w.movie_id = m.id');
+
+		$subquery = $db->getQuery(true)
+			->select('movie_id')
+			->from($db->quoteName('#__ka_user_marked_movies'))
+			->where('uid = ' . $user->get('id') . ' AND watched = 1');
+
+		$query->where('state = 1 AND id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+			->group('id')
+			->order($db->quoteName('created') . ' DESC');
+
+		return $query;
+	}
+
+	/**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @param   string  $content  Content type. Can be 'movies', 'albums'.
+	 *
+	 * @return  JDatabaseQuery
+	 *
+	 * @since   3.1
+	 */
+	protected function getVoted($content)
+	{
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$query  = $db->getQuery(true);
+
+		if ($content == '' || $content == 'movies')
+		{
 			$query->select($db->quoteName(array('m.id', 'm.title', 'm.alias', 'm.rate_loc', 'm.rate_sum_loc', 'm.year')))
 				->from($db->quoteName('#__ka_movies', 'm'));
 
@@ -106,20 +181,46 @@ class KinoarhivModelProfile extends JModelList
 				->where("v.vote != 0 AND v._datetime != '" . $db->getNullDate() . "'")
 				->order($db->quoteName('_datetime') . ' DESC');
 		}
-		elseif ($page == 'reviews')
+		elseif ($content == 'albums')
 		{
-			$query = $db->getQuery(true);
+			$query->select($db->quoteName(array('a.id', 'a.title', 'a.alias', 'a.rate', 'a.rate_sum', 'a.year')))
+				->from($db->quoteName('#__ka_music_albums', 'a'));
 
-			$query->select($db->quoteName(array('r.id', 'r.movie_id', 'r.review', 'r.created', 'r.type', 'r.ip', 'r.state', 'm.title', 'm.year')))
-				->from($db->quoteName('#__ka_reviews', 'r'))
-				->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = r.movie_id')
-				->where('r.uid = ' . (int) $user->get('id') . ' AND m.state = 1')
-				->order($db->quoteName('created') . ' DESC');
+			// Join over user votes
+			$query->select('v.vote AS my_vote, v._datetime')
+				->join('LEFT', $db->quoteName('#__ka_user_votes_albums', 'v') . ' ON v.uid = ' . (int) $user->get('id') . ' AND v.album_id = a.id');
+
+			$subquery = $db->getQuery(true)
+				->select('album_id')
+				->from($db->quoteName('#__ka_user_votes_albums'))
+				->where('uid = ' . $user->get('id'));
+
+			$query->where('state = 1 AND id IN (' . $subquery . ') AND `access` IN (' . $groups . ')')
+				->where("v.vote != 0 AND v._datetime != '" . $db->getNullDate() . "'")
+				->order($db->quoteName('_datetime') . ' DESC');
 		}
-		else
-		{
-			$query = null;
-		}
+
+		return $query;
+	}
+
+	/**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @return  JDatabaseQuery
+	 *
+	 * @since   3.1
+	 */
+	protected function getReviewed()
+	{
+		$db    = $this->getDbo();
+		$user  = JFactory::getUser();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName(array('r.id', 'r.movie_id', 'r.review', 'r.created', 'r.type', 'r.ip', 'r.state', 'm.title', 'm.year')))
+			->from($db->quoteName('#__ka_reviews', 'r'))
+			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = r.movie_id')
+			->where('r.uid = ' . (int) $user->get('id') . ' AND m.state = 1')
+			->order($db->quoteName('created') . ' DESC');
 
 		return $query;
 	}

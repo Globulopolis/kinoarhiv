@@ -35,43 +35,23 @@ $columns   = 10;
 	};
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_MOVIES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
-
-		<?php if (count($this->items) > 1): ?>
-		$('#articleList tbody').sortable({
-			axis:'y',
-			cancel: 'input,textarea,button,select,option,.inactive',
-			placeholder: 'ui-state-highlight',
-			handle: '.sortable-handler',
-			cursor: 'move',
-			helper: function(e, tr){
-				var $originals = tr.children();
-				var $helper = tr.clone();
-
-				$helper.children().each(function(index){
-					$(this).width($originals.eq(index).width());
-				});
-				return $helper;
-			},
-			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=movies&tmpl=component', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
-					if (!response.success) {
-						showMsg('#system-message-container', response.message);
-					}
-				}).fail(function(xhr, status, error){
-					showMsg('#system-message-container', error);
-				});
-			}
-		});
-		<?php endif; ?>
+		$('.js-stools-btn-clear').parent().after(
+			'<div class="btn-wrapper">' +
+				'<button class="btn search-help" type="button"' +
+						'onclick="Aurora.message([{text: \'<?php echo JText::_('COM_KA_MOVIES_SEARCH_HELP'); ?>\'}], \'#system-message-container\', {replace: true});">' +
+					'<span class="icon-help"></span></button>' +
+			'</div>'
+		);
 	});
 </script>
 <div id="j-main-container">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies'); ?>" method="post"
+		  name="adminForm" id="adminForm" autocomplete="off">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
 
-		<table class="table table-striped" id="articleList">
+		<table class="table table-striped sortable" id="articleList"
+			   data-sort-url="index.php?option=com_kinoarhiv&task=saveOrder&items=movies&tmpl=component&format=json">
 			<thead>
 				<tr>
 					<th width="1%" class="nowrap center hidden-phone">

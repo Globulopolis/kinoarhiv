@@ -16,7 +16,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 $user		= JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
-$saveOrder = $listOrder == 'a.ordering';
+$saveOrder = $listOrder == 'p.ordering';
 $columns   = 8;
 ?>
 <script type="text/javascript">
@@ -29,10 +29,16 @@ $columns   = 8;
 	};
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_PREMIERES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
+		$('.js-stools-btn-clear').parent().after(
+			'<div class="btn-wrapper">' +
+				'<button class="btn search-help" type="button"' +
+					'onclick="Aurora.message([{text: \'<?php echo JText::_('COM_KA_PREMIERES_SEARCH_HELP'); ?>\'}], \'#system-message-container\', {replace: true});">' +
+				'<span class="icon-help"></span></button>' +
+			'</div>'
+		);
 
 		<?php if (count($this->items) > 1): ?>
-		$('#articleList tbody').sortable({
+		/*$('#articleList tbody').sortable({
 			axis:'y',
 			cancel: 'input,textarea,button,select,option,.inactive',
 			placeholder: 'ui-state-highlight',
@@ -56,7 +62,7 @@ $columns   = 8;
 					showMsg('#system-message-container', error);
 				});
 			}
-		});
+		});*/
 		<?php endif; ?>
 	});
 </script>

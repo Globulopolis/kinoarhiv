@@ -19,6 +19,12 @@ class KinoarhivViewProfile extends JViewLegacy
 {
 	protected $itemid = null;
 
+	/**
+	 * The items details
+	 *
+	 * @var    JObject
+	 * @since  1.6
+	 */
 	protected $items = null;
 
 	protected $pagination = null;
@@ -73,8 +79,9 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function favorite()
 	{
 		$app = JFactory::getApplication();
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -83,19 +90,9 @@ class KinoarhivViewProfile extends JViewLegacy
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->params = $params;
-		$this->items = $items;
-		$this->pagination = $pagination;
 		$pathway = $app->getPathway();
 
-		if ($this->page == '')
-		{
-			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_FAVORITE'));
-
-			$pathway->addItem(JText::_('COM_KA_FAVORITE'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&Itemid=' . $this->itemid));
-		}
-		elseif ($this->page == 'movies')
+		if ($this->tab == 'movies')
 		{
 			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_FAVORITE') . ' - ' . JText::_('COM_KA_MOVIES'));
 
@@ -108,7 +105,7 @@ class KinoarhivViewProfile extends JViewLegacy
 				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid)
 			);
 		}
-		elseif ($this->page == 'names')
+		elseif ($this->tab == 'names')
 		{
 			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_FAVORITE') . ' - ' . JText::_('COM_KA_PERSONS'));
 
@@ -121,6 +118,19 @@ class KinoarhivViewProfile extends JViewLegacy
 				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid)
 			);
 		}
+		elseif ($this->tab == 'albums')
+		{
+			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_FAVORITE') . ' - ' . JText::_('COM_KA_MUSIC_ALBUMS'));
+
+			$pathway->addItem(
+				JText::_('COM_KA_FAVORITE'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_MUSIC_ALBUMS'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums&Itemid=' . $this->itemid)
+			);
+		}
 
 		parent::display('favorite');
 	}
@@ -128,8 +138,9 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function watched()
 	{
 		$app = JFactory::getApplication();
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -137,10 +148,6 @@ class KinoarhivViewProfile extends JViewLegacy
 
 			return false;
 		}
-
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->items = $items;
-		$this->pagination = $pagination;
 
 		$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_WATCHED'));
 		$pathway = $app->getPathway();
@@ -152,8 +159,9 @@ class KinoarhivViewProfile extends JViewLegacy
 	protected function votes()
 	{
 		$app = JFactory::getApplication();
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -163,22 +171,44 @@ class KinoarhivViewProfile extends JViewLegacy
 		}
 
 		$this->lang = JFactory::getLanguage();
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->items = $items;
-		$this->pagination = $pagination;
-
-		$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_PROFILE_VOTES'));
 		$pathway = $app->getPathway();
-		$pathway->addItem(JText::_('COM_KA_PROFILE_VOTES'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $this->itemid));
 
-		parent::display('votes');
+		if ($this->tab == 'movies')
+		{
+			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_PROFILE_VOTES') . ' - ' . JText::_('COM_KA_MOVIES'));
+
+			$pathway->addItem(
+				JText::_('COM_KA_PROFILE_VOTES'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_MOVIES'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=movies&Itemid=' . $this->itemid)
+			);
+		}
+		elseif ($this->tab == 'albums')
+		{
+			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_PROFILE_VOTES') . ' - ' . JText::_('COM_KA_MUSIC_ALBUMS'));
+
+			$pathway->addItem(
+				JText::_('COM_KA_PROFILE_VOTES'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_MUSIC_ALBUMS'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=albums&Itemid=' . $this->itemid)
+			);
+		}
+
+		parent::display('votes_' . $this->tab);
 	}
 
 	protected function reviews()
 	{
 		$app = JFactory::getApplication();
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -186,10 +216,6 @@ class KinoarhivViewProfile extends JViewLegacy
 
 			return false;
 		}
-
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->items = $items;
-		$this->pagination = $pagination;
 
 		$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_REVIEWS'));
 		$pathway = $app->getPathway();

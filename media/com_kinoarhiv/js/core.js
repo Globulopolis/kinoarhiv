@@ -114,14 +114,10 @@ var KA_vars = {};
 	 * @return  {void}
 	 */
 	Kinoarhiv.openWindow = function(url){
-		var handler = window.open(url),
-			element = !!document.getElementById('system-message-container') ? '#system-message-container' : 'body';
+		var handler = window.open(url);
 
 		if (!handler) {
-			showMsg(
-				element,
-				KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + url + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
-			);
+			Aurora.message([{text: KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + url + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B, type: 'alert'}], '#system-message-container', msgOptions);
 		}
 	};
 

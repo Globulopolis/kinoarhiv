@@ -28,7 +28,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	{
 		if (JFactory::getUser()->guest)
 		{
-			header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+			header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
 			jexit();
 		}
 

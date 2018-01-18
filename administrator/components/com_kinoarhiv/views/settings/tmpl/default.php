@@ -23,10 +23,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				&& task !== 'restoreConfigLayout' && task !== 'settings.restoreConfig')
 			{
 				$.post(form.attr('action'), form.serialize() + '&task=' + task + '&format=json', function(response){
-					showMsg('#system-message-container', response.message);
-					$(document).scrollTop(0);
+					Aurora.message([{text: response.message, type: 'success'}], '', {attachTo: 'window', replace: true});
 				}).fail(function(xhr, status, error){
-					showMsg('#system-message-container', error);
+					Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
 				});
 			} else {
 				if (task === 'settings.saveConfig') {
@@ -144,7 +143,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 				$('input[title]').tooltip();
 		}).fail(function (xhr, status, error) {
-			showMsg('#system-message-container', error);
+			Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
 		});
 	});
 </script>

@@ -18,19 +18,19 @@ defined('_JEXEC') or die;
 class KinoarhivControllerMovies extends JControllerLegacy
 {
 	/**
-	 * Method to mark movie, person as favorite
+	 * Removes movie(s) from favorites list.
 	 *
 	 * @return  void
 	 *
-	 * @throws  Exception
-	 *
 	 * @since   3.0
 	 */
-	public function favorite()
+	public function favoriteRemove()
 	{
 		if (JFactory::getUser()->guest)
 		{
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+			return;
 		}
 
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -39,45 +39,39 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
-			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-			throw new Exception(JText::_('ERROR'), 500);
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite'), JText::_('ERROR'), 'error');
+
+			return;
 		}
 
+		// Encoded value. Default 'view=profile'
+		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
+		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
 		$view = $this->input->get('view', 'movies', 'cmd');
 		$model = $this->getModel($view);
 		$result = $model->favorite();
-		$tab = $this->input->get('tab', '', 'cmd');
-		$page = $this->input->get('page', '', 'cmd');
-		$id = $this->input->get('id', 0, 'int');
-		$_id = ($id != 0) ? '&id=' . $id : '';
-		$tab = !empty($tab) ? '&tab=' . $tab : '';
-		$page = !empty($page) ? '&page=' . $page : '';
-		$return = $this->input->get('return', 'movies', 'cmd');
-		$url = JRoute::_(
-			'index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id
-			. '&Itemid=' . $this->input->get('Itemid', 0, 'int'),
-			false
-		);
 
 		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
 
-		$this->setRedirect($url);
+		$this->setRedirect($redirUrl);
 	}
 
 	/**
-	 * Method to mark movie as watched
+	 * Removes movie(s) from watched list.
 	 *
 	 * @return  void
 	 *
 	 * @throws  Exception
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	public function watched()
+	public function watchedRemove()
 	{
 		if (JFactory::getUser()->guest)
 		{
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+			return;
 		}
 
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -86,28 +80,20 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
-			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-			throw new Exception(JText::_('ERROR'), 500);
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=watched'), JText::_('ERROR'), 'error');
+
+			return;
 		}
 
+		// Encoded value. Default 'view=profile'
+		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
+		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
 		$model = $this->getModel('movies');
 		$result = $model->watched();
-		$tab = $this->input->get('tab', '', 'cmd');
-		$page = $this->input->get('page', '', 'cmd');
-		$id = $this->input->get('id', 0, 'int');
-		$_id = ($id != 0) ? '&id=' . $id : '';
-		$tab = !empty($tab) ? '&tab=' . $tab : '';
-		$page = !empty($page) ? '&page=' . $page : '';
-		$return = $this->input->get('return', 'movies', 'cmd');
-		$url = JRoute::_(
-			'index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id
-			. '&Itemid=' . $this->input->get('Itemid', 0, 'int'),
-			false
-		);
 
 		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
 
-		$this->setRedirect($url);
+		$this->setRedirect($redirUrl);
 	}
 
 	/**
@@ -117,13 +103,15 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @throws  Exception
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function votesRemove()
 	{
 		if (JFactory::getUser()->guest)
 		{
-			throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 403);
+			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+			return;
 		}
 
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -132,27 +120,19 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
-			header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-			throw new Exception(JText::_('ERROR'), 500);
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes'), JText::_('ERROR'), 'error');
+
+			return;
 		}
 
+		// Encoded value. Default 'view=profile'
+		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
+		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
 		$model = $this->getModel('movies');
 		$result = $model->votesRemove($ids);
-		$tab = $this->input->get('tab', '', 'cmd');
-		$page = $this->input->get('page', '', 'cmd');
-		$id = $this->input->get('id', 0, 'int');
-		$_id = ($id != 0) ? '&id=' . $id : '';
-		$tab = !empty($tab) ? '&tab=' . $tab : '';
-		$page = !empty($page) ? '&page=' . $page : '';
-		$return = $this->input->get('return', 'movies', 'cmd');
-		$url = JRoute::_(
-			'index.php?option=com_kinoarhiv&view=' . $return . $tab . $page . $_id
-			. '&Itemid=' . $this->input->get('Itemid', 0, 'int'),
-			false
-		);
 
 		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
 
-		$this->setRedirect($url);
+		$this->setRedirect($redirUrl);
 	}
 }

@@ -10,10 +10,10 @@
 
 defined('_JEXEC') or die;
 
-$params   = $displayData['params'];
-$item     = $displayData['item'];
-$guest    = $displayData['guest'];
-$itemid   = $displayData['itemid'];
+$params  = $displayData['params'];
+$item    = $displayData['item'];
+$guest   = $displayData['guest'];
+$itemid  = $displayData['itemid'];
 $authMsg = isset($displayData['auth_msg']) ? true : false;
 $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 ?>
@@ -51,7 +51,7 @@ $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' 
 		<?php if ($params->get('ratings_show_local') == 1): ?>
 			<div class="clear"></div>
 			<div class="rate">
-				<strong><?php echo JText::_('COM_KA_RATE'); ?></strong><br/>
+				<p><strong><?php echo JText::_('COM_KA_RATE'); ?></strong></p>
 
 				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc; ?>" data-rateit-min="0"
 					 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"

@@ -32,7 +32,8 @@ jQuery(document).ready(function($){
 	})
 	.bind('rated', function(){
 		var $this = $(this),
-			value = $this.rateit('value');
+			value = $this.rateit('value'),
+			place = $this.next().next();
 
 		$.ajax({
 			url: $this.data('rateit-url') + '&task=' + $(this).data('rateit-content').toLowerCase() + '.vote',
@@ -41,27 +42,29 @@ jQuery(document).ready(function($){
 			if (response.success) {
 				$('.my_vote .vote_rate_current').text(value);
 				$('.my_vote, .my_votes').show();
-				Aurora.message([{text: response.message, type: 'success'}], '.my_votes', msgOptions);
+				Aurora.message([{text: response.message, type: 'success'}], place, msgOptions);
 			} else {
-				Aurora.message([{text: response.message, type: 'alert'}], '.my_votes', msgOptions);
+				Aurora.message([{text: response.message, type: 'alert'}], place, msgOptions);
 			}
 		}).fail(function(xhr, status, error){
-			Aurora.message([{text: error, type: 'error'}], '.my_votes', msgOptions);
+			Aurora.message([{text: error, type: 'error'}], place, msgOptions);
 		});
 	})
 	.bind('reset', function(){
+		var place = $(this).next().next();
+
 		$.ajax({
 			url: $(this).data('rateit-url') + '&task=' + $(this).data('rateit-content').toLowerCase() + '.votesRemove',
 			data: {'id[]': $(this).data('rateit-id')}
 		}).done(function(response){
 			if (response.success) {
 				$('.my_vote').hide();
-				Aurora.message([{text: response.message, type: 'success'}], '.my_votes', msgOptions);
+				Aurora.message([{text: response.message, type: 'success'}], place, msgOptions);
 			} else {
-				Aurora.message([{text: response.message, type: 'alert'}], '.my_votes', msgOptions);
+				Aurora.message([{text: response.message, type: 'alert'}], place, msgOptions);
 			}
 		}).fail(function(xhr, status, error){
-			Aurora.message([{text: error, type: 'error'}], '.my_votes', msgOptions);
+			Aurora.message([{text: error, type: 'error'}], place, msgOptions);
 		});
 	});
 

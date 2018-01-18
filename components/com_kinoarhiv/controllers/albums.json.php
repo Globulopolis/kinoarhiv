@@ -11,18 +11,34 @@
 defined('_JEXEC') or die;
 
 /**
- * Movies controller class
+ * Music controller class
  *
  * @since  3.1
  */
-class KinoarhivControllerMovies extends JControllerLegacy
+class KinoarhivControllerAlbums extends JControllerLegacy
 {
 	/**
-	 * Mark movie favorite
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 * Recognized key values include 'name', 'default_task', 'model_path', and
+	 * 'view_path' (this list is not meant to be comprehensive).
+	 *
+	 * @since   3.0
+	 */
+	public function __construct($config = array())
+	{
+		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
+
+		parent::__construct($config);
+	}
+
+	/**
+	 * Mark music album as favorite
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function favorite()
 	{
@@ -32,29 +48,8 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			jexit();
 		}
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('albums');
 		$result = $model->favorite();
-
-		echo json_encode($result);
-	}
-
-	/**
-	 * Mark movie as watched
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	public function watched()
-	{
-		if (JFactory::getUser()->guest)
-		{
-			header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
-			jexit();
-		}
-
-		$model = $this->getModel('movies');
-		$result = $model->watched();
 
 		echo json_encode($result);
 	}
@@ -64,7 +59,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function vote()
 	{
@@ -82,7 +77,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		$id     = $this->input->get('id', 0, 'int');
 		$value  = $this->input->get('value', 0, 'int');
-		$model  = $this->getModel('movies');
+		$model  = $this->getModel('albums');
 		$result = $model->vote($id, $value);
 
 		echo json_encode($result);
@@ -93,7 +88,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function votesRemove()
 	{
@@ -120,7 +115,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Make sure the item ids are integers
 		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
 
-		$model = $this->getModel('movies');
+		$model = $this->getModel('albums');
 		$result = $model->votesRemove($ids);
 
 		echo json_encode($result);

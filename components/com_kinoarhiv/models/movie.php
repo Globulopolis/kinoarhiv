@@ -438,7 +438,7 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			$result = $db->loadObject();
 
-			if (count($result) == 0)
+			if (empty($result))
 			{
 				$this->setError('Error');
 				$result = (object) array();

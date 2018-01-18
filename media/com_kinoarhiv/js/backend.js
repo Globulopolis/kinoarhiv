@@ -97,6 +97,8 @@ Kinoarhiv = window.Kinoarhiv || {};
 }(Kinoarhiv, document));
 
 jQuery(document).ready(function($){
+	var msgOptions = {place: 'insertAfter', replace: true};
+
 	// Attach 'more' plugin to hide overflowed content
 	if (jQuery.fn.more) {
 		$.more.setDefaults({
@@ -175,7 +177,8 @@ jQuery(document).ready(function($){
 			content_type = input.data('content-type');
 
 		if (empty(input.val())) {
-			showMsg('#remote_urls', KA_vars.language.COM_KA_FILE_UPLOAD_ERROR);
+			Aurora.message([{text: KA_vars.language.COM_KA_FILE_UPLOAD_ERROR, type: 'error'}], '#remote_urls', msgOptions);
+
 			return false;
 		}
 
@@ -193,9 +196,10 @@ jQuery(document).ready(function($){
 			dataType: 'json'
 		}).done(function(response){
 			if (!response.success) {
-				showMsg('#remote_urls', response.message);
+				Aurora.message([{text: response.message, type: 'alert'}], '#remote_urls', msgOptions);
 			} else {
-				showMsg('#remote_urls', !empty(response.message) ? showMsg('#remote_urls', response.message) : KA_vars.language.COM_KA_FILES_UPLOAD_SUCCESS);
+				var msg = !empty(response.message) ? response.message : KA_vars.language.COM_KA_FILES_UPLOAD_SUCCESS;
+				Aurora.message([{text: msg, type: 'success'}], '#remote_urls', msgOptions);
 
 				// Set upload state to 1
 				$('input[name="file_uploaded"]').val(1);
@@ -213,7 +217,7 @@ jQuery(document).ready(function($){
 			$this.removeAttr('disabled');
 			Kinoarhiv.showLoading('hide', modal);
 		}).fail(function(xhr, status, error){
-			showMsg('#remote_urls', error);
+			Aurora.message([{text: error, type: 'error'}], '#remote_urls', msgOptions);
 			$this.removeAttr('disabled');
 			Kinoarhiv.showLoading('hide', modal);
 		});
@@ -223,7 +227,7 @@ jQuery(document).ready(function($){
 	$('#copyForm').submit(function(){
 		if (jQuery.fn.select2) {
 			if (empty($('#from_id').select2('val'))) {
-				showMsg('fieldset.copy', KA_vars.language.COM_KA_REQUIRED);
+				Aurora.message([{text: KA_vars.language.COM_KA_REQUIRED, type: 'alert'}], 'fieldset.copy', msgOptions);
 
 				return false;
 			}
@@ -345,10 +349,7 @@ jQuery(document).ready(function($){
 				FilesAdded: function(up, files){
 					if (config.max_files && (up.files.length > config.max_files)) {
 						up.splice(config.max_files);
-						showMsg(
-							$(element),
-							plupload.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), config.max_files)
-						);
+						Aurora.message([{text: plupload.sprintf(plupload.translate('Upload element accepts only %d file(s) at a time. Extra files were stripped.'), config.max_files), type: 'alert'}], $(element), msgOptions);
 					}
 				},
 				FileUploaded: function(up, file, info){
@@ -455,12 +456,12 @@ jQuery(document).ready(function($){
 
 						$.post($this.data('del_url'), data, function(response){
 							if (!response.success) {
-								showMsg($this.closest('.ui-jqgrid'), response.message, 'after');
+								Aurora.message([{text: response.message, type: 'alert'}], $this.closest('.ui-jqgrid'), {place: 'insertBefore', replace: true});
 							}
 
 							$this.trigger('reloadGrid');
 						}).fail(function(xhr, status, error){
-							showMsg('#system-message-container', error);
+							Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
 						});
 					},
 					addtext: navgrid.btn.lang.addtext, edittext: navgrid.btn.lang.edittext, deltext: navgrid.btn.lang.deltext,
@@ -480,4 +481,59 @@ jQuery(document).ready(function($){
 			).jqGrid('gridResize', {});
 		});
 	}
+
+	if (jQuery.fn.sortable) {
+		$('.sortable tbody').sortable({
+			axis: 'y',
+			cancel: 'input,textarea,button,select,option,.inactive',
+			placeholder: 'ui-state-highlight',
+			handle: '.sortable-handler',
+			cursor: 'move',
+			helper: function (e, tr) {
+				var $originals = tr.children();
+				var $helper = tr.clone();
+
+				$helper.children().each(function(index){
+					$(this).width($originals.eq(index).width());
+				});
+
+				return $helper;
+			},
+			update: function(){
+				var table = $(this).parent();
+
+				$.post(table.data('sort-url'), $('.order input', table).serialize() + '&' + Kinoarhiv.getFormToken() + '=1', function(response){
+					if (!response.success) {
+						Aurora.message([{
+							text: response.message,
+							type: 'alert'
+						}], '#system-message-container', msgOptions);
+					}
+				}).fail(function(xhr, status, error){
+					Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
+				});
+			}
+		});
+	}
+
+	$('body').on('click', '.cmd-update-genre-stat', function(e){
+		e.preventDefault();
+		var $this = $(this);
+
+		$.post('index.php?option=com_kinoarhiv&task=genres.updateStat&type=' + $this.data('gs-type') + '&id[]=' + $this.data('gs-id') + '&boxchecked=1&format=json', '&' + Kinoarhiv.getFormToken() + '=1', function(response){
+			if (response.success) {
+				var tagName = document.querySelector($this.data('gs-update')).tagName.toLowerCase();
+
+				if (tagName === 'input' || tagName === 'select') {
+					$($this.data('gs-update')).val(parseInt(response.total, 10));
+				} else {
+					$($this.data('gs-update')).text(response.total);
+				}
+
+				Aurora.message([{text: response.message, type: 'success'}], '#system-message-container', msgOptions);
+			} else {
+				Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', msgOptions);
+			}
+		});
+	});
 });

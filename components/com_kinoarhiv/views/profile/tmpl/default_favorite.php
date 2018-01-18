@@ -29,7 +29,9 @@ else
 	<div class="subtabs breadcrumb">
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid); ?>" class="subtab-movie<?php echo ($this->tab == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid); ?>" class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums&Itemid=' . $this->itemid); ?>" class="subtab-album<?php echo ($this->tab == 'albums') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MUSIC_ALBUMS'); ?></a>
 	</div>
+
 	<?php if (count($this->items) > 0): ?>
 		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . $total; ?></div>
 
@@ -75,11 +77,10 @@ else
 
 			<input type="hidden" name="option" value="com_kinoarhiv"/>
 			<input type="hidden" name="view" value="<?php echo $this->tab; ?>"/>
-			<input type="hidden" name="task" value="movies.favorite"/>
-			<input type="hidden" name="page" value="favorite"/>
+			<input type="hidden" name="task" value="movies.favoriteRemove"/>
 			<input type="hidden" name="action" value="delete"/>
+			<input type="hidden" name="return" value="<?php echo base64_encode('view=profile&page=favorite&tab=' . $this->tab); ?>"/>
 			<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
-			<input type="hidden" name="return" value="profile"/>
 			<?php echo JHtml::_('form.token'); ?>
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>"/>
 		</form>

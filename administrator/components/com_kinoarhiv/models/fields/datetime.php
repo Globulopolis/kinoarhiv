@@ -16,7 +16,7 @@ defined('JPATH_PLATFORM') or die;
  * Provides a pop up date and time picker linked to a button.
  * Optionally may be filtered to use user's or server's time zone.
  *
- * @since  3.0
+ * @since  3.1
  */
 class JFormFieldDatetime extends JFormField
 {
@@ -32,7 +32,7 @@ class JFormFieldDatetime extends JFormField
 	 * The allowable maxlength of the field.
 	 *
 	 * @var    integer
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	protected $maxLength;
 
@@ -41,7 +41,7 @@ class JFormFieldDatetime extends JFormField
 	 *
 	 * @return  string  The field input.
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function getInput()
 	{

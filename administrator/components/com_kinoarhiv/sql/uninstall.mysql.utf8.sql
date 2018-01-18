@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS `#__ka_rel_names_genres`;
 DROP TABLE IF EXISTS `#__ka_releases`;
 DROP TABLE IF EXISTS `#__ka_reviews`;
 DROP TABLE IF EXISTS `#__ka_trailers`;
+DROP TABLE IF EXISTS `#__ka_user_marked_albums`;
 DROP TABLE IF EXISTS `#__ka_user_marked_movies`;
 DROP TABLE IF EXISTS `#__ka_user_marked_names`;
 DROP TABLE IF EXISTS `#__ka_user_votes`;

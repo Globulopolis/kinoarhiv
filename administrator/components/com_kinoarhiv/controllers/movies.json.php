@@ -87,7 +87,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes cast in cast&crew list on 'cast&crew tab'.
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -147,7 +147,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes award(s) in awards list on 'awards tab'.
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -208,7 +208,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes premiere(s) in premieres list on 'premieres tab'.
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -269,7 +269,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes release(s) in releases list on 'releases tab'.
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -330,7 +330,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to get an item alias for filesystem.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -354,8 +354,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		$fs_alias = rawurlencode(StringHelper::substr($alias, 0, 1));
 
-		echo json_encode(
-			array('success' => true, 'fs_alias' => $fs_alias)
-		);
+		echo json_encode(array('success' => true, 'fs_alias' => $fs_alias));
 	}
 }

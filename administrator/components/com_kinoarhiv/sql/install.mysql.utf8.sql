@@ -431,6 +431,14 @@ CREATE TABLE IF NOT EXISTS `#__ka_trailers` (
   KEY `idx_language` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__ka_user_marked_albums` (
+  `uid` int(11) NOT NULL,
+  `album_id` int(11) NOT NULL,
+  `favorite` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `favorite_added` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL,
+  PRIMARY KEY (`uid`,`album_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `#__ka_user_marked_movies` (
   `uid` int(11) NOT NULL,
   `movie_id` int(11) NOT NULL,

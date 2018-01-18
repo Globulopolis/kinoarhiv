@@ -128,6 +128,14 @@ ALTER TABLE `#__ka_user_marked_names` ADD COLUMN `favorite_added` DATETIME DEFAU
 
 RENAME TABLE `#__ka_user_votes` TO `#__ka_user_votes_movies`;
 
+CREATE TABLE `#__ka_user_marked_albums` (
+  `uid` int(11) NOT NULL,
+  `album_id` int(11) NOT NULL,
+  `favorite` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `favorite_added` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`uid`,`album_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

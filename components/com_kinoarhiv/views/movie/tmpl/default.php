@@ -90,7 +90,7 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 			e.preventDefault();
 			var _this = $(this);
 
-			$.colorbox({html: '<div class="overlay">' + _this.next('div').html() + '</div>'});
+			$.colorbox({html: '<div style="margin: 1em 2em 1em .5em;">' + _this.next('div').html() + '</div>'});
 		});
 
 		$('.countdown-premiere').each(function(){

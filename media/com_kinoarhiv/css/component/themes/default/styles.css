@@ -9,14 +9,6 @@
 	padding: 8px 15px;
 }
 
-.ui-widget {
-	font-size: 0.9em !important;
-}
-
-.ui-message span {
-	margin-top: 0.25em !important;
-}
-
 .separator {
 	background-color: #eee;
 	height: 1px;
@@ -25,10 +17,6 @@
 
 div.clear {
 	clear: both;
-}
-
-.overlay {
-	margin: 1em 2em 1em .5em;
 }
 
 .error {
@@ -297,6 +285,11 @@ h3.title {
 
 .subtab-name {
 	background: url("../../../../images/icons/tab_names_16.png") no-repeat left center;
+	padding-left: 20px;
+}
+
+.subtab-album {
+	background: url("../../../../images/icons/tab_sound_16.png") no-repeat left center;
 	padding-left: 20px;
 }
 

@@ -297,47 +297,44 @@ class KinoarhivModelGenre extends JModelForm
 	/**
 	 * Method to update stats for genres.
 	 *
-	 * @return  mixed   Total numbers of items, false otherwise.
-	 *
-	 * @since   3.0
-	 */
-	public function updateStats()
-	{
-		$app = JFactory::getApplication();
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$result = $this->updateMusicGenresStat();
-		}
-		elseif ($app->input->get('type', 'movie', 'word') == 'movie')
-		{
-			$result = $this->updateMovieGenresStat();
-		}
-		else
-		{
-			$result = false;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Method to update stats for movie genres.
+	 * @param   array   $ids   Items.
+	 * @param   string  $type  Item type.
 	 *
 	 * @return  mixed   Total numbers of items, false otherwise.
 	 *
 	 * @since   3.1
 	 */
-	private function updateMovieGenresStat()
+	public function updateStats($ids, $type)
+	{
+		switch ($type)
+		{
+			case 'movie':
+				return $this->updateMovieGenresStat($ids);
+			case 'music':
+				return $this->updateMusicGenresStat($ids);
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Method to update stats for movie genres.
+	 *
+	 * @param   array   $ids   Items.
+	 *
+	 * @return  mixed   Total numbers of items, false otherwise.
+	 *
+	 * @since   3.1
+	 */
+	private function updateMovieGenresStat($ids)
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$gid = $app->input->get('id', array(), 'array');
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
 		$total = 0;
 
 		// Check if control number is the same with selected.
-		if (count($gid) != $boxchecked)
+		if (count($ids) != $boxchecked)
 		{
 			return false;
 		}
@@ -346,7 +343,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db->lockTable('#__ka_genres');
 		$db->transactionStart();
 
-		foreach ($gid as $genre_id)
+		foreach ($ids as $genre_id)
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_genres'));
@@ -378,12 +375,12 @@ class KinoarhivModelGenre extends JModelForm
 			$db->transactionCommit();
 
 			// Count total genres for genre ID. Required for single row update.
-			if (count($gid) == 1)
+			if (count($ids) == 1)
 			{
 				$query = $db->getQuery(true)
 					->select($db->quoteName('stats'))
 					->from($db->quoteName('#__ka_genres'))
-					->where($db->quoteName('id') . ' = ' . (int) $gid[0]);
+					->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
 
 				$db->setQuery($query);
 				$total = $db->loadResult();
@@ -404,20 +401,21 @@ class KinoarhivModelGenre extends JModelForm
 	/**
 	 * Method to update stats for music genres.
 	 *
+	 * @param   array   $ids   Items.
+	 *
 	 * @return  mixed   Total numbers of items, false otherwise.
 	 *
 	 * @since   3.1
 	 */
-	private function updateMusicGenresStat()
+	private function updateMusicGenresStat($ids)
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$gid = $app->input->get('id', array(), 'array');
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
 		$total = 0;
 
 		// Check if control number is the same with selected.
-		if (count($gid) != $boxchecked)
+		if (count($ids) != $boxchecked)
 		{
 			return false;
 		}
@@ -426,7 +424,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db->lockTable('#__ka_music_genres');
 		$db->transactionStart();
 
-		foreach ($gid as $genre_id)
+		foreach ($ids as $genre_id)
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_music_genres'));
@@ -458,12 +456,12 @@ class KinoarhivModelGenre extends JModelForm
 			$db->transactionCommit();
 
 			// Count total genres for genre ID. Required for single row update.
-			if (count($gid) == 1)
+			if (count($ids) == 1)
 			{
 				$query = $db->getQuery(true)
 					->select($db->quoteName('stats'))
 					->from($db->quoteName('#__ka_music_genres'))
-					->where($db->quoteName('id') . ' = ' . (int) $gid[0]);
+					->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
 
 				$db->setQuery($query);
 				$total = $db->loadResult();

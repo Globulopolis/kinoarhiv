@@ -73,6 +73,5 @@ class KinoarhivController extends JControllerLegacy
 		}
 
 		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_SAVED')));
-		JFactory::getApplication()->close();
 	}
 }

@@ -31,44 +31,16 @@ $columns   = 7;
 		}
 		Joomla.submitform(pressbutton);
 	};
-
-	jQuery(document).ready(function($){
-		<?php if (count($this->items) > 1): ?>
-		$('#articleList tbody').sortable({
-			axis:'y',
-			cancel: 'input,textarea,button,select,option,.inactive',
-			placeholder: 'ui-state-highlight',
-			handle: '.sortable-handler',
-			cursor: 'move',
-			helper: function(e, tr){
-				var $originals = tr.children();
-				var $helper = tr.clone();
-
-				$helper.children().each(function(index){
-					$(this).width($originals.eq(index).width());
-				});
-				return $helper;
-			},
-			update: function(){
-				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=careers&tmpl=component', $('#articleList tbody .order input').serialize() + '&<?php echo JSession::getFormToken(); ?>=1', function(response){
-					if (!response.success) {
-						showMsg('#system-message-container', response.message);
-					}
-				}).fail(function(xhr, status, error){
-					showMsg('#system-message-container', error);
-				});
-			}
-		});
-		<?php endif; ?>
-	});
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=careers'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=careers'); ?>" method="post"
+	  name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
 
-		<table class="table table-striped" id="articleList">
+		<table class="table table-striped sortable" id="articleList"
+			   data-sort-url="index.php?option=com_kinoarhiv&task=saveOrder&items=careers&tmpl=component&format=json">
 			<thead>
 				<tr>
 					<th width="1%" class="nowrap center hidden-phone">

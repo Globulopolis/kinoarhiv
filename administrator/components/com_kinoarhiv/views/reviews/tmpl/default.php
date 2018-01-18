@@ -27,7 +27,13 @@ $columns   = 9;
 	};
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_REVIEWS_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
+		$('.js-stools-btn-clear').parent().after(
+			'<div class="btn-wrapper">' +
+				'<button class="btn search-help" type="button"' +
+					'onclick="Aurora.message([{text: \'<?php echo JText::_('COM_KA_REVIEWS_SEARCH_HELP'); ?>\'}], \'#system-message-container\', {replace: true});">' +
+				'<span class="icon-help"></span></button>' +
+			'</div>'
+		);
 	});
 </script>
 

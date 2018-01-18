@@ -2,6 +2,7 @@
 	color: #312e25;
 	font-family: segoe ui, Arial, sans-serif;
 	font-size: 1em;
+	line-height: normal;
 }
 
 .ui-message-body {
@@ -68,7 +69,7 @@
 }
 
 .ui-pos-window {
-	position: absolute;
+	position: fixed;
 	width: 50%;
 	z-index: 10001;
 }

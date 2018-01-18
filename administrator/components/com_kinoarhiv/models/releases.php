@@ -137,10 +137,20 @@ class KinoarhivModelReleases extends JModelList
 	protected function getListQuery()
 	{
 		$db = $this->getDbo();
-
 		$query = $db->getQuery(true);
 
 		$query->select(
+			$this->getState(
+				'list.select',
+				'r.id, m.title, m.year'
+			)
+		);
+
+		$query->from($db->quoteName('#__ka_releases', 'r'))
+			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('r.movie_id'))
+			->group('r.movie_id');
+
+		/*$query->select(
 			$this->getState(
 				'list.select',
 				'r.id, r.movie_id, r.release_date, r.language, r.ordering, m.title, m.year, v.company_name, ' .
@@ -237,7 +247,7 @@ class KinoarhivModelReleases extends JModelList
 			$orderCol = 'l.title';
 		}
 
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));*/
 
 		return $query;
 	}

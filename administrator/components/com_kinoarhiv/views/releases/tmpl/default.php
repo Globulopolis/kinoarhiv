@@ -16,7 +16,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
-$saveOrder = $listOrder == 'a.ordering';
+$saveOrder = $listOrder == 'r.ordering';
 $columns   = 9;
 ?>
 <script type="text/javascript">
@@ -29,10 +29,16 @@ $columns   = 9;
 	};
 
 	jQuery(document).ready(function($){
-		$('.js-stools-btn-clear').parent().after('<div class="btn-wrapper"><button class="btn search-help" type="button" onclick="showMsg(\'#system-message-container\', \'<?php echo JText::_('COM_KA_RELEASES_SEARCH_HELP'); ?>\');"><span class="icon-help"></span></button></div>');
+		$('.js-stools-btn-clear').parent().after(
+			'<div class="btn-wrapper">' +
+				'<button class="btn search-help" type="button"' +
+					'onclick="Aurora.message([{text: \'<?php echo JText::_('COM_KA_RELEASES_SEARCH_HELP'); ?>\'}], \'#system-message-container\', {replace: true});">' +
+				'<span class="icon-help"></span></button>' +
+			'</div>'
+		);
 
 		<?php if (count($this->items) > 1): ?>
-		$('#articleList tbody').sortable({
+		/*$('#articleList tbody').sortable({
 			axis:'y',
 			cancel: 'input,textarea,button,select,option,.inactive',
 			placeholder: 'ui-state-highlight',
@@ -48,7 +54,7 @@ $columns   = 9;
 				return $helper;
 			},
 			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=releases&tmpl=component', $('#articleList tbody .order input.ord').serialize() + '&<?php echo JSession::getFormToken(); ?>=1&movie_id=' + $(ui.item).find('input[name="movie_id"]').val(), function(response){
+				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=releases&tmpl=component', $('#articleList tbody .order input.ord').serialize() + '&echo JSession::getFormToken()=1&movie_id=' + $(ui.item).find('input[name="movie_id"]').val(), function(response){
 					if (!response.success) {
 						showMsg('#system-message-container', response.message);
 					}
@@ -56,7 +62,7 @@ $columns   = 9;
 					showMsg('#system-message-container', error);
 				});
 			}
-		});
+		});*/
 		<?php endif; ?>
 	});
 </script>
@@ -65,7 +71,71 @@ $columns   = 9;
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
 
-		<table class="table table-striped" id="articleList">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th width="1%" class="center">
+						<?php echo JHtml::_('grid.checkall'); ?>
+					</th>
+					<th width="30%" style="min-width:55px;">
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php if (count($this->items) == 0): ?>
+					<tr>
+						<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					</tr>
+				<?php else:
+				foreach ($this->items as $i => $item):
+					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv');
+					$canEdit   = $user->authorise('core.edit', 'com_kinoarhiv');
+				?>
+					<tr class="row<?php echo $i % 2; ?>">
+						<td class="center"><?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?></td>
+						<td><?php echo $this->escape($item->title); ?><?php echo $item->year != '0000' ? ' (' . $item->year . ')' : ''; ?></td>
+					</tr>
+					<tr class="row<?php echo $i % 2; ?>">
+						<td></td>
+						<td>
+							<table class="table table-striped" id="articleList">
+								<thead>
+									<tr>
+										<th width="3%" class="nowrap center hidden-phone">
+											<?php echo JHtml::_('searchtools.sort', '', 'r.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING', 'icon-menu-2'); ?>
+										</th>
+										<th width="1%" class="center">
+											<?php echo JHtml::_('grid.checkall'); ?>
+										</th>
+										<th width="11%" class="center">
+											<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_RELEASE_DATE_LABEL', 'r.release_date', $listDirn, $listOrder); ?>
+										</th>
+										<th width="25%" class="nowrap hidden-phone">
+											<?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?>
+										</th>
+										<th width="15%" class="nowrap hidden-phone">
+											<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_RELEASE_COUNTRY', 'c.name', $listDirn, $listOrder); ?>
+										</th>
+										<th width="15%" class="nowrap hidden-phone">
+											<?php echo JHtml::_('searchtools.sort', 'COM_KA_RELEASES_MEDIATYPE_TITLE', 'r.media_type', $listDirn, $listOrder); ?>
+										</th>
+										<th width="10%" class="nowrap hidden-phone">
+											<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_LANGUAGE', 'r.language', $listDirn, $listOrder); ?>
+										</th>
+										<th width="5%" class="nowrap center">
+											<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'r.id', $listDirn, $listOrder); ?>
+										</th>
+									</tr>
+								</thead>
+							</table>
+						</td>
+					</tr>
+				<?php endforeach;
+				endif; ?>
+			</tbody>
+		</table>
+		<!--<table class="table table-striped" id="articleList">
 			<thead>
 				<tr>
 					<th width="3%" class="nowrap center hidden-phone">
@@ -167,7 +237,7 @@ $columns   = 9;
 					<td colspan="<?php echo $columns; ?>"></td>
 				</tr>
 			</tfoot>
-		</table>
+		</table>-->
 		<?php echo $this->pagination->getListFooter(); ?>
 		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
 			&& $user->authorise('core.edit', 'com_kinoarhiv')

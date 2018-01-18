@@ -20,11 +20,29 @@ use Joomla\Registry\Registry;
  */
 class KinoarhivViewMovie extends JViewLegacy
 {
+	/**
+	 * The form object for the reviews item
+	 *
+	 * @var    JForm
+	 * @since  1.6
+	 */
 	protected $form;
 
-	protected $item = null;
+	/**
+	 * The item object details
+	 *
+	 * @var    JObject
+	 * @since  1.6
+	 */
+	protected $item;
 
-	protected $items = null;
+	/**
+	 * The items details
+	 *
+	 * @var    JObject
+	 * @since  1.6
+	 */
+	protected $items;
 
 	protected $filters = null;
 
@@ -32,8 +50,20 @@ class KinoarhivViewMovie extends JViewLegacy
 
 	protected $page;
 
+	/**
+	 * Component config object
+	 *
+	 * @var    JObject
+	 * @since  3.0
+	 */
 	protected $params;
 
+	/**
+	 * The Joomla config object
+	 *
+	 * @var    JObject
+	 * @since  3.0
+	 */
 	protected $config;
 
 	protected $user;
@@ -263,7 +293,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 
 		parent::display();
 	}
@@ -315,7 +348,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = JFactory::getApplication()->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_CREATORS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $this->item->id . '&Itemid=' . $this->itemid)
@@ -452,7 +488,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_WALLPAPERS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=wallpapers&id=' . $this->item->id . '&Itemid=' . $this->itemid)
@@ -585,7 +624,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_POSTERS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid)
@@ -721,7 +763,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_SCREENSHOTS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=screenshots&id=' . $this->item->id . '&Itemid=' . $this->itemid)
@@ -781,7 +826,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_AWARDS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=awards&id=' . $this->item->id . '&Itemid=' . $this->itemid)
@@ -851,7 +899,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_TRAILERS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=trailers&id=' . $this->item->id . '&Itemid=' . $this->itemid)
@@ -896,18 +947,13 @@ class KinoarhivViewMovie extends JViewLegacy
 			if (!empty($album->rate) && !empty($album->rate_sum))
 			{
 				$plural = $lang->getPluralSuffixes($album->rate);
-				$albums[$key]->rate_loc_c = round($album->rate_sum / $album->rate, (int) $params->get('vote_summ_precision'));
-				$albums[$key]->rate_loc_label = JText::sprintf(
-					'COM_KA_RATE_LOCAL_' . $plural[0],
-					$albums[$key]->rate_loc_c,
-					(int) $params->get('vote_summ_num'),
-					$album->rate
-				);
+				$albums[$key]->rate_loc = round($album->rate_sum / $album->rate, (int) $params->get('vote_summ_precision'));
+				$albums[$key]->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $album->rate_loc, (int) $params->get('vote_summ_num'));
 				$albums[$key]->rate_loc_label_class = ' has-rating';
 			}
 			else
 			{
-				$albums[$key]->rate_loc_c = 0;
+				$albums[$key]->rate_loc = 0;
 				$albums[$key]->rate_loc_label = JText::_('COM_KA_RATE_NO');
 				$albums[$key]->rate_loc_label_class = ' no-rating';
 			}
@@ -943,7 +989,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_SOUNDTRACKS'),
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=soundtracks&id=' . $this->item->id . '&Itemid=' . $this->itemid)

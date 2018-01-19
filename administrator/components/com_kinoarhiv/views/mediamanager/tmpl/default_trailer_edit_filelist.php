@@ -13,14 +13,13 @@ defined('_JEXEC') or die;
 jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 KAComponentHelperBackend::loadMediamanagerAssets();
 
-$video_files = json_decode($this->form->getValue('trailer.video'));
-$total_video_files = !empty($video_files) ? count($video_files) : 0;
-$subtitle_files = json_decode($this->form->getValue('trailer.subtitles'));
-$total_subtitle_files = !empty($subtitle_files) ? count($subtitle_files) : 0;
-$chapter_files = json_decode($this->form->getValue('trailer.chapters'));
-$total_chapter_files = !empty($chapter_files) ? count($chapter_files) : 0;
+$videoFiles         = json_decode($this->form->getValue('trailer.video'));
+$totalVideoFiles    = !empty($videoFiles) ? count($videoFiles) : 0;
+$subtitleFiles      = json_decode($this->form->getValue('trailer.subtitles'));
+$totalSubtitleFiles = !empty($subtitleFiles) ? count($subtitleFiles) : 0;
+$chapterFile        = json_decode($this->form->getValue('trailer.chapters'));
 ?>
-<table class="table table-striped table-condensed filelist"
+<table class="table table-striped table-condensed filelist sortable"
 	   data-sort-url="index.php?option=com_kinoarhiv&task=mediamanager.saveOrderTrailerFiles&format=json&item_id=<?php echo $this->trailer_id; ?>&type=video"
 	   data-list="video">
 	<thead>
@@ -37,19 +36,19 @@ $total_chapter_files = !empty($chapter_files) ? count($chapter_files) : 0;
 		</tr>
 	</thead>
 	<tbody>
-	<?php if ($total_video_files == 0): ?>
+	<?php if ($totalVideoFiles == 0): ?>
 		<tr>
 			<td colspan="4"><?php echo JText::_('COM_KA_NO_FILES'); ?></td>
 		</tr>
 	<?php else:
-		foreach ($video_files as $key => $item):
+		foreach ($videoFiles as $key => $item):
 			$file_info = KAContentHelper::formatItemTitle($item->type, $item->resolution, '', ', ');
 			$file_info_text = $file_info != "" ? ' <span class="gray">(' . $file_info . ')</span>': '';
 			$filename_class = !$item->is_file ? ' red' : '';
 		?>
 		<tr>
-			<td width="1%" class="ord_numbering">
-				<span class="sortable-handler<?php echo $total_video_files < 2 ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
+			<td width="1%" class="order">
+				<span class="sortable-handler<?php echo $totalVideoFiles < 2 ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
 				<input type="hidden" name="ord[]" value="<?php echo (int) $key; ?>" />
 			</td>
 			<td width="4%"><?php echo (int) $key; ?></td>
@@ -101,7 +100,7 @@ $total_chapter_files = !empty($chapter_files) ? count($chapter_files) : 0;
 	</tfoot>
 </table>
 
-<table class="table table-striped table-condensed filelist"
+<table class="table table-striped table-condensed filelist sortable"
        data-sort-url="index.php?option=com_kinoarhiv&task=mediamanager.saveOrderTrailerFiles&format=json&item_id=<?php echo $this->trailer_id; ?>&type=subtitles"
        data-list="subtitles">
 	<thead>
@@ -118,17 +117,17 @@ $total_chapter_files = !empty($chapter_files) ? count($chapter_files) : 0;
 		</tr>
 	</thead>
 	<tbody>
-	<?php if ($total_subtitle_files == 0): ?>
+	<?php if ($totalSubtitleFiles == 0): ?>
 		<tr>
 			<td colspan="5"><?php echo JText::_('COM_KA_NO_FILES'); ?></td>
 		</tr>
 	<?php else:
-		foreach ($subtitle_files as $key => $item):
+		foreach ($subtitleFiles as $key => $item):
 			$filename_class = !$item->is_file ? ' red' : '';
 		?>
 			<tr>
-				<td width="1%" class="ord_numbering">
-					<span class="sortable-handler<?php echo $total_subtitle_files < 2 ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
+				<td width="1%" class="order">
+					<span class="sortable-handler<?php echo $totalSubtitleFiles < 2 ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
 					<input type="hidden" name="ord[]" value="<?php echo (int) $key; ?>" />
 				</td>
 				<td width="4%"><?php echo (int) $key; ?></td>
@@ -176,15 +175,15 @@ $total_chapter_files = !empty($chapter_files) ? count($chapter_files) : 0;
 		</tr>
 	</thead>
 	<tbody>
-	<?php if ($total_chapter_files == 0): ?>
+	<?php if (!empty($chapterFile)): ?>
 		<tr>
 			<td colspan="2"><?php echo JText::_('COM_KA_NO_FILES'); ?></td>
 		</tr>
 	<?php else:
-		$filename_class = !$chapter_files->is_file ? ' red' : '';
+		$filename_class = !$chapterFile->is_file ? ' red' : '';
 		?>
 		<tr>
-			<td class="item-row"><span class="more<?php echo $filename_class; ?>"><?php echo $chapter_files->file; ?></span></td>
+			<td class="item-row"><span class="more<?php echo $filename_class; ?>"><?php echo $chapterFile->file; ?></span></td>
 			<td width="9%">
 				<div class="pull-right">
 					<a href="index.php?option=com_kinoarhiv&task=mediamanager.editTrailerFile&type=chapters&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&format=raw" class="cmd-file-edit"><span class="icon-pencil"></span></a>&nbsp;<a href="index.php?option=com_kinoarhiv&task=mediamanager.removeTrailerFiles&type=chapters&id=<?php echo $this->id; ?>&item_id=<?php echo $this->trailer_id; ?>&item=0&format=json" class="cmd-remove-file"><span class="icon-delete"></span></a>

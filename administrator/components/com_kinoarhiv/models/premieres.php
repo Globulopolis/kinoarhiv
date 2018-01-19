@@ -19,6 +19,13 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivModelPremieres extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = 'com_kinoarhiv.premieres';
 
 	/**
@@ -183,11 +190,11 @@ class KinoarhivModelPremieres extends JModelList
 			{
 				$query->where('p.id = ' . (int) substr($search, 3));
 			}
-			elseif (stripos($search, 'title:') === 0)
+			elseif (stripos($search, 'date:') === 0)
 			{
-				$search = trim(substr($search, 6));
+				$search = trim(substr($search, 5));
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('m.title LIKE ' . $search);
+				$query->where('p.premiere_date LIKE ' . $search);
 			}
 			elseif (stripos($search, 'country:') === 0)
 			{
@@ -205,9 +212,9 @@ class KinoarhivModelPremieres extends JModelList
 			}
 			else
 			{
-				$search = trim(substr($search, 5));
+				$search = trim($search);
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('p.premiere_date LIKE ' . $search);
+				$query->where('m.title LIKE ' . $search);
 			}
 		}
 
@@ -263,17 +270,18 @@ class KinoarhivModelPremieres extends JModelList
 	/**
 	 * Method save careers ordering in lists.
 	 *
-	 * @param   array    $data      Indexed array of IDs
-	 * @param   integer  $movie_id  Movie ID
+	 * @param   array  $data  Indexed array of orderings.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.0
 	 */
-	public function saveOrder($data, $movie_id)
+	public function saveOrder($data)
 	{
 		$db = $this->getDbo();
-		$query_result = true;
+		$movieID = JFactory::getApplication()->input->getInt('movie_id', 0);
+		$queryResult = true;
+
 		$db->setDebug(true);
 		$db->lockTable('#__ka_premieres');
 		$db->transactionStart();
@@ -284,18 +292,18 @@ class KinoarhivModelPremieres extends JModelList
 
 			$query->update($db->quoteName('#__ka_premieres'))
 				->set($db->quoteName('ordering') . " = '" . (int) $key . "'")
-				->where($db->quoteName('ordering') . ' = ' . (int) $value)
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
+				->where($db->quoteName('id') . ' = ' . (int) $value)
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)
 			{
-				$query_result = false;
+				$queryResult = false;
 				break;
 			}
 		}
 
-		if ($query_result === false)
+		if ($queryResult === false)
 		{
 			$db->transactionRollback();
 		}
@@ -307,7 +315,7 @@ class KinoarhivModelPremieres extends JModelList
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		return (bool) $query_result;
+		return (bool) $queryResult;
 	}
 
 	/**
@@ -322,28 +330,28 @@ class KinoarhivModelPremieres extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['vendor_id']))
+		if (!empty($batchData['vendor_id']))
 		{
-			$fields[] = $db->quoteName('vendor_id') . " = '" . (int) $batch_data['vendor_id'] . "'";
+			$fields[] = $db->quoteName('vendor_id') . " = '" . (int) $batchData['vendor_id'] . "'";
 		}
 
-		if (!empty($batch_data['country_id']))
+		if (!empty($batchData['country_id']))
 		{
-			$fields[] = $db->quoteName('country_id') . " = '" . (int) $batch_data['country_id'] . "'";
+			$fields[] = $db->quoteName('country_id') . " = '" . (int) $batchData['country_id'] . "'";
 		}
 
-		if (!empty($batch_data['language_id']))
+		if (!empty($batchData['language_id']))
 		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
 		if (empty($fields))

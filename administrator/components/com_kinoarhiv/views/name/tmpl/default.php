@@ -26,15 +26,9 @@ $this->id    = $this->form->getValue('id');
 		if ((task === 'names.cancel' || task === 'gallery') || document.formvalidator.isValid(document.getElementById('item-form'))) {
 			if (task === 'gallery') {
 				var tab = (task === 'gallery') ? '&tab=3' : '',
-					url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=' + task + tab + '<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?>',
-					handler = window.open(url);
+					url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=name&type=' + task + tab + '<?php echo ($this->id != 0) ? '&id=' . $this->id : ''; ?>';
 
-				if (!handler) {
-					showMsg(
-						'#system-message-container',
-						KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + url + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B
-					);
-				}
+				Kinoarhiv.openWindow(url);
 
 				return false;
 			}
@@ -73,7 +67,7 @@ $this->id    = $this->form->getValue('id');
 				url: 'index.php?option=com_kinoarhiv&task=mediamanager.removePoster&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&item_id[]=' + item_id + '&format=json',
 				data: {'<?php echo JSession::getFormToken(); ?>': 1}
 			}).done(function(response){
-				showMsg('#system-message-container', response.message ? response.message : $(response).text());
+				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {place: 'insertAfter', replace: true});
 
 				$('a.img-preview').attr('href', no_cover);
 				$('a.img-preview img').attr({
@@ -82,10 +76,10 @@ $this->id    = $this->form->getValue('id');
 					height: 128,
 					style: 'width: 128px; height: 128px;'
 				});
-			 	Kinoarhiv.showLoading('hide', $('body'));
+				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function (xhr, status, error) {
-				showMsg('#system-message-container', error);
-			 	Kinoarhiv.showLoading('hide', $('body'));
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		});
 
@@ -95,7 +89,7 @@ $this->id    = $this->form->getValue('id');
 				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=names&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
 				.done(function(response){
 					if (Object.keys(response).length > 0) {
-						showMsg('#system-message-container', '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>');
+						Aurora.message([{text: '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
 					}
 				});
 			}
@@ -115,7 +109,7 @@ $this->id    = $this->form->getValue('id');
 					if (response.success) {
 						$('.field_fs_alias').val(response.fs_alias);
 					} else {
-						showMsg('#system-message-container', response.message);
+						Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
 					}
 			});
 		});

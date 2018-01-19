@@ -24,29 +24,29 @@ class KAContentHelper
 	 *
 	 * @param   string   $path        Path to a file
 	 * @param   boolean  $scale       Scale image or not
-	 * @param   integer  $base_width  Base image width from settings
+	 * @param   integer  $baseWidth   Base image width from settings
 	 * @param   string   $dimension   Default image dimension
 	 *
 	 * @return  object
 	 *
 	 * @since  3.0
 	 */
-	public static function getImageSize($path, $scale = true, $base_width = 0, $dimension = '128x128')
+	public static function getImageSize($path, $scale = true, $baseWidth = 0, $dimension = '128x128')
 	{
 		$image = (object) array();
 
 		if ($scale)
 		{
-			$image->width = (int) $base_width;
-			$orig_size = explode('x', $dimension);
+			$image->width = (int) $baseWidth;
+			$origSize = explode('x', $dimension);
 
-			if (!isset($orig_size[1]) || empty($orig_size[0]) || empty($orig_size[1]))
+			if (!isset($origSize[1]) || empty($origSize[0]) || empty($origSize[1]))
 			{
-				$orig_size[0] = '128';
-				$orig_size[1] = '128';
+				$origSize[0] = '128';
+				$origSize[1] = '128';
 			}
 
-			$image->height = floor(($image->width * $orig_size[1]) / $orig_size[0]);
+			$image->height = floor(($image->width * $origSize[1]) / $origSize[0]);
 		}
 		else
 		{
@@ -212,32 +212,32 @@ class KAContentHelper
 
 		if (is_array($id))
 		{
-			$fs_alias = self::getFilesystemAlias($section, $id);
+			$filesystemAlias = self::getFilesystemAlias($section, $id);
 			$result = array();
 
 			foreach ($id as $value)
 			{
 				if (is_array($tab))
 				{
-					$result[$value]['parent'] = JPath::clean($paths[1]['path'] . '/' . $fs_alias[$value] . '/' . $value);
+					$result[$value]['parent'] = JPath::clean($paths[1]['path'] . '/' . $filesystemAlias[$value] . '/' . $value);
 
 					foreach ($tab as $number)
 					{
 						$result[$value][$number] = JPath::clean(
-							$paths[$number]['path'] . '/' . $fs_alias[$value] . '/' . $value . '/' . $paths[$number]['folder']
+							$paths[$number]['path'] . '/' . $filesystemAlias[$value] . '/' . $value . '/' . $paths[$number]['folder']
 						);
 					}
 				}
 				else
 				{
-					$result[$value] = JPath::clean($path . '/' . $fs_alias[$value] . '/' . $value . '/' . $folder);
+					$result[$value] = JPath::clean($path . '/' . $filesystemAlias[$value] . '/' . $value . '/' . $folder);
 				}
 			}
 		}
 		else
 		{
-			$fs_alias = self::getFilesystemAlias($section, array($id));
-			$result = JPath::clean($path . '/' . $fs_alias[$id] . '/' . $id . '/' . $folder);
+			$filesystemAlias = self::getFilesystemAlias($section, array($id));
+			$result = JPath::clean($path . '/' . $filesystemAlias[$id] . '/' . $id . '/' . $folder);
 		}
 
 		return $result;

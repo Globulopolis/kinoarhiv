@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 JHtml::_('bootstrap.tooltip');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
-$user		= JFactory::getUser();
+$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'p.ordering';
@@ -32,38 +32,10 @@ $columns   = 8;
 		$('.js-stools-btn-clear').parent().after(
 			'<div class="btn-wrapper">' +
 				'<button class="btn search-help" type="button"' +
-					'onclick="Aurora.message([{text: \'<?php echo JText::_('COM_KA_PREMIERES_SEARCH_HELP'); ?>\'}], \'#system-message-container\', {replace: true});">' +
+					'onclick="Aurora.message([{text: \'<?php echo JText::sprintf('COM_KA_PREMIERES_SEARCH_HELP', JText::_('COM_KA_FIELD_MOVIE_LABEL')); ?>\'}], \'#system-message-container\', {replace: true});">' +
 				'<span class="icon-help"></span></button>' +
 			'</div>'
 		);
-
-		<?php if (count($this->items) > 1): ?>
-		/*$('#articleList tbody').sortable({
-			axis:'y',
-			cancel: 'input,textarea,button,select,option,.inactive',
-			placeholder: 'ui-state-highlight',
-			handle: '.sortable-handler',
-			cursor: 'move',
-			helper: function(e, tr){
-				var $originals = tr.children();
-				var $helper = tr.clone();
-
-				$helper.children().each(function(index){
-					$(this).width($originals.eq(index).width());
-				});
-				return $helper;
-			},
-			update: function(e, ui){
-				$.post('index.php?option=com_kinoarhiv&task=saveOrder&items=premieres&tmpl=component', $('#articleList tbody .order input.ord').serialize() + '&<?php echo JSession::getFormToken(); ?>=1&movie_id=' + $(ui.item).find('input[name="movie_id"]').val(), function(response){
-					if (!response.success) {
-						showMsg('#system-message-container', response.message);
-					}
-				}).fail(function(xhr, status, error){
-					showMsg('#system-message-container', error);
-				});
-			}
-		});*/
-		<?php endif; ?>
 	});
 </script>
 <div id="j-main-container">
@@ -71,7 +43,8 @@ $columns   = 8;
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
 
-		<table class="table table-striped" id="articleList">
+		<table class="table table-striped sortable" id="articleList"
+			   data-sort-url="index.php?option=com_kinoarhiv&task=saveOrder&items=premieres&tmpl=component&format=json">
 			<thead>
 				<tr>
 					<th width="3%" class="nowrap center hidden-phone">
@@ -106,10 +79,11 @@ $columns   = 8;
 					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
-				foreach ($this->items as $i => $item) :
+				foreach ($this->items as $i => $item):
 					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv');
 					$canEdit   = $user->authorise('core.edit', 'com_kinoarhiv');
-				?>
+					$iconClass = '';
+			?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">
 						<?php
@@ -156,7 +130,7 @@ $columns   = 8;
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<?php echo (int)$item->id; ?>
+						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>
 				<?php endforeach;
@@ -169,9 +143,11 @@ $columns   = 8;
 			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
+		<?php
+		if ($user->authorise('core.create', 'com_kinoarhiv')
 			&& $user->authorise('core.edit', 'com_kinoarhiv')
-			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+			&& $user->authorise('core.edit.state', 'com_kinoarhiv')
+		): ?>
 			<?php echo JHtml::_(
 				'bootstrap.renderModal',
 				'collapseModal',

@@ -25,8 +25,8 @@ $this->section    = $input->get('section', '', 'word');
 $this->type       = $input->get('type', '', 'word');
 $this->tab        = $input->get('tab', '', 'int');
 $this->id         = $input->get('id', 0, 'int');
-$trailer_id       = $input->get('item_id', null, 'array');
-$this->trailer_id = $trailer_id[0];
+$trailerID        = $input->get('item_id', null, 'array');
+$this->trailer_id = $trailerID[0];
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -36,6 +36,8 @@ $this->trailer_id = $trailer_id[0];
 	};
 
 	jQuery(document).ready(function($){
+		var msgOptions = {place: 'insertAfter', replace: true};
+
 		// Bind actions to the URLs modal button
 		$('.cmd-form-urls').click(function(e){
 			e.preventDefault();
@@ -48,7 +50,7 @@ $this->trailer_id = $trailer_id[0];
 				if (!empty(url_video.val())) {
 					target_form.val(
 						target_form.val()
-						+ (target_form.val() != '' ? "\n" : '')
+						+ (target_form.val() !== '' ? "\n" : '')
 						+ '[url="' + url_video.val() + '" type="' + $('#form_trailer_finfo_video_type').val() + '" player="' + $('#urls_url_video_inplayer').val() + '"]'
 					);
 					$('#urls_layout_video_form')[0].reset();
@@ -56,7 +58,7 @@ $this->trailer_id = $trailer_id[0];
 					return true;
 				}
 
-				showMsg('#urls_layout_video_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
+				Aurora.message([{text: '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>', type: 'alert'}], '#urls_layout_video_form', msgOptions);
 			} else if ($(this).data('type') === 'subtitles') {
 				var url_subtitle = $('#urls_url_subtitles');
 
@@ -72,7 +74,7 @@ $this->trailer_id = $trailer_id[0];
 					return true;
 				}
 
-				showMsg('#urls_layout_subtitles_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
+				Aurora.message([{text: '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>', type: 'alert'}], '#urls_layout_subtitles_form', msgOptions);
 			} else if ($(this).data('type') === 'chapters') {
 				var url_chapter = $('#urls_url_chapters');
 
@@ -83,41 +85,11 @@ $this->trailer_id = $trailer_id[0];
 					return true;
 				}
 
-				showMsg('#urls_layout_chapters_form', '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>');
+				Aurora.message([{text: '<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_URLS_ERR'); ?>', type: 'alert'}], '#urls_layout_chapters_form', msgOptions);
 			}
 		});
 
-		var filelist = $('.filelist'),
-			sortable_list = $('.filelist tbody');
-
-		sortable_list.sortable({
-			axis:'y',
-			cancel: 'input,textarea,button,select,option,.inactive',
-			placeholder: 'ui-state-highlight',
-			handle: '.sortable-handler',
-			cursor: 'move',
-			helper: function(e, tr){
-				var $originals = tr.children(),
-					$helper = tr.clone();
-
-				$helper.children().each(function(index){
-					$(this).width($originals.eq(index).width());
-				});
-
-				return $helper;
-			},
-			update: function(){
-				var $this = $(this);
-
-				$.post($this.parent().data('sort-url'), ($('input[name="ord[]"]', $this).serialize() + '&' + $.param({'<?php echo JSession::getFormToken(); ?>': 1})), function(response){
-					if (!response.success) {
-						showMsg('#system-message-container', response.message);
-					}
-				}).fail(function(xhr, status, error){
-					showMsg('#system-message-container', error);
-				});
-			}
-		});
+		var filelist = $('.filelist');
 
 		// Get and update filelist
 		$('.cmd-refresh-filelist').click(function(e){
@@ -136,7 +108,7 @@ $this->trailer_id = $trailer_id[0];
 				data: {'<?php echo JSession::getFormToken(); ?>': 1}
 			}).done(function(response){
 				if (response.length < 1) {
-					showMsg('#system-message-container', response.message);
+					Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', msgOptions);
 					Kinoarhiv.showLoading('hide', table);
 
 					return false;
@@ -178,7 +150,7 @@ $this->trailer_id = $trailer_id[0];
 							filename_class = object.is_file == 0 ? ' red' : '';
 
 						html += '<tr>' +
-							'<td width="1%" class="ord_numbering">' +
+							'<td width="1%" class="order">' +
 								'<span class="sortable-handler' + sort_handler + '"><i class="icon-menu"></i></span>' +
 								'<input type="hidden" name="ord[]" value="' + key + '" />' +
 							'</td>' +
@@ -208,7 +180,7 @@ $this->trailer_id = $trailer_id[0];
 							filename_class = object.is_file == 0 ? ' red' : '';
 
 						html += '<tr>' +
-							'<td width="1%" class="ord_numbering">' +
+							'<td width="1%" class="order">' +
 								'<span class="sortable-handler' + sort_handler + '"><i class="icon-menu"></i></span>' +
 								'<input type="hidden" name="ord[]" value="' + key + '" />' +
 							'</td>' +
@@ -262,7 +234,7 @@ $this->trailer_id = $trailer_id[0];
 
 				Kinoarhiv.showLoading('hide', table);
 			}).fail(function(xhr, status, error){
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
 				Kinoarhiv.showLoading('hide', table);
 			});
 		});
@@ -292,9 +264,9 @@ $this->trailer_id = $trailer_id[0];
 					return;
 				}
 
-				showMsg('#system-message-container', response.message);
+				Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', msgOptions);
 			}).fail(function (xhr, status, error) {
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
 			});
 		});
 
@@ -337,7 +309,7 @@ $this->trailer_id = $trailer_id[0];
 				modal.popover({ selector: '.hasPopover', trigger: 'hover' });
 				modal.modal('toggle');
 			}).fail(function (xhr, status, error) {
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
 			});
 		});
 
@@ -355,7 +327,7 @@ $this->trailer_id = $trailer_id[0];
 					msg = $('button', msg_container).siblings('div').text();
 
 				msg_container.html("");
-				showMsg('#fileinfo-item-form', msg);
+				Aurora.message([{text: msg, type: 'alert'}], '#fileinfo-item-form', {place: 'appendTo', replace: true});
 
 				return;
 			}
@@ -366,11 +338,11 @@ $this->trailer_id = $trailer_id[0];
 				data: $('form[name="adminFormFile"]').serialize()
 			}).done(function(response){
 				if (!response.success) {
-					showMsg('#fileinfo-item-form', response.message);
+					Aurora.message([{text: response.message, type: 'alert'}], '#fileinfo-item-form', {place: 'appendTo', replace: true});
 
 					return;
-				} else if (response.message != "") {
-					showMsg('#fileinfo-item-form', response.message);
+				} else if (response.message !== "") {
+					Aurora.message([{text: response.message, type: 'success'}], '#fileinfo-item-form', {place: 'appendTo', replace: true});
 				}
 
 				if (list === 'screenshot') {
@@ -380,7 +352,7 @@ $this->trailer_id = $trailer_id[0];
 				$('table[data-list="' + list + '"] .cmd-refresh-filelist').trigger('click');
 				modal.modal('hide');
 			}).fail(function (xhr, status, error) {
-				showMsg('#fileinfo-item-form', error);
+				Aurora.message([{text: error, type: 'error'}], '#fileinfo-item-form', {place: 'appendTo', replace: true});
 			});
 		});
 
@@ -413,7 +385,8 @@ $this->trailer_id = $trailer_id[0];
 				url: $this.attr('href'),
 				data: {'<?php echo JSession::getFormToken(); ?>': 1}
 			}).done(function(response){
-				showMsg('#system-message-container', response.message ? response.message : $(response).text());
+				var text = response.message ? response.message : $(response).text();
+				Aurora.message([{text: text, type: 'info'}], '#system-message-container', msgOptions);
 
 				if ((remove_all && list === 'video') || (!remove_all && $this.data('type') === 'image')) {
 					$('.screenshot div', table).remove();
@@ -422,7 +395,7 @@ $this->trailer_id = $trailer_id[0];
 				table.find('.cmd-refresh-filelist').trigger('click');
 				Kinoarhiv.showLoading('hide', table);
 			}).fail(function (xhr, status, error) {
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
 				Kinoarhiv.showLoading('hide', table);
 			});
 		});
@@ -442,7 +415,8 @@ $this->trailer_id = $trailer_id[0];
 
 				msg_container.html("");
 				msg = !empty(msg) ? msg + '<br />' : '';
-				showMsg('#screenshot_layout_create_form', msg + '<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR'); ?>');
+				msg += '<?php echo JText::_('COM_KA_TRAILERS_VIDEO_SCREENSHOT_CREATE_TIME_ERR'); ?>';
+				Aurora.message([{text: msg, type: 'alert'}], '#screenshot_layout_create_form', {place: 'appendTo', replace: true});
 
 				return;
 			}
@@ -454,18 +428,19 @@ $this->trailer_id = $trailer_id[0];
 				data: {'screenshot_time': $screenshot_time.val(),'<?php echo JSession::getFormToken(); ?>': 1}
 			}).done(function(response){
 				$this.removeProp('disabled', 'disabled');
+				var msg = response.message ? response.message : $(response).text();
 
 				if (!response.success) {
-					showMsg('#screenshot_layout_create_form', response.message ? response.message : $(response).text());
+					Aurora.message([{text: msg, type: 'alert'}], '#screenshot_layout_create_form', {place: 'appendTo', replace: true});
 
 					return;
 				}
 
 				$('table[data-list="video"]').find('.cmd-refresh-filelist').trigger('click');
-				showMsg('#screenshot_layout_create_form', response.message);
+				Aurora.message([{text: response.message, type: 'success'}], '#screenshot_layout_create_form', {place: 'appendTo', replace: true});
 				$('#stdoutSlide .accordion-inner p').html(response.stdout);
-			}).fail(function (xhr, status, error) {
-				showMsg('#screenshot_layout_create_form', error);
+			}).fail(function(xhr, status, error){
+				Aurora.message([{text: error, type: 'error'}], '#screenshot_layout_create_form', {place: 'appendTo', replace: true});
 				$this.removeProp('disabled', 'disabled');
 			});
 		});

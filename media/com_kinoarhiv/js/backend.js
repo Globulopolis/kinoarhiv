@@ -112,8 +112,13 @@ jQuery(document).ready(function($){
 	// Create datetime field
 	$('.hasDatetime').each(function(index, element){
 		var $this = $(element),
-			input = $this.children('input'),
+			input = $('input:text', $this),
 			framework = $this.data('framework');
+
+		// Sometimes input not wrapped into <div>
+		if (input.length === 0) {
+			input = $this;
+		}
 
 		if (input.val().toLowerCase() === 'now') {
 			if (empty($this.data('time-format'))) {
@@ -499,7 +504,7 @@ jQuery(document).ready(function($){
 
 				return $helper;
 			},
-			update: function(){
+			update: function(e, ui){
 				var table = $(this).parent();
 
 				$.post(table.data('sort-url'), $('.order input', table).serialize() + '&' + Kinoarhiv.getFormToken() + '=1', function(response){

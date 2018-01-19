@@ -88,7 +88,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				url: 'index.php?option=com_kinoarhiv&task=mediamanager.removePoster&section=movie&type=gallery&tab=2&id=<?php echo $this->id; ?>&item_id[]=' + item_id + '&format=json',
 				data: {'<?php echo $token ?>': 1}
 			}).done(function(response){
-				showMsg('#system-message-container', response.message ? response.message : $(response).text());
+				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {place: 'insertAfter', replace: true});
 
 				$('a.img-preview').attr('href', no_cover);
 				$('a.img-preview img').attr({
@@ -99,7 +99,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				});
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function (xhr, status, error) {
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		});
@@ -110,7 +110,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=movies&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
 					.done(function(response){
 						if (Object.keys(response).length > 0) {
-							showMsg('#system-message-container', '<?php echo JText::_('COM_KA_MOVIES_EXISTS'); ?>');
+							Aurora.message([{text: '<?php echo JText::_('COM_KA_MOVIES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
 						}
 					});
 			}
@@ -129,7 +129,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 					if (response.success) {
 						$('.field_fs_alias').val(response.fs_alias);
 					} else {
-						showMsg('#system-message-container', response.message);
+						Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
 					}
 				});
 		});
@@ -179,7 +179,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function(xhr, status, error){
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		});
@@ -210,12 +210,12 @@ $lang_request = substr($lang->getTag(), 0, 2);
 					$('.modal-body', modal).html('<div class="container-fluid"><img src="' + response.image + '"/></div>');
 					modal.modal('toggle');
 				} else {
-					showMsg('#system-message-container', response.message);
+					Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
 				}
 
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function(xhr, status, error){
-				showMsg('#system-message-container', error);
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		}

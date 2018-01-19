@@ -84,6 +84,7 @@ $columns   = 8;
 					$canEdit   = $user->authorise('core.edit',       'com_kinoarhiv.name.' . $item->id);
 					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.name.' . $item->id);
 					$title     = KAContentHelper::formatItemTitle($item->name, $item->latin_name, $item->date_of_birth);
+					$iconClass = '';
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="order nowrap center hidden-phone">

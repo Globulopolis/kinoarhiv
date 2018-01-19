@@ -117,7 +117,7 @@ var KA_vars = {};
 		var handler = window.open(url);
 
 		if (!handler) {
-			Aurora.message([{text: KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + url + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B, type: 'alert'}], '#system-message-container', msgOptions);
+			Aurora.message([{text: KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_A + url + KA_vars.language.COM_KA_NEWWINDOW_BLOCKED_B, type: 'alert'}], '#system-message-container', {replace: true});
 		}
 	};
 

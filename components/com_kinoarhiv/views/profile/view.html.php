@@ -132,7 +132,7 @@ class KinoarhivViewProfile extends JViewLegacy
 			);
 		}
 
-		parent::display('favorite');
+		parent::display('favorite_' . $this->tab);
 	}
 
 	protected function watched()

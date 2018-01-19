@@ -43,7 +43,6 @@ class KAComponentHelperBackend
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/aurora.min.css');
 
 		JHtml::_('jquery.framework');
-		JHtml::_('script', 'media/com_kinoarhiv/js/ui.aurora.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/aurora.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 		JHtml::_('script', 'media/com_kinoarhiv/js/backend.min.js');
@@ -69,8 +68,8 @@ class KAComponentHelperBackend
 				'COM_KA_READ_MORE'             => JText::_('COM_KA_READ_MORE', true),
 				'COM_KA_READ_LESS'             => JText::_('COM_KA_READ_LESS', true),
 				'COM_KA_DELETE_SELECTED'       => JText::_('COM_KA_DELETE_SELECTED', true),
-				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
-				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
+				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A'),
+				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B'),
 			)
 		);
 		$document->addScriptDeclaration('var KA_vars = ' . json_encode($jsVars) . ';');

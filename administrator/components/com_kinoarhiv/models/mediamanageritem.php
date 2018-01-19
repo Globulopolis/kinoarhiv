@@ -344,37 +344,37 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to get a single record for trailer file or list of files. I. e. used in fileinfo_edit template.
 	 *
-	 * @param   string   $type         Content type. Can be 'video', 'subtitles', 'chapters', 'screenshot' or list separated by commas.
-	 * @param   integer  $item_id      Trailer ID
-	 * @param   mixed    $item         File ID. If it's an empty value then return all files.
-	 * @param   string   $form_prefix  Fields group prefix. See mediamanager.xml form.
+	 * @param   string   $type        Content type. Can be 'video', 'subtitles', 'chapters', 'screenshot' or list separated by commas.
+	 * @param   integer  $itemID      Trailer ID
+	 * @param   mixed    $item        File ID. If it's an empty value then return all files.
+	 * @param   string   $formPrefix  Fields group prefix. See mediamanager.xml form.
 	 *
 	 * @return  mixed  Array on success, false on failure.
 	 *
 	 * @since  3.0
 	 */
-	public function getTrailerFiles($type, $item_id, $item = '', $form_prefix = 'trailer_finfo_')
+	public function getTrailerFiles($type, $itemID, $item = '', $formPrefix = 'trailer_finfo_')
 	{
 		$db = $this->getDbo();
 		$types = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($type));
 
 		// Return an empty array if we request data for new file.
-		$is_new = JFactory::getApplication()->input->getInt('new', 0);
+		$isNew = JFactory::getApplication()->input->getInt('new', 0);
 
-		if ($is_new == 1)
+		if ($isNew == 1)
 		{
 			return array(
-				$form_prefix . 'video'      => array(),
-				$form_prefix . 'subtitles'  => array(),
-				$form_prefix . 'chapters'   => array(),
-				$form_prefix . 'screenshot' => array()
+				$formPrefix . 'video'      => array(),
+				$formPrefix . 'subtitles'  => array(),
+				$formPrefix . 'chapters'   => array(),
+				$formPrefix . 'screenshot' => array()
 			);
 		}
 
 		$query = $db->getQuery(true)
 			->select($db->quoteName(array('movie_id', 'screenshot', 'video', 'subtitles', 'chapters')))
 			->from($db->quoteName('#__ka_trailers'))
-			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+			->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 		$db->setQuery($query);
 
@@ -394,22 +394,31 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$subtitles = json_decode($columns['subtitles'], true);
 		$chapters = json_decode($columns['chapters'], true);
 
-		foreach ($video as $v_key => $v_value)
+		if (!empty($video) && count($video) > 0)
 		{
-			$video[$v_key] = $v_value;
-			$video[$v_key]['is_file'] = (!is_file($folder . $v_value['src'])) ? 0 : 1;
+			foreach ($video as $videoKey => $videoValue)
+			{
+				$video[$videoKey]            = $videoValue;
+				$video[$videoKey]['is_file'] = (!is_file($folder . $videoValue['src'])) ? 0 : 1;
+			}
 		}
 
-		foreach ($subtitles as $s_key => $s_value)
+		if (!empty($subtitles) && count($subtitles) > 0)
 		{
-			$subtitles[$s_key] = $s_value;
-			$subtitles[$s_key]['is_file'] = (!is_file($folder . $s_value['file'])) ? 0 : 1;
+			foreach ($subtitles as $subtlKey => $subtlValue)
+			{
+				$subtitles[$subtlKey]            = $subtlValue;
+				$subtitles[$subtlKey]['is_file'] = (!is_file($folder . $subtlValue['file'])) ? 0 : 1;
+			}
 		}
 
-		foreach ($chapters as $c_key => $c_value)
+		if (!empty($chapters) && count($chapters) > 0)
 		{
-			$chapters[$c_key] = $c_value;
-			$chapters['is_file'] = (!is_file($folder . $c_value)) ? 0 : 1;
+			foreach ($chapters as $chapKey => $chapValue)
+			{
+				$chapters[$chapKey]  = $chapValue;
+				$chapters['is_file'] = (!is_file($folder . $chapValue)) ? 0 : 1;
+			}
 		}
 
 		// Return only one result by ID, all otherwise.
@@ -426,10 +435,10 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 
 		$result = array(
-			$form_prefix . 'video'      => $video,
-			$form_prefix . 'subtitles'  => $subtitles,
-			$form_prefix . 'chapters'   => $chapters,
-			$form_prefix . 'screenshot' => array(
+			$formPrefix . 'video'      => $video,
+			$formPrefix . 'subtitles'  => $subtitles,
+			$formPrefix . 'chapters'   => $chapters,
+			$formPrefix . 'screenshot' => array(
 				'file'    => $columns['screenshot'],
 				'is_file' => !is_file($folder . $columns['screenshot']) ? 0 : 1
 			)
@@ -439,7 +448,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		{
 			foreach ($types as $value)
 			{
-				$keys[] = $form_prefix . $value;
+				$keys[] = $formPrefix . $value;
 			}
 
 			$result = array_intersect_key($result, array_flip($keys));
@@ -676,7 +685,8 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 							. "'" . $db->escape($data['resolution']) . "', '" . $db->escape($data['dar']) . "', "
 							. "'" . $db->escape($data['duration']) . "', '{}', '{}', '{}', '" . (int) $data['frontpage'] . "', "
 							. "'" . (int) $data['access'] . "', '" . (int) $data['state'] . "', "
-							. "'" . $data['language'] . "', '" . (int) $data['is_movie'] . "'");
+							. "'" . $data['language'] . "', '" . (int) $data['is_movie'] . "'"
+						);
 				}
 				else
 				{
@@ -900,32 +910,32 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			return false;
 		}
 
-		$result_arr = json_decode($result);
+		$resultArr = json_decode($result);
 
-		foreach ($result_arr as $key => $value)
+		foreach ($resultArr as $key => $value)
 		{
 			// Set all other items to false except selected
 			if ($key != $item)
 			{
-				$result_arr->$key->default = false;
+				$resultArr->$key->default = false;
 			}
 			else
 			{
 				// Unset 'default' state from item which allready have 'default' state
 				if ($isDefault === false)
 				{
-					$result_arr->$key->default = false;
+					$resultArr->$key->default = false;
 				}
 				else
 				{
-					$result_arr->$key->default = true;
+					$resultArr->$key->default = true;
 				}
 			}
 		}
 
 		$query = $db->getQuery(true)
 			->update($db->quoteName('#__ka_trailers'))
-			->set($db->quoteName('subtitles') . " = '" . json_encode($result_arr) . "'")
+			->set($db->quoteName('subtitles') . " = '" . json_encode($resultArr) . "'")
 			->where($db->quoteName('id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);

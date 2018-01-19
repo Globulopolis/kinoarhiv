@@ -44,7 +44,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 				<li class="media">
 					<a class="pull-left album-art poster" href="<?php echo $album->cover['poster']; ?>"><img src="<?php echo $album->cover['th_poster']; ?>" class="media-object" width="<?php echo $album->cover['size']->width; ?>" height="<?php echo $album->cover['size']->height; ?>" /></a>
 					<div class="media-body">
-						<h3 class="media-heading album-title"><?php echo $this->escape($album->title); ?></h3>
+						<h3 class="media-heading album-title">
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $album->id); ?>"><?php echo $this->escape($album->title); ?></a>
+						</h3>
 						<span class="album-info">
 							<?php if (!empty($composer)): ?>
 							<span class="album-composer"><?php echo $composer; ?></span>

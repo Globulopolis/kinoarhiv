@@ -17,6 +17,12 @@ defined('_JEXEC') or die;
  */
 class KinoarhivController extends JControllerLegacy
 {
+	/**
+	 * The default view for the display method.
+	 *
+	 * @var    string
+	 * @since  3.0
+	 */
 	protected $default_view = 'controlpanel';
 
 	/**
@@ -52,10 +58,10 @@ class KinoarhivController extends JControllerLegacy
 			return;
 		}
 
-		$data = $this->input->post->get('ord', array(), 'array');
+		$orderings = $this->input->post->get('ord', array(), 'array');
 
 		// Sorting required at least two items in list
-		if (count($data) < 2)
+		if (count($orderings) < 2)
 		{
 			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO')));
 
@@ -63,7 +69,7 @@ class KinoarhivController extends JControllerLegacy
 		}
 
 		$model = $this->getModel($this->input->getWord('items', ''));
-		$result = $model->saveOrder($data);
+		$result = $model->saveOrder($orderings);
 
 		if (!$result)
 		{

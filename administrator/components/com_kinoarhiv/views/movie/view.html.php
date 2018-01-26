@@ -84,12 +84,12 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		if (substr($params->get('media_posters_root_www'), 0, 1) == '/')
 		{
-			$img_folder = JUri::root() . substr($params->get('media_posters_root_www'), 1) . '/'
+			$imgFolder = JUri::root() . substr($params->get('media_posters_root_www'), 1) . '/'
 				. urlencode($form->getValue('fs_alias')) . '/' . $form->getValue('id') . '/posters/';
 		}
 		else
 		{
-			$img_folder = $params->get('media_posters_root_www') . '/' . urlencode($form->getValue('fs_alias'))
+			$imgFolder = $params->get('media_posters_root_www') . '/' . urlencode($form->getValue('fs_alias'))
 				. '/' . $form->getValue('id') . '/posters/';
 		}
 
@@ -106,11 +106,11 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 		else
 		{
-			$items->set('poster', $img_folder . $form->getValue('filename'));
-			$items->set('th_poster', $img_folder . 'thumb_' . $form->getValue('filename'));
+			$items->set('poster', $imgFolder . $form->getValue('filename'));
+			$items->set('th_poster', $imgFolder . 'thumb_' . $form->getValue('filename'));
 		}
 
-		$items->set('img_folder', $img_folder);
+		$items->set('img_folder', $imgFolder);
 		$this->items = $items;
 		$this->form = $form;
 		$this->params = $params;
@@ -267,24 +267,24 @@ class KinoarhivViewMovie extends JViewLegacy
 					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')),
 					'play'
 				);
+				JToolbarHelper::apply('movies.apply');
+				JToolbarHelper::save('movies.save');
+				JToolbarHelper::save2new('movies.save2new');
+				JToolbarHelper::divider();
+				JToolbarHelper::cancel('movies.cancel', 'JTOOLBAR_CLOSE');
+				JToolbarHelper::divider();
+				JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
+				JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
+				JToolbarHelper::custom('soundtracks', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 			}
 			else
 			{
 				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
-			}
-
-			JToolbarHelper::apply('movies.apply');
-			JToolbarHelper::save('movies.save');
-			JToolbarHelper::save2new('movies.save2new');
-			JToolbarHelper::divider();
-			JToolbarHelper::cancel('movies.cancel');
-			JToolbarHelper::divider();
-
-			if ($this->form->getValue('id') != 0)
-			{
-				JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
-				JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
-				JToolbarHelper::custom('soundtracks', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
+				JToolbarHelper::apply('movies.apply');
+				JToolbarHelper::save('movies.save');
+				JToolbarHelper::save2new('movies.save2new');
+				JToolbarHelper::divider();
+				JToolbarHelper::cancel('movies.cancel');
 			}
 		}
 		elseif ($task == 'cast')

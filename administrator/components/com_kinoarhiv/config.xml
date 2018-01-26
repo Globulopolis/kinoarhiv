@@ -7,12 +7,6 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="allow_votes" type="radio" class="btn-group" default="1"
-			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL"
-			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 		<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
 			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
 			<option value="5">J5</option>
@@ -370,6 +364,12 @@
 			   description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12"/>
 	</fieldset>
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
+		<field name="allow_votes" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="ratings_show_local" type="radio" class="btn-group" default="1"
 			   label="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL" description="COM_KA_FIELD_AP_RATE_SHOW_LOCAL_LABEL_DESC"
 			   filter="integer">

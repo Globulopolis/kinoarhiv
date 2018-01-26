@@ -4,7 +4,7 @@
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="id" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
 			   default="0" readonly="true" class="field_id"/>
-		<field name="asset_id" type="hidden" filter="unset" />
+		<field name="asset_id" type="hidden" filter="unset"/>
 		<field name="parent_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_PARENT_LABEL"
 			   description="COM_KA_FIELD_MOVIE_PARENT_DESC" filter="integer" class="span12" data-content="movies"
 			   data-allow-clear="true" data-remote="true" data-lang="*" data-minimum-input-length="1" data-key="id">
@@ -115,18 +115,18 @@
 			<option value="noindex, nofollow">JGLOBAL_NOINDEX_NOFOLLOW</option>
 		</field>
 		<field name="tags" type="tag" label="JTAG" description="JTAG_DESC" class="span12" multiple="true"/>
-		<field name="publish_up" type="datetime" default="NOW" label="COM_KA_FIELD_PUBLISH_UP_LABEL"
+		<field name="publish_up" type="datetime" label="COM_KA_FIELD_PUBLISH_UP_LABEL"
 			   description="COM_KA_FIELD_PUBLISH_UP_DESC" class="inputbox" datatype="datetime" size="22"
-			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="server_utc"/>
-		<field name="publish_down" type="datetime" default="NOW" label="COM_KA_FIELD_PUBLISH_DOWN_LABEL"
+			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
+		<field name="publish_down" type="datetime" label="COM_KA_FIELD_PUBLISH_DOWN_LABEL"
 			   description="COM_KA_FIELD_PUBLISH_DOWN_DESC" class="inputbox" datatype="datetime" size="22"
-			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="server_utc"/>
+			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
 		<field name="created_by" type="user" label="JGLOBAL_FIELD_CREATED_BY_LABEL"
 			   description="JGLOBAL_FIELD_CREATED_BY_DESC"/>
-		<field name="created" type="datetime" default="NOW" label="JGLOBAL_CREATED_DATE" class="inputbox"
-			   datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="server_utc"/>
-		<field name="modified" type="datetime" default="NOW" label="JGLOBAL_FIELD_MODIFIED_LABEL" readonly="true"
-			   datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="server_utc"/>
+		<field name="created" type="datetime" label="JGLOBAL_CREATED_DATE" class="inputbox" datatype="datetime"
+			   size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
+		<field name="modified" type="datetime" label="JGLOBAL_FIELD_MODIFIED_LABEL" readonly="true"
+			   datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
 		<field name="modified_by" type="user" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" class="readonly"
 			   readonly="true" filter="unset"/>
 		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
@@ -162,7 +162,8 @@
 				<option value="1">JSHOW</option>
 				<option value="0">JHIDE</option>
 			</field>
-			<field name="show_author" type="list" label="JGLOBAL_SHOW_AUTHOR_LABEL" description="JGLOBAL_SHOW_AUTHOR_DESC">
+			<field name="show_author" type="list" label="JGLOBAL_SHOW_AUTHOR_LABEL"
+				   description="JGLOBAL_SHOW_AUTHOR_DESC">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
@@ -197,7 +198,8 @@
 				<option value="1">JYES</option>
 				<option value="0">JNO</option>
 			</field>
-			<field name="trailer_collapsed" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL"
+			<field name="trailer_collapsed" type="list"
+				   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL"
 				   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="1">JYES</option>

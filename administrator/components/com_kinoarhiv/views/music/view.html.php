@@ -30,6 +30,16 @@ class KinoarhivViewMusic extends JViewLegacy
 
 	protected $form_attribs_group;
 
+	/**
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed  A string if successful, otherwise an Error object.
+	 *
+	 * @see     \JViewLegacy::loadTemplate()
+	 * @since   3.1
+	 */
 	public function display($tpl = null)
 	{
 		$app = JFactory::getApplication();

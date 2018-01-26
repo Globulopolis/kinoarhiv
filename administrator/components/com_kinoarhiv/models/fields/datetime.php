@@ -74,6 +74,12 @@ class JFormFieldDatetime extends JFormField
 			$attributes .= 'required aria-required="true" ';
 		}
 
+		// Check for null date to avoid datetime fields with null value instead of empty field.
+		if ($this->value == JFactory::getDbo()->getNullDate())
+		{
+			$this->value = '';
+		}
+
 		if ($framework == 'bootstrap')
 		{
 			JHtml::_('jquery.framework');

@@ -9,8 +9,8 @@
 			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
-		<field name="created" type="datetime" default="NOW" class="inputbox" datatype="datetime"
-			   label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="server_utc"/>
+		<field name="created" type="datetime" class="inputbox" datatype="datetime"
+			   label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>
 		<field name="uid" type="user" label="COM_KA_REVIEWS_FIELD_USER" labelclass="control-label"/>
 		<field name="ip" type="text" default="" label="COM_KA_REVIEWS_FIELD_USER_IP" class="span12" filter="string"
 			   size="45" validate="ip"/>

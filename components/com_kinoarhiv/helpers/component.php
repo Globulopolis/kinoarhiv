@@ -72,20 +72,20 @@ class KAComponentHelper
 	/**
 	 * Return html structure for message.
 	 *
-	 * @param   string   $text        Text to display. Translated string.
-	 * @param   string   $class       See http://getbootstrap.com/2.3.2/components.html#alerts
-	 * @param   boolean  $close       Show close link.
-	 * @param   string   $block_text  Text for display in block mode.
+	 * @param   string   $text       Text to display. Translated string.
+	 * @param   string   $class      See http://getbootstrap.com/2.3.2/components.html#alerts
+	 * @param   boolean  $close      Show close link.
+	 * @param   string   $blockText  Text for display in block mode.
 	 *
 	 * @return  string
 	 *
 	 * @since  3.0
 	 */
-	public static function showMsg($text, $class = 'alert-info', $close = false, $block_text = '')
+	public static function showMsg($text, $class = 'alert-info', $close = false, $blockText = '')
 	{
-		if (stripos($class, 'alert-block') !== false && !empty($block_text))
+		if (stripos($class, 'alert-block') !== false && !empty($blockText))
 		{
-			$text = '<h4>' . $block_text . '</h4>' . $text;
+			$text = '<h4>' . $blockText . '</h4>' . $text;
 		}
 
 		$html = '<div class="alert ' . (string) $class . '">';

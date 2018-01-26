@@ -18,14 +18,16 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
 		jQuery(document).ready(function($){
-			var form = $('#adminForm');
+			var form = $('#adminForm'),
+				datetime = Kinoarhiv.datetime() + ' ';
+
 			if (task !== 'settings.cancel' && task !== 'settings.save' && task !== 'settings.saveConfig'
 				&& task !== 'restoreConfigLayout' && task !== 'settings.restoreConfig')
 			{
 				$.post(form.attr('action'), form.serialize() + '&task=' + task + '&format=json', function(response){
-					Aurora.message([{text: response.message, type: 'success'}], '', {attachTo: 'window', replace: true});
+					Aurora.message([{text: datetime + response.message, type: 'success'}], '', {attachTo: 'window', replace: true});
 				}).fail(function(xhr, status, error){
-					Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+					Aurora.message([{text: datetime + error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
 				});
 			} else {
 				if (task === 'settings.saveConfig') {

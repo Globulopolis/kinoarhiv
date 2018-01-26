@@ -28,8 +28,21 @@ JHtml::_('behavior.keepalive');
 	};
 
 	jQuery(document).ready(function($){
-		document.formvalidator.setHandler('year', function(value){
-			return /^\d{4,}?$/.test(value);
+		$('.cmd-voice-artists label').click(function(){
+			var is_dir_group = $('.is_directors').closest('.control-group');
+
+			if ($(this).hasClass('active btn-success')) {
+				is_dir_group.slideUp();
+
+				// Set Director radio button to none.
+				var is_dir_radio1 = is_dir_group.find('input[value="0"]');
+				is_dir_radio1.prop('checked', true);
+				is_dir_radio1.next().addClass('active btn-danger');
+				is_dir_radio1.prev().removeClass('active btn-success');
+				is_dir_radio1.prev().prev().prop('checked', false);
+			} else {
+				is_dir_group.slideDown();
+			}
 		});
 	});
 </script>

@@ -19,6 +19,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox/', true, true);
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.plugin.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/js/validation-rules.min.js');
 
 $input            = JFactory::getApplication()->input;
 $this->section    = $input->get('section', '', 'word');
@@ -120,17 +121,11 @@ $this->trailer_id = $trailerID[0];
 				if (list === 'video') {
 					// Update row with screenshot
 					if (typeof response.screenshot !== 'undefined' && !empty(response.screenshot.file)) {
-						if (!Date.now) {
-							Date.now = function(){
-								return new Date().getTime();
-							}
-						}
-
 						var screenshot_row = $this.closest('table').find('tfoot .screenshot'),
 							screenshot_filename_class = response.screenshot.is_file == 0 ? ' error_image' : '';
 
 						screenshot_row.find('div').remove();
-						screenshot_row.prepend('<div class="item-row"><a href="<?php echo $this->folder_path_www; ?>' + response.screenshot.file + '?_=' + Date.now() + '" id="screenshot_file" class="more' + screenshot_filename_class + '">' + response.screenshot.file + '</a></div>');
+						screenshot_row.prepend('<div class="item-row"><a href="<?php echo $this->folder_path_www; ?>' + response.screenshot.file + '?_=' + Kinoarhiv.datetime('now') + '" id="screenshot_file" class="more' + screenshot_filename_class + '">' + response.screenshot.file + '</a></div>');
 						screenshot_row.find('.more').more('destroy').more();
 					}
 
@@ -456,16 +451,6 @@ $this->trailer_id = $trailerID[0];
 			var $this = $(this);
 
 			$this.closest('.modal').find('.modal-header h3').text($this.text());
-		});
-
-		// Validate filename in 'fileinfo edit' dialog
-		document.formvalidator.setHandler('filename', function(value){
-			return !/[^a-z0-9_.,[]%@'()\s-]/i.test(value);
-		});
-
-		// Validate screenshot time value in 'createScreenshot' dialog
-		document.formvalidator.setHandler('time', function(value){
-			return /^\d{2,}:(?:[0-5]\d):(?:[0-5]\d)(?:.\d{3,})?$/.test(value);
 		});
 	});
 </script>

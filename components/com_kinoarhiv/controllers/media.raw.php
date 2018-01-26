@@ -10,26 +10,35 @@
 
 defined('_JEXEC') or die;
 
+JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
+
 /**
  * Media Controller class
  *
- * @since  3.0
+ * @since  3.1
  */
 class KinoarhivControllerMedia extends JControllerLegacy
 {
 	/**
 	 * Get content from filesystem.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function view()
 	{
 		$element = $this->input->get('element', '', 'word');
 		$content = $this->input->get('content', '', 'word');
+		$id      = $this->input->get('id', 0, 'int');
 
 		header_remove('X-Powered-By');
+
+		if ($id == 0)
+		{
+			header('HTTP/1.0 404 Not Found', true, 404);
+			jexit();
+		}
 
 		if (!empty($element) && method_exists($this, $element))
 		{
@@ -50,8 +59,8 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		else
 		{
-			header('HTTP/1.0 404 Not Found');
-			die();
+			header('HTTP/1.0 404 Not Found', true, 404);
+			jexit();
 		}
 	}
 
@@ -60,30 +69,23 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @param   string  $content  Content type(image).
 	 *
-	 * @return  string
+	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function movie($content)
 	{
-		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $this->input->get('id', 0, 'int');
-		$fs_alias = $this->input->get('fa', '', 'string');
-		$filename = $this->input->get('fn', '', 'string');
+		$params    = JComponentHelper::getParams('com_kinoarhiv');
+		$id        = $this->input->get('id', 0, 'int');
+		$fsAlias   = $this->input->get('fa', '', 'string');
+		$filename  = $this->input->get('fn', '', 'string');
 		$thumbnail = $this->input->get('thumbnail', 0, 'int');
-
-		if ($id == 0)
-		{
-			die();
-		}
 
 		if ($content === 'image')
 		{
 			$type = $this->input->get('type', 2, 'int');
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('movie', $type, $fs_alias, $id, $filename);
+			$path = $this->getImagePath('movie', $type, $fsAlias, $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
@@ -114,36 +116,29 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @param   string  $content  Content type(image).
 	 *
-	 * @return  string
+	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function name($content)
 	{
-		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $this->input->get('id', 0, 'int');
-		$fs_alias = $this->input->get('fa', '', 'string');
-		$filename = $this->input->get('fn', '', 'string');
+		$params    = JComponentHelper::getParams('com_kinoarhiv');
+		$id        = $this->input->get('id', 0, 'int');
+		$fsAlias   = $this->input->get('fa', '', 'string');
+		$filename  = $this->input->get('fn', '', 'string');
 		$thumbnail = $this->input->get('thumbnail', 0, 'int');
-
-		if ($id == 0)
-		{
-			die();
-		}
 
 		if ($content === 'image')
 		{
 			$type = $this->input->get('type', 3, 'int');
 			$gender = $this->input->get('gender', 0, 'int');
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('name', $type, $fs_alias, $id, $filename);
+			$path = $this->getImagePath('name', $type, $fsAlias, $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
-				$no_cover = ($gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png';
+				$noCover = ($gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
 			}
 
 			try
@@ -170,28 +165,21 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @param   string  $content  Content type(image, video, subtitles, chapters).
 	 *
-	 * @return  string
+	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function trailer($content)
 	{
-		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $this->input->get('id', 0, 'int');
-		$item_id = $this->input->get('item_id', 0, 'int');
-		$fs_alias = $this->input->get('fa', '', 'string');
+		$params   = JComponentHelper::getParams('com_kinoarhiv');
+		$id       = $this->input->get('id', 0, 'int');
+		$itemID   = $this->input->get('item_id', 0, 'int');
+		$fsAlias  = $this->input->get('fa', '', 'string');
 		$filename = $this->input->get('fn', '', 'string');
-
-		if ($id == 0)
-		{
-			die();
-		}
 
 		$model = $this->getModel('movie');
 
-		if (!$model->getTrailerAccessLevel($item_id))
+		if (!$model->getTrailerAccessLevel($itemID))
 		{
 			header('HTTP/1.0 403 Forbidden');
 			die();
@@ -200,7 +188,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		if ($content === 'image')
 		{
 			$type = $this->input->get('type', 2, 'int');
-			$path = $this->getImagePath('trailer', $type, $fs_alias, $id, $filename);
+			$path = $this->getImagePath('trailer', $type, $fsAlias, $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
@@ -228,7 +216,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 				die();
 			}
 
-			$path = $this->getVideoPath(urldecode($fs_alias), $id, $filename);
+			$path = $this->getVideoPath(urldecode($fsAlias), $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
@@ -253,7 +241,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		elseif ($content === 'subtitles' || $content === 'chapters')
 		{
-			$path = $this->getVideoPath(urldecode($fs_alias), $id, $filename);
+			$path = $this->getVideoPath(urldecode($fsAlias), $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
@@ -285,30 +273,23 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @param   string  $content  Content type.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function music($content)
 	{
-		JLoader::register('KAFilesystem', JPath::clean(JPATH_COMPONENT . '/libraries/filesystem.php'));
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $this->input->get('id', 0, 'int');
-		$fs_alias = $this->input->get('fa', '', 'string');
-		$filename = $this->input->get('fn', '', 'string');
+		$params    = JComponentHelper::getParams('com_kinoarhiv');
+		$id        = $this->input->get('id', 0, 'int');
+		$fsAlias   = $this->input->get('fa', '', 'string');
+		$filename  = $this->input->get('fn', '', 'string');
 		$thumbnail = $this->input->get('thumbnail', 0, 'int');
-
-		if ($id == 0)
-		{
-			die();
-		}
 
 		if ($content === 'image')
 		{
 			$type = $this->input->get('type', 2, 'int');
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('music', $type, $fs_alias, $id, $filename);
+			$path = $this->getImagePath('music', $type, $fsAlias, $id, $filename);
 
 			if (!file_exists($path) && !is_file($path))
 			{
@@ -339,22 +320,22 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @param   string   $content   Item type. Movie or person or trailer screenshot or album art.
 	 * @param   integer  $type      Content image type. 1 - wallpapers, 2 - posters, 3 - screenshots
-	 * @param   string   $fs_alias  Filesystem alias(`fs_alias` column).
-	 * @param   integer  $item_id   Item ID.
+	 * @param   string   $fsAlias   Filesystem alias(`fs_alias` column).
+	 * @param   integer  $itemID    Item ID.
 	 * @param   string   $filename  File name.
 	 *
 	 * @return  string
 	 *
-	 * @since    3.0
+	 * @since    3.1
 	 */
-	private function getImagePath($content, $type, $fs_alias, $item_id, $filename)
+	private function getImagePath($content, $type, $fsAlias, $itemID, $filename)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$path = '';
 
 		if ($content === 'movie')
 		{
-			$middle = '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
+			$middle = '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
 
 			// 1-wallpapers, 2-posters, 3-screenshots
 			if ($type == 1)
@@ -372,7 +353,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		elseif ($content === 'name')
 		{
-			$middle = '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
+			$middle = '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
 
 			// 1-wallpapers, 2-posters, 3-photo
 			if ($type == 1)
@@ -390,11 +371,11 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		}
 		elseif ($content === 'trailer')
 		{
-			$path = $params->get('media_trailers_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
+			$path = $params->get('media_trailers_root') . '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
 		}
 		elseif ($content === 'music')
 		{
-			$path = $params->get('media_music_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
+			$path = $params->get('media_music_root') . '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
 		}
 
 		return JPath::clean($path . $filename);
@@ -403,18 +384,18 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	/**
 	 * Method to get the filesystem path for image content
 	 *
-	 * @param   string   $fs_alias  Filesystem alias(`fs_alias` column).
-	 * @param   integer  $item_id   Item ID.
+	 * @param   string   $fsAlias   Filesystem alias(`fs_alias` column).
+	 * @param   integer  $itemID    Item ID.
 	 * @param   string   $filename  File name.
 	 *
 	 * @return  string
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	private function getVideoPath($fs_alias, $item_id, $filename)
+	private function getVideoPath($fsAlias, $itemID, $filename)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$path = $params->get('media_trailers_root') . '/' . rawurlencode($fs_alias) . '/' . $item_id . '/';
+		$path = $params->get('media_trailers_root') . '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
 
 		return JPath::clean($path . $filename);
 	}

@@ -21,7 +21,7 @@ KAComponentHelperBackend::loadMediamanagerAssets();
 $this->input  = JFactory::getApplication()->input;
 $this->id     = $this->form->getValue('id');
 $lang         = JFactory::getLanguage();
-$navgrid_opt  = array(
+$navgridOpts  = array(
 	'btn' => array(
 		'lang' => array(
 			'addtext'     => JText::_('JTOOLBAR_ADD'), 'edittext' => JText::_('JTOOLBAR_EDIT'),
@@ -59,13 +59,6 @@ $lang_request = substr($lang->getTag(), 0, 2);
 	};
 
 	jQuery(document).ready(function($){
-		// Bind 'show modal' functional for poster upload
-		$('.cmd-file-upload').click(function(e){
-			e.preventDefault();
-
-			$('#imgModalUpload').modal('toggle');
-		});
-
 		// Bind 'remove poster' functional
 		$('.cmd-file-remove').click(function(e){
 			e.preventDefault();
@@ -114,24 +107,6 @@ $lang_request = substr($lang->getTag(), 0, 2);
 						}
 					});
 			}
-		});
-
-		// Create filesystem alias
-		$('.cmd-get-alias').click(function(e){
-			e.preventDefault();
-
-			$.post('index.php?option=com_kinoarhiv&task=movies.getFilesystemAlias&format=json',
-				{
-					'name': $('.field_title').val(),
-					'alias': $('.field_alias').val()
-				},
-				function(response){
-					if (response.success) {
-						$('.field_fs_alias').val(response.fs_alias);
-					} else {
-						Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
-					}
-				});
 		});
 
 		// Update total votes
@@ -308,7 +283,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 								'name' => 'type', 'width' => 1, 'sortable' => false, 'search' => false
 							)
 						),
-						'navgrid' => $navgrid_opt
+						'navgrid' => $navgridOpts
 					);
 
 					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
@@ -373,7 +348,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 								)
 							)
 						),
-						'navgrid' => $navgrid_opt
+						'navgrid' => $navgridOpts
 					);
 
 					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
@@ -435,7 +410,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 								'sorttype' => 'int', 'search' => false
 							)
 						),
-						'navgrid' => $navgrid_opt
+						'navgrid' => $navgridOpts
 					);
 
 					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
@@ -504,7 +479,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 								'sorttype' => 'int', 'search' => false
 							)
 						),
-						'navgrid' => $navgrid_opt
+						'navgrid' => $navgridOpts
 					);
 
 					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);

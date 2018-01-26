@@ -23,20 +23,15 @@ Kinoarhiv = window.Kinoarhiv || {};
 	 */
 	Kinoarhiv.updatePoster = function(data){
 		jQuery(document).ready(function($){
-			if (!Date.now) {
-				Date.now = function(){
-					return new Date().getTime();
-				}
-			}
-
-			var doc = (!document.querySelector('input[name="img_folder"]')) ? parent.document : document;
+			var doc = (!document.querySelector('input[name="img_folder"]')) ? parent.document : document,
+				now = Kinoarhiv.datetime('now');
 
 			var response = (typeof data !== 'object') ? JSON.parse(data) : data,
 				img_folder = doc.querySelector('input[name="img_folder"]').value,
 				image = new Image(),
 				img_preview = doc.querySelector('a.img-preview img');
 
-			image.src = img_folder + 'thumb_' + response.filename + '?_=' + Date.now();
+			image.src = img_folder + 'thumb_' + response.filename + '?_=' + now;
 			image.onload = function(){
 				img_preview.width = image.naturalWidth;
 				img_preview.height = image.naturalHeight;
@@ -44,8 +39,8 @@ Kinoarhiv = window.Kinoarhiv || {};
 			};
 
 			doc.querySelector('input[name="image_id"]').value = response.insertid;
-			doc.querySelector('a.img-preview').setAttribute('href', img_folder + response.filename + '?_=' + Date.now());
-			img_preview.setAttribute('src', img_folder + 'thumb_' + response.filename + '?_=' + Date.now());
+			doc.querySelector('a.img-preview').setAttribute('href', img_folder + response.filename + '?_=' + now);
+			img_preview.setAttribute('src', img_folder + 'thumb_' + response.filename + '?_=' + now);
 		});
 	};
 
@@ -94,6 +89,43 @@ Kinoarhiv = window.Kinoarhiv || {};
 			});
 		});
 	};
+
+	/**
+	 * Get date or time or datetime.
+	 *
+	 * @param  {string}  data  Date or time or now or datetime.
+	 *
+	 * @return  {string}
+	 */
+	Kinoarhiv.datetime = function(data){
+		var date = new Date();
+
+		if (!Date.now) {
+			Date.now = function(){
+				return date.getTime();
+			}
+		}
+
+		var result  = '',
+			offset  = (date).getTimezoneOffset() * 60000,
+			isoTime = (new Date(Date.now() - offset)).toISOString();
+
+		switch (data) {
+			case 'date':
+				result = isoTime.slice(0, 10).replace('T', ' ');
+				break;
+			case 'time':
+				result = isoTime.slice(11, 19).replace('T', ' ');
+				break;
+			case 'now':
+				result = Date.now();
+				break;
+			default:
+				result = isoTime.slice(0, -5).replace('T', ' ');
+		}
+
+		return result;
+	};
 }(Kinoarhiv, document));
 
 jQuery(document).ready(function($){
@@ -121,12 +153,16 @@ jQuery(document).ready(function($){
 		}
 
 		if (input.val().toLowerCase() === 'now') {
-			if (empty($this.data('time-format'))) {
-				input.val(new Date().toISOString().slice(0, 10));
-			} else if (empty($this.data('date-format'))) {
-				input.val(new Date().toISOString().slice(11, 19));
+			if (framework === 'bootstrap') {
+				input.val(Kinoarhiv.datetime());
 			} else {
-				input.val(new Date().toISOString().slice(0, 19).replace('T', ' '));
+				if (empty($this.data('time-format'))) {
+					input.val(Kinoarhiv.datetime('date'));
+				} else if (empty($this.data('date-format'))) {
+					input.val(Kinoarhiv.datetime('time'));
+				} else {
+					input.val(Kinoarhiv.datetime());
+				}
 			}
 		}
 
@@ -538,6 +574,35 @@ jQuery(document).ready(function($){
 				Aurora.message([{text: response.message, type: 'success'}], '#system-message-container', msgOptions);
 			} else {
 				Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', msgOptions);
+			}
+		});
+	});
+
+	// Bind 'show modal' functional for poster, photo upload
+	$('.cmd-file-upload').click(function(e){
+		e.preventDefault();
+
+		$('#imgModalUpload').modal('toggle');
+	});
+
+	// Create filesystem alias
+	$('.cmd-get-alias').click(function(e){
+		e.preventDefault();
+		var $this  = $(this),
+			fields = $this.data('getalias-fields'),
+			data   = {};
+
+		for (var key in fields) {
+			if (fields.hasOwnProperty(key) && typeof fields[key] !== 'undefined') {
+				data[key] = $(fields[key]).val();
+			}
+		}
+
+		$.post('index.php?option=com_kinoarhiv&task=' + $this.data('getalias-task') + '&format=json', data, function(response){
+			if (response.success) {
+				$('.field_fs_alias').val(response.fs_alias);
+			} else {
+				Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
 			}
 		});
 	});

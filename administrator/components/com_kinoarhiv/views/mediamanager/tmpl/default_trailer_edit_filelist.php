@@ -175,7 +175,7 @@ $chapterFile        = json_decode($this->form->getValue('trailer.chapters'));
 		</tr>
 	</thead>
 	<tbody>
-	<?php if (!empty($chapterFile)): ?>
+	<?php if (empty($chapterFile) !== false): ?>
 		<tr>
 			<td colspan="2"><?php echo JText::_('COM_KA_NO_FILES'); ?></td>
 		</tr>

@@ -13,7 +13,7 @@
 			<option value=""></option>
 		</field>
 		<field name="premiere_date" type="datetime" default="NOW" label="COM_KA_FIELD_PREMIERE_DATE_LABEL"
-			   class="inputbox validate-date" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss"
+			   class="inputbox validate-datetime" datatype="datetime" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss"
 			   validate="date" filter="server_utc" required="true"/>
 		<field name="info" type="textarea" default="" label="COM_KA_FIELD_PREMIERE_DESC" class="span12" filter="raw"
 			   cols="6" rows="5"/>

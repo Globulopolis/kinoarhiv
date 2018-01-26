@@ -38,7 +38,9 @@ $width  = $image[0];
 						<div class="input-append">
 							<?php echo $this->form->getInput('fs_alias'); ?>
 							<?php echo $this->form->getInput('fs_alias_orig'); ?>
-							<button class="btn btn-default cmd-get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_NAME_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
+							<button class="btn btn-default cmd-get-alias hasTooltip" data-getalias-task="names.getFilesystemAlias"
+									data-getalias-fields='{"name": ".field_name", "latin_name": ".field_latin_name", "alias": ".field_alias"}'
+									title="<?php echo JText::_('COM_KA_FIELD_NAME_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
 							<button class="btn btn-default" data-toggle="modal" data-target="#helpAliasModal"><i class="icon-help"></i></button>
 						</div>
 					</div>

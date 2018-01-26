@@ -90,7 +90,7 @@ class JFormFieldDatetime extends JFormField
 				. ' data-date-format="' . $dateformat . ' ' . $timeformat . '">
 				<input type="text" name="' . $this->name . '" id="' . $this->id . '" class="' . $this->class . '"'
 					. ' value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $attributes . '/>
-				<span class="add-on"><i class="icon-calendar"></i></span>
+				<button class="btn btn-default add-on" type="button" style="padding: 4px 12px; height: auto;"><i class="icon-calendar"></i></button>
 			</div>';
 		}
 		else

@@ -276,3 +276,8 @@ table[data-sortable] th[data-sorted-direction="ascending"]:after {
 .trumbowyg-button-pane button {
 	vertical-align: inherit;
 }
+
+/* Override poster sizing for players */
+.flowplayer, .vjs-poster {
+	background-size: cover !important;
+}

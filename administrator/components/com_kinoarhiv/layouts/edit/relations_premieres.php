@@ -14,6 +14,7 @@ $form = $displayData['form'];
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
+JHtml::_('script', 'media/com_kinoarhiv/js/validation-rules.min.js');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task){
@@ -25,18 +26,6 @@ JHtml::_('behavior.keepalive');
 			}
 		}
 	};
-
-	jQuery(document).ready(function($){
-		document.formvalidator.setHandler('date', function(value){
-			var regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-
-			if (!value.match(regex)) {
-				return false;
-			}
-
-			return !!Date.parse(value);
-		});
-	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&item_id=' . JFactory::getApplication()->input->getInt('item_id', 0)); ?>"
 	method="post" name="adminForm" id="adminForm" autocomplete="off" class="form-validate">

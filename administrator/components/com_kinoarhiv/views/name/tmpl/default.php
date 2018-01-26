@@ -38,13 +38,6 @@ $this->id    = $this->form->getValue('id');
 	};
 
 	jQuery(document).ready(function($){
-		// Bind 'show modal' functional for photo upload
-		$('.cmd-file-upload').click(function(e){
-			e.preventDefault();
-
-			$('#imgModalUpload').modal('toggle');
-		});
-
 		// Bind 'remove photo' functional
 		$('.cmd-file-remove').click(function(e){
 			e.preventDefault();
@@ -94,28 +87,10 @@ $this->id    = $this->form->getValue('id');
 				});
 			}
 		});
-
-		// Create filesystem alias
-		$('.cmd-get-alias').click(function(e){
-			e.preventDefault();
-
-			$.post('index.php?option=com_kinoarhiv&task=names.getFilesystemAlias&format=json',
-				{
-					'name': $('.field_name').val(),
-					'latin_name': $('.field_latin_name').val(),
-					'alias': $('.field_alias').val()
-				},
-				function(response){
-					if (response.success) {
-						$('.field_fs_alias').val(response.fs_alias);
-					} else {
-						Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
-					}
-			});
-		});
 	});
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . (int) $this->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . (int) $this->id); ?>" method="post"
+	  name="adminForm" id="item-form" class="form-validate" autocomplete="off">
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<div class="span12">

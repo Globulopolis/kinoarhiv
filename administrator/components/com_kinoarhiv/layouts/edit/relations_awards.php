@@ -25,12 +25,6 @@ JHtml::_('behavior.keepalive');
 			}
 		}
 	};
-
-	jQuery(document).ready(function($){
-		document.formvalidator.setHandler('year', function(value){
-			return /^\d{4,}?$/.test(value);
-		});
-	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&item_id=' . JFactory::getApplication()->input->getInt('item_id', 0)); ?>"
 	method="post" name="adminForm" id="adminForm" autocomplete="off" class="form-validate">

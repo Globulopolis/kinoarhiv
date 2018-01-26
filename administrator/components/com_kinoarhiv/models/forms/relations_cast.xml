@@ -3,8 +3,9 @@
 	<fieldset addrulepath="administrator/components/com_kinoarhiv/models/rules"
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="type" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE" filter="integer"
-			   class="span6" data-content="careers" data-allow-clear="true" data-remote="true" data-key="id"
-			   data-sel-size="1" data-remote-show-all="true" data-lang="*" required="true">
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC" class="span6" data-content="careers"
+			   data-allow-clear="true" data-remote="true" data-key="id" data-sel-size="1" data-remote-show-all="true"
+			   data-lang="*" required="true">
 			<option value=""></option>
 		</field>
 		<field type="spacer" name="type_spacer" label=" "/>
@@ -27,12 +28,14 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="is_directors" type="radio" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR_DESC" filter="integer" class="btn-group">
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR_DESC" filter="integer" class="btn-group"
+			   labelclass="is_directors">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
 		<field name="voice_artists" type="radio" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB_DESC" filter="integer" class="btn-group">
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB_DESC" filter="integer"
+			   class="btn-group cmd-voice-artists">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

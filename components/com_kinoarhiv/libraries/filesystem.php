@@ -13,14 +13,14 @@ defined('_JEXEC') or die;
 /**
  * Class KAFilesystem
  *
- * @since  3.0
+ * @since  3.1
  */
 class KAFilesystem
 {
 	/**
 	 * @var    KAFilesystem  instance of this class
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	protected static $instance;
 
@@ -29,7 +29,7 @@ class KAFilesystem
 	 *
 	 * The constructor is protected to force the use of KAFilesystem::getInstance()
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	protected function __construct()
 	{
@@ -40,7 +40,7 @@ class KAFilesystem
 	 *
 	 * @return  KAFilesystem
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public static function getInstance()
 	{
@@ -53,38 +53,41 @@ class KAFilesystem
 	}
 
 	/**
-	 * Sets-up headers and starts transfering.
-	 * BEWARE!!! This method doesn't work correctly on 32bit servers. It's not possible to fix it! DO NOT USE 32bit platforms!
+	 * Set up headers and starts transfering.
+	 * BEWARE!!! This method may not work correctly on 32bit servers. It's not possible to fix it! DO NOT USE 32bit platforms!
 	 *
-	 * @param   string   $file_path        Path to a file
-	 * @param   integer  $throttle         Use throttle mechanism
-	 * @param   array    $throttle_config  Throttle mechanism config. array('seconds'=>1, 'bytes'=>1024)
-	 * @param   boolean  $disposition      Send or not 'Content-Disposition' header
-	 * @param   boolean  $cache            Use cache
+	 * @param   string   $path            Path to a file.
+	 * @param   integer  $throttle        Use throttle mechanism.
+	 * @param   array    $throttleConfig  Throttle mechanism config. array('seconds'=>1, 'bytes'=>1024)
+	 * @param   boolean  $disposition     Send or not 'Content-Disposition' header.
+	 * @param   boolean  $cache           Use cache.
 	 *
 	 * @return  mixed
 	 *
 	 * @throws  Exception
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	public function sendFile($file_path, $throttle=0, $throttle_config=array(), $disposition=true, $cache=true)
+	public function sendFile($path, $throttle=0, $throttleConfig=array(), $disposition=true, $cache=true)
 	{
-		$file_path = JPath::clean($file_path);
+		$path = JPath::clean($path);
 
-		if (!is_readable($file_path))
+		if (!is_readable($path))
 		{
-			throw new Exception('File not found or inaccessible!');
+			header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not found', true, 404);
+			KAComponentHelper::eventLog('Cannot read file: ' . $path);
+
+			return false;
 		}
 
-		if (!array_key_exists('seconds', $throttle_config) && empty($throttle_config['seconds']))
+		if (!array_key_exists('seconds', $throttleConfig) && empty($throttleConfig['seconds']))
 		{
-			$throttle_config['seconds'] = 0.1;
+			$throttleConfig['seconds'] = 0.1;
 		}
 
-		if (!array_key_exists('throttle_bytes', $throttle_config) && empty($throttle_config['throttle_bytes']))
+		if (!array_key_exists('throttle_bytes', $throttleConfig) && empty($throttleConfig['throttle_bytes']))
 		{
-			$throttle_config['throttle_bytes'] = 0.1;
+			$throttleConfig['throttle_bytes'] = 0.1;
 		}
 
 		// Turn off output buffering to decrease cpu usage
@@ -96,11 +99,11 @@ class KAFilesystem
 			@ini_set('zlib.output_compression', 'Off');
 		}
 
-		header('Content-type: ' . $this->detectMime($file_path));
+		header('Content-type: ' . $this->detectMime($path), true);
 
 		if ($disposition)
 		{
-			header('Content-Disposition: inline; filename="' . basename($file_path) . '"');
+			header('Content-Disposition: inline; filename="' . basename($path) . '"');
 		}
 
 		header('Accept-Ranges: bytes');
@@ -113,29 +116,29 @@ class KAFilesystem
 		}
 		else
 		{
-			$last_modified = filemtime($file_path);
-			$etag = md5_file($file_path);
-			$etag_header = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim($_SERVER['HTTP_IF_NONE_MATCH']) : false;
-			$modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
+			$lastModified = filemtime($path);
+			$etag = md5_file($path);
+			$etagHeader = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim($_SERVER['HTTP_IF_NONE_MATCH']) : false;
+			$modifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
 
 			header('Pragma: cache');
 			header('Cache-control: no-transform, public, max-age=2592000, s-maxage=7776000');
 			header('Etag: ' . $etag);
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $last_modified) . ' GMT');
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
 			header('Expires: Mon, 01 Jan 2100 00:00:00 GMT');
 
-			if (@strtotime($modified_since) == $last_modified || $etag_header == $etag)
+			if (@strtotime($modifiedSince) == $lastModified || $etagHeader == $etag)
 			{
 				header('HTTP/1.1 304 Not Modified');
 				die();
 			}
 		}
 
-		$file = @fopen($file_path, 'rb');
-		$size = $this->getFilesize($file);
+		$file = @fopen($path, 'rb');
+		$size = $this->getFilesize($path);
 
 		// Multipart-download and download resuming support
-		$valid_range = true;
+		$validRange = true;
 		$range = 0;
 
 		if (isset($_SERVER['HTTP_RANGE']))
@@ -143,30 +146,30 @@ class KAFilesystem
 			// Check to correct HTTP_RANGE value
 			if (!preg_match('/^bytes=((\d*-\d*,? ?)+)$/', $_SERVER['HTTP_RANGE'], $matches))
 			{
-				$valid_range = false;
+				$validRange = false;
 			}
 
-			if ($valid_range)
+			if ($validRange)
 			{
 				list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
 				list($range) = explode(',', $range, 2);
-				list($range, $range_end) = explode('-', $range);
+				list($range, $rangeEnd) = explode('-', $range);
 				$range = (int) $range;
 
-				if (!$range_end)
+				if (!$rangeEnd)
 				{
-					$range_end = $size - 1;
+					$rangeEnd = $size - 1;
 				}
 				else
 				{
-					$range_end = (int) $range_end;
+					$rangeEnd = (int) $rangeEnd;
 				}
 
-				$new_length = $range_end - $range + 1;
+				$newLength = $rangeEnd - $range + 1;
 
 				header('HTTP/1.1 206 Partial Content');
-				header('Content-Length: ' . $new_length);
-				header('Content-Range: bytes ' . $range . '-' . $range_end . '/' . $size);
+				header('Content-Length: ' . $newLength);
+				header('Content-Range: bytes ' . $range . '-' . $rangeEnd . '/' . $size);
 			}
 			else
 			{
@@ -177,23 +180,23 @@ class KAFilesystem
 		}
 		else
 		{
-			$new_length = $size;
+			$newLength = $size;
 			header('HTTP/1.1 200 OK');
 			header('Content-Length: ' . $size);
 		}
 
 		// Output the file itself
-		$chunksize = ($throttle == 1) ? (int) $throttle_config['bytes'] : 1024 * 8;
-		$bytes_send = 0;
+		$chunksize = ($throttle == 1) ? (int) $throttleConfig['bytes'] : 1024 * 8;
+		$bytesSend = 0;
 
 		if ($file)
 		{
-			if (isset($_SERVER['HTTP_RANGE']) && $valid_range)
+			if (isset($_SERVER['HTTP_RANGE']) && $validRange)
 			{
 				fseek($file, $range);
 			}
 
-			while (!feof($file) && (!connection_aborted()) && ($bytes_send < $new_length))
+			while (!feof($file) && (!connection_aborted()) && ($bytesSend < $newLength))
 			{
 				$buffer = fread($file, $chunksize);
 				echo $buffer;
@@ -201,10 +204,10 @@ class KAFilesystem
 
 				if ($throttle == 1)
 				{
-					usleep((float) $throttle_config['seconds'] * 1000000);
+					usleep((float) $throttleConfig['seconds'] * 1000000);
 				}
 
-				$bytes_send += strlen($buffer);
+				$bytesSend += strlen($buffer);
 			}
 
 			fclose($file);
@@ -222,7 +225,7 @@ class KAFilesystem
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	private function cleanAll()
 	{
@@ -242,7 +245,7 @@ class KAFilesystem
 	 *
 	 * @return  boolean
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function move($src, $dest, $copy = false)
 	{
@@ -278,7 +281,7 @@ class KAFilesystem
 	 *
 	 * @return  boolean
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	private function moveItem($src, $dest, $copy)
 	{
@@ -324,47 +327,67 @@ class KAFilesystem
 	}
 
 	/**
-	 * Get file size. See http://php.net/manual/en/function.filesize.php#115792
+	 * Get file size. See http://php.net/manual/en/function.filesize.php#121406
 	 *
-	 * @param   resource  $handle  Path to a file.
+	 * @param   string  $path  Path to a file.
 	 *
-	 * @return  mixed (int|float) File size on success or false on error
+	 * @return  string|boolean  File size on success or false on error
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	public function getFilesize($handle)
+	public function getFilesize($path)
 	{
-		$result = false;
+		$path = JPath::clean($path);
 
-		if (is_resource($handle))
+		if (!file_exists($path))
 		{
-			if (PHP_INT_SIZE < 8)
-			{
-				if (0 === fseek($handle, 0, SEEK_END))
-				{
-					$result = 0.0;
-					$step = 0x7FFFFFFF;
+			return false;
+		}
 
-					while ($step > 0)
-					{
-						if (0 === fseek($handle, -$step, SEEK_CUR))
-						{
-							$result += floatval($step);
-						}
-						else
-						{
-							$step >>= 1;
-						}
-					}
-				}
-			}
-			elseif (0 === fseek($handle, 0, SEEK_END))
+		$size = filesize($path);
+
+		if (!($file = fopen($path, 'rb')))
+		{
+			return false;
+		}
+
+		// Check if it really is a small file (< 2 GB)
+		if ($size >= 0)
+		{
+			// It really is a small file
+			if (fseek($file, 0, SEEK_END) === 0)
 			{
-				$result = ftell($handle);
+				fclose($file);
+
+				return $size;
 			}
 		}
 
-		return $result;
+		// Quickly jump the first 2 GB with fseek. After that fseek is not working on 32 bit php (it uses int internally)
+		$size = PHP_INT_MAX - 1;
+
+		if (fseek($file, PHP_INT_MAX - 1) !== 0)
+		{
+			fclose($file);
+
+			return false;
+		}
+
+		$length = 1024 * 1024;
+
+		// Read the file until end
+		while (!feof($file))
+		{
+			$read = fread($file, $length);
+			$size = bcadd($size, $length);
+		}
+
+		$size = bcsub($size, $length);
+		$size = bcadd($size, strlen($read));
+
+		fclose($file);
+
+		return $size;
 	}
 
 	/**
@@ -375,7 +398,7 @@ class KAFilesystem
 	 *
 	 * @return  mixed    Folder size, false on error.
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function getFolderSize($path, $cache = true)
 	{
@@ -409,33 +432,52 @@ class KAFilesystem
 	}
 
 	/**
-	 * Get MIME-type of the file
+	 * Get MIME-type of the file.
 	 *
 	 * @param   string  $path  Path to a file.
 	 *
 	 * @return  string
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function detectMime($path)
 	{
-		$mime = 'text/plain';
+		$mime = false;
 
 		if (!empty($path) && is_file($path))
 		{
+			// We should suppress all errors here to avoid broken data due to bug in PHP >7 with mime database.
 			if (KAComponentHelper::functionExists('finfo_open'))
 			{
-				$finfo = finfo_open(FILEINFO_MIME_TYPE);
-				$mime = finfo_file($finfo, $path);
-				finfo_close($finfo);
+				$finfo = new finfo(FILEINFO_MIME_TYPE);
+				$mime = @$finfo->file($path);
 			}
 			elseif (KAComponentHelper::functionExists('mime_content_type'))
 			{
-				$mime = mime_content_type($path);
+				$mime = @mime_content_type($path);
 			}
 			elseif (KAComponentHelper::functionExists('exif_imagetype') === true)
 			{
-				$mime = image_type_to_mime_type(exif_imagetype($path));
+				$mime = @image_type_to_mime_type(exif_imagetype($path));
+			}
+		}
+		else
+		{
+			KAComponentHelper::eventLog('File not found at ' . $path);
+			jexit();
+		}
+
+		// Give up and try to get from predefined mimes.
+		if ($mime === false)
+		{
+			$ext = pathinfo($path, PATHINFO_EXTENSION);
+			$mimes = $this->mimes();
+			$mime = $mimes[$ext];
+
+			// Returns first matched mime.
+			if (is_array($mime))
+			{
+				$mime = $mime[0];
 			}
 		}
 
@@ -507,12 +549,12 @@ class KAFilesystem
 			'au'    => 'audio/x-au',
 			'ac3'   => 'audio/ac3',
 			'flac'  => 'audio/x-flac',
-			'ogg'   => array('audio/ogg', 'video/ogg', 'application/ogg'),
+			'ogg'   => array('audio/ogg', 'video/ogg'),
 			'oga'   => 'audio/ogg',
-			'ogv'   => array('video/ogg', 'application/ogg'),
+			'ogv'   => 'video/ogg',
 			'wma'   => array('audio/x-ms-wma', 'video/x-ms-asf'),
 			'srt'   => array('text/srt', 'text/plain'),
-			'vtt'   => array('text/vtt', 'text/plain')
+			'vtt'   => 'text/vtt'
 		);
 	}
 }

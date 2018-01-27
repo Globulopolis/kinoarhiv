@@ -144,16 +144,16 @@ class KAComponentHelperBackend
 	/**
 	 * Method to save the access rules.
 	 *
-	 * @param   integer  $id          Item ID.
-	 * @param   string   $asset_name  The unique name for the asset.
-	 * @param   string   $title       The descriptive title for the asset.
-	 * @param   array    $rules       The form data.
+	 * @param   integer  $id         Item ID.
+	 * @param   string   $assetName  The unique name for the asset.
+	 * @param   string   $title      The descriptive title for the asset.
+	 * @param   array    $rules      The form data.
 	 *
 	 * @return  mixed  lastInsertID on insert, true on update, false otherwise.
 	 *
 	 * @since   3.1
 	 */
-	public static function saveAccessRules($id, $asset_name, $title = '', $rules = array())
+	public static function saveAccessRules($id, $assetName, $title = '', $rules = array())
 	{
 		$app = JFactory::getApplication();
 		$db = JFactory::getDbo();
@@ -170,7 +170,7 @@ class KAComponentHelperBackend
 
 			try
 			{
-				$parent_id = $db->loadResult();
+				$parentID = $db->loadResult();
 			}
 			catch (RuntimeException $e)
 			{
@@ -200,15 +200,16 @@ class KAComponentHelperBackend
 			$query = $db->getQuery(true)
 				->insert($db->quoteName('#__assets'))
 				->columns($db->quoteName(array_keys($db->getTableColumns('#__assets'))))
-				->values("'', '" . (int) $parent_id . "', '" . $lft . "', '" . $rgt . "', '2', '" . $asset_name . "', "
-					. "'" . $db->escape($title) . "', '" . $rules . "'");
+				->values("'', '" . (int) $parentID . "', '" . $lft . "', '" . $rgt . "', '2', '" . $assetName . "', "
+					. "'" . $db->escape($title) . "', '" . $rules . "'"
+				);
 		}
 		else
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__assets'))
 				->set($db->quoteName('rules') . " = '" . $rules . "'")
-				->where($db->quoteName('name') . " = '" . $asset_name . "'");
+				->where($db->quoteName('name') . " = '" . $assetName . "'");
 		}
 
 		$db->setQuery($query);

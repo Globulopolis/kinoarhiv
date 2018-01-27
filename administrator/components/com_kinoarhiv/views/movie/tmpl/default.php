@@ -112,7 +112,15 @@ $lang_request = substr($lang->getTag(), 0, 2);
 		// Update total votes
 		$('.field_rate_sum_loc, .field_rate_loc').blur(function(){
 			var rate_loc = parseInt($('.field_rate_loc').val(), 10),
-				vote = parseFloat($('.field_rate_sum_loc').val() / rate_loc).toFixed(<?php echo (int) $this->params->get('vote_summ_precision'); ?>);
+				votesum = parseInt($('.field_rate_sum_loc').val(), 10);
+
+			if (isNaN(rate_loc) || isNaN(votesum)) {
+				$('#vote').text('0');
+
+				return;
+			}
+
+			var vote = parseFloat(votesum / rate_loc).toFixed(<?php echo (int) $this->params->get('vote_summ_precision'); ?>);
 
 			if (empty(vote) || empty(rate_loc) || rate_loc === 0) {
 				$('#vote').text('0');

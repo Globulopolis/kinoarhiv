@@ -120,11 +120,11 @@ class KinoarhivModelMovie extends JModelForm
 		$query = $db->getQuery(true);
 
 		$query->select("m.id, m.parent_id, m.title, m.alias, m.fs_alias, m.plot, m.desc, m.known, m.slogan, m.budget, "
-					. "m.age_restrict, m.ua_rate, m.mpaa, m.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, "
-					. "m.imdb_id, m.kp_votesum, m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, "
-					. "m.metacritics_id, m.rate_custom, m.urls, m.buy_urls, m.length, m.year, m.created_by, m.metakey, "
-					. "m.metadesc, m.attribs, m.state, m.metadata, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, "
-					. "DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
+			. "m.age_restrict, m.ua_rate, m.mpaa, m.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, "
+			. "m.imdb_id, m.kp_votesum, m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, "
+			. "m.metacritics_id, m.rate_custom, m.urls, m.buy_urls, m.length, m.year, m.created_by, m.metakey, "
+			. "m.metadesc, m.attribs, m.state, m.metadata, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, "
+			. "DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
 		)
 			->from($db->quoteName('#__ka_movies', 'm'));
 
@@ -177,20 +177,20 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		// Countries
-		$query_countries = $db->getQuery(true)
+		$queryCountries = $db->getQuery(true)
 			->select('c.id, c.name, c.code, t.ordering')
 			->from($db->quoteName('#__ka_countries', 'c'))
 			->join('LEFT', $db->quoteName('#__ka_rel_countries', 't') . ' ON t.country_id = c.id AND t.movie_id = ' . (int) $id);
 
-			$subquery_countries = $db->getQuery(true)
+			$subqueryCountries = $db->getQuery(true)
 				->select('country_id')
 				->from($db->quoteName('#__ka_rel_countries'))
 				->where('movie_id = ' . (int) $id);
 
-		$query_countries->where('id IN (' . $subquery_countries . ') AND state = 1')
+		$queryCountries->where('id IN (' . $subqueryCountries . ') AND state = 1')
 			->order('ordering ASC');
 
-		$db->setQuery($query_countries);
+		$db->setQuery($queryCountries);
 
 		try
 		{
@@ -203,20 +203,20 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		// Genres
-		$query_genres = $db->getQuery(true)
+		$queryGenres = $db->getQuery(true)
 			->select('g.id, g.name, g.alias, t.ordering')
 			->from($db->quoteName('#__ka_genres', 'g'))
 			->join('LEFT', $db->quoteName('#__ka_rel_genres', 't') . ' ON t.genre_id = g.id AND t.movie_id = ' . (int) $id);
 
-			$subquery_genres = $db->getQuery(true)
+			$subqueryGenres = $db->getQuery(true)
 				->select('genre_id')
 				->from($db->quoteName('#__ka_rel_genres'))
 				->where('movie_id = ' . (int) $id);
 
-		$query_genres->where('id IN (' . $subquery_genres . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
+		$queryGenres->where('id IN (' . $subqueryGenres . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
 			->order('ordering ASC');
 
-		$db->setQuery($query_genres);
+		$db->setQuery($queryGenres);
 
 		try
 		{
@@ -230,13 +230,13 @@ class KinoarhivModelMovie extends JModelForm
 
 		// Cast and crew
 		$careers = array();
-		$query_career = $db->getQuery(true)
+		$queryCareer = $db->getQuery(true)
 			->select('id, title')
 			->from($db->quoteName('#__ka_names_career'))
 			->where('is_mainpage = 1 AND is_amplua = 0')
 			->order('ordering ASC');
 
-		$db->setQuery($query_career);
+		$db->setQuery($queryCareer);
 		$_careers = $db->loadObjectList();
 
 		foreach ($_careers as $career)
@@ -244,20 +244,20 @@ class KinoarhivModelMovie extends JModelForm
 			$careers[$career->id] = $career->title;
 		}
 
-		$query_crew = $db->getQuery(true)
+		$queryCrew = $db->getQuery(true)
 			->select('n.id, n.name, n.latin_name, n.alias, t.type, t.is_actors, t.is_directors, t.voice_artists')
 			->from($db->quoteName('#__ka_names', 'n'))
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id);
 
-			$subquery_crew = $db->getQuery(true)
+			$subqueryCrew = $db->getQuery(true)
 				->select('name_id')
 				->from($db->quoteName('#__ka_rel_names'))
 				->where('movie_id = ' . (int) $id);
 
-		$query_crew->where('id IN (' . $subquery_crew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
+		$queryCrew->where('id IN (' . $subqueryCrew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
 			->order('t.ordering ASC');
 
-		$db->setQuery($query_crew);
+		$db->setQuery($queryCrew);
 		$crew = $db->loadObjectList();
 
 		$_result = array();
@@ -324,7 +324,7 @@ class KinoarhivModelMovie extends JModelForm
 		// Premiere dates
 		if ($params->get('premieres_list_limit') > 0)
 		{
-			$query_p = $db->getQuery(true)
+			$queryPremieres = $db->getQuery(true)
 				->select('p.id, p.vendor_id, p.premiere_date, p.info, c.name AS country, v.company_name')
 				->from($db->quoteName('#__ka_premieres', 'p'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = p.vendor_id')
@@ -333,7 +333,7 @@ class KinoarhivModelMovie extends JModelForm
 				->order('p.ordering ASC')
 				->setLimit((int) $params->get('premieres_list_limit'), 0);
 
-			$db->setQuery($query_p);
+			$db->setQuery($queryPremieres);
 
 			try
 			{
@@ -353,7 +353,7 @@ class KinoarhivModelMovie extends JModelForm
 		// Release dates
 		if ($params->get('releases_list_limit') > 0)
 		{
-			$query_r = $db->getQuery(true)
+			$queryReleases = $db->getQuery(true)
 				->select('r.id, r.movie_id, r.release_date, c.name AS country, v.company_name, media.title AS media_type')
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
@@ -363,7 +363,7 @@ class KinoarhivModelMovie extends JModelForm
 				->order('r.ordering ASC')
 				->setLimit((int) $params->get('releases_list_limit'), 0);
 
-			$db->setQuery($query_r);
+			$db->setQuery($queryReleases);
 
 			try
 			{
@@ -386,13 +386,13 @@ class KinoarhivModelMovie extends JModelForm
 		// Get Slider items
 		if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1)
 		{
-			$query_slider = $db->getQuery(true)
+			$querySlider = $db->getQuery(true)
 				->select($db->quoteName(array('id', 'filename', 'dimension')))
 				->from($db->quoteName('#__ka_movies_gallery'))
 				->where('movie_id = ' . (int) $id . ' AND state = 1 AND type = 3')
 				->setLimit((int) $params->get('slider_max_item'), 0);
 
-			$db->setQuery($query_slider);
+			$db->setQuery($querySlider);
 
 			try
 			{
@@ -426,7 +426,8 @@ class KinoarhivModelMovie extends JModelForm
 
 		$query = $db->getQuery(true)
 			->select("m.id, m.title, m.alias, m.fs_alias, m.year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .
-					"DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified, m.metakey, m.metadesc, m.metadata, m.attribs, user.name AS username")
+				"DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified, m.metakey, m.metadesc, m.metadata, m.attribs, user.name AS username"
+			)
 			->from($db->quoteName('#__ka_movies', 'm'))
 			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by')
 			->where('m.id = ' . (int) $id . ' AND m.state = 1 AND m.access IN (' . $groups . ')')
@@ -472,7 +473,7 @@ class KinoarhivModelMovie extends JModelForm
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$id = $app->input->get('id', 0, 'int');
 		$itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		$result = $this->getMovieData();
 
@@ -490,11 +491,12 @@ class KinoarhivModelMovie extends JModelForm
 			$careers[$career->id] = $career->title;
 		}
 
-		$query_crew = $db->getQuery(true)
+		$queryCrew = $db->getQuery(true)
 			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, n.gender, t.type, t.role, t.is_actors, t.voice_artists, " .
-					"d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, d.alias AS dub_alias, d.fs_alias AS dub_fs_alias, " .
-					"d.gender AS dub_gender, GROUP_CONCAT(r.role SEPARATOR ', ') AS dub_role, ac.desc, " .
-					"g.filename AS url_photo, dg.filename AS dub_url_photo")
+				"d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, d.alias AS dub_alias, d.fs_alias AS dub_fs_alias, " .
+				"d.gender AS dub_gender, GROUP_CONCAT(r.role SEPARATOR ', ') AS dub_role, ac.desc, " .
+				"g.filename AS url_photo, dg.filename AS dub_url_photo"
+			)
 			->from($db->quoteName('#__ka_names', 'n'))
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id)
 			->join('LEFT', $db->quoteName('#__ka_names', 'd') . ' ON d.id = t.dub_id AND d.state = 1 AND d.access IN (' . $groups . ') AND d.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
@@ -503,38 +505,38 @@ class KinoarhivModelMovie extends JModelForm
 			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1')
 			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'dg') . ' ON dg.name_id = d.id AND dg.type = 3 AND dg.frontpage = 1');
 
-			$subquery_crew = $db->getQuery(true)
+			$subqueryCrew = $db->getQuery(true)
 				->select('name_id')
 				->from($db->quoteName('#__ka_rel_names'))
 				->where('movie_id = ' . (int) $id);
 
-		$query_crew->where('n.id IN (' . $subquery_crew . ') AND n.state = 1 AND n.access IN (' . $groups . ')')
+		$queryCrew->where('n.id IN (' . $subqueryCrew . ') AND n.state = 1 AND n.access IN (' . $groups . ')')
 			->where('n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->group('n.id')
 			->order('t.ordering ASC');
 
-		$db->setQuery($query_crew);
+		$db->setQuery($queryCrew);
 		$crew = $db->loadObjectList();
 
 		$_result = array('crew' => array(), 'cast' => array(), 'dub' => array());
-		$_careers_crew = array();
+		$_careersCrew = array();
 
 		foreach ($crew as $key => $value)
 		{
 			foreach (explode(',', $value->type) as $k => $type)
 			{
 				// Process posters
-				if ($throttle_enable == 0)
+				if ($throttleEnable == 0)
 				{
 					// Cast and crew photo
-					$checking_path = JPath::clean(
+					$checkingPath = JPath::clean(
 						$params->get('media_actor_photo_root') . '/' . $value->fs_alias . '/' . $value->id . '/photo/' . $value->url_photo
 					);
-					$no_cover = ($value->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+					$noCover = ($value->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
-					if (!is_file($checking_path))
+					if (!is_file($checkingPath))
 					{
-						$value->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png';
+						$value->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
 					}
 					else
 					{
@@ -558,14 +560,14 @@ class KinoarhivModelMovie extends JModelForm
 					// Dub actors photo
 					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
 					{
-						$checking_path1 = JPath::clean(
+						$checkingPath1 = JPath::clean(
 							$params->get('media_actor_photo_root') . '/' . $value->dub_fs_alias . '/' . $value->dub_id . '/photo/' . $value->dub_url_photo
 						);
-						$no_cover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+						$noCover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
-						if (!is_file($checking_path1))
+						if (!is_file($checkingPath1))
 						{
-							$value->dub_url_photo = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover1 . '.png';
+							$value->dub_url_photo = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover1 . '.png';
 						}
 						else
 						{
@@ -609,7 +611,7 @@ class KinoarhivModelMovie extends JModelForm
 				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
 				{
 					$_result['crew'][$type]['career'] = $careers[$type];
-					$_careers_crew[] = $careers[$type];
+					$_careersCrew[] = $careers[$type];
 					$_result['crew'][$type]['items'][] = array(
 						'id'         => $value->id,
 						'name'       => $value->name,
@@ -628,7 +630,7 @@ class KinoarhivModelMovie extends JModelForm
 					$_result['cast'][$type]['career'] = $careers[$type];
 
 					// Only one value for actors. So we don't need to build an array of items
-					$_careers_cast = $careers[$type];
+					$_careersCast = $careers[$type];
 					$_result['cast'][$type]['items'][] = array(
 						'id'             => $value->id,
 						'name'           => $value->name,
@@ -652,7 +654,7 @@ class KinoarhivModelMovie extends JModelForm
 				if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 1)
 				{
 					$_result['dub'][$type]['career'] = $careers[$type];
-					$_careers_dub = $careers[$type];
+					$_careersDub = $careers[$type];
 					$_result['dub'][$type]['items'][] = array(
 						'id'         => $value->id,
 						'name'       => $value->name,
@@ -673,15 +675,15 @@ class KinoarhivModelMovie extends JModelForm
 		$result->dub = $_result['dub'];
 
 		// Create a new array with name career, remove duplicate items and sort it
-		$new_careers = array_unique($_careers_crew, SORT_STRING);
+		$newCareers = array_unique($_careersCrew, SORT_STRING);
 
-		foreach ($new_careers as $row)
+		foreach ($newCareers as $row)
 		{
 			$result->careers['crew'][] = $row;
 		}
 
-		$result->careers['cast'] = isset($_careers_cast) ? $_careers_cast : '';
-		$result->careers['dub'] = isset($_careers_dub) ? $_careers_dub : '';
+		$result->careers['cast'] = isset($_careersCast) ? $_careersCast : '';
+		$result->careers['dub'] = isset($_careersDub) ? $_careersDub : '';
 
 		return $result;
 	}
@@ -709,9 +711,9 @@ class KinoarhivModelMovie extends JModelForm
 		$itemid = $app->input->get('Itemid', 0, 'int');
 		$result = $this->getMovieData();
 		$result->player_width = $params->get('player_width');
-		$throttle_img_enable = $params->get('throttle_image_enable', 0);
-		$throttle_video_enable = $params->get('throttle_video_enable', 0);
-		$allowed_formats = array('mp4', 'webm', 'ogv', 'flv');
+		$throttleImgEnable = $params->get('throttle_image_enable', 0);
+		$throttleVideoEnable = $params->get('throttle_video_enable', 0);
+		$allowedFormats = array('mp4', 'webm', 'ogv', 'flv');
 
 		$query = $db->getQuery(true)
 			->select(
@@ -741,18 +743,18 @@ class KinoarhivModelMovie extends JModelForm
 			// Get the data from urls
 			if (!empty($value->urls))
 			{
-				$urls_arr = explode("\n", $value->urls);
+				$urlsArr = explode("\n", $value->urls);
 				$value->path = '';
 
-				if (count($urls_arr) > 0)
+				if (count($urlsArr) > 0)
 				{
-					if ($throttle_img_enable == 0)
+					if ($throttleImgEnable == 0)
 					{
-						$checking_path = JPath::clean(
+						$checkingPath = JPath::clean(
 							$params->get('media_trailers_root') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot
 						);
 
-						if (!is_file($checking_path))
+						if (!is_file($checkingPath))
 						{
 							$value->screenshot = JUri::base() . 'media/com_kinoarhiv/images/video_off.png';
 						}
@@ -785,7 +787,7 @@ class KinoarhivModelMovie extends JModelForm
 					$value->files['chapters'] = array();
 					$value->files['video_links'] = array();
 
-					foreach ($urls_arr as $v)
+					foreach ($urlsArr as $v)
 					{
 						if (preg_match('#\[(url="(?P<url>.+?)")?(\stype="(?P<type>.+?)")?(\splayer="(?P<player>.+?)")?(\sresolution="(?P<resolution>.+?)")?(\skind="(?P<kind>.+?)")?(\ssrclang="(?P<srclang>.+?)")?(\slabel="(?P<label>.+?)")?(\sdefault="(?P<default>.+?)")?\]#i', $v, $m))
 						{
@@ -798,16 +800,16 @@ class KinoarhivModelMovie extends JModelForm
 								{
 									if (!empty($m['player']) && $m['player'] == 'true')
 									{
-										$in_player = true;
+										$inPlayer = true;
 									}
 									else
 									{
-										$in_player = false;
+										$inPlayer = false;
 									}
 								}
 								else
 								{
-									$in_player = false;
+									$inPlayer = false;
 								}
 
 								$resolution = (isset($m['resolution']) && !empty($m['resolution'])) ? $m['resolution'] : '';
@@ -832,13 +834,13 @@ class KinoarhivModelMovie extends JModelForm
 									}
 								}
 
-								$tr_resolution = explode('x', $resolution);
-								$tr_height = $tr_resolution[1];
-								$value->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+								$trailerResolution = explode('x', $resolution);
+								$trailerHeight = $trailerResolution[1];
+								$value->player_height = floor(($trailerHeight * $result->player_width) / $trailerResolution[0]);
 
 								if ($kind == '')
 								{
-									if ($in_player === true)
+									if ($inPlayer === true)
 									{
 										$value->files['video'][] = array(
 											'src'        => $url,
@@ -883,13 +885,13 @@ class KinoarhivModelMovie extends JModelForm
 			}
 			else
 			{
-				if ($throttle_img_enable == 0)
+				if ($throttleImgEnable == 0)
 				{
-					$checking_path = JPath::clean(
+					$checkingPath = JPath::clean(
 						$params->get('media_trailers_root') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot
 					);
 
-					if (!is_file($checking_path))
+					if (!is_file($checkingPath))
 					{
 						$value->screenshot = JUri::base() . 'media/com_kinoarhiv/images/video_off.png';
 					}
@@ -916,21 +918,21 @@ class KinoarhivModelMovie extends JModelForm
 					);
 				}
 
-				if ($throttle_video_enable == 0)
+				if ($throttleVideoEnable == 0)
 				{
-					$_fs_alias = rawurlencode($value->fs_alias);
+					$_fsAlias = rawurlencode($value->fs_alias);
 
 					if (StringHelper::substr($params->get('media_trailers_root_www'), 0, 1) == '/')
 					{
 						// $value->path is an URL, $path is a root path to the files
 						$value->path = JUri::base() . StringHelper::substr($params->get('media_trailers_root_www'), 1) . '/'
-							. $_fs_alias . '/' . $id . '/';
+							. $_fsAlias . '/' . $id . '/';
 						$path = JPATH_ROOT . '/' . StringHelper::substr($params->get('media_trailers_root_www'), 1)
 							. '/' . $value->fs_alias . '/' . $id . '/';
 					}
 					else
 					{
-						$value->path = $params->get('media_trailers_root_www') . '/' . $_fs_alias . '/' . $id . '/';
+						$value->path = $params->get('media_trailers_root_www') . '/' . $_fsAlias . '/' . $id . '/';
 						$path = JPATH_ROOT . '/' . $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/';
 					}
 				}
@@ -948,12 +950,12 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					foreach ($value->files['video'] as $i => $val)
 					{
-						if ($throttle_video_enable == 0)
+						if ($throttleVideoEnable == 0)
 						{
 							$value->files['video'][$i]['src'] = $value->path . $val['src'];
 
 							// Check video extentions
-							if (!in_array(strtolower(JFile::getExt($val['src'])), $allowed_formats))
+							if (!in_array(strtolower(JFile::getExt($val['src'])), $allowedFormats))
 							{
 								$value->files['video_links'][] = $value->files['video'][$i];
 								unset($value->files['video'][$i]);
@@ -989,9 +991,9 @@ class KinoarhivModelMovie extends JModelForm
 					}
 				}
 
-				$tr_resolution = explode('x', $resolution);
-				$tr_height = $tr_resolution[1];
-				$value->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+				$trailerResolution = explode('x', $resolution);
+				$trailerHeight = $trailerResolution[1];
+				$value->player_height = floor(($trailerHeight * $result->player_width) / $trailerResolution[0]);
 
 				// Set default aspect ratio if it's not set
 				if ($value->dar == '')
@@ -1012,7 +1014,7 @@ class KinoarhivModelMovie extends JModelForm
 						}
 						else
 						{
-							if ($throttle_video_enable == 0)
+							if ($throttleVideoEnable == 0)
 							{
 								$_subtitles[$i]['file'] = $value->path . $subtitle['file'];
 							}
@@ -1039,7 +1041,7 @@ class KinoarhivModelMovie extends JModelForm
 						}
 						else
 						{
-							if ($throttle_video_enable == 0)
+							if ($throttleVideoEnable == 0)
 							{
 								$_chapters[$i] = $value->path . $chapter;
 							}
@@ -1081,9 +1083,9 @@ class KinoarhivModelMovie extends JModelForm
 		$id = is_null($id) ? $app->input->get('id', null, 'int') : $id;
 		$type = is_null($type) ? $type = $app->input->get('type', '') : $type;
 		$itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_img_enable = $params->get('throttle_image_enable', 0);
-		$throttle_video_enable = $params->get('throttle_video_enable', 0);
-		$allowed_formats = array('mp4', 'webm', 'ogv', 'flv');
+		$throttleImgEnable = $params->get('throttle_image_enable', 0);
+		$throttleVideoEnable = $params->get('throttle_video_enable', 0);
+		$allowedFormats = array('mp4', 'webm', 'ogv', 'flv');
 
 		if ($type == 'movie')
 		{
@@ -1092,11 +1094,11 @@ class KinoarhivModelMovie extends JModelForm
 				return (object) array();
 			}
 
-			$is_movie = 1;
+			$isMovie = 1;
 		}
 		else
 		{
-			$is_movie = 0;
+			$isMovie = 0;
 		}
 
 		$query = $db->getQuery(true)
@@ -1111,7 +1113,7 @@ class KinoarhivModelMovie extends JModelForm
 			->from($db->quoteName('#__ka_trailers', 'tr'))
 			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = tr.movie_id')
 			->where('tr.movie_id = ' . (int) $id . ' AND tr.state = 1 AND tr.access IN (' . $groups . ')')
-			->where('tr.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND tr.is_movie = ' . $is_movie)
+			->where('tr.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND tr.is_movie = ' . $isMovie)
 			->where('tr.frontpage = 1')
 			->setLimit(1, 0);
 
@@ -1130,9 +1132,9 @@ class KinoarhivModelMovie extends JModelForm
 
 		if (!empty($result->urls))
 		{
-			$urls_arr = explode("\n", $result->urls);
+			$urlsArr = explode("\n", $result->urls);
 
-			if (count($urls_arr) > 0)
+			if (count($urlsArr) > 0)
 			{
 				if (file_exists($params->get('media_trailers_root') . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot))
 				{
@@ -1155,7 +1157,7 @@ class KinoarhivModelMovie extends JModelForm
 				$result->files['chapters'] = array();
 				$result->files['video_links'] = array();
 
-				foreach ($urls_arr as $v)
+				foreach ($urlsArr as $v)
 				{
 					if (preg_match('#\[(url="(?P<url>.+?)")?(\stype="(?P<type>.+?)")?(\splayer="(?P<player>.+?)")?(\sresolution="(?P<resolution>.+?)")?(\skind="(?P<kind>.+?)")?(\ssrclang="(?P<srclang>.+?)")?(\slabel="(?P<label>.+?)")?(\sdefault="(?P<default>.+?)")?\]#i', $v, $m))
 					{
@@ -1168,16 +1170,16 @@ class KinoarhivModelMovie extends JModelForm
 							{
 								if (!empty($m['player']) && $m['player'] == 'true')
 								{
-									$in_player = true;
+									$inPlayer = true;
 								}
 								else
 								{
-									$in_player = false;
+									$inPlayer = false;
 								}
 							}
 							else
 							{
-								$in_player = false;
+								$inPlayer = false;
 							}
 
 							$resolution = (isset($m['resolution']) && !empty($m['resolution'])) ? $m['resolution'] : '';
@@ -1202,13 +1204,13 @@ class KinoarhivModelMovie extends JModelForm
 								}
 							}
 
-							$tr_resolution = explode('x', $resolution);
-							$tr_height = $tr_resolution[1];
-							$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+							$trailerResolution = explode('x', $resolution);
+							$trailerHeight = $trailerResolution[1];
+							$result->player_height = floor(($trailerHeight * $result->player_width) / $trailerResolution[0]);
 
 							if ($kind == '')
 							{
-								if ($in_player === true)
+								if ($inPlayer === true)
 								{
 									$result->files['video'][] = array(
 										'src'        => $url,
@@ -1253,7 +1255,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		else
 		{
-			if ($throttle_img_enable == 0)
+			if ($throttleImgEnable == 0)
 			{
 				$checking_path = JPath::clean(
 					$params->get('media_trailers_root') . '/' . $result->fs_alias . '/' . $id . '/' . $result->screenshot
@@ -1286,7 +1288,7 @@ class KinoarhivModelMovie extends JModelForm
 				);
 			}
 
-			if ($throttle_video_enable == 0)
+			if ($throttleVideoEnable == 0)
 			{
 				$video_fs_alias = rawurlencode($result->fs_alias);
 
@@ -1321,12 +1323,12 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				foreach ($result->files['video'] as $i => $val)
 				{
-					if ($throttle_video_enable == 0)
+					if ($throttleVideoEnable == 0)
 					{
 						$result->files['video'][$i]['src'] = $result->path . $val['src'];
 
 						// Check video extentions
-						if (!in_array(strtolower(JFile::getExt($val['src'])), $allowed_formats))
+						if (!in_array(strtolower(JFile::getExt($val['src'])), $allowedFormats))
 						{
 							$result->files['video_links'][] = $result->files['video'][$i];
 							unset($result->files['video'][$i]);
@@ -1362,9 +1364,9 @@ class KinoarhivModelMovie extends JModelForm
 				}
 			}
 
-			$tr_resolution = explode('x', $resolution);
-			$tr_height = $tr_resolution[1];
-			$result->player_height = floor(($tr_height * $result->player_width) / $tr_resolution[0]);
+			$trailerResolution = explode('x', $resolution);
+			$trailerHeight = $trailerResolution[1];
+			$result->player_height = floor(($trailerHeight * $result->player_width) / $trailerResolution[0]);
 
 			// Set default aspect ratio if it's not set
 			if ($result->dar == '')
@@ -1385,7 +1387,7 @@ class KinoarhivModelMovie extends JModelForm
 					}
 					else
 					{
-						if ($throttle_video_enable == 0)
+						if ($throttleVideoEnable == 0)
 						{
 							$_subtitles[$i]['file'] = $result->path . $subtitle['file'];
 						}
@@ -1412,7 +1414,7 @@ class KinoarhivModelMovie extends JModelForm
 					}
 					else
 					{
-						if ($throttle_video_enable == 0)
+						if ($throttleVideoEnable == 0)
 						{
 							$_chapters[$i] = $result->path . $chapter;
 						}

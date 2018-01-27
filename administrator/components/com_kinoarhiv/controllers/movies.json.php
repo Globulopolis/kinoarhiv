@@ -100,11 +100,11 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$app     = JFactory::getApplication();
-		$user    = JFactory::getUser();
-		$id      = $app->input->getInt('id', 0);
-		$ids     = $app->input->get('items', array(), 'array');
-		$new_ids = array();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->getInt('id', 0);
+		$ids    = $app->input->get('items', array(), 'array');
+		$newIDs = array();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.delete', 'com_kinoarhiv.movie.' . $id))
@@ -122,16 +122,16 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		// Get IDs from string
-		foreach ($ids as $key => $id)
+		foreach ($ids as $key => $_id)
 		{
-			$array = explode('_', $id['name']);
+			$array = explode('_', $_id['name']);
 			$total = count($array);
-			$new_ids[$key]['name_id'] = (int) $array[$total - 2];
-			$new_ids[$key]['type'] = (int) $array[$total - 1];
+			$newIDs[$key]['name_id'] = (int) $array[$total - 2];
+			$newIDs[$key]['type'] = (int) $array[$total - 1];
 		}
 
 		$model = $this->getModel('movie');
-		$result = $model->removeMovieCast($id, $new_ids);
+		$result = $model->removeMovieCast($id, $newIDs);
 
 		if (!$result)
 		{
@@ -160,11 +160,11 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$app     = JFactory::getApplication();
-		$user    = JFactory::getUser();
-		$id      = $app->input->getInt('id', 0);
-		$ids     = $app->input->get('items', array(), 'array');
-		$new_ids = array();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->getInt('id', 0);
+		$ids    = $app->input->get('items', array(), 'array');
+		$newIDs = array();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.delete', 'com_kinoarhiv.movie.' . $id))
@@ -185,14 +185,14 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		foreach ($ids as $id)
 		{
 			$_id = explode('_', $id['name']);
-			$new_ids[] = end($_id);
+			$newIDs[] = end($_id);
 		}
 
 		// Make sure the item ids are integers
-		$new_ids = Joomla\Utilities\ArrayHelper::toInteger($new_ids);
+		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
 		$model = $this->getModel('movie');
-		$result = $model->removeMovieAwards($new_ids);
+		$result = $model->removeMovieAwards($newIDs);
 
 		if (!$result)
 		{
@@ -221,11 +221,11 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$app     = JFactory::getApplication();
-		$user    = JFactory::getUser();
-		$id      = $app->input->getInt('id', 0);
-		$ids     = $app->input->get('items', array(), 'array');
-		$new_ids = array();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->getInt('id', 0);
+		$ids    = $app->input->get('items', array(), 'array');
+		$newIDs = array();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.delete', 'com_kinoarhiv.movie.' . $id))
@@ -246,14 +246,14 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		foreach ($ids as $id)
 		{
 			$_id = explode('_', $id['name']);
-			$new_ids[] = end($_id);
+			$newIDs[] = end($_id);
 		}
 
 		// Make sure the item ids are integers
-		$new_ids = Joomla\Utilities\ArrayHelper::toInteger($new_ids);
+		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
 		$model = $this->getModel('premiere');
-		$result = $model->remove($new_ids);
+		$result = $model->remove($newIDs);
 
 		if (!$result)
 		{
@@ -282,11 +282,11 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$app     = JFactory::getApplication();
-		$user    = JFactory::getUser();
-		$id      = $app->input->getInt('id', 0);
-		$ids     = $app->input->get('items', array(), 'array');
-		$new_ids = array();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->getInt('id', 0);
+		$ids    = $app->input->get('items', array(), 'array');
+		$newIDs = array();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.delete', 'com_kinoarhiv.movie.' . $id))
@@ -307,14 +307,14 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		foreach ($ids as $id)
 		{
 			$_id = explode('_', $id['name']);
-			$new_ids[] = end($_id);
+			$newIDs[] = end($_id);
 		}
 
 		// Make sure the item ids are integers
-		$new_ids = Joomla\Utilities\ArrayHelper::toInteger($new_ids);
+		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
 		$model = $this->getModel('release');
-		$result = $model->remove($new_ids);
+		$result = $model->remove($newIDs);
 
 		if (!$result)
 		{
@@ -352,8 +352,8 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			}
 		}
 
-		$fs_alias = rawurlencode(StringHelper::substr($alias, 0, 1));
+		$fsAlias = rawurlencode(StringHelper::substr($alias, 0, 1));
 
-		echo json_encode(array('success' => true, 'fs_alias' => $fs_alias));
+		echo json_encode(array('success' => true, 'fs_alias' => $fsAlias));
 	}
 }

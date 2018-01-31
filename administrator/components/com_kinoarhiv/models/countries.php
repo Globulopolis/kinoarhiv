@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelCountries extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = 'com_kinoarhiv.countries';
 
 	/**
@@ -234,18 +241,18 @@ class KinoarhivModelCountries extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['language_id']))
+		if (!empty($batchData['language_id']))
 		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
 		if (empty($fields))

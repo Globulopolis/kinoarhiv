@@ -108,7 +108,9 @@ class KinoarhivModelRelease extends JModelForm
 			$query = $db->getQuery(true);
 
 			$query->insert($db->quoteName('#__ka_releases'))
-				->columns($db->quoteName(array('id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering')))
+				->columns(
+					$db->quoteName(array('id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering'))
+				)
 				->values("'','" . (int) $data['country_id'] . "','" . (int) $data['vendor_id'] . "','" . (int) $data['movie_id'] . "','" . (int) $data['media_type'] . "','" . $db->escape($data['release_date']) . "','" . $db->escape($data['desc']) . "','" . $db->escape($data['language']) . "','" . (int) $data['ordering'] . "'");
 		}
 		else
@@ -136,9 +138,9 @@ class KinoarhivModelRelease extends JModelForm
 			// We need to store LastInsertID in session for later use in controller.
 			if (empty($data['id']))
 			{
-				$session_data = $app->getUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data');
-				$session_data['id'] = $db->insertid();
-				$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data', $session_data);
+				$sessionData = $app->getUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data');
+				$sessionData['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data', $sessionData);
 			}
 		}
 		catch (Exception $e)

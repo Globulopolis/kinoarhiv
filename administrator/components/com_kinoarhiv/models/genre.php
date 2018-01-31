@@ -150,6 +150,13 @@ class KinoarhivModelGenre extends JModelForm
 		}
 	}
 
+	/**
+	 * Removes genres from database.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		$app = JFactory::getApplication();
@@ -276,9 +283,9 @@ class KinoarhivModelGenre extends JModelForm
 			// We need to store LastInsertID in session for later use in controller.
 			if (empty($data['id']))
 			{
-				$session_data = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
-				$session_data['id'] = $db->insertid();
-				$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', $session_data);
+				$sessionData = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
+				$sessionData['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', $sessionData);
 			}
 		}
 		catch (Exception $e)
@@ -332,6 +339,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db = $this->getDbo();
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
 		$total = 0;
+		$queryResut = true;
 
 		// Check if control number is the same with selected.
 		if (count($ids) != $boxchecked)
@@ -343,7 +351,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db->lockTable('#__ka_genres');
 		$db->transactionStart();
 
-		foreach ($ids as $genre_id)
+		foreach ($ids as $genreID)
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_genres'));
@@ -351,21 +359,21 @@ class KinoarhivModelGenre extends JModelForm
 				$subquery = $db->getQuery(true)
 					->select('COUNT(genre_id)')
 					->from($db->quoteName('#__ka_rel_genres'))
-					->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id);
+					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID);
 
 			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
-				->where($db->quoteName('id') . ' = ' . (int) $genre_id . ';');
+				->where($db->quoteName('id') . ' = ' . (int) $genreID . ';');
 
 			$db->setQuery($query);
-			$query = $db->execute();
+			$queryResut = $db->execute();
 
-			if ($query === false)
+			if ($queryResut === false)
 			{
 				break;
 			}
 		}
 
-		if ($query === false)
+		if ($queryResut === false)
 		{
 			$db->transactionRollback();
 			$app->enqueueMessage('Commit failed!', 'error');
@@ -390,7 +398,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query === false)
+		if ($queryResut === false)
 		{
 			return false;
 		}
@@ -413,6 +421,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db = $this->getDbo();
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
 		$total = 0;
+		$queryResut = true;
 
 		// Check if control number is the same with selected.
 		if (count($ids) != $boxchecked)
@@ -424,7 +433,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db->lockTable('#__ka_music_genres');
 		$db->transactionStart();
 
-		foreach ($ids as $genre_id)
+		foreach ($ids as $genreID)
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_music_genres'));
@@ -432,21 +441,21 @@ class KinoarhivModelGenre extends JModelForm
 				$subquery = $db->getQuery(true)
 					->select('COUNT(genre_id)')
 					->from($db->quoteName('#__ka_music_rel_genres'))
-					->where($db->quoteName('genre_id') . ' = ' . (int) $genre_id . ' AND ' . $db->quoteName('type') . ' = 0');
+					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID . ' AND ' . $db->quoteName('type') . ' = 0');
 
 			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
-				->where($db->quoteName('id') . ' = ' . (int) $genre_id . ';');
+				->where($db->quoteName('id') . ' = ' . (int) $genreID . ';');
 
 			$db->setQuery($query);
-			$query = $db->execute();
+			$queryResut = $db->execute();
 
-			if ($query === false)
+			if ($queryResut === false)
 			{
 				break;
 			}
 		}
 
-		if ($query === false)
+		if ($queryResut === false)
 		{
 			$db->transactionRollback();
 			$app->enqueueMessage('Commit failed!', 'error');
@@ -471,7 +480,7 @@ class KinoarhivModelGenre extends JModelForm
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query === false)
+		if ($queryResut === false)
 		{
 			return false;
 		}

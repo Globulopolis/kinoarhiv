@@ -98,7 +98,7 @@ else
 						type: 'alert'
 					}],
 					'#review-form',
-					{place: 'insertAfter', replace: true}
+					{replace: true}
 				);
 
 				window.setTimeout(function(){

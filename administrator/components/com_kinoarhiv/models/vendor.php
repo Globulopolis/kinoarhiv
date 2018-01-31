@@ -119,6 +119,13 @@ class KinoarhivModelVendor extends JModelForm
 		}
 	}
 
+	/**
+	 * Removes vendors from database.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		$app = JFactory::getApplication();
@@ -159,7 +166,7 @@ class KinoarhivModelVendor extends JModelForm
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$company_name = trim($data['company_name']);
+		$companyName = trim($data['company_name']);
 
 		// Automatic handling of alias for empty fields
 		if (in_array($app->input->get('task'), array('vendors.apply', 'vendors.save', 'vendors.save2new')) && (int) $app->input->get('id') == 0)
@@ -168,11 +175,11 @@ class KinoarhivModelVendor extends JModelForm
 			{
 				if (JFactory::getConfig()->get('unicodeslugs') == 1)
 				{
-					$data['company_name_alias'] = JFilterOutput::stringUrlUnicodeSlug($company_name);
+					$data['company_name_alias'] = JFilterOutput::stringUrlUnicodeSlug($companyName);
 				}
 				else
 				{
-					$data['company_name_alias'] = JFilterOutput::stringURLSafe($company_name);
+					$data['company_name_alias'] = JFilterOutput::stringURLSafe($companyName);
 				}
 			}
 		}
@@ -184,7 +191,7 @@ class KinoarhivModelVendor extends JModelForm
 
 			$query->select('COUNT(id)')
 				->from($db->quoteName('#__ka_vendors'))
-				->where($db->quoteName('company_name') . " = '" . $db->escape($company_name) . "'");
+				->where($db->quoteName('company_name') . " = '" . $db->escape($companyName) . "'");
 
 			$db->setQuery($query);
 			$count = $db->loadResult();
@@ -200,14 +207,14 @@ class KinoarhivModelVendor extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_vendors'))
 				->columns($db->quoteName(array('id', 'company_name', 'company_name_alias', 'description', 'language', 'state')))
-				->values("'','" . $db->escape($company_name) . "','" . $data['company_name_alias'] . "','" . $db->escape($data['description']) . "','" . $db->escape($data['language']) . "','" . $data['state'] . "'");
+				->values("'','" . $db->escape($companyName) . "','" . $data['company_name_alias'] . "','" . $db->escape($data['description']) . "','" . $db->escape($data['language']) . "','" . $data['state'] . "'");
 		}
 		else
 		{
 			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__ka_vendors'))
-				->set($db->quoteName('company_name') . " = '" . $db->escape($company_name) . "'")
+				->set($db->quoteName('company_name') . " = '" . $db->escape($companyName) . "'")
 				->set($db->quoteName('company_name_alias') . " = '" . $data['company_name_alias'] . "'")
 				->set($db->quoteName('description') . " = '" . $db->escape($data['description']) . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
@@ -224,9 +231,9 @@ class KinoarhivModelVendor extends JModelForm
 			// We need to store LastInsertID in session for later use in controller.
 			if (empty($data['id']))
 			{
-				$session_data = $app->getUserState('com_kinoarhiv.vendors.' . $user->id . '.edit_data');
-				$session_data['id'] = $db->insertid();
-				$app->setUserState('com_kinoarhiv.vendors.' . $user->id . '.edit_data', $session_data);
+				$sessionData = $app->getUserState('com_kinoarhiv.vendors.' . $user->id . '.edit_data');
+				$sessionData['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.vendors.' . $user->id . '.edit_data', $sessionData);
 			}
 		}
 		catch (Exception $e)

@@ -219,7 +219,10 @@ Aurora = window.Aurora || {};
 		 * Applied only if attachTo is set to 'document'.
 		 */
 		place: '',
-		replace: false // If true, replace existing message(s), so only one message always be visible.
+		replace: false, // If true, replace existing message(s), so only one message always be visible.
+		onBeforeShow: function(){},
+		onAfterShow: function(){},
+		onRemove: function(){}
 	};
 
 	/*
@@ -282,8 +285,8 @@ Aurora = window.Aurora || {};
 				}
 			} else {
 				switch (place) {
-					case 'insertAfter':
-						insertAfter(container, node);
+					case 'prependTo':
+						prependTo(container, node);
 						break;
 					case 'insertBefore':
 						insertBefore(container, node);
@@ -292,7 +295,7 @@ Aurora = window.Aurora || {};
 						appendTo(container, node);
 						break;
 					default:
-						prependTo(container, node);
+						insertAfter(container, node);
 				}
 			}
 		}
@@ -313,70 +316,67 @@ Aurora = window.Aurora || {};
 		var container = document.createElement('div'),
 			options = extend(default_options, user_options),
 			attach_to = options.attachTo.toLowerCase(),
-			msg_nodes = '',
-			last_child = '';
+			msg_nodes, last_child = '', selector = '';
+
+		if (!empty(node) && typeof node === 'string') {
+			selector = node;
+			node = document.querySelectorAll(node)[0];
+		} else if (!empty(node) && typeof node === 'object') {
+			// Get first matched in set
+			node = node[0];
+			selector = '';
+		} else {
+			selector = 'body';
+			node = document.querySelector('body');
+		}
 
 		container.innerHTML = buildMessage(data);
 		container.setAttribute('data-au-attachto', attach_to);
+		container.setAttribute('data-au-selector', selector);
+		container.className = 'ui-message ui-pos-' + attach_to + ' ' + options.position;
+		msg_nodes = document.querySelectorAll('.ui-message[data-au-attachto="' + attach_to + '"]');
 
-		if (attach_to === 'window') {
-			msg_nodes = document.querySelectorAll('.ui-message[data-au-attachto="window"]');
-			container.className = 'ui-message ui-pos-window ' + options.position;
+		if (options.replace === true) {
+			this.remove(msg_nodes, options);
+		}
 
-			if (options.replace) {
-				this.remove(msg_nodes);
-			}
+		options.onBeforeShow();
 
-			if (msg_nodes.length > 0) {
-				last_child = document.querySelectorAll('.ui-message[data-au-attachto="window"] .ui-message-body:last-child');
+		if (msg_nodes.length > 0) {
+			// Get a last message from messages stack and insert after it.
+			last_child = document.querySelectorAll('.ui-message[data-au-selector="' + selector + '"] .ui-message-body:last-child');
 
-				if (last_child.length === 0) {
-					insertMessage(container, document.body);
-				} else {
-					insertAfter(container.firstChild, last_child[0]);
-				}
-			} else {
-				insertMessage(container, document.body);
-			}
-		} else {
-			if (!empty(node)) {
-				if (typeof node === 'string') {
-					node = document.querySelectorAll(node)[0];
-				} else if (typeof node === 'object') {
-					node = node[0];
-				}
-			} else {
-				node = document.querySelector('body');
-			}
-
-			msg_nodes = document.querySelectorAll('.ui-message[data-au-attachto="document"]');
-			container.className = 'ui-message';
-
-			if (options.replace) {
-				this.remove(msg_nodes);
-			}
-
-			if (msg_nodes.length > 0) {
-				last_child = document.querySelectorAll('.ui-message[data-au-attachto="document"] .ui-message-body:last-child');
-
-				if (last_child.length === 0) {
+			if ((attach_to === 'window' && last_child.length > 0) || (attach_to === 'document' && last_child.length > 0)) {
+				if (document.querySelectorAll('.ui-message[data-au-selector="' + selector + '"]').length > 1) {
 					insertMessage(container, node, options.place);
 				} else {
 					insertAfter(container.firstChild, last_child[0]);
 				}
+			} else if (attach_to === 'window' && last_child.length === 0) {
+				insertMessage(container, document.body);
+			} else {
+				insertMessage(container, node, options.place);
+			}
+		} else {
+			if (attach_to === 'window') {
+				insertMessage(container, document.body);
 			} else {
 				insertMessage(container, node, options.place);
 			}
 		}
+
+		options.onAfterShow();
 	};
 
 	/**
 	 * Remove messages from the DOM.
 	 *
-	 * @param   {NodeList|string}  element  CSS selector or NodeList returned by querySelector(All).
+	 * @param   {NodeList|string}  element       CSS selector or NodeList returned by querySelector(All).
+	 * @param   {object}           user_options  Additional options.
 	 */
-	Aurora.remove = function(element){
-		var nodes = {};
+	Aurora.remove = function(element, user_options){
+		var nodes = {},
+			options = extend(default_options, user_options);
 
 		if (typeof element === 'string') {
 			nodes = empty(element) ? document.querySelectorAll('.ui-message') : document.querySelectorAll(element);
@@ -388,6 +388,7 @@ Aurora = window.Aurora || {};
 
 		if (Object.keys(nodes).length > 0) {
 			nodes.forEach(function(node){
+				options.onRemove();
 				remove(node);
 			});
 		}
@@ -402,5 +403,7 @@ Aurora = window.Aurora || {};
 		});
 	}
 
-	init();
+	document.addEventListener("DOMContentLoaded", function() {
+		init();
+	});
 }(Aurora, document));

@@ -21,6 +21,13 @@ class KinoarhivViewMovie extends JViewLegacy
 {
 	protected $items;
 
+	/**
+	 * The JForm object
+	 *
+	 * @var  JForm
+	 *
+	 * @since 3.0
+	 */
 	protected $form;
 
 	protected $params;
@@ -111,9 +118,10 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 
 		$items->set('img_folder', $imgFolder);
-		$this->items = $items;
-		$this->form = $form;
+		$this->items  = $items;
+		$this->form   = $form;
 		$this->params = $params;
+		$this->lang   = JFactory::getLanguage();
 
 		if ($this->getLayout() !== 'modal')
 		{

@@ -110,7 +110,7 @@ KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/wysihtml/l
 						type: 'alert'
 					}],
 					'#review-form',
-					{place: 'insertAfter', replace: true}
+					{replace: true}
 				);
 
 				editor.enable();

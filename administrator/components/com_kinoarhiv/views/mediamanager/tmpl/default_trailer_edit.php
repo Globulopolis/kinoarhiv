@@ -37,7 +37,7 @@ $this->trailer_id = $trailerID[0];
 	};
 
 	jQuery(document).ready(function($){
-		var msgOptions = {place: 'insertAfter', replace: true};
+		var msgOptions = {replace: true};
 
 		// Bind actions to the URLs modal button
 		$('.cmd-form-urls').click(function(e){

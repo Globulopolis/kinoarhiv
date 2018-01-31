@@ -10,7 +10,7 @@
  */
 
 jQuery(document).ready(function($){
-	var msgOptions = {place: 'insertAfter', replace: true};
+	var msgOptions = {replace: true};
 
 	if ($.fn.lazyload) {
 		$('img.lazy').lazyload({

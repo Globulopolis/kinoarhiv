@@ -18,10 +18,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox/', true, true);
 KAComponentHelperBackend::loadMediamanagerAssets();
 
-$this->input  = JFactory::getApplication()->input;
-$this->id     = $this->form->getValue('id');
-$lang         = JFactory::getLanguage();
-$navgridOpts  = array(
+$this->input = JFactory::getApplication()->input;
+$this->id    = $this->form->getValue('id');
+$navgridOpts = array(
 	'btn' => array(
 		'lang' => array(
 			'addtext'     => JText::_('JTOOLBAR_ADD'), 'edittext' => JText::_('JTOOLBAR_EDIT'),
@@ -30,8 +29,8 @@ $navgridOpts  = array(
 		)
 	)
 );
-$token        = JSession::getFormToken();
-$lang_request = substr($lang->getTag(), 0, 2);
+$token       = JSession::getFormToken();
+$languageTag = substr($this->lang->getTag(), 0, 2);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -81,7 +80,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				url: 'index.php?option=com_kinoarhiv&task=mediamanager.removePoster&section=movie&type=gallery&tab=2&id=<?php echo $this->id; ?>&item_id[]=' + item_id + '&format=json',
 				data: {'<?php echo $token ?>': 1}
 			}).done(function(response){
-				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {replace: true});
 
 				$('a.img-preview').attr('href', no_cover);
 				$('a.img-preview img').attr({
@@ -92,7 +91,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				});
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function (xhr, status, error) {
-				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		});
@@ -103,7 +102,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=movies&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
 					.done(function(response){
 						if (Object.keys(response).length > 0) {
-							Aurora.message([{text: '<?php echo JText::_('COM_KA_MOVIES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
+							Aurora.message([{text: '<?php echo JText::_('COM_KA_MOVIES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {replace: true});
 						}
 					});
 			}
@@ -145,7 +144,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 			Kinoarhiv.showLoading('show', $('body'));
 
 			$.ajax({
-				url: '<?php echo JUri::root(); ?>index.php?option=com_kinoarhiv&task=api.parser&lang=<?php echo $lang_request; ?>&format=raw&' + key + '[action]=movie.info&' + key + '[data]=rating'
+				url: '<?php echo JUri::root(); ?>index.php?option=com_kinoarhiv&task=api.parser&lang=<?php echo $languageTag; ?>&format=raw&' + key + '[action]=movie.info&' + key + '[data]=rating'
 			}).done(function(response){
 				if (typeof response === 'string') {
 					response = JSON.parse(response);
@@ -162,7 +161,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function(xhr, status, error){
-				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		});
@@ -179,7 +178,7 @@ $lang_request = substr($lang->getTag(), 0, 2);
 		 */
 		function updateRatingImage(id, source, votes, votesum) {
 			$.ajax({
-				url: '<?php echo JUri::root(); ?>index.php?option=com_kinoarhiv&task=api.updateRatingImage&lang=<?php echo $lang_request; ?>&format=raw&id=' + id + '&source=' + source + '&votes=' + votes + '&votesum=' + votesum
+				url: '<?php echo JUri::root(); ?>index.php?option=com_kinoarhiv&task=api.updateRatingImage&lang=<?php echo $languageTag; ?>&format=raw&id=' + id + '&source=' + source + '&votes=' + votes + '&votesum=' + votesum
 			}).done(function(response){
 				if (typeof response === 'string') {
 					response = JSON.parse(response);
@@ -193,12 +192,12 @@ $lang_request = substr($lang->getTag(), 0, 2);
 					$('.modal-body', modal).html('<div class="container-fluid"><img src="' + response.image + '"/></div>');
 					modal.modal('toggle');
 				} else {
-					Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
+					Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {replace: true});
 				}
 
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function(xhr, status, error){
-				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		}
@@ -225,10 +224,9 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				<?php
 				if ($this->id != 0)
 				{
-					$lang = JFactory::getLanguage();
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieCastAndCrew&format=json&showAll=1'
-							. '&lang=' . $lang_request . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieCast&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieCast&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieCast&format=json&id=' . $this->id),
@@ -308,10 +306,9 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				<?php
 				if ($this->id != 0)
 				{
-					$lang = JFactory::getLanguage();
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json&showAll=1'
-							. '&lang=' . $lang_request . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieAwards&format=json&id=' . $this->id),
@@ -373,10 +370,9 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				<?php
 				if ($this->id != 0)
 				{
-					$lang = JFactory::getLanguage();
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=moviePremieres&format=json&showAll=1'
-							. '&lang=' . $lang_request . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMoviePremieres&format=json&id=' . $this->id),
@@ -435,10 +431,9 @@ $lang_request = substr($lang->getTag(), 0, 2);
 				<?php
 				if ($this->id != 0)
 				{
-					$lang = JFactory::getLanguage();
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json&showAll=1'
-							. '&lang=' . $lang_request . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieReleases&format=json&id=' . $this->id),

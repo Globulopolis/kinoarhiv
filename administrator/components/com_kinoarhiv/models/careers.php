@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelCareers extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = 'com_kinoarhiv.careers';
 
 	/**
@@ -214,7 +221,7 @@ class KinoarhivModelCareers extends JModelList
 	public function saveOrder($data)
 	{
 		$db = $this->getDbo();
-		$query_result = true;
+		$queryResult = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_names_career');
 		$db->transactionStart();
@@ -230,12 +237,12 @@ class KinoarhivModelCareers extends JModelList
 
 			if ($db->execute() === false)
 			{
-				$query_result = false;
+				$queryResult = false;
 				break;
 			}
 		}
 
-		if ($query_result === false)
+		if ($queryResult === false)
 		{
 			$db->transactionRollback();
 		}
@@ -247,7 +254,7 @@ class KinoarhivModelCareers extends JModelList
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		return (bool) $query_result;
+		return (bool) $queryResult;
 	}
 
 	/**
@@ -262,18 +269,18 @@ class KinoarhivModelCareers extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['language_id']))
+		if (!empty($batchData['language_id']))
 		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
 		if (empty($fields))

@@ -24,27 +24,27 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to save image information into DB. Accept gallery items for movie and poster for trailer.
 	 *
-	 * @param   string   $section      Section. (can be: movie, name, trailer, soundtrack)
-	 * @param   integer  $item_id      Item ID(for trailer it's a trailer ID).
-	 * @param   string   $filename     System filename.
-	 * @param   array    $image_sizes  Array with the sizes. array(width, height)
-	 * @param   mixed    $item_type    Item type.
-	 *                                 For movie: 2 - poster, 1 - wallpaper, 3 - screenshot.
-	 *                                 For name: 2 - poster, 1 - wallpaper, 3 - photo.
-	 *                                 For trailer: null
-	 * @param   integer  $frontpage    Item published on frontpage.
+	 * @param   string   $section     Section. (can be: movie, name, trailer, soundtrack)
+	 * @param   integer  $itemID      Item ID(for trailer it's a trailer ID).
+	 * @param   string   $filename    System filename.
+	 * @param   array    $imageSizes  Array with the sizes. array(width, height)
+	 * @param   mixed    $itemType    Item type.
+	 *                                For movie: 2 - poster, 1 - wallpaper, 3 - screenshot.
+	 *                                For name: 2 - poster, 1 - wallpaper, 3 - photo.
+	 *                                For trailer: null
+	 * @param   integer  $frontpage   Item published on frontpage.
 	 *
 	 * @return  mixed  Last insert ID on success, false otherwise.
 	 *
 	 * @since   3.0
 	 */
-	public function saveImageInDB($section, $item_id, $filename, $image_sizes = array(), $item_type = null, $frontpage = 0)
+	public function saveImageInDB($section, $itemID, $filename, $imageSizes = array(), $itemType = null, $frontpage = 0)
 	{
-		$app         = JFactory::getApplication();
-		$db          = $this->getDbo();
-		$image_sizes = (count($image_sizes) == 0) ? array(0 => 0, 1 => 0) : $image_sizes;
-		$dimension   = floor($image_sizes[0]) . 'x' . floor($image_sizes[1]);
-		$insert_id   = '';
+		$app        = JFactory::getApplication();
+		$db         = $this->getDbo();
+		$imageSizes = (count($imageSizes) == 0) ? array(0 => 0, 1 => 0) : $imageSizes;
+		$dimension  = floor($imageSizes[0]) . 'x' . floor($imageSizes[1]);
+		$insertID   = '';
 
 		if ($section == 'movie')
 		{
@@ -52,13 +52,13 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_movies_gallery'), 'id')
 				->columns($db->quoteName(array('id', 'filename', 'dimension', 'movie_id', 'type', 'frontpage', 'state')))
-				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $item_id . "', '" . (int) $item_type . "', '" . (int) $frontpage . "', '1'");
+				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $itemID . "', '" . (int) $itemType . "', '" . (int) $frontpage . "', '1'");
 			$db->setQuery($query);
 
 			try
 			{
 				$db->execute();
-				$insert_id = $db->insertid();
+				$insertID = $db->insertid();
 			}
 			catch (RuntimeException $e)
 			{
@@ -74,8 +74,8 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 				$query->update($db->quoteName('#__ka_movies_gallery'))
 					->set($db->quoteName('frontpage') . " = 0")
-					->where($db->quoteName('movie_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 2')
-					->where($db->quoteName('id') . ' != ' . (int) $insert_id);
+					->where($db->quoteName('movie_id') . ' = ' . (int) $itemID . ' AND ' . $db->quoteName('type') . ' = 2')
+					->where($db->quoteName('id') . ' != ' . (int) $insertID);
 				$db->setQuery($query);
 
 				try
@@ -96,13 +96,13 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_names_gallery'), 'id')
 				->columns($db->quoteName(array('id', 'filename', 'dimension', 'name_id', 'type', 'frontpage', 'state')))
-				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $item_id . "', '" . (int) $item_type . "', '" . (int) $frontpage . "', '1'");
+				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $itemID . "', '" . (int) $itemType . "', '" . (int) $frontpage . "', '1'");
 			$db->setQuery($query);
 
 			try
 			{
 				$db->execute();
-				$insert_id = $db->insertid();
+				$insertID = $db->insertid();
 			}
 			catch (RuntimeException $e)
 			{
@@ -118,8 +118,8 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 				$query->update($db->quoteName('#__ka_names_gallery'))
 					->set($db->quoteName('frontpage') . " = 0")
-					->where($db->quoteName('name_id') . ' = ' . (int) $item_id . ' AND ' . $db->quoteName('type') . ' = 3')
-					->where($db->quoteName('id') . ' != ' . (int) $insert_id);
+					->where($db->quoteName('name_id') . ' = ' . (int) $itemID . ' AND ' . $db->quoteName('type') . ' = 3')
+					->where($db->quoteName('id') . ' != ' . (int) $insertID);
 				$db->setQuery($query);
 
 				try
@@ -140,7 +140,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$query->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('screenshot') . " = '" . $db->escape($filename) . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
+				->where($db->quoteName('id') . ' = ' . (int) $itemID);
 			$db->setQuery($query);
 
 			try
@@ -159,7 +159,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			return false;
 		}
 
-		return $insert_id;
+		return $insertID;
 	}
 
 	/**
@@ -232,7 +232,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 
 		$db = $this->getDbo();
-		$item_id = $app->input->get('item_id', null, 'array');
+		$itemID = $app->input->get('item_id', null, 'array');
 		$query = $db->getQuery(true);
 
 		$query->select(
@@ -256,7 +256,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$query->select($db->quoteName('ag.title', 'access_level'))
 			->leftJoin($db->quoteName('#__viewlevels', 'ag') . ' ON ag.id = g.access');
 
-		$query->where($db->quoteName('g.id') . ' = ' . (int) $item_id[0]);
+		$query->where($db->quoteName('g.id') . ' = ' . (int) $itemID[0]);
 
 		$db->setQuery($query);
 
@@ -266,7 +266,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			if ($result['trailer'])
 			{
-				$files = $this->getTrailerFiles('screenshot, video, subtitles, chapters', (int) $item_id[0], '', '');
+				$files = $this->getTrailerFiles('screenshot, video, subtitles, chapters', (int) $itemID[0], '', '');
 				$result['trailer']->video = json_encode($files['video']);
 				$result['trailer']->subtitles = json_encode($files['subtitles']);
 				$result['trailer']->chapters = json_encode($files['chapters']);
@@ -283,18 +283,18 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to get a list of gallery files.
 	 *
-	 * @param   string   $section   Type of the item. Can be 'movie' or 'name'.
-	 * @param   string   $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
-	 * @param   array    $item_ids  Items.
-	 * @param   boolean  $item      Select gallery items by parent ID(movie id or name id). Default - select by gallery
-	 *                              item ID($item_ids an gallery IDs).
+	 * @param   string   $section  Type of the item. Can be 'movie' or 'name'.
+	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
+	 * @param   array    $itemIDs  Items.
+	 * @param   boolean  $item     Select gallery items by parent ID(movie id or name id). Default - select by gallery
+	 *                             item ID($item_ids an gallery IDs).
 	 *
 	 * @return  object
 	 *
 	 * @throws  RuntimeException
 	 * @since   3.1
 	 */
-	public function getGalleryFiles($section = '', $type = '', $item_ids = array(), $item = false)
+	public function getGalleryFiles($section = '', $type = '', $itemIDs = array(), $item = false)
 	{
 		$db      = $this->getDbo();
 		$input   = JFactory::getApplication()->input;
@@ -320,11 +320,11 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 		if (!$item)
 		{
-			$query->where($db->quoteName('id') . ' IN (' . implode(',', $item_ids) . ')');
+			$query->where($db->quoteName('id') . ' IN (' . implode(',', $itemIDs) . ')');
 		}
 		else
 		{
-			$query->where($db->quoteName($section . '_id') . ' IN (' . implode(',', $item_ids) . ')');
+			$query->where($db->quoteName($section . '_id') . ' IN (' . implode(',', $itemIDs) . ')');
 		}
 
 		$db->setQuery($query);
@@ -460,15 +460,15 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Remove a file associated with trailer.
 	 *
-	 * @param   string   $type     Content type
-	 * @param   integer  $item_id  Trailer ID
-	 * @param   mixed    $item     File ID or array of IDs
+	 * @param   string   $type    Content type
+	 * @param   integer  $itemID  Trailer ID
+	 * @param   mixed    $items   File ID or array of IDs
 	 *
 	 * @return  string
 	 *
 	 * @since   3.0
 	 */
-	public function removeTrailerFiles($type, $item_id, $item = null)
+	public function removeTrailerFiles($type, $itemID, $items = null)
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
@@ -476,7 +476,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$query = $db->getQuery(true)
 			->select($db->quoteName(array('movie_id', 'screenshot', 'video', 'subtitles', 'chapters')))
 			->from($db->quoteName('#__ka_trailers'))
-			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+			->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 		$db->setQuery($query);
 
@@ -495,28 +495,28 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		{
 			$result = json_decode($result, true);
 
-			if (!is_array($item))
+			if (!is_array($items))
 			{
-				unset($result[$item]);
+				unset($result[$items]);
 			}
 			else
 			{
 				foreach ($result as $key => $value)
 				{
-					if (in_array($key, $item))
+					if (in_array($key, $items))
 					{
 						unset($result[$key]);
 					}
 				}
 			}
 
-			$result_obj = ArrayHelper::toObject($result);
-			$json = json_encode($result_obj);
+			$resultObj = ArrayHelper::toObject($result);
+			$json = json_encode($resultObj);
 
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('video') . " = '" . $json . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
+				->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 			$db->setQuery($query);
 
@@ -537,28 +537,28 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		{
 			$result = json_decode($result, true);
 
-			if (!is_array($item))
+			if (!is_array($items))
 			{
-				unset($result[$item]);
+				unset($result[$items]);
 			}
 			else
 			{
 				foreach ($result as $key => $value)
 				{
-					if (in_array($key, $item))
+					if (in_array($key, $items))
 					{
 						unset($result[$key]);
 					}
 				}
 			}
 
-			$result_obj = ArrayHelper::toObject($result);
-			$json = json_encode($result_obj);
+			$resultObj = ArrayHelper::toObject($result);
+			$json = json_encode($resultObj);
 
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('subtitles') . " = '" . $json . "'")
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
+				->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 			$db->setQuery($query);
 
@@ -580,7 +580,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('chapters') . " = '{}'")
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
+				->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 			$db->setQuery($query);
 
@@ -602,7 +602,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_trailers'))
 				->set($db->quoteName('screenshot') . " = ''")
-				->where($db->quoteName('id') . ' = ' . (int) $item_id);
+				->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 			$db->setQuery($query);
 
@@ -711,9 +711,9 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 					// We need to store LastInsertID in session for later use in controller.
 					if (empty($data['item_id']))
 					{
-						$session_data = $app->getUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data');
-						$session_data['trailer']['item_id'] = $db->insertid();
-						$app->setUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data', $session_data);
+						$sessionData = $app->getUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data');
+						$sessionData['trailer']['item_id'] = $db->insertid();
+						$app->setUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data', $sessionData);
 					}
 				}
 				catch (Exception $e)
@@ -807,22 +807,22 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Saves the manually set order of files on trailers edit page.
 	 *
-	 * @param   integer  $item_id  Trailer ID
-	 * @param   array    $items    Array of items to sort.
-	 * @param   string   $type     Content type.
+	 * @param   integer  $itemID  Trailer ID
+	 * @param   array    $items   Array of items to sort.
+	 * @param   string   $type    Content type.
 	 *
 	 * @return  string
 	 *
 	 * @since   3.0
 	 */
-	public function saveOrderTrailerFiles($item_id, $items, $type)
+	public function saveOrderTrailerFiles($itemID, $items, $type)
 	{
 		$db = $this->getDbo();
 
 		$query = $db->getQuery(true)
 			->select($db->quoteName($type))
 			->from($db->quoteName('#__ka_trailers'))
-			->where($db->quoteName('id') . ' = ' . $item_id);
+			->where($db->quoteName('id') . ' = ' . $itemID);
 
 		$db->setQuery($query);
 
@@ -840,21 +840,21 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			return false;
 		}
 
-		$result_arr = json_decode($result, true);
-		$new_arr = (object) array();
+		$resultArr = json_decode($result, true);
+		$newArr = (object) array();
 
-		foreach ($items as $new_index => $old_index)
+		foreach ($items as $newIndex => $oldIndex)
 		{
-			foreach ($result_arr as $value)
+			foreach ($resultArr as $value)
 			{
-				$new_arr->$new_index = $result_arr[$old_index];
+				$newArr->$newIndex = $resultArr[$oldIndex];
 			}
 		}
 
 		$query = $db->getQuery(true)
 			->update($db->quoteName('#__ka_trailers'))
-			->set($db->quoteName($type) . " = '" . json_encode($new_arr) . "'")
-			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+			->set($db->quoteName($type) . " = '" . json_encode($newArr) . "'")
+			->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 		$db->setQuery($query);
 
@@ -967,19 +967,19 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 */
 	public function saveFileinfoData($data, $options = array())
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$type = array_key_exists('list', $options) ? $options['list'] : $app->input->get('list', '', 'word');
-		$id = $app->input->get('id', 0, 'int');
-		$item_id = $app->input->get('item_id', 0, 'int');
-		$item = $app->input->get('item', null, 'int');
-		$is_new = array_key_exists('new', $options) ? $options['new'] : $app->input->get('new', 0, 'int');
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$type   = array_key_exists('list', $options) ? $options['list'] : $app->input->get('list', '', 'word');
+		$id     = $app->input->get('id', 0, 'int');
+		$itemID = $app->input->get('item_id', 0, 'int');
+		$item   = $app->input->get('item', null, 'int');
+		$isNew  = array_key_exists('new', $options) ? $options['new'] : $app->input->get('new', 0, 'int');
 
 		// Select existing data
 		$query = $db->getQuery(true)
 			->select($db->quoteName($type))
 			->from($db->quoteName('#__ka_trailers'))
-			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+			->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 		$db->setQuery($query);
 
@@ -989,7 +989,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			if (empty($result))
 			{
-				$is_new = 1;
+				$isNew = 1;
 			}
 		}
 		catch (RuntimeException $e)
@@ -1002,16 +1002,16 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		if ($type == 'video')
 		{
 			$files = json_decode($result, true);
-			$new_filename = JPath::clean($data['src']);
+			$newFilename = JPath::clean($data['src']);
 			$file = array(
-				'src'        => $new_filename,
+				'src'        => $newFilename,
 				'type'       => $data['type'],
 				'resolution' => trim($data['resolution'])
 			);
 
-			if ($is_new == 0)
+			if ($isNew == 0)
 			{
-				$old_filename = JPath::clean($files[$item]['src']);
+				$oldFilename = JPath::clean($files[$item]['src']);
 				$files[$item] = $file;
 			}
 			else
@@ -1019,22 +1019,22 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				$files[] = $file;
 			}
 
-			$file_obj = json_encode((object) $files);
+			$fileObj = json_encode((object) $files);
 		}
 		elseif ($type == 'subtitles')
 		{
 			$files = json_decode($result, true);
-			$new_filename = JPath::clean($data['file']);
+			$newFilename = JPath::clean($data['file']);
 			$file = array(
-				'file'      => $new_filename,
+				'file'      => $newFilename,
 				'lang'      => trim($data['lang']),
 				'lang_code' => $data['lang_code'],
 				'default'   => (bool) $data['default']
 			);
 
-			if ($is_new == 0)
+			if ($isNew == 0)
 			{
-				$old_filename = JPath::clean($files[$item]['file']);
+				$oldFilename = JPath::clean($files[$item]['file']);
 				$files[$item] = $file;
 			}
 			else
@@ -1055,30 +1055,30 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				}
 			}
 
-			$file_obj = json_encode((object) $files);
+			$fileObj = json_encode((object) $files);
 		}
 		elseif ($type == 'chapters')
 		{
 			$files = json_decode($result, true);
 
-			if ($is_new == 0)
+			if ($isNew == 0)
 			{
-				$old_filename = JPath::clean($files['file']);
+				$oldFilename = JPath::clean($files['file']);
 			}
 
-			$new_filename = JPath::clean($data['file']);
-			$files['file'] = $new_filename;
-			$file_obj = json_encode((object) $files);
+			$newFilename = JPath::clean($data['file']);
+			$files['file'] = $newFilename;
+			$fileObj = json_encode((object) $files);
 		}
 		elseif ($type == 'screenshot')
 		{
-			if ($is_new == 0)
+			if ($isNew == 0)
 			{
-				$old_filename = JPath::clean($result);
+				$oldFilename = JPath::clean($result);
 			}
 
-			$new_filename = JPath::clean($data['file']);
-			$file_obj = $new_filename;
+			$newFilename = JPath::clean($data['file']);
+			$fileObj = $newFilename;
 		}
 		else
 		{
@@ -1087,31 +1087,31 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			return false;
 		}
 
-		if ($is_new == 0)
+		if ($isNew == 0)
 		{
 			// Rename the file
 			$path = KAContentHelper::getPath('movie', 'trailers', null, $id);
 
-			if ($old_filename !== $new_filename)
+			if ($oldFilename !== $newFilename)
 			{
-				if (is_file($path . $old_filename))
+				if (is_file($path . $oldFilename))
 				{
-					if (@rename($path . $old_filename, $path . $new_filename) === false)
+					if (@rename($path . $oldFilename, $path . $newFilename) === false)
 					{
 						$app->enqueueMessage('Error while renaming file!', 'error');
 					}
 				}
 				else
 				{
-					$app->enqueueMessage('Error while renaming file! File ' . $old_filename . ' not found', 'error');
+					$app->enqueueMessage('Error while renaming file! File ' . $oldFilename . ' not found', 'error');
 				}
 			}
 		}
 
 		$query = $db->getQuery(true)
 			->update($db->quoteName('#__ka_trailers'))
-			->set($db->quoteName($type) . " = '" . $db->escape($file_obj) . "'")
-			->where($db->quoteName('id') . ' = ' . (int) $item_id);
+			->set($db->quoteName($type) . " = '" . $db->escape($fileObj) . "'")
+			->where($db->quoteName('id') . ' = ' . (int) $itemID);
 
 		$db->setQuery($query);
 
@@ -1132,21 +1132,21 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to copy gallery items from one item to another.
 	 *
-	 * @param   string   $section   Section. (can be: movie, name, soundtrack)
-	 * @param   string   $type      Item type.
-	 * @param   integer  $from_id   ID to copy from.
-	 * @param   string   $to_id     ID where to copy.
-	 * @param   string   $from_tab  Content type.
+	 * @param   string   $section  Section. Can be: movie, name, soundtrack
+	 * @param   string   $type     Item type.
+	 * @param   integer  $fromID   ID to copy from.
+	 * @param   string   $toID     ID where to copy.
+	 * @param   string   $fromTab  Content type.
 	 *
-	 * @return  boolean   True on success, false on error.
+	 * @return  boolean  True on success, false on error.
 	 *
 	 * @since   3.0
 	 */
-	public function copyfrom($section, $type, $from_id, $to_id, $from_tab)
+	public function copyfrom($section, $type, $fromID, $toID, $fromTab)
 	{
 		$db = $this->getDbo();
 		$app = JFactory::getApplication();
-		$query_result = true;
+		$queryResult = true;
 
 		// Update DB
 		if ($type == 'gallery')
@@ -1167,22 +1167,22 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			}
 
 			// Get all table columns from $table
-			$cols_obj = $db->getTableColumns($table);
-			$_keys = $db->quoteName(array_keys($cols_obj));
+			$colsObj = $db->getTableColumns($table);
+			$_keys = $db->quoteName(array_keys($colsObj));
 			$cols = implode(', ', $_keys);
-			$cols_count = count($_keys);
+			$colsCount = count($_keys);
 
 			// Get all rows $table
 			$query = $db->getQuery(true)
 				->select($cols)
 				->from($db->quoteName($table))
-				->where($db->quoteName($col) . ' = ' . (int) $from_id . ' AND ' . $db->quoteName('type') . ' = ' . (int) $from_tab);
+				->where($db->quoteName($col) . ' = ' . (int) $fromID . ' AND ' . $db->quoteName('type') . ' = ' . (int) $fromTab);
 
 				// Remove from result set rows with the same filename(avoid duplicates).
 				$subquery = $db->getQuery(true)
 					->select($db->quoteName('filename'))
 					->from($db->quoteName($table))
-					->where($db->quoteName($col) . ' = ' . (int) $to_id . ' AND ' . $db->quoteName('type') . ' = ' . (int) $from_tab);
+					->where($db->quoteName($col) . ' = ' . (int) $toID . ' AND ' . $db->quoteName('type') . ' = ' . (int) $fromTab);
 
 			$query->where($db->quoteName('filename') . 'NOT IN (' . $subquery . ')');
 
@@ -1208,7 +1208,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 					{
 						if ($key == $col)
 						{
-							$value .= "'" . (int) $to_id . "'";
+							$value .= "'" . (int) $toID . "'";
 						}
 						else
 						{
@@ -1216,7 +1216,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 						}
 					}
 
-					if ($i + 1 != $cols_count)
+					if ($i + 1 != $colsCount)
 					{
 						$value .= ', ';
 					}
@@ -1233,12 +1233,12 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 				if ($db->execute() === false)
 				{
-					$query_result = false;
+					$queryResult = false;
 					break;
 				}
 			}
 
-			if ($query_result === false)
+			if ($queryResult === false)
 			{
 				$db->transactionRollback();
 			}

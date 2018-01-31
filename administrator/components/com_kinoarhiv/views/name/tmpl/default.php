@@ -60,7 +60,7 @@ $this->id    = $this->form->getValue('id');
 				url: 'index.php?option=com_kinoarhiv&task=mediamanager.removePoster&section=name&type=gallery&tab=3&id=<?php echo $this->id; ?>&item_id[]=' + item_id + '&format=json',
 				data: {'<?php echo JSession::getFormToken(); ?>': 1}
 			}).done(function(response){
-				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {replace: true});
 
 				$('a.img-preview').attr('href', no_cover);
 				$('a.img-preview img').attr({
@@ -71,7 +71,7 @@ $this->id    = $this->form->getValue('id');
 				});
 				Kinoarhiv.showLoading('hide', $('body'));
 			}).fail(function (xhr, status, error) {
-				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
 				Kinoarhiv.showLoading('hide', $('body'));
 			});
 		});
@@ -82,7 +82,7 @@ $this->id    = $this->form->getValue('id');
 				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=names&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
 				.done(function(response){
 					if (Object.keys(response).length > 0) {
-						Aurora.message([{text: '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
+						Aurora.message([{text: '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {replace: true});
 					}
 				});
 			}

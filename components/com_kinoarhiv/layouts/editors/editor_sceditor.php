@@ -90,7 +90,7 @@ else
 						type: 'alert'
 					}],
 					'#review-form',
-					{place: 'insertAfter', replace: true}
+					{replace: true}
 				);
 
 				editor_inst.readOnly(false);

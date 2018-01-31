@@ -22,7 +22,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -87,7 +87,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Method to remove award(s) in awards list on 'awards tab'.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -100,11 +100,11 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$app     = JFactory::getApplication();
-		$user    = JFactory::getUser();
-		$id      = $app->input->getInt('id', 0);
-		$ids     = $app->input->get('items', array(), 'array');
-		$new_ids = array();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->getInt('id', 0);
+		$ids    = $app->input->get('items', array(), 'array');
+		$newIDs = array();
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.edit', 'com_kinoarhiv.name.' . $id) && !$user->authorise('core.delete', 'com_kinoarhiv.name.' . $id))
@@ -125,19 +125,19 @@ class KinoarhivControllerNames extends JControllerLegacy
 		foreach ($ids as $id)
 		{
 			$_id = explode('_', $id['name']);
-			$new_ids[] = end($_id);
+			$newIDs[] = end($_id);
 		}
 
 		// Make sure the item ids are integers
-		$new_ids = Joomla\Utilities\ArrayHelper::toInteger($new_ids);
+		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
 		$model = $this->getModel('name');
-		$result = $model->removeNameAwards($new_ids);
+		$result = $model->removeNameAwards($newIDs);
 
 		if (!$result)
 		{
 			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors)));
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -148,20 +148,20 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Method to get an item alias for filesystem.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
 	public function getFilesystemAlias()
 	{
-		$app        = JFactory::getApplication();
-		$name       = $app->input->getString('name', '');
-		$latin_name = $app->input->getString('latin_name', '');
-		$alias      = $app->input->getString('alias', '');
+		$app       = JFactory::getApplication();
+		$name      = $app->input->getString('name', '');
+		$latinName = $app->input->getString('latin_name', '');
+		$alias     = $app->input->getString('alias', '');
 
 		if (empty($alias))
 		{
-			$name = empty($latin_name) ? $name : $latin_name;
+			$name = empty($latinName) ? $name : $latinName;
 
 			if (JFactory::getConfig()->get('unicodeslugs') == 1)
 			{
@@ -173,10 +173,10 @@ class KinoarhivControllerNames extends JControllerLegacy
 			}
 		}
 
-		$fs_alias = rawurlencode(StringHelper::substr($alias, 0, 1));
+		$fsAlias = rawurlencode(StringHelper::substr($alias, 0, 1));
 
 		echo json_encode(
-			array('success' => true, 'fs_alias' => $fs_alias)
+			array('success' => true, 'fs_alias' => $fsAlias)
 		);
 	}
 }

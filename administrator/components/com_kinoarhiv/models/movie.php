@@ -516,10 +516,10 @@ class KinoarhivModelMovie extends JModelForm
 			// We need to store LastInsertID in session for later use in controller.
 			if (empty($input_name))
 			{
-				$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id');
-				$session_data['name_id'] = $data['name_id'];
-				$session_data['type'] = $_type;
-				$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id', $session_data);
+				$sessionData = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id');
+				$sessionData['name_id'] = $data['name_id'];
+				$sessionData['type'] = $_type;
+				$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id', $sessionData);
 			}
 
 			return true;
@@ -553,8 +553,9 @@ class KinoarhivModelMovie extends JModelForm
 			return false;
 		}
 
-		$db = $this->getDbo();
+		$db      = $this->getDbo();
 		$nameIDs = array();
+		$types   = array();
 
 		// Get person IDs to query all rows with selected persons.
 		foreach ($ids as $_id)
@@ -562,6 +563,11 @@ class KinoarhivModelMovie extends JModelForm
 			if (!in_array($_id['name_id'], $nameIDs))
 			{
 				$nameIDs[] = $_id['name_id'];
+			}
+
+			if (!in_array($_id['type'], $types))
+			{
+				$types[$_id['name_id']][] = $_id['type'];
 			}
 		}
 
@@ -589,22 +595,47 @@ class KinoarhivModelMovie extends JModelForm
 		$db->lockTable('#__ka_rel_names');
 		$db->transactionStart();
 
-		foreach ($typeRows as $types)
+		foreach ($typeRows as $_types)
 		{
-			$typesArr = explode(',', $types['type']);
+			$typesArr = explode(',', $_types['type']);
 
-			// Update field data else remove row if only one type in field
+			// Update field 'type' with new data else remove row if only one type in field
 			if (count($typesArr) > 1)
 			{
-				// Not yet implemented
-				echo $types['name_id'] . '>1';
+				$typesToRemove = $types[$_types['name_id']];
+				$newArr = array_diff($typesArr, $typesToRemove);
+
+				// Delete row if array_diff return no difference.
+				if (count($newArr) == 0)
+				{
+					$query = $db->getQuery(true)
+						->delete($db->quoteName('#__ka_rel_names'))
+						->where($db->quoteName('movie_id') . ' = ' . (int) $id)
+						->where($db->quoteName('name_id') . ' = ' . (int) $_types['name_id']);
+					$db->setQuery($query . ';');
+				}
+				else
+				{
+					$query = $db->getQuery(true)
+						->update($db->quoteName('#__ka_rel_names'))
+						->set($db->quoteName('type') . " = '" . implode(',', $newArr) . "'")
+						->where($db->quoteName('movie_id') . ' = ' . (int) $id)
+						->where($db->quoteName('name_id') . ' = ' . (int) $_types['name_id']);
+					$db->setQuery($query . ';');
+				}
+
+				if (!$db->execute())
+				{
+					$queryDeleteResult = false;
+					break;
+				}
 			}
 			else
 			{
 				$query = $db->getQuery(true)
 					->delete($db->quoteName('#__ka_rel_names'))
 					->where($db->quoteName('movie_id') . ' = ' . (int) $id)
-					->where($db->quoteName('name_id') . ' = ' . (int) $types['name_id']);
+					->where($db->quoteName('name_id') . ' = ' . (int) $_types['name_id']);
 				$db->setQuery($query . ';');
 
 				if (!$db->execute())

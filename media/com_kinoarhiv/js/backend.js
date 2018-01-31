@@ -129,7 +129,7 @@ Kinoarhiv = window.Kinoarhiv || {};
 }(Kinoarhiv, document));
 
 jQuery(document).ready(function($){
-	var msgOptions = {place: 'insertAfter', replace: true};
+	var msgOptions = {replace: true};
 
 	// Attach 'more' plugin to hide overflowed content
 	if (jQuery.fn.more) {
@@ -602,7 +602,7 @@ jQuery(document).ready(function($){
 			if (response.success) {
 				$('.field_fs_alias').val(response.fs_alias);
 			} else {
-				Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: response.message, type: 'alert'}], '#system-message-container', {replace: true});
 			}
 		});
 	});

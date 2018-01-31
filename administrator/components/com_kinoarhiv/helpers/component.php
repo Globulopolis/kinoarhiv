@@ -98,16 +98,17 @@ class KAComponentHelperBackend
 	 * @param   string   $format  Document type format.
 	 * @param   integer  $count   Number of errors to process.
 	 *
-	 * @return  mixed
+	 * @return  string|boolean  Return string if document type not a html.
 	 *
 	 * @since  3.0
 	 */
 	public static function renderErrors($errors, $format = 'html', $count = 3)
 	{
 		$app = JFactory::getApplication();
+		$totalErrors = count($errors);
 		$_errors = array();
 
-		for ($i = 0, $n = count($errors); $i < $n && $i < $count; $i++)
+		for ($i = 0; $i < $totalErrors && $i < $count; $i++)
 		{
 			if ($errors[$i] instanceof Exception)
 			{

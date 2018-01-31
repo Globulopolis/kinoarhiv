@@ -119,6 +119,13 @@ class KinoarhivModelAward extends JModelForm
 		}
 	}
 
+	/**
+	 * Removes award(s).
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		$app = JFactory::getApplication();
@@ -207,9 +214,9 @@ class KinoarhivModelAward extends JModelForm
 			// We need to store LastInsertID in session for later use in controller.
 			if (empty($data['id']))
 			{
-				$session_data = $app->getUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data');
-				$session_data['id'] = $db->insertid();
-				$app->setUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data', $session_data);
+				$sessionData = $app->getUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data');
+				$sessionData['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.awards.' . $user->id . '.edit_data', $sessionData);
 			}
 		}
 		catch (Exception $e)

@@ -117,6 +117,13 @@ class KinoarhivModelReview extends JModelForm
 		}
 	}
 
+	/**
+	 * Removes reviews from database.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @since   3.0
+	 */
 	public function remove()
 	{
 		$app = JFactory::getApplication();

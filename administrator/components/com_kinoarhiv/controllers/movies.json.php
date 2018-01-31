@@ -22,7 +22,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -87,7 +87,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes cast in cast&crew list on 'cast&crew tab'.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -136,7 +136,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (!$result)
 		{
 			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors)));
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -147,7 +147,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes award(s) in awards list on 'awards tab'.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -197,7 +197,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (!$result)
 		{
 			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors)));
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -208,7 +208,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes premiere(s) in premieres list on 'premieres tab'.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -258,7 +258,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (!$result)
 		{
 			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors)));
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
@@ -269,7 +269,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Removes release(s) in releases list on 'releases tab'.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -319,7 +319,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		if (!$result)
 		{
 			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
-			echo json_encode(array('success' => false, 'message' => implode('<br/>', $errors)));
+			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}

@@ -18,7 +18,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 		<?php if ($this->params->get('search_movies_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('movies')): ?>
 		$('#searchForm #search_form_content').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=movies&format=raw&' . JSession::getFormToken() . '=1', false); ?>', <?php echo json_encode(array('form' => $this->filtersData)); ?>, function (response, status, xhr) {
 			if (status == 'error') {
-				Aurora.message([{text: 'Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText, type: 'error'}], '#system-message-container', {place: 'insertAfter', replace: true});
+				Aurora.message([{text: 'Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText, type: 'error'}], '#system-message-container', {replace: true});
 				return false;
 			}
 

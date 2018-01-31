@@ -47,24 +47,6 @@ var KA_vars = {};
 	};
 
 	/**
-	 * Block UI interaction.
-	 *
-	 * @param   {string}  action  Show or hide block.
-	 *
-	 * @return  {void}
-	 * @deprecated
-	 */
-	Kinoarhiv.blockUI = function(action) {
-		jQuery(document).ready(function($) {
-			if (action === 'show') {
-				$('<div class="modal-backdrop" style="z-index: 10002;"></div>').appendTo(document.body).show();
-			} else {
-				$('.modal-backdrop').remove();
-			}
-		});
-	};
-
-	/**
 	 * Block UI and display loader.
 	 *
 	 * @param   {string}  action    Show or hide block.
@@ -189,34 +171,6 @@ function empty(mixedVar) {
 	}
 
 	return false
-}
-
-/**
- * Create a message and display.
- *
- * @param   {object}  selector   Selector.
- * @param   {string}  text       Message text.
- * @param   {string}  placement  Where to place the message.
- * @param   {string}  btn_type   Show button to close or hide.
- * @param   {string}  btn_title  Text for close or hide button.
- *
- * @return  {void}
- * @deprecated  Use Aurora.message() instead
- */
-function showMsg(selector, text, placement, btn_type, btn_title) {
-	placement = (typeof placement === 'undefined') ? 'after' : placement;
-	btn_type  = (typeof btn_type === 'undefined' || empty(btn_type)) ? 'close' : btn_type;
-	btn_title = (typeof btn_title === 'undefined' || empty(btn_title)) ? KA_vars.language.COM_KA_CLOSE : btn_title;
-	selector  = (typeof selector === 'object') ? selector : jQuery(selector);
-
-	if (jQuery.fn.aurora) {
-		selector.aurora({
-			text: text,
-			placement: placement,
-			button: btn_type,
-			button_title: '[' + btn_title + ']'
-		});
-	}
 }
 
 jQuery(document).ready(function($){

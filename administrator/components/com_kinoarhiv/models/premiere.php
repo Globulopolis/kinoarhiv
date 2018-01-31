@@ -129,9 +129,9 @@ class KinoarhivModelPremiere extends JModelForm
 			// We need to store LastInsertID in session for later use in controller.
 			if (empty($data['id']))
 			{
-				$session_data = $app->getUserState('com_kinoarhiv.premieres.' . $user->id . '.edit_data');
-				$session_data['id'] = $db->insertid();
-				$app->setUserState('com_kinoarhiv.premieres.' . $user->id . '.edit_data', $session_data);
+				$sessionData = $app->getUserState('com_kinoarhiv.premieres.' . $user->id . '.edit_data');
+				$sessionData['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.premieres.' . $user->id . '.edit_data', $sessionData);
 			}
 		}
 		catch (Exception $e)

@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelNames extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = 'com_kinoarhiv.names';
 
 	/**
@@ -275,7 +282,7 @@ class KinoarhivModelNames extends JModelList
 			return array('success' => false, 'message' => JText::_('COM_KA_SAVE_ORDER_AT_LEAST_TWO'));
 		}
 
-		$query_result = true;
+		$queryResult = true;
 		$db->setDebug(true);
 		$db->lockTable('#__ka_names');
 		$db->transactionStart();
@@ -292,12 +299,12 @@ class KinoarhivModelNames extends JModelList
 
 			if ($db->execute() === false)
 			{
-				$query_result = false;
+				$queryResult = false;
 				break;
 			}
 		}
 
-		if ($query_result === false)
+		if ($queryResult === false)
 		{
 			$db->transactionRollback();
 		}
@@ -309,7 +316,7 @@ class KinoarhivModelNames extends JModelList
 		$db->unlockTables();
 		$db->setDebug(false);
 
-		if ($query_result)
+		if ($queryResult)
 		{
 			$success = true;
 			$message = JText::_('COM_KA_SAVED');
@@ -335,23 +342,23 @@ class KinoarhivModelNames extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['language_id']))
+		if (!empty($batchData['language_id']))
 		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
-		if (!empty($batch_data['assetgroup_id']))
+		if (!empty($batchData['assetgroup_id']))
 		{
-			$fields[] = $db->quoteName('access') . " = '" . (int) $batch_data['assetgroup_id'] . "'";
+			$fields[] = $db->quoteName('access') . " = '" . (int) $batchData['assetgroup_id'] . "'";
 		}
 
 		if (empty($fields))

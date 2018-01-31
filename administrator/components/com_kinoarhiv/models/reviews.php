@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelReviews extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = 'com_kinoarhiv.reviews';
 
 	/**
@@ -74,8 +81,8 @@ class KinoarhivModelReviews extends JModelList
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$author_id = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id', '');
-		$this->setState('filter.author_id', $author_id);
+		$authorID = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id', '');
+		$this->setState('filter.author_id', $authorID);
 
 		$type = $this->getUserStateFromRequest($this->context . '.filter.type', 'filter_type', '');
 		$this->setState('filter.type', $type);
@@ -141,11 +148,11 @@ class KinoarhivModelReviews extends JModelList
 			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('a.movie_id'));
 
 		// Filter by author ID
-		$author_id = $this->getState('filter.author_id');
+		$authorID = $this->getState('filter.author_id');
 
-		if (is_numeric($author_id))
+		if (is_numeric($authorID))
 		{
-			$query->where('a.uid = ' . (int) $author_id);
+			$query->where('a.uid = ' . (int) $authorID);
 		}
 
 		// Filter by type
@@ -273,23 +280,23 @@ class KinoarhivModelReviews extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['type']))
+		if (!empty($batchData['type']))
 		{
-			$fields[] = $db->quoteName('type') . " = '" . (int) $batch_data['type'] . "'";
+			$fields[] = $db->quoteName('type') . " = '" . (int) $batchData['type'] . "'";
 		}
 
-		if (!empty($batch_data['user_id']))
+		if (!empty($batchData['user_id']))
 		{
-			$fields[] = $db->quoteName('uid') . " = '" . (int) $batch_data['user_id'] . "'";
+			$fields[] = $db->quoteName('uid') . " = '" . (int) $batchData['user_id'] . "'";
 		}
 
 		if (empty($fields))

@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelGenres extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = 'com_kinoarhiv.genres';
 
 	/**
@@ -269,9 +276,9 @@ class KinoarhivModelGenres extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
@@ -287,14 +294,14 @@ class KinoarhivModelGenres extends JModelList
 
 		$fields = array();
 
-		if (!empty($batch_data['language_id']))
+		if (!empty($batchData['language_id']))
 		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
-		if (!empty($batch_data['assetgroup_id']))
+		if (!empty($batchData['assetgroup_id']))
 		{
-			$fields[] = $db->quoteName('access') . " = '" . (int) $batch_data['assetgroup_id'] . "'";
+			$fields[] = $db->quoteName('access') . " = '" . (int) $batchData['assetgroup_id'] . "'";
 		}
 
 		if (empty($fields))

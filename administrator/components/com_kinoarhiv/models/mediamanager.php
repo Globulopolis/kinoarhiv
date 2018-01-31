@@ -17,6 +17,13 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelMediamanager extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = null;
 
 	/**
@@ -540,28 +547,28 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	public function setFrontpage($state)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$app     = JFactory::getApplication();
+		$db      = $this->getDbo();
 		$section = $app->input->get('section', null, 'word');
-		$type = $app->input->get('type', '', 'word');
-		$id = $app->input->get('id', null, 'int');
-		$ids = $app->input->get('item_id', array(), 'array');
+		$type    = $app->input->get('type', '', 'word');
+		$id      = $app->input->get('id', null, 'int');
+		$ids     = $app->input->get('item_id', array(), 'array');
 
 		if ($type == 'gallery')
 		{
 			if ($section == 'movie')
 			{
-				$table = '#__ka_movies_gallery';
-				$pub_col = 'frontpage';
-				$item_col = 'movie_id';
-				$type_num = 2;
+				$table   = '#__ka_movies_gallery';
+				$pubCol  = 'frontpage';
+				$itemCol = 'movie_id';
+				$typeNum = 2;
 			}
 			elseif ($section == 'name')
 			{
-				$table = '#__ka_names_gallery';
-				$pub_col = 'frontpage';
-				$item_col = 'name_id';
-				$type_num = 3;
+				$table   = '#__ka_names_gallery';
+				$pubCol  = 'frontpage';
+				$itemCol = 'name_id';
+				$typeNum = 3;
 			}
 			else
 			{
@@ -573,8 +580,8 @@ class KinoarhivModelMediamanager extends JModelList
 			// Reset all frontpage field values to 0
 			$query = $db->getQuery(true)
 				->update($db->quoteName($table))
-				->set($db->quoteName($pub_col) . " = 0")
-				->where($db->quoteName($item_col) . ' = ' . (int) $id . ' AND ' . $db->quoteName('type') . ' = ' . $type_num);
+				->set($db->quoteName($pubCol) . " = 0")
+				->where($db->quoteName($itemCol) . ' = ' . (int) $id . ' AND ' . $db->quoteName('type') . ' = ' . $typeNum);
 			$db->setQuery($query);
 
 			try
@@ -597,7 +604,7 @@ class KinoarhivModelMediamanager extends JModelList
 
 			$query = $db->getQuery(true)
 				->update($db->quoteName($table))
-				->set($db->quoteName($pub_col) . " = '" . (int) $state . "'")
+				->set($db->quoteName($pubCol) . " = '" . (int) $state . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
 			$db->setQuery($query);
 
@@ -620,9 +627,9 @@ class KinoarhivModelMediamanager extends JModelList
 				->from($db->quoteName('#__ka_trailers'))
 				->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
 			$db->setQuery($query);
-			$is_movie = $db->loadResult();
+			$isMovie = $db->loadResult();
 
-			if ($is_movie == 0)
+			if ($isMovie == 0)
 			{
 				// Reset all values to 0
 				$query = $db->getQuery(true)
@@ -695,12 +702,12 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	public function publish($isUnpublish)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$app     = JFactory::getApplication();
+		$db      = $this->getDbo();
 		$section = $app->input->get('section', null, 'word');
-		$type = $app->input->get('type', '', 'word');
-		$ids = $app->input->get('item_id', array(), 'array');
-		$state = $isUnpublish ? 0 : 1;
+		$type    = $app->input->get('type', '', 'word');
+		$ids     = $app->input->get('item_id', array(), 'array');
+		$state   = $isUnpublish ? 0 : 1;
 
 		if ($type == 'gallery')
 		{
@@ -763,18 +770,18 @@ class KinoarhivModelMediamanager extends JModelList
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$ids = $app->input->post->get('item_id', array(), 'array');
-		$batch_data = $app->input->post->get('batch', array(), 'array');
+		$batchData = $app->input->post->get('batch', array(), 'array');
 
-		if (empty($batch_data))
+		if (empty($batchData))
 		{
 			return false;
 		}
 
 		$fields = array();
 
-		if (!empty($batch_data['language_id']))
+		if (!empty($batchData['language_id']))
 		{
-			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batch_data['language_id']) . "'";
+			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
 		if (empty($fields))

@@ -20,7 +20,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -59,7 +59,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), 'json');
+			$errors = KAComponentHelper::renderErrors($model->getErrors(), 'json');
 
 			echo json_encode(array('success' => false, 'message' => $errors));
 
@@ -69,11 +69,11 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		// Store data for use in KinoarhivModelGenre::loadFormData()
 		$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
+		$sessionData = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -82,7 +82,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data', null);
 
-		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $session_data));
+		echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_ITEMS_SAVE_SUCCESS'), $sessionData));
 	}
 
 	/**

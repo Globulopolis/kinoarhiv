@@ -59,7 +59,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Proxy to KinoarhivControllerNames::save()
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -71,7 +71,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Proxy to KinoarhivControllerNames::save()
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -83,7 +83,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -118,7 +118,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' . $id);
 
 			return;
@@ -136,7 +136,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.names.' . $user->id . '.edit_data');
+		$sessionData = $app->getUserState('com_kinoarhiv.names.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -151,7 +151,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 				break;
 
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' . $session_data['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' . $sessionData['id'], $message);
 				break;
 
 			case 'save':
@@ -355,7 +355,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=names');
 
 				return;
@@ -383,7 +383,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 	/**
 	 * Method to save a record for editNameAwards.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -418,7 +418,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect($url);
 
 			return;
@@ -434,7 +434,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id');
+		$sessionData = $app->getUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -442,8 +442,8 @@ class KinoarhivControllerNames extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.name.' . $user->id . '.edit_data.aw_id', null);
 
-		$award_id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+		$awardID = $sessionData['id'] ? '&row_id=' . $sessionData['id'] : '&row_id=' . $validData['id'];
 
-		$this->setRedirect($url . $award_id, $message);
+		$this->setRedirect($url . $awardID, $message);
 	}
 }

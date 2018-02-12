@@ -238,6 +238,57 @@ class KAComponentHelper
 	}
 
 	/**
+	 * Method to get an errors from $errors and enqueue or directly display them.
+	 *
+	 * @param   mixed    $errors  Exceptions object or array.
+	 * @param   string   $format  Document type format.
+	 * @param   integer  $count   Number of errors to process.
+	 *
+	 * @return  string|boolean  Return string if document type not a html.
+	 *
+	 * @since   3.1
+	 */
+	public static function renderErrors($errors, $format = 'html', $count = 3)
+	{
+		$app = JFactory::getApplication();
+		$totalErrors = count($errors);
+		$_errors = array();
+
+		for ($i = 0; $i < $totalErrors && $i < $count; $i++)
+		{
+			if ($errors[$i] instanceof Exception)
+			{
+				if ($format == 'html')
+				{
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				}
+				else
+				{
+					$_errors[] = $errors[$i]->getMessage();
+				}
+			}
+			else
+			{
+				if ($format == 'html')
+				{
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+				else
+				{
+					$_errors[] = $errors[$i]['message'];
+				}
+			}
+		}
+
+		if ($format != 'html')
+		{
+			return implode('<br />', $_errors);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Wrapper for JApplicationWeb::redirect() to use in the views
 	 *
 	 * @param   string  $url          The URL to redirect to. Can only be http/https URL

@@ -19,6 +19,13 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivModelPremieres extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = null;
 
 	/**
@@ -116,7 +123,7 @@ class KinoarhivModelPremieres extends JModelList
 		$app = JFactory::getApplication();
 		$lang = JFactory::getLanguage();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$null_date = $db->quote($db->getNullDate());
+		$nullDate = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);
 
@@ -127,8 +134,8 @@ class KinoarhivModelPremieres extends JModelList
 				'm.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, ' .
 				'm.metacritics, m.metacritics_id, m.rate_custom, m.year, ' .
 				'DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
-				'CASE WHEN m.modified = ' . $null_date . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
-				'CASE WHEN m.publish_up = ' . $null_date . ' THEN m.created ELSE m.publish_up END AS publish_up, ' .
+				'CASE WHEN m.modified = ' . $nullDate . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
+				'CASE WHEN m.publish_up = ' . $nullDate . ' THEN m.created ELSE m.publish_up END AS publish_up, ' .
 				'm.publish_down, m.attribs, m.state'
 			)
 		);
@@ -175,7 +182,7 @@ class KinoarhivModelPremieres extends JModelList
 			}
 		}
 
-		$query->where('p.premiere_date != ' . $null_date);
+		$query->where('p.premiere_date != ' . $nullDate);
 		$query->group('m.id');
 		$query->order($this->getState('list.ordering', 'p.premiere_date') . ' ' . $this->getState('list.direction', 'ASC'));
 

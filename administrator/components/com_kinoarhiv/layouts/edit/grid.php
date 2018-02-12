@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('jquery.framework');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . JComponentHelper::getParams('com_kinoarhiv')->get('ui_theme') . '/jquery-ui.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/ui.jqgrid.min.css');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/ui.multiselect.css');
@@ -30,14 +31,14 @@ else
 	return false;
 }
 
-$id       = str_replace('.', '', uniqid(rand(), true));
-$grid_id  = 'grid_' . $id;
-$pager_id = 'grid_pager_' . $id;
+$id      = str_replace('.', '', uniqid(rand(), true));
+$gridID  = 'grid_' . $id;
+$pagerID = 'grid_pager_' . $id;
 
 if (array_key_exists('id', $data) && !empty($data['id']))
 {
-	$grid_id = $data['id'];
-	$pager_id = 'pager_' . $data['id'];
+	$gridID  = $data['id'];
+	$pagerID = 'pager_' . $data['id'];
 }
 
 if (array_key_exists('colModel', $data) && !empty($data['colModel']))
@@ -71,11 +72,11 @@ $attr[] = array_key_exists('pager', $data) ? ' data-pager="' . $data['pager'] . 
 $attr[] = array_key_exists('idprefix', $data) ? ' data-idprefix="' . $data['idprefix'] . '"' : '';
 $attr[] = array_key_exists('rowlist', $data) ? ' data-rowlist="' . json_encode($data['rowlist']) . '"' : ' data-rowlist="[]"';
 $attr[] = array_key_exists('navgrid', $data) ? " data-navgrid_setup='" . json_encode($data['navgrid']) . "'" : '';
-$attr[] = array_key_exists('add_url', $data) ? " data-add_url='" . $data['add_url'] . "'" : '';
-$attr[] = array_key_exists('edit_url', $data) ? " data-edit_url='" . $data['edit_url'] . "'" : '';
-$attr[] = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_url'] . "'" : '';
-$attr[] = array_key_exists('pgbuttons', $data) ? ' data-pgbuttons="' . (bool) $data['pgbuttons'] . '"' : ' data-pgbuttons="true"';
-$attr[] = array_key_exists('pginput', $data) ? ' data-pginput="' . (bool) $data['pginput'] . '"' : ' data-pginput="true"';
+$attr[]   = array_key_exists('add_url', $data) ? " data-add_url='" . $data['add_url'] . "'" : '';
+$attr[]   = array_key_exists('edit_url', $data) ? " data-edit_url='" . $data['edit_url'] . "'" : '';
+$attr[]  = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_url'] . "'" : '';
+$attr[]  = array_key_exists('pgbuttons', $data) ? ' data-pgbuttons="' . (bool) $data['pgbuttons'] . '"' : ' data-pgbuttons="true"';
+$attr[]  = array_key_exists('pginput', $data) ? ' data-pginput="' . (bool) $data['pginput'] . '"' : ' data-pginput="true"';
 ?>
-<table id="<?php echo $grid_id; ?>" class="jqgrid" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
-<div id="<?php echo $pager_id; ?>"></div>
+<table id="<?php echo $gridID; ?>" class="jqgrid" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
+<div id="<?php echo $pagerID; ?>"></div>

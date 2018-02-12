@@ -118,7 +118,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $id);
 
 			return;
@@ -403,7 +403,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=movies');
 
 				return;
@@ -467,7 +467,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect($url);
 
 			return;
@@ -551,7 +551,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect($url);
 
 			return;
@@ -634,7 +634,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect($url);
 
 			return;
@@ -717,7 +717,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect($url);
 
 			return;

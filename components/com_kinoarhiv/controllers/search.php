@@ -61,19 +61,19 @@ class KinoarhivControllerSearch extends JControllerLegacy
 		$badchars = array('#', '>', '<', '\\');
 
 		// We need to check field name for person
-		$title_field = ($content == 'names') ? 'name' : 'title';
+		$titleField = ($content == 'names') ? 'name' : 'title';
 
-		$data[$content][$title_field] = trim(str_replace($badchars, '', $data[$content][$title_field]));
+		$data[$content][$titleField] = trim(str_replace($badchars, '', $data[$content][$titleField]));
 
 		// If searchword enclosed in double quotes, strip quotes and do exact match
-		if (substr($data[$content][$title_field], 0, 1) == '"' && substr($data[$content][$title_field], -1) == '"')
+		if (substr($data[$content][$titleField], 0, 1) == '"' && substr($data[$content][$titleField], -1) == '"')
 		{
-			$data[$content][$title_field] = substr($data[$content][$title_field], 1, -1);
-			$exact_match = true;
+			$data[$content][$titleField] = substr($data[$content][$titleField], 1, -1);
+			$exactMatch = true;
 		}
 		else
 		{
-			$exact_match = false;
+			$exactMatch = false;
 		}
 
 		$validData = $model->validate($form, $data, $content);
@@ -106,7 +106,7 @@ class KinoarhivControllerSearch extends JControllerLegacy
 		$uri->setVar('Itemid', $this->input->post->get('m_itemid', '', 'int'));
 		$uri->setVar('content', $content);
 
-		if ($exact_match)
+		if ($exactMatch)
 		{
 			$uri->setVar('exact_match', 1);
 		}

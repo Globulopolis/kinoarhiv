@@ -1,4 +1,5 @@
 ## HEAD (Unreleased)
+* Add try/catch to almost all queries in frontend models and fields.
 * Added option to disable links parsing for introtext.
 * Ratings tempate now moved to layout.
 * Fixed error for offline mode.

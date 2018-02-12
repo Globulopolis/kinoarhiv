@@ -114,7 +114,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 
 			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id[]=' . $data['id']);
 
@@ -133,7 +133,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data');
+		$sessionData = $app->getUserState('com_kinoarhiv.releases.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -148,7 +148,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.add', $message);
 				break;
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id[]=' . $session_data['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id[]=' . $sessionData['id'], $message);
 				break;
 
 			case 'save':
@@ -189,7 +189,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 
 		if (!$result)
 		{
-			KAComponentHelperBackend::renderErrors($app->getMessageQueue());
+			KAComponentHelper::renderErrors($app->getMessageQueue());
 			$this->setRedirect('index.php?option=com_kinoarhiv&view=releases', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
 			return;
@@ -245,7 +245,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=releases');
 
 				return;

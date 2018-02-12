@@ -367,7 +367,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	/**
 	 * Method to save the submitted ordering values for records.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -414,7 +414,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
 
 				return;

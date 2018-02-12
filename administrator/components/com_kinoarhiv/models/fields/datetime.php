@@ -102,7 +102,7 @@ class JFormFieldDatetime extends JFormField
 		else
 		{
 			JHtml::_('jquery.framework');
-			JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.css');
+			JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.min.css');
 			JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 			KAComponentHelper::getScriptLanguage('datepicker-', 'media/com_kinoarhiv/js/i18n/datepicker/');
 

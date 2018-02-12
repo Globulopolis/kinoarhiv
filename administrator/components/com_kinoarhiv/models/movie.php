@@ -312,19 +312,19 @@ class KinoarhivModelMovie extends JModelForm
 		$id        = $app->input->get('row_id', 0, 'int');
 		$itemID    = $app->input->get('item_id', 0, 'int');
 		$inputName = explode('_', $app->input->getString('input_name', ''));
-		$nameID    = !empty($inputName[1]) ? $inputName[1] : 0;
+		$rowID     = !empty($inputName[1]) ? $inputName[1] : 0;
 		$query     = $db->getQuery(true);
 
 		$query->select(
 			$db->quoteName(
 				array(
-					'name_id', 'movie_id', 'type', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors',
+					'id', 'name_id', 'movie_id', 'type', 'role', 'dub_id', 'is_actors', 'voice_artists', 'is_directors',
 					'ordering', 'desc'
 				)
 			)
 		)
 			->from($db->quoteName('#__ka_rel_names'))
-			->where($db->quoteName('name_id') . ' = ' . (int) $nameID)
+			->where($db->quoteName('id') . ' = ' . (int) $rowID)
 			->where($db->quoteName('movie_id') . ' = ' . (int) $itemID)
 			->where('FIND_IN_SET (' . (int) $id . ', ' . $db->quoteName('type') . ')');
 
@@ -355,19 +355,70 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function saveMovieCast($data)
 	{
-		$app        = JFactory::getApplication();
-		$db         = $this->getDbo();
-		$user       = JFactory::getUser();
-		$id         = $app->input->get('item_id', 0, 'int');
-		$input_name = $app->input->getString('input_name', '');
-		$ids        = explode('_', $input_name);
-		$name_id    = array_key_exists(1, $ids) ? $ids[1] : 0;
-		$old_type   = array_key_exists(2, $ids) ? $ids[2] : 0;
-		$new_type   = $data['type'];
+		$app       = JFactory::getApplication();
+		$db        = $this->getDbo();
+		$user      = JFactory::getUser();
+		$id        = $app->input->get('item_id', 0, 'int');
+		$inputName = $app->input->getString('input_name', '');
+		$ids       = explode('_', $inputName);
+		$nameID    = array_key_exists(1, $ids) ? $ids[1] : 0;
+		$oldType   = array_key_exists(2, $ids) ? $ids[2] : 0;
+		$newType   = $data['type'];
 
-		if ($old_type != $new_type)
+		// Check if person allready exists in relation table
+		$query = $db->getQuery(true)
+			->select('COUNT(name_id)')
+			->from($db->quoteName('#__ka_rel_names'))
+			->where($db->quoteName('name_id') . ' = ' . (int) $data['name_id'])
+			->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
 		{
-			if (empty($input_name))
+			$total = $db->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		if ($total > 0)
+		{
+			echo 'update type';
+			$query = $db->getQuery(true)
+				->select($db->quoteName('type'))
+				->from($db->quoteName('#__ka_rel_names'))
+				->where($db->quoteName('name_id') . ' = ' . (int) $data['name_id'])
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$types = $db->loadResult();
+				$typesArr = explode(',', $types);
+
+				// Add a new type to an array of types only if he not exists in this array.
+				if (!in_array($data['type'], $typesArr))
+				{
+					$typesArr[] = $data['type'];
+					echo 1;
+				}
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+		}
+
+		if ($oldType !== $newType)
+		{
+			if (empty($inputName))
 			{
 				echo 'insert new';
 			}
@@ -385,7 +436,7 @@ class KinoarhivModelMovie extends JModelForm
 
 
 
-		if (empty($input_name))
+		if (empty($inputName))
 		{
 			// Check if person allready exists in relation table and update field `type`, otherwise insert new record.
 			/*$query = $db->getQuery(true)
@@ -507,7 +558,7 @@ class KinoarhivModelMovie extends JModelForm
 				->where($db->quoteName('movie_id') . ' = ' . (int) $id);*/
 		}
 
-		$db->setQuery($query);
+		/*$db->setQuery($query);
 
 		try
 		{
@@ -529,54 +580,29 @@ class KinoarhivModelMovie extends JModelForm
 			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
-		}
+		}*/
 	}
 
 	/**
 	 * Method to remove cast and crew.
 	 *
-	 * @param   integer  $id   Movie ID.
-	 * @param   array    $ids  Array with IDs. In form array(array('name_id'=>, 'type'=>), ...)
+	 * @param   array  $ids  Array with IDs.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	public function removeMovieCast($id, $ids)
+	public function removeMovieCast($ids)
 	{
-		$app = JFactory::getApplication();
-
-		if (empty($ids))
-		{
-			$app->enqueueMessage(JText::_('JERROR_NO_ITEMS_SELECTED'), 'error');
-
-			return false;
-		}
-
-		$db      = $this->getDbo();
-		$nameIDs = array();
-		$types   = array();
-
-		// Get person IDs to query all rows with selected persons.
-		foreach ($ids as $_id)
-		{
-			if (!in_array($_id['name_id'], $nameIDs))
-			{
-				$nameIDs[] = $_id['name_id'];
-			}
-
-			if (!in_array($_id['type'], $types))
-			{
-				$types[$_id['name_id']][] = $_id['type'];
-			}
-		}
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$rowIDs = array_unique($ids['row_ids']);
 
 		// Get all rows with selected person.
 		$query = $db->getQuery(true)
-			->select($db->quoteName(array('name_id', 'type')))
+			->select($db->quoteName(array('id', 'type')))
 			->from($db->quoteName('#__ka_rel_names'))
-			->where($db->quoteName('movie_id') . ' = ' . (int) $id)
-			->where($db->quoteName('name_id') . ' IN (' . implode(',', $nameIDs) . ')');
+			->where($db->quoteName('id') . ' IN (' . implode(',', $rowIDs) . ')');
 
 		$db->setQuery($query);
 
@@ -598,31 +624,16 @@ class KinoarhivModelMovie extends JModelForm
 		foreach ($typeRows as $_types)
 		{
 			$typesArr = explode(',', $_types['type']);
+			$newArr = array_diff($typesArr, $ids['rows'][$_types['id']]);
 
 			// Update field 'type' with new data else remove row if only one type in field
-			if (count($typesArr) > 1)
+			if (count($typesArr) > 1 && count($newArr) > 0)
 			{
-				$typesToRemove = $types[$_types['name_id']];
-				$newArr = array_diff($typesArr, $typesToRemove);
-
-				// Delete row if array_diff return no difference.
-				if (count($newArr) == 0)
-				{
-					$query = $db->getQuery(true)
-						->delete($db->quoteName('#__ka_rel_names'))
-						->where($db->quoteName('movie_id') . ' = ' . (int) $id)
-						->where($db->quoteName('name_id') . ' = ' . (int) $_types['name_id']);
-					$db->setQuery($query . ';');
-				}
-				else
-				{
-					$query = $db->getQuery(true)
-						->update($db->quoteName('#__ka_rel_names'))
-						->set($db->quoteName('type') . " = '" . implode(',', $newArr) . "'")
-						->where($db->quoteName('movie_id') . ' = ' . (int) $id)
-						->where($db->quoteName('name_id') . ' = ' . (int) $_types['name_id']);
-					$db->setQuery($query . ';');
-				}
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__ka_rel_names'))
+					->set($db->quoteName('type') . " = '" . implode(',', $newArr) . "'")
+					->where($db->quoteName('id') . ' = ' . (int) $_types['id']);
+				$db->setQuery($query . ';');
 
 				if (!$db->execute())
 				{
@@ -634,8 +645,7 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				$query = $db->getQuery(true)
 					->delete($db->quoteName('#__ka_rel_names'))
-					->where($db->quoteName('movie_id') . ' = ' . (int) $id)
-					->where($db->quoteName('name_id') . ' = ' . (int) $_types['name_id']);
+					->where($db->quoteName('id') . ' = ' . (int) $_types['id']);
 				$db->setQuery($query . ';');
 
 				if (!$db->execute())
@@ -658,55 +668,6 @@ class KinoarhivModelMovie extends JModelForm
 		$db->unlockTables();
 
 		return true;
-	}
-
-	/**
-	 * Add new cast type to person. Preserve existing types.
-	 *
-	 * @param   integer  $nameID   Person ID.
-	 * @param   integer  $movieID  Movie ID.
-	 * @param   integer  $newType  New cast type to add.
-	 *
-	 * @return  string  Commas separated string with new types
-	 *
-	 * @since   3.1
-	 */
-	private function buildCastTypeSet($nameID, $movieID, $newType)
-	{
-		$db = $this->getDbo();
-
-		$query = $db->getQuery(true)
-			->select($db->quoteName('type'))
-			->from($db->quoteName('#__ka_rel_names'))
-			->where($db->quoteName('name_id') . ' = ' . (int) $nameID)
-			->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
-
-		$db->setQuery($query);
-
-		try
-		{
-			$result = $db->loadResult();
-			$types  = explode(',', $result);
-
-			if (is_array($types))
-			{
-				foreach ($types as $_type)
-				{
-					if ($newType != $_type)
-					{
-						array_push($types, $newType);
-					}
-				}
-			}
-		}
-		catch (RuntimeException $e)
-		{
-			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-
-			return false;
-		}
-
-		return implode(',', $types);
 	}
 
 	/**

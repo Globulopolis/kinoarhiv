@@ -80,10 +80,8 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_rel_composers` (
   PRIMARY KEY (`name_id`,`album_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `#__ka_rel_names`
-  ADD INDEX `idx_dub_id` (`dub_id`);
-
-ALTER TABLE `#__ka_rel_names` DROP PRIMARY KEY, ADD PRIMARY KEY (`name_id`, `movie_id`);
+ALTER TABLE `#__ka_rel_names` ADD COLUMN `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, DROP PRIMARY KEY, ADD PRIMARY KEY (`id`);
+ALTER TABLE `#__ka_rel_names` ADD INDEX `idx_dub_id` (`dub_id`), ADD KEY `idx_cc` (`name_id`, `movie_id`);
 
 ALTER TABLE `#__ka_names`
   ADD COLUMN `fs_alias` VARCHAR(3) DEFAULT '' NOT NULL AFTER `alias`;

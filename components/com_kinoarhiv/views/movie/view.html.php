@@ -113,7 +113,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$form = $this->get('Form');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($item) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -312,7 +312,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	{
 		$item = $this->get('Cast');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -375,7 +375,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -515,7 +515,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -651,7 +651,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -788,7 +788,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Awards');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -851,7 +851,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item = $this->get('Trailers');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -925,9 +925,8 @@ class KinoarhivViewMovie extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$lang = JFactory::getLanguage();
 		$item = $this->get('SoundtrackAlbums');
-		$albums = $item->albums;
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -940,6 +939,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
 		}
 
+		$albums = $item->albums;
 		$item->text = '';
 
 		foreach ($albums as $key => $album)

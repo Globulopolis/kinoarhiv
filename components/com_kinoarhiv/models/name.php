@@ -17,9 +17,14 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelName extends JModelList
 {
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = null;
-
-	protected $list_limit;
 
 	/**
 	 * Constructor.
@@ -44,9 +49,9 @@ class KinoarhivModelName extends JModelList
 	/**
 	 * Get an item data
 	 *
-	 * @return object
+	 * @return  object|boolean  Object with data or false on error.
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getData()
 	{
@@ -59,10 +64,11 @@ class KinoarhivModelName extends JModelList
 
 		$query = $db->getQuery(true)
 			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
-					"n.date_of_birth AS date_of_birth_raw, DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, " .
-					"n.date_of_death AS date_of_death_raw, n.birthplace, n.birthcountry, n.gender, n.height, n.desc, " .
-					"n.attribs, n.metakey, n.metadesc, n.metadata, cn.name AS country, cn.code, g.filename, g.dimension")
-			->from($db->quoteName('#__ka_names', 'n'));
+				"n.date_of_birth AS date_of_birth_raw, DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, " .
+				"n.date_of_death AS date_of_death_raw, n.birthplace, n.birthcountry, n.gender, n.height, n.desc, " .
+				"n.attribs, n.metakey, n.metadesc, n.metadata, cn.name AS country, cn.code, g.filename, g.dimension"
+			);
+		$query->from($db->quoteName('#__ka_names', 'n'));
 
 		$query->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1 AND g.state = 1');
 		$query->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON `cn`.`id` = n.birthcountry AND cn.state = 1');
@@ -84,8 +90,9 @@ class KinoarhivModelName extends JModelList
 
 			if (empty($result))
 			{
-				$this->setError('Error');
-				$result = (object) array();
+				KAComponentHelper::eventLog(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
+
+				return false;
 			}
 			else
 			{
@@ -99,11 +106,11 @@ class KinoarhivModelName extends JModelList
 				}
 			}
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$result = (object) array();
-			$this->setError('Error');
 			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
 		if (isset($result->attribs))
@@ -112,78 +119,78 @@ class KinoarhivModelName extends JModelList
 		}
 
 		// Select career
-		$query_career = $db->getQuery(true)
+		$queryCareer = $db->getQuery(true)
 			->select('id, title')
 			->from($db->quoteName('#__ka_names_career'));
 
-			$subquery_career = $db->getQuery(true)
+			$subqueryCareer = $db->getQuery(true)
 				->select('career_id')
 				->from($db->quoteName('#__ka_rel_names_career'))
 				->where('name_id = ' . (int) $id);
 
-		$query_career->where('id IN (' . $subquery_career . ') AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+		$queryCareer->where('id IN (' . $subqueryCareer . ') AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->order('title ASC');
 
-		$db->setQuery($query_career);
+		$db->setQuery($queryCareer);
 
 		try
 		{
 			$result->career = $db->loadObjectList();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			$result->career = array();
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 
 		// Select genres
-		$query_genres = $db->getQuery(true)
+		$queryGenres = $db->getQuery(true)
 			->select('id, name, alias')
 			->from($db->quoteName('#__ka_genres'));
 
-			$subquery_genres = $db->getQuery(true)
+			$subqueryGenres = $db->getQuery(true)
 				->select('genre_id')
 				->from($db->quoteName('#__ka_rel_names_genres'))
 				->where('name_id = ' . (int) $id);
 
-		$query_genres->where('id IN (' . $subquery_genres . ') AND state = 1 AND access IN (' . $groups . ')')
+		$queryGenres->where('id IN (' . $subqueryGenres . ') AND state = 1 AND access IN (' . $groups . ')')
 			->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->order('name ASC');
 
-		$db->setQuery($query_genres);
+		$db->setQuery($queryGenres);
 
 		try
 		{
 			$result->genres = $db->loadObjectList();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			$result->genres = array();
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 
 		// Select movies
-		$query_movies = $db->getQuery(true)
+		$queryMovies = $db->getQuery(true)
 			->select('m.id, m.title, m.alias, m.year, r.role')
 			->from($db->quoteName('#__ka_movies', 'm'))
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 'r') . ' ON r.name_id = ' . (int) $id . ' AND r.movie_id = m.id');
 
-			$subquery_movies = $db->getQuery(true)
+			$subqueryMovies = $db->getQuery(true)
 				->select('movie_id')
 				->from($db->quoteName('#__ka_rel_names'))
 				->where('name_id = ' . (int) $id);
 
-		$query_movies->where('m.id IN (' . $subquery_movies . ') AND m.state = 1 AND m.access IN (' . $groups . ')')
+		$queryMovies->where('m.id IN (' . $subqueryMovies . ') AND m.state = 1 AND m.access IN (' . $groups . ')')
 			->where('m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->order('m.year ASC');
 
-		$db->setQuery($query_movies);
+		$db->setQuery($queryMovies);
 
 		try
 		{
 			$result->movies = $db->loadObjectList();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			$result->movies = array();
 			KAComponentHelper::eventLog($e->getMessage());
@@ -192,14 +199,23 @@ class KinoarhivModelName extends JModelList
 		// Get proper Itemid for movies list
 		if (count($result->movies) > 0)
 		{
-			$query_itemid = $db->getQuery(true)
+			$queryItemid = $db->getQuery(true)
 				->select('id')
 				->from($db->quoteName('#__menu'))
 				->where("link = 'index.php?option=com_kinoarhiv&view=movies'")
 				->where("type = 'component' AND parent_id = 1 AND language = " . $db->quote($lang->getTag()));
 
-			$db->setQuery($query_itemid);
-			$result->itemid = $db->loadResult();
+			$db->setQuery($queryItemid);
+
+			try
+			{
+				$result->itemid = $db->loadResult();
+			}
+			catch (RuntimeException $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+				$result->itemid = 0;
+			}
 		}
 		else
 		{
@@ -215,9 +231,9 @@ class KinoarhivModelName extends JModelList
 	 * @param   integer  $month  Month number
 	 * @param   integer  $day    Day number
 	 *
-	 * @return string
+	 * @return  string
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getZodiacSign($month, $day)
 	{
@@ -311,9 +327,9 @@ class KinoarhivModelName extends JModelList
 	/**
 	 * Method to get person data
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getNameData()
 	{
@@ -326,7 +342,7 @@ class KinoarhivModelName extends JModelList
 		$result = (object) array();
 
 		$query = $db->getQuery(true)
-			->select('id, name, latin_name, alias, fs_alias, gender, attribs, metakey, metadesc, metadata')
+			->select($db->quoteName(array('id', 'name', 'latin_name', 'alias', 'fs_alias', 'gender', 'attribs', 'metakey', 'metadesc', 'metadata')))
 			->from($db->quoteName('#__ka_names'))
 			->where('id = ' . (int) $id . ' AND state = 1 AND access IN (' . $groups . ')')
 			->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
@@ -339,13 +355,16 @@ class KinoarhivModelName extends JModelList
 
 			if (empty($result))
 			{
-				$this->setError('Error');
+				KAComponentHelper::eventLog(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
+
+				return false;
 			}
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
 			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
 		$result->attribs = json_decode($result->attribs);
@@ -370,11 +389,21 @@ class KinoarhivModelName extends JModelList
 			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
 			->from($db->quoteName('#__ka_rel_awards', 'a'))
 			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON aw.id = a.award_id')
-			->where('type = 1 AND item_id = ' . (int) $id)
-			->order('year DESC');
+			->where($db->quoteName('type') . ' = 1')
+			->where($db->quoteName('item_id') . ' = ' . (int) $id)
+			->order($db->quoteName('year') . ' DESC');
 
 		$db->setQuery($query);
-		$result = $db->loadObjectList();
+
+		try
+		{
+			$result = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+			$result = array();
+		}
 
 		return $result;
 	}
@@ -399,12 +428,23 @@ class KinoarhivModelName extends JModelList
 			$query = $db->getQuery(true)
 				->select("dimension AS value, dimension AS title, SUBSTRING_INDEX(dimension, 'x', 1) AS width")
 				->from($db->quoteName('#__ka_names_gallery'))
-				->where('name_id = ' . (int) $id . ' AND type = 1 AND state = 1')
-				->group('width')
-				->order('width DESC');
+				->where($db->quoteName('name_id') . ' = ' . (int) $id)
+				->where($db->quoteName('type') . ' = 1')
+				->where($db->quoteName('state') . ' = 1')
+				->group($db->quoteName('width'))
+				->order($db->quoteName('width') . ' DESC');
 
 			$db->setQuery($query);
-			$result = $db->loadAssocList();
+
+			try
+			{
+				$result = $db->loadAssocList();
+			}
+			catch (RuntimeException $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+				$result = array();
+			}
 		}
 
 		return $result;
@@ -481,102 +521,5 @@ class KinoarhivModelName extends JModelList
 		$this->cache[$store] = $page;
 
 		return $this->cache[$store];
-	}
-
-	/**
-	 * Method to auto-populate the model state.
-	 *
-	 * This method should only be called once per instantiation and is designed
-	 * to be called on the first call to the getState() method unless the model
-	 * configuration flag to ignore the request is set.
-	 *
-	 * Note. Calling getState in this method will result in recursion.
-	 *
-	 * @param   string  $ordering   An optional ordering field.
-	 * @param   string  $direction  An optional direction (asc|desc).
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
-	protected function populateState($ordering = null, $direction = null)
-	{
-		if ($this->context)
-		{
-			$app = JFactory::getApplication();
-
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $app->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $limit);
-
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-
-			$value = $app->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $ordering);
-
-			if (!in_array($value, $this->filter_fields))
-			{
-				$value = $ordering;
-				$app->setUserState($this->context . '.ordercol', $value);
-			}
-
-			$this->setState('list.ordering', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.orderdirn', 'filter_order_Dir', $direction);
-
-			if (!in_array(strtoupper($value), array('ASC', 'DESC', '')))
-			{
-				$value = $direction;
-				$app->setUserState($this->context . '.orderdirn', $value);
-			}
-
-			$this->setState('list.direction', $value);
-		}
-		else
-		{
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
-		}
-	}
-
-	/**
-	 * Gets the value of a user state variable and sets it in the session
-	 *
-	 * This is the same as the method in JApplication except that this also can optionally
-	 * force you back to the first page when a filter has changed
-	 *
-	 * @param   string   $key        The key of the user state variable.
-	 * @param   string   $request    The name of the variable passed in a request.
-	 * @param   string   $default    The default value for the variable if not found. Optional.
-	 * @param   string   $type       Filter for the variable, for valid values see {@link JFilterInput::clean()}. Optional.
-	 * @param   boolean  $resetPage  If true, the limitstart in request is set to zero
-	 *
-	 * @return  mixed
-	 *
-	 * @since   12.2
-	 */
-	public function getUserStateFromRequest($key, $request, $default = null, $type = 'none', $resetPage = true)
-	{
-		$app = JFactory::getApplication();
-		$old_state = $app->getUserState($key);
-		$cur_state = (!is_null($old_state)) ? $old_state : $default;
-		$new_state = $app->input->get($request, null, $type);
-
-		if (($cur_state != $new_state) && ($resetPage))
-		{
-			$app->input->set('limitstart', 0);
-		}
-
-		if ($new_state !== null)
-		{
-			$app->setUserState($key, $new_state);
-		}
-		else
-		{
-			$new_state = $cur_state;
-		}
-
-		return $new_state;
 	}
 }

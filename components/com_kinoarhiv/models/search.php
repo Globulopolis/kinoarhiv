@@ -77,7 +77,15 @@ class KinoarhivModelSearch extends JModelForm
 			->setLimit(1, 0);
 
 		$db->setQuery($query);
-		$itemid['movies'] = $db->loadResult();
+
+		try
+		{
+			$itemid['movies'] = $db->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+		}
 
 		$query = $db->getQuery(true)
 			->select('id')
@@ -87,7 +95,15 @@ class KinoarhivModelSearch extends JModelForm
 			->setLimit(1, 0);
 
 		$db->setQuery($query);
-		$itemid['names'] = $db->loadResult();
+
+		try
+		{
+			$itemid['names'] = $db->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+		}
 
 		return $itemid;
 	}

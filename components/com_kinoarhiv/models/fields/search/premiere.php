@@ -30,7 +30,7 @@ class JFormFieldPremiere extends JFormFieldList
 	/**
 	 * Method to get the field input.
 	 *
-	 * @return  string  The field input.
+	 * @return  string|boolean  The field input, false on database error.
 	 *
 	 * @since   3.0
 	 */
@@ -97,35 +97,35 @@ class JFormFieldPremiere extends JFormFieldList
 		try
 		{
 			$db->setQuery($query);
-			$objects_list = $db->loadObjectList();
+			$values = $db->loadObjectList();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			KAComponentHelper::eventLog('Error while fetching data from DB in ' . __METHOD__ . '(): ' . $e->getMessage());
+			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
 		}
 
 		if ($this->element['data-content'] == 'vendors')
 		{
-			$new_objects = array();
+			$newValues = array();
 
-			foreach ($objects_list as $item)
+			foreach ($values as $item)
 			{
-				$new_objects[] = array(
+				$newValues[] = array(
 					'value' => $item->id,
 					'text'  => $item->company_name
 				);
 			}
 
-			$objects_list = array_merge($options, $new_objects);
+			$values = array_merge($options, $newValues);
 		}
 		else
 		{
-			$objects_list = array_merge($options, $objects_list);
+			$values = array_merge($options, $values);
 		}
 
-		$html[] = JHtml::_('select.genericlist', $objects_list, $this->name, $attr, 'value', 'text', $this->value);
+		$html[] = JHtml::_('select.genericlist', $values, $this->name, $attr, 'value', 'text', $this->value);
 
 		return implode($html);
 	}

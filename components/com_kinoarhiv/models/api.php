@@ -765,7 +765,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of careers based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array
 	 *
 	 * @since   3.1
 	 */
@@ -807,7 +807,7 @@ class KinoarhivModelAPI extends JModelLegacy
 				{
 					KAComponentHelper::eventLog($e->getMessage());
 
-					return false;
+					return array();
 				}
 			}
 			else
@@ -827,7 +827,7 @@ class KinoarhivModelAPI extends JModelLegacy
 					{
 						KAComponentHelper::eventLog($e->getMessage());
 
-						return false;
+						return array();
 					}
 				}
 				else
@@ -843,7 +843,7 @@ class KinoarhivModelAPI extends JModelLegacy
 					{
 						KAComponentHelper::eventLog($e->getMessage());
 
-						return false;
+						return array();
 					}
 				}
 			}
@@ -861,7 +861,7 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
+				return array();
 			}
 		}
 
@@ -871,7 +871,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Get cast and crew based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array
 	 *
 	 * @since   3.1
 	 */
@@ -904,7 +904,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		{
 			KAComponentHelper::eventLog($e->getMessage());
 
-			return false;
+			return array();
 		}
 
 		foreach ($_careers as $career)
@@ -915,7 +915,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$query = $this->db->getQuery(true);
 
 		$query->select($this->db->quoteName('n.id', 'name_id'))
-			->select($this->db->quoteName(array('n.name', 'n.latin_name', 'n.date_of_birth', 't.type', 't.role', 't.ordering')))
+			->select($this->db->quoteName(array('n.name', 'n.latin_name', 'n.date_of_birth', 't.id', 't.type', 't.role', 't.ordering')))
 			->select(
 				$this->db->quoteName('d.id', 'dub_id') . ',' . $this->db->quoteName('d.name', 'dub_name') . ','
 				. $this->db->quoteName('d.latin_name', 'dub_latin_name') . ',' . $this->db->quoteName('d.date_of_birth', 'dub_date_of_birth')
@@ -926,12 +926,12 @@ class KinoarhivModelAPI extends JModelLegacy
 			->leftJoin($this->db->quoteName('#__ka_names', 'd') . ' ON ' . $this->db->quoteName('d.id') . ' = ' . $this->db->quoteName('t.dub_id'))
 			->leftJoin($this->db->quoteName('#__ka_rel_names', 'r') . ' ON ' . $this->db->quoteName('r.dub_id') . ' = ' . $this->db->quoteName('n.id'));
 
-			$where_subquery = $this->db->getQuery(true)
+			$subqueryWhere = $this->db->getQuery(true)
 				->select($this->db->quoteName('name_id'))
 				->from($this->db->quoteName('#__ka_rel_names'))
 				->where($this->db->quoteName('movie_id') . ' = ' . (int) $id);
 
-		$query->where($this->db->quoteName('n.id') . ' IN (' . $where_subquery . ')');
+		$query->where($this->db->quoteName('n.id') . ' IN (' . $subqueryWhere . ')');
 
 		if (!empty($term))
 		{
@@ -940,8 +940,8 @@ class KinoarhivModelAPI extends JModelLegacy
 				$query->where("("
 					. KADatabaseHelper::transformOperands($this->db->quoteName($field), $operand, $this->db->escape($term))
 					. " OR "
-					. KADatabaseHelper::transformOperands($this->db->quoteName('n.latin_name'), $operand, $this->db->escape($term))
-				. ")");
+					. KADatabaseHelper::transformOperands($this->db->quoteName('n.latin_name'), $operand, $this->db->escape($term)) . ")"
+				);
 			}
 			else
 			{
@@ -949,7 +949,7 @@ class KinoarhivModelAPI extends JModelLegacy
 			}
 		}
 
-		$query->group($this->db->quoteName('n.id'));
+		$query->group($this->db->quoteName('t.id'));
 
 		// Prevent 'ordering asc/desc, ordering asc/desc' duplication
 		if (strpos($orderby, 'ordering') !== false)
@@ -959,11 +959,11 @@ class KinoarhivModelAPI extends JModelLegacy
 		else
 		{
 			// We need this if grid grouping is used. At the first(0) index - grouping field
-			$ord_request = explode(',', $orderby);
+			$ordRequest = explode(',', $orderby);
 
-			if (count($ord_request) > 1)
+			if (count($ordRequest) > 1)
 			{
-				$query->order($this->db->quoteName(trim($ord_request[1])) . ' ' . strtoupper($order) . ', ' . $this->db->quoteName('t.ordering') . ' ASC');
+				$query->order($this->db->quoteName(trim($ordRequest[1])) . ' ' . strtoupper($order) . ', ' . $this->db->quoteName('t.ordering') . ' ASC');
 			}
 			else
 			{
@@ -981,7 +981,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		{
 			KAComponentHelper::eventLog($e->getMessage());
 
-			return false;
+			return array();
 		}
 
 		// Presorting, based on the type of career person.
@@ -990,16 +990,17 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		foreach ($names as $value)
 		{
-			$name     = KAContentHelper::formatItemTitle($value->name, $value->latin_name, $value->date_of_birth);
-			$dub_name = KAContentHelper::formatItemTitle($value->dub_name, $value->dub_latin_name, $value->dub_date_of_birth);
+			$name = KAContentHelper::formatItemTitle($value->name, $value->latin_name, $value->date_of_birth);
+			$dub  = KAContentHelper::formatItemTitle($value->dub_name, $value->dub_latin_name, $value->dub_date_of_birth);
 
 			foreach (explode(',', $value->type) as $k => $type)
 			{
 				$_result[$type][$i] = array(
+					'id'       => $value->id,
 					'name'     => $name,
 					'name_id'  => $value->name_id,
 					'role'     => $value->role,
-					'dub_name' => $dub_name,
+					'dub_name' => $dub,
 					'dub_id'   => $value->dub_id,
 					'ordering' => $value->ordering,
 					'type'     => $careers[$type],
@@ -1018,8 +1019,9 @@ class KinoarhivModelAPI extends JModelLegacy
 		{
 			foreach ($row as $elem)
 			{
-				$result->rows[$k]['id']   = $elem['name_id'] . '_' . $elem['type_id'];
+				$result->rows[$k]['id']   = $elem['id'] . '_' . $elem['name_id'] . '_' . $elem['type_id'];
 				$result->rows[$k]['cell'] = array(
+					'row_id'   => $elem['id'],
 					'name'     => $elem['name'],
 					'name_id'  => $elem['name_id'],
 					'role'     => $elem['role'],
@@ -1069,7 +1071,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @param   integer  $type  Content type. 0 - movie, 1 - name.
 	 *
-	 * @return  object
+	 * @return  object|array
 	 *
 	 * @since   3.1
 	 */
@@ -1113,8 +1115,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			return array();
 		}
 
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
+		$totalPages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $totalPages) ? $totalPages : $page;
 
 		$query = $this->db->getQuery(true)
 			->select(
@@ -1141,7 +1143,7 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		$result->rows    = $rows;
 		$result->page    = $page;
-		$result->total   = $total_pages;
+		$result->total   = $totalPages;
 		$result->records = (int) $total;
 
 		return $result;
@@ -1150,7 +1152,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of premieres based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array
 	 *
 	 * @since   3.1
 	 */
@@ -1194,8 +1196,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			return array();
 		}
 
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
+		$totalPages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $totalPages) ? $totalPages : $page;
 
 		$query = $this->db->getQuery(true)
 			->select(
@@ -1238,7 +1240,7 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		$result->rows    = $rows;
 		$result->page    = $page;
-		$result->total   = $total_pages;
+		$result->total   = $totalPages;
 		$result->records = (int) $total;
 
 		return $result;
@@ -1291,8 +1293,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			return array();
 		}
 
-		$total_pages = ($total > 0) ? ceil($total / $limit) : 0;
-		$page = ($page > $total_pages) ? $total_pages : $page;
+		$totalPages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $totalPages) ? $totalPages : $page;
 
 		$query = $this->db->getQuery(true)
 			->select(
@@ -1328,7 +1330,7 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		$result->rows    = $rows;
 		$result->page    = $page;
-		$result->total   = $total_pages;
+		$result->total   = $totalPages;
 		$result->records = (int) $total;
 
 		return $result;

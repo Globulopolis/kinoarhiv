@@ -47,11 +47,9 @@ class KinoarhivModelReviews extends JModelForm
 	 *
 	 * @param   string  $data  A raw string from POST
 	 *
-	 * @return boolean
+	 * @return  boolean
 	 *
-	 * @throws Exception
-	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function save($data)
 	{
@@ -59,17 +57,17 @@ class KinoarhivModelReviews extends JModelForm
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$movie_id = $app->input->get('id', 0, 'int');
-		$strip_tag = KAComponentHelper::cleanHTML($data['review'], null);
+		$movieID = $app->input->get('id', 0, 'int');
+		$stripTag = KAComponentHelper::cleanHTML($data['review'], null);
 
-		if (StringHelper::strlen($strip_tag) < $params->get('reviews_length_min') || StringHelper::strlen($strip_tag) > $params->get('reviews_length_max'))
+		if (StringHelper::strlen($stripTag) < $params->get('reviews_length_min') || StringHelper::strlen($stripTag) > $params->get('reviews_length_max'))
 		{
 			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
 
 			return false;
 		}
 
-		$cleaned_text = KAComponentHelper::cleanHTML($data['review']);
+		$cleanedText = KAComponentHelper::cleanHTML($data['review']);
 		$datetime = date('Y-m-d H:i:s');
 		$state = $params->get('reviews_premod') == 1 ? 0 : 1;
 		$ip = '';
@@ -92,7 +90,7 @@ class KinoarhivModelReviews extends JModelForm
 		$query = $db->getQuery(true)
 			->insert($db->quoteName('#__ka_reviews'))
 			->columns($db->quoteName(array('id', 'uid', 'movie_id', 'review', 'created', 'type', 'ip', 'state')))
-			->values("'', '" . (int) $user->get('id') . "', '" . (int) $movie_id . "', '" . $db->escape($cleaned_text) . "', '" . $datetime . "', '" . (int) $data['type'] . "', '" . $ip . "', '" . (int) $state . "'");
+			->values("'', '" . (int) $user->get('id') . "', '" . (int) $movieID . "', '" . $db->escape($cleanedText) . "', '" . $datetime . "', '" . (int) $data['type'] . "', '" . $ip . "', '" . (int) $state . "'");
 
 		$db->setQuery($query);
 
@@ -102,7 +100,7 @@ class KinoarhivModelReviews extends JModelForm
 			$insertid = $db->insertid();
 			$app->enqueueMessage($params->get('reviews_premod') == 1 ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED'));
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			KAComponentHelper::eventLog($e->getMessage());
 
@@ -111,8 +109,8 @@ class KinoarhivModelReviews extends JModelForm
 
 		$this->sendEmails(
 			array(
-				'review'   => $cleaned_text,
-				'id'       => (int) $movie_id,
+				'review'   => $cleanedText,
+				'id'       => (int) $movieID,
 				'ip'       => $ip,
 				'datetime' => $datetime,
 				'insertid' => $insertid
@@ -129,7 +127,7 @@ class KinoarhivModelReviews extends JModelForm
 	 *
 	 * @return  boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	protected function sendEmails($data)
 	{
@@ -138,7 +136,7 @@ class KinoarhivModelReviews extends JModelForm
 		$mailer = JFactory::getMailer();
 		$config = JFactory::getConfig();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$movie_title = '';
+		$movieTitle = '';
 
 		if ($params->get('reviews_send_email') == 1 || $params->get('reviews_send_email_touser') == 1)
 		{
@@ -148,15 +146,15 @@ class KinoarhivModelReviews extends JModelForm
 				->where('id = ' . (int) $data['id']);
 
 			$db->setQuery($query);
-			$result = $db->loadObject();
 
-			if (!empty($result->year) && $result->year != '0000')
+			try
 			{
-				$movie_title = $result->title . ' (' . $result->year . ')';
+				$result = $db->loadObject();
+				$movieTitle = KAContentHelper::formatItemTitle($result->title, '', $result->year);
 			}
-			else
+			catch (RuntimeException $e)
 			{
-				$movie_title = $result->title;
+				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 
@@ -174,29 +172,29 @@ class KinoarhivModelReviews extends JModelForm
 				$recipients = explode(',', $_recipients);
 			}
 
-			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movie_title);
-			$admin_url = JUri::base() . 'administrator/index.php?option=com_kinoarhiv&controller=reviews&task=edit&id[]=' . $data['insertid'];
-			$movie_url = JRoute::_(JUri::getInstance()) . '&review=' . $data['insertid'] . '#review-' . $data['insertid'];
+			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movieTitle);
+			$adminURL = JUri::base() . 'administrator/index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['insertid'];
+			$movieURL = JRoute::_(JUri::getInstance()) . '&review=' . $data['insertid'] . '#review-' . $data['insertid'];
 
 			$body = JText::sprintf(
 				'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
-				'<a href="' . $movie_url . '" target="_blank">' . $movie_title . '</a>'
+				'<a href="' . $movieURL . '" target="_blank">' . $movieTitle . '</a>'
 			) . '<br />' . JText::sprintf(
 				'COM_KA_REVIEWS_MAIL_INFO',
 				$user->get('name'), $data['datetime'], $data['ip']
 			) . '<p>' . $data['review'] . '</p>' . JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY')
-				. '<a href="' . $admin_url . '" target="_blank">' . $admin_url . '</a>';
+				. '<a href="' . $adminURL . '" target="_blank">' . $adminURL . '</a>';
 
-			$send_a = $mailer->sendMail(
-					$config->get('mailfrom'),
-					$config->get('fromname'),
-					$recipients,
-					$subject,
-					$body,
-					true
+			$sendToAdmin = $mailer->sendMail(
+				$config->get('mailfrom'),
+				$config->get('fromname'),
+				$recipients,
+				$subject,
+				$body,
+				true
 			);
 
-			if ($send_a)
+			if ($sendToAdmin)
 			{
 				KAComponentHelper::eventLog('Cannot send an email to administrator(s) while save review.');
 			}
@@ -217,30 +215,30 @@ class KinoarhivModelReviews extends JModelForm
 
 			try
 			{
-				$menu_itemid = $db->loadResult();
+				$menuItemid = $db->loadResult();
 			}
-			catch (Exception $e)
+			catch (RuntimeException $e)
 			{
 				KAComponentHelper::eventLog($e->getMessage());
 
 				return false;
 			}
 
-			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movie_title);
-			$uprofile_url = JRoute::_(JUri::base() . 'index.php?option=com_kinoarhiv&view=profile&page=reviews&Itemid=' . (int) $menu_itemid);
-			$movie_url = JRoute::_(JUri::getInstance() . '&review=' . (int) $data['insertid']) . '#review-' . (int) $data['insertid'];
+			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movieTitle);
+			$profileURL = JRoute::_(JUri::base() . 'index.php?option=com_kinoarhiv&view=profile&page=reviews&Itemid=' . (int) $menuItemid);
+			$movieURL = JRoute::_(JUri::getInstance() . '&review=' . (int) $data['insertid']) . '#review-' . (int) $data['insertid'];
 
 			$body = JText::sprintf(
 				'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
-				'<a href="' . $movie_url . '" target="_blank">' . $movie_title . '</a>'
+				'<a href="' . $movieURL . '" target="_blank">' . $movieTitle . '</a>'
 			) . '<br />' . JText::sprintf(
 				'COM_KA_REVIEWS_MAIL_INFO',
 				$user->get('name'),
 				$data['datetime'], $data['ip']
 			) . '<p>' . $data['review'] . '</p>' . JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY')
-				. '<a href="' . $uprofile_url . '" target="_blank">' . $uprofile_url . '</a>';
+				. '<a href="' . $profileURL . '" target="_blank">' . $profileURL . '</a>';
 
-			$send_b = $mailer->sendMail(
+			$sendToUser = $mailer->sendMail(
 				$config->get('mailfrom'),
 				$config->get('fromname'),
 				$user->get('email'),
@@ -249,7 +247,7 @@ class KinoarhivModelReviews extends JModelForm
 				true
 			);
 
-			if ($send_b)
+			if ($sendToUser)
 			{
 				KAComponentHelper::eventLog('Cannot send an email to user while save review.');
 			}
@@ -262,38 +260,35 @@ class KinoarhivModelReviews extends JModelForm
 	/**
 	 * Method to delete review(s)
 	 *
-	 * @return boolean
+	 * @return  boolean
 	 *
-	 * @throws Exception
-	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function delete()
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
 		$user = JFactory::getUser();
-		$review_id = $app->input->get('review_id', null, 'int');
-		$review_ids = $app->input->get('review_ids', array(), 'array');
+		$reviewID = $app->input->get('review_id', null, 'int');
+		$reviewIDs = $app->input->get('review_ids', array(), 'array');
 
-		if (!empty($review_ids))
+		if (!empty($reviewIDs))
 		{
 			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 		}
 
-		if (!empty($review_ids))
+		if (!empty($reviewIDs))
 		{
-			if (empty($review_ids))
+			if (empty($reviewIDs))
 			{
 				return false;
 			}
 
-			$query_result = true;
-			$db->setDebug(true);
+			$queryResult = true;
 			$db->lockTable('#__ka_reviews');
 			$db->transactionStart();
 
-			foreach ($review_ids as $id)
+			foreach ($reviewIDs as $id)
 			{
 				$query = $db->getQuery(true);
 
@@ -310,16 +305,16 @@ class KinoarhivModelReviews extends JModelForm
 
 				if ($db->execute() === false)
 				{
-					$query_result = false;
+					$queryResult = false;
 					break;
 				}
 			}
 
-			if ($query_result === true)
+			if ($queryResult === true)
 			{
 				$db->transactionCommit();
 
-				if (count($review_ids) > 1)
+				if (count($reviewIDs) > 1)
 				{
 					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED_MANY'));
 				}
@@ -335,16 +330,15 @@ class KinoarhivModelReviews extends JModelForm
 			}
 
 			$db->unlockTables();
-			$db->setDebug(false);
 
-			if ($query_result === false)
+			if ($queryResult === false)
 			{
 				return false;
 			}
 		}
 		else
 		{
-			if (empty($review_id))
+			if (empty($reviewID))
 			{
 				return false;
 			}
@@ -358,7 +352,7 @@ class KinoarhivModelReviews extends JModelForm
 				$query->where('uid = ' . $user->get('id'));
 			}
 
-			$query->where('id = ' . (int) $review_id);
+			$query->where('id = ' . (int) $reviewID);
 
 			$db->setQuery($query);
 
@@ -367,7 +361,7 @@ class KinoarhivModelReviews extends JModelForm
 				$db->execute();
 				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
 			}
-			catch (Exception $e)
+			catch (RuntimeException $e)
 			{
 				$this->setError(JText::_('JERROR_ERROR'));
 				KAComponentHelper::eventLog(JText::_('JERROR_ERROR'));

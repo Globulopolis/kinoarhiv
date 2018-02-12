@@ -98,7 +98,7 @@ jQuery(document).ready(function($){
 			place = typeof $this.data('ka-msg-place') === 'undefined' ? '#system-message-container' : $this.closest($this.data('ka-msg-place'));
 
 		$.ajax({
-			url: $this.attr('href')
+			url: $this.attr('href') + '&format=json'
 		}).done(function (response) {
 			if (response.success) {
 				Aurora.message([{text: response.message, type: 'success'}], place, msgOptions);

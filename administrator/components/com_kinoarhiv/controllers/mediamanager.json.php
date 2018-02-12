@@ -22,16 +22,16 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	/**
 	 * Method to get list of trailer files.
 	 *
-	 * @return  array
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
 	public function getTrailerFiles()
 	{
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
-		$id = $app->input->get('id', 0, 'int');
-		$data = $app->input->get('data', '', 'string');
+		$app    = JFactory::getApplication();
+		$model  = $this->getModel('mediamanagerItem');
+		$id     = $app->input->get('id', 0, 'int');
+		$data   = $app->input->get('data', '', 'string');
 		$result = $model->getTrailerFiles($data, $id, '', '');
 
 		if (!$result)
@@ -60,12 +60,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
-		$item_id = $app->input->get('item_id', 0, 'int');
-		$items = $app->input->get('ord', array(), 'array');
-		$type = $app->input->get('type', '', 'word');
-		$result = $model->saveOrderTrailerFiles($item_id, $items, $type);
+		$app    = JFactory::getApplication();
+		$model  = $this->getModel('mediamanagerItem');
+		$itemID = $app->input->get('item_id', 0, 'int');
+		$items  = $app->input->get('ord', array(), 'array');
+		$type   = $app->input->get('type', '', 'word');
+		$result = $model->saveOrderTrailerFiles($itemID, $items, $type);
 
 		if (!$result)
 		{
@@ -202,7 +202,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), 'json');
+			$errors = KAComponentHelper::renderErrors($model->getErrors(), 'json');
 
 			echo json_encode(array('success' => false, 'message' => $errors));
 
@@ -210,7 +210,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$result = $model->saveFileinfoData($validData['trailer_finfo_' . $type]);
-		$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+		$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 
 		if (!$result)
 		{
@@ -263,23 +263,23 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 		jimport('joomla.filesystem.file');
 
-		$model = $this->getModel('mediamanagerItem');
-		$item = $app->input->getInt('item', 0);
-		$item_id = $app->input->getInt('item_id', 0);
-		$all = $app->input->getInt('all', 0);
-		$path = KAContentHelper::getPath('movie', 'trailers', null, $id);
+		$model  = $this->getModel('mediamanagerItem');
+		$item   = $app->input->getInt('item', 0);
+		$itemID = $app->input->getInt('item_id', 0);
+		$all    = $app->input->getInt('all', 0);
+		$path   = KAContentHelper::getPath('movie', 'trailers', null, $id);
 		$errors = array();
 
 		if ($all === 1)
 		{
 			$message = 'COM_KA_FILES_N_DELETED_SUCCESS';
-			$type = $app->input->getString('type', '');
-			$types = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($type));
-			$files = $model->getTrailerFiles($type, $item_id, '', '');
+			$type    = $app->input->getString('type', '');
+			$types   = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($type));
+			$files   = $model->getTrailerFiles($type, $itemID, '', '');
 
 			foreach ($types as $_type)
 			{
-				if (!$model->removeTrailerFiles($_type, $item_id, array_keys($files[$_type])))
+				if (!$model->removeTrailerFiles($_type, $itemID, array_keys($files[$_type])))
 				{
 					$errors[] = implode('<br />', $app->getMessageQueue());
 				}
@@ -302,11 +302,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				}
 				else
 				{
-					$array_key = ($_type === 'video') ? 'src' : 'file';
+					$arrayKey = ($_type === 'video') ? 'src' : 'file';
 
 					foreach ($files[$_type] as $file)
 					{
-						$filepath = $path . $file[$array_key];
+						$filepath = $path . $file[$arrayKey];
 
 						if ($file['is_file'] == 1)
 						{
@@ -327,10 +327,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		{
 			$message = 'COM_KA_FILES_N_DELETED_SUCCESS_1';
 			$type = $app->input->getWord('type', '');
-			$files = $model->getTrailerFiles($type, $item_id, $item, '');
-			$array_key = ($type === 'video') ? 'src' : 'file';
+			$files = $model->getTrailerFiles($type, $itemID, $item, '');
+			$arrayKey = ($type === 'video') ? 'src' : 'file';
 
-			if (!$model->removeTrailerFiles($type, $item_id, $item))
+			if (!$model->removeTrailerFiles($type, $itemID, $item))
 			{
 				$errors[] = implode('<br />', $app->getMessageQueue());
 			}
@@ -341,7 +341,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				$filepath = $path . $files[$type][$array_key];
+				$filepath = $path . $files[$type][$arrayKey];
 			}
 
 			if (is_file($filepath))
@@ -396,14 +396,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 		jimport('joomla.filesystem.file');
 
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
+		$app     = JFactory::getApplication();
+		$model   = $this->getModel('mediamanagerItem');
 		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', 0, 'int');
-		$id = $app->input->get('id', 0, 'int');
-		$ids = $app->input->get('item_id', array(), 'array');
-		$path = KAContentHelper::getPath($section, $type, $tab, $id);
+		$type    = $app->input->get('type', '', 'word');
+		$tab     = $app->input->get('tab', 0, 'int');
+		$id      = $app->input->get('id', 0, 'int');
+		$ids     = $app->input->get('item_id', array(), 'array');
+		$path    = KAContentHelper::getPath($section, $type, $tab, $id);
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
@@ -420,9 +420,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		{
 			if ($type == 'gallery')
 			{
-				$gallery_items = $model->getGalleryFiles($section, $type, $ids);
+				$galleryItems = $model->getGalleryFiles($section, $type, $ids);
 
-				foreach ($gallery_items as $item)
+				foreach ($galleryItems as $item)
 				{
 					JFile::delete($path . '/' . $item->filename);
 					JFile::delete($path . '/thumb_' . $item->filename);
@@ -431,9 +431,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 		elseif ($section == 'name')
 		{
-			$gallery_items = $model->getGalleryFiles($section, $type, $ids);
+			$galleryItems = $model->getGalleryFiles($section, $type, $ids);
 
-			foreach ($gallery_items as $item)
+			foreach ($galleryItems as $item)
 			{
 				JFile::delete($path . '/' . $item->filename);
 				JFile::delete($path . '/thumb_' . $item->filename);
@@ -492,19 +492,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('administrator.components.com_kinoarhiv.libraries.media', JPATH_ROOT);
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$media = KAMedia::getInstance();
-		$model = $this->getModel('mediamanagerItem');
-		$id = $app->input->get('id', 0, 'int');
-		$item_id = $app->input->get('item_id', null, 'int');
-		$files = $model->getTrailerFiles('screenshot,video', $item_id, '', '');
-		$path = KAContentHelper::getPath('movie', 'trailers', null, $id);
-		$old_screenshot = $path . $files['screenshot']['file'];
+		$media         = KAMedia::getInstance();
+		$model         = $this->getModel('mediamanagerItem');
+		$id            = $app->input->get('id', 0, 'int');
+		$itemID        = $app->input->get('item_id', null, 'int');
+		$files         = $model->getTrailerFiles('screenshot,video', $itemID, '', '');
+		$path          = KAContentHelper::getPath('movie', 'trailers', null, $id);
+		$oldScreenshot = $path . $files['screenshot']['file'];
 
 		unset($files['screenshot']);
 
-		if (!empty($old_screenshot) && is_file($old_screenshot))
+		if (!empty($oldScreenshot) && is_file($oldScreenshot))
 		{
-			@unlink($old_screenshot);
+			@unlink($oldScreenshot);
 		}
 
 		if (count($files['video']) < 1)
@@ -538,18 +538,18 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
 		}
 
 		// Save into database
-		$image = $model->saveImageInDB('trailer', $item_id, $result['filename']);
+		$image = $model->saveImageInDB('trailer', $itemID, $result['filename']);
 
 		if (!$image)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -584,20 +584,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$app = JFactory::getApplication();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$model = $this->getModel('mediamanagerItem');
-		$errors = array();
-		$urls = $app->input->post->get('urls', '', 'string');
-		$urls_arr = explode("\n", $urls);
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', null, 'int');
-		$id = $app->input->get('id', null, 'int');
+		$app       = JFactory::getApplication();
+		$params    = JComponentHelper::getParams('com_kinoarhiv');
+		$model     = $this->getModel('mediamanagerItem');
+		$errors    = array();
+		$urls      = $app->input->post->get('urls', '', 'string');
+		$urlsArr   = explode("\n", $urls);
+		$section   = $app->input->get('section', '', 'word');
+		$type      = $app->input->get('type', '', 'word');
+		$tab       = $app->input->get('tab', null, 'int');
+		$id        = $app->input->get('id', null, 'int');
 		$frontpage = $app->input->get('frontpage', 0, 'int');
-		$max_files = $app->input->get('max_files', 0, 'int');
+		$maxFiles  = $app->input->get('max_files', 0, 'int');
 
-		if (count($urls_arr) > 0 && !empty($id))
+		if (count($urlsArr) > 0 && !empty($id))
 		{
 			jimport('joomla.filesystem.file');
 			jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
@@ -605,12 +605,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			$image = new KAImage;
 
-			foreach ($urls_arr as $index => $url)
+			foreach ($urlsArr as $index => $url)
 			{
 				// Limit number of files
-				if ($max_files != 0)
+				if ($maxFiles != 0)
 				{
-					if ($max_files == $index)
+					if ($maxFiles == $index)
 					{
 						break;
 					}
@@ -620,16 +620,16 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				if ($output->code == 200 || $output->code == 301 || $output->code == 304)
 				{
-					$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id) . '/';
+					$dstDir = KAContentHelper::getPath($section, $type, $tab, $id) . '/';
 
 					// Put image in Joomla 'temp' dir
-					$temp_file = JPath::clean(JFactory::getConfig()->get('tmp_path') . '/' . uniqid(rand(), true) . '.tmp');
+					$tempFile = JPath::clean(JFactory::getConfig()->get('tmp_path') . '/' . uniqid(rand(), true) . '.tmp');
 
-					if (file_put_contents($temp_file, $output->body) !== false)
+					if (file_put_contents($tempFile, $output->body) !== false)
 					{
-						$image->loadFile($temp_file);
-						$file_prop = $image->getImageFileProperties($temp_file);
-						$file_ext = image_type_to_extension($file_prop->type);
+						$image->loadFile($tempFile);
+						$fileProp = $image->getImageFileProperties($tempFile);
+						$fileExt = image_type_to_extension($fileProp->type);
 					}
 					else
 					{
@@ -639,15 +639,15 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					}
 
 					// If image type is image/jpeg change the file ext to more native .jpg instead of .jpeg
-					if (stripos($file_ext, 'jpeg') !== false)
+					if (stripos($fileExt, 'jpeg') !== false)
 					{
-						$file_ext = str_ireplace('jpeg', 'jpg', $file_ext);
+						$fileExt = str_ireplace('jpeg', 'jpg', $fileExt);
 					}
 
-					$filename = str_replace('.', '', uniqid(rand(), true)) . $file_ext;
-					$file_path = JPath::clean($dest_dir . $filename);
-					$orig_width = $file_prop->width;
-					$orig_height = $file_prop->height;
+					$filename = str_replace('.', '', uniqid(rand(), true)) . $fileExt;
+					$filePath = JPath::clean($dstDir . $filename);
+					$origWidth = $fileProp->width;
+					$origHeight = $fileProp->height;
 
 					if ($image->isLoaded())
 					{
@@ -665,7 +665,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						// Save image to file
 						try
 						{
-							$image->toFile($file_path, $file_prop->type);
+							$image->toFile($filePath, $fileProp->type);
 						}
 						catch (LogicException $e)
 						{
@@ -681,17 +681,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								if ($tab == 1)
 								{
 									$width  = (int) $params->get('size_x_wallpp');
-									$height = ($width * $orig_height) / $orig_width;
+									$height = ($width * $origHeight) / $origWidth;
 								}
 								elseif ($tab == 2)
 								{
 									$width  = (int) $params->get('size_x_posters');
-									$height = ($width * $orig_height) / $orig_width;
+									$height = ($width * $origHeight) / $origWidth;
 								}
 								elseif ($tab == 3)
 								{
 									$width  = (int) $params->get('size_x_scr');
-									$height = ($width * $orig_height) / $orig_width;
+									$height = ($width * $origHeight) / $origWidth;
 								}
 								else
 								{
@@ -703,26 +703,26 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								// Add watermark
 								if ($params->get('upload_gallery_watermark_image_on') == 1)
 								{
-									$watermark_img = $params->get('upload_gallery_watermark_image');
+									$watermarkImg = $params->get('upload_gallery_watermark_image');
 									$options = array();
 
-									if ($file_prop->type == 2)
+									if ($fileProp->type == 2)
 									{
 										$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
 									}
-									elseif ($file_prop->type == 3)
+									elseif ($fileProp->type == 3)
 									{
 										$options['output_quality'] = (int) $params->get('upload_quality_images_png');
 									}
 
-									if (!empty($watermark_img) && file_exists($watermark_img))
+									if (!empty($watermarkImg) && file_exists($watermarkImg))
 									{
-										$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
+										$image->addWatermark($dstDir, $filename, $watermarkImg, 'br', $options);
 									}
 								}
 
-								$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-								$insertid = $model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+								$image->makeThumbs($dstDir, $filename, $width . 'x' . $height, 1, $dstDir, false);
+								$insertid = $model->saveImageInDB('movie', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
 							}
 							elseif ($type == 'trailers')
 							{
@@ -737,17 +737,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								if ($tab == 1)
 								{
 									$width = (int) $params->get('size_x_wallpp');
-									$height = ($width * $orig_height) / $orig_width;
+									$height = ($width * $origHeight) / $origWidth;
 								}
 								elseif ($tab == 2)
 								{
 									$width = (int) $params->get('size_x_posters');
-									$height = ($width * $orig_height) / $orig_width;
+									$height = ($width * $origHeight) / $origWidth;
 								}
 								elseif ($tab == 3)
 								{
 									$width = (int) $params->get('size_x_photo');
-									$height = ($width * $orig_height) / $orig_width;
+									$height = ($width * $origHeight) / $origWidth;
 								}
 								else
 								{
@@ -759,26 +759,26 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								// Add watermark
 								if ($params->get('upload_gallery_watermark_image_on') == 1)
 								{
-									$watermark_img = $params->get('upload_gallery_watermark_image');
+									$watermarkImg = $params->get('upload_gallery_watermark_image');
 									$options = array();
 
-									if ($file_prop->type == 2)
+									if ($fileProp->type == 2)
 									{
 										$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
 									}
-									elseif ($file_prop->type == 3)
+									elseif ($fileProp->type == 3)
 									{
 										$options['output_quality'] = (int) $params->get('upload_quality_images_png');
 									}
 
-									if (!empty($watermark_img) && file_exists($watermark_img))
+									if (!empty($watermarkImg) && file_exists($watermarkImg))
 									{
-										$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
+										$image->addWatermark($dstDir, $filename, $watermarkImg, 'br', $options);
 									}
 								}
 
-								$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-								$insertid = $model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+								$image->makeThumbs($dstDir, $filename, $width . 'x' . $height, 1, $dstDir, false);
+								$insertid = $model->saveImageInDB('name', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
 							}
 						}
 					}
@@ -788,7 +788,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 						$errors[] = $c . '. ' . $url . '<br />';
 					}
 
-					JFile::delete($temp_file);
+					JFile::delete($tempFile);
 				}
 				else
 				{

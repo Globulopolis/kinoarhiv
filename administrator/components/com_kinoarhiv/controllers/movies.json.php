@@ -61,7 +61,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), 'json');
+			$errors = KAComponentHelper::renderErrors($model->getErrors(), 'json');
 
 			echo json_encode(array('success' => false, 'message' => $errors));
 
@@ -72,7 +72,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -126,16 +126,18 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		{
 			$array = explode('_', $_id['name']);
 			$total = count($array);
-			$newIDs[$key]['name_id'] = (int) $array[$total - 2];
-			$newIDs[$key]['type'] = (int) $array[$total - 1];
+			$rowID = (int) $array[$total - 3];
+
+			$newIDs['rows'][$rowID][] = (int) $array[$total - 1];
+			$newIDs['row_ids'][] = $rowID;
 		}
 
 		$model = $this->getModel('movie');
-		$result = $model->removeMovieCast($id, $newIDs);
+		$result = $model->removeMovieCast($newIDs);
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -196,7 +198,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -257,7 +259,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -318,7 +320,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors($app->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;

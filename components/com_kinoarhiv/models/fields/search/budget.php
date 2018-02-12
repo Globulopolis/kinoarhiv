@@ -55,22 +55,33 @@ class JFormFieldBudget extends JFormFieldList
 		$query = $db->getQuery(true)
 			->select('budget AS value, budget AS text')
 			->from($db->quoteName('#__ka_movies'))
-			->where("budget != '' AND state = 1 AND access IN (" . $groups . ") AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
-			->group('budget')
-			->order('budget ASC');
+			->where("budget != '' AND state = 1")
+			->where("access1 IN (" . $groups . ") AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
+			->group($db->quoteName('budget'))
+			->order($db->quoteName('budget') . ' ASC');
 
 		$db->setQuery($query);
-		$budget = $db->loadObjectList();
-		$budget = array_merge($options, $budget);
+
+		try
+		{
+			$budget = $db->loadObjectList();
+			$budget = array_merge($options, $budget);
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			$budget = $options;
+		}
 
 		if ($this->element['data-range'] == 'true')
 		{
-			$_value_1 = (is_array($this->value) && array_key_exists(0, $this->value)) ? $this->value[0] : '';
-			$_value_2 = (is_array($this->value) && array_key_exists(1, $this->value)) ? $this->value[1] : '';
+			$_value1 = (is_array($this->value) && array_key_exists(0, $this->value)) ? $this->value[0] : '';
+			$_value2 = (is_array($this->value) && array_key_exists(1, $this->value)) ? $this->value[1] : '';
 			$html[] = JText::_($this->element['labelfrom']) . '&nbsp;';
-			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $_value_1, $this->id . '_from');
+			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $_value1, $this->id . '_from');
 			$html[] = '&nbsp;&nbsp;&nbsp;&nbsp;' . JText::_($this->element['labelto']) . '&nbsp;';
-			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $_value_2, $this->id . '_to');
+			$html[] = JHtml::_('select.genericlist', $budget, $this->name . '[]', $attr, 'value', 'text', $_value2, $this->id . '_to');
 		}
 		else
 		{

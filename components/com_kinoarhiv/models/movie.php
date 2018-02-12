@@ -19,12 +19,37 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivModelMovie extends JModelForm
 {
+	/**
+	 * Internal memory based cache array of data.
+	 *
+	 * @var    array
+	 * @since  1.6
+	 */
 	protected $cache = array();
 
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $context = null;
 
+	/**
+	 * Valid filter fields or ordering.
+	 *
+	 * @var    array
+	 * @since  1.6
+	 */
 	protected $filter_fields = array();
 
+	/**
+	 * An internal cache for the last query used.
+	 *
+	 * @var    \JDatabaseQuery[]
+	 * @since  1.6
+	 */
 	protected $query = array();
 
 	/**
@@ -102,9 +127,9 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Get a movie item object
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getData()
 	{
@@ -156,11 +181,11 @@ class KinoarhivModelMovie extends JModelForm
 				return (object) array();
 			}
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$result = (object) array();
-			$this->setError($e->getMessage());
 			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
 		if (isset($result->attribs))
@@ -196,7 +221,7 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			$result->countries = $db->loadObjectList();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			$result->countries = array();
 			KAComponentHelper::eventLog($e->getMessage());
@@ -222,7 +247,7 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			$result->genres = $db->loadObjectList();
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			$result->genres = array();
 			KAComponentHelper::eventLog($e->getMessage());
@@ -231,94 +256,102 @@ class KinoarhivModelMovie extends JModelForm
 		// Cast and crew
 		$careers = array();
 		$queryCareer = $db->getQuery(true)
-			->select('id, title')
+			->select($db->quoteName(array('id', 'title')))
 			->from($db->quoteName('#__ka_names_career'))
 			->where('is_mainpage = 1 AND is_amplua = 0')
 			->order('ordering ASC');
 
 		$db->setQuery($queryCareer);
-		$_careers = $db->loadObjectList();
 
-		foreach ($_careers as $career)
+		try
 		{
-			$careers[$career->id] = $career->title;
-		}
+			$_careers = $db->loadObjectList();
 
-		$queryCrew = $db->getQuery(true)
-			->select('n.id, n.name, n.latin_name, n.alias, t.type, t.is_actors, t.is_directors, t.voice_artists')
-			->from($db->quoteName('#__ka_names', 'n'))
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id);
+			foreach ($_careers as $career)
+			{
+				$careers[$career->id] = $career->title;
+			}
+
+			$queryCrew = $db->getQuery(true)
+				->select('n.id, n.name, n.latin_name, n.alias, t.type, t.is_actors, t.is_directors, t.voice_artists')
+				->from($db->quoteName('#__ka_names', 'n'))
+				->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id);
 
 			$subqueryCrew = $db->getQuery(true)
 				->select('name_id')
 				->from($db->quoteName('#__ka_rel_names'))
 				->where('movie_id = ' . (int) $id);
 
-		$queryCrew->where('id IN (' . $subqueryCrew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
-			->order('t.ordering ASC');
+			$queryCrew->where('n.id IN (' . $subqueryCrew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
+				->order('t.ordering ASC');
 
-		$db->setQuery($queryCrew);
-		$crew = $db->loadObjectList();
+			$db->setQuery($queryCrew);
+			$crew = $db->loadObjectList();
 
-		$_result = array();
+			$_result = array();
 
-		foreach ($crew as $key => $value)
-		{
-			foreach (explode(',', $value->type) as $k => $type)
+			foreach ($crew as $key => $value)
 			{
-				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
+				foreach (explode(',', $value->type) as $k => $type)
 				{
-					$_result['crew'][$type]['career'] = $careers[$type];
-					$_result['crew'][$type]['items'][] = array(
-						'id'        => $value->id,
-						'name'      => !empty($value->name) ? $value->name : $value->latin_name,
-						'alias'     => $value->alias,
-						'directors' => $value->is_directors
-					);
-				}
+					if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
+					{
+						$_result['crew'][$type]['career']  = $careers[$type];
+						$_result['crew'][$type]['items'][] = array(
+							'id'        => $value->id,
+							'name'      => !empty($value->name) ? $value->name : $value->latin_name,
+							'alias'     => $value->alias,
+							'directors' => $value->is_directors
+						);
+					}
 
-				if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
+					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
+					{
+						$_result['cast'][$type]['career']  = $careers[$type];
+						$_result['cast'][$type]['items'][] = array(
+							'id'    => $value->id,
+							'name'  => !empty($value->name) ? $value->name : $value->latin_name,
+							'alias' => $value->alias
+						);
+					}
+				}
+			}
+
+			if (!empty($_result['crew']))
+			{
+				ksort($_result['crew']);
+
+				foreach ($_result['crew'] as $row)
 				{
-					$_result['cast'][$type]['career'] = $careers[$type];
-					$_result['cast'][$type]['items'][] = array(
-						'id'    => $value->id,
-						'name'  => !empty($value->name) ? $value->name : $value->latin_name,
-						'alias' => $value->alias
-					);
+					$row['total_items'] = count($row['items']);
+
+					if ($row['total_items'] > 0)
+					{
+						$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
+					}
+
+					$result->crew[] = $row;
+				}
+			}
+
+			if (!empty($_result['cast']))
+			{
+				foreach ($_result['cast'] as $row)
+				{
+					$row['total_items'] = count($row['items']);
+
+					if ($row['total_items'] > 0)
+					{
+						$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
+					}
+
+					$result->cast[] = $row;
 				}
 			}
 		}
-
-		if (!empty($_result['crew']))
+		catch (RuntimeException $e)
 		{
-			ksort($_result['crew']);
-
-			foreach ($_result['crew'] as $row)
-			{
-				$row['total_items'] = count($row['items']);
-
-				if ($row['total_items'] > 0)
-				{
-					$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
-				}
-
-				$result->crew[] = $row;
-			}
-		}
-
-		if (!empty($_result['cast']))
-		{
-			foreach ($_result['cast'] as $row)
-			{
-				$row['total_items'] = count($row['items']);
-
-				if ($row['total_items'] > 0)
-				{
-					$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
-				}
-
-				$result->cast[] = $row;
-			}
+			KAComponentHelper::eventLog($e->getMessage());
 		}
 
 		// Premiere dates
@@ -339,15 +372,15 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				$result->premieres = $db->loadObjectList();
 			}
-			catch (Exception $e)
+			catch (RuntimeException $e)
 			{
-				$result->premieres = (object) array();
+				$result->premieres = array();
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 		else
 		{
-			$result->premieres = (object) array();
+			$result->premieres = array();
 		}
 
 		// Release dates
@@ -369,15 +402,15 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				$result->releases = $db->loadObjectList();
 			}
-			catch (Exception $e)
+			catch (RuntimeException $e)
 			{
-				$result->releases = (object) array();
+				$result->releases = array();
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
 		else
 		{
-			$result->releases = (object) array();
+			$result->releases = array();
 		}
 
 		$result->trailer = ($params->get('watch_trailer') == 1) ? $this->getTrailer($id, 'trailer') : (object) array();
@@ -398,9 +431,9 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				$result->slides = $db->loadObjectList();
 			}
-			catch (Exception $e)
+			catch (RuntimeException $e)
 			{
-				$result->slides = (object) array();
+				$result->slides = array();
 				KAComponentHelper::eventLog($e->getMessage());
 			}
 		}
@@ -411,9 +444,9 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Get a short movie info
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getMovieData()
 	{
@@ -441,14 +474,16 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (empty($result))
 			{
-				$this->setError('Error');
-				$result = (object) array();
+				KAComponentHelper::eventLog(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
+
+				return false;
 			}
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
 			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
 		$result->attribs = isset($result->attribs) ? json_decode($result->attribs) : "{}";
@@ -459,9 +494,9 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Method to get cast and crew for movie
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getCast()
 	{
@@ -484,7 +519,17 @@ class KinoarhivModelMovie extends JModelForm
 			->order('ordering ASC');
 
 		$db->setQuery($query);
-		$_careers = $db->loadObjectList();
+
+		try
+		{
+			$_careers = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 
 		foreach ($_careers as $career)
 		{
@@ -492,10 +537,11 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		$queryCrew = $db->getQuery(true)
-			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, n.gender, t.type, t.role, t.is_actors, t.voice_artists, " .
-				"d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, d.alias AS dub_alias, d.fs_alias AS dub_fs_alias, " .
-				"d.gender AS dub_gender, GROUP_CONCAT(r.role SEPARATOR ', ') AS dub_role, ac.desc, " .
-				"g.filename AS url_photo, dg.filename AS dub_url_photo"
+			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, n.gender, t.type, t.role, t.is_actors, " .
+				"t.voice_artists, d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, " .
+				"d.alias AS dub_alias, d.fs_alias AS dub_fs_alias, d.gender AS dub_gender, " .
+				"GROUP_CONCAT(r.role SEPARATOR ', ') AS dub_role, ac.desc, g.filename AS url_photo, " .
+				"dg.filename AS dub_url_photo"
 			)
 			->from($db->quoteName('#__ka_names', 'n'))
 			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id)
@@ -516,7 +562,17 @@ class KinoarhivModelMovie extends JModelForm
 			->order('t.ordering ASC');
 
 		$db->setQuery($queryCrew);
-		$crew = $db->loadObjectList();
+
+		try
+		{
+			$crew = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 
 		$_result = array('crew' => array(), 'cast' => array(), 'dub' => array());
 		$_careersCrew = array();
@@ -561,13 +617,15 @@ class KinoarhivModelMovie extends JModelForm
 					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
 					{
 						$checkingPath1 = JPath::clean(
-							$params->get('media_actor_photo_root') . '/' . $value->dub_fs_alias . '/' . $value->dub_id . '/photo/' . $value->dub_url_photo
+							$params->get('media_actor_photo_root') . '/' . $value->dub_fs_alias . '/' .
+							$value->dub_id . '/photo/' . $value->dub_url_photo
 						);
 						$noCover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 						if (!is_file($checkingPath1))
 						{
-							$value->dub_url_photo = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover1 . '.png';
+							$value->dub_url_photo = JUri::base() . 'media/com_kinoarhiv/images/themes/' .
+							$params->get('ka_theme') . '/' . $noCover1 . '.png';
 						}
 						else
 						{
@@ -693,9 +751,9 @@ class KinoarhivModelMovie extends JModelForm
 	 *
 	 * @param   integer  $id  Movie ID
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getTrailers($id = null)
 	{
@@ -729,13 +787,23 @@ class KinoarhivModelMovie extends JModelForm
 			->where('tr.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 		$db->setQuery($query);
-		$result->trailers = $db->loadObjectList();
 
-		if (count($result->trailers) < 1)
+		try
 		{
-			$result->trailers = array();
+			$result->trailers = $db->loadObjectList();
 
-			return $result;
+			if (empty($result->trailers))
+			{
+				KAComponentHelper::eventLog(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
+
+				return false;
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
 		foreach ($result->trailers as $key => $value)
@@ -769,7 +837,8 @@ class KinoarhivModelMovie extends JModelForm
 							}
 							else
 							{
-								$value->screenshot = $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot;
+								$value->screenshot = $params->get('media_trailers_root_www') . '/' . $value->fs_alias .
+								'/' . $id . '/' . $value->screenshot;
 							}
 						}
 					}
@@ -906,7 +975,8 @@ class KinoarhivModelMovie extends JModelForm
 						}
 						else
 						{
-							$value->screenshot = $params->get('media_trailers_root_www') . '/' . $value->fs_alias . '/' . $id . '/' . $value->screenshot;
+							$value->screenshot = $params->get('media_trailers_root_www') . '/' . $value->fs_alias .
+							'/' . $id . '/' . $value->screenshot;
 						}
 					}
 				}
@@ -914,7 +984,8 @@ class KinoarhivModelMovie extends JModelForm
 				{
 					$value->screenshot = JRoute::_(
 						'index.php?option=com_kinoarhiv&task=media.view&element=trailer&content=image&id=' . $id .
-						'&item_id=' . $value->id . '&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot . '&format=raw&Itemid=' . $itemid
+						'&item_id=' . $value->id . '&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->screenshot .
+						'&format=raw&Itemid=' . $itemid
 					);
 				}
 
@@ -963,7 +1034,9 @@ class KinoarhivModelMovie extends JModelForm
 						}
 						else
 						{
-							$value->files['video'][$i]['src'] = JRoute::_($value->path . '&content=video&fn=' . $val['src'] . '&' . JSession::getFormToken() . '=1');
+							$value->files['video'][$i]['src'] = JRoute::_(
+								$value->path . '&content=video&fn=' . $val['src'] . '&' . JSession::getFormToken() . '=1'
+							);
 						}
 					}
 				}
@@ -1118,10 +1191,20 @@ class KinoarhivModelMovie extends JModelForm
 			->setLimit(1, 0);
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
 
-		if (empty($result))
+		try
 		{
+			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				return (object) array();
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
 			return (object) array();
 		}
 
@@ -1437,9 +1520,9 @@ class KinoarhivModelMovie extends JModelForm
 	 *
 	 * @param   integer  $id  Trailer ID.
 	 *
-	 * @return boolean
+	 * @return  boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getTrailerAccessLevel($id)
 	{
@@ -1453,7 +1536,15 @@ class KinoarhivModelMovie extends JModelForm
 			->where('id = ' . (int) $id . ' AND state = 1 AND access IN (' . $groups . ')');
 
 		$db->setQuery($query);
-		$result = $db->loadResult();
+
+		try
+		{
+			$result = $db->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			return false;
+		}
 
 		return $result < 1 ? false : true;
 	}
@@ -1461,9 +1552,9 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Get winned awards for movie
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getAwards()
 	{
@@ -1473,7 +1564,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		if ($id == 0)
 		{
-			return (object) array();
+			return false;
 		}
 
 		$result = $this->getMovieData();
@@ -1486,7 +1577,17 @@ class KinoarhivModelMovie extends JModelForm
 			->order('year ASC');
 
 		$db->setQuery($query);
-		$result->awards = $db->loadObjectList();
+
+		try
+		{
+			$result->awards = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 
 		return $result;
 	}
@@ -1494,9 +1595,9 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Get the list of albums and their tracks for movie
 	 *
-	 * @return object
+	 * @return  object|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getSoundtrackAlbums()
 	{
@@ -1508,7 +1609,7 @@ class KinoarhivModelMovie extends JModelForm
 
 		if ($movie_id == 0)
 		{
-			return (object) array();
+			return false;
 		}
 
 		$result = $this->getMovieData();
@@ -1574,7 +1675,17 @@ class KinoarhivModelMovie extends JModelForm
 			->order('t.track_number ASC');
 
 		$db->setQuery($query);
-		$result->tracks = $db->loadObjectList();
+
+		try
+		{
+			$result->tracks = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 
 		return $result;
 	}
@@ -1582,9 +1693,9 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * Build list of filters by dimensions for gallery
 	 *
-	 * @return  array
+	 * @return  array|boolean
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function getDimensionFilters()
 	{
@@ -1604,7 +1715,17 @@ class KinoarhivModelMovie extends JModelForm
 				->order('width DESC');
 
 			$db->setQuery($query);
-			$result = $db->loadAssocList();
+
+			try
+			{
+				$result = $db->loadAssocList();
+			}
+			catch (RuntimeException $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
+			}
 		}
 
 		return $result;
@@ -1870,7 +1991,7 @@ class KinoarhivModelMovie extends JModelForm
 			$limit = $value;
 			$this->setState('list.limit', $limit);
 
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
+			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0, 'int');
 			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
 			$this->setState('list.start', $limitstart);
 

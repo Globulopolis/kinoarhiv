@@ -36,11 +36,11 @@ class KinoarhivControllerApi extends JControllerLegacy
 
 		$this->addModelPath(JPATH_ROOT . '/components/com_kinoarhiv/models');
 
-		$model_config = array(
+		$modelConfig = array(
 			'item_state' => array(1, 0)
 		);
 
-		$model   = $this->getModel('API', '', $model_config);
+		$model   = $this->getModel('API', '', $modelConfig);
 		$content = $this->input->get('content', '', 'word');
 		$method  = 'get' . ucfirst($content);
 

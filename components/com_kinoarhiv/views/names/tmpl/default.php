@@ -83,16 +83,18 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 								<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 									<p class="favorite">
 										<?php if ($item->favorite == 1): ?>
-											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id . '&format=json'); ?>" class="cmd-favorite delete" data-ka-msg-place=".middle-nav"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=names.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $item->id, false); ?>" class="cmd-favorite delete" data-ka-msg-place=".middle-nav"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 										<?php else: ?>
-											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $item->id . '&format=json'); ?>" class="cmd-favorite add" data-ka-msg-place=".middle-nav"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+											<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&task=names.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $item->id, false); ?>" class="cmd-favorite add" data-ka-msg-place=".middle-nav"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 										<?php endif; ?>
 									</p>
 								<?php endif; ?>
 							</div>
+
 							<?php if ($item->career != ''): ?>
 								<div class="name-career"><?php echo JText::_('COM_KA_NAMES_CAREER'); ?><?php echo StringHelper::strtolower($item->career); ?></div>
 							<?php endif; ?>
+
 							<?php if (!empty($item->birthplace) || !empty($item->country)): ?>
 								<div class="name-bd">
 									<?php echo JText::_('COM_KA_NAMES_BIRTHPLACE'); ?>

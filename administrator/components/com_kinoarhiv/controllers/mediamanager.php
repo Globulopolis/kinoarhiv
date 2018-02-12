@@ -184,20 +184,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	{
 		JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
-		$model = $this->getModel('mediamanagerItem');
-		$id = $this->input->get('id', 0, 'int');
-		$item_id = $this->input->get('item_id', null, 'array');
+		$model  = $this->getModel('mediamanagerItem');
+		$id     = $this->input->get('id', 0, 'int');
+		$itemID = $this->input->get('item_id', null, 'array');
 		$result = $model->subtitleSetDefault($isDefault);
 
 		if (!$result)
 		{
 			// Errors enqueued in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id[]=' . $item_id[0]);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id[]=' . $itemID[0]);
 
 			return;
 		}
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id[]=' . $item_id[0]);
+		$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id[]=' . $itemID[0]);
 	}
 
 	/**
@@ -245,15 +245,15 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$id = $app->input->get('id', 0, 'int');
-		$data = $this->input->post->get('form', array(), 'array');
-		$form_group = 'trailer';
-		$form = $model->getForm($data, false);
-		$item_id = $data[$form_group]['item_id'];
+		$app       = JFactory::getApplication();
+		$model     = $this->getModel('mediamanagerItem');
+		$section   = $app->input->get('section', '', 'word');
+		$type      = $app->input->get('type', '', 'word');
+		$id        = $app->input->get('id', 0, 'int');
+		$data      = $this->input->post->get('form', array(), 'array');
+		$formGroup = 'trailer';
+		$form      = $model->getForm($data, false);
+		$itemID    = $data[$formGroup]['item_id'];
 
 		if (!$form)
 		{
@@ -262,13 +262,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$validData = $model->validate($form, $data, $form_group);
+		$validData = $model->validate($form, $data, $formGroup);
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section='
-				. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $item_id
+				. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $itemID
 			);
 
 			return;
@@ -276,19 +276,19 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		// Store data for use in KinoarhivModelMediamanagerItem::loadFormData()
 		$app->setUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data', $validData);
-		$result = $model->save($validData[$form_group]);
+		$result = $model->save($validData[$formGroup]);
 
 		if (!$result)
 		{
 			// Errors enqueue in the model
 			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section='
-				. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $item_id
+				. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $itemID
 			);
 
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data');
+		$sessionData = $app->getUserState('com_kinoarhiv.trailers.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -306,7 +306,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			case 'apply':
 				$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section='
-					. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $session_data[$form_group]['item_id'], $message
+					. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $sessionData[$formGroup]['item_id'], $message
 				);
 				break;
 
@@ -363,18 +363,18 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 		jimport('joomla.filesystem.file');
 
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
-		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', 0, 'int');
-		$_tab = $tab ? '&tab=' . $tab : '';
-		$layoutview = $app->input->get('layoutview', '', 'word');
+		$app         = JFactory::getApplication();
+		$model       = $this->getModel('mediamanagerItem');
+		$section     = $app->input->get('section', '', 'word');
+		$type        = $app->input->get('type', '', 'word');
+		$tab         = $app->input->get('tab', 0, 'int');
+		$_tab        = $tab ? '&tab=' . $tab : '';
+		$layoutview  = $app->input->get('layoutview', '', 'word');
 		$_layoutview = $layoutview ? '&layoutview=' . $layoutview : '';
-		$id = $app->input->get('id', 0, 'int');
-		$ids = $app->input->get('item_id', array(), 'array');
-		$path = KAContentHelper::getPath($section, $type, $tab, $id);
-		$url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $section . '&type=' . $type . $_tab . '&id=' . $id . $_layoutview;
+		$id          = $app->input->get('id', 0, 'int');
+		$ids         = $app->input->get('item_id', array(), 'array');
+		$path        = KAContentHelper::getPath($section, $type, $tab, $id);
+		$url         = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $section . '&type=' . $type . $_tab . '&id=' . $id . $_layoutview;
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
@@ -391,9 +391,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		{
 			if ($type == 'gallery')
 			{
-				$gallery_items = $model->getGalleryFiles($section, $type, $ids);
+				$galleryItems = $model->getGalleryFiles($section, $type, $ids);
 
-				foreach ($gallery_items as $item)
+				foreach ($galleryItems as $item)
 				{
 					JFile::delete($path . '/' . $item->filename);
 					JFile::delete($path . '/thumb_' . $item->filename);
@@ -401,11 +401,11 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			elseif ($type == 'trailers')
 			{
-				foreach ($ids as $trailer_id)
+				foreach ($ids as $trailerID)
 				{
-					$trailer_items = $model->getTrailerFiles('screenshot, video, subtitles, chapters', $trailer_id, '', '');
+					$trailerItems = $model->getTrailerFiles('screenshot, video, subtitles, chapters', $trailerID, '', '');
 
-					foreach ($trailer_items as $key => $item)
+					foreach ($trailerItems as $key => $item)
 					{
 						// Remove screenshot
 						if ($key == 'screenshot')
@@ -436,9 +436,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 		elseif ($section == 'name')
 		{
-			$gallery_items = $model->getGalleryFiles($section, $type, $ids);
+			$galleryItems = $model->getGalleryFiles($section, $type, $ids);
 
-			foreach ($gallery_items as $item)
+			foreach ($galleryItems as $item)
 			{
 				JFile::delete($path . '/' . $item->filename);
 				JFile::delete($path . '/thumb_' . $item->filename);
@@ -490,7 +490,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors());
+				KAComponentHelper::renderErrors($model->getErrors());
 				$this->setRedirect($redirect);
 
 				return;
@@ -524,32 +524,32 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$app = JFactory::getApplication();
-		$model = $this->getModel('mediamanagerItem');
+		$app     = JFactory::getApplication();
+		$model   = $this->getModel('mediamanagerItem');
 		$section = $app->input->get('section', '', 'word');
-		$type = $app->input->get('type', '', 'word');
-		$tab = $app->input->get('tab', 0, 'int');
-		$id = $app->input->get('id', 0, 'int');
-		$from_tab = $app->input->get('from_tab', 0, 'int');
-		$from_id = $app->input->get('from_id', 0, 'int');
-		$url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $section . '&type=' . $type
+		$type    = $app->input->get('type', '', 'word');
+		$tab     = $app->input->get('tab', 0, 'int');
+		$id      = $app->input->get('id', 0, 'int');
+		$fromTab = $app->input->get('from_tab', 0, 'int');
+		$fromID  = $app->input->get('from_id', 0, 'int');
+		$url     = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $section . '&type=' . $type
 			. '&tab=' . $tab . '&id=' . $id . '&layoutview=' . $app->input->get('layoutview', '', 'word');
 
 		// Copy from
-		$src_path = KAContentHelper::getPath($section, $type, $from_tab, $from_id);
+		$srcPath = KAContentHelper::getPath($section, $type, $fromTab, $fromID);
 
 		// Copy to
-		$dst_path = KAContentHelper::getPath($section, $type, $tab, $id);
+		$dstPath = KAContentHelper::getPath($section, $type, $tab, $id);
 
 		// Copy selected folders
-		if (KAFilesystem::getInstance()->move($src_path, $dst_path, true) === false)
+		if (KAFilesystem::getInstance()->move($srcPath, $dstPath, true) === false)
 		{
 			$this->setRedirect($url, JText::_('COM_KA_MOVIES_GALLERY_COPYFROM_ERROR_FS'), 'error');
 
 			return;
 		}
 
-		$result = $model->copyfrom($section, $type, $from_id, $id, $from_tab);
+		$result = $model->copyfrom($section, $type, $fromID, $id, $fromTab);
 
 		if (!$result)
 		{

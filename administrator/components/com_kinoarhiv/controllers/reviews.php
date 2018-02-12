@@ -82,7 +82,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['id']);
 
 			return;
@@ -300,7 +300,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=reviews');
 
 				return;

@@ -17,8 +17,6 @@ defined('_JEXEC') or die;
  */
 class KinoarhivModelRelease extends JModelItem
 {
-	protected $context = 'com_kinoarhiv.release';
-
 	/**
 	 * Method to auto-populate the model state.
 	 *
@@ -97,16 +95,16 @@ class KinoarhivModelRelease extends JModelItem
 				$query = $db->getQuery(true)
 					->select(
 						$this->getState(
-						'item.select',
-						'r.id, r.release_date, r.desc, cn.name, cn.code, media.title AS media_type'
+							'item.select',
+							'r.id, r.release_date, r.desc, cn.name, cn.code, media.title AS media_type'
+						)
 					)
-				)
-				->from($db->quoteName('#__ka_releases', 'r'))
-				->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
-				->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'))
-				->where($db->quoteName('r.movie_id') . ' = ' . $pk)
-				->where($db->quoteName('r.language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
-				->order($db->quoteName('r.release_date') . ' DESC');
+					->from($db->quoteName('#__ka_releases', 'r'))
+					->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
+					->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'))
+					->where($db->quoteName('r.movie_id') . ' = ' . $pk)
+					->where($db->quoteName('r.language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
+					->order($db->quoteName('r.release_date') . ' DESC');
 
 				$db->setQuery($query);
 				$data->items = $db->loadObjectList();

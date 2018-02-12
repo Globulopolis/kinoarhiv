@@ -34,11 +34,52 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 	}
 
 	/**
+	 * Adds album(s) to favorites list.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function favorite()
+	{
+		if (JFactory::getUser()->guest)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+			return;
+		}
+
+		$action = $this->input->get('action', '', 'word');
+
+		if ($action == 'delete')
+		{
+			$this->favoriteRemove();
+
+			return;
+		}
+
+		$id     = $this->input->get('id', 0, 'int');
+		$view   = $this->input->get('view', 'albums', 'cmd');
+		$model  = $this->getModel('albums');
+		$result = $model->favoriteAdd($id);
+		$id     = ($view == 'album') ? '&id=' . $id : '';
+
+		if (!$result)
+		{
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false));
+		}
+		else
+		{
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false), JText::_('COM_KA_FAVORITE_ADDED'));
+		}
+	}
+
+	/**
 	 * Removes album(s) from favorites list.
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function favoriteRemove()
 	{
@@ -49,26 +90,45 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 			return;
 		}
 
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$ids = $this->input->get('ids', array(), 'array');
-
-		if (!is_array($ids) || count($ids) < 1)
-		{
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums'), JText::_('ERROR'), 'error');
-
-			return;
-		}
-
-		// Encoded value. Default 'view=profile'
-		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
-		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
+		$id = $this->input->get('id', 0, 'int');
+		$view = $this->input->get('view', 'albums', 'cmd');
 		$model = $this->getModel('albums');
-		$result = $model->favorite();
 
-		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
+		// If ID not empty when data from submitted form, else from 'Remove from favorite ' link.
+		if (!$id)
+		{
+			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		$this->setRedirect($redirUrl);
+			$ids = $this->input->get('ids', array(), 'array');
+
+			if (!is_array($ids) || count($ids) < 1)
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums'), JText::_('ERROR'), 'error');
+
+				return;
+			}
+
+			// Encoded value. Default 'view=profile'
+			$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
+			$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
+			$result = $model->favoriteRemove($ids);
+
+			$this->setRedirect($redirUrl);
+		}
+		else
+		{
+			$result = $model->favoriteRemove($id);
+			$id     = ($view == 'album') ? '&id=' . $id : '';
+
+			if (!$result)
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false));
+			}
+			else
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false), JText::_('COM_KA_FAVORITE_REMOVED'));
+			}
+		}
 	}
 
 	/**

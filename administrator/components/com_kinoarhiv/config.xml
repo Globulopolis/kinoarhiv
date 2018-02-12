@@ -257,7 +257,7 @@
 		<field name="ka_theme" type="folderlist" default="default"
 			   directory="media/com_kinoarhiv/images/themes/" label="COM_KA_FIELD_AP_KA_THEME_LABEL"
 			   description="COM_KA_FIELD_AP_KA_THEME_LABEL_DESC" hide_none="true"/>
-		<field name="ui_theme" type="folderlist" default="ui-lightness"
+		<field name="ui_theme" type="folderlist" default="base"
 			   directory="media/com_kinoarhiv/jqueryui/" label="COM_KA_FIELD_AP_UI_THEME_LABEL"
 			   description="COM_KA_FIELD_AP_UI_THEME_LABEL_DESC" hide_none="true" hide_default="true"/>
 		<field name="vegas_enable" default="0" type="radio" class="btn-group" label="COM_KA_FIELD_AP_VEGAS_LABEL"

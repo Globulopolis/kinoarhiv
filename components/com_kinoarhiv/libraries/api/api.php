@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
-use Joomla\Utilities\ArrayHelper;
 
 /**
  * API class
@@ -66,14 +65,14 @@ class KAApi
 	public function getParser($name, $options = array())
 	{
 		$path = __DIR__ . '/parsers/' . $name;
-		$class_path = JPath::clean($path . '/' . $name . '.php');
+		$classPath = JPath::clean($path . '/' . $name . '.php');
 		$class = 'KAParser' . ucfirst($name);
 
 		if (!class_exists($class))
 		{
-			if (file_exists($class_path))
+			if (file_exists($classPath))
 			{
-				require_once $class_path;
+				require_once $classPath;
 			}
 			else
 			{

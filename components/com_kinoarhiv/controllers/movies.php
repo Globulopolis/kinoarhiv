@@ -18,11 +18,52 @@ defined('_JEXEC') or die;
 class KinoarhivControllerMovies extends JControllerLegacy
 {
 	/**
+	 * Mark movie as favorite
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function favorite()
+	{
+		if (JFactory::getUser()->guest)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+
+			return;
+		}
+
+		$action = $this->input->get('action', '', 'word');
+
+		if ($action == 'delete')
+		{
+			$this->favoriteRemove();
+
+			return;
+		}
+
+		$id     = $this->input->get('id', 0, 'int');
+		$view   = $this->input->get('view', 'movies', 'cmd');
+		$model  = $this->getModel('movies');
+		$result = $model->favoriteAdd($id);
+		$id     = ($view == 'movie') ? '&id=' . $id : '';
+
+		if (!$result)
+		{
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false));
+		}
+		else
+		{
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false), JText::_('COM_KA_FAVORITE_ADDED'));
+		}
+	}
+
+	/**
 	 * Removes movie(s) from favorites list.
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function favoriteRemove()
 	{
@@ -33,35 +74,92 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$id = $this->input->get('id', 0, 'int');
+		$view = $this->input->get('view', 'movies', 'cmd');
+		$model = $this->getModel('movies');
 
-		$ids = $this->input->get('ids', array(), 'array');
-
-		if (!is_array($ids) || count($ids) < 1)
+		// If ID not empty when data from submitted form, else from 'Remove from favorite ' link.
+		if (!$id)
 		{
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite'), JText::_('ERROR'), 'error');
+			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+			$ids = $this->input->get('ids', array(), 'array');
+
+			if (!is_array($ids) || count($ids) < 1)
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies'), JText::_('ERROR'), 'error');
+
+				return;
+			}
+
+			// Encoded value. Default 'view=profile'
+			$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
+			$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
+			$result = $model->favoriteRemove($ids);
+
+			$this->setRedirect($redirUrl);
+		}
+		else
+		{
+			$result = $model->favoriteRemove($id);
+			$id     = ($view == 'movie') ? '&id=' . $id : '';
+
+			if (!$result)
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false));
+			}
+			else
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false), JText::_('COM_KA_FAVORITE_REMOVED'));
+			}
+		}
+	}
+
+	/**
+	 * Mark movie as watched
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function watched()
+	{
+		if (JFactory::getUser()->guest)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv', JText::_('JERROR_ALERTNOAUTHOR'), 'error');
 
 			return;
 		}
 
-		// Encoded value. Default 'view=profile'
-		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
-		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
-		$view = $this->input->get('view', 'movies', 'cmd');
-		$model = $this->getModel($view);
-		$result = $model->favorite();
+		$action = $this->input->get('action', '', 'word');
 
-		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
+		if ($action == 'delete')
+		{
+			$this->watchedRemove();
 
-		$this->setRedirect($redirUrl);
+			return;
+		}
+
+		$id     = $this->input->get('id', 0, 'int');
+		$view   = $this->input->get('view', 'movies', 'cmd');
+		$model  = $this->getModel('movies');
+		$result = $model->watchedAdd($id);
+		$id     = ($view == 'movie') ? '&id=' . $id : '';
+
+		if (!$result)
+		{
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false));
+		}
+		else
+		{
+			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false), JText::_('COM_KA_WATCHED_ADDED'));
+		}
 	}
 
 	/**
 	 * Removes movie(s) from watched list.
 	 *
 	 * @return  void
-	 *
-	 * @throws  Exception
 	 *
 	 * @since   3.1
 	 */
@@ -74,26 +172,45 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		$ids = $this->input->get('ids', array(), 'array');
-
-		if (!is_array($ids) || count($ids) < 1)
-		{
-			$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=watched'), JText::_('ERROR'), 'error');
-
-			return;
-		}
-
-		// Encoded value. Default 'view=profile'
-		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
-		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
+		$id = $this->input->get('id', 0, 'int');
+		$view = $this->input->get('view', 'movies', 'cmd');
 		$model = $this->getModel('movies');
-		$result = $model->watched();
 
-		$this->setMessage($result['message'], $result['success'] ? 'message' : 'error');
+		// If ID not empty when data from submitted form, else from 'Remove from favorite ' link.
+		if (!$id)
+		{
+			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		$this->setRedirect($redirUrl);
+			$ids = $this->input->get('ids', array(), 'array');
+
+			if (!is_array($ids) || count($ids) < 1)
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=watched'), JText::_('ERROR'), 'error');
+
+				return;
+			}
+
+			// Encoded value. Default 'view=profile'
+			$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
+			$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
+			$result = $model->watchedRemove($ids);
+
+			$this->setRedirect($redirUrl);
+		}
+		else
+		{
+			$result = $model->watchedRemove($id);
+			$id     = ($view == 'movie') ? '&id=' . $id : '';
+
+			if (!$result)
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false));
+			}
+			else
+			{
+				$this->setRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=' . $view . $id, false), JText::_('COM_KA_WATCHED_REMOVED'));
+			}
+		}
 	}
 
 	/**

@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $this->params->get('ui_theme') . '/jquery-ui.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
@@ -226,7 +227,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				{
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieCastAndCrew&format=json&showAll=1'
-							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieCast&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieCast&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieCast&format=json&id=' . $this->id),
@@ -246,18 +248,18 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 						'pgbuttons' => false,
 						'pginput'   => false,
 						'colModel'  => array(
+							'JGRID_HEADING_ID' => (object) array(
+								'name' => 'row_id', 'index' => 't.id', 'width' => 60, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
 							'COM_KA_FIELD_NAME' => (object) array(
 								'name' => 'name', 'index' => 'n.name', 'width' => 350, 'title' => false,
 								'sorttype' => 'text',
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'bw', 'ew')
-								)
-							),
-							'JGRID_HEADING_ID' => (object) array(
-								'name' => 'name_id', 'index' => 'n.id', 'width' => 55, 'title' => false,
-								'sorttype' => 'int',
-								'searchoptions' => (object) array(
-									'sopt' => array('cn', 'eq', 'le', 'ge')
 								)
 							),
 							'COM_KA_FIELD_NAME_ROLE' => (object) array(
@@ -272,13 +274,6 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 								'sorttype' => 'text',
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'bw', 'ew')
-								)
-							),
-							'ID' => (object) array(
-								'name' => 'dub_id', 'index' => 'd.id', 'width' => 55, 'title' => false,
-								'sorttype' => 'int',
-								'searchoptions' => (object) array(
-									'sopt' => array('cn', 'eq', 'le', 'ge')
 								)
 							),
 							'JGRID_HEADING_ORDERING' => (object) array(
@@ -308,7 +303,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				{
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json&showAll=1'
-							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieAwards&format=json&id=' . $this->id),
@@ -372,7 +368,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				{
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=moviePremieres&format=json&showAll=1'
-							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMoviePremieres&format=json&id=' . $this->id),
@@ -433,7 +430,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				{
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json&showAll=1'
-							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'),
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
 						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieReleases&format=json&id=' . $this->id),

@@ -24,7 +24,7 @@ class KAComponentHelperBackend
 	 *
 	 * @return  void
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public static function setHeadTags()
 	{
@@ -37,7 +37,6 @@ class KAComponentHelperBackend
 			return;
 		}
 
-		JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $params->get('ui_theme') . '/jquery-ui.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/plugins_backend.min.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/component/styles_backend.min.css');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/aurora.min.css');
@@ -78,9 +77,9 @@ class KAComponentHelperBackend
 	/**
 	 * Load mediamanager assets
 	 *
-	 * @return void
+	 * @return  void
 	 *
-	 * @since  3.0
+	 * @since   3.1
 	 */
 	public static function loadMediamanagerAssets()
 	{
@@ -89,57 +88,6 @@ class KAComponentHelperBackend
 		JHtml::_('script', 'media/com_kinoarhiv/plupload/plupload.full.min.js');
 		KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/plupload/i18n');
 		JHtml::_('script', 'media/com_kinoarhiv/plupload/jquery.plupload.queue/jquery.plupload.queue.min.js');
-	}
-
-	/**
-	 * Method to get an errors from $errors and enqueue or directly display them.
-	 *
-	 * @param   mixed    $errors  Exceptions object or array.
-	 * @param   string   $format  Document type format.
-	 * @param   integer  $count   Number of errors to process.
-	 *
-	 * @return  string|boolean  Return string if document type not a html.
-	 *
-	 * @since  3.0
-	 */
-	public static function renderErrors($errors, $format = 'html', $count = 3)
-	{
-		$app = JFactory::getApplication();
-		$totalErrors = count($errors);
-		$_errors = array();
-
-		for ($i = 0; $i < $totalErrors && $i < $count; $i++)
-		{
-			if ($errors[$i] instanceof Exception)
-			{
-				if ($format == 'html')
-				{
-					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				}
-				else
-				{
-					$_errors[] = $errors[$i]->getMessage();
-				}
-			}
-			else
-			{
-				if ($format == 'html')
-				{
-					$app->enqueueMessage($errors[$i], 'warning');
-				}
-				else
-				{
-					$_errors[] = $errors[$i]['message'];
-				}
-			}
-		}
-
-		if ($format != 'html')
-		{
-			return implode('<br />', $_errors);
-		}
-
-		return true;
 	}
 
 	/**

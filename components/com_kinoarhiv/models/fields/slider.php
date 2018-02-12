@@ -93,8 +93,8 @@ class JFormFieldSlider extends JFormField
 		{
 			if (strpos($this->element['data-slider-max'], 'params::') !== false)
 			{
-				$val_args = explode('::', $this->element['data-slider-max']);
-				$max = $params->get($val_args[1]);
+				$valueArgs = explode('::', $this->element['data-slider-max']);
+				$max = $params->get($valueArgs[1]);
 			}
 			else
 			{
@@ -109,40 +109,40 @@ class JFormFieldSlider extends JFormField
 		if ($this->element['data-slider-range'] == 'true')
 		{
 			$attr .= ' data-slider-range="true"';
-			$def_args = explode(',', $this->element['data-default']);
-			$def_values = array();
+			$defaultArgs = explode(',', $this->element['data-default']);
+			$defaultValues = array();
 
 			// First default value
-			if (strpos($def_args[0], 'params::') !== false)
+			if (strpos($defaultArgs[0], 'params::') !== false)
 			{
-				$temp = explode('::', $def_args[0]);
-				$def_values[0] = $params->get((string) $temp[1]);
+				$temp = explode('::', $defaultArgs[0]);
+				$defaultValues[0] = $params->get((string) $temp[1]);
 			}
 			else
 			{
 				// Remove openning square bracket
-				$def_values[0] = substr($def_args[0], 1);
+				$defaultValues[0] = substr($defaultArgs[0], 1);
 			}
 
 			// Second default value
-			if (strpos($def_args[1], 'params::') !== false)
+			if (strpos($defaultArgs[1], 'params::') !== false)
 			{
-				$temp = explode('::', $def_args[1]);
-				$def_values[1] = $params->get((string) substr($temp[1], 0, -1));
+				$temp = explode('::', $defaultArgs[1]);
+				$defaultValues[1] = $params->get((string) substr($temp[1], 0, -1));
 			}
 			else
 			{
 				// Remove closing square bracket
-				$def_values[1] = substr($def_args[1], 0, -1);
+				$defaultValues[1] = substr($defaultArgs[1], 0, -1);
 			}
 
 			// It must be in format: [value1,value2]
-			$current_value = strlen($this->value) ? '[' . $this->value . ']' : '[' . implode(',', $def_values) . ']';
+			$currentValue = strlen($this->value) ? '[' . $this->value . ']' : '[' . implode(',', $defaultValues) . ']';
 		}
 		else
 		{
 			$attr .= ' data-slider-range="false"';
-			$current_value = $this->value;
+			$currentValue = $this->value;
 		}
 
 		if ($this->element['data-slider-disabled'] == 'false')
@@ -156,6 +156,6 @@ class JFormFieldSlider extends JFormField
 		}
 
 		return '<input name="' . $this->name . '" data-slider-min="' . $min . '" data-slider-max="' . $max . '"'
-			. ' data-slider-value="' . $current_value . '"' . ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';
+			. ' data-slider-value="' . $currentValue . '"' . ($id !== '' ? ' id="' . $id . '"' : '') . ' ' . trim($attr) . ' />';
 	}
 }

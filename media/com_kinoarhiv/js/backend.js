@@ -467,6 +467,18 @@ jQuery(document).ready(function($){
 				},
 				gridComplete: function(){
 					$(this).find('.jqgroup').addClass('ui-widget-header');
+				},
+				loadError: function(xhr, status, error){
+					var response = '';
+
+					try {
+						response = JSON.parse(xhr.responseText);
+						response = response.message;
+					} catch (e) {
+						response = xhr.status + ' ' + error;
+					}
+
+					Aurora.message([{text: response, type: 'error'}], '#system-message-container', msgOptions);
 				}
 			}).jqGrid('navGrid', $this.next('div').attr('id'),
 				{
@@ -505,8 +517,11 @@ jQuery(document).ready(function($){
 							Aurora.message([{text: error, type: 'error'}], '#system-message-container', msgOptions);
 						});
 					},
-					addtext: navgrid.btn.lang.addtext, edittext: navgrid.btn.lang.edittext, deltext: navgrid.btn.lang.deltext,
-					searchtext: navgrid.btn.lang.searchtext, refreshtext: navgrid.btn.lang.refreshtext,
+					addtext: navgrid.btn.lang.addtext,
+					edittext: navgrid.btn.lang.edittext,
+					deltext: navgrid.btn.lang.deltext,
+					searchtext: navgrid.btn.lang.searchtext,
+					refreshtext: navgrid.btn.lang.refreshtext,
 					viewtext: navgrid.btn.lang.viewtext,
 					view: true
 				},

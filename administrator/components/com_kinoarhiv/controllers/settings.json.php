@@ -62,7 +62,7 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		// Check the return value.
 		if (!$result)
 		{
-			$errors = KAComponentHelperBackend::renderErrors(JFactory::getApplication()->getMessageQueue(), 'json');
+			$errors = KAComponentHelper::renderErrors(JFactory::getApplication()->getMessageQueue(), 'json');
 			echo json_encode(array('success' => false, 'message' => $errors));
 
 			return;
@@ -76,7 +76,7 @@ class KinoarhivControllerSettings extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function saveConfig()
 	{
@@ -102,6 +102,13 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		echo json_encode(JComponentHelper::getParams('com_kinoarhiv'));
 	}
 
+	/**
+	 * Validate folder paths.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.0
+	 */
 	public function validatePaths()
 	{
 		$paths = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -110,10 +117,10 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		foreach ($paths as $key => $path)
 		{
 			$path = JPath::clean($path);
-			$files_keys = array('ffmpeg_path', 'ffprobe_path', 'gnuplot_path', 'upload_gallery_watermark_image');
+			$filesKeys = array('ffmpeg_path', 'ffprobe_path', 'gnuplot_path', 'upload_gallery_watermark_image');
 
 			// Check if checked value not a file
-			if (!in_array($key, $files_keys))
+			if (!in_array($key, $filesKeys))
 			{
 				if (!is_dir($path) || !is_writable($path))
 				{

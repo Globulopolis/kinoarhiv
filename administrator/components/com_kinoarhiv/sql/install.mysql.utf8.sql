@@ -344,6 +344,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_rel_genres` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_rel_names` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name_id` int(11) NOT NULL DEFAULT '0',
   `movie_id` int(11) NOT NULL DEFAULT '0',
   `type` varchar(16) NOT NULL DEFAULT '0',
@@ -354,8 +355,9 @@ CREATE TABLE IF NOT EXISTS `#__ka_rel_names` (
   `is_directors` tinyint(1) NOT NULL DEFAULT '0',
   `ordering` int(11) NOT NULL DEFAULT '0',
   `desc` mediumtext NOT NULL,
-  PRIMARY KEY (`name_id`,`movie_id`),
-  KEY `idx_dub_id` (`dub_id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_dub_id` (`dub_id`),
+  KEY `idx_cc` (`name_id`,`movie_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_rel_names_career` (

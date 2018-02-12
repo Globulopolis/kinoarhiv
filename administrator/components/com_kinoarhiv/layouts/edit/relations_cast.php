@@ -49,7 +49,7 @@ JHtml::_('behavior.keepalive');
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&item_id=' . $input->getInt('item_id', 0) . '&input_name=' . $input->getString('input_name', '')); ?>"
 	method="post" name="adminForm" id="adminForm" autocomplete="off" class="form-validate">
 	<div class="row-fluid form-horizontal-desktop">
-		<div class="span12">
+		<div class="span6">
 			<fieldset class="form-horizontal">
 				<?php foreach ($form->getFieldset() as $field): ?>
 					<div class="control-group">
@@ -58,6 +58,10 @@ JHtml::_('behavior.keepalive');
 					</div>
 				<?php endforeach; ?>
 			</fieldset>
+		</div>
+
+		<div class="span6">
+			<?php echo KAComponentHelper::showMsg(JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_HELP')); ?>
 		</div>
 	</div>
 	<input type="hidden" name="task" value=""/>

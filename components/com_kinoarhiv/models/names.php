@@ -20,7 +20,14 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivModelNames extends JModelList
 {
-	protected $context = null;
+	/**
+	 * Context string for the model type.  This is used to handle uniqueness
+	 * when dealing with the getStoreId() method and caching data structures.
+	 *
+	 * @var    string
+	 * @since  1.6
+	 */
+	protected $context = 'com_kinoarhiv.names';
 
 	/**
 	 * Constructor.
@@ -195,10 +202,10 @@ class KinoarhivModelNames extends JModelList
 
 			if ($params->get('search_names_name') == 1 && !empty($name))
 			{
-				$exact_match = $app->input->get('exact_match', 0, 'int');
+				$exactMatch = $app->input->get('exact_match', 0, 'int');
 				$filter = StringHelper::strtolower(trim($name));
 
-				if ($exact_match === 1)
+				if ($exactMatch === 1)
 				{
 					$filter = $db->quote('%' . $db->escape($filter, true) . '%', false);
 				}
@@ -231,21 +238,29 @@ class KinoarhivModelNames extends JModelList
 
 			if ($params->get('search_names_mtitle') == 1 && !empty($mtitle))
 			{
-				$subquery_title = $db->getQuery(true)
+				$subqueryTitle = $db->getQuery(true)
 					->select('name_id')
 					->from($db->quoteName('#__ka_rel_names'))
 					->where('movie_id = ' . (int) $mtitle)
 					->group('name_id');
 
-				$db->setQuery($subquery_title);
-				$name_ids = $db->loadColumn();
+				$db->setQuery($subqueryTitle);
 
-				if (count($name_ids) == 0)
+				try
 				{
-					$name_ids = array(0);
-				}
+					$nameIDs = $db->loadColumn();
 
-				$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($name_ids)) . ')');
+					if (count($nameIDs) == 0)
+					{
+						$nameIDs = array(0);
+					}
+
+					$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($nameIDs)) . ')');
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+				}
 			}
 
 			// Filter by birthplace
@@ -269,21 +284,29 @@ class KinoarhivModelNames extends JModelList
 
 			if ($params->get('search_names_amplua') == 1 && !empty($amplua))
 			{
-				$subquery_amplua = $db->getQuery(true)
+				$subqueryAmplua = $db->getQuery(true)
 					->select('name_id')
 					->from($db->quoteName('#__ka_rel_names_career'))
 					->where('career_id = ' . (int) $amplua)
 					->group('name_id');
 
-				$db->setQuery($subquery_amplua);
-				$name_ids = $db->loadColumn();
+				$db->setQuery($subqueryAmplua);
 
-				if (count($name_ids) == 0)
+				try
 				{
-					$name_ids = array(0);
-				}
+					$nameIDs = $db->loadColumn();
 
-				$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($name_ids)) . ')');
+					if (count($nameIDs) == 0)
+					{
+						$nameIDs = array(0);
+					}
+
+					$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($nameIDs)) . ')');
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+				}
 			}
 		}
 
@@ -307,171 +330,166 @@ class KinoarhivModelNames extends JModelList
 	{
 		jimport('models.search', JPATH_COMPONENT);
 
-		$search_model = new KinoarhivModelSearch;
+		$searchModel = new KinoarhivModelSearch;
 
-		return $search_model->getActiveFilters();
+		return $searchModel->getActiveFilters();
 	}
 
 	/**
 	 * Method to add a person into favorites
 	 *
-	 * @return array
+	 * @param   integer  $id  Person ID.
 	 *
-	 * @throws Exception
+	 * @return  boolean
 	 *
-	 * @since  3.0
+	 * @since   3.1
 	 */
-	public function favorite()
+	public function favoriteAdd($id)
 	{
 		$db = $this->getDbo();
-		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
-		$action = $app->input->get('action', '', 'cmd');
-		$name_id = $app->input->get('id', 0, 'int');
-		$name_ids = $app->input->get('ids', array(), 'array');
-		$total = '';
+		$userID = JFactory::getUser()->get('id');
 
-		if (!empty($name_ids))
+		// Check if any record with person ID exists in database.
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('uid', 'favorite')))
+			->from($db->quoteName('#__ka_user_marked_names'))
+			->where($db->quoteName('uid') . ' = ' . (int) $userID)
+			->where($db->quoteName('name_id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
 		{
-			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+			$result = $db->loadAssoc();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$success = false;
-		$url = '';
-		$text = '';
-
-		if (empty($name_ids))
+		if (!$result)
 		{
-			$query_total = $db->getQuery(true)
-				->select('favorite')
-				->from($db->quoteName('#__ka_user_marked_names'))
-				->where('uid = ' . (int) $user->get('id') . ' AND name_id = ' . (int) $name_id);
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_user_marked_names'))
+				->columns($db->quoteName(array('uid', 'name_id', 'favorite', 'favorite_added')))
+				->values("'" . (int) $userID . "', '" . (int) $id . "', '1', NOW()");
 
-			$db->setQuery($query_total);
-			$total = $db->loadResult();
+			$db->setQuery($query);
+		}
+		else
+		{
+			if ($result['favorite'] == 1)
+			{
+				$app->enqueueMessage(JText::_('COM_KA_FAVORITE_ERROR'), 'notice');
+
+				return false;
+			}
+
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_user_marked_names'))
+				->set($db->quoteName('favorite') . " = '1', " . $db->quoteName('favorite_added') . " = NOW()")
+				->where($db->quoteName('uid') . ' = ' . (int) $userID)
+				->where($db->quoteName('name_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
 		}
 
-		if ($action == 'add')
+		try
 		{
-			if ($total == 1)
-			{
-				$message = JText::_('COM_KA_FAVORITE_ERROR');
-			}
-			else
-			{
-				if (is_null($total))
-				{
-					$query = $db->getQuery(true)
-						->insert($db->quoteName('#__ka_user_marked_names'))
-						->columns('uid, name_id, favorite, favorite_added')
-						->values("'" . $user->get('id') . "', '" . (int) $name_id . "', '1', NOW()");
-
-					$db->setQuery($query);
-				}
-				elseif ($total == 0)
-				{
-					$query = $db->getQuery(true)
-						->update($db->quoteName('#__ka_user_marked_names'))
-						->set("favorite = '1', favorite_added = NOW()")
-						->where('uid = ' . $user->get('id') . ' AND name_id = ' . (int) $name_id);
-
-					$db->setQuery($query);
-				}
-
-				if ($db->execute())
-				{
-					$success = true;
-					$message = JText::_('COM_KA_FAVORITE_ADDED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=delete&Itemid=' . $itemid . '&id=' . $name_id . '&format=json', false);
-					$text = JText::_('COM_KA_REMOVEFROM_FAVORITE');
-				}
-				else
-				{
-					$message = JText::_('JERROR_ERROR');
-				}
-			}
+			$db->execute();
 		}
-		elseif ($action == 'delete')
+		catch (RuntimeException $e)
 		{
-			if ($total == 1)
+			$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Removes person(s) from favorites.
+	 *
+	 * @param   mixed  $id  Person ID or array of IDs.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function favoriteRemove($id)
+	{
+		$db = $this->getDbo();
+		$app = JFactory::getApplication();
+		$userID = JFactory::getUser()->get('id');
+
+		if (!is_array($id))
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_user_marked_names'))
+				->set($db->quoteName('favorite') . " = '0'")
+				->where($db->quoteName('uid') . ' = ' . (int) $userID)
+				->where($db->quoteName('name_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
 			{
-				$query = $db->getQuery(true)
-					->update($db->quoteName('#__ka_user_marked_names'))
-					->set("favorite = '0'")
-					->where('uid = ' . $user->get('id') . ' AND name_id = ' . (int) $name_id);
-
-				$db->setQuery($query);
-
-				if ($db->execute())
-				{
-					$success = true;
-					$message = JText::_('COM_KA_FAVORITE_REMOVED');
-					$url = JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=add&Itemid=' . $itemid . '&id=' . $name_id . '&format=json', false);
-					$text = JText::_('COM_KA_ADDTO_FAVORITE');
-				}
-				else
-				{
-					$message = JText::_('JERROR_ERROR');
-				}
+				$db->execute();
 			}
-			else
+			catch (RuntimeException $e)
 			{
-				if (!empty($name_ids))
-				{
-					$query_result = true;
-					$db->setDebug(true);
-					$db->lockTable('#__ka_user_marked_names');
-					$db->transactionStart();
+				$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+				KAComponentHelper::eventLog($e->getMessage());
 
-					foreach ($name_ids as $id)
-					{
-						$query = $db->getQuery(true);
-
-						$query->update($db->quoteName('#__ka_user_marked_names'))
-							->set("favorite = '0'")
-							->where('uid = ' . $user->get('id') . ' AND name_id = ' . (int) $id);
-
-						$db->setQuery($query . ';');
-
-						if ($db->execute() === false)
-						{
-							$query_result = false;
-							break;
-						}
-					}
-
-					if ($query_result === true)
-					{
-						$db->transactionCommit();
-
-						$success = true;
-						$message = JText::_('COM_KA_FAVORITE_REMOVED');
-						$url = JRoute::_('index.php?option=com_kinoarhiv&task=names.favorite&action=add&Itemid=' . $itemid . '&id=' . $name_id . '&format=json', false);
-						$text = JText::_('COM_KA_ADDTO_FAVORITE');
-					}
-					else
-					{
-						$db->transactionRollback();
-
-						$message = JText::_('JERROR_ERROR');
-					}
-
-					$db->unlockTables();
-					$db->setDebug(false);
-				}
-				else
-				{
-					$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
-				}
+				return false;
 			}
 		}
 		else
 		{
-			$message = JText::_('JERROR_AN_ERROR_HAS_OCCURRED');
+			$queryResult = true;
+			$db->lockTable('#__ka_user_marked_names');
+			$db->transactionStart();
+
+			foreach ($id as $_id)
+			{
+				$query = $db->getQuery(true);
+
+				$query->update($db->quoteName('#__ka_user_marked_names'))
+					->set($db->quoteName('favorite') . " = '0'")
+					->where($db->quoteName('uid') . ' = ' . (int) $userID)
+					->where($db->quoteName('name_id') . ' = ' . (int) $_id);
+
+				$db->setQuery($query . ';');
+
+				if ($db->execute() === false)
+				{
+					$queryResult = false;
+					break;
+				}
+			}
+
+			if ($queryResult === true)
+			{
+				$db->transactionCommit();
+				$db->unlockTables();
+			}
+			else
+			{
+				$db->transactionRollback();
+				$db->unlockTables();
+				$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+
+				return false;
+			}
 		}
 
-		return array('success' => $success, 'message' => $message, 'url' => $url, 'text' => $text);
+		return true;
 	}
 
 	/**

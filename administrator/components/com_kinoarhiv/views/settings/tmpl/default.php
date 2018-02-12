@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tabstate');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.modal', 'collapseModal');
+JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $this->form->getValue('ui_theme') . '/jquery-ui.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 ?>
 <script type="text/javascript">

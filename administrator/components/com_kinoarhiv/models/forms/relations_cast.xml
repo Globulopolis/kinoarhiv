@@ -3,24 +3,23 @@
 	<fieldset addrulepath="administrator/components/com_kinoarhiv/models/rules"
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="type" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE" filter="integer"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC" class="span6" data-content="careers"
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC" class="span12" data-content="careers"
 			   data-allow-clear="true" data-remote="true" data-key="id" data-sel-size="1" data-remote-show-all="true"
 			   data-lang="*" required="true">
 			<option value=""></option>
 		</field>
-		<field type="spacer" name="type_spacer" label=" "/>
 		<field name="name_id" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" filter="integer"
-			   class="span6" required="true" data-content="names" data-allow-clear="true" data-remote="true"
+			   class="span12" required="true" data-content="names" data-allow-clear="true" data-remote="true"
 			   data-minimum-input-length="1" data-key="id" data-sel-size="1" data-lang="*">
 			<option value=""></option>
 		</field>
 		<field name="dub_id" type="autocomplete" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB"
-			   filter="integer" class="span6" data-content="names" data-allow-clear="true" data-remote="true"
+			   filter="integer" class="span12" data-content="names" data-allow-clear="true" data-remote="true"
 			   data-key="id" data-minimum-input-length="1" data-sel-size="1" data-lang="*">
 			<option value=""></option>
 		</field>
 		<field name="role" type="text" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE_DESC" class="span6" size="55" maxlength="255"
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE_DESC" class="span12" size="55" maxlength="255"
 			   default=""/>
 		<field name="is_actors" type="radio" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR"
 			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR_DESC" filter="integer" class="btn-group">
@@ -42,6 +41,8 @@
 		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"
 			   class="inputbox" size="6" default="0"/>
 		<field name="desc" type="textarea" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" cols="60" rows="6"
-			   class="span6" filter="JComponentHelper::filterText"/>
+			   class="span12" filter="JComponentHelper::filterText"/>
+		<field name="id" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
+			   default="0" readonly="true" class="field_id"/>
 	</fieldset>
 </form>

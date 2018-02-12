@@ -54,7 +54,7 @@ class JFormFieldYear extends JFormFieldList
 		{
 			// Build the query for the list.
 			$query = $db->getQuery(true)
-				->select('year')
+				->select($db->quoteName('year'))
 				->from($db->quoteName('#__ka_movies'));
 
 			if (!empty($this->element['data-group']))
@@ -68,36 +68,45 @@ class JFormFieldYear extends JFormFieldList
 			}
 
 			$db->setQuery($query);
-			$years_list = $db->loadObjectList();
-			$_years_list = array();
 
-			foreach ($years_list as $key => $_years)
+			try
+			{
+				$years = $db->loadObjectList();
+			}
+			catch (RuntimeException $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+			}
+
+			$_yearsArr = array();
+
+			foreach ($years as $key => $_years)
 			{
 				$y = explode('-', str_replace(' ', '', $_years->year));
 
-				$_years_list[$key]['value'] = (int) $y[0];
-				$_years_list[$key]['text'] = (int) $y[0];
+				$_yearsArr[$key]['value'] = (int) $y[0];
+				$_yearsArr[$key]['text'] = (int) $y[0];
 
 				if (isset($y[1]) && !empty($y[1]))
 				{
-					$_years_list[$key]['value'] = (int) $y[1];
-					$_years_list[$key]['text'] = (int) $y[1];
+					$_yearsArr[$key]['value'] = (int) $y[1];
+					$_yearsArr[$key]['text'] = (int) $y[1];
 				}
 			}
 
-			$_years_list = array_unique($_years_list, SORT_REGULAR);
-			rsort($_years_list);
-			$years = array_merge($options, $_years_list);
+			$_yearsArr = array_unique($_yearsArr, SORT_REGULAR);
+			rsort($_yearsArr);
+			$years = array_merge($options, $_yearsArr);
 		}
 
 		if ($this->element['data-range'] == 'true')
 		{
-			$_value_1 = (is_array($this->value) && array_key_exists(0, $this->value)) ? $this->value[0] : '';
-			$_value_2 = (is_array($this->value) && array_key_exists(1, $this->value)) ? $this->value[1] : '';
+			$_value1 = (is_array($this->value) && array_key_exists(0, $this->value)) ? $this->value[0] : '';
+			$_value2 = (is_array($this->value) && array_key_exists(1, $this->value)) ? $this->value[1] : '';
 			$html[] = JText::_($this->element['labelfrom']) . '&nbsp;';
-			$html[] = JHtml::_('select.genericlist', $years, $this->name . '[]', $attr, 'value', 'text', $_value_1, $this->id . '_from');
+			$html[] = JHtml::_('select.genericlist', $years, $this->name . '[]', $attr, 'value', 'text', $_value1, $this->id . '_from');
 			$html[] = '&nbsp;&nbsp;&nbsp;&nbsp;' . JText::_($this->element['labelto']) . '&nbsp;';
-			$html[] = JHtml::_('select.genericlist', $years, $this->name . '[]', $attr, 'value', 'text', $_value_2, $this->id . '_to');
+			$html[] = JHtml::_('select.genericlist', $years, $this->name . '[]', $attr, 'value', 'text', $_value2, $this->id . '_to');
 		}
 		else
 		{

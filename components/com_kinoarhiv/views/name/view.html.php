@@ -36,9 +36,9 @@ class KinoarhivViewName extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
-	 * @since  3.0
+	 * @since   3.0
 	 */
 	public function display($tpl = null)
 	{
@@ -72,7 +72,7 @@ class KinoarhivViewName extends JViewLegacy
 
 		$item = $this->get('Data');
 
-		if (count($errors = $this->get('Errors')) || is_null($item))
+		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -80,7 +80,7 @@ class KinoarhivViewName extends JViewLegacy
 		}
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		// Build title string
@@ -101,18 +101,18 @@ class KinoarhivViewName extends JViewLegacy
 
 		$item->dates .= ')';
 
-		if ($throttle_enable == 0)
+		if ($throttleEnable == 0)
 		{
-			$checking_path = JPath::clean(
+			$checkingPath = JPath::clean(
 				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
 			);
-			$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+			$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
-			if (!is_file($checking_path))
+			if (!is_file($checkingPath))
 			{
-				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png';
+				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
 				$dimension = KAContentHelper::getImageSize(
-					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png',
+					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
 					false
 				);
 				$item->poster_width = $dimension->width;
@@ -203,7 +203,9 @@ class KinoarhivViewName extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			$this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 
 		parent::display($tpl);
 	}
@@ -216,7 +218,7 @@ class KinoarhivViewName extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -328,7 +330,7 @@ class KinoarhivViewName extends JViewLegacy
 		$items = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -439,7 +441,7 @@ class KinoarhivViewName extends JViewLegacy
 		$item = $this->get('NameData');
 		$items = $this->get('Awards');
 
-		if (count($errors = $this->get('Errors')) || is_null($items))
+		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 

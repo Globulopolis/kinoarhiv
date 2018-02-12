@@ -117,7 +117,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		if ($validData === false)
 		{
-			KAComponentHelperBackend::renderErrors($model->getErrors());
+			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect('index.php?option=com_kinoarhiv&type=' . $type . '&task=genres.edit&id[]=' . $data['id']);
 
 			return;
@@ -135,7 +135,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
+		$sessionData = $app->getUserState('com_kinoarhiv.genres.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -150,7 +150,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 				$this->setRedirect('index.php?option=com_kinoarhiv&type=' . $type . '&task=genres.add', $message);
 				break;
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&type=' . $type . '&task=genres.edit&id[]=' . $session_data['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&type=' . $type . '&task=genres.edit&id[]=' . $sessionData['id'], $message);
 				break;
 
 			case 'save':
@@ -328,7 +328,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 			if ($result === false)
 			{
-				KAComponentHelperBackend::renderErrors($model->getErrors(), 'html');
+				KAComponentHelper::renderErrors($model->getErrors(), 'html');
 				$this->setRedirect('index.php?option=com_kinoarhiv&view=genres&type=' . $app->input->get('type', 'movie', 'word'));
 
 				return;

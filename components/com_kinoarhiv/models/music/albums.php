@@ -163,6 +163,163 @@ class KinoarhivModelAlbums extends JModelList
 	}
 
 	/**
+	 * Method to add an album into favorites
+	 *
+	 * @param   integer  $id  Album ID.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function favoriteAdd($id)
+	{
+		$db = $this->getDbo();
+		$app = JFactory::getApplication();
+		$userID = JFactory::getUser()->get('id');
+
+		// Check if any record with person ID exists in database.
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('uid', 'favorite')))
+			->from($db->quoteName('#__ka_user_marked_albums'))
+			->where($db->quoteName('uid') . ' = ' . (int) $userID)
+			->where($db->quoteName('album_id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadAssoc();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+
+		if (!$result)
+		{
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_user_marked_albums'))
+				->columns($db->quoteName(array('uid', 'album_id', 'favorite', 'favorite_added')))
+				->values("'" . (int) $userID . "', '" . (int) $id . "', '1', NOW()");
+
+			$db->setQuery($query);
+		}
+		else
+		{
+			if ($result['favorite'] == 1)
+			{
+				$app->enqueueMessage(JText::_('COM_KA_FAVORITE_ERROR'), 'notice');
+
+				return false;
+			}
+
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_user_marked_albums'))
+				->set($db->quoteName('favorite') . " = '1', " . $db->quoteName('favorite_added') . " = NOW()")
+				->where($db->quoteName('uid') . ' = ' . (int) $userID)
+				->where($db->quoteName('album_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+		}
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Removes album(s) from favorites.
+	 *
+	 * @param   mixed  $id  Album ID or array of IDs.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function favoriteRemove($id)
+	{
+		$db = $this->getDbo();
+		$app = JFactory::getApplication();
+		$userID = JFactory::getUser()->get('id');
+
+		if (!is_array($id))
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_user_marked_albums'))
+				->set($db->quoteName('favorite') . " = '0'")
+				->where($db->quoteName('uid') . ' = ' . (int) $userID)
+				->where($db->quoteName('album_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
+			}
+		}
+		else
+		{
+			$queryResult = true;
+			$db->lockTable('#__ka_user_marked_albums');
+			$db->transactionStart();
+
+			foreach ($id as $_id)
+			{
+				$query = $db->getQuery(true);
+
+				$query->update($db->quoteName('#__ka_user_marked_albums'))
+					->set($db->quoteName('favorite') . " = '0'")
+					->where($db->quoteName('uid') . ' = ' . (int) $userID)
+					->where($db->quoteName('album_id') . ' = ' . (int) $_id);
+
+				$db->setQuery($query . ';');
+
+				if ($db->execute() === false)
+				{
+					$queryResult = false;
+					break;
+				}
+			}
+
+			if ($queryResult === true)
+			{
+				$db->transactionCommit();
+				$db->unlockTables();
+			}
+			else
+			{
+				$db->transactionRollback();
+				$db->unlockTables();
+				$app->enqueueMessage(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Add a music album into favorites.
 	 *
 	 * @return array
@@ -264,7 +421,6 @@ class KinoarhivModelAlbums extends JModelList
 				if (!empty($albumsIDs))
 				{
 					$queryResult = true;
-					$db->setDebug(true);
 					$db->lockTable('#__ka_user_marked_albums');
 					$db->transactionStart();
 
@@ -302,7 +458,6 @@ class KinoarhivModelAlbums extends JModelList
 					}
 
 					$db->unlockTables();
-					$db->setDebug(false);
 				}
 				else
 				{

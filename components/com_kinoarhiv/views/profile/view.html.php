@@ -17,24 +17,56 @@ defined('_JEXEC') or die;
  */
 class KinoarhivViewProfile extends JViewLegacy
 {
+	/**
+	 * The user data from com_users
+	 *
+	 * @var    JObject
+	 * @since  3.1
+	 */
+	protected $data;
+
+	/**
+	 * The form
+	 *
+	 * @var    JForm
+	 * @since  3.1
+	 */
+	protected $form;
+
 	protected $itemid = null;
 
 	/**
 	 * The items details
 	 *
 	 * @var    JObject
-	 * @since  1.6
+	 * @since  3.1
 	 */
 	protected $items = null;
 
 	protected $pagination = null;
 
 	/**
+	 * The component parameters
+	 *
+	 * @var    JRegistry
+	 * @since  1.6
+	 */
+	protected $params;
+
+	/**
+	 * An instance of JDatabaseDriver.
+	 *
+	 * @var    JDatabaseDriver
+	 * @since  3.1
+	 */
+	protected $db;
+
+	/**
 	 * Execute and display a template script.
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  void
+	 * @return  mixed
 	 *
 	 * @since  3.0
 	 */
@@ -49,7 +81,7 @@ class KinoarhivViewProfile extends JViewLegacy
 			$app->enqueueMessage($err, 'error');
 			KAComponentHelper::eventLog($err);
 
-			return;
+			return false;
 		}
 
 		$this->page = $app->input->get('page', '', 'cmd');
@@ -71,8 +103,49 @@ class KinoarhivViewProfile extends JViewLegacy
 				$this->votes();
 				break;
 			default:
-				parent::display($tpl);
-				break;
+				jimport('components.com_users.models.profile', JPATH_ROOT);
+				JForm::addFormPath(JPATH_ROOT . '/components/com_users/models/forms/');
+
+				$profileModel = new UsersModelProfile;
+				$this->data = $profileModel->getData();
+				$this->form = $profileModel->getForm(new JObject(array('id' => $user->id)));
+				$this->params = JComponentHelper::getParams('com_users');
+				$this->db = JFactory::getDbo();
+
+				// View also takes responsibility for checking if the user logged in with remember me.
+				$cookieLogin = $user->get('cookieLogin');
+
+				if (!empty($cookieLogin))
+				{
+					// If so, the user must login to edit the password and other data.
+					// What should happen here? Should we force a logout which destroys the cookies?
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::_('JGLOBAL_REMEMBER_MUST_LOGIN'), 'message');
+					$app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
+
+					return false;
+				}
+
+				// Check if a user was found.
+				if (!$this->data->id)
+				{
+					KAComponentHelper::eventLog(JText::_('JERROR_USERS_PROFILE_NOT_FOUND'), 'ui');
+
+					return false;
+				}
+
+				JPluginHelper::importPlugin('content');
+				$this->data->text = '';
+				JEventDispatcher::getInstance()->trigger('onContentPrepare', array ('com_users.user', &$this->data, &$this->data->params, 0));
+				unset($this->data->text);
+
+				$lang = \JFactory::getLanguage();
+				$lang->load('com_users');
+
+				// Escape strings for HTML output
+				$this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
+
+				parent::display();
 		}
 	}
 

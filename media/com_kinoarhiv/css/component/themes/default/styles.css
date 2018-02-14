@@ -228,6 +228,11 @@ h3.title {
 	padding-left: 20px;
 }
 
+.tab-profile {
+	background: url("../../../../images/icons/user_16.png") no-repeat left center;
+	padding-left: 20px;
+}
+
 .tab-reviews {
 	background: url("../../../../images/icons/tab_review_16.png") no-repeat left center;
 	padding-left: 20px;

@@ -112,6 +112,14 @@ class KinoarhivViewProfile extends JViewLegacy
 				$this->params = JComponentHelper::getParams('com_users');
 				$this->db = JFactory::getDbo();
 
+				// Check for errors.
+				if (count($errors = $this->get('Errors')) || count($errors = $profileModel->getErrors()))
+				{
+					KAComponentHelper::eventLog(implode('<br />', $errors), 'ui');
+
+					return false;
+				}
+
 				// View also takes responsibility for checking if the user logged in with remember me.
 				$cookieLogin = $user->get('cookieLogin');
 

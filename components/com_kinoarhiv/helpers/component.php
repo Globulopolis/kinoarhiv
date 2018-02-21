@@ -110,7 +110,6 @@ class KAComponentHelper
 	 * @return  string
 	 *
 	 * @since   3.0
-	 * @throws  \Exception
 	 */
 	public static function cleanHTML($text, $tags = '', $extra = array())
 	{
@@ -209,9 +208,12 @@ class KAComponentHelper
 		{
 			jimport('joomla.log.log');
 
+			$isSite = JFactory::getApplication()->isClient('site');
+			$loggerFile = $isSite ? 'com_kinoarhiv.errors' : 'com_kinoarhiv.errors.administrator';
+
 			JLog::addLogger(
 				array(
-					'text_file' => 'com_kinoarhiv.errors.php'
+					'text_file' => $loggerFile . '.php'
 				),
 				JLog::ALL, 'com_kinoarhiv'
 			);
@@ -286,30 +288,6 @@ class KAComponentHelper
 		}
 
 		return true;
-	}
-
-	/**
-	 * Wrapper for JApplicationWeb::redirect() to use in the views
-	 *
-	 * @param   string  $url          The URL to redirect to. Can only be http/https URL
-	 * @param   string  $message      The message to enqueue.
-	 * @param   string  $messageType  The message type. Default is message.
-	 *
-	 * @return  mixed   False if url is empty, void otherwise
-	 *
-	 * @since   3.0
-	 * @throws  \Exception
-	 */
-	public static function doRedirect($url = null, $message = null, $messageType = 'message')
-	{
-		if (!is_null($url))
-		{
-			$app = JFactory::getApplication();
-			$app->enqueueMessage($message, $messageType);
-			$app->redirect($url);
-		}
-
-		return false;
 	}
 
 	/**

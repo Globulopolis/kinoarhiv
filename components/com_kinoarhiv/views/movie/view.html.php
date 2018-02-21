@@ -385,7 +385,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (($item->attribs->tab_movie_wallpp === '' && $params->get('tab_movie_wallpp') === '0') || $item->attribs->tab_movie_wallpp === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		$item->text = '';
@@ -525,7 +527,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (($item->attribs->tab_movie_posters === '' && $params->get('tab_movie_posters') === '0') || $item->attribs->tab_movie_posters === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		$item->text = '';
@@ -661,7 +665,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (($item->attribs->tab_movie_scr === '' && $params->get('tab_movie_scr') === '0') || $item->attribs->tab_movie_scr === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		$item->text = '';
@@ -798,7 +804,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (($item->attribs->tab_movie_awards === '' && $params->get('tab_movie_awards') === '0') || $item->attribs->tab_movie_awards === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		// Prepare the data
@@ -861,14 +869,16 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (($item->attribs->tab_movie_tr === '' && $params->get('tab_movie_tr') === '0') || $item->attribs->tab_movie_tr === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		// Check if player folder exists.
 		if (!file_exists(JPATH_ROOT . '/media/com_kinoarhiv/players/' . $params->get('player_type')))
 		{
-			$player_layout = ($params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $params->get('player_type');
-			KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+			$playerLayout = ($params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $params->get('player_type');
+			KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $playerLayout));
 
 			$params->set('player_type', '-1');
 		}
@@ -936,7 +946,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (($item->attribs->tab_movie_snd === '' && $params->get('tab_movie_snd') === '0') || $item->attribs->tab_movie_snd === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		$albums = $item->albums;
@@ -1053,8 +1065,8 @@ class KinoarhivViewMovie extends JViewLegacy
 		);
 
 		$pathway->setPathway(array($path));
-		$title_add = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_MOVIE_TAB_' . StringHelper::ucwords($this->page));
-		$this->document->setTitle(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . $title_add);
+		$titleAdd = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_MOVIE_TAB_' . StringHelper::ucwords($this->page));
+		$this->document->setTitle(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . $titleAdd);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

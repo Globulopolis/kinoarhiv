@@ -46,13 +46,14 @@ else
 				// IMDB rating
 				if ($params->get('ratings_img_imdb') != 0 && !empty($item->imdb_id)):
 					if (file_exists($params->get('media_rating_image_root') . '/imdb/' . $item->id . '_big.png')): ?>
-						<a href="http://www.imdb.com/title/<?php echo $item->imdb_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $ratingImageURL; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0"/></a>
+						<a href="http://www.imdb.com/title/<?php echo $item->imdb_id; ?>/" rel="noopener noreferrer nofollow"
+						   target="_blank"><img src="<?php echo $ratingImageURL; ?>/imdb/<?php echo $item->id; ?>_big.png" border="0"/></a>
 					<?php endif;
 				endif;
 
 				// Kinopoisk rating
 				if ($params->get('ratings_img_kp') != 0 && !empty($item->kp_id)): ?>
-					<a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank">
+					<a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="noopener noreferrer nofollow" target="_blank">
 						<?php if ($params->get('ratings_img_kp_remote') == 0): ?>
 							<img src="<?php echo $ratingImageURL; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" border="0"/>
 						<?php else: ?>
@@ -64,13 +65,17 @@ else
 				// Rottentomatoes rating
 				if ($params->get('ratings_img_rotten') != 0 && !empty($item->rottentm_id)):
 					if (file_exists($params->get('media_rating_image_root') . '/rottentomatoes/' . $item->id . '_big.png')): ?>
-						<a href="https://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><img src="<?php echo $ratingImageURL; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0"/></a>
+						<a href="https://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/"
+						   rel="noopener noreferrer nofollow" target="_blank"
+						><img src="<?php echo $ratingImageURL; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" border="0"/></a>
 					<?php endif;
 				endif;
 
 				if ($params->get('ratings_img_metacritic') != 0 && !empty($item->metacritics_id)):
 					if (file_exists($params->get('media_rating_image_root') . '/metacritic/' . $item->id . '_big.png')): ?>
-						<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>" rel="nofollow" target="_blank"><img src="<?php echo $ratingImageURL; ?>/metacritic/<?php echo $item->id; ?>_big.png" border="0"/></a>
+						<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>"
+						   rel="noopener noreferrer nofollow" target="_blank"
+						><img src="<?php echo $ratingImageURL; ?>/metacritic/<?php echo $item->id; ?>_big.png" border="0"/></a>
 					<?php endif;
 				endif; ?>
 			</div>
@@ -79,7 +84,10 @@ else
 				<div id="rate-imdb">
 					<span class="a"><?php echo JText::_('COM_KA_RATE_IMDB'); ?></span>
 					<span class="b">
-						<a href="http://www.imdb.com/title/<?php echo $item->imdb_id; ?>/?ref_=fn_al_tt_1" rel="nofollow" target="_blank" title="<?php echo JText::_('COM_KA_RATE_DESC'); ?>"><?php echo $item->imdb_votesum; ?> (<?php echo (int) $item->imdb_votes; ?>)</a>
+						<a href="http://www.imdb.com/title/<?php echo $item->imdb_id; ?>/?ref_=fn_al_tt_1"
+						   rel="noopener noreferrer nofollow" target="_blank"
+						   title="<?php echo JText::_('COM_KA_RATE_DESC'); ?>"
+						><?php echo $item->imdb_votesum; ?> (<?php echo (int) $item->imdb_votes; ?>)</a>
 					</span>
 				</div>
 			<?php else: ?>
@@ -92,7 +100,9 @@ else
 				<div id="rate-kp">
 					<span class="a"><?php echo JText::_('COM_KA_RATE_KP'); ?></span>
 					<span class="b">
-						<a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="nofollow" target="_blank" title="<?php echo JText::_('COM_KA_RATE_DESC'); ?>"><?php echo $item->kp_votesum; ?> (<?php echo $item->kp_votes; ?>)</a>
+						<a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/"
+						   rel="noopener noreferrer nofollow" target="_blank"
+						   title="<?php echo JText::_('COM_KA_RATE_DESC'); ?>"><?php echo $item->kp_votesum; ?> (<?php echo $item->kp_votes; ?>)</a>
 					</span>
 				</div>
 			<?php else: ?>
@@ -105,7 +115,8 @@ else
 				<div id="rate-rt">
 					<span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span>
 					<span class="b">
-						<a href="https://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->rate_fc; ?>%</a>
+						<a href="https://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/"
+						   rel="noopener noreferrer nofollow" target="_blank"><?php echo $item->rate_fc; ?>%</a>
 					</span>
 				</div>
 			<?php else: ?>
@@ -118,7 +129,8 @@ else
 				<div id="rate-mc">
 					<span class="a"><?php echo JText::_('COM_KA_RATE_MC'); ?></span>
 					<span class="b">
-						<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>/" rel="nofollow" target="_blank"><?php echo $item->metacritics; ?>%</a>
+						<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>/"
+						   rel="noopener noreferrer nofollow" target="_blank"><?php echo $item->metacritics; ?>%</a>
 					</span></div>
 			<?php else: ?>
 				<div id="rate-mc">
@@ -130,7 +142,10 @@ else
 
 	<?php if (!$column): ?>
 		<div class="local-rt<?php echo $item->rate_loc_label_class; ?>">
-			<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0" data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true" data-rateit-readonly="true"></div>
+			<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0"
+				 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"
+				 data-rateit-readonly="true">
+			</div>
 			&nbsp;<?php echo $item->rate_loc_label; ?>
 		</div>
 	<?php endif; ?>

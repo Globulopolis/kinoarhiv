@@ -228,7 +228,9 @@ class KinoarhivViewName extends JViewLegacy
 		if (($item->attribs->tab_name_wallpp === '' && $params->get('tab_name_wallpp') === '0') || $item->attribs->tab_name_wallpp === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		// Build title string
@@ -340,7 +342,9 @@ class KinoarhivViewName extends JViewLegacy
 		if (($item->attribs->tab_name_photos === '' && $params->get('tab_name_photos') === '0') || $item->attribs->tab_name_photos === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		// Build title string
@@ -451,7 +455,9 @@ class KinoarhivViewName extends JViewLegacy
 		if (($item->attribs->tab_name_awards === '' && $params->get('tab_name_awards') === '0') || $item->attribs->tab_name_awards === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			KAComponentHelper::doRedirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $id . '&Itemid=' . $this->itemid, false));
+
+			return false;
 		}
 
 		// Prepare the data

@@ -236,3 +236,8 @@ img.movie-poster-preview, img.album-cover-preview {
 	overflow-y: scroll;
 }
 /* End */
+
+/* Fix height of input with appended dropdown */
+.ratings-fields input {
+	min-height: 29px !important;
+}

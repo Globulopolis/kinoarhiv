@@ -161,7 +161,8 @@ class KinoarhivModelMovies extends JModelList
 				'm.id, m.parent_id, m.title, m.alias, m.fs_alias, ' . $db->quoteName('m.introtext', 'text') . ', m.plot, ' .
 				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, ' .
 				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, ' .
-				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
+				'm.myshows_votesum, m.myshows_votes, m.myshows_id, m.rate_custom, m.year, ' .
+				'DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
 				'CASE WHEN m.modified = ' . $nullDate . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
 				'CASE WHEN m.publish_up = ' . $nullDate . ' THEN m.created ELSE m.publish_up END AS publish_up, ' .
 				'm.publish_down, m.attribs, m.state'
@@ -183,7 +184,8 @@ class KinoarhivModelMovies extends JModelList
 		$query->select($db->quoteName('user.name', 'username') . ', ' . $db->quoteName('user.email', 'author_email'));
 		$query->leftJoin($db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
 
-		$query->where('m.state = 1 AND language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ') AND parent_id = 0 AND m.access IN (' . $groups . ')');
+		$query->where('m.state = 1 AND m.access IN (' . $groups . ')')
+			->where('language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
 
 		if ($params->get('use_alphabet') == 1)
 		{
@@ -227,7 +229,11 @@ class KinoarhivModelMovies extends JModelList
 					|| StringHelper::strlen($title) > $params->get('search_movies_length_max'))
 				{
 					echo KAComponentHelper::showMsg(
-						JText::sprintf('COM_KA_SEARCH_ERROR_SEARCH_MESSAGE', $params->get('search_movies_length_min'), $params->get('search_movies_length_max')),
+						JText::sprintf(
+							'COM_KA_SEARCH_ERROR_SEARCH_MESSAGE',
+							$params->get('search_movies_length_min'),
+							$params->get('search_movies_length_max')
+						),
 						'alert-error',
 						true
 					);

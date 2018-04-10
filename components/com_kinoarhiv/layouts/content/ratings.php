@@ -14,9 +14,24 @@ use Joomla\String\StringHelper;
 
 $params = $displayData['params'];
 $item   = $displayData['item'];
+$ratingsShowRemote = $item->attribs->ratings_show_remote;
+$colClass = '';
+
+if ($item->attribs->ratings_show_remote === '')
+{
+	$ratingsShowRemote = $params->get('ratings_show_remote');
+}
+
+if (!$ratingsShowRemote)
+{
+	return;
+}
 
 // Display ratings vertical
-$column = isset($displayData['column']) && $displayData['column'] ? true : false;
+if (isset($displayData['column']) && $displayData['column'])
+{
+	$colClass = 'rating-col';
+}
 
 if (StringHelper::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
 {
@@ -27,7 +42,7 @@ else
 	$ratingImageURL = $params->get('media_rating_image_root_www');
 }
 
-if (!$column)
+if ($colClass == '')
 {
 	echo '<div class="separator"></div>';
 }
@@ -36,12 +51,12 @@ else
 	echo '<br />';
 }
 ?>
-<div class="ratings-frontpage">
+<div class="ratings-frontpage <?php echo $colClass; ?>">
 	<?php if (!empty($item->rate_custom)): ?>
 		<div><?php echo $item->rate_custom; ?></div>
 	<?php else:
 		if ($params->get('ratings_show_img') == 1): ?>
-			<div style="text-align: center; display: inline-block;">
+			<div>
 				<?php
 				// IMDB rating
 				if ($params->get('ratings_img_imdb') != 0 && !empty($item->imdb_id)):
@@ -58,6 +73,25 @@ else
 							<img src="<?php echo $ratingImageURL; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" border="0"/>
 						<?php else: ?>
 							<img src="https://www.kinopoisk.ru/rating/<?php echo $item->kp_id; ?>.gif" border="0" style="padding-left: 1px;"/>
+						<?php endif; ?>
+					</a>
+				<?php endif;
+
+				// MyShows rating
+				if ($params->get('ratings_img_myshows') != 0 && !empty($item->myshows_id)):
+					if ($item->parent_id > 0):
+						$msURL = 'episode/' . $item->myshows_id;
+					else:
+						$msURL = $item->myshows_id;
+					endif;
+				?>
+					<a href="https://myshows.me/view/<?php echo $msURL; ?>/" rel="noopener noreferrer nofollow" target="_blank">
+						<?php
+						// MyShows have an rating image only for serial not for episode.
+						if ($params->get('ratings_img_myshows_remote') == 0 && $item->parent_id == 0): ?>
+							<img src="<?php echo $ratingImageURL; ?>/myshows/<?php echo $item->id; ?>_big.png" border="0"/>
+						<?php else: ?>
+							<img src="https://u.myshows.me/r/<?php echo $item->myshows_id; ?>.png" border="0" style="padding-left: 1px;"/>
 						<?php endif; ?>
 					</a>
 				<?php endif;
@@ -111,6 +145,28 @@ else
 				</div>
 			<?php endif;
 
+			if (!empty($item->myshows_votesum) && !empty($item->myshows_votes)):
+				if ($item->parent_id > 0):
+					$msURL = 'episode/' . $item->myshows_id;
+				else:
+					$msURL = $item->myshows_id;
+				endif;
+			?>
+				<div id="rate-ms">
+					<span class="a"><?php echo JText::_('COM_KA_RATE_MS'); ?></span>
+					<span class="b">
+						<a href="https://myshows.me/view/<?php echo $msURL; ?>/"
+						   rel="noopener noreferrer nofollow" target="_blank"
+						   title="<?php echo JText::_('COM_KA_RATE_DESC'); ?>"
+						><?php echo $item->myshows_votesum; ?> (<?php echo $item->myshows_votes; ?>)</a>
+					</span>
+				</div>
+			<?php else: ?>
+				<div id="rate-ms">
+					<span class="a"><?php echo JText::_('COM_KA_RATE_MS'); ?></span> <?php echo JText::_('COM_KA_RATE_NO'); ?>
+				</div>
+			<?php endif;
+
 			if (!empty($item->rate_fc)): ?>
 				<div id="rate-rt">
 					<span class="a"><?php echo JText::_('COM_KA_RATE_RT'); ?></span>
@@ -140,7 +196,7 @@ else
 		endif;
 	endif; ?>
 
-	<?php if (!$column): ?>
+	<?php if ($colClass == ''): ?>
 		<div class="local-rt<?php echo $item->rate_loc_label_class; ?>">
 			<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0"
 				 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"

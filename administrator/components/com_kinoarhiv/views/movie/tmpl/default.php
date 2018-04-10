@@ -64,7 +64,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 			e.preventDefault();
 
 			var item_id  = parseInt($('input[name="image_id"]').val(), 10),
-				no_cover = '<?php echo JUri::root(); ?>media/com_kinoarhiv/images/themes/<?php echo $this->params->get('ka_theme'); ?>/no_movie_cover.png';
+				no_cover = KA_vars.uri_root + 'media/com_kinoarhiv/images/themes/<?php echo $this->params->get('ka_theme'); ?>/no_movie_cover.png';
 
 			if (isNaN(item_id)) {
 				return false;
@@ -136,35 +136,68 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 			var $this  = $(this),
 				source = $this.data('source'),
 				id     = $('.field_' + source + '_id').val(),
-				key    = 'parser[' + source + '][' + id + ']';
+				key    = 'parser[' + source + '][' + id + ']',
+				page   = '',
+				sl_ov  = $('body');
 
 			if (empty(id)) {
 				return;
 			}
 
-			Kinoarhiv.showLoading('show', $('body'));
+			if (source === 'kinopisk') {
+				page = '&page=rating';
+			}
+
+			Kinoarhiv.showLoading('show', sl_ov);
+			Aurora.remove();
 
 			$.ajax({
-				url: '<?php echo JUri::root(); ?>index.php?option=com_kinoarhiv&task=api.parser&lang=<?php echo $languageTag; ?>&format=raw&' + key + '[action]=movie.info&' + key + '[data]=rating'
+				url: KA_vars.uri_root + 'index.php?option=com_kinoarhiv&task=api.parser&lang=' +
+					 KA_vars.language.tag.slice(0, 2) + '&format=raw&' + key + '[action]=movie.info&' + key + '[data]=rating' + page
 			}).done(function(response){
+				if (response[source][id]['success'] === false) {
+					Kinoarhiv.showLoading('hide', $('body'));
+					Aurora.message([{text: response[source][id]['message'], type: 'error'}], '#system-message-container', {replace: true});
+				}
+
 				if (typeof response === 'string') {
 					response = JSON.parse(response);
 				}
 
+				var votes, votesum;
+
 				if (source === 'imdb' || source === 'kinopoisk') {
-					$('.field_' + source + '_votesum').val(response[source][id]['rating']['votesum']);
-					$('.field_' + source + '_votes').val(response[source][id]['rating']['votes']);
+					votes = response[source][id]['rating']['votes'];
+					votesum = response[source][id]['rating']['votesum'];
+
+					$('.field_' + source + '_votesum').val(votesum);
+					$('.field_' + source + '_votes').val(votes);
 				} else if (source === 'rottentomatoes' || source === 'metacritic') {
-					$('.field_' + source + '_votesum').val(response[source][id]['rating']['score']);
+					votes = response[source][id]['rating']['critics'];
+					votesum = response[source][id]['rating']['score'];
+
+					$('.field_' + source + '_votesum').val(votesum);
 				}
 
-				updateRatingImage($('.field_id').val(), source, response[source][id]['rating']['votes'], response[source][id]['rating']['votesum']);
+				updateRatingImage(parseInt($('.field_id').val(), 10), source, votes, votesum);
 
-				Kinoarhiv.showLoading('hide', $('body'));
+				Kinoarhiv.showLoading('hide', sl_ov);
 			}).fail(function(xhr, status, error){
 				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
-				Kinoarhiv.showLoading('hide', $('body'));
+				Kinoarhiv.showLoading('hide', sl_ov);
 			});
+		});
+
+		$('.cmd-update-vote-image').click(function(e){
+			e.preventDefault();
+
+			var source = $(this).data('source');
+			updateRatingImage(
+				parseInt($('.field_id').val(), 10),
+				source,
+				$('.field_' + source + '_votes').val(),
+				$('.field_' + source + '_votesum').val()
+			);
 		});
 
 		/**
@@ -179,7 +212,9 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 		 */
 		function updateRatingImage(id, source, votes, votesum) {
 			$.ajax({
-				url: '<?php echo JUri::root(); ?>index.php?option=com_kinoarhiv&task=api.updateRatingImage&lang=<?php echo $languageTag; ?>&format=raw&id=' + id + '&source=' + source + '&votes=' + votes + '&votesum=' + votesum
+				url: KA_vars.uri_root + 'index.php?option=com_kinoarhiv&task=api.updateRatingImage&lang=' +
+					 KA_vars.language.tag.slice(0, 2) + '&format=raw&id=' + id +
+					'&source=' + source + '&votes=' + votes + '&votesum=' + votesum
 			}).done(function(response){
 				if (typeof response === 'string') {
 					response = JSON.parse(response);
@@ -189,7 +224,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 					// Show dialog
 					var modal = $('#ratingImgModal');
 
-					$('.modal-header h3', modal).text(source.toUpperCase());
+					$('.modal-header h3', modal).text(source).css('text-transform', 'capitalize');
 					$('.modal-body', modal).html('<div class="container-fluid"><img src="' + response.image + '"/></div>');
 					modal.modal('toggle');
 				} else {

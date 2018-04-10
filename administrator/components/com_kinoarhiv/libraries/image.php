@@ -121,8 +121,6 @@ class KAImage extends JImage
 	 *
 	 * @return  void
 	 *
-	 * @throws  RuntimeException
-	 *
 	 * @since  3.0
 	 */
 	public function addWatermark($directory, $filename, $watermark, $position = 'br', $properties = array())
@@ -199,79 +197,79 @@ class KAImage extends JImage
 
 		if ($wtCreated)
 		{
-			$watermark_dst_width = $watermark_src_width = imagesx($filter);
-			$watermark_dst_height = $watermark_src_height = imagesy($filter);
+			$watermarkDstWidth  = $watermarkSrcWidth  = imagesx($filter);
+			$watermarkDstHeight = $watermarkSrcHeight = imagesy($filter);
 
-			if ($watermark_dst_width > $imgProperties->width || $watermark_dst_height > $imgProperties->height)
+			if ($watermarkDstWidth > $imgProperties->width || $watermarkDstHeight > $imgProperties->height)
 			{
-				$canvas_width = $imgProperties->width - abs($wtProperties->width);
-				$canvas_height = $imgProperties->height - abs($wtProperties->height);
+				$canvasWidth = $imgProperties->width - abs($wtProperties->width);
+				$canvasHeight = $imgProperties->height - abs($wtProperties->height);
 
-				if (($watermark_src_width / $canvas_width) > ($watermark_src_height / $canvas_height))
+				if (($watermarkSrcWidth / $canvasWidth) > ($watermarkSrcHeight / $canvasHeight))
 				{
-					$watermark_dst_width = $canvas_width;
-					$watermark_dst_height = (int) ($watermark_src_height * ($canvas_width / $watermark_src_width));
+					$watermarkDstWidth = $canvasWidth;
+					$watermarkDstHeight = (int) ($watermarkSrcHeight * ($canvasWidth / $watermarkSrcWidth));
 				}
 				else
 				{
-					$watermark_dst_height = $canvas_height / 2;
-					$watermark_dst_width = (int) ($watermark_src_width * ($canvas_height / $watermark_src_height)) / 2;
+					$watermarkDstHeight = $canvasHeight / 2;
+					$watermarkDstWidth = (int) ($watermarkSrcWidth * ($canvasHeight / $watermarkSrcHeight)) / 2;
 				}
 			}
 
-			$watermark_x_offset = (int) isset($properties['watermark_x_offset']) ? $properties['watermark_x_offset'] : 10;
-			$watermark_y_offset = (int) isset($properties['watermark_y_offset']) ? $properties['watermark_y_offset'] : 10;
+			$watermarkOffsetX = (int) isset($properties['watermark_x_offset']) ? $properties['watermark_x_offset'] : 10;
+			$watermarkOffsetY = (int) isset($properties['watermark_y_offset']) ? $properties['watermark_y_offset'] : 10;
 
 			if (isset($properties['watermark_x']) && is_numeric($properties['watermark_x']))
 			{
-				$watermark_x = ($wtProperties->width < 0) ? $imgProperties->width - $watermark_dst_width + $wtProperties->width : $wtProperties->width;
+				$watermarkX = ($wtProperties->width < 0) ? $imgProperties->width - $watermarkDstWidth + $wtProperties->width : $wtProperties->width;
 			}
 			else
 			{
 				if (strpos($position, 'r') !== false)
 				{
-					$watermark_x = ($imgProperties->width - $watermark_dst_width) - $watermark_x_offset;
+					$watermarkX = ($imgProperties->width - $watermarkDstWidth) - $watermarkOffsetX;
 				}
 				else
 				{
 					if (strpos($position, 'l') !== false)
 					{
-						$watermark_x = $watermark_x_offset;
+						$watermarkX = $watermarkOffsetX;
 					}
 					else
 					{
-						$watermark_x = ($imgProperties->width - $watermark_dst_width) / 2;
+						$watermarkX = ($imgProperties->width - $watermarkDstWidth) / 2;
 					}
 				}
 			}
 
 			if (isset($properties['watermark_y']) && is_numeric($properties['watermark_y']))
 			{
-				$watermark_y = ($wtProperties->height < 0) ? $imgProperties->height - $watermark_dst_height + $wtProperties->height : $wtProperties->height;
+				$watermarkY = ($wtProperties->height < 0) ? $imgProperties->height - $watermarkDstHeight + $wtProperties->height : $wtProperties->height;
 			}
 			else
 			{
 				if (strpos($position, 'b') !== false)
 				{
-					$watermark_y = ($imgProperties->height - $watermark_dst_height) - $watermark_y_offset;
+					$watermarkY = ($imgProperties->height - $watermarkDstHeight) - $watermarkOffsetY;
 				}
 				else
 				{
 					if (strpos($position, 't') !== false)
 					{
-						$watermark_y = $watermark_y_offset;
+						$watermarkY = $watermarkOffsetY;
 					}
 					else
 					{
-						$watermark_y = ($imgProperties->height - $watermark_dst_height) / 2;
+						$watermarkY = ($imgProperties->height - $watermarkDstHeight) / 2;
 					}
 				}
 			}
 
 			imagealphablending($image->handle, true);
 			imagecopyresampled(
-				$image->handle, $filter, $watermark_x, $watermark_y, 0, 0,
-				$watermark_dst_width, $watermark_dst_height, $watermark_src_width, $watermark_src_height
+				$image->handle, $filter, $watermarkX, $watermarkY, 0, 0,
+				$watermarkDstWidth, $watermarkDstHeight, $watermarkSrcWidth, $watermarkSrcHeight
 			);
 		}
 		else
@@ -303,15 +301,17 @@ class KAImage extends JImage
 	 * @param   array    $data    Array with the ratings and votes.
 	 *
 	 * @return  array
+	 *
+	 * @since   3.1
 	 */
 	public function createRateImage($id, $source, $data)
 	{
 		jimport('joomla.filesystem.folder');
 
-		$params  = JComponentHelper::getParams('com_kinoarhiv');
-		$file    = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/images/rating/' . $source . '_blank.png');
-		$dst_dir = JPath::clean($params->get('media_rating_image_root') . '/' . $source . '/');
-		$font    = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/fonts/OpenSans-Regular.ttf');
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$file   = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/images/rating/' . $source . '_blank.png');
+		$dstDir = JPath::clean($params->get('media_rating_image_root') . '/' . $source . '/');
+		$font   = JPath::clean(JPATH_ROOT . '/media/com_kinoarhiv/fonts/OpenSans-Regular.ttf');
 
 		if (empty($id))
 		{
@@ -322,59 +322,64 @@ class KAImage extends JImage
 		{
 			list($width, $height) = @getimagesize($file);
 
-			$dst_im = imagecreatetruecolor($width, $height);
-			$src_im = imagecreatefrompng($file);
-			imagealphablending($src_im, true);
-			imagesavealpha($src_im, true);
+			$dstImg = imagecreatetruecolor($width, $height);
+			$srcImg = imagecreatefrompng($file);
+			imagealphablending($srcImg, true);
+			imagesavealpha($srcImg, true);
 
 			if (!isset($data[1]['fontsize']))
 			{
-				$rgb_array = $this->rgb2array('#333333');
-				$color = imagecolorallocate($src_im, $rgb_array['r'], $rgb_array['g'], $rgb_array['b']);
-				imagettftext($src_im, 10, 0, 5, 32, $color, $font, $data[0]['text']);
+				$rgbArr = $this->rgb2array('#333333');
+				$color = imagecolorallocate($srcImg, $rgbArr['r'], $rgbArr['g'], $rgbArr['b']);
+				imagettftext($srcImg, 10, 0, 5, 32, $color, $font, $data[0]['text']);
 			}
 			else
 			{
-				$rgb_array1 = $this->rgb2array($data[0]['color']);
-				$rgb_array2 = $this->rgb2array($data[1]['color']);
-				$color1 = imagecolorallocate($src_im, $rgb_array1['r'], $rgb_array1['g'], $rgb_array1['b']);
-				$color2 = imagecolorallocate($src_im, $rgb_array2['r'], $rgb_array2['g'], $rgb_array2['b']);
+				$rgbArr1 = $this->rgb2array($data[0]['color']);
+				$rgbArr2 = $this->rgb2array($data[1]['color']);
+				$color1  = imagecolorallocate($srcImg, $rgbArr1['r'], $rgbArr1['g'], $rgbArr1['b']);
+				$color2  = imagecolorallocate($srcImg, $rgbArr2['r'], $rgbArr2['g'], $rgbArr2['b']);
 
 				if ($source == 'rottentomatoes')
 				{
-					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
-					$offset_left = count(count_chars($data[0]['text'], 1)) * 10 + 7;
-					imagettftext($src_im, $data[1]['fontsize'], 0, $offset_left, 31, $color2, $font, $data[1]['text']);
+					imagettftext($srcImg, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
+					$offsetLeft = count(count_chars($data[0]['text'], 1)) * 10 + 7;
+					imagettftext($srcImg, $data[1]['fontsize'], 0, $offsetLeft, 31, $color2, $font, $data[1]['text']);
 				}
 				elseif ($source == 'metacritic')
 				{
-					imagettftext($src_im, $data[0]['fontsize'], 0, 45, 18, $color1, $font, $data[0]['text']);
-					imagettftext($src_im, $data[1]['fontsize'], 0, 45, 30, $color2, $font, $data[1]['text']);
+					imagettftext($srcImg, $data[0]['fontsize'], 0, 45, 18, $color1, $font, $data[0]['text']);
+					imagettftext($srcImg, $data[1]['fontsize'], 0, 45, 30, $color2, $font, $data[1]['text']);
 				}
 				elseif ($source == 'kinopoisk')
 				{
-					imagettftext($src_im, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
-					imagettftext($src_im, $data[1]['fontsize'], 0, 40, 31, $color2, $font, $data[1]['text']);
+					imagettftext($srcImg, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
+					imagettftext($srcImg, $data[1]['fontsize'], 0, 40, 31, $color2, $font, $data[1]['text']);
 				}
 				elseif ($source == 'imdb')
 				{
-					imagettftext($src_im, $data[0]['fontsize'], 0, 55, 18, $color1, $font, $data[0]['text']);
-					imagettftext($src_im, $data[1]['fontsize'], 0, 55, 30, $color2, $font, $data[1]['text']);
+					imagettftext($srcImg, $data[0]['fontsize'], 0, 55, 18, $color1, $font, $data[0]['text']);
+					imagettftext($srcImg, $data[1]['fontsize'], 0, 55, 30, $color2, $font, $data[1]['text']);
+				}
+				elseif ($source == 'myshows')
+				{
+					imagettftext($srcImg, $data[0]['fontsize'], 0, 5, 32, $color1, $font, $data[0]['text']);
+					imagettftext($srcImg, $data[1]['fontsize'], 0, 50, 32, $color2, $font, $data[1]['text']);
 				}
 			}
 
-			imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $width, $height, $width, $height);
+			imagecopyresampled($dstImg, $srcImg, 0, 0, 0, 0, $width, $height, $width, $height);
 
 			JFactory::getDocument()->setMimeEncoding('image/png');
 			JFactory::getApplication()->allowCache(false);
 
-			if (!file_exists($dst_dir))
+			if (!file_exists($dstDir))
 			{
-				JFolder::create($dst_dir);
+				JFolder::create($dstDir);
 			}
 
-			$result = imagepng($src_im, $dst_dir . $id . '_big.png', 1);
-			imagedestroy($src_im);
+			$result = imagepng($srcImg, $dstDir . $id . '_big.png', 1);
+			imagedestroy($srcImg);
 
 			if ($result === true)
 			{
@@ -395,6 +400,8 @@ class KAImage extends JImage
 	 * @param   string  $rgb  HEX color code.
 	 *
 	 * @return  array
+	 *
+	 * @since   3.1
 	 */
 	protected function rgb2array($rgb)
 	{

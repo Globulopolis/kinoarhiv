@@ -93,6 +93,12 @@
 			   class="span6 field_metacritic_votesum" filter="string" size="38"/>
 		<field name="metacritics_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_MC_ID"
 			   class="span12 field_metacritic_id" filter="string" size="45"/>
+		<field name="myshows_votesum" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_MYSHOWS"
+			   class="span6 field_myshows_votesum" filter="string" size="38"/>
+		<field name="myshows_votes" type="text" default="0" label="COM_KA_FIELD_MOVIE_RATES_MYSHOWS_VOTES"
+			   class="span6 field_myshows_votes" filter="integer"/>
+		<field name="myshows_id" type="text" default="" label="COM_KA_FIELD_MOVIE_RATES_MYSHOWS_ID"
+			   class="span12 field_myshows_id" filter="integer" size="45"/>
 		<field name="rate_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6 field_rate_loc"
 			   filter="integer" size="45"/>
 		<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM"

@@ -391,6 +391,11 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="ratings_img_myshows_remote" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_MS_IMG_REMORE_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 	</fieldset>
 	<fieldset name="ap_rate_img" label="COM_KA_SETTINGS_AP_RATE_IMG_LABEL">
 		<field name="ratings_show_remote" type="radio" class="btn-group" default="1"
@@ -422,6 +427,11 @@
 		</field>
 		<field name="ratings_img_metacritic" type="radio" class="btn-group" default="1"
 			   label="COM_KA_FIELD_AP_RATE_IMG_MT_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="ratings_img_myshows" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_RATE_IMG_MS_LABEL" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

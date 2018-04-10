@@ -770,9 +770,10 @@ div.rating {
 	font-size: 1em;
 }
 
-#rate-imdb, #rate-kp, #rate-rt, #rate-mc {
+#rate-imdb, #rate-kp, #rate-ms, #rate-rt, #rate-mc {
 	display: inline-block;
 	margin-right: 1em;
+	padding-top: .5em;
 }
 
 #tr_accordion .accordion-inner, #movie_accordion .accordion-inner {
@@ -1000,20 +1001,25 @@ div.rating {
 	color: #787d81;
 }
 
-#rate-imdb, #rate-kp, #rate-rt, #rate-mc {
-	padding-top: .5em;
-}
-
 .ratings-frontpage a {
 	display: inline-block;
+	text-decoration: none !important;
+}
+
+.ratings-frontpage.rating-col a {
+	display: block;
+	text-align: center;
+}
+
+@media (max-width: 790px) {
+	.ratings-frontpage.rating-col a {
+		display: inline-block;
+		text-align: center;
+	}
 }
 
 .ratings-frontpage img {
 	margin-bottom: 5px;
-}
-
-.ratings-frontpage a {
-	text-decoration: none !important;
 }
 
 .local-rt {

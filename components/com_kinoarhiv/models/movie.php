@@ -147,9 +147,9 @@ class KinoarhivModelMovie extends JModelForm
 		$query->select("m.id, m.parent_id, m.title, m.alias, m.fs_alias, m.plot, m.desc, m.known, m.slogan, m.budget, "
 			. "m.age_restrict, m.ua_rate, m.mpaa, m.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, "
 			. "m.imdb_id, m.kp_votesum, m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, "
-			. "m.metacritics_id, m.rate_custom, m.urls, m.buy_urls, m.length, m.year, m.created_by, m.metakey, "
-			. "m.metadesc, m.attribs, m.state, m.metadata, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, "
-			. "DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
+			. "m.metacritics_id, m.myshows_votesum, m.myshows_votes, m.myshows_id, m.rate_custom, m.urls, m.buy_urls, "
+			. "m.length, m.year, m.created_by, m.metakey, m.metadesc, m.attribs, m.state, m.metadata, "
+			. "DATE_FORMAT(m.created, '%Y-%m-%d') AS created, DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
 		)
 			->from($db->quoteName('#__ka_movies', 'm'));
 

@@ -63,6 +63,9 @@ ALTER TABLE `#__ka_music_albums`
   ADD INDEX `idx_language` (`language`);
 
 ALTER TABLE `#__ka_movies`
+  ADD COLUMN `myshows_votesum` VARCHAR(5) DEFAULT '0' NOT NULL AFTER `metacritics_id`,
+  ADD COLUMN `myshows_votes` INT(11) DEFAULT 0 NOT NULL AFTER `myshows_votesum`,
+  ADD COLUMN `myshows_id` INT(11) DEFAULT 0 NOT NULL AFTER `myshows_votes`,
   ADD COLUMN `buy_urls` TEXT NOT NULL AFTER `urls`,
   ADD COLUMN `modified_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `modified`,
   ADD COLUMN `publish_up` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `modified_by`,

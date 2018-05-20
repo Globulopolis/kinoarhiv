@@ -87,14 +87,14 @@ class KAParserRottentomatoes extends KAApi
 		@$dom->loadHTML($html);
 		$xpath = new DOMXPath($dom);
 
-		$json_raw = @$xpath->query($this->params->get('patterns.json_data'))->item(0)->nodeValue;
-		$object = json_decode($json_raw);
+		$jsonRaw = @$xpath->query($this->params->get('patterns.json_data'))->item(0)->nodeValue;
+		$object = json_decode($jsonRaw);
 
 		// Check if json is valid for UTF8 symbols.
 		if (json_last_error() == JSON_ERROR_UTF8)
 		{
-			$json_raw = utf8_decode($json_raw);
-			$object = json_decode($json_raw);
+			$jsonRaw = utf8_decode($jsonRaw);
+			$object = json_decode($jsonRaw);
 		}
 
 		$t_score = trim(@$xpath->query($this->params->get('patterns.ratings.t_score'))->item(0)->nodeValue);
@@ -111,12 +111,12 @@ class KAParserRottentomatoes extends KAApi
 
 		$result = array(
 			'rating'   => array(
-				'score'           => (int) $t_score,
-				'av_rating'       => $t_av_rating,
-				'reviews_counted' => (int) $t_reviews_counted,
-				'fresh'           => (int) $t_fresh,
-				'rotten'          => (int) $t_rotten,
-				'consensus'       => $consensus
+				'score'     => (int) $t_score,
+				'av_rating' => $t_av_rating,
+				'critics'   => (int) $t_reviews_counted,
+				'fresh'     => (int) $t_fresh,
+				'rotten'    => (int) $t_rotten,
+				'consensus' => $consensus
 			),
 			'audience' => array(
 				'score'        => $a_score,

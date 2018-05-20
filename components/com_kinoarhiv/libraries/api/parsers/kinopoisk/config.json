@@ -13,7 +13,7 @@
 	"patterns": {
 		"ratings": {
 			"rating": "//div[@id=\"block_rating\"]//span[@class=\"rating_ball\"]",
-			"score": "//div[@id=\"block_rating\"]//span[@itemprop=\"ratingCount\"]"
+			"score": "//div[@id=\"block_rating\"]//span[@class=\"ratingCount\"]"
 		},
 		"titles": {
 			"original": "//div[@id=\"headerFilm\"]/h1[@itemprop=\"name\"]/text()",

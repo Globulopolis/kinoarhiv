@@ -122,19 +122,25 @@ class KAApi
 	/**
 	 * Get data from remote server
 	 *
-	 * @param   string   $url      URL
-	 * @param   null     $headers  Headers to send
-	 * @param   integer  $timeout  Request timeout in seconds
+	 * @param   string  $url   URL
+	 * @param   array   $data  Array with options.
 	 *
 	 * @return  string|boolean
 	 *
 	 * @since   3.1
 	 */
-	public static function getRemoteData($url, $headers = null, $timeout = 30)
+	public static function getRemoteData($url, $data)
 	{
 		try
 		{
-			$response = JHttpFactory::getHttp()->get($url, $headers, $timeout);
+			if ($data['method'] == 'get')
+			{
+				$response = JHttpFactory::getHttp()->get($url, $data, $timeout);
+			}
+			elseif ($data['method'] == 'post')
+			{
+				$response = JHttpFactory::getHttp()->post($url, $data, $data, $timeout);
+			}
 		}
 		catch (RuntimeException $e)
 		{

@@ -10,7 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -91,12 +90,18 @@ class KAParserImdb extends KAApi
 
 		try
 		{
+			$timeout = JFactory::getApplication()->input->getInt('timeout', 30);
 			$this->headers['Referer'] = $this->headers['Referer'] . '/title/' . $id . '/?ref_=nv_sr_1';
-			$html = $this->getDataById($id);
+			$html = $this->getDataById($id, 'main', array('timeout' => $timeout));
 		}
 		catch (Exception $e)
 		{
-			return array('error' => $e->getMessage());
+			return array('success' => false, 'message' => $e->getMessage());
+		}
+
+		if (!$html)
+		{
+			return array('success' => false, 'message' => 'Request error!');
 		}
 
 		$dom = new DOMDocument('1.0', 'utf-8');
@@ -115,7 +120,7 @@ class KAParserImdb extends KAApi
 	 * @param   string  $page     Page URL
 	 * @param   array   $options  Custom options
 	 *
-	 * @return  string
+	 * @return  string|boolean
 	 *
 	 * @since   3.1
 	 */
@@ -125,24 +130,28 @@ class KAParserImdb extends KAApi
 		$cache = JCache::getInstance();
 		$cache->setCaching((bool) $caching);
 		$cache->setLifeTime($this->params->get('cache_lifetime'));
-		$cache_id = $id . '.' . $page;
+		$cacheID = $id . '.' . $page;
 
-		if ($cache->get($cache_id, 'imdb') === false)
+		if ($cache->get($cacheID, 'imdb') === false)
 		{
 			// ID of the image from mediabrowser
 			$itemid = isset($options['itemid']) ? $options['itemid'] : '';
 
 			$response = parent::getRemoteData(
-				str_replace(array('[id]', '[itemid]'), array($id, $itemid), $this->urls[$page]),
-				$this->headers
+				str_replace(array('[id]', '[itemid]'), array($id, $itemid), $this->urls[$page]), $this->headers
 			);
 
+			if ($response === false)
+			{
+				return false;
+			}
+
 			$output = $response;
-			$cache->store($output, $cache_id, 'imdb');
+			$cache->store($output, $cacheID, 'imdb');
 		}
 		else
 		{
-			$output = $cache->get($cache_id, 'imdb');
+			$output = $cache->get($cacheID, 'imdb');
 		}
 
 		return $output;

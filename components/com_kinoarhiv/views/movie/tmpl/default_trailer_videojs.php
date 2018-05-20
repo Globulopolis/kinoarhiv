@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 JHtml::_('stylesheet', 'media/com_kinoarhiv/players/videojs/video-js.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/players/videojs/ie8/videojs-ie8.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/players/videojs/video.min.js');
+JHtml::_('script', 'media/com_kinoarhiv/players/videojs/videojs-flash.min.js');
 KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/lang');
 JFactory::getDocument()->addScriptDeclaration("videojs.options.flash.swf='" . JUri::base() . "media/com_kinoarhiv/players/videojs/video-js.swf';");
 

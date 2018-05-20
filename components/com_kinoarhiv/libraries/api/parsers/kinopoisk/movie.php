@@ -362,29 +362,29 @@ class KAParserKinopoiskMovie
 	/**
 	 * Get rating.
 	 *
-	 * @param   object   $xpath     DOMXPath object instance.
-	 * @param   boolean  $from_xml  Get content from xml file. Parse html page instead.
+	 * @param   object  $xpath  DOMXPath object instance.
+	 * @param   string  $page   Get content from xml file. Parse html page instead.
 	 *
 	 * @return  array
 	 *
 	 * @since   3.1
 	 */
-	public function getRating($xpath)
+	public function getRating($xpath, $page = '')
 	{
 		$rating = array('votesum' => 0, 'votes' => 0);
 
-		/*if ($from_xml)
+		if ($page == 'rating')
 		{
-			$this->headers['Host'] = 'rating.kinopoisk.ru';
+			/*$this->headers['Host'] = 'rating.kinopoisk.ru';
 			$this->headers['Accept-Encoding'] = 'gzip, deflate, br';
 			$xml = $this->getPageById($id, 'rating');
-			$rating = array('votesum' => 0, 'votes' => 0);
-			$xml = new SimpleXMLElement($xml);
+			$rating = array('votesum' => 0, 'votes' => 0);*/
+			$xml = new SimpleXMLElement($xpath);
 			$rating['votesum'] = (string) $xml->kp_rating;
 			$rating['votes'] = (int) $xml->kp_rating['num_vote'];
 		}
 		else
-		{*/
+		{
 			/*$html = $this->getPageById($id);
 			$dom = new DOMDocument('1.0', 'utf-8');
 			@$dom->loadHTML($html);
@@ -398,7 +398,7 @@ class KAParserKinopoiskMovie
 				$rating['votesum'] = 0;
 				$rating['votes'] = 0;
 			}
-		//}
+		}
 
 		// Replace all unexpected digit separators
 		$rating['votesum'] = str_replace(array(',', '.', ' '), '.', $rating['votesum']);

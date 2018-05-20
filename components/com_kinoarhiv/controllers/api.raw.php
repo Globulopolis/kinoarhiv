@@ -91,14 +91,21 @@ class KinoarhivControllerApi extends JControllerLegacy
 		elseif ($source == 'kinopoisk')
 		{
 			$text = array(
-				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
+				0 => array('fontsize' => 10, 'text' => $votesum, 'color' => '#333333'),
 				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
 			);
 		}
 		elseif ($source == 'imdb')
 		{
 			$text = array(
-				0 => array('fontsize' => 10, 'text' => round($votesum, $params->get('vote_summ_precision'), PHP_ROUND_HALF_UP), 'color' => '#333333'),
+				0 => array('fontsize' => 10, 'text' => $votesum, 'color' => '#333333'),
+				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
+			);
+		}
+		elseif ($source == 'myshows')
+		{
+			$text = array(
+				0 => array('fontsize' => 10, 'text' => $votesum, 'color' => '#333333'),
 				1 => array('fontsize' => 7, 'text' => '( ' . $votes . ' )', 'color' => '#555555'),
 			);
 		}
@@ -119,25 +126,26 @@ class KinoarhivControllerApi extends JControllerLegacy
 
 		if (StringHelper::substr($params->get('media_rating_image_root_www'), 0, 1) == '/')
 		{
-			$rating_image_www = JUri::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
+			$ratingImgWww = JUri::root() . StringHelper::substr($params->get('media_rating_image_root_www'), 1);
 		}
 		else
 		{
-			$rating_image_www = $params->get('media_rating_image_root_www');
+			$ratingImgWww = $params->get('media_rating_image_root_www');
 		}
 
 		echo json_encode(
 			array(
 				'success' => $result['success'],
 				'message' => $result['message'],
-				'image'   => $rating_image_www . '/' . $source . '/' . $id . '_big.png?' . time()
+				'image'   => $ratingImgWww . '/' . $source . '/' . $id . '_big.png?' . time()
 			)
 		);
 	}
 
 	/**
 	 * Parser API.
-	 * For json data for movie by title: index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=movie.search&title[imdb]={movie title}&format=json
+	 * For json data for movie by title:
+	 * index.php?option=com_kinoarhiv&task=api.parser&action[imdb]=movie.search&title[imdb]={movie title}&format=json
 	 * where task = controller.method; action = content_type.method; title = {movie title} or id = {movie id};
 	 * lucky = 1|0 - if 1 when we search for first result and redirect to URL listed below. lucky has no effect w/o title variable.
 	 * data = columns - data variable contain list of `fields` with data separated by commas. E.g. id,content_rating,plot,budget. If

@@ -79,20 +79,37 @@ class KAParserKinopoisk extends KAApi
 	{
 		jimport('components.com_kinoarhiv.libraries.api.parsers.kinopoisk.' . $entity, JPATH_ROOT);
 
+		$input = JFactory::getApplication()->input;
+
 		try
 		{
-			$html = $this->getDataById($id);
+			$timeout = $input->getInt('timeout', 30);
+			$page = $input->getWord('page', 'main');
+			$html = $this->getDataById($id, $page, array('timeout' => $timeout));
 		}
 		catch (Exception $e)
 		{
-			return array('error' => $e->getMessage());
+			return array('success' => false, 'message' => $e->getMessage());
 		}
 
-		$dom = new DOMDocument('1.0', 'utf-8');
-		@$dom->loadHTML($html);
-		$xpath = new DOMXPath($dom);
-		$result = new KAParserKinopoiskMovie($this->params);
-		$result = $result->getRating($xpath);
+		if (!$html)
+		{
+			return array('success' => false, 'message' => 'Request error!');
+		}
+
+		if ($page == 'rating')
+		{
+			$result = new KAParserKinopoiskMovie($this->params);
+			$result = $result->getRating($html, $page);
+		}
+		else
+		{
+			$dom = new DOMDocument('1.0', 'utf-8');
+			@$dom->loadHTML($html);
+			$xpath  = new DOMXPath($dom);
+			$result = new KAParserKinopoiskMovie($this->params);
+			$result = $result->getRating($xpath, $page);
+		}
 
 		return $result;
 	}
@@ -104,7 +121,7 @@ class KAParserKinopoisk extends KAApi
 	 * @param   string  $page     Page URL
 	 * @param   array   $options  Custom options
 	 *
-	 * @return  string
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -114,21 +131,27 @@ class KAParserKinopoisk extends KAApi
 		$cache = JCache::getInstance();
 		$cache->setCaching((bool) $caching);
 		$cache->setLifeTime($this->params->get('cache_lifetime'));
-		$cache_id = $id . '.' . $page;
+		$cacheID = $id . '.' . $page;
 
-		if ($cache->get($cache_id, 'kinopoisk') === false)
+		if ($cache->get($cacheID, 'kinopoisk') === false)
 		{
 			$response = parent::getRemoteData(
 				str_replace('[id]', $id, $this->urls[$page]),
-				$this->headers
+				$this->headers,
+				$options['timeout']
 			);
 
+			if ($response === false)
+			{
+				return false;
+			}
+
 			$output = $response;
-			$cache->store($output, $cache_id, 'kinopoisk');
+			$cache->store($output, $cacheID, 'kinopoisk');
 		}
 		else
 		{
-			$output = $cache->get($cache_id, 'kinopoisk');
+			$output = $cache->get($cacheID, 'kinopoisk');
 		}
 
 		return $output;

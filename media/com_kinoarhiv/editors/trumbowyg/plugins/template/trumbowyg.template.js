@@ -7,6 +7,9 @@
             en: {
                 template: 'Template'
             },
+            da: {
+                template: 'Skabelon'
+            },
             fr: {
                 template: 'Patron'
             },
@@ -21,6 +24,12 @@
             },
             tr: {
                 template: 'Şablon'
+            },
+            zh_tw: {
+                template: '模板',
+            },
+            pt_br: {
+                template: 'Modelo'
             }
         }
     });

@@ -13,6 +13,38 @@
                     'large': 'Large',
                     'x-large': 'Extra large',
                     'custom': 'Custom'
+                },
+                fontCustomSize: {
+                    title: 'Custom Font Size',
+                    label: 'Font Size',
+                    value: '48px'
+                }
+            },
+            es: {
+                fontsize: 'Tamaño de Fuente',
+                fontsizes: {
+                    'x-small': 'Extra pequeña',
+                    'small': 'Pegueña',
+                    'medium': 'Regular',
+                    'large': 'Grande',
+                    'x-large': 'Extra Grande',
+                    'custom': 'Customizada'
+                },
+                fontCustomSize: {
+                    title: 'Tamaño de Fuente Customizada',
+                    label: 'Tamaño de Fuente',
+                    value: '48px'
+                }
+            },
+            da: {
+                fontsize: 'Skriftstørrelse',
+                fontsizes: {
+                    'x-small': 'Ekstra lille',
+                    'small': 'Lille',
+                    'medium': 'Normal',
+                    'large': 'Stor',
+                    'x-large': 'Ekstra stor',
+                    'custom': 'Brugerdefineret'
                 }
             },
             fr: {
@@ -24,6 +56,22 @@
                     'large': 'Grand',
                     'x-large': 'Très grand',
                     'custom': 'Douane'
+                }
+            },
+            de: {
+                fontsize: 'Font size',
+                fontsizes: {
+                    'x-small': 'Sehr klein',
+                    'small': 'Klein',
+                    'medium': 'Normal',
+                    'large': 'Groß',
+                    'x-large': 'Sehr groß',
+                    'custom': 'Benutzerdefiniert'
+                },
+                fontCustomSize: {
+                    title: 'Benutzerdefinierte Schriftgröße',
+                    label: 'Schriftgröße',
+                    value: '48px'
                 }
             },
             nl: {
@@ -46,6 +94,54 @@
                     'large': 'Büyük',
                     'x-large': 'Çok Büyük',
                     'custom': 'Görenek'
+                }
+            },
+            zh_tw: {
+                fontsize: '字體大小',
+                fontsizes: {
+                    'x-small': '最小',
+                    'small': '小',
+                    'medium': '中',
+                    'large': '大',
+                    'x-large': '最大',
+                    'custom': '自訂大小',
+                },
+                fontCustomSize: {
+                    title: '自訂義字體大小',
+                    label: '字體大小',
+                    value: '48px'
+                }
+            },
+            pt_br: {
+                fontsize: 'Tamanho da fonte',
+                fontsizes: {
+                        'x-small':'Extra pequeno',
+                        'small':'Pequeno',
+                        'regular':'Médio',
+                        'large':'Grande',
+                        'x-large':'Extra grande',
+                        'custom':'Personalizado'
+                },
+                fontCustomSize: {
+                    title: 'Tamanho de Fonte Personalizado',
+                    label: 'Tamanho de Fonte',
+                    value: '48px'
+                }
+            },
+            it: {
+                fontsize: 'Dimensioni del testo',
+                fontsizes: {
+                        'x-small':'Molto piccolo',
+                        'small':'piccolo',
+                        'regular':'normale',
+                        'large':'grande',
+                        'x-large':'Molto grande',
+                        'custom':'Personalizzato'
+                },
+                fontCustomSize: {
+                    title: 'Dimensioni del testo personalizzato',
+                    label: 'Dimensioni del testo',
+                    value: '48px'
                 }
             }
         }
@@ -83,11 +179,11 @@
         var freeSizeButtonName = 'fontsize_custom',
             freeSizeBtnDef = {
                 fn: function () {
-                    trumbowyg.openModalInsert('Custom Font Size',
+                    trumbowyg.openModalInsert(trumbowyg.lang.fontCustomSize.title,
                         {
                             size: {
-                                label: 'Font Size',
-                                value: '48px'
+                                label: trumbowyg.lang.fontCustomSize.label,
+                                value: trumbowyg.lang.fontCustomSize.value
                             }
                         },
                         function (values) {

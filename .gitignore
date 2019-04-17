@@ -1,6 +1,7 @@
 /.idea/
 /administrator/cache
 /administrator/components/index.html
+/administrator/components/com_actionlogs
 /administrator/components/com_admin
 /administrator/components/com_ajax
 /administrator/components/com_associations
@@ -26,6 +27,7 @@
 /administrator/components/com_newsfeeds
 /administrator/components/com_plugins
 /administrator/components/com_postinstall
+/administrator/components/com_privacy
 /administrator/components/com_redirect
 /administrator/components/com_search
 /administrator/components/com_tags
@@ -125,6 +127,7 @@
 /components/com_menus/
 /components/com_modules/
 /components/com_newsfeeds/
+/components/com_privacy/
 /components/com_search/
 /components/com_tags/
 /components/com_users/

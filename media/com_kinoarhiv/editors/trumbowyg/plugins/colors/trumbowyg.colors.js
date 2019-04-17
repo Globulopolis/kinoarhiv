@@ -22,9 +22,17 @@
                 foreColor: 'Text color',
                 backColor: 'Background color'
             },
+            da: {
+                foreColor: 'Tekstfarve',
+                backColor: 'Baggrundsfarve'
+            },
             fr: {
                 foreColor: 'Couleur du texte',
                 backColor: 'Couleur de fond'
+            },
+            de: {
+                foreColor: 'Textfarbe',
+                backColor: 'Hintergrundfarbe'
             },
             nl: {
                 foreColor: 'Tekstkleur',
@@ -38,6 +46,10 @@
                 foreColor: '文字颜色',
                 backColor: '背景颜色'
             },
+            zh_tw: {
+                foreColor: '文字顏色',
+                backColor: '背景顏色'
+            },
             ru: {
                 foreColor: 'Цвет текста',
                 backColor: 'Цвет выделения текста'
@@ -49,6 +61,10 @@
             tr: {
                 foreColor: 'Yazı rengi',
                 backColor: 'Arkaplan rengi'
+            },
+            pt_br: {
+                foreColor: 'Cor de fonte',
+                backColor: 'Cor de fundo'
             }
         }
     });
@@ -163,6 +179,8 @@
                         {
                             color: {
                                 label: fn,
+                                forceCss: true,
+                                type: 'color',
                                 value: '#FFFFFF'
                             }
                         },

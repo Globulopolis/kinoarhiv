@@ -26,6 +26,15 @@
                 tableDestroy: 'Delete table',
                 error: 'Error'
             },
+            da: {
+              table: 'Indsæt tabel',
+              tableAddRow: 'Tilføj række',
+              tableAddColumn: 'Tilføj kolonne',
+              tableDeleteRow: 'Slet række',
+              tableDeleteColumn: 'Slet kolonne',
+              tableDestroy: 'Slet tabel',
+              error: 'Fejl'
+            },
             de: {
               table: 'Tabelle einfügen',
               tableAddRow: 'Zeile hinzufügen',
@@ -45,6 +54,9 @@
                 table: 'Insérer un tableau',
                 tableAddRow: 'Ajouter des lignes',
                 tableAddColumn: 'Ajouter des colonnes',
+                tableDeleteRow: 'Effacer la ligne',
+                tableDeleteColumn: 'Effacer la colonne',
+                tableDestroy: 'Effacer le tableau',
                 error: 'Erreur'
             },
             cs: {
@@ -55,8 +67,11 @@
             },
             ru: {
                 table: 'Вставить таблицу',
-                tableAddRow: 'Добавить строки',
-                tableAddColumn: 'Добавить столбцы',
+                tableAddRow: 'Добавить строку',
+                tableAddColumn: 'Добавить столбец',
+                tableDeleteRow: 'Удалить строку',
+                tableDeleteColumn: 'Удалить столбец',
+                tableDestroy: 'Удалить таблицу',
                 error: 'Ошибка'
             },
             ja: {
@@ -70,6 +85,33 @@
                 tableAddRow: 'Satır ekle',
                 tableAddColumn: 'Kolon ekle',
                 error: 'Hata'
+            },
+            zh_tw: {
+              table: '插入表格',
+              tableAddRow: '加入行',
+              tableAddColumn: '加入列',
+              tableDeleteRow: '刪除行',
+              tableDeleteColumn: '刪除列',
+              tableDestroy: '刪除表格',
+              error: '錯誤'
+            },
+            id: {
+                table: 'Sisipkan tabel',
+                tableAddRow: 'Sisipkan baris',
+                tableAddColumn: 'Sisipkan kolom',
+                tableDeleteRow: 'Hapus baris',
+                tableDeleteColumn: 'Hapus kolom',
+                tableDestroy: 'Hapus tabel',
+                error: 'Galat'
+            },
+            pt_br: {
+                table: 'Inserir tabela',
+                tableAddRow: 'Adicionar linha',
+                tableAddColumn: 'Adicionar coluna',
+                tableDeleteRow: 'Deletar linha',
+                tableDeleteColumn: 'Deletar coluna',
+                tableDestroy: 'Deletar tabela',
+                error: 'Erro'
             }
         },
 

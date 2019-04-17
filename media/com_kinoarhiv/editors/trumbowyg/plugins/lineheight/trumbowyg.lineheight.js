@@ -13,6 +13,15 @@
                     '2.0':    'Extra large'
                 }
             },
+            da: {
+                lineheight: 'Linjehøjde',
+                lineheights: {
+                    '0.9':    'Lille',
+                    'normal': 'Normal',
+                    '1.5':    'Stor',
+                    '2.0':    'Ekstra stor'
+                }
+            },
             fr: {
                 lineheight: 'Hauteur de ligne',
                 lineheights: {
@@ -39,7 +48,34 @@
                     '1.5':    'Büyük',
                     '2.0':    'Çok Büyük'
                 }
-            }
+            },
+            zh_tw: {
+                lineheight: '文字間距',
+                lineheights: {
+                    '0.9': '小',
+                    'normal': '正常',
+                    '1.5': '大',
+                    '2.0': '特大'
+                }
+            },
+            pt_br: {
+                lineheight: 'Altura de linha',
+                lineheights: {
+                    '0.9':    'Pequena',
+                    'normal': 'Regular',
+                    '1.5':    'Grande',
+                    '2.0':    'Extra grande'
+                }
+            },
+            it: {
+                lineheight: 'Altezza linea',
+                lineheights: {
+                    '0.9':    'Bassa',
+                    'normal': 'Normale',
+                    '1.5':    'Alta',
+                    '2.0':    'Molto alta'
+                }
+            },
         }
     });
     // jshint camelcase:true

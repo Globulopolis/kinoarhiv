@@ -7,14 +7,26 @@
             en: {
                 fontFamily: 'Font'
             },
+            da: {
+                fontFamily: 'Skrifttype'
+            },
             fr: {
                 fontFamily: 'Police'
+            },
+            de: {
+                fontFamily: 'Schriftart'
             },
             nl: {
                 fontFamily: 'Lettertype'
             },
             tr: {
                 fontFamily: 'Yazı Tipi'
+            },
+            zh_tw: {
+                fontFamily: '字體',
+            },
+            pt_br: {
+                fontFamily: 'Fonte',
             }
         }
     });

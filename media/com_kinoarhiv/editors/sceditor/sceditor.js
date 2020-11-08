@@ -71,7 +71,8 @@
 				// Skip undefined values to match jQuery and
 				// skip if target to prevent infinite loop
 				if (!isUndefined(value)) {
-					var isObject = value !== null && typeof value === 'object';
+					var isObject = value !== null && typeof value === 'object' &&
+						Object.getPrototypeOf(value) === Object.prototype;
 					var isArray = Array.isArray(value);
 
 					if (isDeep && (isObject || isArray)) {
@@ -203,18 +204,7 @@
 	 * @param {!string} [selector]
 	 * @returns {Array<HTMLElement>}
 	 */
-	function parents(node, selector) {
-		var parents = [];
-		var parent = node || {};
 
-		while ((parent = parent.parentNode) && !/(9|11)/.test(parent.nodeType)) {
-			if (!selector || is(parent, selector)) {
-				parents.push(parent);
-			}
-		}
-
-		return parents;
-	}
 
 	/**
 	 * Gets the first parent node that matches the selector
@@ -251,7 +241,9 @@
 	 * @param {!HTMLElement} node
 	 */
 	function remove(node) {
-		node.parentNode.removeChild(node);
+		if (node.parentNode) {
+			node.parentNode.removeChild(node);
+		}
 	}
 
 	/**
@@ -440,7 +432,7 @@
 	function css(node, rule, value) {
 		if (arguments.length < 3) {
 			if (isString(rule)) {
-				return getComputedStyle(node)[rule];
+				return node.nodeType === 1 ? getComputedStyle(node)[rule] : null;
 			}
 
 			each(rule, function (key, value) {
@@ -994,6 +986,7 @@
 				while (hasClass(previous, 'sceditor-ignore')) {
 					previous = getSibling(previous, true);
 				}
+
 				// If previous sibling isn't inline or is a textnode that
 				// ends in whitespace, time the start whitespace
 				if (isInline(node) && previous) {
@@ -1001,6 +994,11 @@
 
 					while (previousSibling.lastChild) {
 						previousSibling = previousSibling.lastChild;
+
+						// eslint-disable-next-line max-depth
+						while (hasClass(previousSibling, 'sceditor-ignore')) {
+							previousSibling = getSibling(previousSibling, true);
+						}
 					}
 
 					trimStart = previousSibling.nodeType === TEXT_NODE ?
@@ -1155,7 +1153,7 @@
 		 */
 		toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
 			'left,center,right,justify|font,size,color,removeformat|' +
-			'cut,copy,paste,pastetext|bulletlist,orderedlist,indent,outdent|' +
+			'cut,copy,pastetext|bulletlist,orderedlist,indent,outdent|' +
 			'table|code,quote|horizontalrule,image,email,link,unlink|' +
 			'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
 
@@ -1792,17 +1790,17 @@
 
 		image:
 			'<div><label for="link">{url}</label> ' +
-				'<input type="text" id="image" placeholder="https://" /></div>' +
+				'<input type="text" id="image" dir="ltr" placeholder="https://" /></div>' +
 			'<div><label for="width">{width}</label> ' +
-				'<input type="text" id="width" size="2" /></div>' +
+				'<input type="text" id="width" size="2" dir="ltr" /></div>' +
 			'<div><label for="height">{height}</label> ' +
-				'<input type="text" id="height" size="2" /></div>' +
+				'<input type="text" id="height" size="2" dir="ltr" /></div>' +
 			'<div><input type="button" class="button" value="{insert}" />' +
 				'</div>',
 
 		email:
 			'<div><label for="email">{label}</label> ' +
-				'<input type="text" id="email" /></div>' +
+				'<input type="text" id="email" dir="ltr" /></div>' +
 			'<div><label for="des">{desc}</label> ' +
 				'<input type="text" id="des" /></div>' +
 			'<div><input type="button" class="button" value="{insert}" />' +
@@ -1810,19 +1808,19 @@
 
 		link:
 			'<div><label for="link">{url}</label> ' +
-				'<input type="text" id="link" placeholder="https://" /></div>' +
+				'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
 			'<div><label for="des">{desc}</label> ' +
 				'<input type="text" id="des" /></div>' +
 			'<div><input type="button" class="button" value="{ins}" /></div>',
 
 		youtubeMenu:
 			'<div><label for="link">{label}</label> ' +
-				'<input type="text" id="link" placeholder="https://" /></div>' +
+				'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
 			'<div><input type="button" class="button" value="{insert}" />' +
 				'</div>',
 
 		youtube:
-			'<iframe width="560" height="315" frameborder="0" allowfullscreen' +
+			'<iframe width="560" height="315" frameborder="0" allowfullscreen ' +
 			'src="https://www.youtube.com/embed/{id}?wmode=opaque&start={time}" ' +
 			'data-youtube-id="{id}"></iframe>'
 	};
@@ -1839,7 +1837,7 @@
 	 * @returns {string|DocumentFragment}
 	 * @private
 	 */
-	var _tmpl = function (name, params, createHtml) {
+	function _tmpl (name, params, createHtml) {
 		var template = _templates[name];
 
 		Object.keys(params).forEach(function (name) {
@@ -1853,11 +1851,11 @@
 		}
 
 		return template;
-	};
+	}
 
 	// In IE < 11 a BR at the end of a block level element
 	// causes a line break. In all other browsers it's collapsed.
-	var IE_BR_FIX$1 = ie && ie < 11;
+	var IE_BR_FIX = ie && ie < 11;
 
 	/**
 	 * Fixes a bug in FF where it sometimes wraps
@@ -1948,6 +1946,18 @@
 
 		// START_COMMAND: Left
 		left: {
+			state: function (node) {
+				if (node && node.nodeType === 3) {
+					node = node.parentNode;
+				}
+
+				if (node) {
+					var isLtr = css(node, 'direction') === 'ltr';
+					var align = css(node, 'textAlign');
+
+					return align === 'left' || align === (isLtr ? 'start' : 'end');
+				}
+			},
 			exec: 'justifyleft',
 			tooltip: 'Align left'
 		},
@@ -1960,6 +1970,18 @@
 		// END_COMMAND
 		// START_COMMAND: Right
 		right: {
+			state: function (node) {
+				if (node && node.nodeType === 3) {
+					node = node.parentNode;
+				}
+
+				if (node) {
+					var isLtr = css(node, 'direction') === 'ltr';
+					var align = css(node, 'textAlign');
+
+					return align === 'right' || align === (isLtr ? 'end' : 'start');
+				}
+			},
 			exec: 'justifyright',
 			tooltip: 'Align right'
 		},
@@ -2154,13 +2176,11 @@
 		// END_COMMAND
 		// START_COMMAND: Indent
 		indent: {
-			state: function (parents$$1, firstBlock) {
+			state: function (parent$$1, firstBlock) {
 				// Only works with lists, for now
-				var	range, startParent, endParent,
-					parentLists = parents(firstBlock, 'ul,ol,menu');
+				var	range, startParent, endParent;
 
-				// in case it's a list with only a single <li>
-				if (parentLists.length > 1 && parentLists[0].children.length > 1) {
+				if (is(firstBlock, 'li')) {
 					return 0;
 				}
 
@@ -2200,7 +2220,7 @@
 				// of complications and issues around how to indent text
 				// As default, let's just stay with indenting the lists,
 				// at least, for now.
-				if (parents(block, 'ul,ol,menu')) {
+				if (closest(block, 'ul,ol,menu')) {
 					editor.execCommand('indent');
 				}
 			},
@@ -2210,12 +2230,11 @@
 		// START_COMMAND: Outdent
 		outdent: {
 			state: function (parents$$1, firstBlock) {
-				return closest(firstBlock, 'ul,ol,menu') > 0 ? 0 : -1;
+				return closest(firstBlock, 'ul,ol,menu') ? 0 : -1;
 			},
 			exec: function () {
 				var	block = this.getRangeHelper().getFirstBlockParent();
-
-				if (parents(block, 'ul,ol,menu')) {
+				if (closest(block, 'ul,ol,menu')) {
 					this.execCommand('outdent');
 				}
 			},
@@ -2244,7 +2263,7 @@
 						html += Array(rows + 1).join(
 							'<tr>' +
 								Array(cols + 1).join(
-									'<td>' + (IE_BR_FIX$1 ? '' : '<br />') + '</td>'
+									'<td>' + (IE_BR_FIX ? '' : '<br />') + '</td>'
 								) +
 							'</tr>'
 						);
@@ -2275,7 +2294,7 @@
 			exec: function () {
 				this.wysiwygEditorInsertHtml(
 					'<code>',
-					(IE_BR_FIX$1 ? '' : '<br />') + '</code>'
+					(IE_BR_FIX ? '' : '<br />') + '</code>'
 				);
 			},
 			tooltip: 'Code'
@@ -2434,7 +2453,7 @@
 					// If there is no selected text then must set the URL as
 					// the text. Most browsers do this automatically, sadly
 					// IE doesn't.
-					if (!editor.getRangeHelper().selectedHtml() || text) {
+					if (text || !editor.getRangeHelper().selectedHtml()) {
 						text = text || url;
 
 						editor.wysiwygEditorInsertHtml(
@@ -2484,7 +2503,7 @@
 					end    = null;
 				// if not add a newline to the end of the inserted quote
 				} else if (this.getRangeHelper().selectedHtml() === '') {
-					end = (IE_BR_FIX$1 ? '' : '<br />') + end;
+					end = (IE_BR_FIX ? '' : '<br />') + end;
 				}
 
 				this.wysiwygEditorInsertHtml(before, end);
@@ -2500,7 +2519,9 @@
 
 				var createContent = function (includeMore) {
 					var	moreLink,
-						emoticonsCompat = editor.opts.emoticonsCompat,
+						opts            = editor.opts,
+						emoticonsRoot   = opts.emoticonsRoot || '',
+						emoticonsCompat = opts.emoticonsCompat,
 						rangeHelper     = editor.getRangeHelper(),
 						startSpace      = emoticonsCompat &&
 							rangeHelper.getOuterText(true, 1) !== ' ' ? ' ' : '',
@@ -2511,8 +2532,8 @@
 						perLine         = 0,
 						emoticons       = extend(
 							{},
-							editor.opts.emoticons.dropdown,
-							includeMore ? editor.opts.emoticons.more : {}
+							opts.emoticons.dropdown,
+							includeMore ? opts.emoticons.more : {}
 						);
 
 					appendChild(content, line);
@@ -2528,7 +2549,7 @@
 
 					each(emoticons, function (code, emoticon) {
 						appendChild(line, createElement('img', {
-							src: emoticon.url || emoticon,
+							src: emoticonsRoot + (emoticon.url || emoticon),
 							alt: code,
 							title: emoticon.tooltip || code
 						}));
@@ -2539,7 +2560,7 @@
 						}
 					});
 
-					if (!includeMore && editor.opts.emoticons.more) {
+					if (!includeMore && opts.emoticons.more) {
 						moreLink = createElement('a', {
 							className: 'sceditor-more'
 						});
@@ -3028,7 +3049,7 @@
 
 	// In IE < 11 a BR at the end of a block level element
 	// causes a line break. In all other browsers it's collapsed.
-	var IE_BR_FIX$2 = ie && ie < 11;
+	var IE_BR_FIX$1 = ie && ie < 11;
 
 
 	/**
@@ -3184,8 +3205,8 @@
 			}
 
 			if (canHaveChildren(lastChild)) {
-				// IE <= 8 and Webkit won't allow the cursor to be placed
-				// inside an empty tag, so add a zero width space to it.
+				// Webkit won't allow the cursor to be placed inside an
+				// empty tag, so add a zero width space to it.
 				if (!lastChild.lastChild) {
 					appendChild(lastChild, document.createTextNode('\u200B'));
 				}
@@ -3251,10 +3272,7 @@
 		};
 
 		/**
-		 * <p>Clones the selected Range</p>
-		 *
-		 * <p>IE <= 8 will return a TextRange, all other browsers
-		 * will return a Range object.</p>
+		 * Clones the selected Range
 		 *
 		 * @return {Range}
 		 * @function
@@ -3270,10 +3288,7 @@
 		};
 
 		/**
-		 * <p>Gets the selected Range</p>
-		 *
-		 * <p>IE <= 8 will return a TextRange, all other browsers
-		 * will return a Range object.</p>
+		 * Gets the selected Range
 		 *
 		 * @return {Range}
 		 * @function
@@ -3290,7 +3305,7 @@
 
 			// When creating a new range, set the start to the first child
 			// element of the body element to avoid errors in FF.
-			if (sel.getRangeAt && sel.rangeCount <= 0) {
+			if (sel.rangeCount <= 0) {
 				firstChild = doc.body;
 				while (firstChild.firstChild) {
 					firstChild = firstChild.firstChild;
@@ -3538,7 +3553,7 @@
 			// Check if cursor is set after a BR when the BR is the only
 			// child of the parent. In Firefox this causes a line break
 			// to occur when something is typed. See issue #321
-			if (!IE_BR_FIX$2 && range.collapsed && container &&
+			if (!IE_BR_FIX$1 && range.collapsed && container &&
 				!isInline(container, true)) {
 
 				lastChild = container.lastChild;
@@ -3952,7 +3967,7 @@
 
 	// In IE < 11 a BR at the end of a block level element
 	// causes a line break. In all other browsers it's collapsed.
-	var IE_BR_FIX = IE_VER && IE_VER < 11;
+	var IE_BR_FIX$2 = IE_VER && IE_VER < 11;
 
 	var IMAGE_MIME_REGEX = /^image\/(p?jpe?g|gif|png|bmp)$/i;
 
@@ -3985,12 +4000,12 @@
 	/**
 	 * SCEditor - A lightweight WYSIWYG editor
 	 *
-	 * @param {Element} el The textarea to be converted
-	 * @return {Object} userOptions
+	 * @param {HTMLTextAreaElement} original The textarea to be converted
+	 * @param {Object} userOptions
 	 * @class SCEditor
 	 * @name SCEditor
 	 */
-	function SCEditor(el, userOptions) {
+	function SCEditor(original, userOptions) {
 		/**
 		 * Alias of this
 		 *
@@ -4002,14 +4017,6 @@
 		 * Editor format like BBCode or HTML
 		 */
 		var format;
-
-		/**
-		 * The textarea element being replaced
-		 *
-		 * @type {HTMLTextAreaElement}
-		 * @private
-		 */
-		var original = el.get ? el.get(0) : el;
 
 		/**
 		 * The div which contains the editor and toolbar
@@ -4042,6 +4049,14 @@
 		 * @private
 		 */
 		var wysiwygEditor;
+
+		/**
+		 * The editors window
+		 *
+		 * @type {Window}
+		 * @private
+		 */
+		var wysiwygWindow;
 
 		/**
 		 * The WYSIWYG editors body element
@@ -4476,6 +4491,7 @@
 			wysiwygDocument.close();
 
 			wysiwygBody = wysiwygDocument.body;
+			wysiwygWindow = wysiwygEditor.contentWindow;
 
 			base.readOnly(!!options.readOnly);
 
@@ -4493,7 +4509,7 @@
 			attr(sourceEditor, 'tabindex', tabIndex);
 			attr(wysiwygEditor, 'tabindex', tabIndex);
 
-			rangeHelper = new RangeHelper(wysiwygEditor.contentWindow);
+			rangeHelper = new RangeHelper(wysiwygWindow);
 
 			// load any textarea value into the editor
 			hide(original);
@@ -4528,7 +4544,7 @@
 			if (options.autoExpand) {
 				// Need to update when images (or anything else) loads
 				on(wysiwygBody, 'load', autoExpand, EVENT_CAPTURE);
-				on(wysiwygDocument, 'input keyup', autoExpand);
+				on(wysiwygBody, 'input keyup', autoExpand);
 			}
 
 			if (options.resizeEnabled) {
@@ -4599,8 +4615,12 @@
 
 			on(editorContainer, 'selectionchanged', checkNodeChanged);
 			on(editorContainer, 'selectionchanged', updateActiveButtons);
-			on(editorContainer, 'selectionchanged valuechanged nodechanged',
-				handleEvent);
+			// Custom events to forward
+			on(
+				editorContainer,
+				'selectionchanged valuechanged nodechanged pasteraw paste',
+				handleEvent
+			);
 		};
 
 		/**
@@ -4901,7 +4921,7 @@
 					// IE < 11 should place the cursor after the <br> as
 					// it will show it as a newline. IE >= 11 and all
 					// other browsers should place the cursor before.
-					if (!IE_BR_FIX && is(node, 'br') && node.previousSibling) {
+					if (!IE_BR_FIX$2 && is(node, 'br') && node.previousSibling) {
 						node = node.previousSibling;
 					}
 				}
@@ -5220,7 +5240,7 @@
 
 		autoExpand = function () {
 			if (options.autoExpand && !autoExpandThrottle) {
-				setTimeout(base.expandToContent, 200);
+				autoExpandThrottle = setTimeout(base.expandToContent, 200);
 			}
 		};
 
@@ -5242,6 +5262,7 @@
 				return;
 			}
 
+			clearTimeout(autoExpandThrottle);
 			autoExpandThrottle = false;
 
 			if (!autoExpandBounds) {
@@ -5258,9 +5279,9 @@
 			range.selectNodeContents(wysiwygBody);
 
 			var rect = range.getBoundingClientRect();
-			var current = wysiwygDocument.documentElement.clientHeight;
+			var current = wysiwygDocument.documentElement.clientHeight - 1;
 			var spaceNeeded = rect.bottom - rect.top;
-			var newHeight = base.height() + (spaceNeeded - current);
+			var newHeight = base.height() + 1 + (spaceNeeded - current);
 
 			if (!ignoreMaxHeight && autoExpandBounds.max !== -1) {
 				newHeight = Math.min(newHeight, autoExpandBounds.max);
@@ -5358,8 +5379,8 @@
 			}
 
 			dropDownCss = extend({
-				top: getOffset(menuItem).top,
-				left: getOffset(menuItem).left,
+				top: menuItem.offsetTop,
+				left: menuItem.offsetLeft,
 				marginTop: menuItem.clientHeight
 			}, options.dropDownCss);
 
@@ -5369,7 +5390,7 @@
 
 			css(dropdown, dropDownCss);
 			appendChild(dropdown, content);
-			appendChild(globalDoc.body, dropdown);
+			appendChild(editorContainer, dropdown);
 			on(dropdown, 'click focusin', function (e) {
 				// stop clicks within the dropdown from being handled
 				e.stopPropagation();
@@ -5478,21 +5499,22 @@
 		 * @private
 		 */
 		handlePasteData = function (data$$1) {
-			var pastearea = createElement('div', {}, wysiwygDocument);
+			var pasteArea = createElement('div', {}, wysiwygDocument);
 
 			pluginManager.call('pasteRaw', data$$1);
+			trigger(editorContainer, 'pasteraw', data$$1);
 
 			if (data$$1.html) {
-				pastearea.innerHTML = data$$1.html;
+				pasteArea.innerHTML = data$$1.html;
 
 				// fix any invalid nesting
-				fixNesting(pastearea);
+				fixNesting(pasteArea);
 			} else {
-				pastearea.innerHTML = entities(data$$1.text || '');
+				pasteArea.innerHTML = entities(data$$1.text || '');
 			}
 
 			var paste = {
-				val: pastearea.innerHTML
+				val: pasteArea.innerHTML
 			};
 
 			if ('fragmentToSource' in format) {
@@ -5501,6 +5523,7 @@
 			}
 
 			pluginManager.call('paste', paste);
+			trigger(editorContainer, 'paste', paste);
 
 			if ('fragmentToHtml' in format) {
 				paste.val = format
@@ -6186,9 +6209,14 @@
 		 */
 		checkSelectionChanged = function () {
 			function check() {
+				// Don't create new selection if there isn't one (like after
+				// blur event in iOS)
+				if (wysiwygWindow.getSelection() &&
+					wysiwygWindow.getSelection().rangeCount <= 0) {
+					currentSelection = null;
 				// rangeHelper could be null if editor was destroyed
 				// before the timeout had finished
-				if (rangeHelper && !rangeHelper.compare(currentSelection)) {
+				} else if (rangeHelper && !rangeHelper.compare(currentSelection)) {
 					currentSelection = rangeHelper.cloneSelected();
 
 					// If the selection is in an inline wrap it in a block.
@@ -6368,7 +6396,7 @@
 					// Last <br> of a block will be collapsed unless it is
 					// IE < 11 so need to make sure the <br> that was inserted
 					// isn't the last node of a block.
-					if (!IE_BR_FIX) {
+					if (!IE_BR_FIX$2) {
 						var parent$$1  = br.parentNode;
 						var lastChild = parent$$1.lastChild;
 
@@ -6416,7 +6444,7 @@
 					if (!is(node, '.sceditor-nlf') && hasStyling(node)) {
 						var paragraph = createElement('p', {}, wysiwygDocument);
 						paragraph.className = 'sceditor-nlf';
-						paragraph.innerHTML = !IE_BR_FIX ? '<br />' : '';
+						paragraph.innerHTML = !IE_BR_FIX$2 ? '<br />' : '';
 						appendChild(wysiwygBody, paragraph);
 						return false;
 					}
@@ -6667,8 +6695,8 @@
 					return;
 				}
 
-				var container,
-					rng = rangeHelper.selectedRange();
+				var container;
+				var rng = rangeHelper.selectedRange();
 
 				// Fix FF bug where it shows the cursor in the wrong place
 				// if the editor hasn't had focus before. See issue #393
@@ -6679,7 +6707,7 @@
 				// Check if cursor is set after a BR when the BR is the only
 				// child of the parent. In Firefox this causes a line break
 				// to occur when something is typed. See issue #321
-				if (!IE_BR_FIX && rng && rng.endOffset === 1 && rng.collapsed) {
+				if (!IE_BR_FIX$2 && rng && rng.endOffset === 1 && rng.collapsed) {
 					container = rng.endContainer;
 
 					if (container && container.childNodes.length === 1 &&
@@ -6690,7 +6718,7 @@
 					}
 				}
 
-				wysiwygEditor.contentWindow.focus();
+				wysiwygWindow.focus();
 				wysiwygBody.focus();
 
 				// Needed for IE

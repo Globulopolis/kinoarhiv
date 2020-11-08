@@ -1,3 +1,187 @@
-/* SCEditor v2.0.0 | (C) 2017, Sam Clarke | sceditor.com/license */
+(function (sceditor) {
+	'use strict';
 
-!function(e){"use strict";e.plugins.undo=function(){var e,t,r=this,o=0,u=50,a=[],n=[],c=!1,s=function(r){c=!0,t=r.value,e.sourceMode(r.sourceMode),e.val(r.value,!1),e.focus(),r.sourceMode?e.sourceEditorCaret(r.caret):e.getRangeHelper().restoreRange(),c=!1},l=function(e,t){var r,o,u,a,n=e.length,c=t.length,s=Math.max(n,c);for(r=0;r<s&&e.charAt(r)===t.charAt(r);r++);for(u=n<c?c-n:0,a=c<n?n-c:0,o=s-1;o>=0&&e.charAt(o-u)===t.charAt(o-a);o--);return o-r+1};r.init=function(){u=(e=this).undoLimit||u,e.addShortcut("ctrl+z",r.undo),e.addShortcut("ctrl+shift+z",r.redo),e.addShortcut("ctrl+y",r.redo)},r.undo=function(){var t=n.pop(),r=e.val(null,!1);return t&&!a.length&&r===t.value&&(t=n.pop()),t&&(a.length||a.push({caret:e.sourceEditorCaret(),sourceMode:e.sourceMode(),value:r}),a.push(t),s(t)),!1},r.redo=function(){var e=a.pop();return n.length||(n.push(e),e=a.pop()),e&&(n.push(e),s(e)),!1},r.signalReady=function(){var r=e.val(null,!1);t=r,n.push({caret:this.sourceEditorCaret(),sourceMode:this.sourceMode(),value:r})},r.signalValuechangedEvent=function(r){var s=r.detail.rawValue;u>0&&n.length>u&&n.shift(),!c&&t&&t!==s&&(a.length=0,(o+=l(t,s))<20||o<50&&!/\s$/g.test(r.rawValue)||(n.push({caret:e.sourceEditorCaret(),sourceMode:e.sourceMode(),value:s}),o=0,t=s))}}}(sceditor);
+	sceditor.plugins.undo = function () {
+		var base = this;
+		var editor;
+		var charChangedCount = 0;
+		var previousValue;
+
+		var undoLimit  = 50;
+		var redoStates = [];
+		var undoStates = [];
+		var ignoreNextValueChanged = false;
+
+		/**
+		 * Sets the editor to the specified state.
+		 *
+		 * @param  {Object} state
+		 * @private
+		 */
+		var applyState = function (state) {
+			ignoreNextValueChanged = true;
+
+			previousValue = state.value;
+
+			editor.sourceMode(state.sourceMode);
+			editor.val(state.value, false);
+			editor.focus();
+
+			if (state.sourceMode) {
+				editor.sourceEditorCaret(state.caret);
+			} else {
+				editor.getRangeHelper().restoreRange();
+			}
+
+			ignoreNextValueChanged = false;
+		};
+
+
+		/**
+		 * Calculates the number of characters that have changed
+		 * between two strings.
+		 *
+		 * @param {String} strA
+		 * @param {String} strB
+		 * @return {String}
+		 * @private
+		 */
+		var simpleDiff = function (strA, strB) {
+			var start, end, aLenDiff, bLenDiff,
+				aLength = strA.length,
+				bLength = strB.length,
+				length  = Math.max(aLength, bLength);
+
+			// Calculate the start
+			for (start = 0; start < length; start++) {
+				if (strA.charAt(start) !== strB.charAt(start)) {
+					break;
+				}
+			}
+
+			// Calculate the end
+			aLenDiff = aLength < bLength ? bLength - aLength : 0;
+			bLenDiff = bLength < aLength ? aLength - bLength : 0;
+
+			for (end = length - 1; end >= 0; end--) {
+				if (strA.charAt(end - aLenDiff) !==
+						strB.charAt(end - bLenDiff)) {
+					break;
+				}
+			}
+
+			return (end - start) + 1;
+		};
+
+		base.init = function () {
+			// The this variable will be set to the instance of the editor
+			// calling it, hence why the plugins "this" is saved to the base
+			// variable.
+			editor = this;
+
+			undoLimit = editor.undoLimit || undoLimit;
+
+			// addShortcut is the easiest way to add handlers to specific
+			// shortcuts
+			editor.addShortcut('ctrl+z', base.undo);
+			editor.addShortcut('ctrl+shift+z', base.redo);
+			editor.addShortcut('ctrl+y', base.redo);
+		};
+
+		base.undo = function () {
+			var state = undoStates.pop();
+			var rawEditorValue = editor.val(null, false);
+
+			if (state && !redoStates.length && rawEditorValue === state.value) {
+				state = undoStates.pop();
+			}
+
+			if (state) {
+				if (!redoStates.length) {
+					redoStates.push({
+						'caret': editor.sourceEditorCaret(),
+						'sourceMode': editor.sourceMode(),
+						'value': rawEditorValue
+					});
+				}
+
+				redoStates.push(state);
+				applyState(state);
+			}
+
+			return false;
+		};
+
+		base.redo = function () {
+			var state = redoStates.pop();
+
+			if (!undoStates.length) {
+				undoStates.push(state);
+				state = redoStates.pop();
+			}
+
+			if (state) {
+				undoStates.push(state);
+				applyState(state);
+			}
+
+			return false;
+		};
+
+		base.signalReady = function () {
+			var rawValue = editor.val(null, false);
+
+			// Store the initial value as the last value
+			previousValue = rawValue;
+
+			undoStates.push({
+				'caret': this.sourceEditorCaret(),
+				'sourceMode': this.sourceMode(),
+				'value': rawValue
+			});
+		};
+
+		/**
+		 * Handle the valueChanged signal.
+		 *
+		 * e.rawValue will either be the raw HTML from the WYSIWYG editor with
+		 * the rangeHelper range markers inserted, or it will be the raw value
+		 * of the source editor (BBCode or HTML depending on plugins).
+		 * @return {void}
+		 */
+		base.signalValuechangedEvent = function (e) {
+			var rawValue = e.detail.rawValue;
+
+			if (undoLimit > 0 && undoStates.length > undoLimit) {
+				undoStates.shift();
+			}
+
+			// If the editor hasn't fully loaded yet,
+			// then the previous value won't be set.
+			if (ignoreNextValueChanged || !previousValue ||
+					previousValue === rawValue) {
+				return;
+			}
+
+			// Value has changed so remove all redo states
+			redoStates.length = 0;
+			charChangedCount += simpleDiff(previousValue, rawValue);
+
+			if (charChangedCount < 20) {
+				return;
+			// ??
+			} else if (charChangedCount < 50 && !/\s$/g.test(e.rawValue)) {
+				return;
+			}
+
+			undoStates.push({
+				'caret': editor.sourceEditorCaret(),
+				'sourceMode': editor.sourceMode(),
+				'value': rawValue
+			});
+
+			charChangedCount = 0;
+			previousValue = rawValue;
+		};
+	};
+}(sceditor));

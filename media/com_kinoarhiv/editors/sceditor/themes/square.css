@@ -182,10 +182,9 @@ div.sceditor-grip {
   border: 1px solid #d9d9d9;
   font-size: 13px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  color: #222;
+  color: #333;
   line-height: 1;
   font-weight: bold;
-  overflow: hidden;
   height: 250px;
   border-radius: 4px;
   background-clip: padding-box;
@@ -302,13 +301,20 @@ div.sceditor-dropdown {
   position: absolute;
   border: 1px solid #ccc;
   background: #fff;
-  color: #333;
   z-index: 4000;
   padding: 10px;
-  line-height: 1;
+  font-weight: normal;
+  font-size: 15px;
   border-radius: 2px;
   background-clip: padding-box;
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+}
+div.sceditor-dropdown *,
+div.sceditor-dropdown *:before,
+div.sceditor-dropdown *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 div.sceditor-dropdown a,
 div.sceditor-dropdown a:link {
@@ -474,6 +480,7 @@ div.sceditor-group {
   width: 16px;
   margin: 2px 0;
   fill: #111;
+  text-decoration: none;
   pointer-events: none;
   line-height: 1;
 }

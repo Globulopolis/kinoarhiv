@@ -43,7 +43,7 @@ $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' 
 						</span>
 						&nbsp;<span class="vote_date small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span>
 					</div>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $itemid); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=albums&Itemid=' . $itemid); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
 				</div>
 			</div>
 		<?php endif; ?>

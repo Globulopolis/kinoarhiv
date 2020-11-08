@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<layout title="COM_KINOARHIV_VIEW_ALBUMS_TITLE" option="">
+		<message>
+			<![CDATA[COM_KINOARHIV_VIEW_ALBUMS_DESC]]>
+		</message>
+	</layout>
+
+	<!-- Add fields to the parameters object for the layout. -->
+	<fields name="params">
+
+		<!-- Basic options. -->
+		<fieldset name="advanced"
+				  label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
+
+			<field
+					name="page_type"
+					type="radio"
+					class="btn-group"
+					label="COM_KA_MUSIC_PAGE_TYPE"
+					default="list">
+				<option value="list">COM_KA_MUSIC_PAGE_TYPE_1</option>
+				<option value="artwork">COM_KA_MUSIC_PAGE_TYPE_2</option>
+			</field>
+		</fieldset>
+	</fields>
+</metadata>

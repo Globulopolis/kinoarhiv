@@ -42,6 +42,7 @@
 			   class="inputbox" size="6" default="0"/>
 		<field name="desc" type="textarea" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DESC" cols="60" rows="6"
 			   class="span12" filter="JComponentHelper::filterText"/>
+		<field name="old_type" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" size="10" default="0" readonly="true"/>
 		<field name="id" type="hidden" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
 			   default="0" readonly="true" class="field_id"/>
 	</fieldset>

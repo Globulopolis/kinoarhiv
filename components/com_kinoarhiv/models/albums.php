@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 
@@ -27,7 +28,7 @@ class KinoarhivModelAlbums extends JModelList
 	 * @var    string
 	 * @since  1.6
 	 */
-	protected $context = null;
+	protected $context = 'com_kinoarhiv.albums';
 
 	/**
 	 * Constructor.
@@ -46,11 +47,6 @@ class KinoarhivModelAlbums extends JModelList
 		}
 
 		parent::__construct($config);
-
-		if (empty($this->context))
-		{
-			$this->context = strtolower('com_kinoarhiv.albums');
-		}
 	}
 
 	/**
@@ -71,6 +67,16 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
+		$app        = JFactory::getApplication('site');
+		$menuParams = new Registry;
+
+		if ($menu = $app->getMenu()->getActive())
+		{
+			$menuParams->loadString($menu->params);
+		}
+
+		$this->setState('menuParams', $menuParams);
+
 		if ($this->context)
 		{
 			$app = JFactory::getApplication();
@@ -143,7 +149,78 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		return null;
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$app    = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		// Define null and now dates
+		$nullDate = $db->quote($db->getNullDate());
+		$nowDate = $db->quote(JFactory::getDate()->toSql());
+
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$this->getState(
+				'list.select',
+				'a.id, a.title, a.alias, a.fs_alias, a.composer, DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', ' .
+				'a.length, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.buy_url, ' .
+				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
+				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
+				'a.attribs, a.state'
+			)
+		);
+		$query->from($db->quoteName('#__ka_music_albums', 'a'));
+
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g') . ' ON g.item_id = a.id AND g.frontpage = 1 AND g.state = 1');
+
+		// Join over composer
+		$query->select($db->quoteName(array('n.name', 'n.latin_name')))
+			->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id IN (' .
+				'SELECT name_id FROM ' . $db->quoteName('#__ka_music_rel_composers') . ' WHERE album_id = a.id' .
+				')'
+			);
+
+		// Join over favorited
+		if (!$user->get('guest'))
+		{
+			$query->select($db->quoteName('u.favorite'));
+			$query->leftJoin($db->quoteName('#__ka_user_marked_albums', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.album_id = a.id');
+		}
+
+		$query->where('a.state = 1 AND a.access IN (' . $groups . ')')
+			->where('a.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
+
+		if ($params->get('use_alphabet') == 1)
+		{
+			$letter = $app->input->get('letter', '', 'string');
+
+			if ($letter != '')
+			{
+				if ($letter == '0-1')
+				{
+					$range = range(0, 9);
+					$query->where('(a.title LIKE "' . implode('%" OR a.title LIKE "', $range) . '%")');
+				}
+				else
+				{
+					if (preg_match('#\p{L}#u', $letter, $matches))
+					{
+						// Only any kind of letter from any language.
+						$query->where('a.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
+					}
+				}
+			}
+		}
+
+		// Prevent duplicate records if accidentally have a more than one poster for frontpage.
+		$query->group($db->quoteName('a.id'));
+		$query->order($this->getState('list.ordering', 'a.ordering') . ' ' . $this->getState('list.direction', 'ASC'));
+
+		return $query;
 	}
 
 	/**
@@ -173,8 +250,8 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	public function favoriteAdd($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		// Check if any record with person ID exists in database.

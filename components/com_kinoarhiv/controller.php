@@ -32,8 +32,8 @@ class KinoarhivController extends JControllerLegacy
 		$cachable = true;
 
 		// Set the default view name and format from the Request.
-		$vName = $this->input->getCmd('view', 'movies');
-		$this->input->set('view', $vName);
+		$viewName = $this->input->getCmd('view', 'movies');
+		$this->input->set('view', $viewName);
 
 		$user = JFactory::getUser();
 

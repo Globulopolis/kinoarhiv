@@ -67,6 +67,7 @@
 				<option value="vnd.apple.mpegURL">vnd.apple.mpegURL (.m3u8)</option>
 				<option value="video/MP2T">video/MP2T (.ts)</option>
 				<option value="application/dash+xml">application/dash+xml (.mpd)</option>
+				<option value="rtmp/mp4">rtmp/mp4 (rtmp stream)</option>
 			</field>
 			<field name="resolution" type="text" default="" label="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION"
 				   description="COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT_RESOLUTION_DESC" class="span6" required="true"

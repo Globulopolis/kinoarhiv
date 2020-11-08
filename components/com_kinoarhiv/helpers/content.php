@@ -33,7 +33,7 @@ class KAContentHelper
 	 */
 	public static function getImageSize($path, $scale = true, $baseWidth = 0, $dimension = '128x128')
 	{
-		$image = (object) array();
+		$image = (object) array('width' => 0, 'height' => 0);
 
 		if ($scale)
 		{
@@ -358,49 +358,49 @@ class KAContentHelper
 	{
 		clearstatcache();
 
-		$itemid          = JFactory::getApplication()->input->get('Itemid');
-		$params          = JComponentHelper::getParams('com_kinoarhiv');
-		$folder_part     = '/' . urlencode($data->fs_alias) . '/' . $data->id . '/';
-		$folder          = $params->get('media_music_images_root') . $folder_part;
-		$throttle_enable = $params->get('throttle_image_enable', 0);
-		$covers          = array('poster' => '', 'th_poster' => '');
+		$itemid         = JFactory::getApplication()->input->getInt('Itemid');
+		$params         = JComponentHelper::getParams('com_kinoarhiv');
+		$folderPart     = '/' . urlencode($data->fs_alias) . '/' . $data->id . '/';
+		$folder         = $params->get('media_music_images_root') . $folderPart;
+		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$covers         = array('poster' => '', 'th_poster' => '', 'size' => (object) array('width' => 250, 'height' => 250));
 
 		foreach (explode("\n", $params->get('music_covers_front')) as $filename)
 		{
 			$filename = trim($filename);
 
-			if ($throttle_enable == 0)
+			if ($throttleEnable == 0)
 			{
 				// Search for cover in default location from component settings
 				if (is_file(JPath::clean($folder . $filename)))
 				{
 					if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
 					{
-						$covers['poster']    = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . $folder_part . $filename;
-						$covers['th_poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . $folder_part . 'thumb_' . $filename;
+						$covers['poster']    = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . $folderPart . $filename;
+						$covers['th_poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . $folderPart . 'thumb_' . $filename;
 					}
 					else
 					{
-						$covers['poster']    = $params->get('media_music_images_root_www') . $folder_part . $filename;
-						$covers['th_poster'] = $params->get('media_music_images_root_www') . $folder_part . 'thumb_' . $filename;
+						$covers['poster']    = $params->get('media_music_images_root_www') . $folderPart . $filename;
+						$covers['th_poster'] = $params->get('media_music_images_root_www') . $folderPart . 'thumb_' . $filename;
 					}
 
-					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folder_part . 'thumb_' . $filename), false);
+					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folderPart . 'thumb_' . $filename), false);
 
 					break;
 				}
 				// Search for cover in album location
-				elseif (is_file(JPath::clean($params->get('media_music_root') . $folder_part . $filename)))
+				elseif (is_file(JPath::clean($params->get('media_music_root') . $folderPart . $filename)))
 				{
 					if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
 					{
-						$covers['poster']    = JUri::root() . substr($params->get('media_music_root'), 1) . $folder_part . $filename;
-						$covers['th_poster'] = JUri::root() . substr($params->get('media_music_root_www'), 1) . $folder_part . 'thumb_' . $filename;
+						$covers['poster']    = JUri::root() . substr($params->get('media_music_root'), 1) . $folderPart . $filename;
+						$covers['th_poster'] = JUri::root() . substr($params->get('media_music_root_www'), 1) . $folderPart . 'thumb_' . $filename;
 					}
 					else
 					{
-						$covers['poster']    = $params->get('media_music_root_www') . $folder_part . $filename;
-						$covers['th_poster'] = $params->get('media_music_root_www') . $folder_part . 'thumb_' . $filename;
+						$covers['poster']    = $params->get('media_music_root_www') . $folderPart . $filename;
+						$covers['th_poster'] = $params->get('media_music_root_www') . $folderPart . 'thumb_' . $filename;
 					}
 
 					break;
@@ -409,7 +409,6 @@ class KAContentHelper
 				{
 					$covers['poster']    = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
 					$covers['th_poster'] = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
-					$covers['size'] = (object) array('width' => 250, 'height' => 250);
 				}
 			}
 			else
@@ -425,9 +424,14 @@ class KAContentHelper
 						'index.php?option=com_kinoarhiv&task=media.view&element=music&content=image&type=3&id=' . $data->id .
 						'&fa=' . urlencode($data->fs_alias) . '&fn=' . $filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
 					);
-					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folder_part . 'thumb_' . $filename), false);
+					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folderPart . 'thumb_' . $filename), false);
 
 					break;
+				}
+				else
+				{
+					$covers['poster']    = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
+					$covers['th_poster'] = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
 				}
 			}
 		}

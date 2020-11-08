@@ -9,7 +9,10 @@
  */
 
 defined('_JEXEC') or die;
+
+JFactory::getDocument()->addStyleDeclaration('#isisJsData {display:none;}');
 ?>
+<br />
 <div id="j-main-container" class="control-panel">
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=movies">
 		<span class="icon-play"> </span> <?php echo JText::_('COM_KA_MOVIES_TITLE'); ?>
@@ -35,14 +38,14 @@ defined('_JEXEC') or die;
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=reviews">
 		<span class="icon-comments-2"> </span> <?php echo JText::_('COM_KA_REVIEWS_TITLE'); ?>
 	</a>
-	<br />
+	<br /><br />
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=premieres">
 		<span class="icon-calendar"> </span> <?php echo JText::_('COM_KA_PREMIERES_TITLE'); ?>
 	</a>
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=releases">
 		<span class="icon-calendar"> </span> <?php echo JText::_('COM_KA_RELEASES_TITLE'); ?>
 	</a>
-	<br />
+	<br /><br />
 	<a class="btn" href="index.php?option=com_kinoarhiv&view=settings">
 		<span class="icon-options"> </span> <?php echo JText::_('COM_KA_SETTINGS_TITLE'); ?>
 	</a>

@@ -1,10 +1,10 @@
 /*!-----------------------------------------------------------------------------
  * Vegas - Fullscreen Backgrounds and Slideshows.
- * v2.4.0 - built 2017-01-04
+ * v2.4.4 - built 2018-10-30
  * Licensed under the MIT License.
  * http://vegas.jaysalvat.com/
  * ----------------------------------------------------------------------------
- * Copyright (C) 2010-2017 Jay Salvat
+ * Copyright (C) 2010-2018 Jay Salvat
  * http://jaysalvat.com/
  * --------------------------------------------------------------------------*/
 
@@ -251,7 +251,7 @@
 
             if (state) {
                 setTimeout(function () {
-                   self.$timer
+                    self.$timer
                     .addClass('vegas-timer-running')
                         .find('div')
                             .css('transition-duration', self._options('delay') - 100 + 'ms');
@@ -484,7 +484,7 @@
                     this.className  = 'vegas-slide';
 
                     if (this.tagName === 'VIDEO') {
-                        this.className += ' vegas-video';    
+                        this.className += ' vegas-video';
                     }
 
                     if (transition) {
@@ -524,7 +524,7 @@
                     }
 
                     for (var i = 0; i < $slides.length - self.settings.slidesToKeep; i++) {
-                         $slides.eq(i).remove();
+                        $slides.eq(i).remove();
                     }
 
                     self.trigger('walk');
@@ -550,7 +550,11 @@
         },
 
         _end: function () {
-            this.ended = true;
+            if (this.settings.autoplay) {
+                this.ended = false;
+            } else {
+                this.ended = true;
+            }
             this._timer(false);
             this.trigger('end');
         },

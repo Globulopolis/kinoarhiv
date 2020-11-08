@@ -16,7 +16,7 @@
 
 .vegas-overlay {
     opacity: .5;
-    background: transparent url("../images/overlays/02.png") center center repeat;
+    background: transparent url("overlays/02.png") center center repeat;
 }
 
 .vegas-timer {
@@ -29,7 +29,6 @@
     width: 0%;
     height: 100%;
     background: white;
-    -webkit-transition: width ease-out;
     transition: width ease-out;
 }
 
@@ -73,27 +72,21 @@ body.vegas-container > .vegas-slide {
 }
 
 /* Target Safari IOS7+ in order to add 76px */
-_::full-page-media, _:future,
-:root body.vegas-container > .vegas-slide,
-:root body.vegas-container > .vegas-overlay {
-    bottom: -76px;
-}
-
 /*******************************************/
 /* blur transition */
 /*******************************************/
 .vegas-transition-blur,
 .vegas-transition-blur2 {
     opacity: 0;
-    -webkit-filter: blur(32px);
-            filter: blur(32px);
+    -webkit-filter: blur(32px) brightness(1.01);
+            filter: blur(32px) brightness(1.01);
 }
 
 .vegas-transition-blur-in,
 .vegas-transition-blur2-in {
     opacity: 1;
-    -webkit-filter: blur(0px);
-            filter: blur(0px);
+    -webkit-filter: blur(0px) brightness(1.01);
+            filter: blur(0px) brightness(1.01);
 }
 
 .vegas-transition-blur2-out {

@@ -924,6 +924,11 @@ div.rating {
 	padding-left: 16px;
 }
 
+.ka-albums div.thumbnail {
+	border: none;
+	box-shadow: none;
+}
+
 .flag-dd {
 	margin: 0 4px 2px 0;
 }

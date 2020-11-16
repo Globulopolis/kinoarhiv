@@ -36,7 +36,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						<div class="thumb">
 							<div class="item">
 								<a href="<?php echo $wp->image; ?>" title="<?php echo $this->item->title; ?>" rel="wp">
-									<img data-original="<?php echo $wp->th_image; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_WP_NAMES_ALT') . $this->item->title; ?>" width="<?php echo $wp->th_image_width; ?>" height="<?php echo $wp->th_image_height; ?>"/>
+									<img data-original="<?php echo $wp->th_image; ?>" class="lazy" alt="<?php echo JText::_('COM_KA_WP_NAMES_ALT') . $this->item->title; ?>" width="<?php echo $wp->th_image_width; ?>" height="<?php echo $wp->th_image_height; ?>"/>
 								</a>
 							</div>
 							<ul>

@@ -117,15 +117,15 @@ class KinoarhivModelReleases extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
+		$app    = JFactory::getApplication();
+		$lang   = JFactory::getLanguage();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// It's a string because country_id == 0 - all countries
-		$country = $app->input->get('country', '', 'word');
+		$country  = $app->input->get('country', '', 'word');
 		$nullDate = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);

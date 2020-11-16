@@ -10,14 +10,15 @@
 
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
 $params  = $displayData['params'];
 $item    = $displayData['item'];
 $guest   = $displayData['guest'];
 $itemid  = $displayData['itemid'];
-$authMsg = isset($displayData['auth_msg']) ? true : false;
+$authMsg = isset($displayData['auth_msg']);
 $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 ?>
-<?php if (($item->attribs['allow_votes'] == '' && $params->get('allow_votes') == 1) || $item->attribs['allow_votes'] == 1): ?>
+<?php if (($item->attribs->allow_votes == '' && $params->get('allow_votes') == 1) || $item->attribs->allow_votes == 1): ?>
 	<?php if (!$guest && $params->get('allow_votes') == 1): ?>
 		<?php if ($params->get('ratings_show_local') == 1): ?>
 			<div class="clear"></div>
@@ -25,15 +26,15 @@ $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' 
 				<p><strong><?php echo JText::_('COM_KA_MUSIC_RATE'); ?></strong></p>
 				<select id="rate_field_<?php echo $item->id; ?>" autocomplete="off">
 					<?php for ($i = 0, $n = (int) $params->get('vote_summ_num') + 1; $i < $n; $i++): ?>
-						<option value="<?php echo $i; ?>"<?php echo ($i == round($item->rate_loc)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
+						<option value="<?php echo $i; ?>"<?php echo ($i == round($item->rate)) ? ' selected="selected"' : ''; ?>><?php echo $i; ?></option>
 					<?php endfor; ?>
 				</select>
 
-				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc; ?>" data-rateit-backingfld="#rate_field_<?php echo $item->id; ?>"
+				<div class="rateit" data-rateit-value="<?php echo $item->rate; ?>" data-rateit-backingfld="#rate_field_<?php echo $item->id; ?>"
 					 data-rateit-min="0" data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>"
 					 data-rateit-url="<?php echo JRoute::_($voteURL, false); ?>" data-rateit-content="albums"
 					 data-rateit-id="<?php echo $item->id; ?>"></div>
-				&nbsp;<span><?php echo $item->rate_loc_label; ?></span>
+				&nbsp;<span><?php echo $item->rate_label; ?></span>
 
 				<div class="my_votes" style="<?php echo ($item->my_vote == 0) ? 'display: none;' : ''; ?>">
 					<div class="my_vote">
@@ -53,10 +54,10 @@ $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' 
 			<div class="rate">
 				<p><strong><?php echo JText::_('COM_KA_MUSIC_RATE'); ?></strong></p>
 
-				<div class="rateit" data-rateit-value="<?php echo $item->rate_loc; ?>" data-rateit-min="0"
+				<div class="rateit" data-rateit-value="<?php echo $item->rate; ?>" data-rateit-min="0"
 					 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"
 					 data-rateit-readonly="true"></div>
-				&nbsp;<?php echo $item->rate_loc_label; ?>
+				&nbsp;<?php echo $item->rate_label; ?>
 
 				<?php if ($params->get('allow_votes') == 1 && $authMsg): ?>
 					<div>

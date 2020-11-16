@@ -66,7 +66,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 			<?php echo $this->pagination->getPagesLinks(); ?>
 		</div>
 		<?php endif;
-			echo $this->loadTemplate($this->menuParams->get('page_type'));
+			echo $this->loadTemplate((string) $this->menuParams->get('page_type'));
 		?>
 		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 		<div class="pagination bottom">

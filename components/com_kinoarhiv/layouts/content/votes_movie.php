@@ -10,11 +10,12 @@
 
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
 $params  = $displayData['params'];
 $item    = $displayData['item'];
 $guest   = $displayData['guest'];
 $itemid  = $displayData['itemid'];
-$authMsg = isset($displayData['auth_msg']) ? true : false;
+$authMsg = isset($displayData['auth_msg']);
 $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 ?>
 <?php if (($item->attribs->allow_votes == '' && $params->get('allow_votes') == 1) || $item->attribs->allow_votes == 1): ?>

@@ -160,16 +160,17 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   `fs_alias` varchar(255) NOT NULL COMMENT 'Is the same as alias but only in latin charset',
   `composer` varchar(255) NOT NULL,
   `year` date NOT NULL DEFAULT '0000-00-00',
-  `length` varchar(16) NOT NULL DEFAULT '',
+  `length` time NOT NULL,
   `isrc` varchar(16) NOT NULL,
   `desc` text NOT NULL,
   `rate` int(10) NOT NULL DEFAULT '0',
   `rate_sum` int(10) NOT NULL DEFAULT '0',
   `covers_path` varchar(255) NOT NULL,
   `covers_path_www` varchar(255) NOT NULL,
+  `cover_filename` varchar(128) NOT NULL,
   `tracks_path` text NOT NULL,
   `tracks_preview_path` varchar(255) NOT NULL,
-  `buy_url` varchar(255) NOT NULL,
+  `buy_urls` text NOT NULL,
   `attribs` varchar(5120) NOT NULL,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0',
@@ -185,19 +186,6 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   KEY `idx_access` (`access`),
   KEY `idx_state` (`state`),
   KEY `idx_language` (`language`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `filename` varchar(128) NOT NULL DEFAULT '',
-  `dimension` varchar(10) NOT NULL DEFAULT '',
-  `item_id` bigint(19) NOT NULL DEFAULT '0',
-  `frontpage` tinyint(1) unsigned DEFAULT '0',
-  `state` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `idx_itemid` (`item_id`),
-  KEY `idx_poster` (`frontpage`),
-  KEY `idx_state` (`state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_music_genres` (

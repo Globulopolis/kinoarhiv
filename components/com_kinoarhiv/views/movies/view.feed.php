@@ -98,7 +98,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html . $cn;
 			},
@@ -161,7 +161,7 @@ class KinoarhivViewMovies extends JViewLegacy
 
 			$row->plot = '<div class="feed-plot">' . JHtml::_('string.truncate', $row->plot, $params->get('limit_text')) . '</div>';
 			$item->description = '<div class="feed-description">
-				<div class="poster"><img src="' . $row->poster . '" border="0" /></div>
+				<div class="poster"><img src="' . $row->poster . '" /></div>
 				<div class="introtext">' . $row->text . $row->plot . '</div>
 			</div>';
 

@@ -342,6 +342,17 @@ h3.title {
 	width: 80%;
 }
 
+.album-info .left-col {
+	float: left;
+	min-width: 128px;
+	width: 30%;
+}
+
+.album-info .right-col {
+	float: left;
+	width: 70%;
+}
+
 @media (max-width: 979px) {
 	.info .left-col {
 		width: 100%;
@@ -576,10 +587,6 @@ span[lang=vi] q:after { content: "\00BB"; }
 	line-height: 110%;
 	padding: 2px;
 	width: 1em;
-}
-
-.uar-icon:hover {
-	cursor: pointer;
 }
 
 div.rating {
@@ -1091,12 +1098,12 @@ div.rating {
 
 .premiere-date .date {
 	font-size: 4.5em;
-	line-height: 120%
+	line-height: 120%;
 }
 
 .premiere-date .month {
 	font-size: 1.7em;
-	line-height: 120%
+	line-height: 120%;
 }
 
 .premiere-date .vendor {

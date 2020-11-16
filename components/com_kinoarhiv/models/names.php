@@ -144,13 +144,13 @@ class KinoarhivModelNames extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$lang   = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$query = $db->getQuery(true);
+		$query  = $db->getQuery(true);
 
 		$query->select(
 			$this->getState(
@@ -346,8 +346,8 @@ class KinoarhivModelNames extends JModelList
 	 */
 	public function favoriteAdd($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		// Check if any record with person ID exists in database.
@@ -424,8 +424,8 @@ class KinoarhivModelNames extends JModelList
 	 */
 	public function favoriteRemove($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		if (!is_array($id))

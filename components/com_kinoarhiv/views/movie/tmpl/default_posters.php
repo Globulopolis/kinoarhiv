@@ -37,7 +37,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 					<div class="thumb">
 						<div class="item">
 							<a href="<?php echo $poster->image; ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>" rel="posters">
-								<img data-original="<?php echo $poster->th_image; ?>" width="<?php echo $poster->th_image_width; ?>" height="<?php echo $poster->th_image_height; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>"/>
+								<img data-original="<?php echo $poster->th_image; ?>" width="<?php echo $poster->th_image_width; ?>" height="<?php echo $poster->th_image_height; ?>" class="lazy" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>"/>
 							</a>
 						</div>
 						<ul>

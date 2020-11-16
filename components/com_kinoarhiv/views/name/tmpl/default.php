@@ -27,7 +27,7 @@ use Joomla\String\StringHelper;
 		<div class="info">
 			<div class="left-col">
 				<div class="poster">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->item->title; ?>"><img src="<?php echo $this->item->poster; ?>" border="0" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->item->title; ?>"><img src="<?php echo $this->item->poster; ?>" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/></a>
 				</div>
 			</div>
 			<div class="right-col">
@@ -53,7 +53,7 @@ use Joomla\String\StringHelper;
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthday]=' . $this->item->date_of_birth_raw . '&Itemid=' . $this->itemid); ?>" rel="nofollow">
 								<?php echo JHtml::_('date', $this->item->date_of_birth_raw, JText::_('DATE_FORMAT_LC3')); ?></a>,
 							<?php if ($this->item->zodiac !== ''): ?>
-								<img src="media/com_kinoarhiv/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" border="0"/> <?php echo JText::_('COM_KA_NAMES_ZODIAC_' . StringHelper::strtoupper($this->item->zodiac)); ?>,
+								<img src="media/com_kinoarhiv/images/icons/zodiac/<?php echo $this->item->zodiac; ?>.png" /> <?php echo JText::_('COM_KA_NAMES_ZODIAC_' . StringHelper::strtoupper($this->item->zodiac)); ?>,
 							<?php endif; ?>
 							<?php echo $this->item->date_of_birth_interval_str; ?>
 						</span>
@@ -71,7 +71,7 @@ use Joomla\String\StringHelper;
 							<span class="f-col"><?php echo JText::_('COM_KA_NAMES_BIRTHPLACE_1'); ?></span>
 						<span class="s-col">
 							<?php echo !empty($this->item->birthplace) ? $this->item->birthplace : ''; ?><?php if (!empty($this->item->birthplace) && !empty($this->item->country)): ?>, <?php endif; ?><?php if (!empty($this->item->country)): ?>
-								<img class="ui-icon-country" border="0" alt="<?php echo $this->item->country; ?>" src="media/com_kinoarhiv/images/icons/countries/<?php echo $this->item->code; ?>.png">
+								<img class="ui-icon-country" alt="<?php echo $this->item->country; ?>" src="media/com_kinoarhiv/images/icons/countries/<?php echo $this->item->code; ?>.png">
 								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&filters[names][birthcountry]=' . $this->item->birthcountry . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->country; ?></a><?php endif; ?>
 						</span>
 						</div>

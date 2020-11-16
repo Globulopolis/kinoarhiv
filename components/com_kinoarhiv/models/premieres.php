@@ -117,12 +117,12 @@ class KinoarhivModelPremieres extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$db       = $this->getDbo();
+		$user     = JFactory::getUser();
+		$groups   = implode(',', $user->getAuthorisedViewLevels());
+		$app      = JFactory::getApplication();
+		$lang     = JFactory::getLanguage();
+		$params   = JComponentHelper::getParams('com_kinoarhiv');
 		$nullDate = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);

@@ -146,9 +146,8 @@ class KAComponentHelper
 		}
 
 		$purifier = new HTMLPurifier($purifierConfig);
-		$cleanHTML = $purifier->purify($text);
 
-		return $cleanHTML;
+		return $purifier->purify($text);
 	}
 
 	/**
@@ -160,7 +159,7 @@ class KAComponentHelper
 	 * @return  void
 	 *
 	 * @since   3.0
-	 * @throws  \Exception
+	 * @throws  Exception
 	 */
 	public static function eventLog($message, $silent = true)
 	{
@@ -314,7 +313,7 @@ class KAComponentHelper
 			$attrs = Joomla\Utilities\ArrayHelper::toString($attribs);
 		}
 
-		return '<label id="' . $for . '-lbl"' . $class . 'for="' . $for . '"' . $title . $attrs . '>' . JText::_($text) . '</label>';
+		return '<label id="' . $for . '-lbl" ' . $class . 'for="' . $for . '" ' . $title . $attrs . '>' . JText::_($text) . '</label>';
 	}
 
 	/**
@@ -412,7 +411,7 @@ class KAComponentHelper
 	 * @return  boolean  True if found and valid, false otherwise.
 	 *
 	 * @since   3.0
-	 * @throws  \Exception
+	 * @throws  Exception
 	 */
 	public static function checkToken($method = 'post')
 	{

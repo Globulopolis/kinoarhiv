@@ -65,7 +65,7 @@ class KinoarhivViewReleases extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" border="0" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html . $cn;
 			},
@@ -103,8 +103,8 @@ class KinoarhivViewReleases extends JViewLegacy
 						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
 						false
 					);
-					$item->poster_width = $dimension->width;
-					$item->poster_height = $dimension->height;
+					$item->poster_width = $dimension['width'];
+					$item->poster_height = $dimension['height'];
 				}
 				else
 				{
@@ -126,8 +126,8 @@ class KinoarhivViewReleases extends JViewLegacy
 						(int) $params->get('size_x_posters'),
 						$item->dimension
 					);
-					$item->poster_width = $dimension->width;
-					$item->poster_height = $dimension->height;
+					$item->poster_width = $dimension['width'];
+					$item->poster_height = $dimension['height'];
 				}
 			}
 			else
@@ -142,8 +142,8 @@ class KinoarhivViewReleases extends JViewLegacy
 					(int) $params->get('size_x_posters'),
 					$item->dimension
 				);
-				$item->poster_width = $dimension->width;
-				$item->poster_height = $dimension->height;
+				$item->poster_width = $dimension['width'];
+				$item->poster_height = $dimension['height'];
 			}
 
 			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));

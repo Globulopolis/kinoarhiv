@@ -143,15 +143,15 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Define null and now dates
 		$nullDate = $db->quote($db->getNullDate());
-		$nowDate = $db->quote(JFactory::getDate()->toSql());
+		$nowDate  = $db->quote(JFactory::getDate()->toSql());
 
 		$query = $db->getQuery(true);
 
@@ -586,8 +586,8 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function favoriteAdd($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		// Check if any record with movie ID exists in database.
@@ -664,8 +664,8 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function favoriteRemove($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		if (!is_array($id))
@@ -743,8 +743,8 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function watchedAdd($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		// Check if any record with movie ID exists in database.
@@ -821,8 +821,8 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function watchedRemove($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		if (!is_array($id))
@@ -901,8 +901,8 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function vote($id, $value)
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$result = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 
@@ -1024,9 +1024,9 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	public function votesRemove($ids)
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$db         = $this->getDbo();
+		$user       = JFactory::getUser();
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
 		$allowedIDs = array();
 
 		// Get attributes to check if user can change vote.

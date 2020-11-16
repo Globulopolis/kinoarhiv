@@ -38,11 +38,10 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 
 			<?php foreach ($this->item->albums as $album):
 					$composer = KAContentHelper::formatItemTitle($album->name, $album->latin_name);
-					$cover_size = explode('x', $this->params->get('music_covers_size'));
 			?>
 
 				<li class="media">
-					<a class="pull-left album-art poster" href="<?php echo $album->cover['poster']; ?>"><img src="<?php echo $album->cover['th_poster']; ?>" class="media-object" width="<?php echo $album->cover['size']->width; ?>" height="<?php echo $album->cover['size']->height; ?>" /></a>
+					<a class="pull-left album-art poster" href="<?php echo $album->cover; ?>"><img src="<?php echo $album->cover; ?>" class="media-object" width="<?php echo $album->coverWidth; ?>" height="<?php echo $album->coverHeight; ?>" /></a>
 					<div class="media-body">
 						<h3 class="media-heading album-title">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $album->id); ?>"><?php echo $this->escape($album->title); ?></a>
@@ -59,26 +58,25 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 						<?php
 						echo JLayoutHelper::render('layouts.content.votes_album',
 							array(
-								'params'  => $this->params,
-								'item'    => $album,
-								'guest'   => $this->user->get('guest'),
-								'itemid'  => $this->itemid
+								'params' => $this->params,
+								'item'   => $album,
+								'guest'  => $this->user->get('guest'),
+								'itemid' => $this->itemid
 							),
 							JPATH_COMPONENT
 						);
 						?>
 
-						<table class="track-list table table-striped table-condensed">
-						<?php foreach ($this->item->tracks as $track):
-							if ($track->album_id == $album->id): ?>
-							<tr class="track-row">
-								<td class="track-number"><?php echo !empty($track->track_number) ? $track->track_number . '. ' : ''; ?></td>
-								<td class="track-title"><?php echo $this->escape($track->title); ?></td>
-								<td class="track-length"><?php echo $track->length; ?></td>
-							</tr>
-							<?php endif;
-						endforeach; ?>
-						</table>
+						<?php
+						echo JLayoutHelper::render('layouts.content.tracklist',
+							array(
+								'tracks'  => $this->item->tracks,
+								'guest'   => $this->user->get('guest'),
+								'albumID' => $album->id
+							),
+							JPATH_COMPONENT
+						);
+						?>
 					</div>
 				</li>
 			<?php endforeach; ?>

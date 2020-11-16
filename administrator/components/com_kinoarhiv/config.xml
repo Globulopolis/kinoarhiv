@@ -249,9 +249,8 @@
 			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
 		<field name="music_covers_disc" type="textarea" default="disc.jpg" label="COM_KA_FIELD_MUSIC_COVERS_DISC"
 			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
-		<field name="music_covers_size" type="text" default="250x250" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
-			   description="COM_KA_FIELD_MUSIC_COVERS_SIZE_DESC"
-			   filter="string" size="64" class="span11"/>
+		<field name="music_covers_size" type="text" default="250" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
+			   filter="integer" size="3" class="span11"/>
 	</fieldset>
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
 		<field name="ka_theme" type="folderlist" default="default"

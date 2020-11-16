@@ -19,6 +19,12 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivViewAlbums extends JViewLegacy
 {
+	/**
+	 * Albums data object
+	 *
+	 * @var    object
+	 * @since  1.6
+	 */
 	protected $items = null;
 
 	/**
@@ -26,7 +32,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed
+	 * @return  false|void
 	 *
 	 * @since  3.0
 	 */
@@ -44,13 +50,8 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$app             = JFactory::getApplication();
 		$document        = JFactory::getDocument();
 		$params          = JComponentHelper::getParams('com_kinoarhiv');
-		$feedEmail       = $app->get('feed_email', 'author');
-		$siteEmail       = $app->get('mailfrom');
-		$this->itemid    = $app->input->get('Itemid', 0, 'int');
-		$throttle_enable = $params->get('throttle_image_enable', 0);
-
-		// Used in preg_replace_callback
-		$itemid = $this->itemid;
+		$itemid          = $app->input->get('Itemid', 0, 'int');
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		$document->setTitle(JText::_('COM_KA_MUSIC_ALBUMS'));
 		$document->setDescription($params->get('meta_description'));
@@ -74,60 +75,39 @@ class KinoarhivViewAlbums extends JViewLegacy
 		// Prepare the data
 		foreach ($items as $row)
 		{
-			$title   = $this->escape(KAContentHelper::formatItemTitle($row->title, '', $row->year));
-			$title   = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
-			$link    = JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $row->id . '&Itemid=' . $this->itemid);
-			$attribs = json_decode($row->attribs);
+			$row->composer = (!empty($row->name) || !empty($row->latin_name))
+				? KAContentHelper::formatItemTitle($row->name, $row->latin_name) : $row->composer;
+			$row->composer = !empty($row->composer) ? $row->composer . ' - ' : '';
+			$title         = $this->escape(KAContentHelper::formatItemTitle($row->composer . $row->title, '', $row->year));
+			$link          = JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $row->id . '&Itemid=' . $itemid);
+			$attribs       = json_decode($row->attribs);
 
 			$item         = new JFeedItem;
-			$item->title  = $title;
+			$item->title  = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
 			$item->link   = $link;
 			$item->author = ($attribs->show_author === '' && !empty($row->username)) ? $row->username : '';
 
-			if ($feedEmail == 'site')
+			if ($throttleEnable == 0)
 			{
-				$item->authorEmail = $siteEmail;
-			}
-			elseif ($feedEmail === 'author')
-			{
-				$item->authorEmail = $row->author_email;
-			}
+				$checkingPath = JPath::clean($row->covers_path . '/' . $row->cover_filename);
 
-			if ($throttle_enable == 0)
-			{
-				$checking_path = JPath::clean(
-					$params->get('media_posters_root') . '/' . $row->fs_alias . '/' . $row->id . '/posters/' . $row->filename
-				);
-
-				if (!is_file($checking_path))
+				if (!is_file($checkingPath))
 				{
-					$row->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
+					$row->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
 				}
 				else
 				{
-					$row->fs_alias = rawurlencode($row->fs_alias);
-
-					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
-					{
-						$row->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
-							. $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
-					}
-					else
-					{
-						$row->poster = $params->get('media_posters_root_www') . '/' . $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
-					}
+					$row->poster = $row->covers_path_www . '/' . $row->cover_filename;
 				}
 			}
 			else
 			{
-				$row->poster = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=album&content=image&type=2&id=' . $row->id .
-					'&fa=' . urlencode($row->fs_alias) . '&fn=' . $row->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-				);
+				$row->itemid = $itemid;
+				$row->poster = KAContentHelper::getAlbumCoverLink($row);
 			}
 
 			$item->description = '<div class="feed-description">
-				<div class="poster"><img src="' . $row->poster . '" border="0" /></div>
+				<div class="poster"><img src="' . $row->poster . '" alt="" /></div>
 			</div>';
 
 			$document->addItem($item);

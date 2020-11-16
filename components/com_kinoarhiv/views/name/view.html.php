@@ -115,8 +115,8 @@ class KinoarhivViewName extends JViewLegacy
 					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
 					false
 				);
-				$item->poster_width = $dimension->width;
-				$item->poster_height = $dimension->height;
+				$item->poster_width = $dimension['width'];
+				$item->poster_height = $dimension['height'];
 			}
 			else
 			{
@@ -138,8 +138,8 @@ class KinoarhivViewName extends JViewLegacy
 					(int) $params->get('size_x_posters'),
 					$item->dimension
 				);
-				$item->poster_width = $dimension->width;
-				$item->poster_height = $dimension->height;
+				$item->poster_width = $dimension['width'];
+				$item->poster_height = $dimension['height'];
 			}
 		}
 		else
@@ -155,8 +155,8 @@ class KinoarhivViewName extends JViewLegacy
 				(int) $params->get('size_x_posters'),
 				$item->dimension
 			);
-			$item->poster_width = $dimension->width;
-			$item->poster_height = $dimension->height;
+			$item->poster_width = $dimension['width'];
+			$item->poster_height = $dimension['height'];
 		}
 
 		$lc_offset = JFactory::getConfig()->get('offset');
@@ -252,8 +252,8 @@ class KinoarhivViewName extends JViewLegacy
 						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_wp.png',
 						false
 					);
-					$_item->th_image_width = $dimension->width;
-					$_item->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension['width'];
+					$_item->th_image_height = $dimension['height'];
 				}
 				else
 				{
@@ -280,8 +280,8 @@ class KinoarhivViewName extends JViewLegacy
 						(int) $params->get('size_x_wallpp'),
 						$_item->dimension
 					);
-					$_item->th_image_width = $dimension->width;
-					$_item->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension['width'];
+					$_item->th_image_height = $dimension['height'];
 				}
 			}
 			else
@@ -302,8 +302,8 @@ class KinoarhivViewName extends JViewLegacy
 					(int) $params->get('size_x_wallpp'),
 					$_item->dimension
 				);
-				$_item->th_image_width = $dimension->width;
-				$_item->th_image_height = $dimension->height;
+				$_item->th_image_width = $dimension['width'];
+				$_item->th_image_height = $dimension['height'];
 			}
 		}
 
@@ -369,8 +369,8 @@ class KinoarhivViewName extends JViewLegacy
 						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png',
 						false
 					);
-					$_item->th_image_width = $dimension->width;
-					$_item->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension['width'];
+					$_item->th_image_height = $dimension['height'];
 				}
 				else
 				{
@@ -395,8 +395,8 @@ class KinoarhivViewName extends JViewLegacy
 						(int) $params->get('size_x_photo'),
 						$_item->dimension
 					);
-					$_item->th_image_width = $dimension->width;
-					$_item->th_image_height = $dimension->height;
+					$_item->th_image_width = $dimension['width'];
+					$_item->th_image_height = $dimension['height'];
 				}
 			}
 			else
@@ -417,8 +417,8 @@ class KinoarhivViewName extends JViewLegacy
 					(int) $params->get('size_x_photo'),
 					$_item->dimension
 				);
-				$_item->th_image_width = $dimension->width;
-				$_item->th_image_height = $dimension->height;
+				$_item->th_image_width = $dimension['width'];
+				$_item->th_image_height = $dimension['height'];
 			}
 		}
 

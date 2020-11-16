@@ -63,9 +63,9 @@ class KinoarhivModelSearch extends JModelForm
 	 */
 	public function getHomeItemid()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$lang   = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$itemid = array('movies' => 0, 'names' => 0);
 
@@ -117,8 +117,8 @@ class KinoarhivModelSearch extends JModelForm
 	 */
 	public function getActiveFilters()
 	{
-		$app = JFactory::getApplication();
-		$form = $this->getForm();
+		$app     = JFactory::getApplication();
+		$form    = $this->getForm();
 		$content = $app->input->get('content', '', 'word');
 
 		if (empty($content))

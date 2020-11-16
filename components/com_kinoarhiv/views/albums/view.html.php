@@ -21,6 +21,12 @@ class KinoarhivViewAlbums extends JViewLegacy
 {
 	protected $state = null;
 
+	/**
+	 * Albums data object
+	 *
+	 * @var    object
+	 * @since  1.6
+	 */
 	protected $items = null;
 
 	protected $pagination = null;
@@ -57,6 +63,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$this->filtersData = $this->get('FiltersData');
 		$this->items       = $this->get('Items');
 		$pagination        = $this->get('Pagination');
+		$this->itemid      = $app->input->get('Itemid');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -68,100 +75,75 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$this->menuParams = &$state->menuParams;
 		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid     = $app->input->get('Itemid', 0, 'int');
-		$itemid           = $this->itemid;
 		$throttleEnable   = $this->params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($this->items as $item)
 		{
-			$item->attribs = json_decode($item->attribs);
-			$item->text    = '';
-			$poster        = KAContentHelper::getAlbumCover($item);
-			$item->poster  = $poster['th_poster'];
-			$item->poster_width  = $poster['size']->width;
-			$item->poster_height = $poster['size']->height;
+			$item->attribs  = json_decode($item->attribs);
+			$item->text     = '';
+			$item->composer = (!empty($item->name) || !empty($item->latin_name))
+				? KAContentHelper::formatItemTitle($item->name, $item->latin_name) : $item->composer;
+			$checkingPath   = JPath::clean($item->covers_path . '/' . $item->cover_filename);
 
-			echo '<pre>';
-			print_r(KAContentHelper::getAlbumCover($item));
-			echo '</pre>';
-
-			/*if ($throttleEnable == 0)
+			if ($throttleEnable == 0)
 			{
-				$checking_path = JPath::clean(
-					$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
-				);
-
-				if (!is_file($checking_path))
+				if (!is_file($checkingPath))
 				{
-					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png',
+					$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
+					$dimension   = KAContentHelper::getImageSize(
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
 						false
 					);
-					$item->poster_width = $dimension->width;
-					$item->poster_height = $dimension->height;
+					$item->coverWidth  = $dimension['width'];
+					$item->coverHeight = $dimension['height'];
 				}
 				else
 				{
-					$item->fs_alias = rawurlencode($item->fs_alias);
-
-					if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
-					{
-						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
-							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-					}
-					else
-					{
-						$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$item->poster,
+					$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
+					$dimension   = KAContentHelper::getImageSize(
+						$checkingPath,
 						true,
-						(int) $this->params->get('size_x_posters'),
-						$item->dimension
+						(int) $this->params->get('music_covers_size')
 					);
-					$item->poster_width = $dimension->width;
-					$item->poster_height = $dimension->height;
+					$item->coverWidth  = $dimension['width'];
+					$item->coverHeight = $dimension['height'];
 				}
 			}
 			else
 			{
-				$item->poster = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-				);
-				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $item->poster,
+				$item->itemid = $this->itemid;
+				$item->cover  = KAContentHelper::getAlbumCoverLink($item);
+				$dimension    = KAContentHelper::getImageSize(
+					$checkingPath,
 					true,
-					(int) $this->params->get('size_x_posters'),
-					$item->dimension
+					(int) $this->params->get('music_covers_size')
 				);
-				$item->poster_width = $dimension->width;
-				$item->poster_height = $dimension->height;
-			}*/
+				$item->coverWidth  = $dimension['width'];
+				$item->coverHeight = $dimension['height'];
+			}
 
 			if ($this->params->get('ratings_show_frontpage') == 1)
 			{
 				if (!empty($item->rate_sum) && !empty($item->rate))
 				{
 					$plural = $lang->getPluralSuffixes($item->rate);
-					$item->rate_loc_c = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
-					$item->rate_loc_label = JText::sprintf(
-						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
+					$item->rate_c = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
+					$item->rate_label = JText::sprintf(
+						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_c,
 						(int) $this->params->get('vote_summ_num'), $item->rate
 					);
-					$item->rate_loc_label_class = ' has-rating';
+					$item->rate_label_class = ' has-rating';
 				}
 				else
 				{
-					$item->rate_loc_c = 0;
-					$item->rate_loc_label = '<br />' . JText::_('COM_KA_RATE_NO');
-					$item->rate_loc_label_class = ' no-rating';
+					$item->rate_c = 0;
+					$item->rate_label = '<br />' . JText::_('COM_KA_RATE_NO');
+					$item->rate_label_class = ' no-rating';
 				}
 			}
 
-			$item->event = new stdClass;
+			$item->event  = new stdClass;
 			$item->params = new JObject;
 			$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $item->id . '&Itemid=' . $this->itemid, false));
 

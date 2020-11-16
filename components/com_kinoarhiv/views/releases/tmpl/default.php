@@ -102,7 +102,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 				<div class="content content-list clearfix">
 					<div>
 						<div class="poster">
-							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>
+							<a href="<?php echo $item->params->get('url'); ?>" title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>" class="lazy" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>
 						</div>
 						<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
 							<div class="text"><?php echo $item->text; ?></div>
@@ -111,7 +111,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 
 							<?php if ($this->params->get('ratings_show_frontpage') == 1):
 								echo JLayoutHelper::render(
-									'layouts.content.ratings',
+									'layouts.content.ratings_movie',
 									array('params' => $this->params, 'item' => $item),
 									JPATH_COMPONENT
 								);

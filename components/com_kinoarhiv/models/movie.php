@@ -1601,13 +1601,13 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getSoundtrackAlbums()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
-		$movie_id = $app->input->get('id', 0, 'int');
+		$db      = $this->getDbo();
+		$user    = JFactory::getUser();
+		$groups  = implode(',', $user->getAuthorisedViewLevels());
+		$app     = JFactory::getApplication();
+		$movieID = $app->input->get('id', 0, 'int');
 
-		if ($movie_id == 0)
+		if ($movieID == 0)
 		{
 			return false;
 		}
@@ -1621,7 +1621,7 @@ class KinoarhivModelMovie extends JModelForm
 					array(
 						'a.id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.length', 'a.isrc',
 						'a.rate', 'a.rate_sum', 'a.cover_filename', 'a.covers_path', 'a.covers_path_www',
-						'a.tracks_path', 'a.tracks_preview_path', 'a.buy_url', 'a.attribs', 'n.name', 'n.latin_name'
+						'a.tracks_path', 'a.tracks_preview_path', 'a.buy_urls', 'a.attribs', 'n.name', 'n.latin_name'
 					)
 				)
 			)
@@ -1633,7 +1633,7 @@ class KinoarhivModelMovie extends JModelForm
 			$subquery1 = $db->getQuery(true)
 				->select($db->quoteName('album_id'))
 				->from($db->quoteName('#__ka_music_rel_movies'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
 
 			$subquery2 = $db->getQuery(true)
 				->select($db->quoteName('name_id'))
@@ -1669,7 +1669,7 @@ class KinoarhivModelMovie extends JModelForm
 			$subquery = $db->getQuery(true)
 				->select($db->quoteName('album_id'))
 				->from($db->quoteName('#__ka_music_rel_movies'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
+				->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
 
 		$query->where('t.album_id IN (' . $subquery . ')')
 			->order('t.track_number ASC');

@@ -11,7 +11,11 @@
 defined('_JEXEC') or die;
 
 foreach ($this->items as $item):
-	$title = $this->escape($item->title . ' (' . $item->year . ')'); ?>
+	$item->composer = (!empty($item->name) || !empty($item->latin_name))
+		? KAContentHelper::formatItemTitle($item->name, $item->latin_name) : $item->composer;
+	$item->composer = !empty($item->composer) ? $item->composer . ' - ' : '';
+	$title = $this->escape(KAContentHelper::formatItemTitle($item->composer . $item->title, '', $item->year)); ?>
+
 	<article class="item" data-permalink="<?php echo $item->params->get('url'); ?>">
 		<header>
 			<h1 class="uk-article-title title title-small">
@@ -86,22 +90,18 @@ foreach ($this->items as $item):
 		<div class="clear"></div>
 		<div class="content content-list clearfix">
 			<div>
-				<div class="poster">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>">
-						<img data-original="<?php echo $item->poster; ?>" class="lazy" border="0" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
+				<div class="poster span3">
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+					   title="<?php echo $title; ?>">
+						<img data-original="<?php echo $item->cover; ?>" class="lazy"
+							 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($item->title); ?>"
+							 width="<?php echo $item->coverWidth; ?>" height="<?php echo $item->coverHeight; ?>" />
 					</a>
 				</div>
 				<div class="introtext">
-					<div class="text"><?php echo $item->text; ?></div>
-
-					<?php if (!empty($item->plot)): ?>
-					<div class="separator"></div>
-					<div class="plot"><?php echo $item->plot; ?></div>
-					<?php endif; ?>
-
 					<?php if ($this->params->get('ratings_show_frontpage') == 1):
 						echo JLayoutHelper::render(
-							'layouts.content.ratings',
+							'layouts.content.ratings_album',
 							array('params' => $this->params, 'item' => $item),
 							JPATH_COMPONENT
 						);
@@ -109,7 +109,8 @@ foreach ($this->items as $item):
 				</div>
 			</div>
 			<div class="links">
-				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTooltip" title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
+				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+				   class="btn btn-default uk-button readmore-link hasTooltip" title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
 					<span class="icon-chevron-right"></span></a>
 			</div>
 		</div>

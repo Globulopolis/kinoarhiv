@@ -1,6 +1,6 @@
 /*!
 
-   Flowplayer v7.2.4 (Tuesday, 23. January 2018 12:27PM) | flowplayer.com/license
+   Flowplayer v7.2.7 (2018-08-13) | flowplayer.com/license
 
 */
 /*! (C) WebReflection Mit Style License */
@@ -485,8 +485,9 @@ engineImpl = function flashEngine(player, root) {
 
             var hlsQualities = typeof video.hlsQualities !== 'undefined' ? video.hlsQualities : conf.hlsQualities;
             if (typeof hlsQualities !== 'undefined') opts.hlsQualities = hlsQualities ? encodeURIComponent(JSON.stringify(hlsQualities)) : hlsQualities;
-            // bufferTime might be 0
+            // bufferTime, bufferTimeMax might be 0
             if (conf.bufferTime !== undefined) opts.bufferTime = conf.bufferTime;
+            if (conf.bufferTimeMax !== undefined) opts.bufferTimeMax = conf.bufferTimeMax;
 
             if (is_absolute) delete opts.rtmp;
 
@@ -739,6 +740,7 @@ function isAbsolute(url) {
 var flowplayer = _dereq_('../flowplayer')
   , support = flowplayer.support
   , common = flowplayer.common
+  , bean = flowplayer.bean
   , html5factory = _dereq_('./html5-factory');
 
 
@@ -752,14 +754,23 @@ var engine;
 
 engine = function(player, root) {
 
-  var hls, Hls = window.Hls
+  var Hls = window.Hls
     , lastSelectedLevel
     , lastSource;
 
-  return html5factory('hlsjs-lite', player, root, canPlay, function(video, api, engineApi) {
-    hls = engine.hls = new Hls(flowplayer.extend({}, player.conf.hlsjs, video.hlsjs));
+  function hlsjsExt(video, api, engineApi) {
+    var conf = flowplayer.extend({
+      recoverMediaError: true
+    }, player.conf.hlsjs, video.hlsjs);
+    if (player.engine.hls) player.engine.hls.destroy();
+    var hls = player.engine.hls = new Hls(conf);
     engine.extensions.forEach(function(ext) {
-      ext(hls, player, root);
+      ext({
+        hls: hls,
+        player: player,
+        root: root,
+        videoTag: api
+      });
     });
     hls.loadSource(video.src);
 
@@ -771,17 +782,62 @@ engine = function(player, root) {
 
     engineApi.seek = function(seekTo) {
       try {
-        if (player.live && !player.dvr) api.currentTime = Math.min(seekTo, hls.liveSyncPosition);
+        if (player.live || player.dvr) {
+          api.currentTime = Math.min(
+            seekTo,
+            (hls.liveSyncPosition || api.duration - conf.livePositionOffset)
+          );
+        }
         else api.currentTime = seekTo;
       } catch (e) {
         player.debug('Failed to seek to ', seekTo, e);
       }
     };
 
+    if (conf.bufferWhilePaused === false) {
+      player.on('pause', function() {
+        hls.stopLoad();
+        player.one('resume', function() {
+          hls.startLoad();
+        });
+      });
+    }
+
     // Quality selection
     player.on('quality', function(_ev, _api, q) {
       hls.nextLevel = lastSelectedLevel = q;
     });
+
+    // HLS.js error handling
+    var recoverMediaErrorDate
+      , swapAudioCodecDate;
+    var recover = function(isNetworkError) {
+      player.debug('hlsjs - recovery');
+
+      common.removeClass(root, 'is-paused');
+      common.addClass(root, 'is-seeking');
+
+      bean.one(api, 'seeked', function() {
+        if (api.paused) {
+          common.removeClass(root, 'is-poster');
+          player.poster = false;
+          api.play();
+        }
+        common.removeClass(root, 'is-seeking');
+      });
+
+
+      if (isNetworkError) return hls.startLoad();
+      var now = performance.now();
+      if (!recoverMediaErrorDate || now - recoverMediaErrorDate > 3000) {
+        recoverMediaErrorDate = performance.now();
+        hls.recoverMediaError();
+      } else if (!swapAudioCodecDate || (now - swapAudioCodecDate) > 3000) {
+        swapAudioCodecDate = performance.now();
+        hls.swapAudioCodec();
+        hls.recoverMediaError();
+      }
+    };
 
 
     hls.on(Hls.Events.MANIFEST_PARSED, function(_, data) {
@@ -822,7 +878,9 @@ engine = function(player, root) {
       }]
 
       if (Array.isArray(hlsQualities)) {
-        video.qualities = [];
+        var confAutoQuality = hlsQualities.find(function(q) { return q === -1 || q.level && q.level === -1; });
+        if (!confAutoQuality) video.qualities = [];
+        else video.qualities[0].label = typeof confAutoQuality !== 'number' ? confAutoQuality.label : video.qualities[0].label;
         confQualities = hlsQualities.map(function(q) {
           if (typeof q.level !== 'undefined') qualityLabels[q.level] = q.label;
           return typeof q.level !== 'undefined' ? q.level : q;
@@ -855,11 +913,48 @@ engine = function(player, root) {
       if (lastSource && video.src !== lastSource) api.play();
       lastSource = video.src;
     });
-  });
+    
+    hls.on(Hls.Events.ERROR, function(ev, data) {
+      if (!data.fatal) return;
+      if (conf.recoverNetworkError && data.type === Hls.ErrorTypes.NETWORK_ERROR) recover(true);
+      else if (conf.recoverMediaError && data.type === Hls.ErrorTypes.MEDIA_ERROR) recover(false);
+      else {
+        var code = 5;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) code = 2;
+        if (data.type === Hls.ErrorTypes.MEDIA_ERROR) code = 3;
+        hls.destroy();
+        player.trigger('error', [player, { code: code }]);
+      }
+    });
+
+    player.one('unload', function() {
+      hls.destroy();
+    });
+
+    return {
+      handlers: {
+        error: function(e, videoTag) {
+          var errorCode = videoTag.error && videoTag.error.code;
+          if (conf.recoverMediaError && errorCode === 3 || !errorCode) {
+            e.preventDefault();
+            recover(false);
+            return true;
+          }
+          if (conf.recoverNetworkError && errorCode === 2) {
+            e.preventDefault();
+            recover(true);
+            return true;
+          }
+        }
+      }
+    };
+  }
+  return html5factory('hlsjs-lite', player, root, canPlay, hlsjsExt);
 };
 
 
 engine.canPlay = function(type, conf) {
+  if (conf.hlsjs === false || (conf.clip && conf.clip.hlsjs === false)) return false;
   if (support.browser.safari && !(conf.clip && conf.clip.hlsjs || conf.hlsjs || {}).safari) return false;
   return flowplayer.support.video && canPlay(type);
 };
@@ -924,12 +1019,14 @@ function html5factory(engineName, player, root, canPlay, ext) {
     },
 
     load: function(video) {
-      var container = common.find('.fp-player', root)[0];
+      var container = common.find('.fp-player', root)[0]
+        , created = false;
 
       if (!api) {
         api = document.createElement('video');
         common.prepend(container, api);
         api.autoplay = !!conf.splash;
+        created = true;
       }
       common.addClass(api, 'fp-engine');
       common.find('track', api).forEach(common.removeNode);
@@ -987,31 +1084,39 @@ function html5factory(engineName, player, root, canPlay, ext) {
         api.volume = volumeLevel;
       }
 
-      ext(video, api, self);
+      var extra = ext(video, api, self);
       if (conf.autoplay || conf.splash || video.autoplay) {
         player.debug('Autoplay / Splash setup, try to start video');
-        try {
-          if (!support.preloadMetadata) api.load();
-          var p = api.play();
-          if (p && p.catch) {
-            p.catch(function(err) {
-              if (err.name === 'AbortError' && err.code === 20) return;
-              if (!conf.mutedAutoplay) throw new Error('Unable to autoplay');
-              player.debug('Play errored, trying muted', err);
-              player.mute(true, true);
-              return api.play();
-            }).catch(function() {
-              conf.autoplay = false;
-              player.mute(false, true); // Restore volume as playback failed
-              player.trigger('stop', [player]);
-            });
+        api.load();
+        var play = function () {
+          try {
+            var p = api.play();
+            if (p && p.catch) {
+              var recoverAutoplay = function(err) {
+                if (err.name === 'AbortError' && err.code === 20) {
+                  if (!created) return api.play().catch(recoverAutoplay);
+                  else return;
+                }
+                if (!conf.mutedAutoplay) throw new Error('Unable to autoplay');
+                player.debug('Play errored, trying muted', err);
+                player.mute(true, true);
+                return api.play();
+              }
+              p.catch(recoverAutoplay).catch(function() {
+                conf.autoplay = false;
+                player.mute(false, true); // Restore volume as playback failed
+                player.trigger('stop', [player]);
+              });
+            }
+          } catch(e) {
+            player.debug('play() error thrown', e);
           }
-        } catch(e) {
-          player.debug('play() error thrown', e);
-        }
+        };
+        if (api.readyState > 0) play();
+        else bean.one(api, 'canplay', play);
       }
 
-      self._listeners = listen(api, common.find('source', api).concat(api), video) || self._listeners;
+      self._listeners = listen(api, common.find('source', api).concat(api), video, extra) || self._listeners;
 
       if (conf.autoplay || conf.splash || video.autoplay) return; // No preload check needed
       var preloadCheck = function() {
@@ -1047,8 +1152,10 @@ function html5factory(engineName, player, root, canPlay, ext) {
     },
 
     seek: function(time) {
+      var pausedState = api.paused || player.finished;
       try {
         api.currentTime = time;
+        if (pausedState) bean.one(api, 'seeked', function() { api.pause(); });
       } catch (ignored) {}
     },
 
@@ -1082,7 +1189,7 @@ function html5factory(engineName, player, root, canPlay, ext) {
     }
   };
 
-  function listen(api, sources, video) {
+  function listen(api, sources, video, extra) {
       // listen only once
     var instanceId = root.getAttribute('data-flowplayer-instance-id');
 
@@ -1115,6 +1222,7 @@ function html5factory(engineName, player, root, canPlay, ext) {
       if (track.kind !== 'metadata') return;
       track.mode = 'hidden';
       track.addEventListener('cuechange', function() {
+        if (!track.activeCues.length) return;
         player.trigger('metadata', [player, track.activeCues[0].value]);
       }, false);
     };
@@ -1172,8 +1280,7 @@ function html5factory(engineName, player, root, canPlay, ext) {
             duration: api.duration < Number.MAX_VALUE ? api.duration : 0,
             width: api.videoWidth,
             height: api.videoHeight,
-            url: api.currentSrc,
-            src: api.currentSrc,
+            url: api.currentSrc
           });
           arg.seekable = arg.duration;
           player.debug('Ready: ', arg);
@@ -1239,6 +1346,10 @@ function html5factory(engineName, player, root, canPlay, ext) {
 
         case 'error':
           try {
+            if (extra && extra.handlers && extra.handlers.error) {
+              var handled = extra.handlers.error(e, api);
+              if (handled) return;
+            }
             arg = (e.srcElement || e.originalTarget).error;
             arg.video = extend(video, {src: api.src, url: api.src});
           } catch (er) {
@@ -1307,7 +1418,10 @@ engine = function(player, root) {
       common.find('source', api).forEach(common.removeNode);
       api.src = video.src;
       api.type = video.type;
+    } else if (video.autoplay) {
+      api.load();
     }
+
   });
 };
 
@@ -1490,6 +1604,7 @@ flowplayer(function(api, root) {
 
   function createUIElements() {
     var btnContainer = common.find('.fp-header', root)[0];
+    if (!btnContainer) return; // UI no more available
     common.find('.fp-chromecast', btnContainer).forEach(common.removeNode);
     common.find('.fp-chromecast-engine', root).forEach(common.removeNode);
     trigger = common.createElement('a', { 'class': 'fp-chromecast fp-icon', title: 'Play on Cast device'})
@@ -1589,15 +1704,12 @@ flowplayer(function(player, root) {
    var segments = {}, lastFiredSegment = -0.125;
 
    var fire = function(cue) {
-     var idx = player.cuepoints.indexOf(cue);
-     if (!isNaN(cue)) cue = { time: cue };
-     cue.index = idx;
-     setClass(idx);
+     setClass(cue.index);
      player.trigger('cuepoint', [player, cue]);
    };
 
    player.on("progress", function(e, api, time) {
-     if (cuepointsDisabled) return;
+      if (cuepointsDisabled) return;
       var segment = segmentForCue(time);
       while (lastFiredSegment < segment) {
         lastFiredSegment += 0.125;
@@ -1620,6 +1732,12 @@ flowplayer(function(player, root) {
      var cues = video.cuepoints || player.conf.cuepoints || [];
      player.setCuepoints(cues);
    }).on('finish', function() {
+      var segment = segmentForCue(player.video.duration);
+      while (lastFiredSegment < segment) {
+        lastFiredSegment += 0.125;
+        if (!segments[lastFiredSegment]) continue;
+        segments[lastFiredSegment].forEach(fire);
+      }
      lastFiredSegment = -0.125;
    });
    if (player.conf.generate_cuepoints) {
@@ -1643,9 +1761,16 @@ flowplayer(function(player, root) {
    };
    player.addCuepoint = function(cue) {
      if (!player.cuepoints) player.cuepoints = [];
+     if (typeof cue === 'number') {
+       cue = {
+          time: cue,
+       };
+     }
+     cue.index = 0;
      var segment = segmentForCue(cue);
      if (!segments[segment]) segments[segment] = [];
      segments[segment].push(cue);
+     if (player.cuepoints.length) cue.index = Math.max.apply(null, player.cuepoints.map(function(cue) { return cue.index; })) + 1;
      player.cuepoints.push(cue);
 
     if (player.conf.generate_cuepoints && cue.visible !== false) {
@@ -1656,7 +1781,7 @@ flowplayer(function(player, root) {
         var time = cue.time || cue;
         if (time < 0) time = duration + time;
 
-        var el = common.createElement('a', {className: 'fp-cuepoint fp-cuepoint' + (player.cuepoints.length - 1)});
+        var el = common.createElement('a', {className: 'fp-cuepoint fp-cuepoint' + cue.index});
         common.css(el, "left", (time / duration * 100) + "%");
 
         timeline.appendChild(el);
@@ -1670,10 +1795,15 @@ flowplayer(function(player, root) {
    };
 
    player.removeCuepoint = function(cue) {
+     if (typeof cue === 'number') cue = player.cuepoints.filter(function(c) { return c.index === cue; })[0];
      var idx = player.cuepoints.indexOf(cue),
          segment = segmentForCue(cue);
      if (idx === -1) return;
-     player.cuepoints = player.cuepoints.slice(0, idx).concat(player.cuepoints.slice(idx+1));
+      player.cuepoints = player.cuepoints.slice(0, idx).concat(player.cuepoints.slice(idx+1));
+
+      var timeline = common.find('.fp-timeline', root)[0];
+
+      common.find('.fp-cuepoint' + cue.index, timeline).forEach(common.removeNode);
 
      var sIdx = segments[segment].indexOf(cue);
      if (sIdx === -1) return;
@@ -1997,6 +2127,7 @@ flowplayer(function(player, root) {
 
    player.on('shutdown', function() {
      FULL_PLAYER = null;
+     common.removeNode(wrapper);
    });
 
 });
@@ -2020,44 +2151,35 @@ bean.on(document, "keydown.fp", function(e) {
 
    if (!el || !conf.keyboard || el.disabled) return;
 
-   // help dialog (shift key not truly required)
-   if ([63, 187, 191].indexOf(key) != -1) {
-      common.toggleClass(focusedRoot, IS_HELP);
-      return false;
-   }
-
-   // close help / unload
-   if (key == 27 && common.hasClass(focusedRoot, IS_HELP)) {
-      common.toggleClass(focusedRoot, IS_HELP);
-      return false;
-   }
-
    if (!metaKeyPressed && el.ready) {
-
-      e.preventDefault();
 
       // slow motion / fast forward
       if (e.shiftKey) {
          if (key == 39) el.speed(true);
          else if (key == 37) el.speed(false);
-         return;
+         return e.preventDefault();
       }
 
       // 1, 2, 3, 4 ..
-      if (key < 58 && key > 47) return el.seekTo(key - 48);
-
-      switch (key) {
-         case 38: case 75: el.volume(el.volumeLevel + 0.15); break;        // volume up
-         case 40: case 74: el.volume(el.volumeLevel - 0.15); break;        // volume down
-         case 39: case 76: el.seeking = true; el.seek(true); break;        // forward
-         case 37: case 72: el.seeking = true; el.seek(false); break;       // backward
-         case 190: el.seekTo(); break;                                     // to last seek position
-         case 32: el.toggle(); break;                                      // spacebar
-         case 70: if(conf.fullscreen) el.fullscreen(); break;               // toggle fullscreen
-         case 77: el.mute(); break;                                        // mute
-         case 81: el.unload(); break;                                      // unload/stop
+      if (key < 58 && key > 47) {
+         e.preventDefault();
+         return el.seekTo(key - 48);
       }
 
+      var handled = (function() {
+         switch (key) {
+            case 38: case 75: el.volume(el.volumeLevel + 0.15); return true;        // volume up
+            case 40: case 74: el.volume(el.volumeLevel - 0.15); return true;        // volume down
+            case 39: case 76: el.seeking = true; el.seek(true); return true;        // forward
+            case 37: case 72: el.seeking = true; el.seek(false); return true;       // backward
+            case 190: el.seekTo(); return true;                                     // to last seek position
+            case 32: el.toggle(); return true;                                      // spacebar
+            case 70: if(conf.fullscreen) el.fullscreen(); return true;              // toggle fullscreen
+            case 77: el.mute(); return true;                                        // mute
+            case 81: el.unload(); return true;                                      // unload/stop
+         }
+      })();
+      if (handled) e.preventDefault();
    }
 
 });
@@ -2245,6 +2367,7 @@ if (support.touch || isIeMobile) {
       bean.on(root, 'touchmove', function() {
         hasMoved = true;
       });
+      var initialClick = true;
       bean.on(root, 'touchend click', function(e) {
         if (hasMoved) { //not intentional, most likely scrolling
           hasMoved = false;
@@ -2252,7 +2375,8 @@ if (support.touch || isIeMobile) {
         }
 
         var video = common.find('video.fp-engine', root)[0];
-        if (video && video.muted && player.conf.autoplay) video.muted = false;
+        if (initialClick && player.conf.clickToUnMute && video && video.muted && player.conf.autoplay) video.muted = false;
+         initialClick = false;
 
         if (player.playing && !common.hasClass(root, 'is-mouseover')) {
           common.addClass(root, 'is-mouseover');
@@ -2303,7 +2427,7 @@ if (support.touch || isIeMobile) {
       // Android browser gives video.duration == 1 until second 'timeupdate' event
       if (isAndroid || isSilk) player.bind("ready", function() {
          var video = common.find('video.fp-engine', root)[0];
-         if (player.conf.splash && video.paused) {
+         if (player.conf.splash && video.paused && player.engine.engineName !== 'hlsjs-lite') {
             bean.one(video, 'canplay', function() {
                video.play();
             });
@@ -2556,6 +2680,7 @@ flowplayer(function(player, root) {
        player.conf.playlist.forEach(function(itm, i) {
          common.removeClass(root, 'video' + i);
        });
+       delete player.video.index;
     });
 
    if (player.conf.playlist.length) {
@@ -2749,18 +2874,20 @@ flowplayer.defaults.subtitleParser = parser;
 
 flowplayer(function(p, root) {
   var currentPoint, wrap,
-      subtitleControl, subtitleMenu;
+      subtitleControl, subtitleMenu, changeHandler;
 
   if (
     !flowplayer.support.inlineVideo ||
       (!flowplayer.support.fullscreen  && p.conf.native_fullscreen)) p.conf.nativesubtitles = true;
 
-  var createSubtitleControl = function() {
+  if (!p.ui) p.ui = {};
+  p.ui.createSubtitleControl = function(subtitles, onChange) {
+    changeHandler = onChange;
     subtitleControl = subtitleControl || common.createElement('strong', { className: 'fp-cc' }, 'CC');
     subtitleMenu = subtitleMenu || common.createElement('div', {className: 'fp-menu fp-subtitle-menu'}, '<strong>Closed Captions</strong>');
     common.find('a', subtitleMenu).forEach(common.removeNode);
     subtitleMenu.appendChild(common.createElement('a', {'data-subtitle-index': -1}, 'No subtitles'));
-    (p.video.subtitles || []).forEach(function(st, i) {
+    (subtitles || []).forEach(function(st, i) {
       var srcLang = st.srclang || 'en',
           label = st.label || 'Default (' + srcLang + ')';
       var item = common.createElement('a', {'data-subtitle-index': i}, label);
@@ -2768,7 +2895,12 @@ flowplayer(function(p, root) {
     });
     common.find('.fp-ui', root)[0].appendChild(subtitleMenu);
     common.find('.fp-controls', root)[0].appendChild(subtitleControl);
+    common.toggleClass(subtitleControl, 'fp-hidden', !subtitles || !subtitles.length);
     return subtitleControl;
+  };
+
+  p.ui.setActiveSubtitleItem = function(idx) {
+    setActiveSubtitleClass(idx);
   };
 
   bean.on(root, 'click', '.fp-cc', function() {
@@ -2779,6 +2911,7 @@ flowplayer(function(p, root) {
   bean.on(root, 'click', '.fp-subtitle-menu [data-subtitle-index]', function(ev) {
     ev.preventDefault();
     var idx = ev.target.getAttribute('data-subtitle-index');
+    if (changeHandler) return changeHandler(idx);
     if (idx === '-1') return p.disableSubtitles();
     p.loadSubtitles(idx);
   });
@@ -2787,7 +2920,7 @@ flowplayer(function(p, root) {
     wrap = common.find('.fp-captions', root)[0];
     wrap = wrap || common.appendTo(common.createElement('div', {'class': 'fp-captions'}), common.find('.fp-player', root)[0]);
     Array.prototype.forEach.call(wrap.children, common.removeNode);
-    createSubtitleControl();
+    p.ui.createSubtitleControl(p.video.subtitles);
   };
 
 
@@ -2800,7 +2933,6 @@ flowplayer(function(p, root) {
 
     p.disableSubtitles();
 
-    common.toggleClass(subtitleControl, 'fp-hidden', !video.subtitles || !video.subtitles.length);
     if (!video.subtitles || !video.subtitles.length) return;
 
     var defaultSubtitle = video.subtitles.filter(function(one) {
@@ -2809,13 +2941,21 @@ flowplayer(function(p, root) {
     if (defaultSubtitle) player.loadSubtitles(video.subtitles.indexOf(defaultSubtitle));
   });
 
+  p.showSubtitle = function(text) {
+    common.html(wrap, text);
+    common.addClass(wrap, 'fp-shown');
+  };
+
+  p.hideSubtitle = function() {
+    common.removeClass(wrap, 'fp-shown');
+  };
+
   p.bind("cuepoint", function(e, api, cue) {
     if (cue.subtitle) {
        currentPoint = cue.index;
-       common.html(wrap, cue.subtitle.text);
-       common.addClass(wrap, 'fp-shown');
+       p.showSubtitle(cue.subtitle.text);
     } else if (cue.subtitleEnd) {
-       common.removeClass(wrap, 'fp-shown');
+       p.hideSubtitle();
        currentPoint = cue.index;
     }
   });
@@ -2886,7 +3026,8 @@ flowplayer(function(p, root) {
     }
     common.xhrGet(url, function(txt) {
       var entries = p.conf.subtitleParser(txt);
-      entries.forEach(function(entry) {
+      entries.forEach(function(entry, idx) {
+        if (!entry.title) entry.title = 'subtitle' + idx;
         var cue = { time: entry.startTime, subtitle: entry, visible: false };
         p.subtitles.push(entry);
         p.addCuepoint(cue);
@@ -2997,7 +3138,7 @@ var flowplayer = _dereq_('../flowplayer'),
       WP_VER = IS_WP ? parseFloat(/Windows\ Phone\ (\d+\.\d+)/.exec(UA)[1], 10) : 0,
       IE_MOBILE_VER = IS_WP ? parseFloat(/IEMobile\/(\d+\.\d+)/.exec(UA)[1], 10) : 0,
       IOS_VER = IS_IPAD || IS_IPHONE ? parseIOSVersion(UA) : 0,
-      ANDROID_VER = IS_ANDROID ? parseFloat(/Android\ (\d\.\d)/.exec(UA)[1], 10) : 0;
+      ANDROID_VER = IS_ANDROID ? parseFloat(/Android\ (\d+(\.\d+)?)/.exec(UA)[1], 10) : 0;
 
    var ios = (IS_IPHONE || IS_IPAD || IS_IPAD_CHROME) && {
      iPhone: IS_IPHONE,
@@ -3588,10 +3729,13 @@ flowplayer(function(api, root) {
         common.addClass(root, "is-poster");
         common.addClass(play, 'fp-visible');
         api.poster = true;
-        api.one(conf.autoplay ? "progress beforeseek" : "resume beforeseek", function() {
-          common.removeClass(root, "is-poster");
-          common.removeClass(play, 'fp-visible');
-          api.poster = false;
+        api.on('resume.poster progress.poster beforeseek.poster', function(ev) {
+          if (ev.type === 'beforeseek' || api.playing) {
+            common.removeClass(root, 'is-poster');
+            common.removeClass(play, 'fp-visible');
+            api.poster = false;
+            api.off('.poster');
+          }
         });
       }
       api.on('stop', function() { initPoster(); });
@@ -3643,11 +3787,13 @@ flowplayer(function(api, root) {
      bean.off(timeline);
      bean.off(volumeSlider);
      if (resizeHandle) window.cancelAnimationFrame(resizeHandle);
+     common.removeNode(ui);
+     common.find('.fp-ratio', root).forEach(common.removeNode);
    });
 
   if (typeof window.requestAnimationFrame === 'function') {
+    var playerEl = common.find('.fp-player', root)[0] || root;
     var resize = function() {
-      var playerEl = common.find('.fp-player', root)[0] || root;
       common.toggleClass(root, 'is-tiny', playerEl.clientWidth < 400);
       common.toggleClass(root, 'is-small', playerEl.clientWidth < 600 && playerEl.clientWidth >= 400);
       resizeHandle = window.requestAnimationFrame(resize);
@@ -3958,7 +4104,7 @@ var flowplayer = module.exports = function(fn, opts, callback) {
 
 extend(flowplayer, {
 
-   version: '7.2.4',
+   version: '7.2.7',
 
    engines: [],
 
@@ -4011,8 +4157,8 @@ extend(flowplayer, {
       live: false,
       livePositionOffset: 120,
 
-      swf: "//releases.flowplayer.org/7.2.4/flowplayer.swf",
-      swfHls: "//releases.flowplayer.org/7.2.4/flowplayerhls.swf",
+      swf: "//releases.flowplayer.org/7.2.7/flowplayer.swf",
+      swfHls: "//releases.flowplayer.org/7.2.7/flowplayerhls.swf",
 
       speeds: [0.25, 0.5, 1, 1.5, 2],
 
@@ -4021,6 +4167,8 @@ extend(flowplayer, {
       mouseoutTimeout: 5000,
 
       mutedAutoplay: true,
+
+      clickToUnMute: true,
 
       // initial volume level
       volume: 1,
@@ -4076,7 +4224,7 @@ if (typeof window.jQuery !== 'undefined') {
   // auto-install (any video tag with parent .flowplayer)
   $(function() {
      if (typeof $.fn.flowplayer == 'function') {
-        $('.flowplayer:has(video,script[type="application/json"])').flowplayer();
+        $('.flowplayer:has(video:not(.fp-engine),script[type="application/json"])').flowplayer();
      }
   });
 
@@ -4139,6 +4287,7 @@ function initializePlayer(element, opts, callback) {
   var root = element,
       conf = extend({}, flowplayer.defaults, flowplayer.conf, opts),
       storage = {},
+      originalClass = root.className,
       lastSeekPosition,
       engine,
       urlResolver = new URLResolver();
@@ -4150,7 +4299,7 @@ function initializePlayer(element, opts, callback) {
          storage = flowplayer.conf.storage || (supportLocalStorage ? window.localStorage : storage);
       } catch(e) {}
 
-      conf.volume = storage.muted === "true" ? 0 : !isNaN(storage.volume) ? storage.volume || conf.volume : conf.volume;
+      conf.volume = storage.muted === "true" ? 0 : conf.volume !== flowplayer.defaults.volume ? conf.volume : !isNaN(storage.volume) ? storage.volume : conf.volume;
 
       conf.debug = !!storage.flowplayerDebug || conf.debug;
 
@@ -4232,7 +4381,7 @@ function initializePlayer(element, opts, callback) {
               });
             }
 
-            extend(video, engine.pick(video.sources.filter(function(source) { // Filter out sources explicitely configured for some other engine
+            extend(video, engine.pick(video.sources.filter(function(source) { // Filter out sources explicitly configured for some other engine
               if (!source.engine) return true;
               return source.engine === engine.engineName;
             })));
@@ -4465,7 +4614,7 @@ function initializePlayer(element, opts, callback) {
 
 
          api.on('boot', function() {
-            var support = flowplayer.support;
+            var  support = flowplayer.support;
 
             // splash
             if (conf.splash || common.hasClass(root, "is-splash") ||
@@ -4501,6 +4650,8 @@ function initializePlayer(element, opts, callback) {
 
             // initial callback
             api.one("ready", callback);
+
+            api.one('shutdown', function() { root.className = originalClass; });
 
 
          }).on("load", function(e, api, video) {
@@ -4680,22 +4831,22 @@ function placeHoldersCount (b64) {
 
 function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
-  return (b64.length * 3 / 4) - placeHoldersCount(b64)
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
 }
 
 function toByteArray (b64) {
-  var i, l, tmp, placeHolders, arr
+  var i, j, l, tmp, placeHolders, arr
   var len = b64.length
   placeHolders = placeHoldersCount(b64)
 
-  arr = new Arr((len * 3 / 4) - placeHolders)
+  arr = new Arr(len * 3 / 4 - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
   l = placeHolders > 0 ? len - 4 : len
 
   var L = 0
 
-  for (i = 0; i < l; i += 4) {
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
     tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
     arr[L++] = (tmp >> 16) & 0xFF
     arr[L++] = (tmp >> 8) & 0xFF
@@ -7769,26 +7920,6 @@ module.exports = computedStyle;
     var toStr = call.bind(ObjectPrototype.toString);
     var arraySlice = call.bind(array_slice);
     var arraySliceApply = apply.bind(array_slice);
-    /* globals document */
-    if (typeof document === 'object' && document && document.documentElement) {
-        try {
-            arraySlice(document.documentElement.childNodes);
-        } catch (e) {
-            var origArraySlice = arraySlice;
-            var origArraySliceApply = arraySliceApply;
-            arraySlice = function arraySliceIE(arr) {
-                var r = [];
-                var i = arr.length;
-                while (i-- > 0) {
-                    r[i] = arr[i];
-                }
-                return origArraySliceApply(r, origArraySlice(arguments, 1));
-            };
-            arraySliceApply = function arraySliceApplyIE(arr, args) {
-                return origArraySliceApply(arraySlice(arr), args);
-            };
-        }
-    }
     var strSlice = call.bind(StringPrototype.slice);
     var strSplit = call.bind(StringPrototype.split);
     var strIndexOf = call.bind(StringPrototype.indexOf);
@@ -8382,14 +8513,10 @@ module.exports = computedStyle;
     var sortIgnoresNonFunctions = (function () {
         try {
             [1, 2].sort(null);
-        } catch (e) {
-            try {
-                [1, 2].sort({});
-            } catch (e2) {
-                return false;
-            }
-        }
-        return true;
+            [1, 2].sort({});
+            return true;
+        } catch (e) {}
+        return false;
     }());
     var sortThrowsOnRegex = (function () {
         // this is a problem in Firefox 4, in which `typeof /a/ === 'function'`
@@ -8428,14 +8555,14 @@ module.exports = computedStyle;
     // http://es5.github.com/#x15.2.3.14
 
     // http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
-    var hasDontEnumBug = !isEnum({ 'toString': null }, 'toString'); // jscs:ignore disallowQuotedKeysInObjects
+    var hasDontEnumBug = !isEnum({ 'toString': null }, 'toString');
     var hasProtoEnumBug = isEnum(function () {}, 'prototype');
     var hasStringEnumBug = !owns('x', '0');
     var equalsConstructorPrototype = function (o) {
         var ctor = o.constructor;
         return ctor && ctor.prototype === o;
     };
-    var excludedKeys = {
+    var blacklistedKeys = {
         $window: true,
         $console: true,
         $parent: true,
@@ -8445,11 +8572,7 @@ module.exports = computedStyle;
         $frameElement: true,
         $webkitIndexedDB: true,
         $webkitStorageInfo: true,
-        $external: true,
-        $width: true,
-        $height: true,
-        $top: true,
-        $localStorage: true
+        $external: true
     };
     var hasAutomationEqualityBug = (function () {
         /* globals window */
@@ -8458,7 +8581,7 @@ module.exports = computedStyle;
         }
         for (var k in window) {
             try {
-                if (!excludedKeys['$' + k] && owns(window, k) && window[k] !== null && typeof window[k] === 'object') {
+                if (!blacklistedKeys['$' + k] && owns(window, k) && window[k] !== null && typeof window[k] === 'object') {
                     equalsConstructorPrototype(window[k]);
                 }
             } catch (e) {
@@ -8494,12 +8617,12 @@ module.exports = computedStyle;
         return toStr(value) === '[object Arguments]';
     };
     var isLegacyArguments = function isArguments(value) {
-        return value !== null
-            && typeof value === 'object'
-            && typeof value.length === 'number'
-            && value.length >= 0
-            && !isArray(value)
-            && isCallable(value.callee);
+        return value !== null &&
+            typeof value === 'object' &&
+            typeof value.length === 'number' &&
+            value.length >= 0 &&
+            !isArray(value) &&
+            isCallable(value.callee);
     };
     var isArguments = isStandardArguments(arguments) ? isStandardArguments : isLegacyArguments;
 
@@ -8576,10 +8699,10 @@ module.exports = computedStyle;
     var timeZoneOffset = aNegativeTestDate.getTimezoneOffset();
     if (timeZoneOffset < -720) {
         hasToDateStringFormatBug = aNegativeTestDate.toDateString() !== 'Tue Jan 02 -45875';
-        hasToStringFormatBug = !(/^Thu Dec 10 2015 \d\d:\d\d:\d\d GMT[-+]\d\d\d\d(?: |$)/).test(String(aPositiveTestDate));
+        hasToStringFormatBug = !(/^Thu Dec 10 2015 \d\d:\d\d:\d\d GMT[-\+]\d\d\d\d(?: |$)/).test(aPositiveTestDate.toString());
     } else {
         hasToDateStringFormatBug = aNegativeTestDate.toDateString() !== 'Mon Jan 01 -45875';
-        hasToStringFormatBug = !(/^Wed Dec 09 2015 \d\d:\d\d:\d\d GMT[-+]\d\d\d\d(?: |$)/).test(String(aPositiveTestDate));
+        hasToStringFormatBug = !(/^Wed Dec 09 2015 \d\d:\d\d:\d\d GMT[-\+]\d\d\d\d(?: |$)/).test(aPositiveTestDate.toString());
     }
 
     var originalGetFullYear = call.bind(Date.prototype.getFullYear);
@@ -8688,13 +8811,13 @@ module.exports = computedStyle;
             var hour = originalGetUTCHours(this);
             var minute = originalGetUTCMinutes(this);
             var second = originalGetUTCSeconds(this);
-            return dayName[day] + ', '
-                + (date < 10 ? '0' + date : date) + ' '
-                + monthName[month] + ' '
-                + year + ' '
-                + (hour < 10 ? '0' + hour : hour) + ':'
-                + (minute < 10 ? '0' + minute : minute) + ':'
-                + (second < 10 ? '0' + second : second) + ' GMT';
+            return dayName[day] + ', ' +
+                (date < 10 ? '0' + date : date) + ' ' +
+                monthName[month] + ' ' +
+                year + ' ' +
+                (hour < 10 ? '0' + hour : hour) + ':' +
+                (minute < 10 ? '0' + minute : minute) + ':' +
+                (second < 10 ? '0' + second : second) + ' GMT';
         }
     }, hasNegativeMonthYearBug || hasToUTCStringFormatBug);
 
@@ -8708,10 +8831,10 @@ module.exports = computedStyle;
             var date = this.getDate();
             var month = this.getMonth();
             var year = this.getFullYear();
-            return dayName[day] + ' '
-                + monthName[month] + ' '
-                + (date < 10 ? '0' + date : date) + ' '
-                + year;
+            return dayName[day] + ' ' +
+                monthName[month] + ' ' +
+                (date < 10 ? '0' + date : date) + ' ' +
+                year;
         }
     }, hasNegativeMonthYearBug || hasToDateStringFormatBug);
 
@@ -8731,16 +8854,16 @@ module.exports = computedStyle;
             var timezoneOffset = this.getTimezoneOffset();
             var hoursOffset = Math.floor(Math.abs(timezoneOffset) / 60);
             var minutesOffset = Math.floor(Math.abs(timezoneOffset) % 60);
-            return dayName[day] + ' '
-                + monthName[month] + ' '
-                + (date < 10 ? '0' + date : date) + ' '
-                + year + ' '
-                + (hour < 10 ? '0' + hour : hour) + ':'
-                + (minute < 10 ? '0' + minute : minute) + ':'
-                + (second < 10 ? '0' + second : second) + ' GMT'
-                + (timezoneOffset > 0 ? '-' : '+')
-                + (hoursOffset < 10 ? '0' + hoursOffset : hoursOffset)
-                + (minutesOffset < 10 ? '0' + minutesOffset : minutesOffset);
+            return dayName[day] + ' ' +
+                monthName[month] + ' ' +
+                (date < 10 ? '0' + date : date) + ' ' +
+                year + ' ' +
+                (hour < 10 ? '0' + hour : hour) + ':' +
+                (minute < 10 ? '0' + minute : minute) + ':' +
+                (second < 10 ? '0' + second : second) + ' GMT' +
+                (timezoneOffset > 0 ? '-' : '+') +
+                (hoursOffset < 10 ? '0' + hoursOffset : hoursOffset) +
+                (minutesOffset < 10 ? '0' + minutesOffset : minutesOffset);
         };
         if (supportsDescriptors) {
             $Object.defineProperty(Date.prototype, 'toString', {
@@ -8760,7 +8883,7 @@ module.exports = computedStyle;
     // this object is not a finite Number a RangeError exception is thrown.
     var negativeDate = -62198755200000;
     var negativeYearString = '-000001';
-    var hasNegativeDateBug = Date.prototype.toISOString && new Date(negativeDate).toISOString().indexOf(negativeYearString) === -1; // eslint-disable-line max-len
+    var hasNegativeDateBug = Date.prototype.toISOString && new Date(negativeDate).toISOString().indexOf(negativeYearString) === -1;
     var hasSafari51DateBug = Date.prototype.toISOString && new Date(-1).toISOString() !== '1969-12-31T23:59:59.999Z';
 
     var getTime = call.bind(Date.prototype.getTime);
@@ -8777,19 +8900,13 @@ module.exports = computedStyle;
             var month = originalGetUTCMonth(this);
             // see https://github.com/es-shims/es5-shim/issues/111
             year += Math.floor(month / 12);
-            month = ((month % 12) + 12) % 12;
+            month = (month % 12 + 12) % 12;
 
             // the date time string format is specified in 15.9.1.15.
-            var result = [
-                month + 1,
-                originalGetUTCDate(this),
-                originalGetUTCHours(this),
-                originalGetUTCMinutes(this),
-                originalGetUTCSeconds(this)
-            ];
+            var result = [month + 1, originalGetUTCDate(this), originalGetUTCHours(this), originalGetUTCMinutes(this), originalGetUTCSeconds(this)];
             year = (
-                (year < 0 ? '-' : (year > 9999 ? '+' : ''))
-                + strSlice('00000' + Math.abs(year), (0 <= year && year <= 9999) ? -4 : -6)
+                (year < 0 ? '-' : (year > 9999 ? '+' : '')) +
+                strSlice('00000' + Math.abs(year), (0 <= year && year <= 9999) ? -4 : -6)
             );
 
             for (var i = 0; i < result.length; ++i) {
@@ -8798,9 +8915,9 @@ module.exports = computedStyle;
             }
             // pad milliseconds to have three digits.
             return (
-                year + '-' + arraySlice(result, 0, 2).join('-')
-                + 'T' + arraySlice(result, 2).join(':') + '.'
-                + strSlice('000' + originalGetUTCMilliseconds(this), -3) + 'Z'
+                year + '-' + arraySlice(result, 0, 2).join('-') +
+                'T' + arraySlice(result, 2).join(':') + '.' +
+                strSlice('000' + originalGetUTCMilliseconds(this), -3) + 'Z'
             );
         }
     }, hasNegativeDateBug || hasSafari51DateBug);
@@ -8811,10 +8928,10 @@ module.exports = computedStyle;
     // JSON.stringify (15.12.3).
     var dateToJSONIsSupported = (function () {
         try {
-            return Date.prototype.toJSON
-                && new Date(NaN).toJSON() === null
-                && new Date(negativeDate).toJSON().indexOf(negativeYearString) !== -1
-                && Date.prototype.toJSON.call({ // generic
+            return Date.prototype.toJSON &&
+                new Date(NaN).toJSON() === null &&
+                new Date(negativeDate).toJSON().indexOf(negativeYearString) !== -1 &&
+                Date.prototype.toJSON.call({ // generic
                     toISOString: function () { return true; }
                 });
         } catch (e) {
@@ -8868,10 +8985,13 @@ module.exports = computedStyle;
         // XXX global assignment won't work in embeddings that use
         // an alternate object for the context.
         /* global Date: true */
+        /* eslint-disable no-undef */
         var maxSafeUnsigned32Bit = Math.pow(2, 31) - 1;
         var hasSafariSignedIntBug = isActualNaN(new Date(1970, 0, 1, 0, 0, 0, maxSafeUnsigned32Bit + 1).getTime());
-        // eslint-disable-next-line no-implicit-globals, no-global-assign
+        /* eslint-disable no-implicit-globals */
         Date = (function (NativeDate) {
+        /* eslint-enable no-implicit-globals */
+        /* eslint-enable no-undef */
             // Date.length === 7
             var DateShim = function Date(Y, M, D, h, m, s, ms) {
                 var length = arguments.length;
@@ -8886,19 +9006,19 @@ module.exports = computedStyle;
                         seconds += sToShift;
                         millis -= sToShift * 1e3;
                     }
-                    date = length === 1 && $String(Y) === Y // isString(Y)
+                    date = length === 1 && $String(Y) === Y ? // isString(Y)
                         // We explicitly pass it through parse:
-                        ? new NativeDate(DateShim.parse(Y))
+                        new NativeDate(DateShim.parse(Y)) :
                         // We have to manually make calls depending on argument
                         // length here
-                        : length >= 7 ? new NativeDate(Y, M, D, h, m, seconds, millis)
-                            : length >= 6 ? new NativeDate(Y, M, D, h, m, seconds)
-                                : length >= 5 ? new NativeDate(Y, M, D, h, m)
-                                    : length >= 4 ? new NativeDate(Y, M, D, h)
-                                        : length >= 3 ? new NativeDate(Y, M, D)
-                                            : length >= 2 ? new NativeDate(Y, M)
-                                                : length >= 1 ? new NativeDate(Y instanceof NativeDate ? +Y : Y)
-                                                    : new NativeDate();
+                        length >= 7 ? new NativeDate(Y, M, D, h, m, seconds, millis) :
+                        length >= 6 ? new NativeDate(Y, M, D, h, m, seconds) :
+                        length >= 5 ? new NativeDate(Y, M, D, h, m) :
+                        length >= 4 ? new NativeDate(Y, M, D, h) :
+                        length >= 3 ? new NativeDate(Y, M, D) :
+                        length >= 2 ? new NativeDate(Y, M) :
+                        length >= 1 ? new NativeDate(Y instanceof NativeDate ? +Y : Y) :
+                                      new NativeDate();
                 } else {
                     date = NativeDate.apply(this, arguments);
                 }
@@ -8910,37 +9030,38 @@ module.exports = computedStyle;
             };
 
             // 15.9.1.15 Date Time String Format.
-            var isoDateExpression = new RegExp('^'
-                + '(\\d{4}|[+-]\\d{6})' // four-digit year capture or sign + 6-digit extended year
-                + '(?:-(\\d{2})' // optional month capture
-                + '(?:-(\\d{2})' // optional day capture
-                + '(?:' // capture hours:minutes:seconds.milliseconds
-                    + 'T(\\d{2})' // hours capture
-                    + ':(\\d{2})' // minutes capture
-                    + '(?:' // optional :seconds.milliseconds
-                        + ':(\\d{2})' // seconds capture
-                        + '(?:(\\.\\d{1,}))?' // milliseconds capture
-                    + ')?'
-                + '(' // capture UTC offset component
-                    + 'Z|' // UTC capture
-                    + '(?:' // offset specifier +/-hours:minutes
-                        + '([-+])' // sign capture
-                        + '(\\d{2})' // hours offset capture
-                        + ':(\\d{2})' // minutes offset capture
-                    + ')'
-                + ')?)?)?)?'
-            + '$');
+            var isoDateExpression = new RegExp('^' +
+                '(\\d{4}|[+-]\\d{6})' + // four-digit year capture or sign +
+                                          // 6-digit extended year
+                '(?:-(\\d{2})' + // optional month capture
+                '(?:-(\\d{2})' + // optional day capture
+                '(?:' + // capture hours:minutes:seconds.milliseconds
+                    'T(\\d{2})' + // hours capture
+                    ':(\\d{2})' + // minutes capture
+                    '(?:' + // optional :seconds.milliseconds
+                        ':(\\d{2})' + // seconds capture
+                        '(?:(\\.\\d{1,}))?' + // milliseconds capture
+                    ')?' +
+                '(' + // capture UTC offset component
+                    'Z|' + // UTC capture
+                    '(?:' + // offset specifier +/-hours:minutes
+                        '([-+])' + // sign capture
+                        '(\\d{2})' + // hours offset capture
+                        ':(\\d{2})' + // minutes offset capture
+                    ')' +
+                ')?)?)?)?' +
+            '$');
 
             var months = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
 
             var dayFromMonth = function dayFromMonth(year, month) {
                 var t = month > 1 ? 1 : 0;
                 return (
-                    months[month]
-                    + Math.floor((year - 1969 + t) / 4)
-                    - Math.floor((year - 1901 + t) / 100)
-                    + Math.floor((year - 1601 + t) / 400)
-                    + (365 * (year - 1970))
+                    months[month] +
+                    Math.floor((year - 1969 + t) / 4) -
+                    Math.floor((year - 1901 + t) / 100) +
+                    Math.floor((year - 1601 + t) / 400) +
+                    365 * (year - 1970)
                 );
             };
 
@@ -8970,7 +9091,9 @@ module.exports = computedStyle;
                 UTC: NativeDate.UTC
             }, true);
             DateShim.prototype = NativeDate.prototype;
-            defineProperties(DateShim.prototype, { constructor: DateShim }, true);
+            defineProperties(DateShim.prototype, {
+                constructor: DateShim
+            }, true);
 
             // Upgrade Date.parse to handle simplified ISO 8601 strings
             var parseShim = function parse(string) {
@@ -8996,22 +9119,22 @@ module.exports = computedStyle;
                         result;
                     var hasMinutesOrSecondsOrMilliseconds = minute > 0 || second > 0 || millisecond > 0;
                     if (
-                        hour < (hasMinutesOrSecondsOrMilliseconds ? 24 : 25)
-                        && minute < 60 && second < 60 && millisecond < 1000
-                        && month > -1 && month < 12 && hourOffset < 24
-                        && minuteOffset < 60 // detect invalid offsets
-                        && day > -1
-                        && day < (dayFromMonth(year, month + 1) - dayFromMonth(year, month))
+                        hour < (hasMinutesOrSecondsOrMilliseconds ? 24 : 25) &&
+                        minute < 60 && second < 60 && millisecond < 1000 &&
+                        month > -1 && month < 12 && hourOffset < 24 &&
+                        minuteOffset < 60 && // detect invalid offsets
+                        day > -1 &&
+                        day < (dayFromMonth(year, month + 1) - dayFromMonth(year, month))
                     ) {
                         result = (
-                            ((dayFromMonth(year, month) + day) * 24)
-                            + hour
-                            + (hourOffset * signOffset)
+                            (dayFromMonth(year, month) + day) * 24 +
+                            hour +
+                            hourOffset * signOffset
                         ) * 60;
-                        result = ((
-                            ((result + minute + (minuteOffset * signOffset)) * 60)
-                            + second
-                        ) * 1000) + millisecond;
+                        result = (
+                            (result + minute + minuteOffset * signOffset) * 60 +
+                            second
+                        ) * 1000 + millisecond;
                         if (isLocalTime) {
                             result = toUTC(result);
                         }
@@ -9046,10 +9169,10 @@ module.exports = computedStyle;
     // ES5.1 15.7.4.5
     // http://es5.github.com/#x15.7.4.5
     var hasToFixedBugs = NumberPrototype.toFixed && (
-        (0.00008).toFixed(3) !== '0.000'
-        || (0.9).toFixed(0) !== '1'
-        || (1.255).toFixed(2) !== '1.25'
-        || (1000000000000000128).toFixed(0) !== '1000000000000000128'
+      (0.00008).toFixed(3) !== '0.000' ||
+      (0.9).toFixed(0) !== '1' ||
+      (1.255).toFixed(2) !== '1.25' ||
+      (1000000000000000128).toFixed(0) !== '1000000000000000128'
     );
 
     var toFixedHelpers = {
@@ -9227,12 +9350,12 @@ module.exports = computedStyle;
     //    '.'.split(/()()/) should be ["."], not ["", "", "."]
 
     if (
-        'ab'.split(/(?:ab)*/).length !== 2
-        || '.'.split(/(.?)(.?)/).length !== 4
-        || 'tesst'.split(/(s)*/)[1] === 't'
-        || 'test'.split(/(?:)/, -1).length !== 4
-        || ''.split(/.?/).length
-        || '.'.split(/()()/).length > 1
+        'ab'.split(/(?:ab)*/).length !== 2 ||
+        '.'.split(/(.?)(.?)/).length !== 4 ||
+        'tesst'.split(/(s)*/)[1] === 't' ||
+        'test'.split(/(?:)/, -1).length !== 4 ||
+        ''.split(/.?/).length ||
+        '.'.split(/()()/).length > 1
     ) {
         (function () {
             var compliantExecNpcg = typeof (/()??/).exec('')[1] === 'undefined'; // NPCG: nonparticipating capturing group
@@ -9250,10 +9373,10 @@ module.exports = computedStyle;
                 }
 
                 var output = [];
-                var flags = (separator.ignoreCase ? 'i' : '')
-                            + (separator.multiline ? 'm' : '')
-                            + (separator.unicode ? 'u' : '') // in ES6
-                            + (separator.sticky ? 'y' : ''), // Firefox 3+ and ES6
+                var flags = (separator.ignoreCase ? 'i' : '') +
+                            (separator.multiline ? 'm' : '') +
+                            (separator.unicode ? 'u' : '') + // in ES6
+                            (separator.sticky ? 'y' : ''), // Firefox 3+ and ES6
                     lastLastIndex = 0,
                     // Make `global` and avoid `lastIndex` issues by working with a copy
                     separator2, match, lastIndex, lastLength;
@@ -9378,9 +9501,9 @@ module.exports = computedStyle;
 
     // ES5 15.5.4.20
     // whitespace from: http://es5.github.io/#x15.5.4.20
-    var ws = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003'
-        + '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028'
-        + '\u2029\uFEFF';
+    var ws = '\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003' +
+        '\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028' +
+        '\u2029\uFEFF';
     var zeroWidth = '\u200b';
     var wsRegexChars = '[' + ws + ']';
     var trimBeginRegexp = new RegExp('^' + wsRegexChars + wsRegexChars + '*');
@@ -9430,18 +9553,13 @@ module.exports = computedStyle;
     }, StringPrototype.lastIndexOf.length !== 1);
 
     // ES-5 15.1.2.2
-    // eslint-disable-next-line radix
+    /* eslint-disable radix */
     if (parseInt(ws + '08') !== 8 || parseInt(ws + '0x16') !== 22) {
+    /* eslint-enable radix */
         /* global parseInt: true */
         parseInt = (function (origParseInt) {
-            var hexRegex = /^[-+]?0[xX]/;
+            var hexRegex = /^[\-+]?0[xX]/;
             return function parseInt(str, radix) {
-                if (typeof str === 'symbol') {
-                    // handle Symbols in node 8.3/8.4
-                    // eslint-disable-next-line no-implicit-coercion, no-unused-expressions
-                    '' + str; // jscs:ignore disallowImplicitTypeConversion
-                }
-
                 var string = trim(String(str));
                 var defaultedRadix = $Number(radix) || (hexRegex.test(string) ? 16 : 10);
                 return origParseInt(string, defaultedRadix);

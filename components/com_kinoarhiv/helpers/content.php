@@ -22,22 +22,22 @@ class KAContentHelper
 	/**
 	 * Get image size
 	 *
-	 * @param   string   $path        Path to a file
-	 * @param   boolean  $scale       Scale image or not
+	 * @param   string   $path        Path to image file
+	 * @param   boolean  $scale       Scale image or not. Preserve proportions.
 	 * @param   integer  $baseWidth   Base image width from settings
 	 * @param   string   $dimension   Default image dimension
 	 *
-	 * @return  object
+	 * @return  array
 	 *
 	 * @since  3.0
 	 */
 	public static function getImageSize($path, $scale = true, $baseWidth = 0, $dimension = '128x128')
 	{
-		$image = (object) array('width' => 0, 'height' => 0);
+		$image = array('width' => 0, 'height' => 0);
 
 		if ($scale)
 		{
-			$image->width = (int) $baseWidth;
+			$image['width'] = (int) $baseWidth;
 			$origSize = explode('x', $dimension);
 
 			if (!isset($origSize[1]) || empty($origSize[0]) || empty($origSize[1]))
@@ -46,13 +46,13 @@ class KAContentHelper
 				$origSize[1] = '128';
 			}
 
-			$image->height = floor(($image->width * $origSize[1]) / $origSize[0]);
+			$image['height'] = floor(($image['width'] * $origSize[1]) / $origSize[0]);
 		}
 		else
 		{
 			list($width, $height) = @getimagesize($path);
-			$image->width = $width;
-			$image->height = $height;
+			$image['width'] = $width;
+			$image['height'] = $height;
 		}
 
 		return $image;
@@ -112,12 +112,12 @@ class KAContentHelper
 	 *                            If $tab is array when return array of paths for each type of $tab.
 	 * @param   mixed   $id       The item IDs(movie or name).
 	 *
-	 * @return  mixed    Absolute filesystem path to a file, array of paths, false otherwise.
+	 * @return  mixed   Absolute filesystem path to a file, array of paths, false otherwise.
 	 *
 	 * @since   3.0
-	 * @throws  \Exception
+	 * @throws  Exception
 	 */
-	public static function getPath($section, $type, $tab = 0, $id = 0)
+	public static function getPath($section, $type, $tab, $id = 0)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$path   = JPATH_ROOT . '/tmp';
@@ -252,7 +252,7 @@ class KAContentHelper
 	 * @return  mixed   Array with URL safe aliases, false on errors.
 	 *
 	 * @since   3.0
-	 * @throws  \Exception
+	 * @throws  Exception
 	 */
 	public static function getFilesystemAlias($section, $ids)
 	{
@@ -344,98 +344,44 @@ class KAContentHelper
 	}
 
 	/**
-	 * Method to get a front cover for music album
+	 * Method to make a link to a cover file.
 	 *
-	 * @param   object  $data  Item data. Should contain three fields from albums table - id, fs_alias, filename,
-	 *                         covers_path, covers_path_www, cover_filename.
+	 * @param   object  $data  Item data.
 	 *
-	 * @return  mixed  Array on success, false otherwise.
+	 * @return  string
 	 *
 	 * @since   3.1
-	 * @throws  \Exception
 	 */
-	public static function getAlbumCover($data)
+	public static function getAlbumCoverLink(&$data)
 	{
-		clearstatcache();
+		$fsAlias = !empty($data->fs_alias) ? '&fa=' . urlencode($data->fs_alias) : '';
 
-		$itemid         = JFactory::getApplication()->input->getInt('Itemid');
-		$params         = JComponentHelper::getParams('com_kinoarhiv');
-		$folderPart     = '/' . urlencode($data->fs_alias) . '/' . $data->id . '/';
-		$folder         = $params->get('media_music_images_root') . $folderPart;
-		$throttleEnable = $params->get('throttle_image_enable', 0);
-		$covers         = array('poster' => '', 'th_poster' => '', 'size' => (object) array('width' => 250, 'height' => 250));
+		return JRoute::_(
+			'index.php?option=com_kinoarhiv&task=media.view&element=music&content=image&id=' . $data->id . $fsAlias .
+			'&fn=' . $data->cover_filename . '&format=raw&Itemid=' . $data->itemid
+		);
+	}
 
-		foreach (explode("\n", $params->get('music_covers_front')) as $filename)
-		{
-			$filename = trim($filename);
+	/**
+	 * Time to ISO8601 duration.
+	 *
+	 * @param   string  $time  Time in format 00:00:00.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.1
+	 */
+	public static function timeToISO8601($time)
+	{
+		$datetime = new DateTime('1970-01-01 ' . $time, new DateTimeZone('UTC'));
+		$seconds  = (int) $datetime->getTimestamp();
+		$days     = floor($seconds / 86400);
+		$seconds  = $seconds % 86400;
+		$hours    = floor($seconds / 3600);
+		$seconds  = $seconds % 3600;
+		$minutes  = floor($seconds / 60);
+		$seconds  = $seconds % 60;
 
-			if ($throttleEnable == 0)
-			{
-				// Search for cover in default location from component settings
-				if (is_file(JPath::clean($folder . $filename)))
-				{
-					if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
-					{
-						$covers['poster']    = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . $folderPart . $filename;
-						$covers['th_poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . $folderPart . 'thumb_' . $filename;
-					}
-					else
-					{
-						$covers['poster']    = $params->get('media_music_images_root_www') . $folderPart . $filename;
-						$covers['th_poster'] = $params->get('media_music_images_root_www') . $folderPart . 'thumb_' . $filename;
-					}
-
-					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folderPart . 'thumb_' . $filename), false);
-
-					break;
-				}
-				// Search for cover in album location
-				elseif (is_file(JPath::clean($params->get('media_music_root') . $folderPart . $filename)))
-				{
-					if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
-					{
-						$covers['poster']    = JUri::root() . substr($params->get('media_music_root'), 1) . $folderPart . $filename;
-						$covers['th_poster'] = JUri::root() . substr($params->get('media_music_root_www'), 1) . $folderPart . 'thumb_' . $filename;
-					}
-					else
-					{
-						$covers['poster']    = $params->get('media_music_root_www') . $folderPart . $filename;
-						$covers['th_poster'] = $params->get('media_music_root_www') . $folderPart . 'thumb_' . $filename;
-					}
-
-					break;
-				}
-				else
-				{
-					$covers['poster']    = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
-					$covers['th_poster'] = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
-				}
-			}
-			else
-			{
-				// Search for cover in default location from component settings
-				if (is_file(JPath::clean($folder . $filename)))
-				{
-					$covers['poster'] = JRoute::_(
-						'index.php?option=com_kinoarhiv&task=media.view&element=music&content=image&type=3&id=' . $data->id .
-						'&fa=' . urlencode($data->fs_alias) . '&fn=' . $filename . '&format=raw&Itemid=' . $itemid
-					);
-					$covers['th_poster'] = JRoute::_(
-						'index.php?option=com_kinoarhiv&task=media.view&element=music&content=image&type=3&id=' . $data->id .
-						'&fa=' . urlencode($data->fs_alias) . '&fn=' . $filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-					);
-					$covers['size'] = self::getImageSize(JPath::clean($params->get('media_music_images_root') . $folderPart . 'thumb_' . $filename), false);
-
-					break;
-				}
-				else
-				{
-					$covers['poster']    = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
-					$covers['th_poster'] = JUri::root() . 'media/com_kinoarhiv/images/themes/default/no_album_cover.png';
-				}
-			}
-		}
-
-		return $covers;
+		return sprintf('P%dDT%dH%dM%dS', $days, $hours, $minutes, $seconds);
 	}
 }

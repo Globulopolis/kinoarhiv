@@ -55,12 +55,12 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getData()
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$lang   = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$id = $app->input->get('id', 0, 'int');
+		$id     = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
 			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
@@ -333,13 +333,12 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getNameData()
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$lang   = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$id = $app->input->get('id', 0, 'int');
-		$result = (object) array();
+		$id     = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
 			->select($db->quoteName(array('id', 'name', 'latin_name', 'alias', 'fs_alias', 'gender', 'attribs', 'metakey', 'metadesc', 'metadata')))
@@ -381,9 +380,9 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getAwards()
 	{
-		$db = $this->getDbo();
+		$db  = $this->getDbo();
 		$app = JFactory::getApplication();
-		$id = $app->input->get('id', 0, 'int');
+		$id  = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
 			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
@@ -417,10 +416,10 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getDimensionFilters()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', 0, 'int');
-		$page = $app->input->get('page', null, 'cmd');
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$id     = $app->input->get('id', 0, 'int');
+		$page   = $app->input->get('page', null, 'cmd');
 		$result = array();
 
 		if ($page == 'wallpapers')
@@ -459,12 +458,12 @@ class KinoarhivModelName extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', 0, 'int');
-		$page = $app->input->get('page', '', 'cmd');
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$id     = $app->input->get('id', 0, 'int');
+		$page   = $app->input->get('page', '', 'cmd');
 		$filter = $app->input->get('dim_filter', '0', 'string');
-		$query = null;
+		$query  = null;
 
 		if ($page == 'wallpapers')
 		{

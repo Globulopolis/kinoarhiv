@@ -155,9 +155,8 @@ class KinoarhivModelAlbums extends JModelList
 		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
-		// Define null and now dates
+		// Define null dates
 		$nullDate = $db->quote($db->getNullDate());
-		$nowDate = $db->quote(JFactory::getDate()->toSql());
 
 		$query = $db->getQuery(true);
 
@@ -165,17 +164,14 @@ class KinoarhivModelAlbums extends JModelList
 			$this->getState(
 				'list.select',
 				'a.id, a.title, a.alias, a.fs_alias, a.composer, DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', ' .
-				'a.length, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.buy_url, ' .
+				'a.length, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, a.buy_urls, ' .
 				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
 				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
-				'a.attribs, a.state'
+				'a.attribs, a.state, ' .
+				'(SELECT COUNT(album_id) FROM ' . $db->quoteName('#__ka_user_votes_albums') . ' WHERE album_id = a.id) AS total_votes'
 			)
 		);
 		$query->from($db->quoteName('#__ka_music_albums', 'a'));
-
-		// Join over gallery item
-		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
-			->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g') . ' ON g.item_id = a.id AND g.frontpage = 1 AND g.state = 1');
 
 		// Join over composer
 		$query->select($db->quoteName(array('n.name', 'n.latin_name')))
@@ -216,7 +212,7 @@ class KinoarhivModelAlbums extends JModelList
 			}
 		}
 
-		// Prevent duplicate records if accidentally have a more than one poster for frontpage.
+		// Prevent duplicate records.
 		$query->group($db->quoteName('a.id'));
 		$query->order($this->getState('list.ordering', 'a.ordering') . ' ' . $this->getState('list.direction', 'ASC'));
 
@@ -562,10 +558,10 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	public function vote($id, $value)
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$error_message = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
+		$result = array('success' => false, 'message' => JText::_('COM_KA_REQUEST_ERROR'));
 
 		$queryAttribs = $db->getQuery(true)
 			->select('attribs')
@@ -604,7 +600,7 @@ class KinoarhivModelAlbums extends JModelList
 							->where('id = ' . (int) $id);
 
 						$db->setQuery($query);
-						$m_query = $db->execute();
+						$albumsQuery = $db->execute();
 
 						$query = $db->getQuery(true)
 							->update($db->quoteName('#__ka_user_votes_albums'))
@@ -612,20 +608,15 @@ class KinoarhivModelAlbums extends JModelList
 							->where('album_id = ' . (int) $id . ' AND uid = ' . $user->get('id'));
 
 						$db->setQuery($query);
-						$v_query = $db->execute();
+						$votesQquery = $db->execute();
 
-						if ($m_query && $v_query)
+						if ($albumsQuery && $votesQquery)
 						{
 							$result = array('success' => true, 'message' => JText::_('COM_KA_RATE_RATED'));
-						}
-						else
-						{
-							$result = $error_message;
 						}
 					}
 					catch (Exception $e)
 					{
-						$result = $error_message;
 						KAComponentHelper::eventLog($e->getMessage());
 					}
 				}
@@ -650,7 +641,7 @@ class KinoarhivModelAlbums extends JModelList
 							->where('id = ' . (int) $id);
 
 						$db->setQuery($query);
-						$m_query = $db->execute();
+						$albumsQuery = $db->execute();
 
 						$query = $db->getQuery(true)
 							->insert($db->quoteName('#__ka_user_votes_albums'))
@@ -658,32 +649,19 @@ class KinoarhivModelAlbums extends JModelList
 							->values("'" . $user->get('id') . "', '" . $id . "', '" . (int) $value . "', NOW()");
 
 						$db->setQuery($query);
-						$v_query = $db->execute();
+						$votesQquery = $db->execute();
 
-						if ($m_query && $v_query)
+						if ($albumsQuery && $votesQquery)
 						{
 							$result = array('success' => true, 'message' => JText::_('COM_KA_RATE_RATED'));
-						}
-						else
-						{
-							$result = $error_message;
 						}
 					}
 					catch (Exception $e)
 					{
-						$result = $error_message;
 						KAComponentHelper::eventLog($e->getMessage());
 					}
 				}
 			}
-			else
-			{
-				$result = $error_message;
-			}
-		}
-		else
-		{
-			$result = $error_message;
 		}
 
 		return $result;

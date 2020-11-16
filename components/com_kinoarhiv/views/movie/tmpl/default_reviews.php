@@ -60,7 +60,7 @@ defined('_JEXEC') or die;
 					<div class="review-title corner-top">
 						<span class="number"><?php echo $review_number++; ?>. </span>
 						<span class="username<?php echo $cmd_insert_username; ?>"><?php echo !empty($review->name) ? $review->name : $review->username; ?></span>
-						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&limitstart=' . $this->pagination->limitstart . '&Itemid=' . $this->itemid) . '#review-' . $review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip permalink"><img src="media/com_kinoarhiv/images/icons/link_16.png" border="0"/></a></span>
+						<span><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&limitstart=' . $this->pagination->limitstart . '&Itemid=' . $this->itemid) . '#review-' . $review->id; ?>" title="<?php echo JText::_('COM_KA_REVIEWS_PERMALINK'); ?>" class="hasTooltip permalink"><img src="media/com_kinoarhiv/images/icons/link_16.png" /></a></span>
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
 					<?php if (!$this->user->guest && $this->item->attribs->allow_reviews == 1): ?>

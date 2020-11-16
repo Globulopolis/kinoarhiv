@@ -45,7 +45,7 @@ class KinoarhivModelReviews extends JModelForm
 	/**
 	 * Method to save review into DB
 	 *
-	 * @param   string  $data  A raw string from POST
+	 * @param   array  $data  A raw string from POST
 	 *
 	 * @return  boolean
 	 *
@@ -53,11 +53,11 @@ class KinoarhivModelReviews extends JModelForm
 	 */
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$movieID = $app->input->get('id', 0, 'int');
+		$app      = JFactory::getApplication();
+		$db       = $this->getDbo();
+		$user     = JFactory::getUser();
+		$params   = JComponentHelper::getParams('com_kinoarhiv');
+		$movieID  = $app->input->get('id', 0, 'int');
 		$stripTag = KAComponentHelper::cleanHTML($data['review'], null);
 
 		if (StringHelper::strlen($stripTag) < $params->get('reviews_length_min') || StringHelper::strlen($stripTag) > $params->get('reviews_length_max'))
@@ -131,11 +131,11 @@ class KinoarhivModelReviews extends JModelForm
 	 */
 	protected function sendEmails($data)
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$mailer = JFactory::getMailer();
-		$config = JFactory::getConfig();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$db         = $this->getDbo();
+		$user       = JFactory::getUser();
+		$mailer     = JFactory::getMailer();
+		$config     = JFactory::getConfig();
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
 		$movieTitle = '';
 
 		if ($params->get('reviews_send_email') == 1 || $params->get('reviews_send_email_touser') == 1)
@@ -172,7 +172,7 @@ class KinoarhivModelReviews extends JModelForm
 				$recipients = explode(',', $_recipients);
 			}
 
-			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movieTitle);
+			$subject  = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movieTitle);
 			$adminURL = JUri::base() . 'administrator/index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['insertid'];
 			$movieURL = JRoute::_(JUri::getInstance()) . '&review=' . $data['insertid'] . '#review-' . $data['insertid'];
 
@@ -266,10 +266,10 @@ class KinoarhivModelReviews extends JModelForm
 	 */
 	public function delete()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$reviewID = $app->input->get('review_id', null, 'int');
+		$app       = JFactory::getApplication();
+		$db        = $this->getDbo();
+		$user      = JFactory::getUser();
+		$reviewID  = $app->input->get('review_id', null, 'int');
 		$reviewIDs = $app->input->get('review_ids', array(), 'array');
 
 		if (!empty($reviewIDs))

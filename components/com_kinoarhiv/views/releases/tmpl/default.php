@@ -10,7 +10,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <div class="uk-article ka-content">
@@ -113,6 +112,19 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 								echo JLayoutHelper::render(
 									'layouts.content.ratings_movie',
 									array('params' => $this->params, 'item' => $item),
+									JPATH_COMPONENT
+								);
+							endif;
+
+							if ($this->params->get('ratings_show_frontpage') == 1):
+								echo JLayoutHelper::render('layouts.content.votes_movie',
+									array(
+										'params' => $this->params,
+										'item'   => $item,
+										'guest'  => $this->user->get('guest'),
+										'itemid' => $this->itemid,
+										'view'   => $this->view
+									),
 									JPATH_COMPONENT
 								);
 							endif; ?>

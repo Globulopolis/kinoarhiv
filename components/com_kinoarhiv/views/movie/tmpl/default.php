@@ -55,7 +55,6 @@ else
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
-JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.plugin.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.countdown.min.js');
 KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/js/i18n/countdown');
@@ -355,7 +354,8 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 				'params'  => $this->params,
 				'item'    => $this->item,
 				'guest'   => $this->user->get('guest'),
-				'itemid'  => $this->itemid
+				'itemid'  => $this->itemid,
+				'view'    => $this->view
 			),
 			JPATH_COMPONENT
 		);

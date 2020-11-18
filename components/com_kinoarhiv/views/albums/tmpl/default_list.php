@@ -100,9 +100,14 @@ foreach ($this->items as $item):
 				</div>
 				<div class="introtext">
 					<?php if ($this->params->get('ratings_show_frontpage') == 1):
-						echo JLayoutHelper::render(
-							'layouts.content.ratings_album',
-							array('params' => $this->params, 'item' => $item),
+						echo JLayoutHelper::render('layouts.content.votes_album',
+							array(
+								'params' => $this->params,
+								'item'   => $item,
+								'guest'  => $this->user->get('guest'),
+								'itemid' => $this->itemid,
+								'view'   => $this->view
+							),
 							JPATH_COMPONENT
 						);
 					endif; ?>

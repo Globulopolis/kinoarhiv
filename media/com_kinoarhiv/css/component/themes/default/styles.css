@@ -1036,6 +1036,7 @@ div.rating {
 
 .local-rt {
 	display: inline-block;
+	width: 100%;
 }
 
 .local-rt.has-rating {

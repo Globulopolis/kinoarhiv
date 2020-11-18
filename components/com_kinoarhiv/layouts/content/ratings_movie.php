@@ -196,15 +196,4 @@ else
 			<?php endif;
 		endif;
 	endif; ?>
-
-	<?php if ($colClass == ''): ?>
-		<div class="local-rt<?php echo $item->rate_loc_label_class; ?>">
-			<div class="rateit" data-rateit-value="<?php echo $item->rate_loc_c; ?>" data-rateit-min="0"
-				 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"
-				 data-rateit-readonly="true">
-			</div>
-			&nbsp;<?php echo $item->rate_loc_label; ?>
-			<?php if (isset($item->total_votes)): ?><span class="total-votes small">(<?php echo $item->total_votes; ?>)</span><?php endif; ?>
-		</div>
-	<?php endif; ?>
 </div>

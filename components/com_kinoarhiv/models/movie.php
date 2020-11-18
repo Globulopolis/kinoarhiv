@@ -149,7 +149,8 @@ class KinoarhivModelMovie extends JModelForm
 			. "m.imdb_id, m.kp_votesum, m.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, "
 			. "m.metacritics_id, m.myshows_votesum, m.myshows_votes, m.myshows_id, m.rate_custom, m.urls, m.buy_urls, "
 			. "m.length, m.year, m.created_by, m.metakey, m.metadesc, m.attribs, m.state, m.metadata, "
-			. "DATE_FORMAT(m.created, '%Y-%m-%d') AS created, DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified"
+			. "DATE_FORMAT(m.created, '%Y-%m-%d') AS created, DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified, "
+			. "(SELECT COUNT(movie_id) FROM " . $db->quoteName('#__ka_user_votes_movies') . " WHERE movie_id = m.id) AS total_votes"
 		)
 			->from($db->quoteName('#__ka_movies', 'm'));
 

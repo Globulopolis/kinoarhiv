@@ -38,12 +38,11 @@ class KinoarhivViewPremieres extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-
-		$items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$user             = JFactory::getUser();
+		$app              = JFactory::getApplication();
+		$lang             = JFactory::getLanguage();
+		$items            = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -52,10 +51,10 @@ class KinoarhivViewPremieres extends JViewLegacy
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$itemid = $this->itemid;
-		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$params         = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid   = $app->input->get('Itemid', 0, 'int');
+		$itemid         = $this->itemid;
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($items as &$item)
@@ -94,7 +93,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 			$item->text
 			);
 
-			if ($throttle_enable == 0)
+			if ($throttleEnable == 0)
 			{
 				$checking_path = JPath::clean($params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename);
 
@@ -148,31 +147,8 @@ class KinoarhivViewPremieres extends JViewLegacy
 				$item->poster_height = $dimension['height'];
 			}
 
-			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
-
-			if ($params->get('ratings_show_frontpage') == 1)
-			{
-				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
-				{
-					$plural = $lang->getPluralSuffixes($item->rate_loc);
-					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-					$item->rate_loc_label = JText::sprintf(
-						'COM_KA_RATE_LOCAL_' . $plural[0],
-						$item->rate_loc_c,
-						(int) $params->get('vote_summ_num'),
-						$item->rate_loc
-					);
-					$item->rate_loc_label_class = ' has-rating';
-				}
-				else
-				{
-					$item->rate_loc_c = 0;
-					$item->rate_loc_label = '<br />' . JText::_('COM_KA_RATE_NO');
-					$item->rate_loc_label_class = ' no-rating';
-				}
-			}
-
-			$item->event = new stdClass;
+			$item->plot   = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
+			$item->event  = new stdClass;
 			$item->params = new JObject;
 			$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid, false));
 
@@ -191,9 +167,9 @@ class KinoarhivViewPremieres extends JViewLegacy
 		}
 
 		$this->params = $params;
-		$this->items = $items;
-		$this->pagination = $pagination;
-		$this->user = $user;
+		$this->items  = $items;
+		$this->user   = $user;
+		$this->view   = $app->input->getWord('view');
 
 		$this->prepareDocument();
 
@@ -209,9 +185,9 @@ class KinoarhivViewPremieres extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
 
 		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PREMIERES');

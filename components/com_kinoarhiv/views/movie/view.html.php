@@ -173,13 +173,13 @@ class KinoarhivViewMovie extends JViewLegacy
 		if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 		{
 			$plural = $lang->getPluralSuffixes($item->rate_loc);
-			$item->rate_loc = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
-			$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc, (int) $params->get('vote_summ_num'));
+			$item->rate_loc_value = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
+			$item->rate_loc_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_value, (int) $params->get('vote_summ_num'));
 			$item->rate_loc_label_class = ' has-rating';
 		}
 		else
 		{
-			$item->rate_loc = 0;
+			$item->rate_loc_value = 0;
 			$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
 			$item->rate_loc_label_class = ' no-rating';
 		}
@@ -290,6 +290,7 @@ class KinoarhivViewMovie extends JViewLegacy
 		$this->metadata = json_decode($item->metadata);
 		$this->form = $form;
 		$this->lang = $lang;
+		$this->view = $app->input->getWord('view');
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();

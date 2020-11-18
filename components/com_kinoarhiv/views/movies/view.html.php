@@ -40,12 +40,12 @@ class KinoarhivViewMovies extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
+		$user              = JFactory::getUser();
+		$app               = JFactory::getApplication();
+		$lang              = JFactory::getLanguage();
 		$this->filtersData = $this->get('FiltersData');
-		$this->items = $this->get('Items');
-		$pagination = $this->get('Pagination');
+		$this->items       = $this->get('Items');
+		$this->pagination  = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -54,9 +54,9 @@ class KinoarhivViewMovies extends JViewLegacy
 			return false;
 		}
 
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$itemid = $this->itemid;
+		$this->params    = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid    = $app->input->get('Itemid', 0, 'int');
+		$itemid          = $this->itemid;
 		$throttle_enable = $this->params->get('throttle_image_enable', 0);
 		$introtext_links = $this->params->get('introtext_links', 1);
 
@@ -167,17 +167,19 @@ class KinoarhivViewMovies extends JViewLegacy
 				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 				{
 					$plural = $lang->getPluralSuffixes($item->rate_loc);
-					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $this->params->get('vote_summ_precision'));
+					$item->rate_loc_value = round($item->rate_sum_loc / $item->rate_loc, (int) $this->params->get('vote_summ_precision'));
 					$item->rate_loc_label = JText::sprintf(
-						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
-						(int) $this->params->get('vote_summ_num'), $item->rate_loc
+						'COM_KA_RATE_LOCAL_' . $plural[0],
+						$item->rate_loc_value,
+						(int) $this->params->get('vote_summ_num'),
+						$item->rate_loc
 					);
 					$item->rate_loc_label_class = ' has-rating';
 				}
 				else
 				{
-					$item->rate_loc_c = 0;
-					$item->rate_loc_label = '<br />' . JText::_('COM_KA_RATE_NO');
+					$item->rate_loc_value = 0;
+					$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
 					$item->rate_loc_label_class = ' no-rating';
 				}
 			}
@@ -200,9 +202,9 @@ class KinoarhivViewMovies extends JViewLegacy
 			$item->event->afterDisplayContent = trim(implode("\n", $results));
 		}
 
-		$this->pagination = $pagination;
 		$this->user = $user;
 		$this->lang = $lang;
+		$this->view = $app->input->getWord('view');
 
 		$this->prepareDocument();
 

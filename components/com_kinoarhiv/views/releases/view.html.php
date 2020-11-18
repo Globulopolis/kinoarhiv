@@ -36,12 +36,12 @@ class KinoarhivViewReleases extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-		$this->items = $this->get('Items');
+		$user             = JFactory::getUser();
+		$app              = JFactory::getApplication();
+		$lang             = JFactory::getLanguage();
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$errors = $this->get('Errors');
+		$errors           = $this->get('Errors');
 
 		if (count($errors))
 		{
@@ -53,7 +53,7 @@ class KinoarhivViewReleases extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 		$itemid = $this->itemid;
-		$throttle_enable = $params->get('throttle_image_enable', 0);
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -92,7 +92,7 @@ class KinoarhivViewReleases extends JViewLegacy
 			$item->text
 			);
 
-			if ($throttle_enable == 0)
+			if ($throttleEnable == 0)
 			{
 				$checking_path = JPath::clean($params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename);
 
@@ -153,9 +153,10 @@ class KinoarhivViewReleases extends JViewLegacy
 				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 				{
 					$plural = $lang->getPluralSuffixes($item->rate_loc);
-					$item->rate_loc_c = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
+					$item->rate_loc_value = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
 					$item->rate_loc_label = JText::sprintf(
-						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_loc_c,
+						'COM_KA_RATE_LOCAL_' . $plural[0],
+						$item->rate_loc_value,
 						(int) $params->get('vote_summ_num'),
 						$item->rate_loc
 					);
@@ -163,8 +164,8 @@ class KinoarhivViewReleases extends JViewLegacy
 				}
 				else
 				{
-					$item->rate_loc_c = 0;
-					$item->rate_loc_label = '<br />' . JText::_('COM_KA_RATE_NO');
+					$item->rate_loc_value = 0;
+					$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
 					$item->rate_loc_label_class = ' no-rating';
 				}
 			}
@@ -188,7 +189,8 @@ class KinoarhivViewReleases extends JViewLegacy
 		}
 
 		$this->params = $params;
-		$this->user = $user;
+		$this->user   = $user;
+		$this->view   = $app->input->getWord('view');
 
 		$this->prepareDocument();
 

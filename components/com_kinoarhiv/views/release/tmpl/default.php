@@ -21,7 +21,6 @@ else
 	$rating_image_www = $this->params->get('media_rating_image_root_www');
 }
 
-JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 ?>
 <script type="text/javascript">
@@ -66,6 +65,19 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 						echo JLayoutHelper::render(
 							'layouts.content.ratings_movie',
 							array('params' => $this->params, 'item' => $this->item),
+							JPATH_COMPONENT
+						);
+					endif;
+
+					if ($this->params->get('ratings_show_frontpage') == 1):
+						echo JLayoutHelper::render('layouts.content.votes_movie',
+							array(
+								'params' => $this->params,
+								'item'   => $this->item,
+								'guest'  => $this->user->get('guest'),
+								'itemid' => $this->itemid,
+								'view'   => $this->view
+							),
 							JPATH_COMPONENT
 						);
 					endif; ?>

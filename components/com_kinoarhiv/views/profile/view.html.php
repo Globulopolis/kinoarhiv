@@ -43,6 +43,22 @@ class KinoarhivViewProfile extends JViewLegacy
 	 */
 	protected $items = null;
 
+	/**
+	 * Page
+	 *
+	 * @var    string
+	 * @since  3.1
+	 */
+	protected $page = '';
+
+	/**
+	 * Sub page
+	 *
+	 * @var    string
+	 * @since  3.1
+	 */
+	protected $tab = 'movies';
+
 	protected $pagination = null;
 
 	/**

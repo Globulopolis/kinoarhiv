@@ -128,17 +128,19 @@ class KinoarhivViewAlbums extends JViewLegacy
 				if (!empty($item->rate_sum) && !empty($item->rate))
 				{
 					$plural = $lang->getPluralSuffixes($item->rate);
-					$item->rate_c = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
+					$item->rate_value = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
 					$item->rate_label = JText::sprintf(
-						'COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_c,
-						(int) $this->params->get('vote_summ_num'), $item->rate
+						'COM_KA_RATE_LOCAL_' . $plural[0],
+						$item->rate_value,
+						(int) $this->params->get('vote_summ_num'),
+						$item->rate
 					);
 					$item->rate_label_class = ' has-rating';
 				}
 				else
 				{
-					$item->rate_c = 0;
-					$item->rate_label = '<br />' . JText::_('COM_KA_RATE_NO');
+					$item->rate_value = 0;
+					$item->rate_label = JText::_('COM_KA_RATE_NO');
 					$item->rate_label_class = ' no-rating';
 				}
 			}
@@ -164,6 +166,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$this->pagination = $pagination;
 		$this->user       = $user;
 		$this->lang       = $lang;
+		$this->view       = $app->input->getWord('view');
 
 		$this->prepareDocument();
 

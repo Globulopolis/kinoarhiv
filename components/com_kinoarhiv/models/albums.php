@@ -167,8 +167,7 @@ class KinoarhivModelAlbums extends JModelList
 				'a.length, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, a.buy_urls, ' .
 				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
 				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
-				'a.attribs, a.state, ' .
-				'(SELECT COUNT(album_id) FROM ' . $db->quoteName('#__ka_user_votes_albums') . ' WHERE album_id = a.id) AS total_votes'
+				'a.attribs, a.state'
 			)
 		);
 		$query->from($db->quoteName('#__ka_music_albums', 'a'));
@@ -694,9 +693,9 @@ class KinoarhivModelAlbums extends JModelList
 
 		foreach ($attribsObjects as $attribs)
 		{
-			$movieAttribs = json_decode($attribs->attribs);
+			$albumAttribs = json_decode($attribs->attribs);
 
-			if (($movieAttribs->allow_votes == '' && $params->get('allow_votes') == 1) || $movieAttribs->allow_votes == 1)
+			if (($albumAttribs->allow_votes == '' && $params->get('allow_votes') == 1) || $albumAttribs->allow_votes == 1)
 			{
 				$allowedIDs[] = $attribs->id;
 			}

@@ -10,7 +10,6 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <div class="uk-article ka-content">
@@ -108,14 +107,6 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 							<div class="text"><?php echo $item->text; ?></div>
 							<div class="separator"></div>
 							<div class="plot"><?php echo $item->plot; ?></div>
-
-							<?php if ($this->params->get('ratings_show_frontpage') == 1):
-								echo JLayoutHelper::render(
-									'layouts.content.ratings_movie',
-									array('params' => $this->params, 'item' => $item),
-									JPATH_COMPONENT
-								);
-							endif; ?>
 						</div>
 
 						<?php if (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00'): ?>

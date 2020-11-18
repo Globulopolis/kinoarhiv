@@ -39,17 +39,17 @@ defined('_JEXEC') or die;
 					if (!empty($item->rate_sum) && !empty($item->rate))
 					{
 						$plural = $this->lang->getPluralSuffixes($item->rate);
-						$item->rate_loc_c = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
+						$item->rate_loc_value = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
 						$item->rate_loc_label = JText::sprintf(
 							'COM_KA_RATE_LOCAL_' . $plural[0],
-							$item->rate_loc_c,
+							$item->rate_loc_value,
 							(int) $this->params->get('vote_summ_num'),
 							$item->rate
 						);
 					}
 					else
 					{
-						$item->rate_loc_c = 0;
+						$item->rate_loc_value = 0;
 						$item->rate_loc_label = JText::_('COM_KA_RATE_NO');
 					}
 					?>

@@ -31,7 +31,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	/**
 	 * The item object details
 	 *
-	 * @var    JObject
+	 * @var    object
 	 * @since  1.6
 	 */
 	protected $item;
@@ -39,7 +39,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	/**
 	 * The items details
 	 *
-	 * @var    JObject
+	 * @var    object
 	 * @since  1.6
 	 */
 	protected $items;
@@ -48,6 +48,10 @@ class KinoarhivViewMovie extends JViewLegacy
 
 	protected $pagination = null;
 
+	/**
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $page;
 
 	/**
@@ -104,13 +108,12 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	protected function info()
 	{
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-
-		$item = $this->get('Data');
-		$items = $this->get('Items');
-		$form = $this->get('Form');
+		$user       = JFactory::getUser();
+		$app        = JFactory::getApplication();
+		$lang       = JFactory::getLanguage();
+		$item       = $this->get('Data');
+		$items      = $this->get('Items');
+		$form       = $this->get('Form');
 		$pagination = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
@@ -122,8 +125,8 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$config = JFactory::getConfig();
-		$throttle_enable = $params->get('throttle_image_enable', 0);
-		$checking_path = JPath::clean(
+		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$checkingPath = JPath::clean(
 			$params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
 		);
 
@@ -131,24 +134,24 @@ class KinoarhivViewMovie extends JViewLegacy
 		// Workaround for plugin interaction. Article must contain $text item.
 		$item->text = '';
 
-		if ($throttle_enable == 0)
+		if ($throttleEnable == 0)
 		{
-			if (!is_file($checking_path))
+			if (!is_file($checkingPath))
 			{
 				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
 			}
 			else
 			{
-				$fs_alias = rawurlencode($item->fs_alias);
+				$fsAlias = rawurlencode($item->fs_alias);
 
 				if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/' . $fs_alias
+					$item->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/' . $fsAlias
 						. '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else
 				{
-					$item->poster = $params->get('media_posters_root_www') . '/' . $fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+					$item->poster = $params->get('media_posters_root_www') . '/' . $fsAlias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 			}
 		}
@@ -191,13 +194,13 @@ class KinoarhivViewMovie extends JViewLegacy
 			{
 				foreach ($item->slides as $key => $slide)
 				{
-					if ($throttle_enable == 0)
+					if ($throttleEnable == 0)
 					{
-						if (!is_file($checking_path))
+						if (!is_file($checkingPath))
 						{
-							$no_cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
-							$item->slides[$key]->image = $no_cover;
-							$item->slides[$key]->th_image = $no_cover;
+							$noCover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
+							$item->slides[$key]->image = $noCover;
+							$item->slides[$key]->th_image = $noCover;
 							$dimension = KAContentHelper::getImageSize(
 								JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
 								false
@@ -207,21 +210,21 @@ class KinoarhivViewMovie extends JViewLegacy
 						}
 						else
 						{
-							$slide_fs_alias = rawurlencode($item->fs_alias);
+							$slideFsAlias = rawurlencode($item->fs_alias);
 
 							if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
 							{
 								$item->slides[$key]->image = JUri::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
-									. '/' . $slide_fs_alias . '/' . $item->id . '/screenshots/' . $slide->filename;
+									. '/' . $slideFsAlias . '/' . $item->id . '/screenshots/' . $slide->filename;
 								$item->slides[$key]->th_image = JUri::base() . StringHelper::substr($params->get('media_scr_root_www'), 1)
-									. '/' . $slide_fs_alias . '/' . $item->id . '/screenshots/thumb_' . $slide->filename;
+									. '/' . $slideFsAlias . '/' . $item->id . '/screenshots/thumb_' . $slide->filename;
 							}
 							else
 							{
 								$item->slides[$key]->image = $params->get('media_scr_root_www') . '/'
-									. $slide_fs_alias . '/' . $item->id . '/screenshots/' . $slide->filename;
+									. $slideFsAlias . '/' . $item->id . '/screenshots/' . $slide->filename;
 								$item->slides[$key]->th_image = $params->get('media_scr_root_www') . '/'
-									. $slide_fs_alias . '/' . $item->id . '/screenshots/thumb_' . $slide->filename;
+									. $slideFsAlias . '/' . $item->id . '/screenshots/thumb_' . $slide->filename;
 							}
 
 							$dimension = KAContentHelper::getImageSize(

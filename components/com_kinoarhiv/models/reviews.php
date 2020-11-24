@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Class KinoarhivModelReviews
@@ -57,7 +58,7 @@ class KinoarhivModelReviews extends JModelForm
 		$db       = $this->getDbo();
 		$user     = JFactory::getUser();
 		$params   = JComponentHelper::getParams('com_kinoarhiv');
-		$movieID  = $app->input->get('id', 0, 'int');
+		$itemID   = $app->input->get('id', 0, 'int');
 		$stripTag = KAComponentHelper::cleanHTML($data['review'], null);
 
 		if (StringHelper::strlen($stripTag) < $params->get('reviews_length_min') || StringHelper::strlen($stripTag) > $params->get('reviews_length_max'))
@@ -68,9 +69,10 @@ class KinoarhivModelReviews extends JModelForm
 		}
 
 		$cleanedText = KAComponentHelper::cleanHTML($data['review']);
-		$datetime = date('Y-m-d H:i:s');
-		$state = $params->get('reviews_premod') == 1 ? 0 : 1;
-		$ip = '';
+		$datetime    = date('Y-m-d H:i:s');
+		$state       = $params->get('reviews_premod') == 1 ? 0 : 1;
+		$itemType    = $app->input->getCmd('return', 'movie') == 'movie' ? 0 : 1;
+		$ip          = '';
 
 		if (!empty($_SERVER['HTTP_CLIENT_IP']))
 		{
@@ -89,8 +91,8 @@ class KinoarhivModelReviews extends JModelForm
 
 		$query = $db->getQuery(true)
 			->insert($db->quoteName('#__ka_reviews'))
-			->columns($db->quoteName(array('id', 'uid', 'movie_id', 'review', 'created', 'type', 'ip', 'state')))
-			->values("'', '" . (int) $user->get('id') . "', '" . (int) $movieID . "', '" . $db->escape($cleanedText) . "', '" . $datetime . "', '" . (int) $data['type'] . "', '" . $ip . "', '" . (int) $state . "'");
+			->columns($db->quoteName(array('id1', 'uid', 'item_id', 'item_type', 'review', 'created', 'type', 'ip', 'state')))
+			->values("'', '" . (int) $user->get('id') . "', '" . (int) $itemID . "', '" . $itemType . "', '" . $db->escape($cleanedText) . "', '" . $datetime . "', '" . (int) $data['type'] . "', '" . $ip . "', '" . (int) $state . "'");
 
 		$db->setQuery($query);
 
@@ -103,6 +105,7 @@ class KinoarhivModelReviews extends JModelForm
 		catch (RuntimeException $e)
 		{
 			KAComponentHelper::eventLog($e->getMessage());
+			$this->setError(JText::_('JERROR_ERROR'));
 
 			return false;
 		}
@@ -110,7 +113,7 @@ class KinoarhivModelReviews extends JModelForm
 		$this->sendEmails(
 			array(
 				'review'   => $cleanedText,
-				'id'       => (int) $movieID,
+				'id'       => (int) $itemID,
 				'ip'       => $ip,
 				'datetime' => $datetime,
 				'insertid' => $insertid
@@ -260,24 +263,71 @@ class KinoarhivModelReviews extends JModelForm
 	/**
 	 * Method to delete review(s)
 	 *
+	 * @param   mixed  $id  An array of IDs or integer ID.
+	 *
 	 * @return  boolean
 	 *
 	 * @since   3.0
 	 */
-	public function delete()
+	public function delete($id)
 	{
-		$app       = JFactory::getApplication();
-		$db        = $this->getDbo();
-		$user      = JFactory::getUser();
-		$reviewID  = $app->input->get('review_id', null, 'int');
-		$reviewIDs = $app->input->get('review_ids', array(), 'array');
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$user = JFactory::getUser();
 
-		if (!empty($reviewIDs))
+		// Values submited from 'profile' page.
+		if (is_array($id) && count($id) > 0)
 		{
-			JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+			$id = ArrayHelper::toInteger($id);
+		}
+		else
+		{
+			$id = array((int) $id);
 		}
 
-		if (!empty($reviewIDs))
+		// Check if user can delete only own review(s), super user can delete all.
+		if ($user->get('isRoot'))
+		{
+			$where = $db->quoteName('id') . ' IN (' . implode(',', $id) . ')';
+		}
+		else
+		{
+			// Check if user deleting only own review.
+			$query = $db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__ka_reviews'))
+				->where($db->quoteName('uid') . ' = ' . (int) $user->get('id'));
+
+			$db->setQuery($query);
+
+			$column = $db->loadColumn();
+			print_r($column);
+
+			/*$where = $db->quoteName('id') . ' IN (' . implode(',', $id) . ')';
+			$where .= ' AND ' . $db->quoteName('uid') . ' = ' . (int) $user->get('id');*/
+		}
+
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_reviews'))
+			->where($where);
+
+		$db->setQuery($query);
+echo $query;
+		try
+		{
+			//var_dump($db->execute());
+			$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError(JText::_('JERROR_ERROR'));
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+
+		// TODO Refactor
+		/*if (!empty($reviewIDs))
 		{
 			if (empty($reviewIDs))
 			{
@@ -368,7 +418,7 @@ class KinoarhivModelReviews extends JModelForm
 
 				return false;
 			}
-		}
+		}*/
 
 		return true;
 	}

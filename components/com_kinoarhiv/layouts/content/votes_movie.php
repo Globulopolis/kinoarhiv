@@ -81,4 +81,4 @@ if ($view == 'movie')
 		<?php endif; ?>
 	<?php endif; ?>
 	<div class="clear"></div>
-<?php endif; ?>
+<?php endif;

@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+/** @var object $displayData */
 $params = $displayData->params;
 $form   = $displayData->form;
 

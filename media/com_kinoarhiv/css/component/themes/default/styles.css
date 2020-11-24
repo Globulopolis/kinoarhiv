@@ -363,7 +363,7 @@ h3.title {
 	}
 }
 
-.movie-info, .name-info {
+.movie-info, .name-info, .album-info {
 	margin-left: .5em;
 	padding-top: .5em;
 }
@@ -372,15 +372,15 @@ h3.title {
 	vertical-align: top;
 }
 
-.movie-info > div, .name-info > div {
+.movie-info > div, .name-info > div, .album-info > div {
 	border-bottom: 1px solid #eee;
 }
 
-.movie-info > div:hover, .name-info > div:hover {
+.movie-info > div:hover, .name-info > div:hover, .album-info > div:hover {
 	background: #f0f0f0;
 }
 
-.movie-info .f-col, .name-info .f-col {
+.movie-info .f-col, .name-info .f-col, .album-info .f-col {
 	display: inline-block;
 	margin: 2px;
 	min-width: 128px;
@@ -388,7 +388,7 @@ h3.title {
 	width: 25%;
 }
 
-.movie-info .s-col, .name-info .s-col {
+.movie-info .s-col, .name-info .s-col, .album-info .s-col {
 	border-left: 1px solid #eee;
 	display: inline-block;
 	margin: 2px;

@@ -109,19 +109,13 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	protected function loadFormData()
 	{
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
 		$user = JFactory::getUser();
-		$id = $app->input->get('id', 0, 'int');
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$data = $app->getUserState('com_kinoarhiv.movie.' . $id . '.user.' . $user->get('id'));
+		$id   = $app->input->get('id', 0, 'int');
+		$view = $app->input->getCmd('return', 'movie');
 
-		if (empty($data))
-		{
-			$data['Itemid'] = $itemid;
-			$data['id'] = $id;
-		}
-
-		return $data;
+		// Return review form data if error occured while sending form.
+		return $app->getUserState('com_kinoarhiv.' . $view . '.reviews.' . $id . '_user_' . $user->get('id') . 'edit');
 	}
 
 	/**
@@ -133,13 +127,13 @@ class KinoarhivModelMovie extends JModelForm
 	 */
 	public function getData()
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$id = $app->input->get('id', 0, 'int');
+		$db          = $this->getDbo();
+		$app         = JFactory::getApplication();
+		$user        = JFactory::getUser();
+		$lang        = JFactory::getLanguage();
+		$groups      = implode(',', $user->getAuthorisedViewLevels());
+		$params      = JComponentHelper::getParams('com_kinoarhiv');
+		$id          = $app->input->get('id', 0, 'int');
 		$langQueryIN = 'language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')';
 
 		$query = $db->getQuery(true);
@@ -1835,10 +1829,10 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			// Select reviews
 			$query = $db->getQuery(true)
-				->select('rev.id, rev.uid, rev.movie_id, rev.review, rev.created, rev.type, rev.state, u.name, u.username')
+				->select('rev.id, rev.uid, rev.item_id, rev.review, rev.created, rev.type, rev.state, u.name, u.username')
 				->from($db->quoteName('#__ka_reviews', 'rev'))
 				->join('LEFT', $db->quoteName('#__users', 'u') . ' ON u.id = rev.uid')
-				->where('movie_id = ' . (int) $id . ' AND rev.state = 1 AND u.id != 0')
+				->where('item_id = ' . (int) $id . ' AND item_type = 0 AND rev.state = 1 AND u.id != 0')
 				->order('rev.id DESC');
 		}
 

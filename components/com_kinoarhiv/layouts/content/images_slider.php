@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
 $params  = $displayData['params'];
 $items   = $displayData['items'];
 $attribs = $displayData['attribs'];
@@ -44,4 +45,4 @@ $attribs = $displayData['attribs'];
 			</ul>
 		</div>
 	<?php endif;
-endif; ?>
+endif;

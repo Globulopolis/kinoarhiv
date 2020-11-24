@@ -20,8 +20,13 @@ ALTER TABLE `#__ka_music_genres`
 UPDATE `#__ka_music_genres` SET `access` = '1';
 
 ALTER TABLE `#__ka_reviews`
-  CHANGE `state` `state` TINYINT(3) DEFAULT 0 NOT NULL
-COMMENT '0-premod, 1-published';
+    CHANGE `uid` `uid` INT (11) UNSIGNED NOT NULL COMMENT 'User ID',
+    CHANGE `movie_id` `item_id` INT (11) UNSIGNED NOT NULL COMMENT 'Movie or album ID',
+    ADD COLUMN `item_type` TINYINT (1) DEFAULT 0 NOT NULL COMMENT '0-movie, 1-music album' AFTER `item_id`,
+    CHANGE `type` `type` TINYINT (1) DEFAULT 0 NOT NULL COMMENT '0-none, 1-neutral, 2-positive, 3-negative',
+    CHANGE `state` `state` TINYINT(3) DEFAULT 0 NOT NULL COMMENT '0-premod, 1-published',
+    DROP INDEX `idx_movie_id`,
+    ADD KEY `idx_item_id` (`item_id`);
 
 CREATE TABLE IF NOT EXISTS `#__ka_music_gallery` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

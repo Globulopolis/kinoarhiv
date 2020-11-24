@@ -72,7 +72,8 @@ defined('_JEXEC') or die;
 
 			<input type="hidden" name="option" value="com_kinoarhiv"/>
 			<input type="hidden" name="task" value="reviews.delete"/>
-			<input type="hidden" name="return" value="<?php echo base64_encode('view=profile&page=reviews'); ?>"/>
+			<input type="hidden" name="return" value="profile"/>
+			<input type="hidden" name="page" value="reviews"/>
 			<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
 			<?php echo JHtml::_('form.token'); ?>
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>"/>

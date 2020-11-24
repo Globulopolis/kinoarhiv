@@ -383,17 +383,18 @@ CREATE TABLE IF NOT EXISTS `#__ka_releases` (
 
 CREATE TABLE IF NOT EXISTS `#__ka_reviews` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `uid` int(11) unsigned NOT NULL,
-  `movie_id` int(11) unsigned NOT NULL,
+  `uid` int(11) unsigned NOT NULL COMMENT 'User ID',
+  `item_id` int(11) unsigned NOT NULL COMMENT 'Movie or album ID',
+  `item_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-movie, 1-music album',
   `review` text NOT NULL,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `type` tinyint(1) NOT NULL DEFAULT '0',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-none, 1-neutral, 2-positive, 3-negative',
   `ip` varchar(64) NOT NULL DEFAULT '',
   `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT '0-premod, 1-published',
   PRIMARY KEY (`id`),
   KEY `idx_state` (`state`),
-  KEY `idx_movie_id` (`movie_id`),
-  KEY `idx_user_id` (`uid`)
+  KEY `idx_user_id` (`uid`),
+  KEY `idx_item_id` (`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__ka_trailers` (

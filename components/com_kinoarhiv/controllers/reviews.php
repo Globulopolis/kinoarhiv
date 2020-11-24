@@ -26,13 +26,16 @@ class KinoarhivControllerReviews extends JControllerLegacy
 	 */
 	public function save()
 	{
-		$id = $this->input->get('id', null, 'int');
-		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id, false);
+		$app      = JFactory::getApplication();
+		$id       = $app->input->get('id', null, 'int');
+		$view     = $app->input->getCmd('return', 'movie');
+		$itemid   = $app->input->getInt('Itemid', 0);
+		$redirUrl = 'index.php?option=com_kinoarhiv&view=' . $view . '&id=' . $id . '&Itemid=' . $itemid;
 
 		if (JSession::checkToken() === false)
 		{
 			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			$this->setRedirect('index.php?option=com_kinoarhiv');
+			$this->setRedirect(JRoute::_($redirUrl, false), JText::_('JINVALID_TOKEN'), 'error');
 
 			return;
 		}
@@ -42,20 +45,20 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if ($user->guest)
 		{
 			KAComponentHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
-			$this->setRedirect('index.php?option=com_kinoarhiv');
+			$this->setRedirect(JRoute::_($redirUrl, false), JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'), 'error');
 
 			return;
 		}
 
-		$app = JFactory::getApplication();
+		/** @var KinoarhivModelReviews $model */
 		$model = $this->getModel('reviews');
-		$data = $this->input->post->get('form', array(), 'array');
-		$form = $model->getForm($data, false);
+		$data  = $app->input->post->get('form', array(), 'array');
+		$form  = $model->getForm($data, false);
 
 		if (!$form)
 		{
 			$app->enqueueMessage($model->getError(), 'error');
-			$this->setRedirect($redirUrl);
+			$this->setRedirect(JRoute::_($redirUrl, false));
 
 			return;
 		}
@@ -66,7 +69,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		{
 			if (!$user->guest)
 			{
-				$app->setUserState('com_kinoarhiv.reviews.' . $id . '_user_' . $user->get('id') . 'edit', $data);
+				$app->setUserState('com_kinoarhiv.' . $view . '.reviews.' . $id . '_user_' . $user->get('id') . 'edit', $data);
 			}
 
 			$errors = $model->getErrors();
@@ -83,7 +86,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 				}
 			}
 
-			$this->setRedirect($redirUrl);
+			$this->setRedirect(JRoute::_($redirUrl, false));
 
 			return;
 		}
@@ -94,13 +97,13 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		{
 			if (!$user->guest)
 			{
-				$app->setUserState('com_kinoarhiv.reviews.' . $id . '_user_' . $user->get('id') . 'edit', $data);
+				$app->setUserState('com_kinoarhiv.' . $view . '.reviews.' . $id . '_user_' . $user->get('id') . 'edit', $data);
 			}
 
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 			$this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect($redirUrl);
+			$this->setRedirect(JRoute::_($redirUrl, false));
 
 			return;
 		}
@@ -108,10 +111,10 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		// Clear stored data in session and redirect
 		if (!$user->guest)
 		{
-			$app->setUserState('com_kinoarhiv.reviews.' . $id . '_user_' . $user->get('id') . 'edit', null);
+			$app->setUserState('com_kinoarhiv.' . $view . '.reviews.' . $id . '_user_' . $user->get('id') . 'edit', null);
 		}
 
-		$this->setRedirect($redirUrl);
+		$this->setRedirect(JRoute::_($redirUrl, false));
 	}
 
 	/**
@@ -123,10 +126,27 @@ class KinoarhivControllerReviews extends JControllerLegacy
 	 */
 	public function delete()
 	{
-		if (JSession::checkToken() === false)
+		$app      = JFactory::getApplication();
+		$view     = $app->input->getCmd('return', 'movie');
+		$itemid   = $app->input->getInt('Itemid', 0);
+		$id       = ($view !== 'profile') ? $app->input->getInt('id', 0) : '';
+		$redirUrl = 'index.php?option=com_kinoarhiv&view=' . $view . '&Itemid=' . $itemid;
+		$reviewID = ($view === 'profile')
+			? $reviewID = $app->input->get('review_ids', array(), 'array')
+			: $reviewID = $app->input->get('review_id', null, 'int');
+
+
+		if ($view === 'profile' && JSession::checkToken() === false)
 		{
 			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			$this->setRedirect('index.php?option=com_kinoarhiv');
+			$this->setRedirect(JRoute::_($redirUrl . '&page=' . $app->input->getCmd('page', ''), false), JText::_('JINVALID_TOKEN'), 'error');
+
+			return;
+		}
+		elseif ($view !== 'profile' && KAComponentHelper::checkToken('get') === false)
+		{
+			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
+			$this->setRedirect(JRoute::_($redirUrl . '&id=' . $id, false), JText::_('JINVALID_TOKEN'), 'error');
 
 			return;
 		}
@@ -136,37 +156,41 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if ($user->guest)
 		{
 			KAComponentHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
-			$this->setRedirect('index.php?option=com_kinoarhiv');
+			$this->setRedirect(JRoute::_($redirUrl, false), JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'), 'error');
 
 			return;
 		}
 
-		// Encoded value. Default 'view=profile'
-		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
-		$redirUrl = JRoute::_('index.php?option=com_kinoarhiv&' . base64_decode($return), false);
-
 		if (!$user->authorise('core.delete.reviews', 'com_kinoarhiv'))
 		{
+			KAComponentHelper::eventLog(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 			$this->setRedirect(
-				'index.php?option=com_kinoarhiv&view=profile&page=reviews',
-				JText::_('JERROR_LAYOUT_YOU_HAVE_NO_ACCESS_TO_THIS_PAGE'),
+				JRoute::_($redirUrl . '&id=' . $id, false),
+				JText::_('JGLOBAL_AUTH_ACCESS_DENIED'),
 				'error'
 			);
 
 			return;
 		}
 
+		/** @var KinoarhivModelReviews $model */
 		$model = $this->getModel('reviews');
-		$result = $model->delete();
+		$result = $model->delete($reviewID);
+
+		if ($view == 'profile')
+		{
+			$redirUrl = $redirUrl . '&page=' . $app->input->getCmd('page', '');
+		}
+		else
+		{
+			$redirUrl = $redirUrl . '&id=' . $id;
+		}
 
 		if (!$result)
 		{
 			$this->setMessage($model->getError(), 'error');
-			$this->setRedirect($redirUrl);
 		}
-		else
-		{
-			$this->setRedirect($redirUrl);
-		}
+
+		//$this->setRedirect(JRoute::_($redirUrl, false));
 	}
 }

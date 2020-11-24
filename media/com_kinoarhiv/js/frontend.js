@@ -117,4 +117,12 @@ jQuery(document).ready(function($){
 			Aurora.message([{text: error, type: 'error'}], place, msgOptions);
 		});
 	});
+
+	$('.cmd-delete-quote').click(function(e){
+		if (confirm($(this).text() + '?')) {
+			return true;
+		}
+
+		return false;
+	});
 });

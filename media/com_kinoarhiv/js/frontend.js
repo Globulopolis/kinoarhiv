@@ -118,11 +118,7 @@ jQuery(document).ready(function($){
 		});
 	});
 
-	$('.cmd-delete-quote').click(function(e){
-		if (confirm($(this).text() + '?')) {
-			return true;
-		}
-
-		return false;
+	$('.cmd-delete-review').click(function(e){
+		return confirm($(this).text() + '?');
 	});
 });

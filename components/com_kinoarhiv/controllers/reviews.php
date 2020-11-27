@@ -127,26 +127,28 @@ class KinoarhivControllerReviews extends JControllerLegacy
 	public function delete()
 	{
 		$app      = JFactory::getApplication();
-		$view     = $app->input->getCmd('return', 'movie');
+		$view     = $app->input->getCmd('view', 'movie');
 		$itemid   = $app->input->getInt('Itemid', 0);
-		$id       = ($view !== 'profile') ? $app->input->getInt('id', 0) : '';
-		$redirUrl = 'index.php?option=com_kinoarhiv&view=' . $view . '&Itemid=' . $itemid;
+		$redirUrl = 'index.php?option=com_kinoarhiv&';
 		$reviewID = ($view === 'profile')
 			? $reviewID = $app->input->get('review_ids', array(), 'array')
 			: $reviewID = $app->input->get('review_id', null, 'int');
+
+		// Encoded value. Default 'view=profile'
+		$return = $this->input->getBase64('return', 'dmlldz1wcm9maWxl');
 
 
 		if ($view === 'profile' && JSession::checkToken() === false)
 		{
 			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			$this->setRedirect(JRoute::_($redirUrl . '&page=' . $app->input->getCmd('page', ''), false), JText::_('JINVALID_TOKEN'), 'error');
+			$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false), JText::_('JINVALID_TOKEN'), 'error');
 
 			return;
 		}
 		elseif ($view !== 'profile' && KAComponentHelper::checkToken('get') === false)
 		{
 			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			$this->setRedirect(JRoute::_($redirUrl . '&id=' . $id, false), JText::_('JINVALID_TOKEN'), 'error');
+			$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false), JText::_('JINVALID_TOKEN'), 'error');
 
 			return;
 		}
@@ -156,7 +158,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if ($user->guest)
 		{
 			KAComponentHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
-			$this->setRedirect(JRoute::_($redirUrl, false), JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'), 'error');
+			$this->setRedirect(JRoute::_($redirUrl . 'view=movies&Itemid=' . $itemid, false), JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'), 'error');
 
 			return;
 		}
@@ -165,7 +167,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		{
 			KAComponentHelper::eventLog(JText::_('JGLOBAL_AUTH_ACCESS_DENIED'));
 			$this->setRedirect(
-				JRoute::_($redirUrl . '&id=' . $id, false),
+				JRoute::_($redirUrl . base64_decode($return), false),
 				JText::_('JGLOBAL_AUTH_ACCESS_DENIED'),
 				'error'
 			);
@@ -177,20 +179,11 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		$model = $this->getModel('reviews');
 		$result = $model->delete($reviewID);
 
-		if ($view == 'profile')
-		{
-			$redirUrl = $redirUrl . '&page=' . $app->input->getCmd('page', '');
-		}
-		else
-		{
-			$redirUrl = $redirUrl . '&id=' . $id;
-		}
-
 		if (!$result)
 		{
 			$this->setMessage($model->getError(), 'error');
 		}
 
-		//$this->setRedirect(JRoute::_($redirUrl, false));
+		$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false));
 	}
 }

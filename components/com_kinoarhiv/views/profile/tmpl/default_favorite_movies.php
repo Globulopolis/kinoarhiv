@@ -14,9 +14,12 @@ defined('_JEXEC') or die;
 	<?php echo $this->loadTemplate('tabs'); ?>
 
 	<div class="subtabs breadcrumb">
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid); ?>" class="subtab-movie<?php echo ($this->tab == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid); ?>" class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums&Itemid=' . $this->itemid); ?>" class="subtab-album<?php echo ($this->tab == 'albums') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MUSIC_ALBUMS'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid); ?>"
+		   class="subtab-movie<?php echo ($this->tab == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid); ?>"
+		   class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums&Itemid=' . $this->itemid); ?>"
+		   class="subtab-album<?php echo ($this->tab == 'albums') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MUSIC_ALBUMS'); ?></a>
 	</div>
 
 	<?php if (count($this->items) > 0): ?>
@@ -35,7 +38,8 @@ defined('_JEXEC') or die;
 				<?php foreach ($this->items as $i => $item): ?>
 					<tr>
 						<td width="2%">
-							<input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>" name="ids[]" title="<?php echo JText::_('JSELECT')?>" />
+							<input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>"
+								   name="ids[]" title="<?php echo JText::_('JSELECT')?>" />
 						</td>
 						<td>
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year)); ?></a>
@@ -49,7 +53,8 @@ defined('_JEXEC') or die;
 				<tfoot>
 					<tr>
 						<td colspan="3">
-							<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value="" name="checkall-toggle" id="checkall-toggle">
+							<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value=""
+								   name="checkall-toggle" id="checkall-toggle">
 							<label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
 						</td>
 					</tr>
@@ -66,7 +71,8 @@ defined('_JEXEC') or die;
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>"/>
 		</form>
 
-		<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+		<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm"
+			  id="adminForm" style="clear: both;" autocomplete="off">
 			<?php if ($this->pagination->total >= $this->pagination->limit): ?>
 				<div class="pagination bottom">
 					<?php echo $this->pagination->getPagesLinks(); ?><br/>

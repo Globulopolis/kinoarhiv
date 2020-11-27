@@ -109,7 +109,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 							<tr class="<?php echo $tr_class; ?>">
 								<td>
 									<span class="hasTooltip" title="<?php echo $row->release_date; ?>"><?php echo JHtml::_('date', $row->release_date, JText::_('DATE_FORMAT_LC3')); ?></span>
-									<a name="row-<?php echo $row->id; ?>"></a>
+									<span id="row-<?php echo $row->id; ?>"></span>
 								</td>
 								<td>
 									<img class="flag-dd" src="media/com_kinoarhiv/images/icons/countries/<?php echo $row->code; ?>.png"/><?php echo $row->name; ?>

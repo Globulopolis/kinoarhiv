@@ -89,7 +89,7 @@ class KinoarhivViewProfile extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
 
 		if ($user->get('guest'))
 		{
@@ -100,8 +100,8 @@ class KinoarhivViewProfile extends JViewLegacy
 			return false;
 		}
 
-		$this->page = $app->input->get('page', '', 'cmd');
-		$this->tab = $app->input->get('tab', 'movies', 'cmd');
+		$this->page   = $app->input->get('page', '', 'cmd');
+		$this->tab    = $app->input->get('tab', 'movies', 'cmd');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		switch ($this->page)
@@ -123,10 +123,10 @@ class KinoarhivViewProfile extends JViewLegacy
 				JForm::addFormPath(JPATH_ROOT . '/components/com_users/models/forms/');
 
 				$profileModel = new UsersModelProfile;
-				$this->data = $profileModel->getData();
-				$this->form = $profileModel->getForm(new JObject(array('id' => $user->id)));
+				$this->data   = $profileModel->getData();
+				$this->form   = $profileModel->getForm(new JObject(array('id' => $user->id)));
 				$this->params = JComponentHelper::getParams('com_users');
-				$this->db = JFactory::getDbo();
+				$this->db     = JFactory::getDbo();
 
 				// Check for errors.
 				if (count($errors = $this->get('Errors')) || count($errors = $profileModel->getErrors()))
@@ -175,10 +175,10 @@ class KinoarhivViewProfile extends JViewLegacy
 
 	protected function favorite()
 	{
-		$app = JFactory::getApplication();
-		$this->items = $this->get('Items');
+		$app              = JFactory::getApplication();
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -234,10 +234,10 @@ class KinoarhivViewProfile extends JViewLegacy
 
 	protected function watched()
 	{
-		$app = JFactory::getApplication();
-		$this->items = $this->get('Items');
+		$app              = JFactory::getApplication();
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -255,10 +255,10 @@ class KinoarhivViewProfile extends JViewLegacy
 
 	protected function votes()
 	{
-		$app = JFactory::getApplication();
-		$this->items = $this->get('Items');
+		$app              = JFactory::getApplication();
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -302,10 +302,10 @@ class KinoarhivViewProfile extends JViewLegacy
 
 	protected function reviews()
 	{
-		$app = JFactory::getApplication();
-		$this->items = $this->get('Items');
+		$app              = JFactory::getApplication();
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -314,10 +314,35 @@ class KinoarhivViewProfile extends JViewLegacy
 			return false;
 		}
 
-		$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_REVIEWS'));
 		$pathway = $app->getPathway();
-		$pathway->addItem(JText::_('COM_KA_REVIEWS'), JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=reviews&Itemid=' . $this->itemid));
 
-		parent::display('reviews');
+		if ($this->tab == 'movies')
+		{
+			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_REVIEWS') . ' - ' . JText::_('COM_KA_MOVIES'));
+
+			$pathway->addItem(
+				JText::_('COM_KA_REVIEWS'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_MOVIES'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=movies&Itemid=' . $this->itemid)
+			);
+		}
+		elseif ($this->tab == 'albums')
+		{
+			$this->document->setTitle($this->document->getTitle() . ' - ' . JText::_('COM_KA_REVIEWS') . ' - ' . JText::_('COM_KA_MUSIC_ALBUMS'));
+
+			$pathway->addItem(
+				JText::_('COM_KA_REVIEWS'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $this->itemid)
+			);
+			$pathway->addItem(
+				JText::_('COM_KA_MUSIC_ALBUMS'),
+				JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=albums&Itemid=' . $this->itemid)
+			);
+		}
+
+		parent::display('reviews_' . $this->tab);
 	}
 }

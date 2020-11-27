@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 
-$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $columns   = 9;
@@ -37,7 +36,8 @@ $columns   = 9;
 	});
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews'); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews'); ?>" method="post"
+	  name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<div class="clearfix"> </div>
@@ -57,8 +57,8 @@ $columns   = 9;
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_SHOW_PUBLISH_DATE_LABEL', 'a.created', $listDirn, $listOrder); ?>
 					</th>
-					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
+					<th width="20%" class="nowrap hidden-phone">
+						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'title', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_REVIEWS_FIELD_USER', 'u.username', $listDirn, $listOrder); ?>
@@ -80,19 +80,19 @@ $columns   = 9;
 				foreach ($this->items as $i => $item):
 					if ($item->type == 1)
 					{
-						$text_class = 'muted';
+						$textClass = 'muted';
 					}
 					elseif ($item->type == 2)
 					{
-						$text_class = 'text-success';
+						$textClass = 'text-success';
 					}
 					elseif ($item->type == 3)
 					{
-						$text_class = 'text-error';
+						$textClass = 'text-error';
 					}
 					else
 					{
-						$text_class = '';
+						$textClass = '';
 					}
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
@@ -103,22 +103,39 @@ $columns   = 9;
 						<?php echo JHtml::_('jgrid.published', $item->state, $i, 'reviews.', $this->canEditState, 'cb'); ?>
 					</td>
 					<td>
-						<span class="<?php echo $text_class; ?>"><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
+						<span class="<?php echo $textClass; ?>"><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
 						<?php if ($this->canEdit) : ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $item->item_type . '&id[]=' . $item->id); ?>"
+							   title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
 						<?php endif; ?>
 					</td>
 					<td class="small center hidden-phone">
 						<?php echo $item->created; ?>
 					</td>
 					<td class="small">
-						<?php echo $item->movie; ?><br />
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&mid=' . $item->movie_id); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
+					<?php if ($item->item_type == 0): ?>
+						<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
+					<?php elseif ($item->item_type == 1): ?>
+						<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
+					<?php endif; ?>
+
+						&nbsp;<?php echo $item->title; ?><br />
+
+					<?php if ($item->item_type == 0): ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&item_type=0&item_id=' . $item->item_id); ?>"
+						   title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_MOVIE'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
+					<?php elseif ($item->item_type == 1): ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&item_type=1&item_id=' . $item->item_id); ?>"
+						   title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_ALBUM'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
+					<?php endif; ?>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->username; ?><br />
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&uid=' . $item->uid); ?>" title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_USER'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
-						<a href="<?php echo JRoute::_('index.php?option=com_users&task=user.edit&id=' . $item->uid); ?>" title="<?php echo JText::sprintf('COM_KA_REVIEWS_USERS_EDIT_USER', $item->username); ?>" class="hasTooltip"><span class="icon-edit"></span></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=reviews&uid=' . $item->uid); ?>"
+						   title="<?php echo JText::_('COM_KA_REVIEWS_SEARCH_BY_USER'); ?>" class="hasTooltip"><span class="icon-search"></span></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_users&task=user.edit&id=' . $item->uid); ?>"
+						   title="<?php echo JText::sprintf('COM_KA_REVIEWS_USERS_EDIT_USER', $item->username); ?>"
+						   class="hasTooltip"><span class="icon-edit"></span></a>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $item->ip; ?>
@@ -137,9 +154,7 @@ $columns   = 9;
 			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
-			&& $user->authorise('core.edit', 'com_kinoarhiv')
-			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+		<?php if ($this->canCreate && $this->canEdit && $this->canEditState): ?>
 			<?php echo JHtml::_(
 				'bootstrap.renderModal',
 				'collapseModal',

@@ -10,65 +10,79 @@
 
 defined('_JEXEC') or die;
 ?>
-<div class="uk-article ka-content user-profile favorite">
+<div class="uk-article ka-content user-profile">
 	<?php echo $this->loadTemplate('tabs'); ?>
 
 	<div class="subtabs breadcrumb">
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=movies&Itemid=' . $this->itemid); ?>"
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=reviews&tab=movies&Itemid=' . $this->itemid); ?>"
 		   class="subtab-movie<?php echo ($this->tab == 'movies') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MOVIES'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=names&Itemid=' . $this->itemid); ?>"
-		   class="subtab-name<?php echo ($this->tab == 'names') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_PERSONS'); ?></a>
-		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=favorite&tab=albums&Itemid=' . $this->itemid); ?>"
+		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=reviews&tab=albums&Itemid=' . $this->itemid); ?>"
 		   class="subtab-album<?php echo ($this->tab == 'albums') ? ' current' : ''; ?>"><?php echo JText::_('COM_KA_MUSIC_ALBUMS'); ?></a>
 	</div>
 
 	<?php if (count($this->items) > 0): ?>
-		<div class="total-favorite"><?php echo JText::_('COM_KA_PROFILE_TOTAL_FAVORITE') . JText::plural('COM_KA_PROFILE_N_TOTAL_NAMES', $this->pagination->total); ?></div>
+		<div class="total-reviews"><?php echo JText::_('COM_KA_PROFILE_TOTAL_REVIEWS') . $this->pagination->total; ?></div>
 
 		<form action="<?php JRoute::_('index.php'); ?>" method="post" id="profileForm" autocomplete="off">
 			<table class="table table-striped items-list">
 				<thead>
-					<tr>
-						<th></th>
-						<th><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_NAMES_LABEL'); ?></th>
-						<th><?php echo JText::_('JDATE'); ?></th>
-					</tr>
+				<tr>
+					<th></th>
+					<th><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL'); ?></th>
+				</tr>
 				</thead>
 				<tbody>
 				<?php foreach ($this->items as $i => $item):
-					$year = $item->date_of_birth != '0000-00-00' ? JHtml::_('date', $item->date_of_birth) : '';
-					$title = $this->escape(KAContentHelper::formatItemTitle($item->name, $item->latin_name, $year));
+					$title = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));
+					$ip = !empty($item->ip) ? $item->ip : JText::_('COM_KA_REVIEWS_IP_NULL');
+
+					if ($item->type == 1)
+					{
+						$uiClass = 'neutral';
+					}
+					elseif ($item->type == 2)
+					{
+						$uiClass = 'positive';
+					}
+					elseif ($item->type == 3)
+					{
+						$uiClass = 'negative';
+					}
+					else
+					{
+						$uiClass = '';
+					}
 				?>
 					<tr>
 						<td width="2%">
 							<input id="cb<?php echo $i; ?>" type="checkbox" value="<?php echo $item->id; ?>"
-								   name="ids[]" title="<?php echo JText::_('JSELECT')?>" />
+								   name="review_ids[]" title="<?php echo JText::_('JSELECT')?>" />
 						</td>
 						<td>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"><?php echo $title; ?></a>
-						</td>
-						<td width="17%">
-							<?php echo $item->favorite_added == '0000-00-00 00:00:00' ? 'N/a' : $item->favorite_added; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->item_id . '&Itemid=' . $this->itemid . '&review=' . $item->id); ?>#review-<?php echo $item->id; ?>"><strong><?php echo $title; ?></strong></a>
+							<div class="review-row">
+								<div class="small timestamp"><?php echo JText::sprintf('COM_KA_REVIEWS_DATETIME', $item->created, $ip); ?></div>
+								<div class="<?php echo $uiClass; ?>"><?php echo $item->review; ?></div>
+							</div>
 						</td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>
 				<tfoot>
-					<tr>
-						<td colspan="3">
-							<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value=""
-								   name="checkall-toggle" id="checkall-toggle">
-							<label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
-						</td>
-					</tr>
+				<tr>
+					<td colspan="2">
+						<input type="checkbox" title="<?php echo JText::_('COM_KA_CHECK_ALL'); ?>" value=""
+							   name="checkall-toggle" id="checkall-toggle">
+						<label for="checkall-toggle"><?php echo JText::_('COM_KA_CHECK_ALL'); ?></label>
+					</td>
+				</tr>
 				</tfoot>
 			</table>
 
 			<input type="hidden" name="option" value="com_kinoarhiv"/>
-			<input type="hidden" name="view" value="names"/>
-			<input type="hidden" name="task" value="names.favoriteRemove"/>
-			<input type="hidden" name="action" value="delete"/>
-			<input type="hidden" name="return" value="<?php echo base64_encode('view=profile&page=favorite&tab=names'); ?>"/>
+			<input type="hidden" name="view" value="profile"/>
+			<input type="hidden" name="task" value="reviews.delete"/>
+			<input type="hidden" name="return" value="<?php echo base64_encode('view=profile&page=reviews&tab=movies'); ?>"/>
 			<input type="hidden" name="Itemid" value="<?php echo $this->itemid; ?>"/>
 			<?php echo JHtml::_('form.token'); ?>
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>"/>

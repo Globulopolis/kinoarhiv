@@ -20,7 +20,8 @@ JHtml::_('behavior.keepalive');
 		}
 	};
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $this->form->getValue('id')); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $this->form->getValue('id')); ?>"
+	  method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
 	<div id="j-main-container">
 		<div class="row-fluid">
 			<fieldset class="form-horizontal">
@@ -32,8 +33,12 @@ JHtml::_('behavior.keepalive');
 				</div>
 				<div class="span6">
 					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('movie_id'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('movie_id'); ?></div>
+						<div class="control-label"><?php echo $this->form->getLabel('item_id'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('item_id'); ?></div>
+					</div>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('item_type'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('item_type'); ?></div>
 					</div>
 					<div class="control-group">
 						<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>

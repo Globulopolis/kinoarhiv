@@ -41,9 +41,10 @@ class KinoarhivModelReviews extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'username', 'u.username',
-				'title', 'm.title',
+				'title',
 				'state', 'a.state',
 				'published', 'author_id',
+				'item_type', 'a.item_type',
 				'type', 'a.type',
 				'ip', 'a.ip',
 				'created', 'a.created');
@@ -81,6 +82,9 @@ class KinoarhivModelReviews extends JModelList
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
+		$itemType = $this->getUserStateFromRequest($this->context . '.filter.item_type', 'filter_item_type', '');
+		$this->setState('filter.item_type', $itemType);
+
 		$authorID = $this->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id', '');
 		$this->setState('filter.author_id', $authorID);
 
@@ -111,6 +115,7 @@ class KinoarhivModelReviews extends JModelList
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.item_type');
 		$id .= ':' . $this->getState('filter.author_id');
 		$id .= ':' . $this->getState('filter.type');
 		$id .= ':' . $this->getState('filter.published');
@@ -127,25 +132,33 @@ class KinoarhivModelReviews extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
-		$uid = $app->input->get('uid', 0, 'int');
-		$mid = $app->input->get('mid', 0, 'int');
+		$app      = JFactory::getApplication();
+		$db       = $this->getDbo();
+		$query    = $db->getQuery(true);
+		$itemType = $app->input->get('item_type', '', 'cmd');
+		$uid      = $app->input->get('uid', 0, 'int');
+		$id       = $app->input->get('item_id', 0, 'int');
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				$db->quoteName(array('a.id', 'a.uid', 'a.movie_id', 'a.review', 'a.created', 'a.type', 'a.ip', 'a.state'))
+				$db->quoteName(array('a.id', 'a.uid', 'a.item_id', 'a.item_type', 'a.review', 'a.created', 'a.type', 'a.ip', 'a.state'))
 			)
 		);
+
+		$query->select('
+		CASE
+			WHEN ' . $db->quoteName('a.item_type') . ' = 0
+				THEN (SELECT title FROM ' . $db->quoteName('#__ka_movies') . ' WHERE id = ' . $db->quoteName('a.item_id') . ')
+			WHEN ' . $db->quoteName('a.item_type') . ' = 1
+				THEN (SELECT title FROM ' . $db->quoteName('#__ka_music_albums') . ' WHERE id = ' . $db->quoteName('a.item_id') . ')
+		END AS ' . $db->quoteName('title')
+		);
+
 		$query->from($db->quoteName('#__ka_reviews', 'a'));
 
 		$query->select($db->quoteName('u.name', 'username'))
 			->join('LEFT', $db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('a.uid'));
-
-		$query->select($db->quoteName('m.title', 'movie'))
-			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('a.movie_id'));
 
 		// Filter by author ID
 		$authorID = $this->getState('filter.author_id');
@@ -153,6 +166,18 @@ class KinoarhivModelReviews extends JModelList
 		if (is_numeric($authorID))
 		{
 			$query->where('a.uid = ' . (int) $authorID);
+		}
+
+		// Filter by item type
+		$filterItemType = $this->getState('filter.item_type');
+
+		if ($filterItemType == '')
+		{
+			$query->where('(a.item_type = 0 OR a.item_type = 1)');
+		}
+		else
+		{
+			$query->where('a.item_type = ' . (int) $filterItemType);
 		}
 
 		// Filter by type
@@ -188,10 +213,21 @@ class KinoarhivModelReviews extends JModelList
 			{
 				$query->where('a.id = ' . (int) substr($search, 3));
 			}
-			elseif (stripos($search, 'movie:') === 0)
+			elseif (stripos($search, 'title:') === 0)
 			{
 				$search = $db->quote('%' . $db->escape(trim(substr($search, 6)), true) . '%');
-				$query->where('m.title LIKE ' . $search);
+
+				if ($itemType == '')
+				{
+					$query->where('
+					(CASE
+						WHEN ' . $db->quoteName('a.item_type') . ' = 0
+							THEN (SELECT title FROM ' . $db->quoteName('#__ka_movies') . ' WHERE id = ' . $db->quoteName('a.item_id') . ')
+						WHEN ' . $db->quoteName('a.item_type') . ' = 1
+							THEN (SELECT title FROM ' . $db->quoteName('#__ka_music_albums') . ' WHERE id = ' . $db->quoteName('a.item_id') . ')
+					END) LIKE ' . $search
+					);
+				}
 			}
 			elseif (stripos($search, 'user:') === 0)
 			{
@@ -224,13 +260,18 @@ class KinoarhivModelReviews extends JModelList
 			$query->where('u.id = ' . (int) $uid);
 		}
 
-		if (!empty($mid) && is_numeric($mid))
+		if (!empty($id) && is_numeric($id))
 		{
-			$query->where('m.id = ' . (int) $mid);
+			$query->where('a.item_id = ' . (int) $id);
+		}
+
+		if ($itemType != '')
+		{
+			$query->where('a.item_type = ' . (int) $itemType);
 		}
 
 		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering', 'a.created');
+		$orderCol  = $this->state->get('list.ordering', 'a.created');
 		$orderDirn = $this->state->get('list.direction', 'desc');
 
 		$query->order($db->escape($orderCol . ' ' . $orderDirn));
@@ -277,9 +318,9 @@ class KinoarhivModelReviews extends JModelList
 	 */
 	public function batch()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->post->get('id', array(), 'array');
+		$app       = JFactory::getApplication();
+		$db        = $this->getDbo();
+		$ids       = $app->input->post->get('id', array(), 'array');
 		$batchData = $app->input->post->get('batch', array(), 'array');
 
 		if (empty($batchData))

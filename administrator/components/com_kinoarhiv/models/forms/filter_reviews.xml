@@ -2,6 +2,12 @@
 <form>
 	<fields name="filter">
 		<field name="search" type="text" label="COM_CONTENT_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER"/>
+		<field name="item_type" type="list" default="" label="COM_KA_REVIEWS_FIELD_ITEMTYPE_TITLE"
+			   onchange="this.form.submit();">
+			<option value="">JALL</option>
+			<option value="0">COM_KA_MOVIES_TITLE</option>
+			<option value="1">COM_KA_MUSIC_TITLE</option>
+		</field>
 		<field name="published" type="status" label="COM_CONTENT_FILTER_PUBLISHED"
 			   description="COM_CONTENT_FILTER_PUBLISHED_DESC" onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_PUBLISHED</option>
@@ -32,8 +38,8 @@
 			<option value="u.username DESC">COM_KA_REVIEWS_FIELD_USER_SORT_DESC</option>
 			<option value="a.ip ASC">COM_KA_REVIEWS_FIELD_IP_SORT_ASC</option>
 			<option value="a.ip DESC">COM_KA_REVIEWS_FIELD_IP_SORT_DESC</option>
-			<option value="m.title ASC">COM_KA_MOVIES_FIELD_MOVIE_SORT_ASC</option>
-			<option value="m.title DESC">COM_KA_MOVIES_FIELD_MOVIE_SORT_DESC</option>
+			<option value="title ASC">JGLOBAL_TITLE_ALPHABETICAL</option>
+			<option value="title DESC">JGLOBAL_TITLE_REVERSE_ALPHABETICAL</option>
 			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
 		</field>

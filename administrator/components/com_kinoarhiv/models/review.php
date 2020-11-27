@@ -29,10 +29,34 @@ class KinoarhivModelReview extends JModelForm
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$form = $this->loadForm('com_kinoarhiv.review', 'review', array('control' => 'form', 'load_data' => $loadData));
+		$app      = JFactory::getApplication();
+		$itemType = $app->input->get('item_type', '', 'alnum');
+
+		if ($itemType == '' && $data['item_type'] == '')
+		{
+			$app->enqueueMessage('Wrong item type!', 'error');
+
+			return false;
+		}
+		else
+		{
+			if ($itemType == 0)
+			{
+				$formName = 'movie';
+			}
+			elseif ($itemType == 1)
+			{
+				$formName = 'album';
+			}
+
+		}
+
+		$form = $this->loadForm('com_kinoarhiv.review', 'review_' . $formName, array('control' => 'form', 'load_data' => $loadData));
 
 		if (empty($form))
 		{
+			$app->enqueueMessage('Could not load XML form. File not found or something wrong!', 'error');
+
 			return false;
 		}
 
@@ -67,19 +91,18 @@ class KinoarhivModelReview extends JModelForm
 	 */
 	public function getItem()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'array');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('id', null, 'array');
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('id', 'uid', 'movie_id', 'review', 'created', 'type', 'ip', 'state')))
+		$query->select($db->quoteName(array('id', 'uid', 'item_id', 'item_type', 'review', 'created', 'type', 'ip', 'state')))
 			->from($db->quoteName('#__ka_reviews'))
 			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
 
-		return $result;
+		return $db->loadObject();
 	}
 
 	/**
@@ -126,9 +149,9 @@ class KinoarhivModelReview extends JModelForm
 	 */
 	public function remove()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$ids   = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
 		$query->delete($db->quoteName('#__ka_reviews'))
@@ -161,8 +184,8 @@ class KinoarhivModelReview extends JModelForm
 	 */
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
 		$review = trim($data['review']);
 
 		if (empty($review))
@@ -183,7 +206,8 @@ class KinoarhivModelReview extends JModelForm
 
 		$query->update($db->quoteName('#__ka_reviews'))
 			->set($db->quoteName('uid') . " = '" . (int) $data['uid'] . "'")
-			->set($db->quoteName('movie_id') . " = '" . (int) $data['movie_id'] . "'")
+			->set($db->quoteName('item_id') . " = '" . (int) $data['item_id'] . "'")
+			->set($db->quoteName('item_type') . " = '" . (int) $data['item_type'] . "'")
 			->set($db->quoteName('review') . " = '" . $db->escape($data['review']) . "'")
 			->set($db->quoteName('created') . " = '" . $data['created'] . "'")
 			->set($db->quoteName('type') . " = '" . (int) $data['type'] . "'")

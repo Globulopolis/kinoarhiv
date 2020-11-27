@@ -155,7 +155,7 @@ $columns   = 10;
 							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
 								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
 							</a>
-							<a href="index.php?option=com_kinoarhiv&view=reviews&mid=<?php echo (int) $item->id; ?>"
+							<a href="index.php?option=com_kinoarhiv&view=reviews&item_type=0&item_id=<?php echo (int) $item->id; ?>"
 							   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
 								<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
 							</a>
@@ -190,7 +190,7 @@ $columns   = 10;
 								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
 							</a>
 						</p>
-						<a href="index.php?option=com_kinoarhiv&view=reviews&mid=<?php echo (int) $item->id; ?>"
+						<a href="index.php?option=com_kinoarhiv&view=reviews&item_type=0&item_id=<?php echo (int) $item->id; ?>"
 						   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
 							<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
 						</a>

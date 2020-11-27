@@ -212,14 +212,33 @@ class KinoarhivModelProfile extends JModelList
 	 */
 	protected function getReviewed()
 	{
+		$input = JFactory::getApplication()->input;
 		$db    = $this->getDbo();
 		$user  = JFactory::getUser();
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('r.id', 'r.movie_id', 'r.review', 'r.created', 'r.type', 'r.ip', 'r.state', 'm.title', 'm.year')))
-			->from($db->quoteName('#__ka_reviews', 'r'))
-			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = r.movie_id')
-			->where('r.uid = ' . (int) $user->get('id') . ' AND m.state = 1')
+		$query->select(
+			$db->quoteName(
+				array('r.id', 'r.item_id', 'r.item_type', 'r.review', 'r.created', 'r.type', 'r.ip', 'r.state')
+			)
+		);
+
+		$query->from($db->quoteName('#__ka_reviews', 'r'));
+
+		if ($input->getCmd('tab', 'movies') == 'albums')
+		{
+			$query->select($db->quoteName(array('m.title', 'm.year')))
+				->join('LEFT', $db->quoteName('#__ka_music_albums', 'm') . ' ON m.id = r.item_id')
+				->where('r.item_type = 1');
+		}
+		else
+		{
+			$query->select($db->quoteName(array('m.title', 'm.year')))
+				->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON m.id = r.item_id')
+				->where('r.item_type = 0');
+		}
+
+		$query->where('r.uid = ' . (int) $user->get('id') . ' AND m.state = 1')
 			->order($db->quoteName('created') . ' DESC');
 
 		return $query;

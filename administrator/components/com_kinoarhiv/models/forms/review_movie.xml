@@ -4,10 +4,14 @@
 	<fieldset name="edit">
 		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="false"
 			   required="true"/>
-		<field name="movie_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_LABEL" filter="integer" required="true"
+		<field name="item_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_LABEL" filter="integer" required="true"
 			   class="span12" data-content="movies" data-allow-clear="true" data-remote="true" data-lang="*"
 			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
+		</field>
+		<field name="item_type" type="list" default="0" label="COM_KA_REVIEWS_FIELD_ITEMTYPE_TITLE">
+			<option value="0">COM_KA_MOVIES_TITLE</option>
+			<option value="1">COM_KA_MUSIC_TITLE</option>
 		</field>
 		<field name="created" type="datetime" class="inputbox" datatype="datetime"
 			   label="JGLOBAL_CREATED_DATE" size="22" dateformat="yy-mm-dd" timeformat="HH:mm:ss" filter="user_utc"/>

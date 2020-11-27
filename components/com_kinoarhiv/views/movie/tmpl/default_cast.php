@@ -61,7 +61,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 			<?php if (count($this->item->crew) > 0):
 				foreach ($this->item->crew as $row): ?>
 					<div class="corner-all header header-small">
-						<a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?>
+						<span id="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></span><?php echo $row['career']; ?>
 					</div>
 					<div class="content">
 						<?php foreach ($row['items'] as $key => $name):
@@ -89,7 +89,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 			<?php if (count($this->item->cast) > 0):
 				foreach ($this->item->cast as $row): ?>
 					<div class="corner-all header header-small">
-						<a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?><?php if (!empty($this->item->dub)): ?>
+						<span id="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></span><?php echo $row['career']; ?><?php if (!empty($this->item->dub)): ?>
 							<span class="dub"><?php echo JText::_('COM_KA_CAST_DUB'); ?></span><?php endif; ?></div>
 					<div class="content">
 						<?php foreach ($row['items'] as $key => $name):
@@ -129,7 +129,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 			<?php if (count($this->item->dub) > 0):
 				foreach ($this->item->dub as $row): ?>
 					<div class="corner-all header header-small">
-						<a name="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></a><?php echo $row['career']; ?>
+						<span id="<?php echo JFilterOutput::stringURLSafe($row['career']); ?>"></span><?php echo $row['career']; ?>
 					</div>
 					<div class="content">
 						<?php foreach ($row['items'] as $key => $name):

@@ -47,7 +47,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 * @var    string
 	 * @since  3.1
 	 */
-	protected $query_lang;
+	protected $queryLang;
 
 	/**
 	 * User access groups to filter by
@@ -55,7 +55,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 * @var    string
 	 * @since  3.1
 	 */
-	protected $query_access;
+	protected $queryAccess;
 
 	/**
 	 * Item state
@@ -63,7 +63,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 * @var    string
 	 * @since  3.1
 	 */
-	protected $query_state;
+	protected $queryState;
 
 	/**
 	 * Constructor
@@ -78,21 +78,21 @@ class KinoarhivModelAPI extends JModelLegacy
 		parent::__construct($config);
 
 		$this->input = JFactory::getApplication()->input;
-		$this->lang = JFactory::getLanguage();
-		$this->db = $this->getDbo();
-		$user = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$data_lang = $this->input->get('data_lang', '', 'string');
+		$this->lang  = JFactory::getLanguage();
+		$this->db    = JFactory::getDbo();
+		$user        = JFactory::getUser();
+		$groups      = implode(',', $user->getAuthorisedViewLevels());
+		$dataLang    = $this->input->get('data_lang', '', 'string');
 
-		if ($data_lang !== '')
+		if ($dataLang !== '')
 		{
-			if ($data_lang == '*')
+			if ($dataLang == '*')
 			{
-				$this->query_lang = '';
+				$this->queryLang = '';
 			}
 			else
 			{
-				$this->query_lang = 'language IN (' . $this->db->quote($data_lang) . ')';
+				$this->queryLang = 'language IN (' . $this->db->quote($dataLang) . ')';
 			}
 		}
 		else
@@ -101,11 +101,11 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				if ($config['data_lang'] == '*')
 				{
-					$this->query_lang = '';
+					$this->queryLang = '';
 				}
 				else
 				{
-					$this->query_lang = 'language IN (' . $this->db->quote($config['data_lang']) . ')';
+					$this->queryLang = 'language IN (' . $this->db->quote($config['data_lang']) . ')';
 				}
 			}
 			else
@@ -116,13 +116,13 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		if (array_key_exists('item_access', $config) && is_array($config['item_access']))
 		{
-			$this->query_access = 'access IN (' . implode(',', $config['item_access']) . ')';
+			$this->queryAccess = 'access IN (' . implode(',', $config['item_access']) . ')';
 		}
 		else
 		{
 			if (array_key_exists('item_access', $config) && $config['item_access'] == '*')
 			{
-				$this->query_access = '';
+				$this->queryAccess = '';
 			}
 			else
 			{
@@ -132,27 +132,27 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		if (array_key_exists('item_state', $config) && is_array($config['item_state']))
 		{
-			$this->query_state = 'state IN (' . implode(',', $config['item_state']) . ')';
+			$this->queryState = 'state IN (' . implode(',', $config['item_state']) . ')';
 		}
 		else
 		{
-			$this->query_state = 'state = 1';
+			$this->queryState = 'state = 1';
 		}
 	}
 
 	/**
 	 * Method to get list of countries or country based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getCountries()
 	{
-		$id = $this->input->get('id', 0, 'int');
-		$all = $this->input->get('showAll', 0, 'int');
+		$id       = $this->input->get('id', 0, 'int');
+		$all      = $this->input->get('showAll', 0, 'int');
 		$multiple = $this->input->get('multiple', 0, 'int');
-		$term = $this->input->get('term', '', 'string');
+		$term     = $this->input->get('term', '', 'string');
 
 		// Do not remove `code` field from the query. It's necessary for flagging row in select
 		$query = $this->db->getQuery(true)
@@ -160,15 +160,15 @@ class KinoarhivModelAPI extends JModelLegacy
 			->from($this->db->quoteName('#__ka_countries'));
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		// Filter by item state
-		if ($this->query_state != '')
+		if ($this->queryState != '')
 		{
-			$query->where($this->query_state);
+			$query->where($this->queryState);
 		}
 
 		if ($all == 0)
@@ -256,15 +256,15 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of movies or movie based on filters.
 	 *
-	 * @return  object
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getMovies()
 	{
-		$id = $this->input->get('id', 0, 'int');
-		$all = $this->input->get('showAll', 0, 'int');
-		$term = $this->input->get('term', '', 'string');
+		$id     = $this->input->get('id', 0, 'int');
+		$all    = $this->input->get('showAll', 0, 'int');
+		$term   = $this->input->get('term', '', 'string');
 		$ignore = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
@@ -278,21 +278,119 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		// Filter by access
-		if ($this->query_access != '')
+		if ($this->queryAccess != '')
 		{
-			$query->where($this->query_access);
+			$query->where($this->queryAccess);
 		}
 
 		// Filter by item state
-		if ($this->query_state != '')
+		if ($this->queryState != '')
 		{
-			$query->where($this->query_state);
+			$query->where($this->queryState);
+		}
+
+		if (empty($all))
+		{
+			if (empty($id))
+			{
+				$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'");
+				$this->db->setQuery($query);
+
+				try
+				{
+					$result = $this->db->loadObjectList();
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
+				}
+			}
+			else
+			{
+				$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+				$this->db->setQuery($query);
+
+				try
+				{
+					$result = $this->db->loadObject();
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+
+					return false;
+				}
+			}
+		}
+		else
+		{
+			$query->order($this->db->quoteName('title') . ' ASC');
+			$this->db->setQuery($query);
+
+			try
+			{
+				$result = $this->db->loadObjectList();
+			}
+			catch (RuntimeException $e)
+			{
+				KAComponentHelper::eventLog($e->getMessage());
+
+				return false;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to get list of albums or album based on filters.
+	 *
+	 * @return  object|boolean
+	 *
+	 * @since   3.1
+	 */
+	public function getAlbums()
+	{
+		$id     = $this->input->get('id', 0, 'int');
+		$all    = $this->input->get('showAll', 0, 'int');
+		$term   = $this->input->get('term', '', 'string');
+		$ignore = $this->input->get('ignore_ids', array(), 'array');
+
+		$query = $this->db->getQuery(true)
+			->select($this->db->quoteName(array('id', 'title')))
+			->select('DATE_FORMAT(' . $this->db->quoteName('year') . ', "%Y") AS ' . $this->db->quoteName('year'))
+			->from($this->db->quoteName('#__ka_music_albums'));
+
+		// Filter results set by IDs
+		if (!empty($ignore))
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
+
+		// Filter by language
+		if ($this->queryLang != '')
+		{
+			$query->where($this->queryLang);
+		}
+
+		// Filter by access
+		if ($this->queryAccess != '')
+		{
+			$query->where($this->queryAccess);
+		}
+
+		// Filter by item state
+		if ($this->queryState != '')
+		{
+			$query->where($this->queryState);
 		}
 
 		if (empty($all))
@@ -353,15 +451,15 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of names or name based on filters.
 	 *
-	 * @return  object
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getNames()
 	{
-		$id = $this->input->get('id', 0, 'int');
-		$all = $this->input->get('showAll', 0, 'int');
-		$term = $this->input->get('term', '', 'string');
+		$id     = $this->input->get('id', 0, 'int');
+		$all    = $this->input->get('showAll', 0, 'int');
+		$term   = $this->input->get('term', '', 'string');
 		$ignore = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
@@ -375,21 +473,21 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		// Filter by access
-		if ($this->query_access != '')
+		if ($this->queryAccess != '')
 		{
-			$query->where($this->query_access);
+			$query->where($this->queryAccess);
 		}
 
 		// Filter by item state
-		if ($this->query_state != '')
+		if ($this->queryState != '')
 		{
-			$query->where($this->query_state);
+			$query->where($this->queryState);
 		}
 
 		if (empty($all))
@@ -453,15 +551,15 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of awards or award based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getAwards()
 	{
-		$id = $this->input->get('id', 0, 'int');
-		$all = $this->input->get('showAll', 0, 'int');
-		$term = $this->input->get('term', '', 'string');
+		$id     = $this->input->get('id', 0, 'int');
+		$all    = $this->input->get('showAll', 0, 'int');
+		$term   = $this->input->get('term', '', 'string');
 		$ignore = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
@@ -475,15 +573,15 @@ class KinoarhivModelAPI extends JModelLegacy
 		}
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		// Filter by item state
-		if ($this->query_state != '')
+		if ($this->queryState != '')
 		{
-			$query->where($this->query_state);
+			$query->where($this->queryState);
 		}
 
 		if (empty($all))
@@ -546,31 +644,31 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of distributors or distributor based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getVendors()
 	{
-		$id = $this->input->get('id', 0, 'int');
-		$all = $this->input->get('showAll', 0, 'int');
+		$id       = $this->input->get('id', 0, 'int');
+		$all      = $this->input->get('showAll', 0, 'int');
 		$multiple = $this->input->get('multiple', 0, 'int');
-		$term = $this->input->get('term', '', 'string');
+		$term     = $this->input->get('term', '', 'string');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('company_name', 'text'))
 			->from($this->db->quoteName('#__ka_vendors'));
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		// Filter by item state
-		if ($this->query_state != '')
+		if ($this->queryState != '')
 		{
-			$query->where($this->query_state);
+			$query->where($this->queryState);
 		}
 
 		if ($all == 0)
@@ -658,7 +756,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of careers based on filters.
 	 *
-	 * @return  object
+	 * @return  object|array|boolean
 	 *
 	 * @since   3.1
 	 */
@@ -674,9 +772,9 @@ class KinoarhivModelAPI extends JModelLegacy
 			->from($this->db->quoteName('#__ka_names_career'));
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		if ($all == 0)
@@ -781,9 +879,9 @@ class KinoarhivModelAPI extends JModelLegacy
 			->from($this->db->quoteName('#__ka_genres'));
 
 		// Filter by language
-		if ($this->query_lang != '')
+		if ($this->queryLang != '')
 		{
-			$query->where($this->query_lang);
+			$query->where($this->queryLang);
 		}
 
 		if ($all == 0)
@@ -1071,7 +1169,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @param   integer  $type  Content type. 0 - movie, 1 - name.
 	 *
-	 * @return  object|array
+	 * @return  object|array|boolean  False on error.
 	 *
 	 * @since   3.1
 	 */

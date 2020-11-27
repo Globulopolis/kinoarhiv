@@ -271,12 +271,13 @@ class KinoarhivModelReviews extends JModelForm
 	 */
 	public function delete($id)
 	{
-		$app  = JFactory::getApplication();
-		$db   = $this->getDbo();
-		$user = JFactory::getUser();
+		$app       = JFactory::getApplication();
+		$db        = $this->getDbo();
+		$user      = JFactory::getUser();
+		$rowsTotal = count($id);
 
 		// Values submited from 'profile' page.
-		if (is_array($id) && count($id) > 0)
+		if (is_array($id) && $rowsTotal > 0)
 		{
 			$id = ArrayHelper::toInteger($id);
 		}
@@ -292,19 +293,27 @@ class KinoarhivModelReviews extends JModelForm
 		}
 		else
 		{
-			// Check if user deleting only own review.
+			// Check if user delete only own review(s).
 			$query = $db->getQuery(true)
 				->select($db->quoteName('id'))
 				->from($db->quoteName('#__ka_reviews'))
-				->where($db->quoteName('uid') . ' = ' . (int) $user->get('id'));
+				->where($db->quoteName('uid') . ' = ' . (int) $user->get('id'))
+				->where($db->quoteName('id') . ' IN (' . implode(',', $id) . ')');
 
 			$db->setQuery($query);
 
-			$column = $db->loadColumn();
-			print_r($column);
+			$column    = $db->loadColumn();
+			$rowsTotal = count($column);
 
-			/*$where = $db->quoteName('id') . ' IN (' . implode(',', $id) . ')';
-			$where .= ' AND ' . $db->quoteName('uid') . ' = ' . (int) $user->get('id');*/
+			if ($rowsTotal == 0)
+			{
+				$this->setError(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
+
+				return false;
+			}
+
+			$where = $db->quoteName('id') . ' IN (' . implode(',', $id) . ')';
+			$where .= ' AND ' . $db->quoteName('uid') . ' = ' . (int) $user->get('id');
 		}
 
 		$query = $db->getQuery(true)
@@ -312,11 +321,24 @@ class KinoarhivModelReviews extends JModelForm
 			->where($where);
 
 		$db->setQuery($query);
-echo $query;
+
 		try
 		{
-			//var_dump($db->execute());
-			$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
+			if ($db->execute() === false)
+			{
+				$this->setError(JText::_('JERROR_ERROR'));
+
+				return false;
+			}
+
+			if ($rowsTotal > 1)
+			{
+				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED_MANY'));
+			}
+			else
+			{
+				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
+			}
 		}
 		catch (RuntimeException $e)
 		{
@@ -325,100 +347,6 @@ echo $query;
 
 			return false;
 		}
-
-		// TODO Refactor
-		/*if (!empty($reviewIDs))
-		{
-			if (empty($reviewIDs))
-			{
-				return false;
-			}
-
-			$queryResult = true;
-			$db->lockTable('#__ka_reviews');
-			$db->transactionStart();
-
-			foreach ($reviewIDs as $id)
-			{
-				$query = $db->getQuery(true);
-
-				$query->delete($db->quoteName('#__ka_reviews'));
-
-				if (!$user->get('isRoot'))
-				{
-					$query->where('uid = ' . $user->get('id'));
-				}
-
-				$query->where('id = ' . (int) $id);
-
-				$db->setQuery($query . ';');
-
-				if ($db->execute() === false)
-				{
-					$queryResult = false;
-					break;
-				}
-			}
-
-			if ($queryResult === true)
-			{
-				$db->transactionCommit();
-
-				if (count($reviewIDs) > 1)
-				{
-					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED_MANY'));
-				}
-				else
-				{
-					$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
-				}
-			}
-			else
-			{
-				$db->transactionRollback();
-				$this->setError(JText::_('JERROR_ERROR'));
-			}
-
-			$db->unlockTables();
-
-			if ($queryResult === false)
-			{
-				return false;
-			}
-		}
-		else
-		{
-			if (empty($reviewID))
-			{
-				return false;
-			}
-
-			$query = $db->getQuery(true);
-
-			$query->delete($db->quoteName('#__ka_reviews'));
-
-			if (!$user->get('isRoot'))
-			{
-				$query->where('uid = ' . $user->get('id'));
-			}
-
-			$query->where('id = ' . (int) $reviewID);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-				$app->enqueueMessage(JText::_('COM_KA_REVIEWS_DELETED'));
-			}
-			catch (RuntimeException $e)
-			{
-				$this->setError(JText::_('JERROR_ERROR'));
-				KAComponentHelper::eventLog(JText::_('JERROR_ERROR'));
-
-				return false;
-			}
-		}*/
 
 		return true;
 	}

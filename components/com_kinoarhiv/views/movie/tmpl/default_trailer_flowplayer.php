@@ -15,12 +15,12 @@ JHtml::_('stylesheet', 'media/com_kinoarhiv/players/flowplayer/skin/skin.css');
 JHtml::_('script', 'media/com_kinoarhiv/players/flowplayer/flowplayer.min.js');
 
 if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) > 0):
-	$item_trailer = $this->item->trailer;
-	$ratio_raw = explode(':', $item_trailer->dar);
-	$ratio = round($ratio_raw[1] / $ratio_raw[0], 4);
+	$itemTrailer = $this->item->trailer;
+	$ratioRaw = explode(':', $itemTrailer->dar);
+	$ratio = round($ratioRaw[1] / $ratioRaw[0], 4);
 ?>
 	<div class="clear"></div>
-	<a name="trailer"></a>
+	<span id="trailer"></span>
 	<div class="accordion" id="tr_accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
@@ -29,42 +29,42 @@ if (isset($this->item->trailer) && count(get_object_vars($this->item->trailer)) 
 			<div id="toggleTrailer" class="accordion-body collapse<?php echo $this->tr_collapsed; ?>">
 				<div class="accordion-inner">
 					<div>
-						<?php if ($item_trailer->embed_code != ''):
-							echo '<div class="video-embed">' . $item_trailer->embed_code . '</div>';
+						<?php if ($itemTrailer->embed_code != ''):
+							echo '<div class="video-embed">' . $itemTrailer->embed_code . '</div>';
 						else: ?>
-							<?php if (count($item_trailer->files['video']) > 0): ?>
+							<?php if (count($itemTrailer->files['video']) > 0): ?>
 
 								<div class="flowplayer fp-full is-splash" data-ratio="<?php echo $ratio; ?>"
-								     data-splash="<?php echo $item_trailer->screenshot; ?>"
+								     data-splash="<?php echo $itemTrailer->screenshot; ?>"
 								     data-swf="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayer.swf"
 								     data-swfHls="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayerhls.swf">
 									<video>
-										<?php foreach ($item_trailer->files['video'] as $item): ?>
+										<?php foreach ($itemTrailer->files['video'] as $item): ?>
 											<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 										<?php endforeach; ?>
-										<?php if (count($item_trailer->files['subtitles']) > 0):
-											foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
+										<?php if (count($itemTrailer->files['subtitles']) > 0):
+											foreach ($itemTrailer->files['subtitles'] as $subtitle): ?>
 												<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>"
 													   label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 											<?php endforeach;
 										endif; ?>
-										<?php if (count($item_trailer->files['chapters']) > 0): ?>
-											<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
+										<?php if (count($itemTrailer->files['chapters']) > 0): ?>
+											<track kind="chapters" src="<?php echo $itemTrailer->files['chapters']['file']; ?>" srclang="en" default/>
 										<?php endif; ?>
 									</video>
 								</div>
 
 							<?php else: ?>
-								<div style="height: <?php echo $item_trailer->player_height; ?>px; text-align: center;">
-									<img src="<?php echo $item_trailer->screenshot; ?>" style="height: <?php echo $item_trailer->player_height; ?>px; width: <?php echo $item_trailer->player_height; ?>px;"/></div>
+								<div style="height: <?php echo $itemTrailer->player_height; ?>px; text-align: center;">
+									<img src="<?php echo $itemTrailer->screenshot; ?>" style="height: <?php echo $itemTrailer->player_height; ?>px; width: <?php echo $itemTrailer->player_height; ?>px;"/></div>
 							<?php endif; ?>
-							<?php if (isset($item_trailer->files['video_links'])
-								&& (count($item_trailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)
+							<?php if (isset($itemTrailer->files['video_links'])
+								&& (count($itemTrailer->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)
 							):
 								?>
 								<div class="video-links">
 									<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
-									<?php foreach ($item_trailer->files['video_links'] as $item): ?>
+									<?php foreach ($itemTrailer->files['video_links'] as $item): ?>
 										<div>
 											<a href="<?php echo $item['src']; ?>"><?php echo $item['src']; ?></a>
 										</div>
@@ -83,12 +83,12 @@ if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0
 	&& ($this->params->get('allow_guest_watch') == 1 && $this->user->guest || $this->user->id != '')
 ):
 
-	$item_movie = $this->item->movie;
-	$ratio_raw = explode(':', $item_movie->dar);
-	$ratio = round($ratio_raw[1] / $ratio_raw[0], 4);
+	$itemMovie = $this->item->movie;
+	$ratioRaw = explode(':', $itemMovie->dar);
+	$ratio = round($ratioRaw[1] / $ratioRaw[0], 4);
 ?>
 	<div class="clear"></div>
-	<a name="movie"></a>
+	<span id="movie"></span>
 	<div class="accordion" id="movie_accordion">
 		<div class="accordion-group">
 			<div class="accordion-heading">
@@ -97,42 +97,42 @@ if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0
 			<div id="toggleMovie" class="accordion-body collapse<?php echo $this->mov_collapsed; ?>">
 				<div class="accordion-inner">
 					<div>
-						<?php if ($item_movie->embed_code != ''):
-							echo '<div class="video-embed">' . $item_movie->embed_code . '</div>';
+						<?php if ($itemMovie->embed_code != ''):
+							echo '<div class="video-embed">' . $itemMovie->embed_code . '</div>';
 						else: ?>
-							<?php if (count($item_movie->files['video']) > 0): ?>
+							<?php if (count($itemMovie->files['video']) > 0): ?>
 
 								<div class="flowplayer fp-full is-splash" data-ratio="<?php echo $ratio; ?>"
-								     data-splash="<?php echo $item_movie->screenshot; ?>"
+								     data-splash="<?php echo $itemMovie->screenshot; ?>"
 								     data-swf="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayer.swf"
 								     data-swfHls="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayerhls.swf">
 									<video>
-										<?php foreach ($item_movie->files['video'] as $item): ?>
+										<?php foreach ($itemMovie->files['video'] as $item): ?>
 											<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
 										<?php endforeach; ?>
-										<?php if (count($item_movie->files['subtitles']) > 0):
-											foreach ($item_movie->files['subtitles'] as $subtitle): ?>
+										<?php if (count($itemMovie->files['subtitles']) > 0):
+											foreach ($itemMovie->files['subtitles'] as $subtitle): ?>
 												<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>"
 													   label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
 											<?php endforeach;
 										endif; ?>
-										<?php if (count($item_movie->files['chapters']) > 0): ?>
-											<track kind="chapters" src="<?php echo $item_movie->files['chapters']['file']; ?>" srclang="en" default/>
+										<?php if (count($itemMovie->files['chapters']) > 0): ?>
+											<track kind="chapters" src="<?php echo $itemMovie->files['chapters']['file']; ?>" srclang="en" default/>
 										<?php endif; ?>
 									</video>
 								</div>
 
 							<?php else: ?>
-								<div style="height: <?php echo $item_movie->player_height; ?>px;">
-									<img src="<?php echo $item_movie->screenshot; ?>"/></div>
+								<div style="height: <?php echo $itemMovie->player_height; ?>px;">
+									<img src="<?php echo $itemMovie->screenshot; ?>"/></div>
 							<?php endif; ?>
-							<?php if (isset($item_movie->files['video_links'])
-								&& (count($item_movie->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)
+							<?php if (isset($itemMovie->files['video_links'])
+								&& (count($itemMovie->files['video_links']) > 0 && $this->params->get('allow_movie_download') == 1)
 							):
 								?>
 								<div class="video-links">
 									<span class="title"><?php echo JText::_('COM_KA_DOWNLOAD_MOVIE_OTHER_FORMAT'); ?></span>
-									<?php foreach ($item_movie->files['video_links'] as $item): ?>
+									<?php foreach ($itemMovie->files['video_links'] as $item): ?>
 										<div>
 											<a href="<?php echo $item['src']; ?>"><?php echo $item['src']; ?></a>
 										</div>

@@ -350,7 +350,7 @@ jQuery(document).ready(function($){
 					}
 				} else if (content === 'names') {
 					return remote === true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
-				} else if (content === 'movies') {
+				} else if (content === 'movies' || content === 'albums') {
 					var year = (remote === true || (sortable === 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 
@@ -373,7 +373,7 @@ jQuery(document).ready(function($){
 					}
 				} else if (content === 'names') {
 					return remote === true ? Kinoarhiv.formatItemTitle(data.name, data.latin_name, data.date_of_birth) : data.text;
-				} else if (content === 'movies') {
+				} else if (content === 'movies' || content === 'albums') {
 					var year = (remote === true || (sortable === 'true' || sortable)) ? data.year : $(data.element).data('year');
 					title = !empty(data.text) ? data.text : data.title;
 

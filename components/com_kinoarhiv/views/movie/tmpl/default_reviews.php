@@ -10,8 +10,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<a name="reviews"></a>
-<div class="reviews">
+<div class="reviews" id="reviews">
 <?php
 	if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') != 'default'):
 		// JComments
@@ -56,7 +55,7 @@ defined('_JEXEC') or die;
 					$uiClass = '';
 				} ?>
 				<div class="review-row">
-					<a name="review-<?php echo $review->id; ?>"></a>
+					<span id="review-<?php echo $review->id; ?>"></span>
 
 					<div class="review-title corner-top">
 						<span class="number"><?php echo $reviewNumber++; ?>. </span>
@@ -71,7 +70,7 @@ defined('_JEXEC') or die;
 						<div class="review-footer corner-bottom">
 							<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
 							<?php if ($this->user->get('isRoot') || ($this->user->authorise('core.delete.reviews', 'com_kinoarhiv') && $review->uid == $this->user->get('id'))): ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.delete&return=movie&review_id=' . $review->id . '&id=' . $review->item_id . '&' . JSession::getFormToken() . '=1'); ?>"
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.delete&review_id=' . $review->id . '&id=' . $review->item_id . '&' . JSession::getFormToken() . '=1&return=' . base64_encode('view=movie&id=' . $review->item_id)); ?>"
 								   class="cmd-delete-review" rel="nofollow"><?php echo JText::_('JACTION_DELETE'); ?></a>
 							<?php endif; ?>
 						</div>

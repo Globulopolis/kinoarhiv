@@ -67,6 +67,8 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
+
+		/** @var KinoarhivModelReview $model */
 		$model = $this->getModel('review');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
@@ -83,7 +85,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if ($validData === false)
 		{
 			KAComponentHelper::renderErrors($model->getErrors());
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id[]=' . $data['id']);
 
 			return;
 		}
@@ -95,7 +97,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if (!$result)
 		{
 			// Errors enqueue in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id[]=' . $data['id']);
 
 			return;
 		}
@@ -110,7 +112,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		switch ($this->getTask())
 		{
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id[]=' . $data['id'], $message);
 				break;
 
 			case 'save':
@@ -163,6 +165,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelReview $model */
 		$model = $this->getModel('review');
 
 		// Make sure the item ids are integers
@@ -242,6 +245,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelReview $model */
 		$model = $this->getModel('review');
 		$result = $model->remove();
 
@@ -295,6 +299,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 
 		if (count($ids) != 0)
 		{
+			/** @var KinoarhivModelReviews $model */
 			$model = $this->getModel('reviews');
 			$result = $model->batch();
 

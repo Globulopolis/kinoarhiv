@@ -126,6 +126,8 @@ else
 	echo JHtml::_('form.token'); ?>
 	<input type="hidden" name="task" id="task" value="<?php echo $displayData->task; ?>"/>
 	<input type="hidden" name="id" value="<?php echo $displayData->id; ?>"/>
+	<input type="hidden" name="view" value="<?php echo $displayData->view; ?>"/>
+	<input type="hidden" name="return" value="<?php echo base64_encode('view=' . $displayData->view . '&id=' . (int) $displayData->id); ?>"/>
 	<br/>
 	<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('JSUBMIT'); ?>"/>
 	<input type="reset" class="btn btn-default uk-button cmd-reset" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"/>

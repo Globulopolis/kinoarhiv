@@ -42,6 +42,46 @@ class KinoarhivModelReviews extends JModelForm
 		return $form;
 	}
 
+	/**
+	 * Method to get a single record.
+	 *
+	 * @param   integer  $id        Review row ID.
+	 * @param   integer  $itemType  Item type. 0 for movie, 1 for album.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @throws  Exception
+	 * @since   3.1
+	 */
+	public function getItem($id = null, $itemType = 0)
+	{
+		if (empty($id))
+		{
+			return false;
+		}
+
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName(array('123id', 'uid', 'item_id', 'item_type', 'review', 'created', 'type', 'ip', 'state')))
+			->from($db->quoteName('#__ka_reviews'))
+			->where($db->quoteName('id') . ' = ' . (int) $id)
+			->where($db->quoteName('item_type') . ' = ' . (int) $itemType)
+			->where($db->quoteName('state') . ' = 1');
+
+		$db->setQuery($query);
+
+		try
+		{
+			return $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+	}
 
 	/**
 	 * Method to save review into DB
@@ -61,7 +101,15 @@ class KinoarhivModelReviews extends JModelForm
 		$itemID   = $app->input->get('id', 0, 'int');
 		$stripTag = KAComponentHelper::cleanHTML($data['review'], null);
 
-		if (StringHelper::strlen($stripTag) < $params->get('reviews_length_min') || StringHelper::strlen($stripTag) > $params->get('reviews_length_max'))
+		if ($params->get('allow_reviews') == 0)
+		{
+			$this->setError(JText::_('COM_KA_REVIEWS_DISABLED'));
+
+			return false;
+		}
+
+		if (StringHelper::strlen($stripTag) < $params->get('reviews_length_min')
+			|| StringHelper::strlen($stripTag) > $params->get('reviews_length_max'))
 		{
 			$this->setError(JText::sprintf(JText::_('COM_KA_EDITOR_EMPTY'), $params->get('reviews_length_min'), $params->get('reviews_length_max')));
 
@@ -71,7 +119,7 @@ class KinoarhivModelReviews extends JModelForm
 		$cleanedText = KAComponentHelper::cleanHTML($data['review']);
 		$datetime    = date('Y-m-d H:i:s');
 		$state       = $params->get('reviews_premod') == 1 ? 0 : 1;
-		$itemType    = $app->input->getCmd('return', 'movie') == 'movie' ? 0 : 1;
+		$itemType    = $app->input->getCmd('view', 'movie') == 'movie' ? 0 : 1;
 		$ip          = '';
 
 		if (!empty($_SERVER['HTTP_CLIENT_IP']))
@@ -91,14 +139,20 @@ class KinoarhivModelReviews extends JModelForm
 
 		$query = $db->getQuery(true)
 			->insert($db->quoteName('#__ka_reviews'))
-			->columns($db->quoteName(array('id1', 'uid', 'item_id', 'item_type', 'review', 'created', 'type', 'ip', 'state')))
+			->columns($db->quoteName(array('id', 'uid', 'item_id', 'item_type', 'review', 'created', 'type', 'ip', 'state')))
 			->values("'', '" . (int) $user->get('id') . "', '" . (int) $itemID . "', '" . $itemType . "', '" . $db->escape($cleanedText) . "', '" . $datetime . "', '" . (int) $data['type'] . "', '" . $ip . "', '" . (int) $state . "'");
 
 		$db->setQuery($query);
 
 		try
 		{
-			$db->execute();
+			if ($db->execute() === false)
+			{
+				$this->setError(JText::_('JERROR_ERROR'));
+
+				return false;
+			}
+
 			$insertid = $db->insertid();
 			$app->enqueueMessage($params->get('reviews_premod') == 1 ? JText::_('COM_KA_REVIEWS_SAVED_PREMOD') : JText::_('COM_KA_REVIEWS_SAVED'));
 		}
@@ -112,11 +166,12 @@ class KinoarhivModelReviews extends JModelForm
 
 		$this->sendEmails(
 			array(
-				'review'   => $cleanedText,
-				'id'       => (int) $itemID,
-				'ip'       => $ip,
-				'datetime' => $datetime,
-				'insertid' => $insertid
+				'review'    => $cleanedText,
+				'id'        => (int) $itemID,
+				'ip'        => $ip,
+				'datetime'  => $datetime,
+				'insertid'  => $insertid,
+				'item_type' => $itemType
 			)
 		);
 
@@ -124,9 +179,13 @@ class KinoarhivModelReviews extends JModelForm
 	}
 
 	/**
-	 * Send an email to specified users
+	 * Send an email to specified users.
 	 *
-	 * @param   array  $data  An array of form array('review'=>$review, 'id'=>$id, 'ip'=>$ip, 'datetime'=>$datetime)
+	 * NB! Call JFactory::getMailer() on each mail send to avoid adding previous recipient to last.
+	 * E.g. first email to user1@domain, second to user2@domain, third to user3@domain. Third user will recieve one email
+	 * with all three email adresses in 'To' field.
+	 *
+	 * @param   array  $data  An array of data.
 	 *
 	 * @return  boolean
 	 *
@@ -134,76 +193,90 @@ class KinoarhivModelReviews extends JModelForm
 	 */
 	protected function sendEmails($data)
 	{
-		$db         = $this->getDbo();
-		$user       = JFactory::getUser();
-		$mailer     = JFactory::getMailer();
-		$config     = JFactory::getConfig();
-		$params     = JComponentHelper::getParams('com_kinoarhiv');
-		$movieTitle = '';
+		$db        = $this->getDbo();
+		$user      = JFactory::getUser();
+		$config    = JFactory::getConfig();
+		$params    = JComponentHelper::getParams('com_kinoarhiv');
+		$itemTitle = '';
 
 		if ($params->get('reviews_send_email') == 1 || $params->get('reviews_send_email_touser') == 1)
 		{
-			$query = $db->getQuery(true)
-				->select('title, year')
-				->from($db->quoteName('#__ka_movies'))
-				->where('id = ' . (int) $data['id']);
+			$itemURL = JRoute::_(JUri::getInstance()) . '&review=' . (int) $data['insertid'] . '#review-' . (int) $data['insertid'];
+			$item    = (object) array();
+			$subject = '';
 
-			$db->setQuery($query);
+			if ($data['item_type'] == 0)
+			{
+				JLoader::register('KinoarhivModelMovie', JPATH_COMPONENT . '/models/movie.php');
 
-			try
-			{
-				$result = $db->loadObject();
-				$movieTitle = KAContentHelper::formatItemTitle($result->title, '', $result->year);
+				$model = new KinoarhivModelMovie;
+				$item  = $model->getMovieData();
 			}
-			catch (RuntimeException $e)
+			elseif ($data['item_type'] == 1)
 			{
-				KAComponentHelper::eventLog($e->getMessage());
+				JLoader::register('KinoarhivModelAlbum', JPATH_COMPONENT . '/models/album.php');
+
+				$model = new KinoarhivModelAlbum;
+				$item  = $model->getAlbumData();
 			}
+
+			if ($item)
+			{
+				$itemTitle = KAContentHelper::formatItemTitle($item->title, '', $item->year);
+				$subject  = JText::sprintf(
+					'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
+					JText::_('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT_' . $data['item_type']),
+					$itemTitle
+				);
+			}
+		}
+		else
+		{
+			return false;
 		}
 
 		if ($params->get('reviews_send_email') == 1)
 		{
 			$_recipients = $params->get('reviews_emails');
 
-			if (empty($_recipients))
+			if (!empty($_recipients))
 			{
-				$recipients = $config->get('mailfrom');
+				$_recipients = str_replace(' ', '', $params->get('reviews_emails'));
+				$recipients  = explode(',', $_recipients);
+				$adminURL    = JUri::base() . 'administrator/index.php?option=com_kinoarhiv&task=reviews.edit&item_type='
+					. $data['item_type'] . '&id[]=' . $data['insertid'];
+				$body        = JText::sprintf(
+					'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
+					JText::_('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT_' . $data['item_type']),
+					'<a href="' . $itemURL . '" target="_blank">' . $itemTitle . '</a>'
+				) . '<br />' . JText::sprintf(
+					'COM_KA_REVIEWS_MAIL_INFO',
+					$user->get('name'), $data['datetime'], $data['ip']
+				) . '<p>' . $data['review'] . '</p>' . JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY')
+				. '<a href="' . $adminURL . '" target="_blank">' . $adminURL . '</a>';
+
+				// Call JFactory::getMailer() on each mail send to avoid adding all recipient
+				$sendToAdmin = JFactory::getMailer()->sendMail(
+					$config->get('mailfrom'),
+					$config->get('fromname'),
+					$recipients,
+					$subject,
+					$body,
+					true
+				);
+
+				if ($sendToAdmin)
+				{
+					KAComponentHelper::eventLog('Cannot send an email to administrator(s) while save review.');
+				}
 			}
 			else
 			{
-				$_recipients = str_replace(' ', '', $params->get('reviews_emails'));
-				$recipients = explode(',', $_recipients);
-			}
-
-			$subject  = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movieTitle);
-			$adminURL = JUri::base() . 'administrator/index.php?option=com_kinoarhiv&task=reviews.edit&id[]=' . $data['insertid'];
-			$movieURL = JRoute::_(JUri::getInstance()) . '&review=' . $data['insertid'] . '#review-' . $data['insertid'];
-
-			$body = JText::sprintf(
-				'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
-				'<a href="' . $movieURL . '" target="_blank">' . $movieTitle . '</a>'
-			) . '<br />' . JText::sprintf(
-				'COM_KA_REVIEWS_MAIL_INFO',
-				$user->get('name'), $data['datetime'], $data['ip']
-			) . '<p>' . $data['review'] . '</p>' . JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY')
-				. '<a href="' . $adminURL . '" target="_blank">' . $adminURL . '</a>';
-
-			$sendToAdmin = $mailer->sendMail(
-				$config->get('mailfrom'),
-				$config->get('fromname'),
-				$recipients,
-				$subject,
-				$body,
-				true
-			);
-
-			if ($sendToAdmin)
-			{
-				KAComponentHelper::eventLog('Cannot send an email to administrator(s) while save review.');
+				KAComponentHelper::eventLog('Cannot send an email to administrator(s) while save review. Empty list of recipients!');
 			}
 		}
 
-		if ($params->get('reviews_send_email_touser') == 1)
+		if ($params->get('reviews_send_email_touser') == 1 && !$user->get('isRoot'))
 		{
 			// Get Itemid for menu
 			$query = $db->getQuery(true);
@@ -227,21 +300,25 @@ class KinoarhivModelReviews extends JModelForm
 				return false;
 			}
 
-			$subject = JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT', $movieTitle);
-			$profileURL = JRoute::_(JUri::base() . 'index.php?option=com_kinoarhiv&view=profile&page=reviews&Itemid=' . (int) $menuItemid);
-			$movieURL = JRoute::_(JUri::getInstance() . '&review=' . (int) $data['insertid']) . '#review-' . (int) $data['insertid'];
-
-			$body = JText::sprintf(
+			$body       = JText::sprintf(
 				'COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT',
-				'<a href="' . $movieURL . '" target="_blank">' . $movieTitle . '</a>'
-			) . '<br />' . JText::sprintf(
-				'COM_KA_REVIEWS_MAIL_INFO',
-				$user->get('name'),
-				$data['datetime'], $data['ip']
-			) . '<p>' . $data['review'] . '</p>' . JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY')
-				. '<a href="' . $profileURL . '" target="_blank">' . $profileURL . '</a>';
+				JText::_('COM_KA_REVIEWS_ADMIN_MAIL_SUBJECT_' . $data['item_type']),
+				'<a href="' . $itemURL . '" target="_blank">' . $itemTitle . '</a>'
+			) . '<br /><p>' . $data['review'] . '</p>';
 
-			$sendToUser = $mailer->sendMail(
+			if (!empty($menuItemid))
+			{
+				$tab        = $data['item_type'] == 0 ? 'movies' : 'albums';
+				$profileURL = JRoute::_(
+					JUri::base() . 'index.php?option=com_kinoarhiv&view=profile&page=reviews&tab=' . $tab . '&Itemid=' . (int) $menuItemid
+				);
+				$body .= JText::_('COM_KA_REVIEWS_ADMIN_MAIL_BODY') . '<a href="' . $profileURL . '" target="_blank">' . $profileURL . '</a>';
+
+				// TODO Implement user unsubscribe functionality
+				// $body .= JText::sprintf('COM_KA_REVIEWS_ADMIN_MAIL_UNSUB', '', '');
+			}
+
+			$sendToUser = JFactory::getMailer()->sendMail(
 				$config->get('mailfrom'),
 				$config->get('fromname'),
 				$user->get('email'),

@@ -9,21 +9,25 @@
  */
 
 defined('_JEXEC') or die;
+
+$allowReviewForm      = $this->params->get('allow_reviews');
+$allowReviewsList     = $this->params->get('show_reviews');
+$itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 ?>
 <div class="reviews" id="reviews">
 <?php
-	if ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') != 'default'):
+	if ($this->params->get('custom_review_component') != 'default'):
 		// JComments
 		if ($this->params->get('custom_review_component') == 'jc' && file_exists(JPATH_ROOT . '/components/com_jcomments/jcomments.php')):
 			include_once JPATH_ROOT . '/components/com_jcomments/jcomments.php';
 			$jc = new JComments;
 			echo $jc::show($this->item->id, 'com_kinoarhiv', $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)));
 		endif;
-	elseif ($this->params->get('allow_reviews') == 1 && $this->params->get('custom_review_component') == 'default'):
+	elseif ($this->params->get('custom_review_component') == 'default'):
 		$reviewNumber = $this->pagination->limitstart + 1;
 		$cmdInsertUsername = '';
 
-		if ($this->params->get('allow_reviews') == 1 && !$this->user->guest && $this->item->attribs->allow_reviews == 1):
+		if ($allowReviewForm == 1 && !$this->user->guest && $itemAllowReviewsForm == 1):
 			// Default review system
 			$cmdInsertUsername = ' cmd-insert-username';
 		endif; ?>
@@ -35,7 +39,9 @@ defined('_JEXEC') or die;
 		if ($totalReviews > 0): ?>
 		<div class="content">
 
-			<?php for ($i = 0, $n = $totalReviews; $i < $n; $i++):
+		<?php
+		if ($allowReviewsList == 1):
+			for ($i = 0, $n = $totalReviews; $i < $n; $i++):
 				$review = $this->items[$i];
 
 				if ($review->type == 1)
@@ -65,7 +71,7 @@ defined('_JEXEC') or die;
 								 class="hasTooltip permalink"><img src="media/com_kinoarhiv/images/icons/link_16.png" alt="" /></a></span>
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
-					<?php if (!$this->user->guest && $this->item->attribs->allow_reviews == 1): ?>
+					<?php if (!$this->user->guest && ($allowReviewForm == 1 && $itemAllowReviewsForm == 1)): ?>
 						<div class="review review-content <?php echo $uiClass; ?>"><?php echo $review->review; ?></div>
 						<div class="review-footer corner-bottom">
 							<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
@@ -91,6 +97,7 @@ defined('_JEXEC') or die;
 					<input type="hidden" name="task" value=""/>
 				</form>
 			</div>
+		<?php endif; ?>
 		</div>
 	<?php else: ?>
 		<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_NO')); ?></div>
@@ -99,14 +106,15 @@ defined('_JEXEC') or die;
 	<?php
 		// Show "Add review" form
 		if (!$this->user->guest):
-			if ($this->item->attribs->allow_reviews == 1):
+			if ($allowReviewForm == 1 && $itemAllowReviewsForm == 1):
 				echo JLayoutHelper::render(
 					'layouts.editors.editor_' . $this->params->get('review_editor'),
 					(object) array(
 						'params' => $this->params,
 						'form'   => $this->form,
 						'id'     => $this->item->id,
-						'task'   => 'reviews.save'
+						'task'   => 'reviews.save',
+						'view'   => 'movie'
 					),
 					JPATH_COMPONENT
 				);
@@ -124,5 +132,5 @@ defined('_JEXEC') or die;
 		); ?>
 		</div>
 		<?php endif;
-endif; ?>
+	endif; ?>
 </div>

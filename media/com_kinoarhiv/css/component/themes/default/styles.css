@@ -99,12 +99,6 @@ div.clear {
 	margin-bottom: .5em;
 }
 
-@media (max-width: 979px) {
-	.content .poster {
-		float: none;
-	}
-}
-
 span.cn-list, span.gn-list, span.dc-list, span.cast-list {
 	display: block;
 }
@@ -351,16 +345,6 @@ h3.title {
 .album-info .right-col {
 	float: left;
 	width: 70%;
-}
-
-@media (max-width: 979px) {
-	.info .left-col {
-		width: 100%;
-	}
-
-	.info .right-col {
-		width: 100%;
-	}
 }
 
 .movie-info, .name-info, .album-info {
@@ -1023,13 +1007,6 @@ div.rating {
 	text-align: center;
 }
 
-@media (max-width: 790px) {
-	.ratings-frontpage.rating-col a {
-		display: inline-block;
-		text-align: center;
-	}
-}
-
 .ratings-frontpage img {
 	margin-bottom: 5px;
 }
@@ -1161,4 +1138,48 @@ div.rating {
 
 .snd-list .media-body {
 	padding-left: .5em;
+}
+
+@media (max-width: 400px) {
+	.tabs.breadcrumb a {
+		display: inline-block;
+		margin-bottom: .5em;
+	}
+}
+
+@media (max-width: 790px) {
+	.ratings-frontpage.rating-col a {
+		display: inline-block;
+		text-align: center;
+	}
+
+	.movie-info, .name-info, .album-info {
+		margin-left: 0;
+	}
+
+	.mark-links {
+		padding-bottom: .5em;
+	}
+
+	.mark-links > div {
+		padding-top: .5em;
+	}
+
+	.movie-info .f-col, .name-info .f-col, .album-info .f-col {
+		min-width: 80px;
+	}
+}
+
+@media (max-width: 979px) {
+	.content .poster {
+		float: none;
+	}
+
+	.info .left-col {
+		width: 100%;
+	}
+
+	.info .right-col {
+		width: 100%;
+	}
 }

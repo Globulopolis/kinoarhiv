@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 /** @var array $displayData */
 $tracks = $displayData['tracks'];
 ?>
+<br />
 <table class="track-list table table-striped">
 	<thead>
 		<tr>

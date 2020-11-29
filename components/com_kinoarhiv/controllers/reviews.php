@@ -28,14 +28,17 @@ class KinoarhivControllerReviews extends JControllerLegacy
 	{
 		$app      = JFactory::getApplication();
 		$id       = $app->input->get('id', null, 'int');
-		$view     = $app->input->getCmd('return', 'movie');
+		$view     = $app->input->getCmd('view', '');
 		$itemid   = $app->input->getInt('Itemid', 0);
-		$redirUrl = 'index.php?option=com_kinoarhiv&view=' . $view . '&id=' . $id . '&Itemid=' . $itemid;
+		$redirUrl = 'index.php?option=com_kinoarhiv&';
+
+		// Encoded value. Default 'view=movies'
+		$return = $this->input->getBase64('return', 'dmlldz1tb3ZpZXM=');
 
 		if (JSession::checkToken() === false)
 		{
 			KAComponentHelper::eventLog(JText::_('JINVALID_TOKEN'));
-			$this->setRedirect(JRoute::_($redirUrl, false), JText::_('JINVALID_TOKEN'), 'error');
+			$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false), JText::_('JINVALID_TOKEN'), 'error');
 
 			return;
 		}
@@ -45,7 +48,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if ($user->guest)
 		{
 			KAComponentHelper::eventLog(JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'));
-			$this->setRedirect(JRoute::_($redirUrl, false), JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'), 'error');
+			$this->setRedirect(JRoute::_($redirUrl . 'view=movies&Itemid=' . $itemid, false), JText::_('COM_KA_REVIEWS_AUTHREQUIRED_ERROR'), 'error');
 
 			return;
 		}
@@ -58,7 +61,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if (!$form)
 		{
 			$app->enqueueMessage($model->getError(), 'error');
-			$this->setRedirect(JRoute::_($redirUrl, false));
+			$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false));
 
 			return;
 		}
@@ -86,7 +89,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 				}
 			}
 
-			$this->setRedirect(JRoute::_($redirUrl, false));
+			$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false));
 
 			return;
 		}
@@ -103,7 +106,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
 			$this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect(JRoute::_($redirUrl, false));
+			$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false));
 
 			return;
 		}
@@ -114,7 +117,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 			$app->setUserState('com_kinoarhiv.' . $view . '.reviews.' . $id . '_user_' . $user->get('id') . 'edit', null);
 		}
 
-		$this->setRedirect(JRoute::_($redirUrl, false));
+		$this->setRedirect(JRoute::_($redirUrl . base64_decode($return), false));
 	}
 
 	/**

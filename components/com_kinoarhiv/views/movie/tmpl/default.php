@@ -431,8 +431,6 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 		<?php endif; ?>
 
 		<?php echo $this->item->event->afterDisplayContent; ?>
-		<?php if ($this->params->get('show_reviews') == 1):
-			echo $this->loadTemplate('reviews');
-		endif; ?>
+		<?php echo $this->loadTemplate('reviews'); ?>
 	</article>
 </div>

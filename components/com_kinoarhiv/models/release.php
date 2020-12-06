@@ -36,7 +36,7 @@ class KinoarhivModelRelease extends JModelItem
 	protected function populateState($ordering = null, $direction = null)
 	{
 		$app = JFactory::getApplication();
-		$pk = $app->input->getInt('id');
+		$pk  = $app->input->getInt('id');
 		$this->setState('release.id', $pk);
 	}
 
@@ -107,13 +107,16 @@ class KinoarhivModelRelease extends JModelItem
 					->order($db->quoteName('r.release_date') . ' DESC');
 
 				$db->setQuery($query);
-				$data->items = $db->loadObjectList();
+				$rows = $db->loadObjectList();
 
-				if (empty($data->items))
+				if (empty($rows))
 				{
-					throw new Exception(JText::_('COM_CONTENT_ERROR_ARTICLE_NOT_FOUND'), 404);
+					$this->setError(JText::_('COM_KA_MOVIE_NOT_FOUND'));
+
+					return false;
 				}
 
+				$data->items = $db->loadObjectList();
 				$this->_item[$pk] = $data;
 			}
 			catch (Exception $e)

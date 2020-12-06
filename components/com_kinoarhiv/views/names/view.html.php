@@ -38,12 +38,12 @@ class KinoarhivViewNames extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
+		$user              = JFactory::getUser();
+		$app               = JFactory::getApplication();
+		$lang              = JFactory::getLanguage();
 		$this->filtersData = $this->get('FiltersData');
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
+		$this->items       = $this->get('Items');
+		$this->pagination  = $this->get('Pagination');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -52,9 +52,9 @@ class KinoarhivViewNames extends JViewLegacy
 			return false;
 		}
 
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_enable = $this->params->get('throttle_image_enable', 0);
+		$this->params   = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid   = $app->input->get('Itemid', 0, 'int');
+		$throttleEnable = $this->params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -79,7 +79,7 @@ class KinoarhivViewNames extends JViewLegacy
 			// Compose title
 			$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
-			if ($throttle_enable == 0)
+			if ($throttleEnable == 0)
 			{
 				$checking_path = JPath::clean(
 					$this->params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
@@ -154,11 +154,11 @@ class KinoarhivViewNames extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PERSONS');
+		$title   = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PERSONS');
 
 		// Create a new pathway object
 		$path = (object) array(

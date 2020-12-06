@@ -63,7 +63,7 @@ else
 				if ($params->get('ratings_img_imdb') != 0 && !empty($item->imdb_id)):
 					if (file_exists($params->get('media_rating_image_root') . '/imdb/' . $item->id . '_big.png')): ?>
 						<a href="http://www.imdb.com/title/<?php echo $item->imdb_id; ?>/" rel="noopener noreferrer nofollow"
-						   target="_blank"><img src="<?php echo $ratingImageURL; ?>/imdb/<?php echo $item->id; ?>_big.png" /></a>
+						   target="_blank"><img src="<?php echo $ratingImageURL; ?>/imdb/<?php echo $item->id; ?>_big.png" alt="imdb"/></a>
 					<?php endif;
 				endif;
 
@@ -71,9 +71,9 @@ else
 				if ($params->get('ratings_img_kp') != 0 && !empty($item->kp_id)): ?>
 					<a href="https://www.kinopoisk.ru/film/<?php echo $item->kp_id; ?>/" rel="noopener noreferrer nofollow" target="_blank">
 						<?php if ($params->get('ratings_img_kp_remote') == 0): ?>
-							<img src="<?php echo $ratingImageURL; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" />
+							<img src="<?php echo $ratingImageURL; ?>/kinopoisk/<?php echo $item->id; ?>_big.png" alt="kinopoisk" />
 						<?php else: ?>
-							<img src="https://www.kinopoisk.ru/rating/<?php echo $item->kp_id; ?>.gif" style="padding-left: 1px;"/>
+							<img src="https://www.kinopoisk.ru/rating/<?php echo $item->kp_id; ?>.gif" alt="kinopoisk" style="padding-left: 1px;" />
 						<?php endif; ?>
 					</a>
 				<?php endif;
@@ -90,9 +90,9 @@ else
 						<?php
 						// MyShows have an rating image only for serial not for episode.
 						if ($params->get('ratings_img_myshows_remote') == 0 && $item->parent_id == 0): ?>
-							<img src="<?php echo $ratingImageURL; ?>/myshows/<?php echo $item->id; ?>_big.png" />
+							<img src="<?php echo $ratingImageURL; ?>/myshows/<?php echo $item->id; ?>_big.png" alt="Myshows" />
 						<?php else: ?>
-							<img src="https://u.myshows.me/r/<?php echo $item->myshows_id; ?>.png" style="padding-left: 1px;"/>
+							<img src="https://u.myshows.me/r/<?php echo $item->myshows_id; ?>.png" alt="Myshows" style="padding-left: 1px;" />
 						<?php endif; ?>
 					</a>
 				<?php endif;
@@ -102,7 +102,7 @@ else
 					if (file_exists($params->get('media_rating_image_root') . '/rottentomatoes/' . $item->id . '_big.png')): ?>
 						<a href="https://www.rottentomatoes.com/m/<?php echo $item->rottentm_id; ?>/"
 						   rel="noopener noreferrer nofollow" target="_blank"
-						><img src="<?php echo $ratingImageURL; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" /></a>
+						><img src="<?php echo $ratingImageURL; ?>/rottentomatoes/<?php echo $item->id; ?>_big.png" alt="Rottentomatoes" /></a>
 					<?php endif;
 				endif;
 
@@ -110,7 +110,7 @@ else
 					if (file_exists($params->get('media_rating_image_root') . '/metacritic/' . $item->id . '_big.png')): ?>
 						<a href="http://www.metacritic.com/movie/<?php echo $item->metacritics_id; ?>"
 						   rel="noopener noreferrer nofollow" target="_blank"
-						><img src="<?php echo $ratingImageURL; ?>/metacritic/<?php echo $item->id; ?>_big.png" /></a>
+						><img src="<?php echo $ratingImageURL; ?>/metacritic/<?php echo $item->id; ?>_big.png" alt="Metacritic" /></a>
 					<?php endif;
 				endif; ?>
 			</div>

@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-if ($this->params->get('search_movies_enable') == 0)
+if (!$this->params->get('search_movies_enable'))
 {
 	return;
 }
@@ -38,7 +38,7 @@ if ($this->params->get('search_movies_enable') == 0)
 						month = matches[2] - 1;
 						composed_date = new Date(year, month);
 
-						if (composed_date.getFullYear() == year && composed_date.getMonth() == month) {
+						if (composed_date.getFullYear() === year && composed_date.getMonth() === month) {
 							if (composed_date.getFullYear() > 1800 && composed_date.getFullYear() < 2100) {
 								return true;
 							}
@@ -52,7 +52,7 @@ if ($this->params->get('search_movies_enable') == 0)
 				day = matches[3];
 				composed_date = new Date(year, month, day);
 
-				if (composed_date.getFullYear() == year && composed_date.getMonth() == month && composed_date.getDate() == day) {
+				if (composed_date.getFullYear() === year && composed_date.getMonth() === month && composed_date.getDate() === day) {
 					if (composed_date.getFullYear() > 1800 && composed_date.getFullYear() < 2100) {
 						return true;
 					}
@@ -68,11 +68,10 @@ if ($this->params->get('search_movies_enable') == 0)
 		});
 	});
 </script>
-<div class="advsearch-movies<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'movies') ? ' well uk-panel uk-panel-box' : ''; ?>">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search'); ?>" id="filters_movies" method="post" autocomplete="off" class="form-validate">
+<div class="advsearch-movies">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search'); ?>" id="filters_movies"
+		  method="post" autocomplete="off" class="form-validate">
 		<fieldset class="form-horizontal uk-form">
-			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE'); ?></legend>
-
 			<?php if ($this->params->get('search_movies_title') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
@@ -191,7 +190,7 @@ if ($this->params->get('search_movies_enable') == 0)
 							<div class="span3 rate-input">
 								<?php echo $this->form->getInput('rate_min', 'movies'); ?> - <?php echo $this->form->getInput('rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rate_slider', 'movies'); ?></div>
+							<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -207,7 +206,7 @@ if ($this->params->get('search_movies_enable') == 0)
 							<div class="span3 rate-input">
 								<?php echo $this->form->getInput('imdb_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('imdb_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('imdb_rate_slider', 'movies'); ?></div>
+							<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('imdb_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -223,7 +222,7 @@ if ($this->params->get('search_movies_enable') == 0)
 							<div class="span3 rate-input">
 								<?php echo $this->form->getInput('kp_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('kp_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('kp_rate_slider', 'movies'); ?></div>
+							<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('kp_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -239,7 +238,7 @@ if ($this->params->get('search_movies_enable') == 0)
 							<div class="span3 rate-input">
 								<?php echo $this->form->getInput('rt_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('rt_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rt_rate_slider', 'movies'); ?></div>
+							<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rt_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -255,7 +254,7 @@ if ($this->params->get('search_movies_enable') == 0)
 							<div class="span3 rate-input">
 								<?php echo $this->form->getInput('mc_rate_min', 'movies'); ?> - <?php echo $this->form->getInput('mc_rate_max', 'movies'); ?>
 							</div>
-							<div class="span6" style="padding-top: 0.2em;"><?php echo $this->form->getInput('mc_rate_slider', 'movies'); ?></div>
+							<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('mc_rate_slider', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>
@@ -277,7 +276,8 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="row-fluid uk-form-row">
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
-							<div class="control-label uk-width-1-6"><label id="movie_premiere_country-lbl" for="movie_premiere_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_PREMIERE'); ?></label></div>
+							<div class="control-label uk-width-1-6"><label id="movie_premiere_country-lbl"
+								 for="movie_premiere_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_PREMIERE'); ?></label></div>
 							<div class="controls uk-width-1-2">
 								<?php echo $this->form->getInput('premiere_country', 'movies'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('premiere_date', 'movies'); ?>
 							</div>
@@ -290,7 +290,8 @@ if ($this->params->get('search_movies_enable') == 0)
 				<div class="row-fluid uk-form-row">
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
-							<div class="control-label uk-width-1-6"><label id="movie_release_country-lbl" for="movie_release_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_RELEASE'); ?></label></div>
+							<div class="control-label uk-width-1-6"><label id="movie_release_country-lbl"
+								 for="movie_release_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_RELEASE'); ?></label></div>
 							<div class="controls uk-width-1-2">
 								<?php echo $this->form->getInput('release_country', 'movies'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('release_date', 'movies'); ?>
 							</div>
@@ -314,7 +315,7 @@ if ($this->params->get('search_movies_enable') == 0)
 		<input type="hidden" name="option" value="com_kinoarhiv" />
 		<input type="hidden" name="task" value="search.results" />
 		<input type="hidden" name="content" value="movies" />
-		<input type="hidden" name="m_itemid" value="<?php echo $this->home_itemid['movies']; ?>" />
+		<input type="hidden" name="menu" value="<?php echo $this->homeItemid['movies']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 		<input type="submit" class="btn btn-primary uk-button uk-button-primary validate" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 		<input type="reset" class="btn uk-button cmd-reset-movies" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />

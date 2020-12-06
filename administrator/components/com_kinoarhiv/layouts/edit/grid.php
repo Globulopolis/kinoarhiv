@@ -19,6 +19,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jqgrid/plugins/ui.multiselect.min.js'
 JHtml::_('script', 'media/com_kinoarhiv/js/jqgrid/jquery.jqgrid.min.js');
 KAComponentHelper::getScriptLanguage('grid.locale-', 'media/com_kinoarhiv/js/i18n/jqgrid');
 
+/** @var array $displayData */
 $data = $displayData;
 $attr = array();
 
@@ -72,11 +73,11 @@ $attr[] = array_key_exists('pager', $data) ? ' data-pager="' . $data['pager'] . 
 $attr[] = array_key_exists('idprefix', $data) ? ' data-idprefix="' . $data['idprefix'] . '"' : '';
 $attr[] = array_key_exists('rowlist', $data) ? ' data-rowlist="' . json_encode($data['rowlist']) . '"' : ' data-rowlist="[]"';
 $attr[] = array_key_exists('navgrid', $data) ? " data-navgrid_setup='" . json_encode($data['navgrid']) . "'" : '';
-$attr[]   = array_key_exists('add_url', $data) ? " data-add_url='" . $data['add_url'] . "'" : '';
-$attr[]   = array_key_exists('edit_url', $data) ? " data-edit_url='" . $data['edit_url'] . "'" : '';
-$attr[]  = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_url'] . "'" : '';
-$attr[]  = array_key_exists('pgbuttons', $data) ? ' data-pgbuttons="' . (bool) $data['pgbuttons'] . '"' : ' data-pgbuttons="true"';
-$attr[]  = array_key_exists('pginput', $data) ? ' data-pginput="' . (bool) $data['pginput'] . '"' : ' data-pginput="true"';
+$attr[] = array_key_exists('add_url', $data) ? " data-add_url='" . $data['add_url'] . "'" : '';
+$attr[] = array_key_exists('edit_url', $data) ? " data-edit_url='" . $data['edit_url'] . "'" : '';
+$attr[] = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_url'] . "'" : '';
+$attr[] = array_key_exists('pgbuttons', $data) ? ' data-pgbuttons="' . (bool) $data['pgbuttons'] . '"' : ' data-pgbuttons="true"';
+$attr[] = array_key_exists('pginput', $data) ? ' data-pginput="' . (bool) $data['pginput'] . '"' : ' data-pginput="true"';
 ?>
 <table id="<?php echo $gridID; ?>" class="jqgrid" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
 <div id="<?php echo $pagerID; ?>"></div>

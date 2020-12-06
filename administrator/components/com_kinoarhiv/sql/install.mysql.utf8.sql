@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   `covers_path_www` varchar(255) NOT NULL,
   `cover_filename` varchar(128) NOT NULL,
   `tracks_path` text NOT NULL,
+  `tracks_path_www` text NOT NULL,
   `tracks_preview_path` varchar(255) NOT NULL,
   `buy_urls` text NOT NULL,
   `attribs` varchar(5120) NOT NULL,

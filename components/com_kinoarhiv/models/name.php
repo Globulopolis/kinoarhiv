@@ -90,7 +90,7 @@ class KinoarhivModelName extends JModelList
 
 			if (empty($result))
 			{
-				KAComponentHelper::eventLog(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
+				$this->setError(JText::_('COM_KA_NAMES_NOT_FOUND'));
 
 				return false;
 			}

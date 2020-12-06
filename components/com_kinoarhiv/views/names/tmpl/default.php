@@ -14,44 +14,13 @@ use Joomla\String\StringHelper;
 
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
-<script type="text/javascript">
-	//<![CDATA[
-	jQuery(document).ready(function ($) {
-		<?php if ($this->params->get('search_names_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('names')): ?>
-		$('#searchForm #search_form_content').load('<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=search&task=names&format=raw&' . JSession::getFormToken() . '=1', false); ?>', <?php echo json_encode(array('form' => $this->filtersData)); ?>, function (response, status, xhr) {
-			if (status == 'error') {
-				Aurora.message([{text: 'Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText, type: 'error'}], '#system-message-container', {replace: true});
-				return false;
-			}
-
-			$(this).removeClass('loading');
-		});
-		<?php endif; ?>
-	});
-	//]]>
-</script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params), JPATH_COMPONENT);
 	endif; ?>
 
-	<?php if ($this->params->get('search_names_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('names')): ?>
-		<div class="accordion" id="searchForm">
-			<div class="accordion-group">
-				<div class="accordion-heading">
-					<a class="accordion-toggle" data-toggle="collapse" data-parent="#searchForm" href="#toggleSearchForm"><strong><?php echo JText::_('COM_KA_SEARCH_ADV'); ?></strong></a>
-				</div>
-				<div id="toggleSearchForm" class="accordion-body collapse">
-					<div class="accordion-inner">
-						<div id="search_form_content" class="loading"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	<?php endif; ?>
-
 	<?php if (count($this->items) > 0):
-		if ($this->params->get('search_names_enable') == 1 && is_object($this->filtersData) && $this->filtersData->exists('names')):
+		if (is_object($this->filtersData) && $this->filtersData->exists('names')):
 			$plural = $this->lang->getPluralSuffixes($this->pagination->total);
 			echo '<br />' . JText::sprintf('COM_KA_SEARCH_PERSON_N_RESULTS_' . $plural[0], $this->pagination->total);
 		endif; ?>
@@ -66,7 +35,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 			<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>">
 				<header>
 					<h1 class="uk-article-title title title-small">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="brand" title="<?php echo $this->escape($item->title); ?>"><?php echo $this->escape($item->title); ?><?php echo $item->date_range; ?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+						   class="brand" title="<?php echo $this->escape($item->title); ?>"><?php echo $this->escape($item->title); ?><?php echo $item->date_range; ?></a>
 					</h1>
 				</header>
 				<div class="content content-list clearfix">
@@ -74,7 +44,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						<div class="poster">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape($item->title); ?>">
 								<div>
-									<img data-original="<?php echo $item->poster; ?>" class="lazy" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
+									<img data-original="<?php echo $item->poster; ?>" class="lazy"
+										 alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->escape($item->title); ?>"
+										 width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
 								</div>
 							</a>
 						</div>
@@ -99,7 +71,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 								<div class="name-bd">
 									<?php echo JText::_('COM_KA_NAMES_BIRTHPLACE'); ?>
 									<?php echo !empty($item->birthplace) ? $item->birthplace . ', ' : ''; ?>
-									<img class="ui-icon-country" alt="<?php echo $item->country; ?>" src="media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png"> <?php echo $item->country; ?>
+									<img class="ui-icon-country" alt="<?php echo $item->country; ?>"
+										 src="media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png"> <?php echo $item->country; ?>
 								</div>
 							<?php endif; ?>
 							<?php if ($item->genres != ''): ?>
@@ -122,7 +95,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						</div>
 					</div>
 					<div class="links">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTooltip" title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+						   class="btn btn-default uk-button readmore-link hasTooltip"
+						   title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
 							<span class="icon-chevron-right"></span></a>
 					</div>
 				</div>
@@ -130,7 +105,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 		<?php endforeach; ?>
 		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 		<div class="pagination bottom">
-			<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+			<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post"
+				  name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 				<?php echo $this->pagination->getPagesLinks(); ?><br/>
 				<?php echo $this->pagination->getResultsCounter(); ?>
 				<?php echo $this->pagination->getLimitBox(); ?>
@@ -139,6 +115,6 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 	<?php endif;
 	else: ?>
 		<br/>
-		<div><?php echo ($this->params->get('search_names_enable') == 1 && $this->filtersData->exists('names')) ? JText::sprintf('COM_KA_SEARCH_PERSON_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<div><?php echo $this->filtersData->exists('names') ? JText::sprintf('COM_KA_SEARCH_ADV_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>
 </div>

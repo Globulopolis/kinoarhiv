@@ -50,6 +50,7 @@
 			<option value="syslog">COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_SYS</option>
 		</field>
 	</fieldset>
+
 	<fieldset name="metadata" label="COM_KA_SETTINGS_META_LABEL">
 		<field name="meta_description" type="textarea" default="" label="JFIELD_META_DESCRIPTION_LABEL"
 			   description="JFIELD_META_DESCRIPTION_DESC" filter="string" cols="60" rows="3" class="span11"/>
@@ -65,6 +66,7 @@
 		<field name="generator" type="text" default="" label="COM_KA_FIELD_METAGENERATOR_LABEL"
 			   description="COM_KA_FIELD_METAGENERATOR_LABEL_DESC" filter="string" size="50"/>
 	</fieldset>
+
 	<fieldset name="paths" label="COM_KA_PATHS_LABEL">
 		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red"/>
 		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL"
@@ -164,6 +166,7 @@
 			   label="COM_KA_FIELD_PATHS_RT_WWW_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
 			   filter="string" size="100" class="span11"/>
 	</fieldset>
+
 	<fieldset name="gallery" label="COM_KA_SETTINGS_GALLERY_LABEL">
 		<field name="upload_limit" type="text" default="10mb" label="COM_KA_FIELD_UPLOAD_LIMIT_LABEL"
 			   description="COM_KA_FIELD_UPLOAD_LIMIT_LABEL_DESC" required="true" filter="string" size="32"/>
@@ -200,6 +203,7 @@
 			   label="COM_KA_FIELD_UPLOAD_WATERMARK_IMAGE_LABEL" description="COM_KA_FIELD_UPLOAD_WATERMARK_LABEL_DESC"
 			   filter="string" size="100" class="span11"/>
 	</fieldset>
+
 	<fieldset name="content_dl" label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_LABEL">
 		<field name="throttle_image_enable" type="radio" class="btn-group" default="0"
 			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_IMG_LABEL"
@@ -222,7 +226,19 @@
 			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL" filter="int" size="32"/>
 		<field name="throttle_video_sec" type="text" default="1"
 			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL" filter="float" size="32"/>
+
+		<field name="throttle_audio_enable" type="radio" class="btn-group" default="0"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_AUDIO_LABEL"
+			   description="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="throttle_audio_bytes" type="text" default="524288"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_BYTES_LABEL" filter="int" size="32"/>
+		<field name="throttle_audio_sec" type="text" default="1"
+			   label="COM_KA_SETTINGS_UPLOAD_DOWNLOAD_THROTTLE_SEC_LABEL" filter="float" size="32"/>
 	</fieldset>
+
 	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
 		<field type="spacer" name="sp_music_global" class="separator" label="COM_KA_FIELD_MUSIC_GLOBAL_SPACER"/>
 		<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg"
@@ -239,6 +255,7 @@
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
+
 	<fieldset name="music_arts" label="COM_KA_FIELD_MUSIC_COVERS_SPACER">
 		<field type="spacer" name="sp_music_covers" class="separator" label="COM_KA_FIELD_MUSIC_COVERS_SPACER"/>
 		<field name="music_covers_front" type="textarea" default="front.jpg" label="COM_KA_FIELD_MUSIC_COVERS_FRONT"
@@ -252,6 +269,7 @@
 		<field name="music_covers_size" type="text" default="250" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
 			   filter="integer" size="3" class="span11"/>
 	</fieldset>
+
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
 		<field name="ka_theme" type="folderlist" default="default"
 			   directory="media/com_kinoarhiv/images/themes/" label="COM_KA_FIELD_AP_KA_THEME_LABEL"
@@ -280,6 +298,7 @@
 		<field name="vegas_slideshow_delay" type="text" default="10" label="COM_KA_FIELD_AP_VEGAS_BGDELAY_LABEL"
 			   filter="integer" size="3"/>
 	</fieldset>
+
 	<fieldset name="ap_item" label="COM_KA_SETTINGS_AP_ITEM_LABEL">
 		<field name="link_titles" type="radio" class="btn-group" default="1" label="JGLOBAL_LINKED_TITLES_LABEL"
 			   description="JGLOBAL_LINKED_TITLES_DESC">
@@ -337,6 +356,7 @@
 		<field name="slider_min_item" type="text" default="3"
 			   label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MIN_LABEL" required="true" filter="integer" size="6"/>
 	</fieldset>
+
 	<fieldset name="ap_item_player" label="COM_KA_SETTINGS_AP_ITEM_PLAYER">
 		<field name="trailer_collapsed" type="radio" class="btn-group" default="0"
 			   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL"
@@ -362,6 +382,7 @@
 		<field name="player_swf" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_SWF_LABEL"
 			   description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12"/>
 	</fieldset>
+
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
 		<field name="allow_votes" type="radio" class="btn-group" default="1"
 			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ALLOW_VOTES_LABEL"
@@ -396,6 +417,7 @@
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
+
 	<fieldset name="ap_rate_img" label="COM_KA_SETTINGS_AP_RATE_IMG_LABEL">
 		<field name="ratings_show_remote" type="radio" class="btn-group" default="1"
 			   label="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL" description="COM_KA_FIELD_AP_RATE_REMOTE_IMG_LABEL_DESC"
@@ -437,12 +459,13 @@
 	</fieldset>
 
 	<field name="use_alphabet" type="radio" class="btn-group" default="0" label="COM_KA_SETTINGS_AP_AB_USE_LABEL"
-		   filter="integer">
+		   description="COM_KA_SETTINGS_AP_AB_USE_DESC" filter="integer">
 		<option value="1">JYES</option>
 		<option value="0">JNO</option>
 	</field>
 	<field type="spacer" name="alphabet_movies" class="text" label="COM_KA_SETTINGS_AP_AB_MOVIES"/>
 	<field type="spacer" name="alphabet_names" class="text" label="COM_KA_SETTINGS_AP_AB_NAMES"/>
+
 	<fieldset name="ap_nav" label="COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL">
 		<field name="show_feed_link" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_LNK_FEED_LABEL"
 			   description="COM_KA_FIELD_AP_LNK_FEED_LABEL_DESC" filter="integer">
@@ -543,6 +566,7 @@
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
+
 	<fieldset name="reviews" label="COM_KA_REVIEWS_TAB">
 		<field name="allow_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_ALLOWREVIEWS_LABEL"
 			   description="COM_KA_FIELD_ALLOWREVIEWS_LABEL_DESC" filter="integer">
@@ -573,6 +597,7 @@
 			   label="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL" description="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL_DESC"
 			   filter="string" cols="60" rows="5" class="span11"/>
 	</fieldset>
+
 	<fieldset name="reviews_save" label="COM_KA_REVIEWS_SETTINGS_SAVE_LABEL">
 		<field name="reviews_premod" type="radio" class="btn-group" default="1"
 			   label="COM_KA_REVIEWS_SETTINGS_SAVE_PREMOD_LABEL"
@@ -596,9 +621,11 @@
 			   description="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL_DESC" filter="string" cols="60" rows="5"
 			   class="span11"/>
 	</fieldset>
+
 	<fieldset name="search_movies" label="COM_KA_SEARCH_SETTINGS_MOVIES">
 		<field name="search_movies_enable" type="radio" class="btn-group" default="1"
-			   label="COM_KA_SEARCH_SETTINGS_FORM_MOVIES_ENABLE" filter="integer">
+			   label="COM_KA_SEARCH_SETTINGS_FORM_MOVIES_ENABLE" description="COM_KA_SEARCH_SETTINGS_FORMS_MENU_OVERRIDE"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
@@ -704,9 +731,11 @@
 			<option value="0">JNO</option>
 		</field>
 	</fieldset>
+
 	<fieldset name="search_names" label="COM_KA_SEARCH_SETTINGS_NAMES">
 		<field name="search_names_enable" type="radio" class="btn-group" default="1"
-			   label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE" filter="integer">
+			   label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE" description="COM_KA_SEARCH_SETTINGS_FORMS_MENU_OVERRIDE"
+			   filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
@@ -758,6 +787,38 @@
 			<option value=""></option>
 		</field>
 	</fieldset>
+
+	<!-- TODO Поиск по альбомам, трекам -->
+	<fieldset name="search_albums" label="COM_KA_SEARCH_SETTINGS_MUSIC">
+		<field name="search_albums_enable" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_MUSIC_ENABLE" description="COM_KA_SEARCH_SETTINGS_FORMS_MENU_OVERRIDE"
+			   filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_length_min" type="text" default="3"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MIN" required="true" filter="integer" size="3"
+			   maxlength="2" class="span2"/>
+		<field name="search_albums_length_max" type="text" default="64"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_LENGTH_MAX" required="true" filter="integer" size="3"
+			   maxlength="2" class="span2"/>
+		<field name="search_albums_title" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TITLE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_year" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_year_range" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_RANGE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+	</fieldset>
+
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" class="inputbox"
 			   filter="rules" component="com_kinoarhiv" section="component" validate="rules"/>

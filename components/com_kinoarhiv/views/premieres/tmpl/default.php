@@ -31,7 +31,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 					<h1 class="uk-article-title title title-small">
 						<?php if ($item->attribs->link_titles === ''): ?>
 							<?php if ($this->params->get('link_titles') == 1): ?>
-								<a href="<?php echo $item->params->get('url'); ?>" class="brand" title="<?php echo $title; ?>"><?php echo $title; ?></a>
+								<a href="<?php echo $item->params->get('url'); ?>" class="brand"
+								   title="<?php echo $title; ?>"><?php echo $title; ?></a>
 							<?php else: ?>
 								<span class="brand"><?php echo $title; ?></span>
 							<?php endif; ?>
@@ -101,7 +102,10 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 				<div class="content content-list clearfix">
 					<div>
 						<div class="poster">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>" class="lazy" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>" width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+							   title="<?php echo $title; ?>"><img data-original="<?php echo $item->poster; ?>"
+							   class="lazy" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>"
+							   width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/></a>
 						</div>
 						<div class="introtext premiere <?php echo (!empty($item->premiere_date) && $item->premiere_date != '0000-00-00 00:00:00') ? 'hasPremiere' : ''; ?>">
 							<div class="text"><?php echo $item->text; ?></div>
@@ -121,7 +125,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 
 					</div>
 					<div class="links">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="btn btn-default uk-button readmore-link hasTooltip" title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+						   class="btn btn-default uk-button readmore-link hasTooltip"
+						   title="<?php echo $title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
 							<span class="icon-chevron-right"></span></a>
 					</div>
 				</div>
@@ -130,7 +136,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 		<?php endforeach; ?>
 		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
 			<div class="pagination bottom">
-				<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
+				<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post"
+					  name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
 					<?php echo $this->pagination->getPagesLinks(); ?><br/>
 					<?php echo $this->pagination->getResultsCounter(); ?>
 					<?php echo $this->pagination->getLimitBox(); ?>

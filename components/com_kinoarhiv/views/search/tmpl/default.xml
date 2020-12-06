@@ -5,4 +5,46 @@
 			<![CDATA[COM_KINOARHIV_VIEW_SEARCH_DESC]]>
 		</message>
 	</layout>
+
+	<!-- Add fields to the parameters object for the layout. -->
+	<fields name="params">
+
+		<!-- Basic options. -->
+		<fieldset name="advanced"
+				  label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
+
+			<field
+					name="search_movies_enable"
+					type="list"
+					class="chzn-color"
+					label="COM_KA_SEARCH_SETTINGS_FORM_MOVIES_ENABLE"
+					default=""
+					useglobal="true">
+				<option value="1">JSHOW</option>
+				<option value="0">JHIDE</option>
+			</field>
+
+			<field
+					name="search_names_enable"
+					type="list"
+					class="chzn-color"
+					label="COM_KA_SEARCH_SETTINGS_FORM_NAMES_ENABLE"
+					default=""
+					useglobal="true">
+				<option value="1">JSHOW</option>
+				<option value="0">JHIDE</option>
+			</field>
+
+			<field
+					name="search_albums_enable"
+					type="list"
+					class="chzn-color"
+					label="COM_KA_SEARCH_SETTINGS_FORM_MUSIC_ENABLE"
+					default=""
+					useglobal="true">
+				<option value="1">JSHOW</option>
+				<option value="0">JHIDE</option>
+			</field>
+		</fieldset>
+	</fields>
 </metadata>

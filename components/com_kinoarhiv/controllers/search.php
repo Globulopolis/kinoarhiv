@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 /**
  * Kinoarhiv search class.
  *
@@ -46,8 +48,10 @@ class KinoarhivControllerSearch extends JControllerLegacy
 		}
 
 		$data = $this->input->post->get('form', array(), 'array');
+
+		/** @var KinoarhivModelSearch $model */
 		$model = $this->getModel('search');
-		$form = $model->getForm($data, false);
+		$form  = $model->getForm($data, false);
 
 		if (!$form)
 		{
@@ -101,17 +105,21 @@ class KinoarhivControllerSearch extends JControllerLegacy
 
 		$uri = JUri::getInstance();
 		$uri->setQuery($data);
-		$uri->setVar('option', 'com_kinoarhiv');
-		$uri->setVar('view', $content);
-		$uri->setVar('Itemid', $this->input->post->get('m_itemid', '', 'int'));
-		$uri->setVar('content', $content);
 
 		if ($exactMatch)
 		{
 			$uri->setVar('exact_match', 1);
 		}
 
-		$this->setRedirect(JRoute::_('index.php' . $uri->toString(array('query', 'fragment')), false));
+		$uri = StringHelper::substr($uri->toString(array('query', 'fragment')), 1);
+
+		$this->setRedirect(
+			JRoute::_(
+				'index.php?option=com_kinoarhiv&view=' . $content . '&content=' . $content
+				. '&Itemid=' . $this->input->post->get('menu', '', 'int') . '&' . $uri,
+				false
+			)
+		);
 
 		return true;
 	}

@@ -179,28 +179,6 @@ class KinoarhivModelReleases extends JModelList
 		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->where('parent_id = 0 AND m.access IN (' . $groups . ')');
 
-		if ($params->get('use_alphabet') == 1)
-		{
-			$letter = $app->input->get('letter', '', 'string');
-
-			if ($letter != '')
-			{
-				if ($letter === '0-1')
-				{
-					$range = range(0, 9);
-					$query->where('(m.title LIKE "' . implode('%" OR m.title LIKE "', $range) . '%")');
-				}
-				else
-				{
-					// Only any kind of letter from any language.
-					if (preg_match('#\p{L}#u', $letter, $matches))
-					{
-						$query->where('m.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
-					}
-				}
-			}
-		}
-
 		$query->where('r.release_date != ' . $nullDate)
 			->group($db->quoteName('m.id'))
 			->order($this->getState('list.ordering', 'r.release_date') . ' ' . $this->getState('list.direction', 'DESC'));

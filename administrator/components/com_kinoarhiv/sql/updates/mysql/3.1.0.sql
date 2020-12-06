@@ -46,6 +46,7 @@ ALTER TABLE `#__ka_music_albums`
   ADD COLUMN `buy_url` VARCHAR (255) NOT NULL AFTER `tracks_preview_path`,
   ADD COLUMN `fs_alias` VARCHAR (3) NOT NULL COMMENT 'Is the same as alias but only in latin charset' AFTER `alias`,
   ADD COLUMN `composer` VARCHAR (255) NOT NULL AFTER `fs_alias`,
+  ADD COLUMN `tracks_path_www` TEXT NOT NULL AFTER `tracks_path`,
   ADD COLUMN `attribs` VARCHAR (5120) NOT NULL AFTER `buy_url`,
   ADD COLUMN `created` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `attribs`,
   ADD COLUMN `created_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `created`,

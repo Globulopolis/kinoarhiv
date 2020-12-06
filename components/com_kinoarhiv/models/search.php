@@ -67,7 +67,7 @@ class KinoarhivModelSearch extends JModelForm
 		$user   = JFactory::getUser();
 		$lang   = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$itemid = array('movies' => 0, 'names' => 0);
+		$itemid = array('movies' => 0, 'names' => 0, 'albums' => 0);
 
 		$query = $db->getQuery(true)
 			->select('id')
@@ -105,6 +105,24 @@ class KinoarhivModelSearch extends JModelForm
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 
+		$query = $db->getQuery(true)
+			->select('id')
+			->from($db->quoteName('#__menu'))
+			->where("link = 'index.php?option=com_kinoarhiv&view=albums' AND type = 'component'")
+			->where("published = 1 AND access IN (" . $groups . ") AND language IN (" . $db->quote($lang->getTag()) . ",'*')")
+			->setLimit(1, 0);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$itemid['albums'] = $db->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+		}
+
 		return $itemid;
 	}
 
@@ -123,8 +141,6 @@ class KinoarhivModelSearch extends JModelForm
 
 		if (empty($content))
 		{
-			KAComponentHelper::eventLog('Wrong search query: content parameter');
-
 			return false;
 		}
 

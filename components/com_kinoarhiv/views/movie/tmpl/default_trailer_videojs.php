@@ -132,5 +132,4 @@ if ((isset($this->item->movie) && count(get_object_vars($this->item->movie)) > 0
 			</div>
 		</div>
 	</div>
-<?php
-endif;
+<?php endif;

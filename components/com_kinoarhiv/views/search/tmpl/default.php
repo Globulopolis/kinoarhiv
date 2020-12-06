@@ -10,39 +10,31 @@
 
 defined('_JEXEC') or die;
 
-if (JFactory::getDocument()->getType() == 'html')
-{
-	JHtml::_('behavior.formvalidator');
-}
-else
-{
-	echo '<style type="text/css">
-		@import url("media/com_kinoarhiv/css/select2.min.css");
-		@import url("media/com_kinoarhiv/css/bootstrap-slider.min.css");
-	</style>
-	<script src="media/com_kinoarhiv/js/bootstrap-slider.min.js" type="text/javascript"></script>
-	<script src="media/com_kinoarhiv/js/select2.min.js" type="text/javascript"></script>
-	<script src="media/system/js/core.js" type="text/javascript"></script>
-	<script src="media/system/js/punycode.js" type="text/javascript"></script>
-	<script src="media/system/js/validate.js" type="text/javascript"></script>
-	<script src="media/com_kinoarhiv/js/core.min.js" type="text/javascript"></script>' . "\n";
-	KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select', false);
-}
+JHtml::_('behavior.formvalidator');
+JHtml::_('behavior.tabstate');
 ?>
 <div class="uk-article ka-content">
-<?php
-if (JFactory::getApplication()->input->get('task', '', 'cmd') == 'movies')
-{
-	echo $this->loadTemplate('form_movies');
-}
-elseif (JFactory::getApplication()->input->get('task', '', 'cmd') == 'names')
-{
-	echo $this->loadTemplate('form_names');
-}
-else
-{
-	echo $this->loadTemplate('form_movies');
-	echo $this->loadTemplate('form_names');
-}
-?>
+	<div class="row-fluid">
+		<div class="span12">
+		<?php echo JHtml::_('bootstrap.startTabSet', 'advanced_search', array('active' => 's_movies'));
+			echo JHtml::_(
+				'bootstrap.addTab', 'advanced_search', 'formMovies', '<span class="tab-about"></span>' . JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE')
+			);
+				echo $this->loadTemplate('form_movies');
+			echo JHtml::_('bootstrap.endTab');
+
+			echo JHtml::_(
+				'bootstrap.addTab', 'advanced_search', 'formNames', '<span class="tab-posters"></span>' . JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE')
+			);
+				echo $this->loadTemplate('form_names');
+			echo JHtml::_('bootstrap.endTab');
+
+			echo JHtml::_(
+				'bootstrap.addTab', 'advanced_search', 'formAlbums', '<span class="tab-sound"></span>' . JText::_('COM_KA_SEARCH_ADV_MUSIC_TITLE')
+			);
+				echo $this->loadTemplate('form_albums');
+			echo JHtml::_('bootstrap.endTab');
+		 echo JHtml::_('bootstrap.endTabSet'); ?>
+		</div>
+	</div>
 </div>

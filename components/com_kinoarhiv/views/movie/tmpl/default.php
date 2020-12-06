@@ -375,15 +375,15 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 		<?php
 		if (($totalTrailers > 0 || $totalMovies > 0) && ($this->params->get('watch_trailer') == 1 || $this->params->get('watch_movie') == 1))
 		{
-			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $this->params->get('player_type');
+			$playerLayout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $this->params->get('player_type');
 
 			try
 			{
-				echo $this->loadTemplate($player_layout);
+				echo $this->loadTemplate($playerLayout);
 			}
 			catch (Exception $e)
 			{
-				KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
+				KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $playerLayout));
 				echo $this->loadTemplate('trailer');
 			}
 		}
@@ -418,7 +418,7 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 						<a class="accordion-toggle" data-toggle="collapse" data-parent="#desc" href="#showTechDescription"><?php echo JText::_('COM_KA_TECH'); ?></a>
 					</div>
 					<div id="showTechDescription" class="accordion-body collapse">
-						<div class="accordion-inner"><p><?php echo $this->item->desc; ?></p></div>
+						<div class="accordion-inner"><?php echo $this->item->desc; ?></div>
 					</div>
 				</div>
 			</div>

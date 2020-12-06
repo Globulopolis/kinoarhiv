@@ -18,7 +18,6 @@ $item    = $displayData['item'];
 $guest   = $displayData['guest'];
 $itemid  = $displayData['itemid'];
 $view    = $displayData['view'];
-$authMsg = isset($displayData['auth_msg']);
 $voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 
 $rateDivClass = '';
@@ -28,9 +27,9 @@ if ($view == 'movie')
 	$rateDivClass = 'rate';
 }
 ?>
-<?php if (($item->attribs->allow_votes == '' && $params->get('allow_votes') == 1) || $item->attribs->allow_votes == 1): ?>
-	<?php if (!$guest && $params->get('allow_votes') == 1 && $view == 'movie'): ?>
-		<?php if ($params->get('ratings_show_local') == 1): ?>
+<?php if (($item->attribs->allow_votes == '' && $params->get('allow_votes')) || $item->attribs->allow_votes): ?>
+	<?php if (!$guest && $params->get('allow_votes') && $view == 'movie'): ?>
+		<?php if ($params->get('ratings_show_local')): ?>
 			<div class="clear"></div>
 			<div class="local-rt<?php echo $item->rate_loc_label_class; ?> <?php echo $rateDivClass; ?>">
 				<p><strong><?php echo JText::_('COM_KA_RATE'); ?></strong></p>
@@ -40,7 +39,9 @@ if ($view == 'movie')
 					 data-rateit-url="<?php echo JRoute::_($voteURL, false); ?>" data-rateit-content="movies"
 					 data-rateit-id="<?php echo $item->id; ?>"></div>
 				&nbsp;<span><?php echo $item->rate_loc_label; ?></span>
-				<?php if (isset($item->total_votes)): ?><span class="total-votes small" title="<?php echo JText::_('COM_KA_RATE_VOTES_TOTAL'); ?>">(<?php echo $item->total_votes; ?>)</span><?php endif; ?>
+				<?php if (isset($item->total_votes)): ?>
+				<span class="total-votes small" title="<?php echo JText::_('COM_KA_RATE_VOTES_TOTAL'); ?>">(<?php echo $item->total_votes; ?>)</span>
+				<?php endif; ?>
 
 				<div class="my_votes" style="<?php echo ($item->my_vote == 0) ? 'display: none;' : ''; ?>">
 					<div class="my_vote">
@@ -55,7 +56,7 @@ if ($view == 'movie')
 			</div>
 		<?php endif; ?>
 	<?php else: ?>
-		<?php if ($params->get('ratings_show_local') == 1): ?>
+		<?php if ($params->get('ratings_show_local')): ?>
 			<div class="clear"></div>
 			<div class="local-rt<?php echo $item->rate_loc_label_class; ?> <?php echo $rateDivClass; ?>">
 				<?php if ($view == 'movie'): ?><p><strong><?php echo JText::_('COM_KA_RATE'); ?></strong></p><?php endif; ?>
@@ -64,9 +65,11 @@ if ($view == 'movie')
 					 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"
 					 data-rateit-readonly="true"></div>
 				&nbsp;<?php echo $item->rate_loc_label; ?>
-				<?php if ($view == 'movie' && isset($item->total_votes)): ?><span class="total-votes small" title="<?php echo JText::_('COM_KA_RATE_VOTES_TOTAL'); ?>">(<?php echo $item->total_votes; ?>)</span><?php endif; ?>
+				<?php if ($view == 'movie' && isset($item->total_votes)): ?>
+				<span class="total-votes small" title="<?php echo JText::_('COM_KA_RATE_VOTES_TOTAL'); ?>">(<?php echo $item->total_votes; ?>)</span>
+				<?php endif; ?>
 
-				<?php if ($params->get('allow_votes') == 1 && $authMsg): ?>
+				<?php if ($params->get('allow_votes') == 1 && $view == 'movie'): ?>
 					<div>
 						<?php echo KAComponentHelper::showMsg(
 							JText::sprintf(

@@ -1140,6 +1140,19 @@ div.rating {
 	padding-left: .5em;
 }
 
+audio {
+	filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%);
+	height: 28px;
+}
+
+.audio-playing {
+	font-weight: bold;
+}
+
+a.cmd-play-audio:active, a.cmd-play-audio:focus {
+	outline: none;
+}
+
 @media (max-width: 400px) {
 	.tabs.breadcrumb a {
 		display: inline-block;

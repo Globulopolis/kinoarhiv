@@ -56,7 +56,7 @@ class JFormFieldBudget extends JFormFieldList
 			->select('budget AS value, budget AS text')
 			->from($db->quoteName('#__ka_movies'))
 			->where("budget != '' AND state = 1")
-			->where("access1 IN (" . $groups . ") AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
+			->where("access IN (" . $groups . ") AND language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
 			->group($db->quoteName('budget'))
 			->order($db->quoteName('budget') . ' ASC');
 

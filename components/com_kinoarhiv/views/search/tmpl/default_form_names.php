@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-if ($this->params->get('search_names_enable') == 0)
+if (!$this->params->get('search_names_enable'))
 {
 	return;
 }
@@ -22,11 +22,10 @@ if ($this->params->get('search_names_enable') == 0)
 		});
 	});
 </script>
-<div class="advsearch-names<?php echo (JFactory::getApplication()->input->get('task', '', 'cmd') != 'names') ? ' well uk-panel uk-panel-box' : ''; ?>">
-	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names', false); ?>" id="filters_names" method="post" autocomplete="off" class="form-validate">
+<div class="advsearch-names">
+	<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names', false); ?>"
+		  id="filters_names" method="post" autocomplete="off" class="form-validate">
 		<fieldset class="form-horizontal uk-form">
-			<legend class="uk-panel-title"><?php echo JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE'); ?></legend>
-
 			<?php if ($this->params->get('search_names_name') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
@@ -104,7 +103,7 @@ if ($this->params->get('search_names_enable') == 0)
 		<input type="hidden" name="option" value="com_kinoarhiv" />
 		<input type="hidden" name="task" value="search.results" />
 		<input type="hidden" name="content" value="names" />
-		<input type="hidden" name="m_itemid" value="<?php echo $this->home_itemid['names']; ?>" />
+		<input type="hidden" name="menu" value="<?php echo $this->homeItemid['names']; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 		<input type="submit" class="btn btn-primary uk-button uk-button-primary validate" value="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" />
 		<input type="reset" class="btn uk-button cmd-reset-names" value="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" />

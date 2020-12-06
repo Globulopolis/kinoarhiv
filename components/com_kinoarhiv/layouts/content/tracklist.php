@@ -10,28 +10,41 @@
 
 defined('_JEXEC') or die;
 
-/** @var array $displayData */
-$tracks = $displayData['tracks'];
+/** @var object $displayData */
 ?>
 <br />
-<table class="track-list table table-striped">
-	<thead>
-		<tr>
-			<th>#</th>
-			<th colspan="2"></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php foreach ($tracks as $track):
-		if ($track->album_id == $displayData['albumID']): ?>
-		<tr class="track-row" itemprop="track" itemscope itemtype="https://schema.org/MusicRecording">
-			<td class="track-number span1"><?php echo !empty($track->track_number) ? $track->track_number . '. ' : ''; ?></td>
-			<td class="track-title span9"><span itemprop="name"><?php echo $this->escape($track->title); ?></span></td>
-			<td class="track-length span2">
-				<meta content="<?php echo KAContentHelper::timeToISO8601($track->length); ?>" itemprop="duration" /><?php echo $track->length; ?>
-			</td>
-		</tr>
-		<?php endif;
-	endforeach; ?>
-	</tbody>
-</table>
+<div class="row-fluid">
+<?php if (!$displayData->user->get('guest')): ?>
+	<div class="span12"><?php echo $displayData->loadTemplate('player'); ?></div>
+<?php endif; ?>
+</div>
+<div class="row-fluid">
+	<table class="track-list table table-striped" data-trackpath="<?php echo $displayData->item->tracks_path_www; ?>/">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th colspan="2"></th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($displayData->item->tracks as $track):
+			if ($track->album_id == $displayData->item->id): ?>
+			<tr class="track-row" itemprop="track" itemscope itemtype="https://schema.org/MusicRecording">
+				<td class="track-number span1"><?php echo !empty($track->track_number) ? $track->track_number . '. ' : ''; ?></td>
+				<td class="track-title span9">
+				<?php if (!$displayData->user->get('guest')): ?>
+					<a href="#" class="cmd-play-audio" data-track="<?php echo $track->filename; ?>"><?php echo $this->escape($track->title); ?></a>
+				<?php else: ?>
+					<span itemprop="name"><?php echo $this->escape($track->title); ?></span>
+				<?php endif; ?>
+				</td>
+				<td class="track-length span2">
+					<meta content="<?php echo KAContentHelper::timeToISO8601($track->length); ?>" itemprop="duration" />
+					<?php echo KAContentHelper::formatTrackLength($track->length); ?>
+				</td>
+			</tr>
+			<?php endif;
+		endforeach; ?>
+		</tbody>
+	</table>
+</div>

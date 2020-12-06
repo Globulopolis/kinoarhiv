@@ -66,14 +66,14 @@ class KinoarhivModelPremieres extends JModelList
 	{
 		if ($this->context)
 		{
-			$app = JFactory::getApplication();
+			$app    = JFactory::getApplication();
 			$params = JComponentHelper::getParams('com_kinoarhiv');
 
 			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
 			$limit = $value;
 			$this->setState('list.limit', $limit);
 
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0, 'uint');
+			$value      = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0, 'uint');
 			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
 			$this->setState('list.start', $limitstart);
 			$this->setState('list.ordering', $ordering);
@@ -159,28 +159,6 @@ class KinoarhivModelPremieres extends JModelList
 
 		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->where('parent_id = 0 AND m.access IN (' . $groups . ')');
-
-		if ($params->get('use_alphabet') == 1)
-		{
-			$letter = $app->input->get('letter', '', 'string');
-
-			if ($letter !== '')
-			{
-				if ($letter == '0-1')
-				{
-					$range = range(0, 9);
-					$query->where('(m.title LIKE "' . implode('%" OR m.title LIKE "', $range) . '%")');
-				}
-				else
-				{
-					if (preg_match('#\p{L}#u', $letter, $matches))
-					{
-						// Only any kind of letter from any language.
-						$query->where('m.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
-					}
-				}
-			}
-		}
 
 		$query->where('p.premiere_date != ' . $nullDate);
 		$query->group('m.id');

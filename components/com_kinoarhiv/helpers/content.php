@@ -344,25 +344,6 @@ class KAContentHelper
 	}
 
 	/**
-	 * Method to make a link to a cover file.
-	 *
-	 * @param   object  $data  Item data.
-	 *
-	 * @return  string
-	 *
-	 * @since   3.1
-	 */
-	public static function getAlbumCoverLink(&$data)
-	{
-		$fsAlias = !empty($data->fs_alias) ? '&fa=' . urlencode($data->fs_alias) : '';
-
-		return JRoute::_(
-			'index.php?option=com_kinoarhiv&task=media.view&element=music&content=image&id=' . $data->id . $fsAlias .
-			'&fn=' . $data->cover_filename . '&format=raw&Itemid=' . $data->itemid
-		);
-	}
-
-	/**
 	 * Time to ISO8601 duration.
 	 *
 	 * @param   string  $time  Time in format 00:00:00.
@@ -383,5 +364,38 @@ class KAContentHelper
 		$seconds  = $seconds % 60;
 
 		return sprintf('P%dDT%dH%dM%dS', $days, $hours, $minutes, $seconds);
+	}
+
+	/**
+	 * Format time without microseconds and leading zero hours.
+	 *
+	 * @param   string  $time  Time in format 00:00:00.000000.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.1
+	 */
+	public static function formatTrackLength($time)
+	{
+		$datetime = DateTime::createFromFormat('H:i:s.u', $time);
+
+		if ($datetime)
+		{
+			$time = $datetime->format('H:i:s');
+		}
+
+		// Remove 00 from hours
+		$parts = explode(':', $time);
+
+		// Check if dealing with hours
+		if (count($parts) === 3)
+		{
+			if ($parts[0] === '00')
+			{
+				$time = substr($time, 3);
+			}
+		}
+
+		return $time;
 	}
 }

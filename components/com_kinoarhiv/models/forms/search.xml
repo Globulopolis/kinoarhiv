@@ -4,7 +4,7 @@
 		<fieldset name="search" addfieldpath="components/com_kinoarhiv/models/fields/search/"
 				  addrulepath="components/com_kinoarhiv/models/rules/">
 			<field name="title" type="text" default="" label="COM_KA_SEARCH_ADV_MOVIES_TITLE_LABEL" filter="string"
-				   class="span10 uk-width-1-1" required="true" maxlength="64"/>
+				   class="span10 uk-width-1-1" maxlength="64"/>
 			<field name="year" type="text" default="" label="COM_KA_YEAR"
 				   description="COM_KA_SEARCH_ADV_MOVIES_YEAR_HELP" maxlength="10" filter="string"
 				   class="span3 uk-width-1-4 validate-date" validate="date"/>
@@ -172,6 +172,20 @@
 			   class="span10 uk-width-1-1" data-content="amplua" data-allow-clear="true" data-key="id"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
+		</field>
+	</fields>
+
+	<fields name="albums">
+		<field name="title" type="text" default="" label="COM_KA_SEARCH_ADV_MUSIC_TITLE_LABEL" filter="string"
+			   class="span10 uk-width-1-1" required="false" maxlength="64"/>
+		<field name="year" type="text" default="" label="COM_KA_YEAR"
+			   description="COM_KA_SEARCH_ADV_MOVIES_YEAR_HELP" maxlength="10" filter="string"
+			   class="span3 uk-width-1-4 validate-date" validate="date"/>
+		<field name="year_range" type="year" default="" label="COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_TO_LABEL"
+			   class="span3 uk-width-1-4" data-range="true" data-content="album"
+			   labelfrom="COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_LABEL"
+			   labelto="COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL" filter="array">
+			<option value="">-</option>
 		</field>
 	</fields>
 </form>

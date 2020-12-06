@@ -35,9 +35,10 @@ class KinoarhivController extends JControllerLegacy
 		$viewName = $this->input->getCmd('view', 'movies');
 		$this->input->set('view', $viewName);
 
-		$user = JFactory::getUser();
+		// This variable store content string. Needed to detect if user do search.
+		$search = $this->input->get('content');
 
-		if ($user->get('id') || ($this->input->getMethod() == 'POST'))
+		if ($this->input->getMethod() == 'POST' || !empty($search))
 		{
 			$cachable = false;
 		}

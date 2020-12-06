@@ -173,7 +173,9 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (empty($result))
 			{
-				return (object) array();
+				$this->setError(JText::_('COM_KA_MOVIE_NOT_FOUND'));
+
+				return false;
 			}
 		}
 		catch (RuntimeException $e)

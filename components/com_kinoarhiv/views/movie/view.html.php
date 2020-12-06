@@ -34,7 +34,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * @var    object
 	 * @since  1.6
 	 */
-	protected $item;
+	protected $item = null;
 
 	/**
 	 * The items details
@@ -42,7 +42,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 * @var    object
 	 * @since  1.6
 	 */
-	protected $items;
+	protected $items = null;
 
 	protected $filters = null;
 
@@ -85,8 +85,8 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$this->page = $app->input->get('page', '', 'cmd');
+		$app          = JFactory::getApplication();
+		$this->page   = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid');
 
 		if (method_exists($this, $this->page))
@@ -115,8 +115,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		$items      = $this->get('Items');
 		$form       = $this->get('Form');
 		$pagination = $this->get('Pagination');
+		$pagination->hideEmptyLimitstart = true;
 
-		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 

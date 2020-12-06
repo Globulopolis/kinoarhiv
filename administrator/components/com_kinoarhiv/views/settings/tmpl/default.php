@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tabstate');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.modal', 'collapseModal');
@@ -160,23 +161,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_GLOBAL_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('global') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('global'); ?>
 					</fieldset>
 				</div>
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_META_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('metadata') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('metadata'); ?>
 					</fieldset>
 				</div>
 			</div>
@@ -184,12 +175,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<div class="span12">
 					<fieldset class="form-horizontal paths">
 						<legend><?php echo JText::_('COM_KA_PATHS_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('paths') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls settings-paths"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('paths'); ?>
 					</fieldset>
 				</div>
 			</div>
@@ -201,23 +187,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_GALLERY_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('gallery') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('gallery'); ?>
 					</fieldset>
 				</div>
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_UPLOAD_DOWNLOAD_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('content_dl') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('content_dl'); ?>
 					</fieldset>
 				</div>
 			</div>
@@ -227,10 +203,14 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 			<div class="row-fluid">
 				<div class="span6">
-					<?php echo $this->loadTemplate('music_global'); ?>
+					<fieldset class="form-horizontal">
+						<?php echo $this->form->renderFieldset('music_global'); ?>
+					</fieldset>
 				</div>
 				<div class="span6">
-					<?php echo $this->loadTemplate('music_covers'); ?>
+					<fieldset class="form-horizontal">
+						<?php echo $this->form->renderFieldset('music_arts'); ?>
+					</fieldset>
 				</div>
 			</div>
 
@@ -241,25 +221,22 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_GLOBAL_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('ap_global') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('ap_global'); ?>
 					</fieldset>
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('ap_nav') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('ap_nav'); ?>
 					</fieldset>
 				</div>
 				<div class="span6">
-					<?php echo $this->loadTemplate('ap_item'); ?>
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_ITEM_LABEL'); ?></legend>
+						<?php echo $this->form->renderFieldset('ap_item'); ?>
+					</fieldset>
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SETTINGS_AP_ITEM_PLAYER'); ?></legend>
+						<?php echo $this->form->renderFieldset('ap_item_player'); ?>
+					</fieldset>
 				</div>
 			</div>
 			<div class="row-fluid">
@@ -267,23 +244,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 					<div class="span6">
 						<fieldset class="form-horizontal">
 							<legend><?php echo JText::_('COM_KA_SETTINGS_AP_RATE_LABEL'); ?></legend>
-							<?php foreach ($this->form->getFieldset('ap_rate') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
+							<?php echo $this->form->renderFieldset('ap_rate'); ?>
 						</fieldset>
 					</div>
 					<div class="span6">
 						<fieldset class="form-horizontal">
 							<legend>&nbsp;</legend>
-							<?php foreach ($this->form->getFieldset('ap_rate_img') as $field): ?>
-								<div class="control-group">
-									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $field->input; ?></div>
-								</div>
-							<?php endforeach; ?>
+							<?php echo $this->form->renderFieldset('ap_rate_img'); ?>
 						</fieldset>
 					</div>
 				</div>
@@ -301,23 +268,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SETTINGS_TAB'); ?></legend>
-						<?php foreach ($this->form->getFieldset('reviews') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('reviews'); ?>
 					</fieldset>
 				</div>
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_REVIEWS_SETTINGS_SAVE_LABEL'); ?></legend>
-						<?php foreach ($this->form->getFieldset('reviews_save') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('reviews_save'); ?>
 					</fieldset>
 				</div>
 			</div>
@@ -329,23 +286,17 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_MOVIES'); ?></legend>
-						<?php foreach ($this->form->getFieldset('search_movies') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('search_movies'); ?>
 					</fieldset>
 				</div>
 				<div class="span6">
 					<fieldset class="form-horizontal">
 						<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_NAMES'); ?></legend>
-						<?php foreach ($this->form->getFieldset('search_names') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
+						<?php echo $this->form->renderFieldset('search_names'); ?>
+					</fieldset>
+					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_SEARCH_SETTINGS_MUSIC'); ?></legend>
+						<?php echo $this->form->renderFieldset('search_albums'); ?>
 					</fieldset>
 				</div>
 			</div>
@@ -386,9 +337,11 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 				<form method="post" enctype="multipart/form-data" id="adminRestoreConfig">
 					<fieldset class="form-horizontal">
 						<div class="control-group span6">
-							<div class="control-label"><label id="form_upload_config-lbl" class="" for="form_upload_config"><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_FILE'); ?></label></div>
+							<div class="control-label"><label id="form_upload_config-lbl" class=""
+								 for="form_upload_config"><?php echo JText::_('COM_KA_SETTINGS_BUTTON_RESTORECONFIG_FILE'); ?></label></div>
 							<div class="controls">
-								<input id="form_upload_config" type="file" accept=".json" value="" name="form_upload_config" required aria-required="true" />
+								<input id="form_upload_config" type="file" accept=".json" value=""
+									   name="form_upload_config" required aria-required="true" />
 							</div>
 						</div>
 						<input type="hidden" name="controller" value="settings" />

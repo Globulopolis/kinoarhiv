@@ -66,7 +66,7 @@ class KAComponentHelper
 				'COM_KA_REMOVE_SELECTED'       => JText::_('COM_KA_REMOVE_SELECTED', true),
 			)
 		);
-		$document->addScriptDeclaration('var KA_vars = ' . json_encode($jsVars) . ';');
+		$document->addScriptDeclaration('KA_vars = ' . json_encode($jsVars) . ';');
 	}
 
 	/**
@@ -164,10 +164,7 @@ class KAComponentHelper
 	public static function eventLog($message, $silent = true)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$uri = JUri::getInstance();
-		$user = JFactory::getUser();
-
-		$message = $message . "\t" . $uri->current() . '?' . $uri->getQuery();
+		$uri    = JUri::getInstance();
 
 		if ($params->get('logger') == 'syslog')
 		{
@@ -178,30 +175,13 @@ class KAComponentHelper
 			{
 				$trace = $backtrace[$i];
 				$class = isset($trace['class']) ? $trace['class'] : '';
-				$type = isset($trace['type']) ? $trace['type'] : '';
+				$type  = isset($trace['type']) ? $trace['type'] : '';
 				$stack .= "#" . $i . " " . $trace['file'] . "#" . $trace['line'] . " " . $class . $type . $trace['function'] . "\n";
 			}
 
 			openlog('com_kinoarhiv_log', LOG_PID, LOG_DAEMON);
 			syslog(LOG_CRIT, $message . "\nBacktrace:\n" . $stack);
 			closelog();
-
-			if (!$silent || is_string($silent))
-			{
-				if ($silent == 'ui')
-				{
-					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'alert-error');
-
-					if ($user->get('isRoot'))
-					{
-						echo '<pre>' . $message . '</pre>';
-					}
-				}
-				else
-				{
-					throw new Exception($message, 500);
-				}
-			}
 		}
 		else
 		{
@@ -218,22 +198,22 @@ class KAComponentHelper
 			);
 
 			JLog::add($message, JLog::WARNING, 'com_kinoarhiv');
+		}
 
-			if (!$silent || is_string($silent))
+		if (JFactory::getUser()->get('isRoot'))
+		{
+			$message .= '<br/>' . $uri->current() . '?' . $uri->getQuery();
+		}
+
+		if (!$silent || is_string($silent))
+		{
+			if ($silent == 'ui')
 			{
-				if ($silent == 'ui')
-				{
-					echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'alert-error');
-
-					if ($user->get('isRoot'))
-					{
-						echo '<pre>' . $message . '</pre>';
-					}
-				}
-				else
-				{
-					throw new Exception($message, 500);
-				}
+				echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '. ' . $message, 'alert-error');
+			}
+			else
+			{
+				throw new Exception($message, 500);
 			}
 		}
 	}
@@ -251,9 +231,9 @@ class KAComponentHelper
 	 */
 	public static function renderErrors($errors, $format = 'html', $count = 3)
 	{
-		$app = JFactory::getApplication();
+		$app         = JFactory::getApplication();
 		$totalErrors = count($errors);
-		$_errors = array();
+		$_errors     = array();
 
 		for ($i = 0; $i < $totalErrors && $i < $count; $i++)
 		{
@@ -332,11 +312,11 @@ class KAComponentHelper
 	 */
 	public static function getScriptLanguage($file, $path, $jhtml = true, $lowercase = false)
 	{
-		$lang = JFactory::getLanguage()->getTag();
-		$lang = $lowercase ? Joomla\String\StringHelper::strtolower($lang) : $lang;
+		$lang     = JFactory::getLanguage()->getTag();
+		$lang     = $lowercase ? Joomla\String\StringHelper::strtolower($lang) : $lang;
 		$filename = $file . $lang . '.js';
 		$basepath = JPATH_ROOT . '/' . $path . '/';
-		$url = JPath::clean($path . '/', '/');
+		$url      = JPath::clean($path . '/', '/');
 
 		if (is_file(JPath::clean($basepath . $filename)))
 		{
@@ -435,8 +415,8 @@ class KAComponentHelper
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/vegas.min.css');
 
 		$document = JFactory::getDocument();
-		$items = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('vegas_bg')));
-		$slides = array();
+		$items    = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($params->get('vegas_bg')));
+		$slides   = array();
 
 		foreach ($items as $item)
 		{

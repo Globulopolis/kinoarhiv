@@ -153,4 +153,4 @@ if ((isset($this->item->movie)
 			</div>
 		</div>
 	</div>
-<?php endif; ?>
+<?php endif;

@@ -21,6 +21,8 @@ class KinoarhivViewSearch extends JViewLegacy
 
 	protected $params;
 
+	protected $menu;
+
 	/**
 	 * Execute and display a template script.
 	 *
@@ -32,9 +34,12 @@ class KinoarhivViewSearch extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$this->form = $this->get('Form');
-		$this->home_itemid = $this->get('HomeItemid');
+		$app              = JFactory::getApplication();
+		$this->form       = $this->get('Form');
+		$this->homeItemid = $this->get('HomeItemid');
+		$this->menu       = $app->getMenu()->getActive();
+		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid     = $app->input->get('Itemid', 0, 'int');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -44,7 +49,11 @@ class KinoarhivViewSearch extends JViewLegacy
 		}
 
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
+
+		// Merge the menu item params with the component params so that the menu params take priority
+		$temp         = clone $this->params;
+		$temp->merge($this->menu->params);
+		$this->params = $temp;
 
 		$this->prepareDocument();
 
@@ -60,12 +69,9 @@ class KinoarhivViewSearch extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
 		$pathway = $app->getPathway();
-
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_SEARCH_ADV');
+		$title   = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_SEARCH_ADV');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -76,27 +82,27 @@ class KinoarhivViewSearch extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
+		if ($this->menu && $this->menu->params->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			$this->document->setDescription($this->menu->params->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		if ($this->menu && $this->menu->params->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $this->menu->params->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
+		if ($this->menu && $this->menu->params->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menu->params->get('robots'));
+			$this->document->setMetadata('robots', $this->menu->params->get('robots'));
 		}
 		else
 		{

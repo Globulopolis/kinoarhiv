@@ -187,28 +187,6 @@ class KinoarhivModelMovies extends JModelList
 		$query->where('m.state = 1 AND m.access IN (' . $groups . ')')
 			->where('language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
 
-		if ($params->get('use_alphabet') == 1)
-		{
-			$letter = $app->input->get('letter', '', 'string');
-
-			if ($letter != '')
-			{
-				if ($letter == '0-1')
-				{
-					$range = range(0, 9);
-					$query->where('(m.title LIKE "' . implode('%" OR m.title LIKE "', $range) . '%")');
-				}
-				else
-				{
-					if (preg_match('#\p{L}#u', $letter, $matches))
-					{
-						// Only any kind of letter from any language.
-						$query->where('m.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
-					}
-				}
-			}
-		}
-
 		// Filter by start and end dates.
 		if ((!$user->authorise('core.edit.state', 'com_kinoarhiv.movie')) && (!$user->authorise('core.edit', 'com_content')))
 		{
@@ -228,14 +206,12 @@ class KinoarhivModelMovies extends JModelList
 				if (StringHelper::strlen($title) < $params->get('search_movies_length_min')
 					|| StringHelper::strlen($title) > $params->get('search_movies_length_max'))
 				{
-					echo KAComponentHelper::showMsg(
+					$this->setError(
 						JText::sprintf(
 							'COM_KA_SEARCH_ERROR_SEARCH_MESSAGE',
 							$params->get('search_movies_length_min'),
 							$params->get('search_movies_length_max')
-						),
-						'alert-error',
-						true
+						)
 					);
 				}
 				else
@@ -243,16 +219,24 @@ class KinoarhivModelMovies extends JModelList
 					$exactMatch = $app->input->get('exact_match', 0, 'int');
 					$filter = StringHelper::strtolower(trim($title));
 
-					if ($exactMatch === 1)
+					if ($exactMatch)
 					{
 						$filter = $db->quote('%' . $db->escape($filter, true) . '%', false);
+						$query->where('m.title LIKE ' . $filter);
 					}
 					else
 					{
-						$filter = $db->quote($db->escape($filter, true) . '%', false);
+						if ($params->get('use_alphabet') && $filter === '0-1')
+						{
+							$range = range(0, 9);
+							$query->where("(m.title LIKE '" . implode("%' OR m.title LIKE '", $range) . "%')");
+						}
+						else
+						{
+							$filter = $db->quote($db->escape($filter, true) . '%', false);
+							$query->where('m.title LIKE ' . $filter);
+						}
 					}
-
-					$query->where('m.title LIKE ' . $filter);
 				}
 			}
 
@@ -268,7 +252,7 @@ class KinoarhivModelMovies extends JModelList
 				// Filter by years range
 				$yearRange = $filters->get('movies.year_range');
 
-				if ($params->get('search_movies_year_range') == 1)
+				if ($params->get('search_movies_year_range') == 1 && is_array($yearRange))
 				{
 					if ((array_key_exists(0, $yearRange) && !empty($yearRange[0])) && (array_key_exists(1, $yearRange) && !empty($yearRange[1])))
 					{
@@ -498,7 +482,7 @@ class KinoarhivModelMovies extends JModelList
 			// Filter by budget
 			$budgetRange = $filters->get('movies.budget');
 
-			if ($params->get('search_movies_budget') == 1)
+			if ($params->get('search_movies_budget') == 1 && is_array($budgetRange))
 			{
 				if ((array_key_exists(0, $budgetRange) && !empty($budgetRange[0])) && (array_key_exists(1, $budgetRange) && !empty($budgetRange[1])))
 				{

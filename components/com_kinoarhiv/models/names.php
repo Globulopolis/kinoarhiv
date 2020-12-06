@@ -161,15 +161,15 @@ class KinoarhivModelNames extends JModelList
 				"GROUP_CONCAT(DISTINCT cr.title SEPARATOR ', ') AS career"
 			)
 		)
-		->from($db->quoteName('#__ka_names', 'n'))
-		->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON cn.id = n.birthcountry AND cn.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND cn.state = 1');
+			->from($db->quoteName('#__ka_names', 'n'))
+			->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON cn.id = n.birthcountry AND cn.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND cn.state = 1');
 
 		// Join over gallery item
 		$query->select($db->quoteName(array('gal.filename', 'gal.dimension')))
 			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'gal') . ' ON gal.name_id = n.id AND gal.type = 3 AND gal.frontpage = 1 AND gal.state = 1');
 
 		$query->join('LEFT', $db->quoteName('#__ka_genres', 'g') . ' ON g.id IN (SELECT genre_id FROM ' . $db->quoteName('#__ka_rel_names_genres') . ' WHERE name_id = n.id)')
-		->join('LEFT', $db->quoteName('#__ka_names_career', 'cr') . ' ON cr.id IN (SELECT career_id FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE name_id = n.id)');
+			->join('LEFT', $db->quoteName('#__ka_names_career', 'cr') . ' ON cr.id IN (SELECT career_id FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE name_id = n.id)');
 
 		if (!$user->get('guest'))
 		{
@@ -178,20 +178,6 @@ class KinoarhivModelNames extends JModelList
 		}
 
 		$query->where('n.state = 1 AND n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND n.access IN (' . $groups . ')');
-
-		if ($params->get('use_alphabet') == 1)
-		{
-			$letter = $app->input->get('letter', '', 'string');
-
-			if ($letter != '')
-			{
-				if (preg_match('#\p{L}#u', $letter, $matches))
-				{
-					// Only any kind of letter from any language.
-					$query->where('n.name LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
-				}
-			}
-		}
 
 		$filters = $this->getFiltersData();
 
@@ -202,19 +188,33 @@ class KinoarhivModelNames extends JModelList
 
 			if ($params->get('search_names_name') == 1 && !empty($name))
 			{
-				$exactMatch = $app->input->get('exact_match', 0, 'int');
-				$filter = StringHelper::strtolower(trim($name));
-
-				if ($exactMatch === 1)
+				if (StringHelper::strlen($name) < $params->get('search_movies_length_min')
+					|| StringHelper::strlen($name) > $params->get('search_movies_length_max'))
 				{
-					$filter = $db->quote('%' . $db->escape($filter, true) . '%', false);
+					$this->setError(
+						JText::sprintf(
+							'COM_KA_SEARCH_ERROR_SEARCH_MESSAGE',
+							$params->get('search_movies_length_min'),
+							$params->get('search_movies_length_max')
+						)
+					);
 				}
 				else
 				{
-					$filter = $db->quote($db->escape($filter, true) . '%', false);
-				}
+					$exactMatch = $app->input->get('exact_match', 0, 'int');
+					$filter = $params->get('use_alphabet') ? StringHelper::strtoupper($name) : StringHelper::strtolower($name);
 
-				$query->where('(n.name LIKE ' . $filter . ' OR n.latin_name LIKE ' . $filter . ')');
+					if ($exactMatch === 1)
+					{
+						$filter = $db->quote('%' . $db->escape($filter, true) . '%', false);
+					}
+					else
+					{
+						$filter = $db->quote($db->escape($filter, true) . '%', false);
+					}
+
+					$query->where('(n.name LIKE ' . $filter . ' OR n.latin_name LIKE ' . $filter . ')');
+				}
 			}
 
 			// Filter by birthday

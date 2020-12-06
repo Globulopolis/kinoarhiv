@@ -42,8 +42,8 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$this->page = $app->input->get('page', '', 'cmd');
+		$app          = JFactory::getApplication();
+		$this->page   = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		if (method_exists($this, $this->page))
@@ -68,11 +68,10 @@ class KinoarhivViewName extends JViewLegacy
 	protected function info($tpl)
 	{
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-
+		$app  = JFactory::getApplication();
 		$item = $this->get('Data');
 
-		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 

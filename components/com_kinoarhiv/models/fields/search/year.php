@@ -50,12 +50,21 @@ class JFormFieldYear extends JFormFieldList
 		// Initialize JavaScript field attributes.
 		$attr .= $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
-		if ($this->element['data-content'] == 'movie')
+		if ($this->element['data-content'] == 'movie' || $this->element['data-content'] == 'album')
 		{
+			$query = $db->getQuery(true);
+
 			// Build the query for the list.
-			$query = $db->getQuery(true)
-				->select($db->quoteName('year'))
-				->from($db->quoteName('#__ka_movies'));
+			if ($this->element['data-content'] == 'movie')
+			{
+				$query->select($db->quoteName('year'))
+					->from($db->quoteName('#__ka_movies'));
+			}
+			elseif ($this->element['data-content'] == 'album')
+			{
+				$query->select('DATE_FORMAT(' . $db->quoteName('year') . ', "%Y") AS ' . $db->quoteName('year'))
+					->from($db->quoteName('#__ka_music_albums'));
+			}
 
 			if (!empty($this->element['data-group']))
 			{

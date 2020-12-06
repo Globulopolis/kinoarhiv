@@ -54,11 +54,11 @@ class KinoarhivViewMovies extends JViewLegacy
 			return false;
 		}
 
-		$this->params    = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid    = $app->input->get('Itemid', 0, 'int');
-		$itemid          = $this->itemid;
-		$throttle_enable = $this->params->get('throttle_image_enable', 0);
-		$introtext_links = $this->params->get('introtext_links', 1);
+		$this->params   = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid   = $app->input->get('Itemid', 0, 'int');
+		$itemid         = $this->itemid;
+		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$introtextLinks = $this->params->get('introtext_links', 1);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -86,11 +86,11 @@ class KinoarhivViewMovies extends JViewLegacy
 			);
 
 			// Replace person BB-code
-			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid, $introtext_links)
+			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid, $introtextLinks)
 			{
 				$html = JText::_($matches[1]);
 
-				if ($introtext_links)
+				if ($introtextLinks)
 				{
 					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid, false) . '" title="$2">$2</a>', $matches[2]);
 				}
@@ -104,7 +104,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			$item->text
 			);
 
-			if ($throttle_enable == 0)
+			if ($throttleEnable == 0)
 			{
 				$checking_path = JPath::clean(
 					$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
@@ -220,11 +220,11 @@ class KinoarhivViewMovies extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_MOVIES');
+		$title   = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_MOVIES');
 
 		// Create a new pathway object
 		$path = (object) array(

@@ -4,7 +4,7 @@
  * @package     Kinoarhiv.Site
  * @subpackage  com_kinoarhiv
  *
- * @copyright   Copyright (C) Libra.ms. All rights reserved.
+ * @copyright   Copyright (C) 2018 Libra.ms. All rights reserved.
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com/
  */
@@ -193,7 +193,11 @@ jQuery(document).ready(function($){
 				show_all = $this.data('remote-show-all'),
 				ignore_ids = $this.data('ignore-ids') || '',
 				api_root = KA_vars.api_root || '',
-				img_root = KA_vars.img_root || '';
+				img_root = KA_vars.img_root || '',
+				allowedTypes = [
+					'countries', 'vendors', 'movieGenres', 'nameGenres', 'albumGenres', 'trackGenres', 'artistGenres',
+					'tags', 'amplua', 'mediatypes'
+				];
 
 			config.placeholder = !empty($this.data('placeholder')) ? $this.data('placeholder') : KA_vars.language.JGLOBAL_SELECT_AN_OPTION;
 			config.allowClear = $this.data('allow-clear');
@@ -207,7 +211,7 @@ jQuery(document).ready(function($){
 				config.maximumSelectionSize = parseInt(max_selection, 10);
 			}
 
-			if (remote === true || (remote === false && $.inArray(content, ['countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua']))) {
+			if (remote === true || (remote === false && $.inArray(content, allowedTypes))) {
 				// Do not add 'multiple' element to the configuration object if select2 attached to <select>!
 				if (multiple) {
 					config.multiple = true;

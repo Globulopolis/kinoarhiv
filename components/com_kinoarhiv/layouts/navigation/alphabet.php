@@ -36,8 +36,8 @@ else
 		<span class="ab_letters btn-toolbar">
 			<span class="btn-group uk-button-group">
 				<?php foreach ($alphabet->letters as $letters): ?>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $viewName . 's&content=' . $viewName . 's&' . $viewName . 's[' . $fieldName . ']=' . $letters); ?>"
-					   class="btn btn-mini btn-default uk-button uk-button-small"><?php echo $letters; ?></a>
+					<noindex><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . $viewName . 's&content=' . $viewName . 's&' . $viewName . 's[' . $fieldName . ']=' . $letters); ?>"
+					   class="btn btn-mini btn-default uk-button uk-button-small" rel="noindex, nofollow"><?php echo $letters; ?></a></noindex>
 				<?php endforeach; ?>
 			</span>
 		</span>

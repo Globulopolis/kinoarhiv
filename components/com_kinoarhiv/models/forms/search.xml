@@ -31,7 +31,7 @@
 				<option value=""></option>
 			</field>
 			<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
-				   data-content="genres-movie" data-allow-clear="true" data-key="id" multiple="true"
+				   data-content="movieGenres" data-allow-clear="true" data-key="id" multiple="true"
 				   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 				<option value=""></option>
 			</field>
@@ -186,6 +186,11 @@
 			   labelfrom="COM_KA_SEARCH_ADV_MOVIES_YEAR_FROM_LABEL"
 			   labelto="COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL" filter="array">
 			<option value="">-</option>
+		</field>
+		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
+			   data-content="musicGenres" data-allow-clear="true" data-key="id" multiple="true"
+			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
 		</field>
 	</fields>
 </form>

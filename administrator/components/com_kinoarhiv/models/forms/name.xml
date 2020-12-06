@@ -6,7 +6,7 @@
 			   default="0" readonly="true"/>
 		<field name="asset_id" type="hidden" filter="unset" />
 
-		<!-- Fix for permissions script. See https://github.com/joomla/joomla-cms/issues/15203 -->
+		<!-- Not fixed. See https://github.com/joomla/joomla-cms/issues/15203 -->
 		<field name="title" type="hidden" filter="unset" />
 
 		<field name="name" type="text" default="" label="COM_KA_FIELD_NAME" class="span12 field_name"
@@ -37,7 +37,7 @@
 		</field>
 
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
-			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="genres-movie"
+			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="movieGenres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
 			   data-remote-show-all="true"/>
 		<field name="genres_orig" type="hidden"/>

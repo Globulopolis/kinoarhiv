@@ -36,7 +36,7 @@
 			   size="45"/>
 
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
-			   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" default="" data-content="genres-movie"
+			   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" default="" data-content="movieGenres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
 			   data-remote-show-all="true" data-maximum-selection-size="5"/>
 		<field name="genres_orig" type="hidden"/>

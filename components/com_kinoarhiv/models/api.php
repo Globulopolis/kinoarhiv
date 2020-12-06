@@ -299,7 +299,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		{
 			if (empty($id))
 			{
-				$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'");
+				$query->where($this->db->quoteName('title') . " LIKE '%" . $this->db->escape($term) . "%'");
 				$this->db->setQuery($query);
 
 				try
@@ -867,7 +867,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function getGenresmovie()
+	public function getMovieGenres()
 	{
 		$id       = $this->input->get('id', 0, 'int');
 		$all      = $this->input->get('showAll', 0, 'int');

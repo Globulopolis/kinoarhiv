@@ -32,14 +32,12 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 * Method to get the field input.
 	 * data-allow-clear works only with placeholder(and with first empty <option> if attached to <select>).
 	 *
-	 * @return  string  The field input.
+	 * @return  string|boolean  The field input. False on error.
 	 *
 	 * @since   3.1
 	 */
 	public function getInput()
 	{
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-
 		JHtml::_('jquery.framework');
 
 		if ((string) $this->element['data-sortable'] == 'true')
@@ -53,7 +51,10 @@ class JFormFieldAutocomplete extends JFormFieldList
 		KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 
-		$allowed_types = array('countries', 'vendors', 'genres-movie', 'genres-name', 'tags', 'amplua', 'mediatypes');
+		$allowedTypes = array(
+			'countries', 'vendors', 'movieGenres', 'nameGenres', 'albumGenres', 'trackGenres', 'artistGenres', 'tags',
+			'amplua', 'mediatypes'
+		);
 		$attr = '';
 
 		// Initialize some field attributes.
@@ -90,142 +91,61 @@ class JFormFieldAutocomplete extends JFormFieldList
 		$attr .= $this->element['data-select2-disabled'] ? ' data-select2-disabled="true"' : '';
 
 		// Content language. This option override default content language from query.
-		$data_lang = $this->element['data-lang'];
-		$attr .= $data_lang ? ' data-lang="' . (string) $data_lang . '"' : '';
+		$dataLang = $this->element['data-lang'];
+		$attr .= $dataLang ? ' data-lang="' . (string) $dataLang . '"' : '';
 
 		// Get id attribute.
 		$id = $this->id !== false ? $this->id : $this->name;
 
 		// Replace [] if id == field name. So fiel name like form[field] will be form_field
-		$id = str_replace(array('[', ']'), '', $id);
-		$attr .= $id !== '' ? ' id="' . $id . '"' : '';
+		$id      = str_replace(array('[', ']'), '', $id);
+		$attr    .= $id !== '' ? ' id="' . $id . '"' : '';
 		$options = (array) $this->getOptions();
 
 		if (((string) $this->element['data-remote'] == 'false' || (string) $this->element['data-remote'] == '')
-			&& in_array($this->element['data-content'], $allowed_types))
+			&& in_array($this->element['data-content'], $allowedTypes))
 		{
-			$db = JFactory::getDbo();
-			$user = JFactory::getUser();
-			$groups = implode(',', $user->getAuthorisedViewLevels());
-			$option_html = '';
-			$query = null;
+			$db         = JFactory::getDbo();
+			$optionHtml = '';
+			$query      = null;
 
-			if (!empty($data_lang))
+			if (!empty($dataLang))
 			{
-				if ($data_lang == '*')
+				if ($dataLang == '*')
 				{
-					$query_lang = "";
+					$queryLang = "";
 				}
 				else
 				{
-					$query_lang = "language IN (" . $db->quote($data_lang) . ",'*')";
+					$queryLang = "language IN (" . $db->quote($dataLang) . ",'*')";
 				}
 			}
 			else
 			{
 				// Default active language
-				$query_lang = "language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')";
+				$queryLang = "language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')";
 			}
 
-			if ($this->element['data-content'] == 'countries')
+			if (!empty($this->element['data-content']))
 			{
-				$query = $db->getQuery(true)
-					->select('id AS value, name AS text, ' . $db->quoteName('code', 'data-country-code'))
-					->from($db->quoteName('#__ka_countries'))
-					->where('state = 1');
+				$method = 'get' . ucfirst($this->element['data-content']);
 
-				if ($query_lang != '')
+				if (method_exists($this, $method))
 				{
-					$query->where($query_lang);
+					$query = $this->{$method}($queryLang);
 				}
-
-				$query->order('name ASC');
-			}
-			elseif ($this->element['data-content'] == 'vendors')
-			{
-				$query = $db->getQuery(true)
-					->select('id AS value, company_name')
-					->from($db->quoteName('#__ka_vendors'))
-					->where('state = 1');
-
-				if ($query_lang != '')
+				else
 				{
-					$query->where($query_lang);
+					KAComponentHelper::eventLog('Error while fetching data from DB in ' . __METHOD__ . '(). Wrong data-content attribute value.');
+
+					return false;
 				}
-			}
-			elseif ($this->element['data-content'] == 'genres-movie')
-			{
-				$query = $db->getQuery(true)
-					->select('id AS value, name AS text')
-					->from($db->quoteName('#__ka_genres'))
-					->where('state = 1 AND access IN (' . $groups . ')');
-
-				if ($query_lang != '')
-				{
-					$query->where($query_lang);
-				}
-
-				$query->order('name ASC');
-			}
-			elseif ($this->element['data-content'] == 'tags')
-			{
-				$query = $db->getQuery(true)
-					->select('id AS value, title AS text')
-					->from($db->quoteName('#__tags'));
-
-					$subquery = $db->getQuery(true)
-						->select('tag_id')
-						->from($db->quoteName('#__contentitem_tag_map'))
-						->where("type_alias = 'com_kinoarhiv.movie'");
-
-				$query->where('id IN (' . $subquery . ') AND access IN (' . $groups . ')')
-					->where('published = 1');
-
-				if ($query_lang != '')
-				{
-					$query->where($query_lang);
-				}
-			}
-			elseif ($this->element['data-content'] == 'amplua')
-			{
-				$amplua_disabled = $params->get('search_names_amplua_disabled');
-				$query = $db->getQuery(true)
-					->select('id AS value, title AS text')
-					->from($db->quoteName('#__ka_names_career'))
-					->where('(is_mainpage = 1 OR is_amplua = 1)');
-
-				if ($query_lang != '')
-				{
-					$query->where($query_lang);
-				}
-
-				if (!empty($amplua_disabled))
-				{
-					$amplua_disabled = is_array($amplua_disabled) ? implode(',', $amplua_disabled) : $amplua_disabled;
-					$query->where('id NOT IN (' . $amplua_disabled . ')');
-				}
-
-				$query->group('title')
-					->order('ordering ASC, title ASC');
-			}
-			elseif ($this->element['data-content'] == 'mediatypes')
-			{
-				$query = $db->getQuery(true)
-					->select('id AS value, title AS text')
-					->from($db->quoteName('#__ka_media_types'));
-
-				if ($query_lang != '')
-				{
-					$query->where($query_lang);
-				}
-
-				$query->order('title ASC');
 			}
 
 			try
 			{
 				$db->setQuery($query);
-				$objects_list = $db->loadObjectList();
+				$objectsList = $db->loadObjectList();
 			}
 			catch (Exception $e)
 			{
@@ -236,9 +156,9 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 			if ((string) $this->element['data-sortable'] == 'false' || (string) $this->element['data-sortable'] == '')
 			{
-				$options = $this->multiple ? $objects_list : array_merge($options, $objects_list);
+				$options = $this->multiple ? $objectsList : array_merge($options, $objectsList);
 
-				foreach ($options as $elementKey => &$element)
+				foreach ($options as $elementKey => $element)
 				{
 					if (!isset($element->text))
 					{
@@ -248,7 +168,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 						}
 					}
 
-					$option_attr = '';
+					$optionAttr = '';
 					$splitText   = explode(' - ', $element->text, 2);
 					$text        = $splitText[0];
 
@@ -259,7 +179,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 					if (isset($element->{'data-country-code'}))
 					{
-						$option_attr .= ' data-country-code="' . $element->{'data-country-code'} . '"';
+						$optionAttr .= ' data-country-code="' . $element->{'data-country-code'} . '"';
 					}
 
 					if (is_array($this->value) && in_array($element->value, $this->value))
@@ -271,16 +191,16 @@ class JFormFieldAutocomplete extends JFormFieldList
 						$selected = ($this->value == $element->value) ? ' selected' : '';
 					}
 
-					$option_html .= '<option value="' . $element->value . '"' . $option_attr . $selected . '>' . $text . '</option>';
+					$optionHtml .= '<option value="' . $element->value . '" ' . $optionAttr . $selected . ' >' . $text . '</option>';
 				}
 
-				$html = '<select name="' . $this->name . '" ' . trim($attr) . '>' . $option_html . '</select>';
+				$html = '<select name="' . $this->name . '" ' . trim($attr) . '>' . $optionHtml . '</select>';
 			}
 			else
 			{
 				$items = array();
 
-				foreach ($objects_list as &$item)
+				foreach ($objectsList as $item)
 				{
 					if ($this->element['data-content'] == 'countries')
 					{
@@ -424,5 +344,182 @@ class JFormFieldAutocomplete extends JFormFieldList
 		reset($options);
 
 		return $options;
+	}
+
+	/**
+	 * Method to get the query object for names amplua.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getAmplua($lang)
+	{
+		$params         = JComponentHelper::getParams('com_kinoarhiv');
+		$ampluaDisabled = $params->get('search_names_amplua_disabled');
+		$db             = JFactory::getDbo();
+		$query          = $db->getQuery(true)
+			->select('id AS value, title AS text')
+			->from($db->quoteName('#__ka_names_career'))
+			->where('(is_mainpage = 1 OR is_amplua = 1)');
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		if (!empty($ampluaDisabled))
+		{
+			$ampluaDisabled = is_array($ampluaDisabled) ? implode(',', $ampluaDisabled) : $ampluaDisabled;
+			$query->where('id NOT IN (' . $ampluaDisabled . ')');
+		}
+
+		$query->group('title')
+			->order('ordering ASC, title ASC');
+
+		return $query;
+	}
+
+	/**
+	 * Method to get the query object for countries.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getCountries($lang)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select('id AS value, name AS text, ' . $db->quoteName('code', 'data-country-code'))
+			->from($db->quoteName('#__ka_countries'))
+			->where('state = 1');
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		$query->order('name ASC');
+
+		return $query;
+	}
+
+	/**
+	 * Method to get the query object for movie genres.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getMovieGenres($lang)
+	{
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$db     = JFactory::getDbo();
+		$query  = $db->getQuery(true)
+			->select('id AS value, name AS text')
+			->from($db->quoteName('#__ka_genres'))
+			->where('state = 1 AND access IN (' . $groups . ')');
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		$query->order('name ASC');
+
+		return $query;
+	}
+
+	/**
+	 * Method to get the query object for mediatypes.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getMediatypes($lang)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select('id AS value, title AS text')
+			->from($db->quoteName('#__ka_media_types'));
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		$query->order('title ASC');
+
+		return $query;
+	}
+
+	/**
+	 * Method to get the query object for tags.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getTags($lang)
+	{
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$db     = JFactory::getDbo();
+		$query  = $db->getQuery(true)
+			->select('id AS value, title AS text')
+			->from($db->quoteName('#__tags'));
+
+		$subquery = $db->getQuery(true)
+			->select('tag_id')
+			->from($db->quoteName('#__contentitem_tag_map'))
+			->where("type_alias = 'com_kinoarhiv.movie'");
+
+		$query->where('id IN (' . $subquery . ') AND access IN (' . $groups . ')')
+			->where('published = 1');
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		return $query;
+	}
+
+	/**
+	 * Method to get the query object for vendors/distributors.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getVendors($lang)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->select('id AS value, company_name')
+			->from($db->quoteName('#__ka_vendors'))
+			->where('state = 1');
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		return $query;
 	}
 }

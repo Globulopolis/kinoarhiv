@@ -168,107 +168,19 @@ class KinoarhivControllerApi extends JControllerLegacy
 
 		jimport('components.com_kinoarhiv.libraries.api.api', JPATH_ROOT);
 
-		$api = KAApi::getInstance();
-		$filter = JFilterInput::getInstance();
-		$parsers = $this->input->get('parser', array(), 'array');
-		$results = array();
-
-		foreach ($parsers as $parser => $items)
-		{
-			$parser = $filter->clean($parser, 'word');
-
-			foreach ($items as $id => $item)
-			{
-				$actions     = $filter->clean($item['action'], 'cmd');
-				//$data_cols   = $filter->clean($item['data'], 'string');
-				$data_arr    = explode('.', $actions);
-				$data_type   = strtolower($filter->clean($data_arr[0], 'word'));
-				$data_action = strtolower($filter->clean($data_arr[1], 'word'));
-				$method      = 'get' . ucfirst($data_action);
-
-				$results[$parser][$id] = $api->getParser($parser)->$method($id, $data_type);
-			}
-		}
-
-		echo json_encode($results);
-	}
-	/*public function parser()
-	{
-		header_remove('X-Powered-By');
-		$document = JFactory::getDocument();
-		//$document->setMimeEncoding('application/json');
-		//header('Content-disposition: inline', true);
-
-		if ($this->checkAccess() === false)
-		{
-			//throw new Exception('Access denied', 403);
-		}
-
-		jimport('libraries.api.api', JPATH_COMPONENT);
-
-		$api          = KAApi::getInstance();
-		$filter       = JFilterInput::getInstance();
-		$action       = $this->input->get('action', array(), 'array');
-		$title        = $this->input->get('title', array(), 'array');
-		$data         = $this->input->get('data', array(), 'array');
-		$id           = $this->input->get('id', array(), 'array');
-		$first_result = $this->input->get('lucky', array(), 'array');
-		$result       = array();
-
-		foreach ($action as $parser => $parser_action)
-		{
-			$parser         = $filter->clean($parser, 'word');
-			$parser_action  = $filter->clean($parser_action, 'cmd');
-			$parser_actions = explode('.', $parser_action);
-
-			if (empty($parser) && (array_key_exists(0, $parser_actions) && array_key_exists(1, $parser_actions)))
-			{
-				break;
-			}
-
-			$_data             = isset($data[$parser]) ? $filter->clean($data[$parser], 'string') : '';
-			$_title            = isset($title[$parser]) ? $filter->clean($title[$parser], 'string') : '';
-			$_id               = isset($id[$parser]) ? $filter->clean($id[$parser], 'string') : '';
-			$_first_result     = isset($first_result[$parser]) ? $filter->clean($first_result[$parser], 'int') : 0;
-			$parser            = strtolower($parser);
-			$parser_actions[0] = strtolower($filter->clean($parser_actions[0], 'word'));
-			$parser_actions[1] = strtolower($filter->clean($parser_actions[1], 'word'));
-			$method            = 'get' . ucfirst($parser_actions[0]) . ucfirst($parser_actions[1]);
-
-			if ($parser_actions[1] == 'search' && !empty($_title))
-			{
-				// Get the first result and do search by ID
-				if ($_first_result === 1)
-				{
-					$item_id = $api->getParser($parser)->$method($_title, true);
-
-					if ($item_id !== false)
-					{
-						$_method = 'get' . ucfirst($parser_actions[0]) . 'Info';
-						$result[$parser][$_id] = $api->getParser($parser)->$_method($item_id, $_data);
-					}
-					else
-					{
-						$result[$parser][$_id] = array();
-					}
-				}
-				else
-				{
-					$result[$parser][$_id] = $api->getParser($parser)->$method($_title);
-				}
-			}
-			elseif ($parser_actions[1] == 'info' && !empty($_id))
-			{
-				$result[$parser][$_id] = $api->getParser($parser)->$method($_id, $_data);
-			}
-			else
-			{
-				$result[$parser][$_id] = array('error' => 'Something wrong with an \'action\' query value.');
-			}
-		}
+		$api             = KAApi::getInstance();
+		$filter          = JFilterInput::getInstance();
+		$parser          = $this->input->get('parser', '', 'word');
+		$parserTask      = $this->input->get('parser_task', '', 'cmd');
+		$parserTask      = explode('.', $parserTask);
+		$parserType      = strtolower($filter->clean($parserTask[0], 'word'));
+		$parserAction    = strtolower($filter->clean($parserTask[1], 'word'));
+		$id              = $this->input->get('id', '', 'string');
+		$method          = 'get' . ucfirst($parserAction);
+		$result[$parser] = $api->getParser($parser)->$method($id, $parserType);
 
 		echo json_encode($result);
-	}*/
+	}
 
 	/**
 	 * Check if user has access to API.

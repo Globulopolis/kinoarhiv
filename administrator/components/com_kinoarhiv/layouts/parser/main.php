@@ -9,7 +9,7 @@
  */
 
 defined('JPATH_BASE') or die;
-
+return;
 JHtml::_('jquery.framework');
 JHtml::_('bootstrap.framework');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.bootstrap.wizard.min.js');

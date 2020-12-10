@@ -64,6 +64,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$this->items       = $this->get('Items');
 		$pagination        = $this->get('Pagination');
 		$this->itemid      = $app->input->get('Itemid');
+		$pagination->hideEmptyLimitstart = true;
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -75,7 +76,6 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$this->menuParams = &$state->menuParams;
 		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
 		$this->itemid     = $app->input->get('Itemid', 0, 'int');
-		$throttleEnable   = $this->params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -86,35 +86,20 @@ class KinoarhivViewAlbums extends JViewLegacy
 				? KAContentHelper::formatItemTitle($item->name, $item->latin_name) : $item->composer;
 			$checkingPath   = JPath::clean($item->covers_path . '/' . $item->cover_filename);
 
-			if ($throttleEnable == 0)
+			if (!is_file($checkingPath))
 			{
-				if (!is_file($checkingPath))
-				{
-					$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
-					$dimension   = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
-						false
-					);
-					$item->coverWidth  = $dimension['width'];
-					$item->coverHeight = $dimension['height'];
-				}
-				else
-				{
-					$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
-					$dimension   = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $this->params->get('music_covers_size')
-					);
-					$item->coverWidth  = $dimension['width'];
-					$item->coverHeight = $dimension['height'];
-				}
+				$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
+				$dimension   = KAContentHelper::getImageSize(
+					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
+					false
+				);
+				$item->coverWidth  = $dimension['width'];
+				$item->coverHeight = $dimension['height'];
 			}
 			else
 			{
-				$item->itemid = $this->itemid;
-				$item->cover  = KAContentHelper::getAlbumCoverLink($item);
-				$dimension    = KAContentHelper::getImageSize(
+				$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
+				$dimension   = KAContentHelper::getImageSize(
 					$checkingPath,
 					true,
 					(int) $this->params->get('music_covers_size')

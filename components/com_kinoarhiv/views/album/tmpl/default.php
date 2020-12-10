@@ -10,12 +10,9 @@
 
 defined('_JEXEC') or die;
 
-$totalTracks = count(get_object_vars($this->item->tracks));
-
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
-JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
@@ -37,24 +34,16 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 			JPATH_COMPONENT
 		);
 		echo $this->item->event->afterDisplayTitle;
-		//echo $this->loadTemplate('tabs');
+		echo $this->loadTemplate('tabs');
 		echo $this->item->event->beforeDisplayContent; ?>
 
-		<div class="album-info">
+		<div class="info">
 			<div class="left-col span3">
 				<div class="poster">
 					<img itemprop="image" src="<?php echo $this->item->cover; ?>"
 						 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($this->item->title); ?>"
 						 width="<?php echo $this->item->coverWidth; ?>" height="<?php echo $this->item->coverHeight; ?>" />
 				</div>
-
-				<?php if ($this->params->get('ratings_show_frontpage') == 1):
-					echo JLayoutHelper::render(
-						'layouts.content.ratings_albums',
-						array('params' => $this->params, 'item' => $this->item, 'column' => true),
-						JPATH_COMPONENT
-					);
-				endif; ?>
 			</div>
 			<div class="right-col span9">
 				<?php if (!$this->user->guest): ?>
@@ -62,16 +51,16 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 						<?php if ($this->params->get('link_favorite') == 1): ?>
 							<div class="favorite">
 								<?php if ($this->item->favorite == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=movies.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite delete" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&task=albums.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite delete" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
 								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&task=movies.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite add" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&task=albums.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite add" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>
 					</div>
 					<div class="clear"></div>
 				<?php endif; ?>
-				<div class="movie-info">
+				<div class="album-info">
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
 						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=search&filters[movies][year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->year; ?></a></span>
@@ -139,7 +128,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 							</span>
 						</div>
 					<?php endif; ?>
-					<?php if (count($this->item->releases) > 0):
+					<?php if (isset($this->item->releases) && count($this->item->releases) > 0):
 						foreach ($this->item->releases as $release): ?>
 							<div>
 								<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JHtml::_('string.truncate', $release->media_type, 14)); ?></span>
@@ -151,10 +140,10 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 					endif; ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_LENGTH'); ?></span>
-						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?>
-							| <?php echo $this->item->_length; ?></span>
+						<span class="s-col"><?php echo $this->item->minutes; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?>
+							| <?php echo $this->item->length; ?></span>
 					</div>
-					<?php if (count($this->item->tags->itemTags) > 0): ?>
+					<?php if (isset($this->item->tags->itemTags) && count($this->item->tags->itemTags) > 0): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 						<span class="s-col">
@@ -169,59 +158,43 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 		</div>
 
 		<div class="clear"></div>
-		<?php
-		echo JLayoutHelper::render('layouts.content.tracklist',
-			array(
-				'tracks'  => $this->item->tracks,
-				'guest'   => $this->user->get('guest'),
-				//'albumID' => $album->id
-			),
-			JPATH_COMPONENT
-		);
-		?>
-
 		<div class="buy">
 			<p><?php echo $this->item->buy_urls; ?></p>
 		</div>
 
-		<?php
-		echo JLayoutHelper::render('layouts.content.votes_album',
-			array(
-				'params'  => $this->params,
-				'item'    => $this->item,
-				'guest'   => $this->user->get('guest'),
-				'itemid'  => $this->itemid
-			),
-			JPATH_COMPONENT
-		);
-		?>
+		<?php if (count($this->item->tracks) > 0 && $this->params->get('watch_trailer') == 1):
+			echo JLayoutHelper::render('layouts.content.tracklist',
+				array(
+					'params' => $this->params,
+					'item'   => $this->item,
+					'guest'  => $this->user->get('guest')
+				),
+				JPATH_COMPONENT
+			);
+		endif; ?>
+
+		<?php if ($this->params->get('ratings_show_frontpage') == 1):
+			echo JLayoutHelper::render('layouts.content.votes_album',
+				array(
+					'params' => $this->params,
+					'item'   => $this->item,
+					'guest'  => $this->user->get('guest'),
+					'itemid' => $this->itemid,
+					'view'   => $this->view
+				),
+				JPATH_COMPONENT
+			);
+		endif; ?>
 
 		<?php
 		echo JLayoutHelper::render('layouts.content.images_slider',
 			array(
 				'params'  => $this->params,
-				'items'   => $this->item->slides,
+				'items'   => isset($this->item->slides) ? $this->item->slides : null,
 				'attribs' => $this->item->attribs->slider
 			),
 			JPATH_COMPONENT
 		);
-		?>
-
-		<?php
-		if ($totalTracks > 0 && $this->params->get('watch_trailer') == 1)
-		{
-			$player_layout = ($this->params->get('player_type') == '-1') ? 'trailer' : 'trailer_' . $this->params->get('player_type');
-
-			try
-			{
-				echo $this->loadTemplate($player_layout);
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog(JText::sprintf('COM_KA_PLAYER_FOLDER_NOT_FOUND', $player_layout));
-				echo $this->loadTemplate('trailer');
-			}
-		}
 		?>
 
 		<?php if (!empty($this->item->desc)): ?>
@@ -229,18 +202,17 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 			<div class="desc" id="desc">
 				<div class="accordion-group">
 					<div class="accordion-heading">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#desc" href="#showTechDescription"><?php echo JText::_('COM_KA_TECH'); ?></a>
+						<a class="accordion-toggle" data-toggle="collapse" data-parent="#desc"
+						   href="#showTechDescription"><?php echo JText::_('JGLOBAL_DESCRIPTION'); ?></a>
 					</div>
 					<div id="showTechDescription" class="accordion-body collapse">
-						<div class="accordion-inner"><p><?php echo $this->item->desc; ?></p></div>
+						<div class="accordion-inner"><?php echo $this->item->desc; ?></div>
 					</div>
 				</div>
 			</div>
 		<?php endif; ?>
 
 		<?php echo $this->item->event->afterDisplayContent; ?>
-		<?php if ($this->params->get('show_reviews') == 1):
-			echo $this->loadTemplate('reviews');
-		endif; ?>
+		<?php echo $this->loadTemplate('reviews'); ?>
 	</article>
 </div>

@@ -107,11 +107,11 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	protected function loadFormData()
 	{
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$id = $app->input->get('id', 0, 'int');
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->get('id', 0, 'int');
 		$itemid = $app->input->get('Itemid', 0, 'int');
-		$data = $app->getUserState('com_kinoarhiv.album.' . $id . '.user.' . $user->get('id'));
+		$data   = $app->getUserState('com_kinoarhiv.album.' . $id . '.user.' . $user->get('id'));
 
 		if (empty($data))
 		{
@@ -144,8 +144,10 @@ class KinoarhivModelAlbum extends JModelForm
 
 		$query->select("a.id, a.title, a.alias, a.fs_alias, a.composer, DATE_FORMAT(a.year, '%Y') AS year, "
 			. "a.length, a.isrc, a.desc, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, "
-			. "a.tracks_path, a.tracks_preview_path, a.buy_urls, a.created_by, a.metakey, a.metadesc, a.attribs, "
-			. "a.state, a.metadata, DATE_FORMAT(a.created, '%Y-%m-%d') AS created, DATE_FORMAT(a.modified, '%Y-%m-%d') AS modified"
+			. "a.tracks_path, a.tracks_path_www, a.tracks_preview_path, a.buy_urls, a.created_by, a.metakey, a.metadesc, "
+			. "a.attribs, a.state, a.metadata, "
+			. "DATE_FORMAT(a.created, '%Y-%m-%d') AS created, DATE_FORMAT(a.modified, '%Y-%m-%d') AS modified, "
+			. "(SELECT COUNT(album_id) FROM " . $db->quoteName('#__ka_user_votes_albums') . " WHERE album_id = a.id) AS total_votes"
 		)
 			->from($db->quoteName('#__ka_music_albums', 'a'));
 
@@ -191,6 +193,34 @@ class KinoarhivModelAlbum extends JModelForm
 				$tags->getItemTags('com_kinoarhiv.album', $result->id);
 				$result->tags = $tags;
 			}*/
+		}
+
+		// Get tracks for albums
+		$query = $db->getQuery(true)
+			->select(
+				$db->quoteName(
+					array(
+						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
+						't.performer', 't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename',
+						't.buy_url'
+					)
+				)
+			)
+			->from($db->quoteName('#__ka_music', 't'))
+			->where('t.album_id = ' . (int) $id)
+			->order('t.track_number ASC');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result->tracks = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
 		}
 
 		// Countries
@@ -402,13 +432,13 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
-	 * Get a short movie info
+	 * Get a short album info
 	 *
 	 * @return  object|boolean
 	 *
 	 * @since   3.0
 	 */
-	public function getMovieData()
+	public function getAlbumData()
 	{
 		$db = $this->getDbo();
 		$app = JFactory::getApplication();
@@ -418,10 +448,10 @@ class KinoarhivModelAlbum extends JModelForm
 		$id = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
-			->select("m.id, m.title, m.alias, m.fs_alias, m.year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .
+			->select("m.id, m.title, m.alias, m.fs_alias, DATE_FORMAT(m.year, '%Y') AS year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .
 				"DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified, m.metakey, m.metadesc, m.metadata, m.attribs, user.name AS username"
 			)
-			->from($db->quoteName('#__ka_movies', 'm'))
+			->from($db->quoteName('#__ka_music_albums', 'm'))
 			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by')
 			->where('m.id = ' . (int) $id . ' AND m.state = 1 AND m.access IN (' . $groups . ')')
 			->where('m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
@@ -469,7 +499,7 @@ class KinoarhivModelAlbum extends JModelForm
 			return false;
 		}
 
-		$result = $this->getMovieData();
+		$result = $this->getAlbumData();
 
 		$query = $db->getQuery(true)
 			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
@@ -514,7 +544,7 @@ class KinoarhivModelAlbum extends JModelForm
 			return false;
 		}
 
-		$result = $this->getMovieData();
+		$result = $this->getAlbumData();
 
 		// Get albums for movie
 		$query = $db->getQuery(true)
@@ -659,10 +689,10 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	protected function getListQuery()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', 0, 'int');
-		$page = $app->input->get('page', 'reviews', 'cmd');
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$id     = $app->input->get('id', 0, 'int');
+		$page   = $app->input->get('page', 'reviews', 'cmd');
 		$filter = $app->input->get('dim_filter', '0', 'string');
 
 		if ($page == 'wallpapers')
@@ -695,10 +725,10 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			// Select reviews
 			$query = $db->getQuery(true)
-				->select('rev.id, rev.uid, rev.movie_id, rev.review, rev.created, rev.type, rev.state, u.name, u.username')
+				->select('rev.id, rev.uid, rev.item_id, rev.review, rev.created, rev.type, rev.state, u.name, u.username')
 				->from($db->quoteName('#__ka_reviews', 'rev'))
 				->join('LEFT', $db->quoteName('#__users', 'u') . ' ON u.id = rev.uid')
-				->where('movie_id = ' . (int) $id . ' AND rev.state = 1 AND u.id != 0')
+				->where('rev.item_id = ' . (int) $id . ' AND item_type = 1 AND rev.state = 1 AND u.id != 0')
 				->order('rev.id DESC');
 		}
 
@@ -903,25 +933,25 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function getUserStateFromRequest($key, $request, $default = null, $type = 'none', $resetPage = true)
 	{
-		$app = JFactory::getApplication();
-		$old_state = $app->getUserState($key);
-		$cur_state = (!is_null($old_state)) ? $old_state : $default;
-		$new_state = $app->input->get($request, null, $type);
+		$app          = JFactory::getApplication();
+		$oldState     = $app->getUserState($key);
+		$currentState = (!is_null($oldState)) ? $oldState : $default;
+		$newState     = $app->input->get($request, null, $type);
 
-		if (($cur_state != $new_state) && ($resetPage))
+		if (($currentState != $newState) && ($resetPage))
 		{
 			$app->input->set('limitstart', 0);
 		}
 
-		if ($new_state !== null)
+		if ($newState !== null)
 		{
-			$app->setUserState($key, $new_state);
+			$app->setUserState($key, $newState);
 		}
 		else
 		{
-			$new_state = $cur_state;
+			$newState = $currentState;
 		}
 
-		return $new_state;
+		return $newState;
 	}
 }

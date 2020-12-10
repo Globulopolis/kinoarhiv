@@ -240,7 +240,6 @@
 	</fieldset>
 
 	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
-		<field type="spacer" name="sp_music_global" class="separator" label="COM_KA_FIELD_MUSIC_GLOBAL_SPACER"/>
 		<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg"
 			   label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span11"/>
 		<field name="upload_audio_preview" type="radio" class="btn-group" default="0"
@@ -257,7 +256,6 @@
 	</fieldset>
 
 	<fieldset name="music_arts" label="COM_KA_FIELD_MUSIC_COVERS_SPACER">
-		<field type="spacer" name="sp_music_covers" class="separator" label="COM_KA_FIELD_MUSIC_COVERS_SPACER"/>
 		<field name="music_covers_front" type="textarea" default="front.jpg" label="COM_KA_FIELD_MUSIC_COVERS_FRONT"
 			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
 		<field name="music_covers_back" type="textarea" default="back.jpg" label="COM_KA_FIELD_MUSIC_COVERS_BACK"
@@ -814,6 +812,11 @@
 		</field>
 		<field name="search_albums_year_range" type="radio" class="btn-group" default="1"
 			   label="COM_KA_SEARCH_SETTINGS_FORM_YEAR_RANGE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_genre" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_GENRE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

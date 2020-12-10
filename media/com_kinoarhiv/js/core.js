@@ -194,6 +194,7 @@ jQuery(document).ready(function($){
 				ignore_ids = $this.data('ignore-ids') || '',
 				api_root = KA_vars.api_root || '',
 				img_root = KA_vars.img_root || '',
+				select = {},
 				allowedTypes = [
 					'countries', 'vendors', 'movieGenres', 'nameGenres', 'albumGenres', 'trackGenres', 'artistGenres',
 					'tags', 'amplua', 'mediatypes'
@@ -391,7 +392,13 @@ jQuery(document).ready(function($){
 				return markup;
 			};
 
-			var select = $this.select2(config);
+			try {
+				select = $this.select2(config);
+			} catch (e) {
+				console.error('Wrong data-content attribute value!');
+
+				return false;
+			}
 
 			if (sortable === 'true' || sortable) {
 				select.select2('container').find('ul.select2-choices').sortable({

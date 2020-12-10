@@ -136,7 +136,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 				}
 				else
 				{
-					KAComponentHelper::eventLog('Error while fetching data from DB in ' . __METHOD__ . '(). Wrong data-content attribute value.');
+					KAComponentHelper::eventLog('Error while fetching data from DB in ' . __METHOD__ . '(). Wrong data-content attribute value or method ' . $method . '() not found.');
 
 					return false;
 				}
@@ -344,6 +344,35 @@ class JFormFieldAutocomplete extends JFormFieldList
 		reset($options);
 
 		return $options;
+	}
+
+	/**
+	 * Method to get the query object for movie genres.
+	 *
+	 * @param   string  $lang  Content language
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	protected function getAlbumGenres($lang)
+	{
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$db     = JFactory::getDbo();
+		$query  = $db->getQuery(true)
+			->select('id AS value, name AS text')
+			->from($db->quoteName('#__ka_music_genres'))
+			->where('state = 1 AND access IN (' . $groups . ')');
+
+		if ($lang != '')
+		{
+			$query->where($lang);
+		}
+
+		$query->order('name ASC');
+
+		return $query;
 	}
 
 	/**

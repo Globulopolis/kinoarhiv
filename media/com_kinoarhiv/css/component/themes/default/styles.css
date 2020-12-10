@@ -1149,8 +1149,71 @@ audio {
 	font-weight: bold;
 }
 
+.audio-paused {
+	-webkit-animation-name: blinker;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-iteration-count: infinite;
+
+	-moz-animation-name: blinker;
+	-moz-animation-duration: 2s;
+	-moz-animation-timing-function: linear;
+	-moz-animation-iteration-count: infinite;
+
+	animation-name: blinker;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+@-moz-keyframes blinker {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+
+@keyframes blinker {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+
 a.cmd-play-audio:active, a.cmd-play-audio:focus {
 	outline: none;
+}
+
+.basket-add {
+	background: url("../../../../images/icons/basket_add_16.png") no-repeat left center;
+	padding-left: 20px;
+	padding-bottom: 2px;
+}
+
+.cmd-playlist-add {
+	background: url("../../../../images/icons/table_add_16.png") no-repeat left center;
+	padding-left: 20px;
+	padding-bottom: 2px;
+}
+
+.cmd-playlist-remove {
+	background: url("../../../../images/icons/table_delete_16.png") no-repeat left center;
+	padding-left: 20px;
+	padding-bottom: 2px;
+}
+
+.cmd-track-info {
+	background: url("../../../../images/icons/help_16.png") no-repeat left center;
+	padding-left: 20px;
+	padding-bottom: 2px;
+}
+
+span.track-info {
+	display: none;
 }
 
 @media (max-width: 400px) {

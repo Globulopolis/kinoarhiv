@@ -204,11 +204,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 			<div class="row-fluid">
 				<div class="span6">
 					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_FIELD_MUSIC_GLOBAL_SPACER'); ?></legend>
 						<?php echo $this->form->renderFieldset('music_global'); ?>
 					</fieldset>
 				</div>
 				<div class="span6">
 					<fieldset class="form-horizontal">
+						<legend><?php echo JText::_('COM_KA_FIELD_MUSIC_COVERS_SPACER'); ?></legend>
 						<?php echo $this->form->renderFieldset('music_arts'); ?>
 					</fieldset>
 				</div>

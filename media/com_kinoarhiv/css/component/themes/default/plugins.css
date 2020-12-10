@@ -278,6 +278,14 @@ table[data-sortable] th[data-sorted-direction="ascending"]:after {
 }
 
 /* Override poster sizing for players */
-.flowplayer, .vjs-poster {
+.vjs-poster {
 	background-size: cover !important;
+}
+
+.vjs-audio .vjs-big-play-button {
+	display: none !important;
+}
+
+.vjs-audio .vjs-control-bar {
+	display: flex !important;
 }

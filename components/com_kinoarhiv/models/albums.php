@@ -163,7 +163,7 @@ class KinoarhivModelAlbums extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.title, a.alias, a.fs_alias, a.composer, DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', ' .
+				'a.id, a.title, a.alias, a.composer, DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', ' .
 				'a.length, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, a.buy_urls, ' .
 				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
 				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
@@ -189,24 +189,222 @@ class KinoarhivModelAlbums extends JModelList
 		$query->where('a.state = 1 AND a.access IN (' . $groups . ')')
 			->where('a.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
 
-		if ($params->get('use_alphabet') == 1)
-		{
-			$letter = $app->input->get('letter', '', 'string');
+		$filters = $this->getFiltersData();
 
-			if ($letter != '')
+		if ($filters !== false)
+		{
+			// Filter by title
+			$title = trim($filters->get('albums.title'));
+
+			if ($params->get('search_albums_title') == 1 && !empty($title))
 			{
-				if ($letter == '0-1')
+				if (StringHelper::strlen($title) < $params->get('search_albums_length_min')
+					|| StringHelper::strlen($title) > $params->get('search_albums_length_max'))
 				{
-					$range = range(0, 9);
-					$query->where('(a.title LIKE "' . implode('%" OR a.title LIKE "', $range) . '%")');
+					$this->setError(
+						JText::sprintf(
+							'COM_KA_SEARCH_ERROR_SEARCH_MESSAGE',
+							$params->get('search_albums_length_min'),
+							$params->get('search_albums_length_max')
+						)
+					);
 				}
 				else
 				{
-					if (preg_match('#\p{L}#u', $letter, $matches))
+					$exactMatch = $app->input->get('exact_match', 0, 'int');
+					$filter = StringHelper::strtolower(trim($title));
+
+					if ($exactMatch)
 					{
-						// Only any kind of letter from any language.
-						$query->where('a.title LIKE "' . $db->escape(StringHelper::strtoupper($matches[0])) . '%"');
+						$filter = $db->quote('%' . $db->escape($filter, true) . '%', false);
+						$query->where('a.title LIKE ' . $filter);
 					}
+					else
+					{
+						if ($params->get('use_alphabet') && $filter === '0-1')
+						{
+							$range = range(0, 9);
+							$query->where("(a.title LIKE '" . implode("%' OR a.title LIKE '", $range) . "%')");
+						}
+						else
+						{
+							$filter = $db->quote($db->escape($filter, true) . '%', false);
+							$query->where('a.title LIKE ' . $filter);
+						}
+					}
+				}
+			}
+
+			// Filter by year
+			$year = $filters->get('albums.year');
+
+			if ($params->get('search_albums_year') == 1 && !empty($year))
+			{
+				$query->where('a.year LIKE ' . $db->quote($db->escape($year, true) . '%', false));
+			}
+			else
+			{
+				// Filter by years range
+				$yearRange = $filters->get('albums.year_range');
+
+				if ($params->get('search_albums_year_range') == 1 && is_array($yearRange))
+				{
+					// TODO Not yet ready
+					/*if ((array_key_exists(0, $yearRange) && !empty($yearRange[0])) && (array_key_exists(1, $yearRange) && !empty($yearRange[1])))
+					{
+						$query->where("a.year BETWEEN '" . (int) $db->escape($yearRange[0]) . "' AND '" . (int) $db->escape($yearRange[1]) . "'");
+					}
+					else
+					{
+						if (array_key_exists(0, $yearRange) && !empty($yearRange[0]))
+						{
+							$query->where("a.year REGEXP '^" . (int) $db->escape($yearRange[0]) . "'");
+						}
+						elseif (array_key_exists(1, $yearRange) && !empty($yearRange[1]))
+						{
+							$query->where("a.year REGEXP '" . (int) $db->escape($yearRange[1]) . "$'");
+						}
+					}*/
+				}
+			}
+
+			// Filter by country
+			$country = $filters->get('albums.country');
+
+			if ($params->get('search_albums_country') == 1 && !empty($country))
+			{
+				// TODO Not yet ready
+				/*$subqueryCountries = $db->getQuery(true)
+					->select('movie_id')
+					->from($db->quoteName('#__ka_rel_countries'))
+					->where('country_id = ' . (int) $country);
+
+				$db->setQuery($subqueryCountries);
+
+				try
+				{
+					$movieIDs = $db->loadColumn();
+
+					if (count($movieIDs) == 0)
+					{
+						$movieIDs = array(0);
+					}
+
+					$query->where('a.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+				}*/
+			}
+
+			// Filter by person name
+			$cast = $filters->get('albums.cast');
+
+			if ($params->get('search_albums_cast') == 1 && !empty($cast))
+			{
+				// TODO Not yet ready
+				/*$subqueryCast = $db->getQuery(true)
+					->select('movie_id')
+					->from($db->quoteName('#__ka_rel_names'))
+					->where('name_id = ' . (int) $cast);
+
+				$db->setQuery($subqueryCast);
+
+				try
+				{
+					$movieIDs = $db->loadColumn();
+
+					if (count($movieIDs) == 0)
+					{
+						$movieIDs = array(0);
+					}
+
+					$query->where('a.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+				}*/
+			}
+
+			// Filter by vendor
+			$vendor = $filters->get('albums.vendor');
+
+			if ($params->get('search_albums_vendor') == 1 && !empty($vendor))
+			{
+				// TODO Not yet ready
+				/*$subqueryVendor = $db->getQuery(true)
+					->select('movie_id')
+					->from($db->quoteName('#__ka_releases'))
+					->where('vendor_id = ' . (int) $vendor)
+					->group('movie_id');
+
+				$db->setQuery($subqueryVendor);
+
+				try
+				{
+					$movieIDs = $db->loadColumn();
+
+					if (count($movieIDs) == 0)
+					{
+						$movieIDs = array(0);
+					}
+
+					$query->where('a.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
+				}
+				catch (RuntimeException $e)
+				{
+					KAComponentHelper::eventLog($e->getMessage());
+				}*/
+			}
+
+			// Filter by genres
+			$genres = $filters->get('albums.genre');
+
+			if ($params->get('search_albums_genre') == 1 && !empty($genres))
+			{
+				$genres = ArrayHelper::fromObject($genres);
+
+				if (count(array_filter($genres)) > 0)
+				{
+					// TODO Not yet ready
+					/*$subqueryGenre = $db->getQuery(true)
+						->select('movie_id')
+						->from($db->quoteName('#__ka_rel_genres'))
+						->where('genre_id IN (' . implode(',', $genres) . ')')
+						->group('movie_id');
+
+					$db->setQuery($subqueryGenre);
+
+					try
+					{
+						$movieIDs = $db->loadColumn();
+
+						if (count($movieIDs) == 0)
+						{
+							$movieIDs = array(0);
+						}
+
+						$query->where('a.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
+					}
+					catch (RuntimeException $e)
+					{
+						KAComponentHelper::eventLog($e->getMessage());
+					}*/
+				}
+			}
+
+			// Filter by site rating
+			if ($params->get('search_albums_rate') == 1)
+			{
+				$minRating = $filters->def('albums.rate_min', '');
+				$maxRating = $filters->def('albums.rate_max', '');
+
+				if ($minRating != '' && $maxRating != '')
+				{
+					// TODO Albums table do not have `rate_loc_rounded` field.
+					// $query->where('(a.rate_loc_rounded BETWEEN ' . (int) $minRating . ' AND ' . (int) $maxRating . ')');
 				}
 			}
 		}
@@ -323,8 +521,8 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	public function favoriteRemove($id)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
 		$userID = JFactory::getUser()->get('id');
 
 		if (!is_array($id))
@@ -402,17 +600,17 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	public function favorite()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$action = $app->input->get('action', '', 'cmd');
-		$albumID = $app->input->get('id', 0, 'int');
+		$db        = $this->getDbo();
+		$user      = JFactory::getUser();
+		$app       = JFactory::getApplication();
+		$action    = $app->input->get('action', '', 'cmd');
+		$albumID   = $app->input->get('id', 0, 'int');
 		$albumsIDs = $app->input->get('ids', array(), 'array');
-		$result = '';
-		$itemid = $app->input->get('Itemid', 0, 'int');
-		$success = false;
-		$url = '';
-		$text = '';
+		$result    = '';
+		$itemid    = $app->input->get('Itemid', 0, 'int');
+		$success   = false;
+		$url       = '';
+		$text      = '';
 
 		if (empty($albumsIDs))
 		{
@@ -677,9 +875,9 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	public function votesRemove($ids)
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$db         = $this->getDbo();
+		$user       = JFactory::getUser();
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
 		$allowedIDs = array();
 
 		// Get attributes to check if user can change vote.

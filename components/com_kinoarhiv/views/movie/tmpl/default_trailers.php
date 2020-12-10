@@ -65,11 +65,6 @@ elseif ($this->params->get('player_type') == 'mediaelement')
 		});
 	");
 }
-elseif ($this->params->get('player_type') == 'flowplayer')
-{
-	JHtml::_('stylesheet', 'media/com_kinoarhiv/players/flowplayer/skin/skin.css');
-	JHtml::_('script', 'media/com_kinoarhiv/players/flowplayer/flowplayer.min.js');
-}
 ?>
 <div class="ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -188,32 +183,6 @@ elseif ($this->params->get('player_type') == 'flowplayer')
 													</object>
 												</video>
 											</div>
-
-										<?php elseif ($this->params->get('player_type') == 'flowplayer'):
-											$ratio_raw = explode(':', $item_trailer->dar);
-											$ratio = round($ratio_raw[1] / $ratio_raw[0], 4);
-											?>
-
-											<div class="flowplayer fp-full is-splash" data-ratio="<?php echo $ratio; ?>"
-												 data-splash="<?php echo $item_trailer->screenshot; ?>"
-												 data-swf="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayer.swf"
-												 data-swfHls="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/flowplayer/flowplayerhls.swf">
-												<video>
-													<?php foreach ($item_trailer->files['video'] as $item): ?>
-														<source type="<?php echo $item['type']; ?>" src="<?php echo $item['src']; ?>"/>
-													<?php endforeach; ?>
-													<?php if (count($item_trailer->files['subtitles']) > 0):
-														foreach ($item_trailer->files['subtitles'] as $subtitle): ?>
-															<track kind="subtitles" src="<?php echo $subtitle['file']; ?>" srclang="<?php echo $subtitle['lang_code']; ?>"
-																   label="<?php echo $subtitle['lang']; ?>"<?php echo $subtitle['default'] ? ' default' : ''; ?> />
-														<?php endforeach;
-													endif; ?>
-													<?php if (count($item_trailer->files['chapters']) > 0): ?>
-														<track kind="chapters" src="<?php echo $item_trailer->files['chapters']['file']; ?>" srclang="en" default/>
-													<?php endif; ?>
-												</video>
-											</div>
-
 										<?php endif; ?>
 									<?php else: ?>
 										<div style="height: <?php echo $item_trailer->player_height; ?>px;">

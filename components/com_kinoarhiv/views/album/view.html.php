@@ -34,7 +34,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 * @var    object
 	 * @since  1.6
 	 */
-	protected $item;
+	public $item;
 
 	/**
 	 * The items details
@@ -42,11 +42,13 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 * @var    object
 	 * @since  1.6
 	 */
-	protected $items;
+	public $items;
 
 	protected $filters = null;
 
 	protected $pagination = null;
+
+	protected $page;
 
 	/**
 	 * Component config object
@@ -64,7 +66,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	protected $config;
 
-	protected $user;
+	public $user;
 
 	protected $itemid;
 
@@ -79,14 +81,16 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$user         = JFactory::getUser();
-		$app          = JFactory::getApplication();
-		$lang         = JFactory::getLanguage();
-		$item         = $this->get('Data');
-		$items        = $this->get('Items');
-		$form         = $this->get('Form');
-		$pagination   = $this->get('Pagination');
-		$this->itemid = $app->input->get('Itemid');
+		$this->user       = JFactory::getUser();
+		$app              = JFactory::getApplication();
+		$lang             = JFactory::getLanguage();
+		$item             = $this->get('Data');
+		$items            = $this->get('Items');
+		$this->form       = $this->get('Form');
+		$this->pagination = $this->get('Pagination');
+		$this->itemid     = $app->input->get('Itemid');
+		$this->page       = $app->input->get('page', '', 'cmd');
+		$this->pagination->hideEmptyLimitstart = true;
 
 		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
@@ -95,44 +99,28 @@ class KinoarhivViewAlbum extends JViewLegacy
 			return false;
 		}
 
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$config = JFactory::getConfig();
-		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$params       = JComponentHelper::getParams('com_kinoarhiv');
+		$this->config = JFactory::getConfig();
 		$checkingPath = JPath::clean($item->covers_path . '/' . $item->cover_filename);
 
 		// Prepare the data
 		// Workaround for plugin interaction. Article must contain $text item.
 		$item->text = '';
 
-		if ($throttleEnable == 0)
+		if (!is_file($checkingPath))
 		{
-			if (!is_file($checkingPath))
-			{
-				$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
-				$dimension   = KAContentHelper::getImageSize(
-					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
-					false
-				);
-				$item->coverWidth  = $dimension['width'];
-				$item->coverHeight = $dimension['height'];
-			}
-			else
-			{
-				$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
-				$dimension   = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $params->get('music_covers_size')
-				);
-				$item->coverWidth  = $dimension['width'];
-				$item->coverHeight = $dimension['height'];
-			}
+			$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$dimension   = KAContentHelper::getImageSize(
+				JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
+				false
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
 		}
 		else
 		{
-			$item->itemid = $this->itemid;
-			$item->cover  = KAContentHelper::getAlbumCoverLink($item);
-			$dimension    = KAContentHelper::getImageSize(
+			$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
+			$dimension   = KAContentHelper::getImageSize(
 				$checkingPath,
 				true,
 				(int) $params->get('music_covers_size')
@@ -141,25 +129,33 @@ class KinoarhivViewAlbum extends JViewLegacy
 			$item->coverHeight = $dimension['height'];
 		}
 
+		if (!empty($item->tracks))
+		{
+			foreach ($item->tracks as $key => $track)
+			{
+				$item->tracks[$key]->src = $item->tracks_path_www . '/' . $track->filename;
+				unset($item->tracks[$key]->filename);
+			}
+		}
+
 		if (!empty($item->desc))
 		{
 			$item->desc = str_replace("\n", "<br />", $item->desc);
 		}
 
-		$item->_length = $item->length;
-		list($hours, $minutes) = explode(':', $item->_length);
-		$item->_hr_length = $hours * 60 + $minutes;
+		list($hours, $minutes) = explode(':', $item->length);
+		$item->minutes = $hours * 60 + $minutes;
 
 		if (!empty($item->rate_sum) && !empty($item->rate))
 		{
 			$plural = $lang->getPluralSuffixes($item->rate);
-			$item->rate = round($item->rate_sum / $item->rate, (int) $params->get('vote_summ_precision'));
-			$item->rate_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate, (int) $params->get('vote_summ_num'));
+			$item->rate_value = round($item->rate_sum / $item->rate, (int) $params->get('vote_summ_precision'));
+			$item->rate_label = JText::sprintf('COM_KA_RATE_LOCAL_' . $plural[0], $item->rate_value, (int) $params->get('vote_summ_num'));
 			$item->rate_label_class = ' has-rating';
 		}
 		else
 		{
-			$item->rate = 0;
+			$item->rate_value = 0;
 			$item->rate_label = JText::_('COM_KA_RATE_NO');
 			$item->rate_label_class = ' no-rating';
 		}
@@ -182,17 +178,14 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
 		$this->params = $params;
-		$this->config = $config;
-		$this->item = $item;
+		$this->item   = $item;
 
 		// Reviews
 		$this->items = $items;
 
-		$this->user = $user;
-		$this->pagination = $pagination;
 		$this->metadata = json_decode($item->metadata);
-		$this->form = $form;
-		$this->lang = $lang;
+		$this->lang     = $lang;
+		$this->view     = $app->input->getWord('view');
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
@@ -213,9 +206,9 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	protected function awards()
 	{
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$item = $this->get('Awards');
+		$item   = $this->get('Awards');
 
 		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
 		{
@@ -278,9 +271,9 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
 
 		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=albums') ? $menu->title : JText::_('COM_KA_MOVIES');

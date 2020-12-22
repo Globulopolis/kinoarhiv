@@ -7,42 +7,6 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
-			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
-			<option value="5">J5</option>
-			<option value="10">J10</option>
-			<option value="15">J15</option>
-			<option value="20">J20</option>
-			<option value="25">J25</option>
-			<option value="30">J30</option>
-			<option value="50">J50</option>
-			<option value="100">J100</option>
-		</field>
-		<field name="sort_movielist_field" type="list" class="inputbox" default="ordering"
-			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL"
-			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
-			<option value="id">JGLOBAL_FIELD_ID_LABEL</option>
-			<option value="title">JFIELD_TITLE_DESC</option>
-			<option value="year">COM_KA_FIELD_MOVIE_YEAR</option>
-			<option value="created">JGLOBAL_CREATED_DATE</option>
-			<option value="ordering">JFIELD_ORDERING_LABEL</option>
-		</field>
-		<field name="sort_movielist_ord" type="radio" class="btn-group" default="desc" label="" filter="string">
-			<option value="desc">JGLOBAL_ORDER_DESCENDING</option>
-			<option value="asc">JGLOBAL_ORDER_ASCENDING</option>
-		</field>
-		<field name="sort_namelist_field" type="list" class="inputbox" default="ordering"
-			   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_NAMES_LABEL"
-			   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
-			<option value="id">JGLOBAL_FIELD_ID_LABEL</option>
-			<option value="name">COM_KA_FIELD_NAME</option>
-			<option value="latin_name">COM_KA_FIELD_NAME_LATIN</option>
-			<option value="ordering">JFIELD_ORDERING_LABEL</option>
-		</field>
-		<field name="sort_namelist_ord" type="radio" class="btn-group" default="desc" label="" filter="string">
-			<option value="desc">JGLOBAL_ORDER_DESCENDING</option>
-			<option value="asc">JGLOBAL_ORDER_ASCENDING</option>
-		</field>
 		<field name="logger" type="list" class="inputbox" default="php"
 			   label="COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_LABEL"
 			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_LABEL_DESC" filter="word">
@@ -78,7 +42,7 @@
 		<field name="gnuplot_path" type="text" default="bin/gnuplot/" label="COM_KA_FIELD_PATHS_GNUPLOT_LABEL"
 			   description="COM_KA_FIELD_PATHS_GNUPLOT_LABEL_DEDC" required="true" filter="string" size="100"
 			   class="span11 validate-path"/>
-		<field name="def_cache" type="text" default="cache/kinoarhiv/DefinitionCache/Serializer/"
+		<field name="def_cache" type="text" default="cache/com_kinoarhiv/DefinitionCache/Serializer/"
 			   label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
 			   filter="string" size="100" class="span11 validate-path"/>
 
@@ -264,8 +228,8 @@
 			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
 		<field name="music_covers_disc" type="textarea" default="disc.jpg" label="COM_KA_FIELD_MUSIC_COVERS_DISC"
 			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
-		<field name="music_covers_size" type="text" default="250" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
-			   filter="integer" size="3" class="span11"/>
+		<field name="music_covers_size" type="text" default="150" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
+			   description="COM_KA_FIELD_MUSIC_COVERS_SIZE_DESC" filter="integer" size="3" class="span11"/>
 	</fieldset>
 
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
@@ -353,21 +317,25 @@
 		</field>
 		<field name="slider_min_item" type="text" default="3"
 			   label="COM_KA_FIELD_SETTINGS_GLOBAL_SLIDER_MOVIE_MIN_LABEL" required="true" filter="integer" size="6"/>
+		<field name="show_pagination_limit" type="radio" class="btn-group" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DISPLAY_SELECT_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
+			<option value="5">J5</option>
+			<option value="10">J10</option>
+			<option value="15">J15</option>
+			<option value="20">J20</option>
+			<option value="25">J25</option>
+			<option value="30">J30</option>
+			<option value="50">J50</option>
+			<option value="100">J100</option>
+		</field>
 	</fieldset>
 
 	<fieldset name="ap_item_player" label="COM_KA_SETTINGS_AP_ITEM_PLAYER">
-		<field name="trailer_collapsed" type="radio" class="btn-group" default="0"
-			   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL"
-			   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
-		<field name="movie_collapsed" type="radio" class="btn-group" default="0"
-			   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL"
-			   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 		<field name="player_width" type="text" default="690" label="COM_KA_FIELD_AP_PLAYER_WIDTH_LABEL" required="true"
 			   filter="integer" size="6"/>
 		<field name="player_type" type="folderlist" default="videojs"
@@ -463,6 +431,7 @@
 	</field>
 	<field type="spacer" name="alphabet_movies" class="text" label="COM_KA_SETTINGS_AP_AB_MOVIES"/>
 	<field type="spacer" name="alphabet_names" class="text" label="COM_KA_SETTINGS_AP_AB_NAMES"/>
+	<field type="spacer" name="alphabet_albums" class="text" label="COM_KA_SETTINGS_AP_AB_ALBUMS"/>
 
 	<fieldset name="ap_nav" label="COM_KA_SETTINGS_AP_NAVGLOBAL_LABEL">
 		<field name="show_feed_link" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_LNK_FEED_LABEL"
@@ -585,6 +554,23 @@
 			   description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
+		</field>
+		<field name="reviews_show_pagination_limit" type="radio" class="btn-group" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL"
+			   description="JGLOBAL_DISPLAY_SELECT_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="reviews_list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
+			   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
+			<option value="5">J5</option>
+			<option value="10">J10</option>
+			<option value="15">J15</option>
+			<option value="20">J20</option>
+			<option value="25">J25</option>
+			<option value="30">J30</option>
+			<option value="50">J50</option>
+			<option value="100">J100</option>
+			<option value="0">JALL</option>
 		</field>
 		<field name="reviews_length_min" type="text" default="20" label="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL"
 			   description="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL_DESC" required="true" filter="integer" size="6"/>
@@ -783,6 +769,11 @@
 			   data-content="careers" data-allow-clear="true" data-key="id" multiple="true"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
+		</field>
+		<field name="search_names_genre" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_GENRE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
 		</field>
 	</fieldset>
 

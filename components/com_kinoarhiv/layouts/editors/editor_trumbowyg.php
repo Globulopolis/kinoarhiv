@@ -19,11 +19,11 @@ JHtml::_('jquery.framework');
 if ($params->get('use_cdn', 0) == 1)
 {
 	$document = JFactory::getDocument();
-	$document->addScript('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/trumbowyg.min.js');
-	$document->addScript('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/plugins/colors/trumbowyg.colors.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/trumbowyg@2.23.0/dist/trumbowyg.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/trumbowyg@2.23.0/dist/plugins/colors/trumbowyg.colors.min.js');
 	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/trumbowyg/langs/');
-	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/ui/trumbowyg.min.css');
-	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/trumbowyg@2.8.1/dist/plugins/colors/ui/trumbowyg.colors.min.css');
+	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/trumbowyg@2.23.0/dist/ui/trumbowyg.min.css');
+	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/trumbowyg@2.23.0/dist/plugins/colors/ui/trumbowyg.colors.min.css');
 }
 else
 {
@@ -117,7 +117,7 @@ else
 </script>
 <div style="clear: both;">&nbsp;</div>
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="review-form" class="form-horizontal uk-form editor">
-	<div class="editor-container"><?php echo $form->getInput('review'); ?></div>
+	<div class="editor-container"><?php echo $form->getInput('review'); ?></div><br />
 	<div class="select-type"><?php echo $form->getLabel('type'); ?><?php echo $form->getInput('type'); ?></div>
 	<div class="clear"></div>
 	<?php

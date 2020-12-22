@@ -16,21 +16,21 @@ JHtml::_('behavior.tabstate');
 <div class="uk-article ka-content">
 	<div class="row-fluid">
 		<div class="span12">
-		<?php echo JHtml::_('bootstrap.startTabSet', 'advanced_search', array('active' => 's_movies'));
+		<?php echo JHtml::_('bootstrap.startTabSet', 'advanced_search', array('active' => 'movies'));
 			echo JHtml::_(
-				'bootstrap.addTab', 'advanced_search', 'formMovies', '<span class="tab-about"></span>' . JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE')
+				'bootstrap.addTab', 'advanced_search', 'movies', '<span class="tab-about"></span>' . JText::_('COM_KA_SEARCH_ADV_MOVIES_TITLE')
 			);
 				echo $this->loadTemplate('form_movies');
 			echo JHtml::_('bootstrap.endTab');
 
 			echo JHtml::_(
-				'bootstrap.addTab', 'advanced_search', 'formNames', '<span class="tab-posters"></span>' . JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE')
+				'bootstrap.addTab', 'advanced_search', 'names', '<span class="tab-posters"></span>' . JText::_('COM_KA_SEARCH_ADV_NAMES_TITLE')
 			);
 				echo $this->loadTemplate('form_names');
 			echo JHtml::_('bootstrap.endTab');
 
 			echo JHtml::_(
-				'bootstrap.addTab', 'advanced_search', 'formAlbums', '<span class="tab-sound"></span>' . JText::_('COM_KA_SEARCH_ADV_MUSIC_TITLE')
+				'bootstrap.addTab', 'advanced_search', 'albums', '<span class="tab-sound"></span>' . JText::_('COM_KA_SEARCH_ADV_MUSIC_TITLE')
 			);
 				echo $this->loadTemplate('form_albums');
 			echo JHtml::_('bootstrap.endTab');

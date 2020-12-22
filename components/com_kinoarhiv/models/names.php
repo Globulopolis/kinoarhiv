@@ -10,8 +10,9 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Utilities\ArrayHelper;
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Persons list class
@@ -46,11 +47,6 @@ class KinoarhivModelNames extends JModelList
 		}
 
 		parent::__construct($config);
-
-		if (empty($this->context))
-		{
-			$this->context = strtolower('com_kinoarhiv.names');
-		}
 	}
 
 	/**
@@ -71,44 +67,33 @@ class KinoarhivModelNames extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		if ($this->context)
+		parent::populateState($ordering, $direction);
+
+		$app    = JFactory::getApplication();
+		$params = new Registry;
+
+		if ($menu = $app->getMenu()->getActive())
 		{
-			$app = JFactory::getApplication();
-			$params = JComponentHelper::getParams('com_kinoarhiv');
-
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-
-			$value = $app->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $params->get('sort_namelist_field'));
-
-			if (!in_array($value, $this->filter_fields))
-			{
-				$value = $ordering;
-				$app->setUserState($this->context . '.ordercol', $value);
-			}
-
-			$this->setState('list.ordering', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.orderdirn', 'filter_order_Dir', strtoupper($params->get('sort_namelist_ord')));
-
-			if (!in_array(strtoupper($value), array('ASC', 'DESC', '')))
-			{
-				$value = $direction;
-				$app->setUserState($this->context . '.orderdirn', $value);
-			}
-
-			$this->setState('list.direction', $value);
+			$params->loadString($menu->params);
 		}
-		else
+
+		$this->setState('params', $params);
+
+		$limit = $params->get('list_limit');
+
+		// Override default limit settings and respect user selection if 'show_pagination_limit' is set to Yes.
+		if ($params->get('show_pagination_limit'))
 		{
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
+			$limit = $app->getUserStateFromRequest('list.limit', 'limit', $params->get('list_limit'), 'uint');
 		}
+
+		$this->setState('list.limit', $limit);
+
+		$limitstart = $app->input->getUInt('limitstart', 0);
+		$this->setState('list.start', $limitstart);
+
+		$this->setState('list.ordering', $params->get('orderby'));
+		$this->setState('list.direction', $params->get('ordering'));
 	}
 
 	/**
@@ -228,9 +213,22 @@ class KinoarhivModelNames extends JModelList
 			// Filter by gender
 			$gender = $filters->get('names.gender');
 
-			if ($params->get('search_names_gender') == 1 && ($gender !== -1))
+			if ($params->get('search_names_gender') == 1 && ($gender === 0 || $gender === 1))
 			{
 				$query->where('n.gender = ' . (int) $gender);
+			}
+
+			// Filter by genre
+			$genre = $filters->get('names.genre');
+
+			if ($params->get('search_names_genre') == 1 && !empty($genre))
+			{
+				$subqueryGenre = $db->getQuery(true)
+					->select($db->quoteName('name_id'))
+					->from($db->quoteName('#__ka_rel_names_genres'))
+					->where('genre_id IN (' . implode(',', $genre) . ')');
+
+				$query->where('n.id IN (' . $subqueryGenre . ')');
 			}
 
 			// Filter by movie title
@@ -239,28 +237,11 @@ class KinoarhivModelNames extends JModelList
 			if ($params->get('search_names_mtitle') == 1 && !empty($mtitle))
 			{
 				$subqueryTitle = $db->getQuery(true)
-					->select('name_id')
+					->select($db->quoteName('name_id'))
 					->from($db->quoteName('#__ka_rel_names'))
-					->where('movie_id = ' . (int) $mtitle)
-					->group('name_id');
+					->where('movie_id = ' . (int) $mtitle);
 
-				$db->setQuery($subqueryTitle);
-
-				try
-				{
-					$nameIDs = $db->loadColumn();
-
-					if (count($nameIDs) == 0)
-					{
-						$nameIDs = array(0);
-					}
-
-					$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($nameIDs)) . ')');
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-				}
+				$query->where('n.id IN (' . $subqueryTitle . ')');
 			}
 
 			// Filter by birthplace
@@ -285,28 +266,11 @@ class KinoarhivModelNames extends JModelList
 			if ($params->get('search_names_amplua') == 1 && !empty($amplua))
 			{
 				$subqueryAmplua = $db->getQuery(true)
-					->select('name_id')
+					->select($db->quoteName('name_id'))
 					->from($db->quoteName('#__ka_rel_names_career'))
-					->where('career_id = ' . (int) $amplua)
-					->group('name_id');
+					->where('career_id = ' . (int) $amplua);
 
-				$db->setQuery($subqueryAmplua);
-
-				try
-				{
-					$nameIDs = $db->loadColumn();
-
-					if (count($nameIDs) == 0)
-					{
-						$nameIDs = array(0);
-					}
-
-					$query->where('n.id IN (' . implode(',', ArrayHelper::arrayUnique($nameIDs)) . ')');
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-				}
+				$query->where('n.id IN (' . $subqueryAmplua . ')');
 			}
 		}
 

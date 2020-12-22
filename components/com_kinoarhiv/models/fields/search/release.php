@@ -64,30 +64,31 @@ class JFormFieldRelease extends JFormFieldList
 		if ($this->element['data-content'] == 'date')
 		{
 			$query = $db->getQuery(true)
-				->select('release_date AS value, DATE_FORMAT(release_date, \'%Y-%m-%d\') AS text')
+				->select("DATE_FORMAT(release_date, '" . $this->element['data-dateformat'] . "') AS value")
+				->select("DATE_FORMAT(release_date, '" . $this->element['data-dateformat'] . "') AS text")
 				->from($db->quoteName('#__ka_releases'))
-				->where("language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
-				->group('release_date')
-				->order('release_date DESC');
+				->where($db->quoteName('language') . " IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
+				->group($db->quoteName('value'))
+				->order($db->quoteName('release_date') . ' DESC');
 		}
 		elseif ($this->element['data-content'] == 'countries')
 		{
 			$query = $db->getQuery(true)
-				->select('r.id AS value, c.name AS text')
+				->select($db->quoteName('r.country_id', 'value') . ', ' . $db->quoteName('c.name', 'text'))
 				->from($db->quoteName('#__ka_releases', 'r'))
-				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
+				->leftJoin($db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
 				->where("r.country_id != 0 AND r.language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
-				->group('r.country_id')
-				->order('c.name ASC');
+				->group($db->quoteName('r.country_id'))
+				->order($db->quoteName('c.name') . ' ASC');
 		}
 		elseif ($this->element['data-content'] == 'vendors')
 		{
 			$query = $db->getQuery(true)
-				->select('r.id, v.company_name')
+				->select($db->quoteName(array('r.id', 'v.company_name')))
 				->from($db->quoteName('#__ka_releases', 'r'))
-				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
+				->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
 				->where("r.vendor_id != 0 AND r.language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
-				->group('r.vendor_id');
+				->group($db->quoteName('r.vendor_id'));
 		}
 		else
 		{

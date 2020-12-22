@@ -115,22 +115,22 @@
 				   labelto="COM_KA_SEARCH_ADV_RANGE_TO_LABEL" filter="array">
 				<option value="">-</option>
 			</field>
-			<field name="premiere_date" type="premiere" data-content="date" default=""
+			<field name="premiere_date" type="premiere" data-content="date" data-dateformat="%Y" default=""
 				   label="COM_KA_SEARCH_ADV_MOVIES_PREMIERE_DATE" class="span3 uk-width-1-4">
 				<option value="">-</option>
 			</field>
-			<!-- Value of the filter should be a 'string' nor 'integeer'. -->
+			<!-- Value of the filter should be a 'string' not 'integer'. -->
 			<field name="premiere_country" type="premiere" data-content="countries" default="" filter="string"
 				   label="COM_KA_SEARCH_ADV_MOVIES_PREMIERE_COUNTRY" class="span7 uk-width-1-4 hasAutocomplete"
 				   data-allow-clear="true">
 				<option value=""></option>
 				<option value="0">COM_KA_PREMIERE_DATE_WORLDWIDE</option>
 			</field>
-			<field name="release_date" type="release" data-content="date" default=""
+			<field name="release_date" type="release" data-content="date" data-dateformat="%Y" default=""
 				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_DATE" class="span3 uk-width-1-4">
 				<option value="">-</option>
 			</field>
-			<!-- Value of the filter should be a 'string' nor 'integeer'. -->
+			<!-- Value of the filter should be a 'string' not 'integer'. -->
 			<field name="release_country" type="release" data-content="countries" default="" filter="string"
 				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_COUNTRY" class="span7 uk-width-1-4 hasAutocomplete">
 				<option value=""></option>
@@ -171,6 +171,11 @@
 		<field name="amplua" type="autocomplete" label="COM_KA_SEARCH_ADV_NAMES_AMPLUA_LABEL" filter="integer"
 			   class="span10 uk-width-1-1" data-content="amplua" data-allow-clear="true" data-key="id"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
+		</field>
+		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
+			   data-content="movieGenres" data-allow-clear="true" data-key="id" multiple="true"
+			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
 		</field>
 	</fields>

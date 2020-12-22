@@ -19,8 +19,8 @@ JHtml::_('jquery.framework');
 if ($params->get('use_cdn', 0) == 1)
 {
 	$document = JFactory::getDocument();
-	$document->addScript('https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.min.js');
-	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/quill@1.3.4/dist/quill.snow.min.css');
+	$document->addScript('https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js');
+	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.min.css');
 }
 else
 {

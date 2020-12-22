@@ -10,17 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
-if (StringHelper::substr($this->params->get('media_rating_image_root_www'), 0, 1) == '/')
-{
-	$rating_image_www = JUri::base() . StringHelper::substr($this->params->get('media_rating_image_root_www'), 1);
-}
-else
-{
-	$rating_image_www = $this->params->get('media_rating_image_root_www');
-}
-
 JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 ?>
 <script type="text/javascript">
@@ -37,24 +26,35 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 </script>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts.navigation.movie_alphabet',
+			array('url' => 'index.php?option=com_kinoarhiv&view=movies&content=movies&Itemid=' . $this->moviesItemid, 'params' => $this->params),
+			JPATH_COMPONENT
+		);
 	endif; ?>
 
 	<article class="uk-article item">
 		<?php
 		echo JLayoutHelper::render(
 			'layouts.navigation.movie_item_header',
-			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			array(
+				'params' => $this->params,
+				'item'   => $this->item,
+				'itemid' => $this->moviesItemid,
+				'guest'  => $this->user->get('guest'),
+				'url'    => 'index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->moviesItemid
+			),
 			JPATH_COMPONENT
 		);
-		echo $this->item->event->afterDisplayTitle;
-		echo $this->item->event->beforeDisplayContent; ?>
+		?>
+		<?php echo $this->item->event->afterDisplayTitle; ?>
+		<?php echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="clear"></div>
 		<div class="content content-list clearfix">
 			<div>
 				<div class="poster">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->moviesItemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
 				</div>
 				<div class="introtext">
 					<div class="text"><?php echo $this->item->text; ?></div>
@@ -69,18 +69,17 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 						);
 					endif;
 
-					if ($this->params->get('ratings_show_frontpage') == 1):
-						echo JLayoutHelper::render('layouts.content.votes_movie',
-							array(
-								'params' => $this->params,
-								'item'   => $this->item,
-								'guest'  => $this->user->get('guest'),
-								'itemid' => $this->itemid,
-								'view'   => $this->view
-							),
-							JPATH_COMPONENT
-						);
-					endif; ?>
+					echo JLayoutHelper::render('layouts.content.votes_movie',
+						array(
+							'params'  => $this->params,
+							'item'    => $this->item,
+							'guest'   => $this->user->get('guest'),
+							'itemid'  => $this->itemid,
+							'view'    => $this->view
+						),
+						JPATH_COMPONENT
+					);
+					?>
 				</div>
 			</div>
 			<?php if (count($this->item->items) > 0): ?>

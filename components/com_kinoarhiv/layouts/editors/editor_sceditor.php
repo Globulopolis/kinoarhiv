@@ -19,11 +19,11 @@ JHtml::_('jquery.framework');
 if ($params->get('use_cdn', 0) == 1)
 {
 	$document = JFactory::getDocument();
-	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/sceditor.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.1.3/minified/sceditor.min.js');
 	KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/editors/sceditor/lang/');
-	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/plugins/format.min.js');
-	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/plugins/undo.min.js');
-	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/sceditor@2.0.0/minified/themes/square.min.css');
+	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.1.3/minified/plugins/format.min.js');
+	$document->addScript('https://cdn.jsdelivr.net/npm/sceditor@2.1.3/minified/plugins/undo.min.js');
+	$document->addStyleSheet('https://cdn.jsdelivr.net/npm/sceditor@2.1.3/minified/themes/square.min.css');
 }
 else
 {

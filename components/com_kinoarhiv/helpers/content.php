@@ -398,4 +398,41 @@ class KAContentHelper
 
 		return $time;
 	}
+
+	/**
+	 * Get proper itemid for menu &view=?&Itemid=? links based on view type.
+	 *
+	 * @param   string  $view  View name.
+	 *
+	 * @return  integer
+	 *
+	 * @since   3.1
+	 */
+	public static function getItemid($view)
+	{
+		$app          = JFactory::getApplication();
+		$lang         = JFactory::getLanguage();
+		$itemid       = $app->input->get('Itemid', 0, 'int');
+		$properItemid = $itemid;
+		$menus        = $app->getMenu();
+		$allMenus     = $menus->getItems(array('link', 'language'), array('index.php?option=com_kinoarhiv&view=' . $view, $lang->getTag()), true);
+
+		// Get menu ID for current link and language.
+		if (!empty($allMenus))
+		{
+			$properItemid = $allMenus->id;
+		}
+		// Try to get menu for all languages.
+		else
+		{
+			$allMenus = $menus->getItems(array('link', 'language'), array('index.php?option=com_kinoarhiv&view=' . $view, '*'), true);
+
+			if (!empty($allMenus))
+			{
+				$properItemid = $allMenus->id;
+			}
+		}
+
+		return (int) $properItemid;
+	}
 }

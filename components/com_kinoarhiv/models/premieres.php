@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
+use Joomla\Registry\Registry;
 
 /**
  * Premieres list class
@@ -26,25 +26,7 @@ class KinoarhivModelPremieres extends JModelList
 	 * @var    string
 	 * @since  1.6
 	 */
-	protected $context = null;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JModelLegacy
-	 * @since   3.0
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
-
-		if (empty($this->context))
-		{
-			$this->context = strtolower('com_kinoarhiv.premieres');
-		}
-	}
+	protected $context = 'com_kinoarhiv.premieres';
 
 	/**
 	 * Method to auto-populate the model state.
@@ -62,29 +44,35 @@ class KinoarhivModelPremieres extends JModelList
 	 *
 	 * @since   3.0
 	 */
-	protected function populateState($ordering = 'p.premiere_date', $direction = 'ASC')
+	protected function populateState($ordering = null, $direction = null)
 	{
-		if ($this->context)
-		{
-			$app    = JFactory::getApplication();
-			$params = JComponentHelper::getParams('com_kinoarhiv');
+		parent::populateState($ordering, $direction);
 
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $limit);
+		$app    = JFactory::getApplication();
+		$params = new Registry;
 
-			$value      = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0, 'uint');
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-			$this->setState('list.ordering', $ordering);
-			$listOrder = $app->getUserStateFromRequest($this->context . '.list.direction', 'direction', $direction, 'cmd');
-			$this->setState('list.direction', $listOrder);
-		}
-		else
+		if ($menu = $app->getMenu()->getActive())
 		{
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
+			$params->loadString($menu->params);
 		}
+
+		$this->setState('params', $params);
+
+		$limit = $params->get('list_limit');
+
+		// Override default limit settings and respect user selection if 'show_pagination_limit' is set to Yes.
+		if ($params->get('show_pagination_limit'))
+		{
+			$limit = $app->getUserStateFromRequest('list.limit', 'limit', $params->get('list_limit'), 'uint');
+		}
+
+		$this->setState('list.limit', $limit);
+
+		$limitstart = $app->input->getUInt('limitstart', 0);
+		$this->setState('list.start', $limitstart);
+
+		$this->setState('list.ordering', $params->get('orderby'));
+		$this->setState('list.direction', $params->get('ordering'));
 	}
 
 	/**
@@ -120,9 +108,7 @@ class KinoarhivModelPremieres extends JModelList
 		$db       = $this->getDbo();
 		$user     = JFactory::getUser();
 		$groups   = implode(',', $user->getAuthorisedViewLevels());
-		$app      = JFactory::getApplication();
 		$lang     = JFactory::getLanguage();
-		$params   = JComponentHelper::getParams('com_kinoarhiv');
 		$nullDate = $db->quote($db->getNullDate());
 
 		$query = $db->getQuery(true);
@@ -153,9 +139,12 @@ class KinoarhivModelPremieres extends JModelList
 
 		if (!$user->get('guest'))
 		{
-			$query->select('u.favorite')
+			$query->select($db->quoteName(array('u.favorite', 'u.watched')))
 				->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
 		}
+
+		$query->select('user.name AS username')
+			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
 
 		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 			->where('parent_id = 0 AND m.access IN (' . $groups . ')');

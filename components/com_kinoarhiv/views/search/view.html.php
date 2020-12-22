@@ -34,12 +34,11 @@ class KinoarhivViewSearch extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app              = JFactory::getApplication();
-		$this->form       = $this->get('Form');
-		$this->homeItemid = $this->get('HomeItemid');
-		$this->menu       = $app->getMenu()->getActive();
-		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid     = $app->input->get('Itemid', 0, 'int');
+		$app          = JFactory::getApplication();
+		$this->form   = $this->get('Form');
+		$this->menu   = $app->getMenu()->getActive();
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -48,7 +47,12 @@ class KinoarhivViewSearch extends JViewLegacy
 			return false;
 		}
 
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
+		$this->homeItemid = array(
+			'movies' => KAContentHelper::getItemid('movies'),
+			'names'  => KAContentHelper::getItemid('names'),
+			'albums' => KAContentHelper::getItemid('albums')
+		);
 
 		// Merge the menu item params with the component params so that the menu params take priority
 		$temp         = clone $this->params;
@@ -78,6 +82,15 @@ class KinoarhivViewSearch extends JViewLegacy
 			'name' => $title,
 			'link' => 'index.php?option=com_kinoarhiv&view=search&Itemid=' . $this->itemid
 		);
+
+		if ($app->get('sitename_pagetitles', 0) == 1)
+		{
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		}
+		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		{
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+		}
 
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);

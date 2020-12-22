@@ -84,20 +84,13 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 						<div class="review-footer corner-bottom review-content <?php echo $uiClass; ?>"><?php echo $review->review; ?></div>
 					<?php endif; ?>
 				</div>
-			<?php endfor; ?>
+			<?php endfor;
 
-			<div class="pagination bottom">
-				<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm"
-					id="adminForm" style="clear: both;" autocomplete="off">
-					<?php echo $this->pagination->getPagesLinks(); ?><br/>
-					<?php echo $this->pagination->getResultsCounter(); ?>&nbsp;
-					<label for="limit" class="element-invisible"><?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?></label>
-					<?php echo $this->pagination->getLimitBox(); ?>
-					<input type="hidden" name="limitstart" value=""/>
-					<input type="hidden" name="task" value=""/>
-				</form>
-			</div>
-		<?php endif; ?>
+			echo JLayoutHelper::render('layouts.navigation.pagination',
+				array('params' => $this->params, 'pagination' => $this->pagination, 'limitstart' => true, 'task' => true),
+				JPATH_COMPONENT
+			);
+		endif; ?>
 		</div>
 	<?php else: ?>
 		<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_NO')); ?></div>

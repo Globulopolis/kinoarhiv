@@ -85,6 +85,6 @@ KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/la
 	});
 </script>
 <div class="player">
-	<audio controls style="width: 100%;" class="video-js vjs-default-skin vjs-b" height="30"
+	<audio controls preload="none" style="width: 100%;" class="video-js vjs-default-skin vjs-b" height="30"
 		   id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
 </div>

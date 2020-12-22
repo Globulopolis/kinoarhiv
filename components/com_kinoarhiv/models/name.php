@@ -196,32 +196,6 @@ class KinoarhivModelName extends JModelList
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 
-		// Get proper Itemid for movies list
-		if (count($result->movies) > 0)
-		{
-			$queryItemid = $db->getQuery(true)
-				->select('id')
-				->from($db->quoteName('#__menu'))
-				->where("link = 'index.php?option=com_kinoarhiv&view=movies'")
-				->where("type = 'component' AND parent_id = 1 AND language = " . $db->quote($lang->getTag()));
-
-			$db->setQuery($queryItemid);
-
-			try
-			{
-				$result->itemid = $db->loadResult();
-			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
-				$result->itemid = 0;
-			}
-		}
-		else
-		{
-			$result->itemid = $app->input->get('Itemid', 0, 'int');
-		}
-
 		return $result;
 	}
 

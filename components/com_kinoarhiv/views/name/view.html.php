@@ -23,6 +23,8 @@ class KinoarhivViewName extends JViewLegacy
 
 	protected $items = null;
 
+	protected $pagination;
+
 	protected $params;
 
 	protected $user;
@@ -43,6 +45,7 @@ class KinoarhivViewName extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$app          = JFactory::getApplication();
+		$this->user   = JFactory::getUser();
 		$this->page   = $app->input->get('page', '', 'cmd');
 		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
@@ -67,7 +70,6 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	protected function info($tpl)
 	{
-		$user = JFactory::getUser();
 		$app  = JFactory::getApplication();
 		$item = $this->get('Data');
 
@@ -84,6 +86,8 @@ class KinoarhivViewName extends JViewLegacy
 		// Prepare the data
 		// Build title string
 		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
+
+		$item->moviesItemid = KAContentHelper::getItemid('movies');
 
 		// Build date string
 		$item->dates = '';
@@ -158,16 +162,16 @@ class KinoarhivViewName extends JViewLegacy
 			$item->poster_height = $dimension['height'];
 		}
 
-		$lc_offset = JFactory::getConfig()->get('offset');
-		$date_of_birth_1 = new DateTime($item->date_of_birth_raw . ' ' . date('H:i:s'), new DateTimeZone($lc_offset));
-		$date_of_birth_2 = new DateTime('now', new DateTimeZone($lc_offset));
-		$_interval = $date_of_birth_1->diff($date_of_birth_2);
-		$interval = ($_interval->y > 100) ? substr($_interval->y, -2) : $_interval->y;
-		$str_age = '';
+		$localeOffset      = JFactory::getConfig()->get('offset');
+		$dateOfBirthFirst  = new DateTime($item->date_of_birth_raw . ' ' . date('H:i:s'), new DateTimeZone($localeOffset));
+		$dateOfBirthSecond = new DateTime('now', new DateTimeZone($localeOffset));
+		$_interval         = $dateOfBirthFirst->diff($dateOfBirthSecond);
+		$interval          = ($_interval->y > 100) ? substr($_interval->y, -2) : $_interval->y;
+		$ageString         = '';
 
 		if ($interval >= 5 && $interval <= 14)
 		{
-			$str_age = JText::_('COM_KA_NAMES_AGE_01');
+			$ageString = JText::_('COM_KA_NAMES_AGE_01');
 		}
 		else
 		{
@@ -175,21 +179,21 @@ class KinoarhivViewName extends JViewLegacy
 
 			if ($interval == 0 || ($interval >= 5 && $interval <= 9))
 			{
-				$str_age = JText::_('COM_KA_NAMES_AGE_01');
+				$ageString = JText::_('COM_KA_NAMES_AGE_01');
 			}
 
 			if ($interval == 1)
 			{
-				$str_age = JText::_('COM_KA_NAMES_AGE_02');
+				$ageString = JText::_('COM_KA_NAMES_AGE_02');
 			}
 
 			if ($interval >= 2 && $interval <= 4)
 			{
-				$str_age = JText::_('COM_KA_NAMES_AGE_03');
+				$ageString = JText::_('COM_KA_NAMES_AGE_03');
 			}
 		}
 
-		$item->date_of_birth_interval_str = $_interval->y . ' ' . $str_age;
+		$item->date_of_birth_interval_str = $_interval->y . ' ' . $ageString;
 
 		if (!empty($item->desc))
 		{
@@ -197,8 +201,7 @@ class KinoarhivViewName extends JViewLegacy
 		}
 
 		$this->params = $params;
-		$this->item = $item;
-		$this->user = $user;
+		$this->item   = $item;
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
@@ -211,13 +214,13 @@ class KinoarhivViewName extends JViewLegacy
 
 	protected function wallpapers()
 	{
-		$app = JFactory::getApplication();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$item = $this->get('NameData');
-		$items = $this->get('Items');
+		$app        = JFactory::getApplication();
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
+		$item       = $this->get('NameData');
+		$items      = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -239,11 +242,11 @@ class KinoarhivViewName extends JViewLegacy
 		{
 			if ($params->get('throttle_image_enable', 0) == 0)
 			{
-				$checking_path = JPath::clean(
+				$checkingPath = JPath::clean(
 					$params->get('media_actor_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
 				);
 
-				if (!is_file($checking_path))
+				if (!is_file($checkingPath))
 				{
 					$_item->image = 'javascript:void(0);';
 					$_item->th_image = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_wp.png';
@@ -306,10 +309,10 @@ class KinoarhivViewName extends JViewLegacy
 			}
 		}
 
-		$this->params = $params;
-		$this->item = $item;
-		$this->items = $items;
-		$this->filters = $this->getDimensionList();
+		$this->params     = $params;
+		$this->item       = $item;
+		$this->items      = $items;
+		$this->filters    = $this->getDimensionList();
 		$this->pagination = $pagination;
 
 		$this->prepareDocument();
@@ -325,13 +328,13 @@ class KinoarhivViewName extends JViewLegacy
 
 	protected function photos()
 	{
-		$app = JFactory::getApplication();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$item = $this->get('NameData');
-		$items = $this->get('Items');
+		$app        = JFactory::getApplication();
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
+		$item       = $this->get('NameData');
+		$items      = $this->get('Items');
 		$pagination = $this->get('Pagination');
 
-		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -349,23 +352,23 @@ class KinoarhivViewName extends JViewLegacy
 		// Build title string
 		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
-		$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+		$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 		foreach ($items as $_item)
 		{
 			if ($params->get('throttle_image_enable', 0) == 0)
 			{
-				$checking_path = JPath::clean(
+				$checkingPath = JPath::clean(
 					$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename
 				);
 
-				if (!is_file($checking_path))
+				if (!is_file($checkingPath))
 				{
 					$_item->image = 'javascript:void(0);';
 					$_item->th_image = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme')
-						. '/' . $no_cover . '.png';
+						. '/' . $noCover . '.png';
 					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $no_cover . '.png',
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
 						false
 					);
 					$_item->th_image_width = $dimension['width'];
@@ -421,9 +424,9 @@ class KinoarhivViewName extends JViewLegacy
 			}
 		}
 
-		$this->params = $params;
-		$this->item = $item;
-		$this->items = $items;
+		$this->params     = $params;
+		$this->item       = $item;
+		$this->items      = $items;
 		$this->pagination = $pagination;
 
 		$this->prepareDocument();
@@ -439,12 +442,12 @@ class KinoarhivViewName extends JViewLegacy
 
 	protected function awards()
 	{
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$item = $this->get('NameData');
-		$items = $this->get('Awards');
+		$item   = $this->get('NameData');
+		$items  = $this->get('Awards');
 
-		if (count($errors = $this->get('Errors')) || is_null($items) || !$item || !$items)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
@@ -464,8 +467,8 @@ class KinoarhivViewName extends JViewLegacy
 		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
 		$this->params = $params;
-		$this->item = $item;
-		$this->items = $items;
+		$this->item   = $item;
+		$this->items  = $items;
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
@@ -480,8 +483,8 @@ class KinoarhivViewName extends JViewLegacy
 
 	protected function getDimensionList()
 	{
-		$app = JFactory::getApplication();
-		$active = $app->input->get('dim_filter', '0', 'string');
+		$app        = JFactory::getApplication();
+		$active     = $app->input->get('dim_filter', '0', 'string');
 		$dimensions = $this->get('DimensionFilters');
 		array_push($dimensions, array('width' => '0', 'title' => JText::_('COM_KA_FILTERS_DIMENSION_NOSORT')));
 
@@ -509,9 +512,9 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
 
 		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PERSONS');
@@ -523,8 +526,8 @@ class KinoarhivViewName extends JViewLegacy
 		);
 
 		$pathway->setPathway(array($path));
-		$title_add = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_NAMES_TAB_' . StringHelper::ucwords($this->page));
-		$this->document->setTitle($this->item->title . $title_add);
+		$titleAdd = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_NAMES_TAB_' . StringHelper::ucwords($this->page));
+		$this->document->setTitle($this->item->title . $titleAdd);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

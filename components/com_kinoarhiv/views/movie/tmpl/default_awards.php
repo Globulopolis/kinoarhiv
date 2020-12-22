@@ -12,19 +12,30 @@ defined('_JEXEC') or die;
 ?>
 <div class="ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts.navigation.movie_alphabet',
+			array('url' => 'index.php?option=com_kinoarhiv&view=movies&content=movies&Itemid=' . $this->moviesItemid, 'params' => $this->params),
+			JPATH_COMPONENT
+		);
 	endif; ?>
 
-	<article class="uk-article">
+	<article class="uk-article item">
 		<?php
 		echo JLayoutHelper::render(
 			'layouts.navigation.movie_item_header',
-			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			array(
+				'params' => $this->params,
+				'item'   => $this->item,
+				'itemid' => $this->itemid,
+				'guest'  => $this->user->get('guest'),
+				'url'    => 'index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid
+			),
 			JPATH_COMPONENT
 		);
-		echo $this->item->event->afterDisplayTitle;
-		echo $this->loadTemplate('tabs');
-		echo $this->item->event->beforeDisplayContent; ?>
+		?>
+		<?php echo $this->item->event->afterDisplayTitle; ?>
+		<?php echo $this->loadTemplate('tabs'); ?>
+		<?php echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="awards-list">
 			<?php if (count($this->item->awards) > 0):

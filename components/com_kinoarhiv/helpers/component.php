@@ -62,8 +62,8 @@ class KAComponentHelper
 				'JERROR_AN_ERROR_HAS_OCCURRED' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED', true),
 				'COM_KA_NEWWINDOW_BLOCKED_A'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_A', true),
 				'COM_KA_NEWWINDOW_BLOCKED_B'   => JText::_('COM_KA_NEWWINDOW_BLOCKED_B', true),
-				'JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST' => JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST', true),
 				'COM_KA_REMOVE_SELECTED'       => JText::_('COM_KA_REMOVE_SELECTED', true),
+				'JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST' => JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST', true)
 			)
 		);
 		$document->addScriptDeclaration('KA_vars = ' . json_encode($jsVars) . ';');
@@ -113,14 +113,14 @@ class KAComponentHelper
 	 */
 	public static function cleanHTML($text, $tags = '', $extra = array())
 	{
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$cachePath = JPath::clean(JPATH_CACHE . '/kinoarhiv/DefinitionCache/Serializer');
+		$params    = JComponentHelper::getParams('com_kinoarhiv');
+		$cachePath = JPath::clean($params->get('def_cache'));
 
 		require_once JPath::clean(JPATH_COMPONENT . '/libraries/vendor/htmlpurifier/HTMLPurifier.standalone.php');
 
 		$purifierConfig = HTMLPurifier_Config::createDefault();
 
-		if (!file_exists($cachePath))
+		if (!is_dir($cachePath))
 		{
 			if (!mkdir($cachePath, 0777, true))
 			{
@@ -284,8 +284,8 @@ class KAComponentHelper
 	 */
 	public static function setLabel($for, $text, $title = '', $class = '', $attribs = array())
 	{
-		$title = !empty($title) ? ' title="' . JText::_($title) . '" ' : ' ';
-		$class = !empty($class) ? ' class="' . $class . '" ' : ' ';
+		$title = !empty($title) ? ' title="' . JText::_($title) . '" ' : '';
+		$class = !empty($class) ? ' class="' . $class . '" ' : '';
 		$attrs = '';
 
 		if (is_array($attribs) && func_num_args() == 5)
@@ -293,7 +293,7 @@ class KAComponentHelper
 			$attrs = Joomla\Utilities\ArrayHelper::toString($attribs);
 		}
 
-		return '<label id="' . $for . '-lbl" ' . $class . 'for="' . $for . '" ' . $title . $attrs . '>' . JText::_($text) . '</label>';
+		return '<label id="' . $for . '-lbl" ' . $class . ' for="' . $for . '" ' . $title . $attrs . '>' . JText::_($text) . '</label>';
 	}
 
 	/**

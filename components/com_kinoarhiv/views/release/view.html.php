@@ -21,6 +21,12 @@ class KinoarhivViewRelease extends JViewLegacy
 {
 	protected $item;
 
+	/**
+	 * @var    integer  Current menu itemid.
+	 * @since  3.0
+	 */
+	protected $itemid;
+
 	protected $params;
 
 	protected $user;
@@ -51,7 +57,8 @@ class KinoarhivViewRelease extends JViewLegacy
 		}
 
 		// Prepare the data
-		$itemid = $this->itemid;
+		$namesItemid = KAContentHelper::getItemid('names');
+		$this->moviesItemid = KAContentHelper::getItemid('movies');
 
 		// Replace country BB-code
 		$item->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches)
@@ -74,11 +81,11 @@ class KinoarhivViewRelease extends JViewLegacy
 		);
 
 		// Replace person BB-code
-		$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid)
+		$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid)
 		{
 			$html = JText::_($matches[1]);
 
-			$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid, false) . '" title="$2">$2</a>', $matches[2]);
+			$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
 
 			return $html . $name;
 		},
@@ -112,7 +119,7 @@ class KinoarhivViewRelease extends JViewLegacy
 		{
 			$item->poster = JRoute::_(
 				'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
+				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
 			);
 		}
 
@@ -163,7 +170,10 @@ class KinoarhivViewRelease extends JViewLegacy
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
-		$pathway->addItem($this->item->title, JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $this->item->id . '&Itemid=' . $this->itemid));
+		$pathway->addItem(
+			KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year),
+			JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
 
 		parent::display($tpl);
 	}
@@ -182,16 +192,28 @@ class KinoarhivViewRelease extends JViewLegacy
 		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
 
-		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=release') ? $menu->title : JText::_('COM_KA_RELEASES');
+		$pathwayTitle = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=release')
+			? $menu->title : JText::_('COM_KA_RELEASES');
 
 		// Create a new pathway object
 		$path = (object) array(
-			'name' => $title,
+			'name' => $pathwayTitle,
 			'link' => 'index.php?option=com_kinoarhiv&view=releases&Itemid=' . $this->itemid
 		);
 
+		$title = KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . ' - ' . JText::_('COM_KA_RELEASES');
+
+		if ($app->get('sitename_pagetitles', 0) == 1)
+		{
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		}
+		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		{
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+		}
+
 		$pathway->setPathway(array($path));
-		$this->document->setTitle($this->item->title);
+		$this->document->setTitle($title);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

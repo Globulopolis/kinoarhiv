@@ -58,10 +58,19 @@ class KinoarhivViewGenres extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app = JFactory::getApplication();
+		$app   = JFactory::getApplication();
 		$menus = $app->getMenu();
-		$menu = $menus->getActive();
+		$menu  = $menus->getActive();
 		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_GENRES');
+
+		if ($app->get('sitename_pagetitles', 0) == 1)
+		{
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		}
+		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		{
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+		}
 
 		$this->document->setTitle($title);
 

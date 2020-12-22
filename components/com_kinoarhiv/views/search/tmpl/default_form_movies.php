@@ -127,17 +127,6 @@ if (!$this->params->get('search_movies_enable'))
 			</div>
 			<?php endif; ?>
 
-			<?php if ($this->params->get('search_movies_vendor') == 1): ?>
-			<div class="row-fluid uk-form-row">
-				<div class="span12 uk-width-1-1">
-					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('vendor', 'movies'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('vendor', 'movies'); ?></div>
-					</div>
-				</div>
-			</div>
-			<?php endif; ?>
-
 			<?php if ($this->params->get('search_movies_genre') == 1): ?>
 			<div class="row-fluid uk-form-row">
 				<div class="span12 uk-width-1-1">
@@ -295,6 +284,17 @@ if (!$this->params->get('search_movies_enable'))
 							<div class="controls uk-width-1-2">
 								<?php echo $this->form->getInput('release_country', 'movies'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('release_date', 'movies'); ?>
 							</div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_movies_vendor') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('vendor', 'movies'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('vendor', 'movies'); ?></div>
 						</div>
 					</div>
 				</div>

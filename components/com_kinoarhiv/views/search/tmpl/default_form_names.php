@@ -98,6 +98,17 @@ if (!$this->params->get('search_names_enable'))
 				</div>
 			</div>
 			<?php endif; ?>
+
+			<?php if ($this->params->get('search_names_genre') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('genre', 'names'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('genre', 'names'); ?></div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
 		</fieldset>
 
 		<input type="hidden" name="option" value="com_kinoarhiv" />

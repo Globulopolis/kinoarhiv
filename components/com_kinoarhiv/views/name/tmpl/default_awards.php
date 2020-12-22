@@ -12,13 +12,32 @@ defined('_JEXEC') or die;
 ?>
 <div class="ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts.navigation.name_alphabet',
+			array('params' => $this->params),
+			JPATH_COMPONENT
+		);
 	endif; ?>
 
 	<article class="uk-article">
 		<?php
-		echo JLayoutHelper::render('layouts.navigation.name_item_header', array('item' => $this->item, 'itemid' => $this->itemid), JPATH_COMPONENT);
-		echo $this->loadTemplate('tabs'); ?>
+		echo JLayoutHelper::render(
+			'layouts.navigation.name_item_header',
+			array(
+				'params' => $this->params,
+				'item'   => $this->item,
+				'itemid' => $this->itemid,
+				'guest'  => $this->user->get('guest'),
+				'url'    => 'index.php?option=com_kinoarhiv&view=name&id=' . $this->item->id . '&Itemid=' . $this->itemid
+			),
+			JPATH_COMPONENT
+		);
+
+		echo JLayoutHelper::render('layouts.navigation.name_item_tabs',
+			array('item' => $this->item, 'params' => $this->params, 'page' => $this->page),
+			JPATH_COMPONENT
+		);
+		?>
 
 		<div class="awards-list">
 			<?php if (count($this->items) > 0):

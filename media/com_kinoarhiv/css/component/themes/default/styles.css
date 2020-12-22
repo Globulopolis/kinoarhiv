@@ -75,6 +75,10 @@ div.clear {
 	padding: 2px;
 }
 
+.content-list {
+	margin-top: .5em;
+}
+
 .content .poster {
 	margin-top: .5em;
 	margin-bottom: 1em;
@@ -151,8 +155,7 @@ h3.title {
 	margin: 0 4px;
 }
 
-.item .favorite {
-	float: right;
+.item .favorite, .item .watched {
 	margin: 0 4px;
 }
 
@@ -312,10 +315,7 @@ h3.title {
 }
 
 .mark-links {
-	border-bottom: 1px solid #eee;
-	clear: both;
 	margin-left: .5em;
-	padding-top: .5em;
 	padding-bottom: .2em;
 	text-align: right;
 }
@@ -349,7 +349,6 @@ h3.title {
 
 .movie-info, .name-info, .album-info {
 	margin-left: .5em;
-	padding-top: .5em;
 }
 
 .name-info img {
@@ -599,7 +598,7 @@ div.rating {
 	font-size: .9em !important;
 }
 
-.review-title {
+.review-title, .video-title {
 	background-color: #f9f9f9;
 	border: 1px solid #ddd;
 	color: #333;
@@ -645,7 +644,7 @@ div.rating {
 	color: #999 !important;
 }
 
-.review-footer {
+.review-footer, .video-footer {
 	border: 1px solid #ddd;
 	color: #333;
 	margin-bottom: .8em;
@@ -1089,11 +1088,16 @@ div.rating {
 }
 
 .alphabet-nav {
+	margin-bottom: 2em;
 	text-align: center;
 }
 
 .alphabet-nav .btn-group, .alphabet-nav .uk-button-group {
 	white-space: normal;
+}
+
+.ab_lang {
+	vertical-align: bottom;
 }
 
 .screenshot-slider {

@@ -173,6 +173,28 @@ function empty(mixedVar) {
 	return false
 }
 
+/**
+ * Get query string value from URL. See https://stackoverflow.com/a/901144
+ *
+ * @param   {string}  name  Parameter name
+ * @param   {string}  url   URL
+ *
+ * @return  {mixed}   Return null if parameter not found,
+ *					  empty string if parameter with empty value or with no value,
+ *					  parameter value otherwise.
+ */
+function getParameterByName(name, url) {
+	name = name.replace(/[\[\]]/g, '\\$&');
+
+	var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+		results = regex.exec(url);
+
+	if (!results) return null;
+	if (!results[2]) return '';
+
+	return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
 jQuery(document).ready(function($){
 	if (jQuery.fn.select2) {
 		$('.hasAutocomplete').each(function (index, element) {

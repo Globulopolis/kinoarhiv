@@ -10,17 +10,37 @@
 	<fields name="params">
 
 		<!-- Basic options. -->
-		<fieldset name="advanced"
-				  label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
-
-			<field
-					name="page_type"
-					type="radio"
-					class="btn-group"
-					label="COM_KA_MUSIC_PAGE_TYPE"
-					default="artwork">
+		<fieldset name="advanced" label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
+			<field name="page_type" type="radio" class="btn-group" label="COM_KA_MUSIC_PAGE_TYPE" default="artwork">
 				<option value="list">COM_KA_MUSIC_PAGE_TYPE_1</option>
 				<option value="artwork">COM_KA_MUSIC_PAGE_TYPE_2</option>
+			</field>
+			<field name="show_pagination_limit" type="radio" class="btn-group" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL"
+				   description="JGLOBAL_DISPLAY_SELECT_DESC" filter="integer">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
+				   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
+				<option value="5">J5</option>
+				<option value="10">J10</option>
+				<option value="15">J15</option>
+				<option value="20">J20</option>
+				<option value="25">J25</option>
+				<option value="30">J30</option>
+				<option value="50">J50</option>
+				<option value="100">J100</option>
+			</field>
+			<field name="orderby" type="list" class="inputbox" default="a.ordering" label="JGLOBAL_ORDERING" filter="string">
+				<option value="a.id">JGLOBAL_FIELD_ID_LABEL</option>
+				<option value="a.title">COM_KA_MUSIC_ALBUMS_HEADING</option>
+				<option value="a.year">COM_KA_FIELD_MOVIE_YEAR</option>
+				<option value="a.created">JGLOBAL_CREATED_DATE</option>
+				<option value="a.ordering">JFIELD_ORDERING_LABEL</option>
+			</field>
+			<field name="ordering" type="radio" class="btn-group" default="desc" label="" filter="string">
+				<option value="desc">JGLOBAL_ORDER_DESCENDING</option>
+				<option value="asc">JGLOBAL_ORDER_ASCENDING</option>
 			</field>
 		</fieldset>
 	</fields>

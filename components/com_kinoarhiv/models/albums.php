@@ -67,54 +67,33 @@ class KinoarhivModelAlbums extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		$app        = JFactory::getApplication('site');
-		$menuParams = new Registry;
+		parent::populateState($ordering, $direction);
+
+		$app    = JFactory::getApplication();
+		$params = new Registry;
 
 		if ($menu = $app->getMenu()->getActive())
 		{
-			$menuParams->loadString($menu->params);
+			$params->loadString($menu->params);
 		}
 
-		$this->setState('menuParams', $menuParams);
+		$this->setState('params', $params);
 
-		if ($this->context)
+		$limit = $params->get('list_limit');
+
+		// Override default limit settings and respect user selection if 'show_pagination_limit' is set to Yes.
+		if ($params->get('show_pagination_limit'))
 		{
-			$app = JFactory::getApplication();
-			$params = JComponentHelper::getParams('com_kinoarhiv');
-
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-
-			$value = $app->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $params->get('sort_albumlist_field'));
-
-			if (!in_array($value, $this->filter_fields))
-			{
-				$value = $ordering;
-				$app->setUserState($this->context . '.ordercol', $value);
-			}
-
-			$this->setState('list.ordering', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.orderdirn', 'filter_order_Dir', strtoupper($params->get('sort_albumlist_field')));
-
-			if (!in_array(strtoupper($value), array('ASC', 'DESC', '')))
-			{
-				$value = $direction;
-				$app->setUserState($this->context . '.orderdirn', $value);
-			}
-
-			$this->setState('list.direction', $value);
+			$limit = $app->getUserStateFromRequest('list.limit', 'limit', $params->get('list_limit'), 'uint');
 		}
-		else
-		{
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
-		}
+
+		$this->setState('list.limit', $limit);
+
+		$limitstart = $app->input->getUInt('limitstart', 0);
+		$this->setState('list.start', $limitstart);
+
+		$this->setState('list.ordering', $params->get('orderby'));
+		$this->setState('list.direction', $params->get('ordering'));
 	}
 
 	/**
@@ -185,6 +164,9 @@ class KinoarhivModelAlbums extends JModelList
 			$query->select($db->quoteName('u.favorite'));
 			$query->leftJoin($db->quoteName('#__ka_user_marked_albums', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.album_id = a.id');
 		}
+
+		$query->select($db->quoteName('user.name', 'username') . ', ' . $db->quoteName('user.email', 'author_email'));
+		$query->leftJoin($db->quoteName('#__users', 'user') . ' ON user.id = a.created_by');
 
 		$query->where('a.state = 1 AND a.access IN (' . $groups . ')')
 			->where('a.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');

@@ -5,4 +5,40 @@
 			<![CDATA[COM_KINOARHIV_VIEW_PREMIERES_DESC]]>
 		</message>
 	</layout>
+
+	<!-- Add fields to the parameters object for the layout. -->
+	<fields name="params">
+
+		<!-- Basic options. -->
+		<fieldset name="advanced" label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
+			<field name="show_pagination_limit" type="radio" class="btn-group" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL"
+				   description="JGLOBAL_DISPLAY_SELECT_DESC" filter="integer">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field name="list_limit" type="list" default="20" label="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_LABEL"
+				   description="COM_KA_FIELD_SETTINGS_GLOBAL_LIST_LIMIT_DESC" filter="integer">
+				<option value="5">J5</option>
+				<option value="10">J10</option>
+				<option value="15">J15</option>
+				<option value="20">J20</option>
+				<option value="25">J25</option>
+				<option value="30">J30</option>
+				<option value="50">J50</option>
+				<option value="100">J100</option>
+			</field>
+			<field name="orderby" type="list" class="inputbox" default="p.ordering"
+				   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL"
+				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
+				<option value="p.movie_id">COM_KA_FIELD_MOVIE_ID</option>
+				<option value="m.title">COM_KA_FIELD_MOVIE_LABEL</option>
+				<option value="p.premiere_date">COM_KA_FIELD_PREMIERE_DATE_LABEL</option>
+				<option value="p.ordering">JFIELD_ORDERING_LABEL</option>
+			</field>
+			<field name="ordering" type="radio" class="btn-group" default="desc" label="" filter="string">
+				<option value="desc">JGLOBAL_ORDER_DESCENDING</option>
+				<option value="asc">JGLOBAL_ORDER_ASCENDING</option>
+			</field>
+		</fieldset>
+	</fields>
 </metadata>

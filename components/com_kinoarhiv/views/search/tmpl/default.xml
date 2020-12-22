@@ -10,9 +10,7 @@
 	<fields name="params">
 
 		<!-- Basic options. -->
-		<fieldset name="advanced"
-				  label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
-
+		<fieldset name="advanced" label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
 			<field
 					name="search_movies_enable"
 					type="list"

@@ -62,7 +62,7 @@ class KinoarhivModelSettings extends JModelForm
 	 *
 	 * @param   array  $data  containing config data.
 	 *
-	 * @return  bool    True on success, false on failure.
+	 * @return  boolean   True on success, false on failure.
 	 *
 	 * @since  3.0
 	 */
@@ -119,9 +119,9 @@ class KinoarhivModelSettings extends JModelForm
 			$data['slider_min_item'] = 1;
 		}
 
-		$app = JFactory::getApplication();
-		$alphabet = $app->input->post->get('letters', array(), 'array');
-		$filter = JFilterInput::getInstance();
+		$app       = JFactory::getApplication();
+		$alphabet  = $app->input->post->get('letters', array(), 'array');
+		$filter    = JFilterInput::getInstance();
 		$_alphabet = array();
 
 		if (count($alphabet['movie']) > 0)
@@ -136,7 +136,12 @@ class KinoarhivModelSettings extends JModelForm
 					}
 					elseif ($key == 'letters')
 					{
-						$_alphabet['movie_alphabet'][$i][$key] = explode(',', StringHelper::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
+						$_alphabet['movie_alphabet'][$i][$key] = explode(
+							',',
+							StringHelper::strtoupper(
+								str_replace(' ', '', $filter->clean($val, 'string'))
+							)
+						);
 					}
 				}
 			}
@@ -154,7 +159,35 @@ class KinoarhivModelSettings extends JModelForm
 					}
 					elseif ($key == 'letters')
 					{
-						$_alphabet['name_alphabet'][$i][$key] = explode(',', StringHelper::strtoupper(str_replace(' ', '', $filter->clean($val, 'string'))));
+						$_alphabet['name_alphabet'][$i][$key] = explode(
+							',',
+							StringHelper::strtoupper(
+								str_replace(' ', '', $filter->clean($val, 'string'))
+							)
+						);
+					}
+				}
+			}
+		}
+
+		if (count($alphabet['album']) > 0)
+		{
+			foreach ($alphabet['album'] as $key => $el)
+			{
+				foreach ($el as $i => $val)
+				{
+					if ($key == 'lang')
+					{
+						$_alphabet['album_alphabet'][$i][$key] = $filter->clean($val, 'string');
+					}
+					elseif ($key == 'letters')
+					{
+						$_alphabet['album_alphabet'][$i][$key] = explode(
+							',',
+							StringHelper::strtoupper(
+								str_replace(' ', '', $filter->clean($val, 'string'))
+							)
+						);
 					}
 				}
 			}
@@ -227,9 +260,9 @@ class KinoarhivModelSettings extends JModelForm
 	 */
 	public function restoreConfig($data)
 	{
-		$db = $this->getDbo();
+		$db     = $this->getDbo();
 		$params = json_encode($data);
-		$query = $db->getQuery(true);
+		$query  = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__extensions'))
 			->set($db->quoteName('params') . " = '" . $db->escape($params) . "'")

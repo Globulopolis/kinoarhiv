@@ -74,17 +74,12 @@ defined('_JEXEC') or die;
 			<input type="submit" class="btn btn-primary uk-button uk-button-primary" value="<?php echo JText::_('COM_KA_REMOVE_SELECTED'); ?>"/>
 		</form>
 
-		<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm"
-			  id="adminForm" style="clear: both;" autocomplete="off">
-			<?php if ($this->pagination->total >= $this->pagination->limit): ?>
-				<div class="pagination bottom">
-					<?php echo $this->pagination->getPagesLinks(); ?><br/>
-					<?php echo $this->pagination->getResultsCounter(); ?>
-					<?php echo $this->pagination->getLimitBox(); ?>
-				</div>
-			<?php endif; ?>
-		</form>
-	<?php else: ?>
+		<?php
+		echo JLayoutHelper::render('layouts.navigation.pagination',
+			array('params' => $this->params, 'pagination' => $this->pagination),
+			JPATH_COMPONENT
+		);
+	else: ?>
 		<br/>
 		<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
 	<?php endif; ?>

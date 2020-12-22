@@ -9,33 +9,36 @@
  */
 
 defined('_JEXEC') or die;
-
-JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
-JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
-KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
 ?>
-<script type="text/javascript">
-	jQuery(document).ready(function ($) {
-	});
-</script>
 <div class="uk-article ka-content" itemscope itemtype="https://schema.org/MusicAlbum">
 	<meta content="8" itemprop="numTracks" />
 	<meta content="Alt/Punk" itemprop="genre" />
 
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params, 'itemid' => $this->itemid), JPATH_COMPONENT);
+		echo JLayoutHelper::render(
+			'layouts.navigation.album_alphabet',
+			array('url' => 'index.php?option=com_kinoarhiv&view=albums&content=albums&Itemid=' . $this->itemid, 'params' => $this->params),
+			JPATH_COMPONENT
+		);
 	endif; ?>
 
-	<article class="uk-article">
+	<article class="uk-article item">
 		<?php
 		echo JLayoutHelper::render(
 			'layouts.navigation.album_item_header',
-			array('params' => $this->params, 'item' => $this->item, 'itemid' => $this->itemid),
+			array(
+				'params' => $this->params,
+				'item'   => $this->item,
+				'itemid' => $this->itemid,
+				'guest'  => $this->user->get('guest'),
+				'url'    => 'index.php?option=com_kinoarhiv&view=album&id=' . $this->item->id . '&Itemid=' . $this->itemid
+			),
 			JPATH_COMPONENT
 		);
-		echo $this->item->event->afterDisplayTitle;
-		echo $this->loadTemplate('tabs');
-		echo $this->item->event->beforeDisplayContent; ?>
+		?>
+		<?php echo $this->item->event->afterDisplayTitle; ?>
+		<?php echo $this->loadTemplate('tabs'); ?>
+		<?php echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="info">
 			<div class="left-col span3">
@@ -46,24 +49,10 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 				</div>
 			</div>
 			<div class="right-col span9">
-				<?php if (!$this->user->guest): ?>
-					<div class="mark-links">
-						<?php if ($this->params->get('link_favorite') == 1): ?>
-							<div class="favorite">
-								<?php if ($this->item->favorite == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&task=albums.favorite&action=delete&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite delete" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_REMOVEFROM_FAVORITE'); ?></a>
-								<?php else: ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&task=albums.favorite&action=add&Itemid=' . $this->itemid . '&id=' . $this->item->id); ?>" class="cmd-favorite add" data-ka-msg-place=".mark-links"><?php echo JText::_('COM_KA_ADDTO_FAVORITE'); ?></a>
-								<?php endif; ?>
-							</div>
-						<?php endif; ?>
-					</div>
-					<div class="clear"></div>
-				<?php endif; ?>
 				<div class="album-info">
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&task=search&filters[movies][year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->year; ?></a></span>
+						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&content=albums&albums[year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->year; ?></a></span>
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 						<div>
@@ -73,7 +62,7 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 								for ($i = 0, $n = $cn_count; $i < $n; $i++):
 									$country = $this->item->countries[$i]; ?>
 									<img src="media/com_kinoarhiv/images/icons/countries/<?php echo $country->code; ?>.png" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>" rel="nofollow"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&filters[albums][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>" rel="nofollow"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
 						</div>
@@ -123,7 +112,7 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 								<?php $genre_count = count($this->item->genres);
 								for ($i = 0, $n = $genre_count; $i < $n; $i++):
 									$genre = $this->item->genres[$i]; ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre" rel="nofollow"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&filters[albums][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre" rel="nofollow"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
 						</div>
@@ -148,7 +137,7 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
 						<span class="s-col">
 						<?php foreach ($this->item->tags->itemTags as $tag): ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&filters[movies][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->title; ?>"><?php echo $tag->title; ?></a>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&filters[albums][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->title; ?>"><?php echo $tag->title; ?></a>
 						<?php endforeach; ?>
 						</span>
 					</div>
@@ -176,11 +165,12 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 		<?php if ($this->params->get('ratings_show_frontpage') == 1):
 			echo JLayoutHelper::render('layouts.content.votes_album',
 				array(
-					'params' => $this->params,
-					'item'   => $this->item,
-					'guest'  => $this->user->get('guest'),
-					'itemid' => $this->itemid,
-					'view'   => $this->view
+					'params'        => $this->params,
+					'item'          => $this->item,
+					'guest'         => $this->user->get('guest'),
+					'itemid'        => $this->itemid,
+					'profileItemid' => $this->profileItemid,
+					'view'          => $this->view
 				),
 				JPATH_COMPONENT
 			);

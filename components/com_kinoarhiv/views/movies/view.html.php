@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
@@ -29,6 +30,8 @@ class KinoarhivViewMovies extends JViewLegacy
 
 	protected $itemid;
 
+	protected $menu;
+
 	/**
 	 * Execute and display a template script.
 	 *
@@ -42,10 +45,12 @@ class KinoarhivViewMovies extends JViewLegacy
 	{
 		$user              = JFactory::getUser();
 		$app               = JFactory::getApplication();
+		$params            = JComponentHelper::getParams('com_kinoarhiv');
 		$lang              = JFactory::getLanguage();
 		$this->filtersData = $this->get('FiltersData');
 		$this->items       = $this->get('Items');
 		$this->pagination  = $this->get('Pagination');
+		$this->itemid      = $app->input->get('Itemid', 0, 'int');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -54,8 +59,24 @@ class KinoarhivViewMovies extends JViewLegacy
 			return false;
 		}
 
-		$this->params   = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid   = $app->input->get('Itemid', 0, 'int');
+		$menus      = $app->getMenu();
+		$menu       = $menus->getActive();
+		$this->menu = $menu;
+		$menuParams = new Registry;
+
+		if ($menu)
+		{
+			$menuParams->loadString($menu->params);
+		}
+
+		$mergedParams = clone $menuParams;
+		$mergedParams->merge($params);
+		$this->params = $mergedParams;
+
+		// Get proper itemid for &view=?&Itemid=? links.
+		$namesItemid = KAContentHelper::getItemid('names');
+		$this->moviesItemid = $this->itemid;
+
 		$itemid         = $this->itemid;
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
 		$introtextLinks = $this->params->get('introtext_links', 1);
@@ -86,13 +107,13 @@ class KinoarhivViewMovies extends JViewLegacy
 			);
 
 			// Replace person BB-code
-			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($itemid, $introtextLinks)
+			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid, $introtextLinks)
 			{
 				$html = JText::_($matches[1]);
 
 				if ($introtextLinks)
 				{
-					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $itemid, false) . '" title="$2">$2</a>', $matches[2]);
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
 				}
 				else
 				{
@@ -106,11 +127,11 @@ class KinoarhivViewMovies extends JViewLegacy
 
 			if ($throttleEnable == 0)
 			{
-				$checking_path = JPath::clean(
+				$checkingPath = JPath::clean(
 					$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
 				);
 
-				if (!is_file($checking_path))
+				if (!is_file($checkingPath))
 				{
 					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
@@ -184,7 +205,7 @@ class KinoarhivViewMovies extends JViewLegacy
 				}
 			}
 
-			$item->event = new stdClass;
+			$item->event  = new stdClass;
 			$item->params = new JObject;
 			$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $item->id . '&Itemid=' . $this->itemid, false));
 
@@ -221,10 +242,8 @@ class KinoarhivViewMovies extends JViewLegacy
 	protected function prepareDocument()
 	{
 		$app     = JFactory::getApplication();
-		$menus   = $app->getMenu();
-		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
-		$title   = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_MOVIES');
+		$title   = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_MOVIES');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -232,30 +251,39 @@ class KinoarhivViewMovies extends JViewLegacy
 			'link' => 'index.php?option=com_kinoarhiv&view=movies&Itemid=' . $this->itemid
 		);
 
+		if ($app->get('sitename_pagetitles', 0) == 1)
+		{
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		}
+		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		{
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+		}
+
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
+		if ($this->menu && $this->menu->params->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			$this->document->setDescription($this->menu->params->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		if ($this->menu && $this->menu->params->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $this->menu->params->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
+		if ($this->menu && $this->menu->params->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menu->params->get('robots'));
+			$this->document->setMetadata('robots', $this->menu->params->get('robots'));
 		}
 		else
 		{

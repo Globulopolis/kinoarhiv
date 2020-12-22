@@ -10,7 +10,11 @@
 
 defined('_JEXEC') or die;
 
-/** @var object $displayData */
+JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
+KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
+
+/** @var array $displayData */
 $params = $displayData['params'];
 $item   = $displayData['item'];
 $tracks = array();
@@ -19,11 +23,18 @@ $tracks = array();
 	jQuery(document).ready(function ($) {
 		$('.cmd-track-info').click(function(e){
 			e.preventDefault();
+
 			$.colorbox({
 				html: '<div class="desc">' + $('span#info_' + $(this).data('id')).html() + '</div>',
 				height: '80%',
 				width: '80%'
 			});
+		});
+
+		$('.cmd-playlist-add').click(function(e){
+			e.preventDefault();
+
+			alert('Not implemented.');
 		});
 	});
 </script>
@@ -34,7 +45,7 @@ $tracks = array();
 		<div class="span12">
 		<?php $playerLayout = ($params->get('player_type') == '-1') ? 'player' : 'player_' . $params->get('player_type');
 			echo JLayoutHelper::render('layouts.content.audio_' . $playerLayout,
-				array('id' => $item->id, 'tracks' => json_encode($item->tracks), 'total' => count($item->tracks)),
+				array('id' => $item->id, 'tracks' => json_encode($item->playlist), 'total' => count($item->playlist)),
 				JPATH_COMPONENT
 			);
 		?>

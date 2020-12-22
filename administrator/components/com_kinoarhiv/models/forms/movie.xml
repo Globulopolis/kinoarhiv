@@ -204,19 +204,6 @@
 				<option value="1">JYES</option>
 				<option value="0">JNO</option>
 			</field>
-			<field name="trailer_collapsed" type="list"
-				   label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_TRAILER_COLLAPSED_LABEL"
-				   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-			<field name="movie_collapsed" type="list" label="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL"
-				   description="COM_KA_FIELD_SETTINGS_GLOBAL_MOVIE_COLLAPSED_LABEL_DESC">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
 			<field name="allow_reviews" type="list" default="1" label="COM_KA_FIELD_AP_MOVIE_ALLOW_REVIEWS_LABEL">
 				<option value="1">JYES</option>
 				<option value="0">JNO</option>

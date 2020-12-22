@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 use Joomla\String\StringHelper;
-use Joomla\Registry\Registry;
 
 /**
  * Movie View class
@@ -104,6 +103,8 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$checkingPath = JPath::clean($item->covers_path . '/' . $item->cover_filename);
 
 		// Prepare the data
+		$this->profileItemid = KAContentHelper::getItemid('profile');
+
 		// Workaround for plugin interaction. Article must contain $text item.
 		$item->text = '';
 
@@ -129,12 +130,19 @@ class KinoarhivViewAlbum extends JViewLegacy
 			$item->coverHeight = $dimension['height'];
 		}
 
+		$item->playlist = array();
+
 		if (!empty($item->tracks))
 		{
 			foreach ($item->tracks as $key => $track)
 			{
 				$item->tracks[$key]->src = $item->tracks_path_www . '/' . $track->filename;
 				unset($item->tracks[$key]->filename);
+
+				$item->playlist[$key] = array(
+					'id'  => $item->tracks[$key]->id,
+					'src' => $item->tracks[$key]->src
+				);
 			}
 		}
 
@@ -276,7 +284,9 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
 
-		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=albums') ? $menu->title : JText::_('COM_KA_MOVIES');
+		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=albums')
+				  ? $menu->title
+				  : JText::_('COM_KA_ALBUMS');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -285,8 +295,19 @@ class KinoarhivViewAlbum extends JViewLegacy
 		);
 
 		$pathway->setPathway(array($path));
-		$titleAdd = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_MOVIE_TAB_' . StringHelper::ucwords($this->page));
-		$this->document->setTitle(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . $titleAdd);
+		$titleAdd = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_ALBUM_TAB_' . StringHelper::ucwords($this->page));
+		$title    = KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . $titleAdd;
+
+		if ($app->get('sitename_pagetitles', 0) == 1)
+		{
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		}
+		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		{
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+		}
+
+		$this->document->setTitle($title);
 
 		if ($menu && $menu->params->get('menu-meta_description') != '')
 		{

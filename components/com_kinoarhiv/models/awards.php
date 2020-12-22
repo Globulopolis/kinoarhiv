@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 /**
  * Awards list class
  *
@@ -25,24 +27,6 @@ class KinoarhivModelAwards extends JModelList
 	 * @since  1.6
 	 */
 	protected $context = 'com_kinoarhiv.awards';
-
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JModelLegacy
-	 * @since   3.0
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
-
-		if (empty($this->context))
-		{
-			$this->context = strtolower('com_kinoarhiv.awards');
-		}
-	}
 
 	/**
 	 * Method to auto-populate the model state.
@@ -62,24 +46,33 @@ class KinoarhivModelAwards extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		if ($this->context)
-		{
-			$app = JFactory::getApplication();
-			$params = JComponentHelper::getParams('com_kinoarhiv');
+		parent::populateState($ordering, $direction);
 
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $value);
+		$app    = JFactory::getApplication();
+		$params = new Registry;
 
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-		}
-		else
+		if ($menu = $app->getMenu()->getActive())
 		{
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
+			$params->loadString($menu->params);
 		}
+
+		$this->setState('params', $params);
+
+		$limit = $params->get('list_limit');
+
+		// Override default limit settings and respect user selection if 'show_pagination_limit' is set to Yes.
+		if ($params->get('show_pagination_limit'))
+		{
+			$limit = $app->getUserStateFromRequest('list.limit', 'limit', $params->get('list_limit'), 'uint');
+		}
+
+		$this->setState('list.limit', $limit);
+
+		$limitstart = $app->input->getUInt('limitstart', 0);
+		$this->setState('list.start', $limitstart);
+
+		$this->setState('list.ordering', $params->get('orderby'));
+		$this->setState('list.direction', $params->get('ordering'));
 	}
 
 	/**
@@ -112,12 +105,15 @@ class KinoarhivModelAwards extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db = $this->getDbo();
+		$db    = $this->getDbo();
+		$lang  = JFactory::getLanguage();
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('id', 'title', 'desc')))
+		$query->select($this->getState('list.select', $db->quoteName(array('id', 'title', 'desc'))))
 			->from($db->quoteName('#__ka_awards'))
-			->where($db->quoteName('state') . ' = 1');
+			->where('state = 1 AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+		$query->order($db->quote($this->getState('list.ordering', 'title')) . ' ' . $this->getState('list.direction', 'ASC'));
 
 		return $query;
 	}
@@ -131,9 +127,9 @@ class KinoarhivModelAwards extends JModelList
 	 */
 	public function getItem()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'int');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('id', null, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'title', 'desc')))

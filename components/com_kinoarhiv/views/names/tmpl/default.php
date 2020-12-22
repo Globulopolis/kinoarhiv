@@ -16,7 +16,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):
-		echo JLayoutHelper::render('layouts.navigation.alphabet', array('params' => $this->params), JPATH_COMPONENT);
+		echo JLayoutHelper::render('layouts.navigation.name_alphabet', array('params' => $this->params), JPATH_COMPONENT);
 	endif; ?>
 
 	<?php if (count($this->items) > 0):
@@ -33,12 +33,19 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 
 		foreach ($this->items as $item): ?>
 			<article class="item" data-permalink="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>">
-				<header>
-					<h1 class="uk-article-title title title-small">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
-						   class="brand" title="<?php echo $this->escape($item->title); ?>"><?php echo $this->escape($item->title); ?><?php echo $item->date_range; ?></a>
-					</h1>
-				</header>
+				<?php
+				echo JLayoutHelper::render(
+					'layouts.navigation.name_item_header',
+					array(
+						'params' => $this->params,
+						'item'   => $item,
+						'itemid' => $this->itemid,
+						'guest'  => $this->user->get('guest'),
+						'url'    => 'index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid
+					),
+					JPATH_COMPONENT
+				);
+				?>
 				<div class="content content-list clearfix">
 					<div>
 						<div class="poster">
@@ -51,7 +58,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 							</a>
 						</div>
 						<div class="introtext">
-							<div class="middle-nav clearfix">
+							<!--<div class="middle-nav clearfix">
 								<?php if (!$this->user->guest && $this->params->get('link_favorite') == 1): ?>
 									<p class="favorite">
 										<?php if ($item->favorite == 1): ?>
@@ -61,7 +68,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 										<?php endif; ?>
 									</p>
 								<?php endif; ?>
-							</div>
+							</div>-->
 
 							<?php if ($item->career != ''): ?>
 								<div class="name-career"><?php echo JText::_('COM_KA_NAMES_CAREER'); ?><?php echo StringHelper::strtolower($item->career); ?></div>
@@ -79,40 +86,36 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 								<div class="name-genres"><?php echo JText::_('COM_KA_GENRES'); ?>: <?php echo StringHelper::strtolower($item->genres); ?></div>
 							<?php endif; ?>
 							<div class="separator"></div>
-							<div class="tabs">
-								<?php if (($item->attribs->tab_name_wallpp == '' && $this->params->get('tab_name_wallpp') == 1) || $item->attribs->tab_name_wallpp == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=wallpapers&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-wallpp"><?php echo JText::_('COM_KA_NAMES_TAB_WALLPAPERS'); ?></a>
-								<?php endif; ?>
-
-								<?php if (($item->attribs->tab_name_photos == '' && $this->params->get('tab_name_photos') == 1) || $item->attribs->tab_name_photos == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-posters"><?php echo JText::_('COM_KA_NAMES_TAB_PHOTOS'); ?></a>
-								<?php endif; ?>
-
-								<?php if (($item->attribs->tab_name_awards == '' && $this->params->get('tab_name_awards') == 1) || $item->attribs->tab_name_awards == 1): ?>
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=awards&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" class="tab-awards"><?php echo JText::_('COM_KA_NAMES_TAB_AWARDS'); ?></a>
-								<?php endif; ?>
-							</div>
+							<?php
+								echo JLayoutHelper::render('layouts.navigation.name_item_tabs',
+									array('item' => $item, 'params' => $this->params, 'page' => ''),
+									JPATH_COMPONENT
+								);
+							?>
 						</div>
 					</div>
 					<div class="links">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
-						   class="btn btn-default uk-button readmore-link hasTooltip"
-						   title="<?php echo $item->title; ?>"><?php echo JText::_('COM_KA_READMORE'); ?>
-							<span class="icon-chevron-right"></span></a>
+						<?php
+						echo JLayoutHelper::render('layouts.content.readmore',
+							array(
+								'link'   => JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid),
+								'item'   => $item,
+								'params' => $this->params,
+								'lang'   => $this->lang
+							),
+							JPATH_COMPONENT
+						);
+						?>
 					</div>
 				</div>
 			</article>
 		<?php endforeach; ?>
-		<?php if ($this->params->get('pagevan_bottom') == 1): ?>
-		<div class="pagination bottom">
-			<form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post"
-				  name="adminForm" id="adminForm" style="clear: both;" autocomplete="off">
-				<?php echo $this->pagination->getPagesLinks(); ?><br/>
-				<?php echo $this->pagination->getResultsCounter(); ?>
-				<?php echo $this->pagination->getLimitBox(); ?>
-			</form>
-		</div>
-	<?php endif;
+
+		<?php
+		echo JLayoutHelper::render('layouts.navigation.pagination',
+			array('params' => $this->params, 'pagination' => $this->pagination),
+			JPATH_COMPONENT
+		);
 	else: ?>
 		<br/>
 		<div><?php echo $this->filtersData->exists('names') ? JText::sprintf('COM_KA_SEARCH_ADV_N_RESULTS', 0) : KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>

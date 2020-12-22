@@ -10,8 +10,9 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Utilities\ArrayHelper;
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Movies list class
@@ -46,11 +47,6 @@ class KinoarhivModelMovies extends JModelList
 		}
 
 		parent::__construct($config);
-
-		if (empty($this->context))
-		{
-			$this->context = strtolower('com_kinoarhiv.movies');
-		}
 	}
 
 	/**
@@ -71,44 +67,33 @@ class KinoarhivModelMovies extends JModelList
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		if ($this->context)
+		parent::populateState($ordering, $direction);
+
+		$app    = JFactory::getApplication();
+		$params = new Registry;
+
+		if ($menu = $app->getMenu()->getActive())
 		{
-			$app = JFactory::getApplication();
-			$params = JComponentHelper::getParams('com_kinoarhiv');
-
-			$value = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('list_limit'), 'uint');
-			$limit = $value;
-			$this->setState('list.limit', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
-			$limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 0);
-			$this->setState('list.start', $limitstart);
-
-			$value = $app->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $params->get('sort_movielist_field'));
-
-			if (!in_array($value, $this->filter_fields))
-			{
-				$value = $ordering;
-				$app->setUserState($this->context . '.ordercol', $value);
-			}
-
-			$this->setState('list.ordering', $value);
-
-			$value = $app->getUserStateFromRequest($this->context . '.orderdirn', 'filter_order_Dir', strtoupper($params->get('sort_movielist_ord')));
-
-			if (!in_array(strtoupper($value), array('ASC', 'DESC', '')))
-			{
-				$value = $direction;
-				$app->setUserState($this->context . '.orderdirn', $value);
-			}
-
-			$this->setState('list.direction', $value);
+			$params->loadString($menu->params);
 		}
-		else
+
+		$this->setState('params', $params);
+
+		$limit = $params->get('list_limit');
+
+		// Override default limit settings and respect user selection if 'show_pagination_limit' is set to Yes.
+		if ($params->get('show_pagination_limit'))
 		{
-			$this->setState('list.start', 0);
-			$this->state->set('list.limit', 0);
+			$limit = $app->getUserStateFromRequest('list.limit', 'limit', $params->get('list_limit'), 'uint');
 		}
+
+		$this->setState('list.limit', $limit);
+
+		$limitstart = $app->input->getUInt('limitstart', 0);
+		$this->setState('list.start', $limitstart);
+
+		$this->setState('list.ordering', $params->get('orderby'));
+		$this->setState('list.direction', $params->get('ordering'));
 	}
 
 	/**
@@ -148,6 +133,7 @@ class KinoarhivModelMovies extends JModelList
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$lang   = JFactory::getLanguage();
 
 		// Define null and now dates
 		$nullDate = $db->quote($db->getNullDate());
@@ -177,7 +163,7 @@ class KinoarhivModelMovies extends JModelList
 		// Join over favorited
 		if (!$user->get('guest'))
 		{
-			$query->select($db->quoteName('u.favorite'));
+			$query->select($db->quoteName(array('u.favorite', 'u.watched')));
 			$query->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
 		}
 
@@ -185,7 +171,7 @@ class KinoarhivModelMovies extends JModelList
 		$query->leftJoin($db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
 
 		$query->where('m.state = 1 AND m.access IN (' . $groups . ')')
-			->where('language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')');
+			->where('m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 		// Filter by start and end dates.
 		if ((!$user->authorise('core.edit.state', 'com_kinoarhiv.movie')) && (!$user->authorise('core.edit', 'com_content')))
@@ -282,23 +268,7 @@ class KinoarhivModelMovies extends JModelList
 					->from($db->quoteName('#__ka_rel_countries'))
 					->where('country_id = ' . (int) $country);
 
-				$db->setQuery($subqueryCountries);
-
-				try
-				{
-					$movieIDs = $db->loadColumn();
-
-					if (count($movieIDs) == 0)
-					{
-						$movieIDs = array(0);
-					}
-
-					$query->where('m.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-				}
+				$query->where('m.id IN (' . $subqueryCountries . ')');
 			}
 
 			// Filter by person name
@@ -330,34 +300,107 @@ class KinoarhivModelMovies extends JModelList
 				}
 			}
 
-			// Filter by vendor
+			// Filter by vendor.
 			$vendor = $filters->get('movies.vendor');
 
 			if ($params->get('search_movies_vendor') == 1 && !empty($vendor))
 			{
-				$subqueryVendor = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_releases'))
-					->where('vendor_id = ' . (int) $vendor)
-					->group('movie_id');
+				$subqueryPremieresVendor = $db->getQuery(true)
+					->select('p_v.movie_id')
+					->from($db->quoteName('#__ka_premieres', 'p_v'))
+					->where('p_v.vendor_id = ' . (int) $vendor)
+					->where('p_v.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
-				$db->setQuery($subqueryVendor);
+				$subqueryReleasesVendor = $db->getQuery(true)
+					->select('r_v.movie_id')
+					->from($db->quoteName('#__ka_releases', 'r_v'))
+					->where('r_v.vendor_id = ' . (int) $vendor)
+					->where('r_v.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
-				try
+				$query->where('m.id IN (' . $subqueryPremieresVendor . ')')
+					->where('m.id IN (' . $subqueryReleasesVendor . ')');
+			}
+
+			// Filter by premiere country.
+			$premiereCountry = $filters->get('movies.premiere_country');
+
+			if ($params->get('search_movies_premiere') == 1 && is_numeric($premiereCountry))
+			{
+				$subqueryPremiereCountry = $db->getQuery(true)
+					->select('p_c.movie_id')
+					->from($db->quoteName('#__ka_premieres', 'p_c'))
+					->where('p_c.country_id = ' . (int) $premiereCountry)
+					->where('p_c.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+				$query->where('m.id IN (' . $subqueryPremiereCountry . ')');
+			}
+
+			// Filter by premiere date.
+			$premiereDate = $filters->get('movies.premiere_date');
+
+			if ($params->get('search_movies_premiere') == 1 && !empty($premiereDate))
+			{
+				$subqueryPremiereDate = $db->getQuery(true)
+					->select('p_d.movie_id')
+					->from($db->quoteName('#__ka_premieres', 'p_d'))
+					->where("p_d.premiere_date LIKE '" . $db->escape($premiereDate) . "%'")
+					->where('p_d.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+				$query->where('m.id IN (' . $subqueryPremiereDate . ')');
+			}
+
+			// Filter by release country.
+			$releaseCountry = $filters->get('movies.release_country');
+
+			if ($params->get('search_movies_release') == 1 && is_numeric($releaseCountry))
+			{
+				$subqueryReleaseCountry = $db->getQuery(true)
+					->select('r_c.movie_id')
+					->from($db->quoteName('#__ka_releases', 'r_c'))
+					->where('r_c.country_id = ' . (int) $releaseCountry)
+					->where('r_c.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+				$query->where('m.id IN (' . $subqueryReleaseCountry . ')');
+			}
+
+			// Filter by release date.
+			$releaseDate = $filters->get('movies.release_date');
+
+			if ($params->get('search_movies_release') == 1 && !empty($releaseDate))
+			{
+				$subqueryReleaseDate = $db->getQuery(true)
+					->select('r_d.movie_id')
+					->from($db->quoteName('#__ka_releases', 'r_d'))
+					->where("r_d.release_date LIKE '" . $db->escape($releaseDate) . "%'")
+					->where('r_d.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+				$query->where('m.id IN (' . $subqueryReleaseDate . ')');
+			}
+
+			if ($app->input->getWord('view') == 'premieres' && ($params->get('search_movies_premiere') == 1
+				|| $params->get('search_movies_premiere') == 1))
+			{
+				// Join over premieres and releases
+				$query->select($db->quoteName(array('p.vendor_id', 'p.premiere_date', 'v.company_name')))
+					->select($db->quoteName('cn.name', 'country'));
+
+				$premiereLeftJoins = array();
+
+				if (is_numeric($premiereCountry))
 				{
-					$movieIDs = $db->loadColumn();
-
-					if (count($movieIDs) == 0)
-					{
-						$movieIDs = array(0);
-					}
-
-					$query->where('m.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
+					$premiereLeftJoins[] = $db->quoteName('p.country_id') . ' = ' . (int) $premiereCountry;
 				}
-				catch (RuntimeException $e)
+
+				if (!empty($premiereDate))
 				{
-					KAComponentHelper::eventLog($e->getMessage());
+					$premiereLeftJoins[] = $db->quoteName('p.premiere_date') . " LIKE '" . $db->escape($premiereDate) . "%'";
 				}
+
+				$premiereLeftJoins = implode(' AND ', $premiereLeftJoins);
+
+				$query->leftJoin($db->quoteName('#__ka_premieres', 'p') . ' ON ' . $premiereLeftJoins)
+					->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON v.id = p.vendor_id')
+					->leftJoin($db->quoteName('#__ka_countries', 'cn') . ' ON cn.id = p.country_id');
 			}
 
 			// Filter by genres
@@ -372,26 +415,9 @@ class KinoarhivModelMovies extends JModelList
 					$subqueryGenre = $db->getQuery(true)
 						->select('movie_id')
 						->from($db->quoteName('#__ka_rel_genres'))
-						->where('genre_id IN (' . implode(',', $genres) . ')')
-						->group('movie_id');
+						->where('genre_id IN (' . implode(',', $genres) . ')');
 
-					$db->setQuery($subqueryGenre);
-
-					try
-					{
-						$movieIDs = $db->loadColumn();
-
-						if (count($movieIDs) == 0)
-						{
-							$movieIDs = array(0);
-						}
-
-						$query->where('m.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-					}
+					$query->where('m.id IN (' . $subqueryGenre . ')');
 				}
 			}
 
@@ -515,23 +541,7 @@ class KinoarhivModelMovies extends JModelList
 						->from($db->quoteName('#__contentitem_tag_map'))
 						->where("type_alias = 'com_kinoarhiv.movie' AND tag_id IN (" . implode(',', $tags) . ")");
 
-					$db->setQuery($subqueryTags);
-
-					try
-					{
-						$movieIDs = $db->loadColumn();
-
-						if (count($movieIDs) == 0)
-						{
-							$movieIDs = array(0);
-						}
-
-						$query->where('m.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-					}
+					$query->where('m.id IN (' . $subqueryTags . ')');
 				}
 			}
 		}

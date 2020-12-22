@@ -13,12 +13,13 @@ defined('_JEXEC') or die;
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 
 /** @var array $displayData */
-$params  = $displayData['params'];
-$item    = $displayData['item'];
-$guest   = $displayData['guest'];
-$itemid  = $displayData['itemid'];
-$view    = $displayData['view'];
-$voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
+$params        = $displayData['params'];
+$item          = $displayData['item'];
+$guest         = $displayData['guest'];
+$itemid        = $displayData['itemid'];
+$profileItemid = isset($displayData['profileItemid']);
+$view          = $displayData['view'];
+$voteURL       = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 
 $rateDivClass = '';
 
@@ -51,7 +52,9 @@ if ($view == 'album')
 						</span>
 						&nbsp;<span class="vote_date small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span>
 					</div>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=albums&Itemid=' . $itemid); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<?php if ($profileItemid): ?>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&tab=albums&Itemid=' . $displayData['profileItemid']); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<?php endif; ?>
 				</div>
 			</div>
 		<?php endif; ?>

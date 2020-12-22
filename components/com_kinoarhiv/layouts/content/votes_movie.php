@@ -13,12 +13,13 @@ defined('_JEXEC') or die;
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 
 /** @var array $displayData */
-$params  = $displayData['params'];
-$item    = $displayData['item'];
-$guest   = $displayData['guest'];
-$itemid  = $displayData['itemid'];
-$view    = $displayData['view'];
-$voteURL = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
+$params        = $displayData['params'];
+$item          = $displayData['item'];
+$guest         = $displayData['guest'];
+$itemid        = $displayData['itemid'];
+$profileItemid = isset($displayData['profileItemid']);
+$view          = $displayData['view'];
+$voteURL       = 'index.php?option=com_kinoarhiv&Itemid=' . $itemid . '&format=json&' . JSession::getFormToken() . '=1';
 
 $rateDivClass = '';
 
@@ -27,7 +28,7 @@ if ($view == 'movie')
 	$rateDivClass = 'rate';
 }
 ?>
-<?php if (($item->attribs->allow_votes == '' && $params->get('allow_votes')) || $item->attribs->allow_votes): ?>
+<?php if (property_exists($item, 'rate_loc_value') && (($item->attribs->allow_votes == '' && $params->get('allow_votes')) || $item->attribs->allow_votes)): ?>
 	<?php if (!$guest && $params->get('allow_votes') && $view == 'movie'): ?>
 		<?php if ($params->get('ratings_show_local')): ?>
 			<div class="clear"></div>
@@ -51,7 +52,9 @@ if ($view == 'movie')
 						</span>
 						&nbsp;<span class="vote_date small">(<?php echo JHtml::_('date', $item->_datetime, JText::_('DATE_FORMAT_LC3')); ?>)</span>
 					</div>
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $itemid); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<?php if ($profileItemid): ?>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=profile&page=votes&Itemid=' . $displayData['profileItemid']); ?>"><?php echo JText::_('COM_KA_RATE_MY_ALL'); ?></a>
+					<?php endif; ?>
 				</div>
 			</div>
 		<?php endif; ?>
@@ -65,7 +68,7 @@ if ($view == 'movie')
 					 data-rateit-max="<?php echo (int) $params->get('vote_summ_num'); ?>" data-rateit-ispreset="true"
 					 data-rateit-readonly="true"></div>
 				&nbsp;<?php echo $item->rate_loc_label; ?>
-				<?php if ($view == 'movie' && isset($item->total_votes)): ?>
+				<?php if (($view == 'movie' || $view == 'release' || $view == 'premiere') && isset($item->total_votes)): ?>
 				<span class="total-votes small" title="<?php echo JText::_('COM_KA_RATE_VOTES_TOTAL'); ?>">(<?php echo $item->total_votes; ?>)</span>
 				<?php endif; ?>
 

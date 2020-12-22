@@ -78,10 +78,24 @@ class KinoarhivModelRelease extends JModelItem
 							)
 						)
 					)
+					->select("(SELECT COUNT(movie_id) FROM " . $db->quoteName('#__ka_user_votes_movies') . " WHERE movie_id = m.id) AS total_votes")
 					->select($db->quoteName('m.introtext', 'text'))
 					->from($db->quoteName('#__ka_movies', 'm'))
-					->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1')
-					->where($db->quoteName('m.id') . ' = ' . $pk . ' AND ' . $db->quoteName('m.state') . ' = 1')
+					->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
+
+				if (!$user->get('guest'))
+				{
+					$query->select($db->quoteName(array('u.favorite', 'u.watched')))
+						->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
+
+					$query->select('v.vote AS my_vote, v._datetime')
+						->join('LEFT', $db->quoteName('#__ka_user_votes_movies', 'v') . ' ON v.movie_id = m.id AND v.uid = ' . $user->get('id'));
+				}
+
+				$query->select('user.name AS username')
+					->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
+
+				$query->where($db->quoteName('m.id') . ' = ' . $pk . ' AND ' . $db->quoteName('m.state') . ' = 1')
 					->where($db->quoteName('m.access') . ' IN (' . implode(',', $groups) . ')');
 				$db->setQuery($query);
 

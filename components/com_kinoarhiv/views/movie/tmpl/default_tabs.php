@@ -11,7 +11,8 @@
 defined('_JEXEC') or die;
 ?>
 <div class="tabs breadcrumb">
-	<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" class="tab-about<?php echo ($this->page == '') ? ' current uk-active' : ''; ?>"><?php echo JText::_('COM_KA_MOVIE_TAB_INFO'); ?></a>
+	<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>"
+	   class="tab-about<?php echo ($this->page == '') ? ' current uk-active' : ''; ?>"><?php echo JText::_('COM_KA_MOVIE_TAB_INFO'); ?></a>
 
 	<?php if (($this->item->attribs->tab_movie_wallpp == '' && $this->params->get('tab_movie_wallpp') == 1) || $this->item->attribs->tab_movie_wallpp == 1): ?>
 		<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=wallpapers&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>" class="tab-wallpp<?php echo ($this->page == 'wallpapers') ? ' current uk-active' : ''; ?>"><?php echo JText::_('COM_KA_MOVIE_TAB_WALLPAPERS'); ?></a>

@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
+use Joomla\Registry\Registry;
 
 /**
  * Albums View class
@@ -45,6 +45,8 @@ class KinoarhivViewAlbums extends JViewLegacy
 
 	protected $itemid;
 
+	protected $menu;
+
 	/**
 	 * Execute and display a template script.
 	 *
@@ -59,11 +61,11 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$user              = JFactory::getUser();
 		$app               = JFactory::getApplication();
 		$lang              = JFactory::getLanguage();
-		$state             = $this->get('State');
+		$params            = JComponentHelper::getParams('com_kinoarhiv');
 		$this->filtersData = $this->get('FiltersData');
 		$this->items       = $this->get('Items');
 		$pagination        = $this->get('Pagination');
-		$this->itemid      = $app->input->get('Itemid');
+		$this->itemid      = $app->input->get('Itemid', 0, 'int');
 		$pagination->hideEmptyLimitstart = true;
 
 		if (count($errors = $this->get('Errors')))
@@ -73,9 +75,18 @@ class KinoarhivViewAlbums extends JViewLegacy
 			return false;
 		}
 
-		$this->menuParams = &$state->menuParams;
-		$this->params     = JComponentHelper::getParams('com_kinoarhiv');
-		$this->itemid     = $app->input->get('Itemid', 0, 'int');
+		$menu         = $app->getMenu()->getActive();
+		$this->menu   = $menu;
+		$menuParams   = new Registry;
+
+		if ($menu)
+		{
+			$menuParams->loadString($menu->params);
+		}
+
+		$mergedParams = clone $menuParams;
+		$mergedParams->merge($params);
+		$this->params = $mergedParams;
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -168,9 +179,8 @@ class KinoarhivViewAlbums extends JViewLegacy
 	protected function prepareDocument()
 	{
 		$app     = JFactory::getApplication();
-		$menu    = $app->getMenu()->getActive();
 		$pathway = $app->getPathway();
-		$title   = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_MUSIC_ALBUMS');
+		$title   = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_MUSIC_ALBUMS');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -178,30 +188,39 @@ class KinoarhivViewAlbums extends JViewLegacy
 			'link' => 'index.php?option=com_kinoarhiv&view=albums&Itemid=' . $this->itemid
 		);
 
+		if ($app->get('sitename_pagetitles', 0) == 1)
+		{
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		}
+		elseif ($app->get('sitename_pagetitles', 0) == 2)
+		{
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+		}
+
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
+		if ($this->menu && $this->menu->params->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			$this->document->setDescription($this->menu->params->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		if ($this->menu && $this->menu->params->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $this->menu->params->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
+		if ($this->menu && $this->menu->params->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menu->params->get('robots'));
+			$this->document->setMetadata('robots', $this->menu->params->get('robots'));
 		}
 		else
 		{

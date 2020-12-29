@@ -3,9 +3,8 @@
 	<fieldset addrulepath="administrator/components/com_kinoarhiv/models/rules"
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="award_id" type="autocomplete" label="COM_KA_MOVIES_AWARDS_LAYOUT_ADD_FIELD_TITLE"
-			   filter="integer"
-			   required="true" class="span12" data-content="awards" data-allow-clear="true" data-remote="true"
-			   data-lang="*" data-key="id">
+			   filter="integer" required="true" class="span12" data-content="awards" data-allow-clear="true"
+			   data-remote="true" data-lang="*" data-key="id">
 			<option value=""></option>
 		</field>
 		<field name="year" type="datetime" label="COM_KA_FIELD_AW_YEAR" size="22" default="" class="validate-year"

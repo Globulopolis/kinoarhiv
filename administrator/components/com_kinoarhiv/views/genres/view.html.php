@@ -43,10 +43,8 @@ class KinoarhivViewGenres extends JViewLegacy
 
 		switch ($task)
 		{
-			case 'add':
-				$this->edit($tpl);
-				break;
 			case 'edit':
+			case 'add':
 				$this->edit($tpl);
 				break;
 			default:
@@ -57,14 +55,13 @@ class KinoarhivViewGenres extends JViewLegacy
 
 	protected function listItems($tpl)
 	{
-		$user = JFactory::getUser();
-
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state = $this->get('State');
-		$this->filterForm = $this->get('FilterForm');
+		$this->user          = JFactory::getUser();
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
-		$errors = $this->get('Errors');
+		$errors              = $this->get('Errors');
 
 		if (count($errors))
 		{
@@ -76,9 +73,9 @@ class KinoarhivViewGenres extends JViewLegacy
 			$this->addToolbar();
 		}
 
-		$this->canEdit = $user->authorise('core.edit.genre', 'com_kinoarhiv');
-		$this->canEditState = $user->authorise('core.edit.state.genre', 'com_kinoarhiv');
-		$this->canUpdateStat = $user->authorise('core.recount.genre', 'com_kinoarhiv');
+		$this->canEdit       = $this->user->authorise('core.edit.genre', 'com_kinoarhiv');
+		$this->canEditState  = $this->user->authorise('core.edit.state.genre', 'com_kinoarhiv');
+		$this->canUpdateStat = $this->user->authorise('core.recount.genre', 'com_kinoarhiv');
 
 		parent::display($tpl);
 	}
@@ -115,17 +112,8 @@ class KinoarhivViewGenres extends JViewLegacy
 	 */
 	protected function addToolbar($task = '')
 	{
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$title = 'COM_KA_GENRES_MUSIC_TITLE';
-		}
-		else
-		{
-			$title = 'COM_KA_GENRES_TITLE';
-		}
+		$user  = JFactory::getUser();
+		$title = 'COM_KA_GENRES_TITLE';
 
 		if ($task == 'add')
 		{
@@ -143,16 +131,16 @@ class KinoarhivViewGenres extends JViewLegacy
 			JToolbarHelper::save('genres.save');
 			JToolbarHelper::save2new('genres.save2new');
 
-			if ($this->form->getValue('id') != 0)
-			{
-				JToolbarHelper::custom('relations', 'link', 'link', JText::_('COM_KA_TABLES_RELATIONS'), false);
-			}
-
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('genres.cancel');
 		}
 		else
 		{
+			if ($this->state->get('filter.type') == 1)
+			{
+				$title = 'COM_KA_GENRES_MUSIC_TITLE';
+			}
+
 			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_($title)), 'smiley-2');
 
 			if ($user->authorise('core.create.genre', 'com_kinoarhiv'))

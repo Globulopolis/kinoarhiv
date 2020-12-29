@@ -50,7 +50,7 @@ $this->id    = $this->form->getValue('id');
 				return false;
 			}
 
-			if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+			if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE', true); ?>?')) {
 				return;
 			}
 
@@ -80,11 +80,21 @@ $this->id    = $this->form->getValue('id');
 		// Check if person allready exists in DB
 		$('.field_name').blur(function(){
 			if (!empty(this.value)) {
-				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=names&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
-				.done(function(response){
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_kinoarhiv&task=api.data&content=names&multiple=0&data_lang=*&ignore_ids[]=<?php echo $this->id; ?>&format=json&term=' + this.value,
+					data: {'<?php echo JSession::getFormToken(); ?>': 1}
+				}).done(function(response){
 					if (Object.keys(response).length > 0) {
-						Aurora.message([{text: '<?php echo JText::_('COM_KA_NAMES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {replace: true});
+						var _text = '<?php echo JText::_('COM_KA_NAMES_EXISTS', true); ?> ' +
+							'<a href="index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' + response[0].id + '">' +
+								Kinoarhiv.formatItemTitle(response[0].name, response[0].latin_name, response[0].date_of_birth, '/') +
+							'</a>';
+						Aurora.message([{text: _text, type: 'alert'}], '#system-message-container', {replace: true});
 					}
+				}).fail(function (xhr, status, error) {
+					var _error = JSON.parse(xhr.responseText);
+					Aurora.message([{text: _error.msg, type: 'error'}], '#system-message-container', {replace: true});
 				});
 			}
 		});
@@ -108,7 +118,7 @@ $this->id    = $this->form->getValue('id');
 				{
 					$lang = JFactory::getLanguage();
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=nameAwards&format=json&showAll=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=nameAwards&format=json'
 							. '&lang=' . substr($lang->getTag(), 0, 2) . '&id=' . $this->id . '&' . JSession::getFormToken() . '=1'),
 						'add_url'  => 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $this->id,
 						'edit_url' => 'index.php?option=com_kinoarhiv&task=names.editNameAwards&item_id=' . $this->id,

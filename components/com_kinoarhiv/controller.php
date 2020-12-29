@@ -50,7 +50,6 @@ class KinoarhivController extends JControllerLegacy
 			'year'             => 'INT',
 			'limit'            => 'UINT',
 			'limitstart'       => 'UINT',
-			'showall'          => 'INT',
 			'return'           => 'BASE64',
 			'filter'           => 'STRING',
 			'filter_order'     => 'CMD',

@@ -102,8 +102,10 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		$app = JFactory::getApplication();
+		/** @var KinoarhivModelName $model */
 		$model = $this->getModel('name');
+
+		$app = JFactory::getApplication();
 		$data = $this->input->post->get('jform', array(), 'array');
 		$form = $model->getForm($data, false);
 
@@ -194,6 +196,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelName $model */
 		$model = $this->getModel('name');
 		$result = $model->publish($isUnpublish);
 
@@ -246,6 +249,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 		// Make sure the item ids are integers
 		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
 
+		/** @var KinoarhivModelName $model */
 		$model = $this->getModel('name');
 		$fs = KAFilesystem::getInstance();
 		$paths = KAContentHelper::getPath('name', 'gallery', array(1, 2, 3), $ids);
@@ -350,6 +354,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		if (count($ids) != 0)
 		{
+			/** @var KinoarhivModelNames $model */
 			$model = $this->getModel('names');
 			$result = $model->batch();
 
@@ -402,6 +407,7 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelName $model */
 		$model = $this->getModel('name');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);

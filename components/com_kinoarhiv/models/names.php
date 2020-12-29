@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
-use Joomla\Utilities\ArrayHelper;
 
 /**
  * Persons list class
@@ -147,14 +146,15 @@ class KinoarhivModelNames extends JModelList
 			)
 		)
 			->from($db->quoteName('#__ka_names', 'n'))
-			->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON cn.id = n.birthcountry AND cn.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND cn.state = 1');
+			->leftJoin($db->quoteName('#__ka_countries', 'cn') . ' ON cn.id = n.birthcountry AND cn.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND cn.state = 1');
 
 		// Join over gallery item
 		$query->select($db->quoteName(array('gal.filename', 'gal.dimension')))
-			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'gal') . ' ON gal.name_id = n.id AND gal.type = 3 AND gal.frontpage = 1 AND gal.state = 1');
+			->leftJoin($db->quoteName('#__ka_names_gallery', 'gal') . ' ON gal.name_id = n.id AND gal.type = 3 AND gal.frontpage = 1 AND gal.state = 1');
 
-		$query->join('LEFT', $db->quoteName('#__ka_genres', 'g') . ' ON g.id IN (SELECT genre_id FROM ' . $db->quoteName('#__ka_rel_names_genres') . ' WHERE name_id = n.id)')
-			->join('LEFT', $db->quoteName('#__ka_names_career', 'cr') . ' ON cr.id IN (SELECT career_id FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE name_id = n.id)');
+		// Ordering in subqueries cannot be applied due SQL standards.
+		$query->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON g.id IN (SELECT genre_id FROM ' . $db->quoteName('#__ka_rel_names_genres') . ' WHERE name_id = n.id)')
+			->leftJoin($db->quoteName('#__ka_names_career', 'cr') . ' ON cr.id IN (SELECT career_id FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE name_id = n.id)');
 
 		if (!$user->get('guest'))
 		{
@@ -162,7 +162,9 @@ class KinoarhivModelNames extends JModelList
 			$query->leftJoin($db->quoteName('#__ka_user_marked_names', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.name_id = n.id');
 		}
 
-		$query->where('n.state = 1 AND n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND n.access IN (' . $groups . ')');
+		$query->where('n.state = 1')
+			->where('n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->where('n.access IN (' . $groups . ')');
 
 		$filters = $this->getFiltersData();
 

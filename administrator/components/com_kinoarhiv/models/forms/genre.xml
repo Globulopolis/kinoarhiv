@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit">
-		<field name="name" type="text" default="" label="COM_KA_FIELD_GENRE_LABEL" class="span5" required="true"
+		<field name="name" type="text" default="" label="COM_KA_FIELD_GENRE_LABEL" class="inputbox span12" required="true"
 			   filter="string" size="6"/>
-		<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="span5"
+		<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" class="inputbox span12"
 			   size="45" labelclass="control-label"/>
+		<field name="type" type="list" label="COM_KA_FIELD_GENRE_TYPE" class="inputbox"
+			   filter="integer" size="1" default="0">
+			<option value="0">COM_KA_GENRES_MOVIE_TITLE</option>
+			<option value="1">COM_KA_GENRES_MUSIC_TITLE</option>
+		</field>
 		<field name="stats" type="text" default="0" label="COM_KA_FIELD_GENRES_STATS_TITLE"
 			   description="COM_KA_FIELD_GENRES_STATS_DESC" class="inputbox" required="true" filter="integer" size="6"/>
+		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="JComponentHelper::filterText" buttons="true"/>
 		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

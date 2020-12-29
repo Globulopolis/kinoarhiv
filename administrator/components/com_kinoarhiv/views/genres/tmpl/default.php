@@ -12,19 +12,8 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 
-$user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
-$columns   = 7;
-
-if (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music')
-{
-	$item_type = 'music';
-}
-else
-{
-	$item_type = 'movie';
-}
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(pressbutton) {
@@ -34,7 +23,7 @@ else
 			return;
 		}
 		if (pressbutton === 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=<?php echo $item_type; ?>';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies';
 
 			return;
 		}
@@ -42,7 +31,7 @@ else
 	};
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres&type=' . $item_type); ?>"
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=genres'); ?>"
 	  method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
 		<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
@@ -61,7 +50,10 @@ else
 						<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
-						<?php echo JHtml::_('searchtools.sort', ($item_type == 'movie') ? 'COM_KA_GENRES_STATS' : 'COM_KA_GENRES_MUSIC_STATS', 'a.stats', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort',  'COM_KA_FIELD_GENRE_TYPE', 'a.type', $listDirn, $listOrder); ?>
+					</th>
+					<th width="10%" class="nowrap hidden-phone">
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_GENRES_STATS', 'a.stats', $listDirn, $listOrder); ?>
 					</th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
@@ -77,7 +69,7 @@ else
 			<tbody>
 			<?php if (count($this->items) == 0): ?>
 				<tr>
-					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
+					<td colspan="8" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
 				foreach ($this->items as $i => $item): ?>
@@ -91,27 +83,34 @@ else
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&type=' . $item_type . '&task=genres.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=genres.edit&id[]=' . $item->id); ?>"
+								   title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>
-								<span class="small">(<?php echo JText::_('JFIELD_ALIAS_LABEL'); ?>: <?php echo $this->escape($item->alias); ?>)</span>
+								<div class="small">(<?php echo JText::_('JFIELD_ALIAS_LABEL'); ?>: <?php echo $this->escape($item->alias); ?>)</div>
 							<?php else : ?>
-								<span title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>"><?php echo $this->escape($item->name); ?></span>
+								<span title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>">
+									<?php echo $this->escape($item->name); ?>
+								</span>
 							<?php endif; ?>
 						</div>
 					</td>
 					<td class="small hidden-phone">
-						<span id="total_<?php echo $item->id; ?>"><?php echo $item->stats; ?></span>&nbsp;
-						<?php if ($this->canUpdateStat) : ?>
+						<?php echo $item->type == 1 ? JText::_('COM_KA_GENRES_MUSIC_TITLE') : JText::_('COM_KA_GENRES_MOVIE_TITLE'); ?>
+					</td>
+					<td class="small hidden-phone">
+						<div class="row-fluid">
+							<span class="span6" id="total_<?php echo $item->id; ?>"><?php echo $item->stats; ?></span>
 
-						<span style="float: right;">
-							<a href="#" class="hasTooltip cmd-update-genre-stat" data-gs-type="<?php echo $item_type; ?>"
-							   data-gs-id="<?php echo $item->id; ?>" data-gs-update="#total_<?php echo $item->id; ?>"
-							   title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
-								<span class="icon-refresh"></span>
-							</a>
-						</span>
-
-						<?php endif; ?>
+							<?php if ($this->canUpdateStat): ?>
+								<span class="span6">
+									<a href="#" class="hasTooltip cmd-update-genre-stat" data-gs-type="<?php echo $item->type; ?>"
+									   data-gs-id="<?php echo $item->id; ?>" data-gs-update="#total_<?php echo $item->id; ?>"
+									   title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
+										<span class="icon-refresh"></span>
+									</a>
+								</span>
+							<?php endif; ?>
+						</div>
 					</td>
 					<td class="small hidden-phone">
 						<?php echo $this->escape($item->access_level); ?>
@@ -124,23 +123,23 @@ else
 						<?php endif;?>
 					</td>
 					<td class="center">
-						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&type=' . $item_type . '&id=' . $item->id); ?>" class="hasTooltip hidden-phone" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS') . ': ' . $this->escape($item->name); ?>"><span class="icon-out-2"></span></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&id=' . $item->id); ?>"
+						   class="hasTooltip hidden-phone"
+						   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS') . ': ' . $this->escape($item->name); ?>">
+							<span class="icon-out-2"></span>
+						</a>
 						<?php echo (int) $item->id; ?>
 					</td>
 				</tr>
 				<?php endforeach;
 			endif; ?>
 			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="<?php echo $columns; ?>"></td>
-				</tr>
-			</tfoot>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>
-		<?php if ($user->authorise('core.create', 'com_kinoarhiv')
-			&& $user->authorise('core.edit', 'com_kinoarhiv')
-			&& $user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
+
+		<?php if ($this->user->authorise('core.create', 'com_kinoarhiv')
+			&& $this->user->authorise('core.edit', 'com_kinoarhiv')
+			&& $this->user->authorise('core.edit.state', 'com_kinoarhiv')) : ?>
 			<?php echo JHtml::_(
 				'bootstrap.renderModal',
 				'collapseModal',

@@ -84,33 +84,29 @@ class KinoarhivModelAPI extends JModelLegacy
 		$groups      = implode(',', $user->getAuthorisedViewLevels());
 		$dataLang    = $this->input->get('data_lang', '', 'string');
 
-		if ($dataLang !== '')
+		// If language is not defined in any way then set to default.
+		if (empty($dataLang))
 		{
-			if ($dataLang == '*')
-			{
-				$this->queryLang = '';
-			}
-			else
-			{
-				$this->queryLang = 'language IN (' . $this->db->quote($dataLang) . ')';
-			}
+			$this->queryLang = $this->db->quoteName('language')
+				. ' IN (' . $this->db->quote($this->lang->getTag()) . ',' . $this->db->quote('*') . ')';
 		}
 		else
 		{
-			if (array_key_exists('data_lang', $config) && $config['data_lang'] != '')
+			// Check for keyword 'request'. This mean that the language will get from query.
+			if ($dataLang === 'request')
 			{
-				if ($config['data_lang'] == '*')
-				{
-					$this->queryLang = '';
-				}
-				else
-				{
-					$this->queryLang = 'language IN (' . $this->db->quote($config['data_lang']) . ')';
-				}
+				$this->queryLang = 'language IN (' . $this->db->quote($this->lang->getTag()) . ')';
 			}
+			// Show all in any language
+			elseif ($dataLang === '*')
+			{
+				$this->queryLang = '';
+			}
+			// Else from input
 			else
 			{
-				//$this->query_lang = 'language IN (' . $this->db->quote($this->lang->getTag()) . ',' . $this->db->quote('*') . ')';
+				$langs = explode(',', trim($dataLang));
+				$this->queryLang = "language IN ('" . implode("','", $langs) . "')";
 			}
 		}
 
@@ -143,111 +139,88 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of countries or country based on filters.
 	 *
-	 * @return  object|array|boolean
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getCountries()
 	{
 		$id       = $this->input->get('id', 0, 'int');
-		$all      = $this->input->get('showAll', 0, 'int');
 		$multiple = $this->input->get('multiple', 0, 'int');
 		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		// Do not remove `code` field from the query. It's necessary for flagging row in select
 		$query = $this->db->getQuery(true)
-			->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('name', 'text') . ', ' . $this->db->quoteName('code'))
+			->select($this->db->quoteName(array('id', 'code')))
+			->select($this->db->quoteName('name', 'text'))
 			->from($this->db->quoteName('#__ka_countries'));
 
 		// Filter by language
-		if ($this->queryLang != '')
+		if ($this->queryLang !== '')
 		{
 			$query->where($this->queryLang);
 		}
 
 		// Filter by item state
-		if ($this->queryState != '')
+		if ($this->queryState !== '')
 		{
 			$query->where($this->queryState);
 		}
 
-		if ($all == 0)
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
 		{
-			if ($id == 0)
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
+
+		try
+		{
+			if (!empty($id) || $multiple === 1)
 			{
-				if (empty($term))
-				{
-					return array();
-				}
-
-				$query->where($this->db->quoteName('name') . ' LIKE "' . $this->db->escape($term) . '%"')
-					->order($this->db->quoteName('name') . ' ASC');
-				$this->db->setQuery($query);
-
-				try
-				{
-					$result = $this->db->loadObjectList();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-			else
-			{
-				if ($multiple == 1)
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
 					$ids = $this->input->get('id', '', 'string');
-					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
-						->order($this->db->quoteName('name') . ' ASC');
+					$ids = $this->sanitizeIDList($ids);
+
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObjectList();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return false;
-					}
+					$result = $this->db->loadObjectList();
 				}
+				// Get single row by ID
 				else
 				{
 					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObject();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return false;
-					}
+					$result = $this->db->loadObject();
 				}
 			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('name') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
+			else
 			{
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('name') . ' ASC');
+				$this->db->setQuery($query);
+
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
@@ -262,25 +235,34 @@ class KinoarhivModelAPI extends JModelLegacy
 	 */
 	public function getMovies()
 	{
-		$id     = $this->input->get('id', 0, 'int');
-		$all    = $this->input->get('showAll', 0, 'int');
-		$term   = $this->input->get('term', '', 'string');
-		$ignore = $this->input->get('ignore_ids', array(), 'array');
+		$id       = $this->input->get('id', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName(array('id', 'title', 'year')))
 			->from($this->db->quoteName('#__ka_movies'));
 
-		// Filter results set by IDs
-		if (!empty($ignore))
-		{
-			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
-		}
-
 		// Filter by language
-		if ($this->queryLang != '')
+		if ($this->queryLang !== '')
 		{
 			$query->where($this->queryLang);
+		}
+
+		// Filter by item state
+		if ($this->queryState !== '')
+		{
+			$query->where($this->queryState);
+		}
+
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
 		}
 
 		// Filter by access
@@ -289,62 +271,50 @@ class KinoarhivModelAPI extends JModelLegacy
 			$query->where($this->queryAccess);
 		}
 
-		// Filter by item state
-		if ($this->queryState != '')
+		try
 		{
-			$query->where($this->queryState);
-		}
-
-		if (empty($all))
-		{
-			if (empty($id))
+			if (!empty($id) || $multiple === 1)
 			{
-				$query->where($this->db->quoteName('title') . " LIKE '%" . $this->db->escape($term) . "%'");
-				$this->db->setQuery($query);
-
-				try
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
+					$ids = $this->input->get('id', '', 'string');
+					$ids = $this->sanitizeIDList($ids);
+
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
+					$this->db->setQuery($query);
+
 					$result = $this->db->loadObjectList();
 				}
-				catch (RuntimeException $e)
+				// Get single row by ID
+				else
 				{
-					KAComponentHelper::eventLog($e->getMessage());
+					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+					$this->db->setQuery($query);
 
-					return false;
+					$result = $this->db->loadObject();
 				}
 			}
 			else
 			{
-				$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('title') . ' ASC');
 				$this->db->setQuery($query);
 
-				try
-				{
-					$result = $this->db->loadObject();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('title') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
-			{
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
@@ -359,26 +329,35 @@ class KinoarhivModelAPI extends JModelLegacy
 	 */
 	public function getAlbums()
 	{
-		$id     = $this->input->get('id', 0, 'int');
-		$all    = $this->input->get('showAll', 0, 'int');
-		$term   = $this->input->get('term', '', 'string');
-		$ignore = $this->input->get('ignore_ids', array(), 'array');
+		$id       = $this->input->get('id', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName(array('id', 'title')))
 			->select('DATE_FORMAT(' . $this->db->quoteName('year') . ', "%Y") AS ' . $this->db->quoteName('year'))
 			->from($this->db->quoteName('#__ka_music_albums'));
 
-		// Filter results set by IDs
-		if (!empty($ignore))
-		{
-			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
-		}
-
 		// Filter by language
-		if ($this->queryLang != '')
+		if ($this->queryLang !== '')
 		{
 			$query->where($this->queryLang);
+		}
+
+		// Filter by item state
+		if ($this->queryState !== '')
+		{
+			$query->where($this->queryState);
+		}
+
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
 		}
 
 		// Filter by access
@@ -387,62 +366,50 @@ class KinoarhivModelAPI extends JModelLegacy
 			$query->where($this->queryAccess);
 		}
 
-		// Filter by item state
-		if ($this->queryState != '')
+		try
 		{
-			$query->where($this->queryState);
-		}
-
-		if (empty($all))
-		{
-			if (empty($id))
+			if (!empty($id) || $multiple === 1)
 			{
-				$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'");
-				$this->db->setQuery($query);
-
-				try
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
+					$ids = $this->input->get('id', '', 'string');
+					$ids = $this->sanitizeIDList($ids);
+
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
+					$this->db->setQuery($query);
+
 					$result = $this->db->loadObjectList();
 				}
-				catch (RuntimeException $e)
+				// Get single row by ID
+				else
 				{
-					KAComponentHelper::eventLog($e->getMessage());
+					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+					$this->db->setQuery($query);
 
-					return false;
+					$result = $this->db->loadObject();
 				}
 			}
 			else
 			{
-				$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('title') . ' ASC');
 				$this->db->setQuery($query);
 
-				try
-				{
-					$result = $this->db->loadObject();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('title') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
-			{
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
@@ -457,25 +424,34 @@ class KinoarhivModelAPI extends JModelLegacy
 	 */
 	public function getNames()
 	{
-		$id     = $this->input->get('id', 0, 'int');
-		$all    = $this->input->get('showAll', 0, 'int');
-		$term   = $this->input->get('term', '', 'string');
-		$ignore = $this->input->get('ignore_ids', array(), 'array');
+		$id       = $this->input->get('id', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName(array('id', 'name', 'latin_name', 'date_of_birth')))
 			->from($this->db->quoteName('#__ka_names'));
 
-		// Filter results set by IDs
-		if (!empty($ignore))
-		{
-			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
-		}
-
 		// Filter by language
-		if ($this->queryLang != '')
+		if ($this->queryLang !== '')
 		{
 			$query->where($this->queryLang);
+		}
+
+		// Filter by item state
+		if ($this->queryState !== '')
+		{
+			$query->where($this->queryState);
+		}
+
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
 		}
 
 		// Filter by access
@@ -484,65 +460,52 @@ class KinoarhivModelAPI extends JModelLegacy
 			$query->where($this->queryAccess);
 		}
 
-		// Filter by item state
-		if ($this->queryState != '')
+		try
 		{
-			$query->where($this->queryState);
-		}
-
-		if (empty($all))
-		{
-			if (empty($id))
+			if (!empty($id) || $multiple === 1)
 			{
-				$query->where(
-					$this->db->quoteName('name') . " LIKE '" . $this->db->escape($term) . "%' OR " .
-					$this->db->quoteName('latin_name') . " LIKE '" . $this->db->escape($term) . "%'"
-				);
-				$this->db->setQuery($query);
-
-				try
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
+					$ids = $this->input->get('id', '', 'string');
+					$ids = $this->sanitizeIDList($ids);
+
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
+					$this->db->setQuery($query);
+
 					$result = $this->db->loadObjectList();
 				}
-				catch (RuntimeException $e)
+				// Get single row by ID
+				else
 				{
-					KAComponentHelper::eventLog($e->getMessage());
+					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+					$this->db->setQuery($query);
 
-					return false;
+					$result = $this->db->loadObject();
 				}
 			}
 			else
 			{
-				$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+				if (!empty($term))
+				{
+					$query->where(
+						$this->db->quoteName('name') . " LIKE '" . $this->db->escape($term) . "%' OR " .
+						$this->db->quoteName('latin_name') . " LIKE '" . $this->db->escape($term) . "%'"
+					);
+				}
+
 				$this->db->setQuery($query);
 
-				try
-				{
-					$result = $this->db->loadObject();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('id') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
-			{
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
@@ -551,26 +514,20 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of awards or award based on filters.
 	 *
-	 * @return  object|array|boolean
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getAwards()
 	{
-		$id     = $this->input->get('id', 0, 'int');
-		$all    = $this->input->get('showAll', 0, 'int');
-		$term   = $this->input->get('term', '', 'string');
-		$ignore = $this->input->get('ignore_ids', array(), 'array');
+		$id       = $this->input->get('id', 0, 'int');
+		$multiple = $this->input->get('multiple', 0, 'int');
+		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('title', 'text'))
 			->from($this->db->quoteName('#__ka_awards'));
-
-		// Filter results set by IDs
-		if (!empty($ignore))
-		{
-			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
-		}
 
 		// Filter by language
 		if ($this->queryLang != '')
@@ -584,58 +541,59 @@ class KinoarhivModelAPI extends JModelLegacy
 			$query->where($this->queryState);
 		}
 
-		if (empty($all))
-		{
-			if (empty($id))
-			{
-				$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'")
-					->order($this->db->quoteName('title') . ' ASC');
-				$this->db->setQuery($query);
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
 
-				try
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
+
+		try
+		{
+			if (!empty($id) || $multiple === 1)
+			{
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
+					$ids = $this->input->get('id', '', 'string');
+					$ids = $this->sanitizeIDList($ids);
+
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
+					$this->db->setQuery($query);
+
 					$result = $this->db->loadObjectList();
 				}
-				catch (RuntimeException $e)
+				// Get single row by ID
+				else
 				{
-					KAComponentHelper::eventLog($e->getMessage());
+					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
+					$this->db->setQuery($query);
 
-					return false;
+					$result = $this->db->loadObject();
 				}
 			}
 			else
 			{
-				$query->where($this->db->quoteName('id') . ' = ' . (int) $id)
-					->order($this->db->quoteName('title') . ' ASC');
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('title') . ' ASC');
 				$this->db->setQuery($query);
 
-				try
-				{
-					$result = $this->db->loadObject();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('title') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
-			{
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
@@ -644,16 +602,16 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of distributors or distributor based on filters.
 	 *
-	 * @return  object|array|boolean
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getVendors()
 	{
 		$id       = $this->input->get('id', 0, 'int');
-		$all      = $this->input->get('showAll', 0, 'int');
 		$multiple = $this->input->get('multiple', 0, 'int');
 		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('company_name', 'text'))
@@ -671,83 +629,59 @@ class KinoarhivModelAPI extends JModelLegacy
 			$query->where($this->queryState);
 		}
 
-		if ($all == 0)
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
 		{
-			if ($id == 0)
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
+
+		try
+		{
+			if (!empty($id) || $multiple === 1)
 			{
-				if (empty($term))
-				{
-					return array();
-				}
-
-				$query->where($this->db->quoteName('company_name') . " LIKE '" . $this->db->escape($term) . "%'")
-					->order($this->db->quoteName('company_name') . ' ASC');
-				$this->db->setQuery($query);
-
-				try
-				{
-					$result = $this->db->loadObjectList();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-			else
-			{
-				if ($multiple == 1)
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
 					$ids = $this->input->get('id', '', 'string');
-					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
-						->order($this->db->quoteName('company_name') . ' ASC');
+					$ids = $this->sanitizeIDList($ids);
+
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObjectList();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return false;
-					}
+					$result = $this->db->loadObjectList();
 				}
+				// Get single row by ID
 				else
 				{
 					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObject();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return false;
-					}
+					$result = $this->db->loadObject();
 				}
 			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('company_name') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
+			else
 			{
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('company_name') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('company_name') . ' ASC');
+				$this->db->setQuery($query);
+
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
@@ -756,211 +690,169 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of careers based on filters.
 	 *
-	 * @return  object|array|boolean
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
 	public function getCareers()
 	{
 		$id       = $this->input->get('id', 0, 'int');
-		$all      = $this->input->get('showAll', 0, 'int');
 		$multiple = $this->input->get('multiple', 0, 'int');
 		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('title', 'text'))
 			->from($this->db->quoteName('#__ka_names_career'));
 
 		// Filter by language
-		if ($this->queryLang != '')
+		if ($this->queryLang !== '')
 		{
 			$query->where($this->queryLang);
 		}
 
-		if ($all == 0)
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
 		{
-			if ($id == 0)
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
+
+		try
+		{
+			if (!empty($id) || $multiple === 1)
 			{
-				if (empty($term))
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
-					return array();
-				}
+					$ids = $this->input->get('id', '', 'string');
+					$ids = $this->sanitizeIDList($ids);
 
-				$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'")
-					->order($this->db->quoteName('ordering') . ' ASC');
-				$this->db->setQuery($query);
-
-				try
-				{
-					$result = $this->db->loadObjectList();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return false;
-				}
-			}
-			else
-			{
-				if ($multiple == 1)
-				{
-					$ids = $this->sanitizeIDList($this->input->get('id', '', 'string'));
-					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
-						->order('FIELD(id, ' . $ids . ')');
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObjectList();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return false;
-					}
+					$result = $this->db->loadObjectList();
 				}
+				// Get single row by ID
 				else
 				{
 					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObject();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return false;
-					}
+					$result = $this->db->loadObject();
 				}
 			}
-		}
-		else
-		{
-			$query->where($this->db->quoteName('title') . " LIKE '" . $this->db->escape($term) . "%'");
-			$query->order($this->db->quoteName('ordering') . ', ' . $this->db->quoteName('title') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
+			else
 			{
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('title') . ' ASC');
+				$this->db->setQuery($query);
+
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return false;
-			}
+			return false;
 		}
 
 		return $result;
 	}
 
 	/**
-	 * Method to get list of careers based on filters.
+	 * Method to get list of genres based on filters.
 	 *
-	 * @return  object|array
+	 * @return  object|boolean
 	 *
 	 * @since   3.1
 	 */
-	public function getMovieGenres()
+	public function getGenres()
 	{
 		$id       = $this->input->get('id', 0, 'int');
-		$all      = $this->input->get('showAll', 0, 'int');
 		$multiple = $this->input->get('multiple', 0, 'int');
 		$term     = $this->input->get('term', '', 'string');
+		$ignore   = $this->input->get('ignore_ids', array(), 'array');
+		$type     = $this->input->get('data_type', '', 'string');
 
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName('id') . ', ' . $this->db->quoteName('name', 'text'))
 			->from($this->db->quoteName('#__ka_genres'));
 
 		// Filter by language
-		if ($this->queryLang != '')
+		if ($this->queryLang !== '')
 		{
 			$query->where($this->queryLang);
 		}
 
-		if ($all == 0)
+		// Delete empty values from array of IDs
+		$ignore = array_filter($ignore);
+
+		// Filter results set by IDs
+		if (!empty($ignore) && count($ignore) > 0)
 		{
-			if ($id == 0)
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $ignore) . ')');
+		}
+
+		// Filter by genre type
+		if ($type !== '')
+		{
+			$query->where($this->db->quoteName('type') . ' IN (' . (string) $type . ')');
+		}
+
+		try
+		{
+			if (!empty($id) || $multiple === 1)
 			{
-				if (empty($term))
+				// Filter rows by IDs
+				if ($multiple === 1)
 				{
-					return array();
-				}
+					$ids = $this->input->get('id', '', 'string');
+					$ids = $this->sanitizeIDList($ids);
 
-				$query->where($this->db->quoteName('name') . " LIKE '" . $this->db->escape($term) . "%'")
-					->order($this->db->quoteName('name') . ' ASC');
-				$this->db->setQuery($query);
-
-				try
-				{
-					$result = $this->db->loadObjectList();
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-
-					return array();
-				}
-			}
-			else
-			{
-				if ($multiple == 1)
-				{
-					$ids = $this->sanitizeIDList($this->input->get('id', '', 'string'));
-					$query->where($this->db->quoteName('id') . ' IN (' . $this->sanitizeIDList($ids) . ')')
-						->order('FIELD(id, ' . $ids . ')');
+					$query->where($this->db->quoteName('id') . ' IN (' . $ids . ')')
+						// Preserve row ordering
+						->order('FIELD (' . $this->db->quoteName('id') . ', ' . $ids . ')');
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObjectList();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return array();
-					}
+					$result = $this->db->loadObjectList();
 				}
+				// Get single row by ID
 				else
 				{
 					$query->where($this->db->quoteName('id') . ' = ' . (int) $id);
 					$this->db->setQuery($query);
 
-					try
-					{
-						$result = $this->db->loadObject();
-					}
-					catch (RuntimeException $e)
-					{
-						KAComponentHelper::eventLog($e->getMessage());
-
-						return array();
-					}
+					$result = $this->db->loadObject();
 				}
 			}
-		}
-		else
-		{
-			$query->order($this->db->quoteName('name') . ' ASC');
-			$this->db->setQuery($query);
-
-			try
+			else
 			{
+				if (!empty($term))
+				{
+					$query->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote($term . '%'));
+				}
+
+				$query->order($this->db->quoteName('name') . ' ASC');
+				$this->db->setQuery($query);
+
 				$result = $this->db->loadObjectList();
 			}
-			catch (RuntimeException $e)
-			{
-				KAComponentHelper::eventLog($e->getMessage());
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
 
-				return array();
-			}
+			return false;
 		}
 
 		return $result;
@@ -1222,7 +1114,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			)
 			->from($this->db->quoteName('#__ka_rel_awards', 'rel'))
 			->leftJoin($this->db->quoteName('#__ka_awards', 'aw') . ' ON ' . $this->db->quoteName('aw.id') . ' = ' . $this->db->quoteName('rel.award_id'))
-			->where($this->db->quoteName('rel.type') . ' = ' . (int) $type . ' AND ' . $this->db->quoteName('rel.item_id') . ' = ' . (int) $id . $where)
+			->where($this->db->quoteName('rel.type') . ' = ' . (int) $type)
+			->where($this->db->quoteName('rel.item_id') . ' = ' . (int) $id . $where)
 			->order($this->db->quoteName($orderby) . ' ' . strtoupper($this->db->escape($order)))
 			->setLimit($limit, $limitstart);
 

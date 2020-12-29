@@ -51,10 +51,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 		KAComponentHelper::getScriptLanguage('select2_locale_', 'media/com_kinoarhiv/js/i18n/select');
 		JHtml::_('script', 'media/com_kinoarhiv/js/core.min.js');
 
-		$allowedTypes = array(
-			'countries', 'vendors', 'movieGenres', 'nameGenres', 'albumGenres', 'trackGenres', 'artistGenres', 'tags',
-			'amplua', 'mediatypes'
-		);
+		$allowedTypes = array('countries', 'vendors', 'genres', 'tags', 'amplua', 'mediatypes');
 		$attr = '';
 
 		// Initialize some field attributes.
@@ -86,6 +83,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 			? ' data-maximum-selection-size="' . (int) $this->element['data-maximum-selection-size'] . '"' : '';
 		$attr .= $this->element['data-content'] ? ' data-content="' . (string) $this->element['data-content'] . '"' : '';
 		$attr .= $this->element['data-key'] ? ' data-key="' . (string) $this->element['data-key'] . '"' : '';
+		$attr .= $this->element['data-type'] ? ' data-type="' . (string) $this->element['data-type'] . '"' : '';
 
 		// Use native input
 		$attr .= $this->element['data-select2-disabled'] ? ' data-select2-disabled="true"' : '';
@@ -97,7 +95,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 		// Get id attribute.
 		$id = $this->id !== false ? $this->id : $this->name;
 
-		// Replace [] if id == field name. So fiel name like form[field] will be form_field
+		// Replace [] if id == field name. So field name like form[field] will be form_field
 		$id      = str_replace(array('[', ']'), '', $id);
 		$attr    .= $id !== '' ? ' id="' . $id . '"' : '';
 		$options = (array) $this->getOptions();
@@ -132,7 +130,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 				if (method_exists($this, $method))
 				{
-					$query = $this->{$method}($queryLang);
+					$objectsList = $this->{$method}($queryLang);
 				}
 				else
 				{
@@ -140,18 +138,6 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 					return false;
 				}
-			}
-
-			try
-			{
-				$db->setQuery($query);
-				$objectsList = $db->loadObjectList();
-			}
-			catch (Exception $e)
-			{
-				KAComponentHelper::eventLog('Error while fetching data from DB in ' . __METHOD__ . '(): ' . $e->getMessage());
-
-				return false;
 			}
 
 			if ((string) $this->element['data-sortable'] == 'false' || (string) $this->element['data-sortable'] == '')
@@ -269,7 +255,6 @@ class JFormFieldAutocomplete extends JFormFieldList
 			}
 
 			$attr .= $this->element['data-remote'] ? ' data-remote="' . (string) $this->element['data-remote'] . '"' : '';
-			$attr .= $this->element['data-remote-show-all'] == 'true' ? ' data-remote-show-all="true"' : '';
 			$attr .= $this->element['data-ignore-ids'] ? ' data-ignore-ids="[' . (string) $this->element['data-ignore-ids'] . ']"' : '';
 
 			return '<input type="hidden" name="' . $this->name . '" value="' . $value . '" ' . trim($attr) . ' />';
@@ -347,40 +332,11 @@ class JFormFieldAutocomplete extends JFormFieldList
 	}
 
 	/**
-	 * Method to get the query object for movie genres.
+	 * Get list for names amplua.
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  object
-	 *
-	 * @since   3.1
-	 */
-	protected function getAlbumGenres($lang)
-	{
-		$user   = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$db     = JFactory::getDbo();
-		$query  = $db->getQuery(true)
-			->select('id AS value, name AS text')
-			->from($db->quoteName('#__ka_music_genres'))
-			->where('state = 1 AND access IN (' . $groups . ')');
-
-		if ($lang != '')
-		{
-			$query->where($lang);
-		}
-
-		$query->order('name ASC');
-
-		return $query;
-	}
-
-	/**
-	 * Method to get the query object for names amplua.
-	 *
-	 * @param   string  $lang  Content language
-	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -408,15 +364,26 @@ class JFormFieldAutocomplete extends JFormFieldList
 		$query->group('title')
 			->order('ordering ASC, title ASC');
 
-		return $query;
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 	}
 
 	/**
-	 * Method to get the query object for countries.
+	 * Get list for countries.
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -435,19 +402,30 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 		$query->order('name ASC');
 
-		return $query;
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 	}
 
 	/**
-	 * Method to get the query object for movie genres.
+	 * Get list for genres.
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
-	protected function getMovieGenres($lang)
+	protected function getGenres($lang)
 	{
 		$user   = JFactory::getUser();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
@@ -464,15 +442,26 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 		$query->order('name ASC');
 
-		return $query;
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 	}
 
 	/**
-	 * Method to get the query object for mediatypes.
+	 * Get list for mediatypes.
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -490,15 +479,26 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 		$query->order('title ASC');
 
-		return $query;
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 	}
 
 	/**
-	 * Method to get the query object for tags.
+	 * Get list for tags.
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -524,15 +524,26 @@ class JFormFieldAutocomplete extends JFormFieldList
 			$query->where($lang);
 		}
 
-		return $query;
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 	}
 
 	/**
-	 * Method to get the query object for vendors/distributors.
+	 * Get list for vendors/distributors.
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  object
+	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
@@ -549,6 +560,17 @@ class JFormFieldAutocomplete extends JFormFieldList
 			$query->where($lang);
 		}
 
-		return $query;
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 	}
 }

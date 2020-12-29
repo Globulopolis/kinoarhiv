@@ -30,6 +30,7 @@
 		</field>
 		<field name="desc" type="editor" label="COM_KA_FIELD_NAME_DESC" filter="raw" buttons="false"/>
 		<field name="birthplace" type="text" label="COM_KA_FIELD_NAME_BIRTHPLACE" class="span12" filter="string"/>
+
 		<field name="birthcountry" type="autocomplete" label="COM_KA_FIELD_NAME_BIRTHCOUNTRY" filter="integer"
 			   class="span11" data-content="countries" data-allow-clear="true" data-remote="true" data-lang="*"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
@@ -37,15 +38,15 @@
 		</field>
 
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
-			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="movieGenres"
+			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-remote-show-all="true"/>
+			   data-lang="*" data-type="0,1"/>
 		<field name="genres_orig" type="hidden"/>
 
 		<field name="careers" type="autocomplete" label="COM_KA_FIELD_NAME_CAREER"
 			   description="COM_KA_FIELD_NAME_CAREER_DESC" class="span10" default="" data-content="careers"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-remote-show-all="true"/>
+			   data-lang="*"/>
 		<field name="careers_orig" type="hidden"/>
 
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL"

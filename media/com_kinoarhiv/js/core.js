@@ -206,21 +206,18 @@ jQuery(document).ready(function($){
 				config = {},
 				data_url = $this.data('url'),
 				data_lang = $this.data('lang') || '',
+				data_type = $this.data('type') || '',
 				content = $this.data('content'),
 				multiple = $this.attr('multiple'),
 				remote = $this.data('remote'),
 				sortable = $this.data('sortable'),
 				min_length = $this.data('minimum-input-length'),
 				max_selection = $this.data('maximum-selection-size'),
-				show_all = $this.data('remote-show-all'),
 				ignore_ids = $this.data('ignore-ids') || '',
 				api_root = KA_vars.api_root || '',
 				img_root = KA_vars.img_root || '',
 				select = {},
-				allowedTypes = [
-					'countries', 'vendors', 'movieGenres', 'nameGenres', 'albumGenres', 'trackGenres', 'artistGenres',
-					'tags', 'amplua', 'mediatypes'
-				];
+				allowedTypes = ['countries', 'vendors', 'genres', 'tags', 'amplua', 'mediatypes'];
 
 			config.placeholder = !empty($this.data('placeholder')) ? $this.data('placeholder') : KA_vars.language.JGLOBAL_SELECT_AN_OPTION;
 			config.allowClear = $this.data('allow-clear');
@@ -245,11 +242,15 @@ jQuery(document).ready(function($){
 						ignore_ids = '&ignore_ids[]=' + [ignore_ids].join('&ignore_ids[]=');
 					}
 
-					if (!empty(data_lang)) {
+					if (data_lang !== '' && typeof data_lang !== 'undefined') {
 						data_lang = '&data_lang=' + data_lang;
 					}
 
-					data_url = api_root + 'index.php?option=com_kinoarhiv&task=api.data&content=' + content + '&format=json&tmpl=component&lang=' + KA_vars.language.tag.substr(0, 2) + data_lang + ignore_ids + '&' + Kinoarhiv.getFormToken() + '=1';
+					if (data_type !== '' && typeof data_type !== 'undefined') {
+						data_type = '&data_type=' + data_type;
+					}
+
+					data_url = api_root + 'index.php?option=com_kinoarhiv&task=api.data&content=' + content + '&format=json&tmpl=component&lang=' + KA_vars.language.tag.substr(0, 2) + data_lang + ignore_ids + data_type + '&' + Kinoarhiv.getFormToken() + '=1';
 				}
 
 				// Require if ID from query results is not an `id` field.
@@ -264,7 +265,6 @@ jQuery(document).ready(function($){
 					data: function (term, page) {
 						return {
 							term: term,
-							showAll: show_all ? 1 : 0,
 							page: page
 						}
 					},

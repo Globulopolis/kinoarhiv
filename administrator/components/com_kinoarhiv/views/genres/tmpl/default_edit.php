@@ -13,7 +13,6 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 
-$item_type = (JFactory::getApplication()->input->get('type', 'movie', 'word') == 'music') ? 'music' : 'movie';
 $id = (int) $this->form->getValue('id');
 ?>
 <script type="text/javascript">
@@ -23,23 +22,34 @@ $id = (int) $this->form->getValue('id');
 		}
 
 		if (task === 'relations') {
-			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&type=<?php echo $item_type; ?>&element=movies<?php echo $id != 0 ? '&id=' . $id : ''; ?>';
+			document.location.href = 'index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies<?php echo $id != 0 ? '&id=' . $id : ''; ?>';
 		}
 	};
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $id); ?>" method="post" name="adminForm" autocomplete="off" id="item-form" class="form-validate">
-	<div id="j-main-container">
-		<fieldset class="form-horizontal">
-			<?php foreach ($this->form->getFieldset('edit') as $field): ?>
-			<div class="control-group">
-				<div class="control-label"><?php echo $field->label; ?></div>
-				<div class="controls"><?php echo $field->input; ?></div>
-			</div>
-			<?php endforeach; ?>
-		</fieldset>
+<form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . $id); ?>" method="post" name="adminForm"
+	  autocomplete="off" id="item-form" class="form-validate">
+	<div class="form-horizontal">
+		<div class="row-fluid">
+			<div class="span6"><?php echo $this->form->renderField('name'); ?></div>
+			<div class="span6"><?php echo $this->form->renderField('language'); ?></div>
+		</div>
+		<div class="row-fluid">
+			<div class="span6"><?php echo $this->form->renderField('alias'); ?></div>
+			<div class="span6"><?php echo $this->form->renderField('access'); ?></div>
+		</div>
+		<div class="row-fluid">
+			<div class="span6"><?php echo $this->form->renderField('type'); ?></div>
+			<div class="span6"><?php echo $this->form->renderField('state'); ?></div>
+		</div>
+		<div class="row-fluid">
+			<div class="span6"><?php echo $this->form->renderField('stats'); ?></div>
+			<div class="span6"><?php echo $this->form->renderField('id'); ?></div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12"><?php echo $this->form->renderField('desc'); ?></div>
+		</div>
 	</div>
 
 	<input type="hidden" name="task" value="" />
-	<input type="hidden" name="type" value="<?php echo $item_type; ?>" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

@@ -20,9 +20,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	/**
 	 * Method to upload media content and proccess some media items, like images.
 	 *
-	 * @return string  JSON string with result
+	 * @return  mixed  JSON string with result
 	 *
-	 * @since  3.1
+	 * @since   3.1
 	 */
 	public function upload()
 	{
@@ -53,10 +53,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$tab      = $this->input->get('tab', 0, 'int');
 		$id       = $this->input->get('id', 0, 'int');
 		$files    = $this->input->files->get('file', array(), 'array');
-		$dest_dir = KAContentHelper::getPath($section, $type, $tab, $id);
+		$destDir  = KAContentHelper::getPath($section, $type, $tab, $id);
 		$insertid = '';
 
-		if (empty($dest_dir))
+		if (empty($destDir))
 		{
 			header('HTTP/1.0 500 Server error', true, 500);
 
@@ -71,15 +71,15 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		// Remove old files
-		$cleanup_dir = true;
+		$cleanupDir = true;
 
 		// Temp file age in seconds
-		$max_file_age = 5 * 3600;
+		$maxFileAge = 5 * 3600;
 
 		// Create target dir
-		if (!file_exists($dest_dir))
+		if (!file_exists($destDir))
 		{
-			if (!JFolder::create($dest_dir))
+			if (!JFolder::create($destDir))
 			{
 				header('HTTP/1.0 500 Server error', true, 500);
 
@@ -108,31 +108,31 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			$filename = '';
 		}
 
-		$file_ext = JFile::getExt($filename);
-		$file_key = 'com_kinoarhiv.uploads.' . $user->get('id');
+		$fileExt = JFile::getExt($filename);
+		$fileKey = 'com_kinoarhiv.uploads.' . $user->get('id');
 
 		// Validate filename
 		if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $filename))
 		{
-			if ($app->getUserState($file_key) == '')
+			if ($app->getUserState($fileKey) == '')
 			{
-				$filename = str_replace('.', '', uniqid(rand(), true)) . '.' . $file_ext;
-				$app->setUserState($file_key, $filename);
+				$filename = str_replace('.', '', uniqid(rand(), true)) . '.' . $fileExt;
+				$app->setUserState($fileKey, $filename);
 			}
 			else
 			{
-				$filename = $app->getUserState($file_key);
+				$filename = $app->getUserState($fileKey);
 			}
 		}
 
-		$file_path = JPath::clean($dest_dir . '/' . $filename);
+		$filePath = JPath::clean($destDir . '/' . $filename);
 
 		// Chunking might be enabled
 		$chunk  = $this->input->request->getInt('chunk', 0);
 		$chunks = $this->input->request->getInt('chunks', 0);
 
 		// Check if file with the same name allready exists
-		if (is_file($file_path))
+		if (is_file($filePath))
 		{
 			header('HTTP/1.0 500 Server error', true, 500);
 
@@ -147,7 +147,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		// Validate file extension
-		if (!$this->checkFileExt($file_ext))
+		if (!$this->checkFileExt($fileExt))
 		{
 			header('HTTP/1.0 500 Server error', true, 500);
 
@@ -162,9 +162,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		// Remove old temp files
-		if ($cleanup_dir)
+		if ($cleanupDir)
 		{
-			if (!is_dir($dest_dir) || !$dir = opendir($dest_dir))
+			if (!is_dir($destDir) || !$dir = opendir($destDir))
 			{
 				header('HTTP/1.0 500 Server error', true, 500);
 
@@ -172,7 +172,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 					json_encode(
 						array(
 							'success' => false,
-							'message' => JText::sprintf('COM_KA_TRAILERS_UPLOAD_FOLDER_OPEN_ERR', $dest_dir)
+							'message' => JText::sprintf('COM_KA_TRAILERS_UPLOAD_FOLDER_OPEN_ERR', $destDir)
 						)
 					)
 				);
@@ -180,16 +180,16 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			while (($file = readdir($dir)) !== false)
 			{
-				$tmpfilePath = JPath::clean($dest_dir . '/' . $file);
+				$tmpfilePath = JPath::clean($destDir . '/' . $file);
 
 				// If temp file is current file proceed to the next
-				if ($tmpfilePath == "{$file_path}.part")
+				if ($tmpfilePath == "{$filePath}.part")
 				{
 					continue;
 				}
 
 				// Remove temp file if it is older than the max age and is not the current file
-				if (preg_match('/\.part$/', $file) && (filemtime($tmpfilePath) < time() - $max_file_age))
+				if (preg_match('/\.part$/', $file) && (filemtime($tmpfilePath) < time() - $maxFileAge))
 				{
 					JFile::delete($tmpfilePath);
 				}
@@ -199,7 +199,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		// Open temp file
-		if (!$out = @fopen("{$file_path}.part", $chunks ? "ab" : "wb"))
+		if (!$out = @fopen("{$filePath}.part", $chunks ? "ab" : "wb"))
 		{
 			header('HTTP/1.0 500 Server error', true, 500);
 
@@ -273,7 +273,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		if (!$chunks || $chunk == $chunks - 1)
 		{
 			// Strip the temp .part suffix off
-			if (!rename("{$file_path}.part", $file_path))
+			if (!rename("{$filePath}.part", $filePath))
 			{
 				header('HTTP/1.0 500 Server error', true, 500);
 
@@ -288,9 +288,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 
 			// Check mime. We need to do this after upload to avoid errors with small chunks w/o mime info.
-			if (!$this->checkMime($file_path, $file_ext))
+			if (!$this->checkMime($filePath, $fileExt))
 			{
-				JFile::delete($file_path);
+				JFile::delete($filePath);
 
 				header('HTTP/1.0 500 Server error', true, 500);
 
@@ -305,28 +305,30 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 
 			// Remove filename from session
-			$app->setUserState($file_key, '');
+			$app->setUserState($fileKey, '');
 
-			$post_proc = $this->postProcessUploads($dest_dir, $filename);
+			$postProc = $this->postProcessUploads($destDir, $filename);
 
-			if (is_array($post_proc))
+			if (is_array($postProc))
 			{
+				JFile::delete($filePath);
+
 				header('HTTP/1.0 500 Server error', true, 500);
 
 				jexit(
 					json_encode(
 						array(
 							'success' => false,
-							'message' => $post_proc['message']
+							'message' => $postProc['message']
 						)
 					)
 				);
 			}
 			else
 			{
-				if ($post_proc !== false)
+				if ($postProc !== false)
 				{
-					$insertid = $post_proc;
+					$insertid = $postProc;
 				}
 			}
 		}
@@ -347,14 +349,14 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	/**
 	 * Post process uploaded file.
 	 *
-	 * @param   string  $dest_dir  Path to a folder.
+	 * @param   string  $destDir   Path to a folder.
 	 * @param   string  $filename  Filename.
 	 *
 	 * @return  mixed
 	 *
 	 * @since   3.1
 	 */
-	private function postProcessUploads($dest_dir, $filename)
+	private function postProcessUploads($destDir, $filename)
 	{
 		$app     = JFactory::getApplication();
 		$section = $app->input->get('section', '', 'word');
@@ -365,17 +367,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		if (($section == 'movie' && $type == 'gallery')
 			|| ($section == 'name' && $type == 'gallery'))
 		{
-			$result = $this->postProcessImageUploads($dest_dir, $filename, $section, $type, $tab);
+			$result = $this->postProcessImageUploads($destDir, $filename, $section, $type, $tab);
 		}
 		elseif ($section == 'movie' && $type == 'trailers')
 		{
 			if ($upload == 'images')
 			{
-				$result = $this->postProcessImageUploads($dest_dir, $filename, $section, $type, $tab);
+				$result = $this->postProcessImageUploads($destDir, $filename, $section, $type, $tab);
 			}
 			elseif ($upload == 'video')
 			{
-				$result = $this->postProcessVideoUploads($dest_dir, $filename);
+				$result = $this->postProcessVideoUploads($destDir, $filename);
 			}
 			elseif ($upload == 'subtitles')
 			{
@@ -397,7 +399,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	/**
 	 * Post process uploaded image.
 	 *
-	 * @param   string   $dest_dir  Path to a folder.
+	 * @param   string   $destDir   Path to a folder.
 	 * @param   string   $filename  Filename.
 	 * @param   string   $section   Type of the item. Can be 'movie' or 'name'.
 	 * @param   string   $type      Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
@@ -407,24 +409,35 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 *
 	 * @since   3.1
 	 */
-	private function postProcessImageUploads($dest_dir, $filename, $section, $type, $tab)
+	private function postProcessImageUploads($destDir, $filename, $section, $type, $tab)
 	{
 		jimport('joomla.filesystem.file');
 		jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
 
 		$params    = JComponentHelper::getParams('com_kinoarhiv');
 		$app       = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model     = $this->getModel('mediamanagerItem');
-		$file_path = JPath::clean($dest_dir . '/' . $filename);
+		$filePath  = JPath::clean($destDir . '/' . $filename);
 		$id        = $app->input->get('id', 0, 'int');
 		$frontpage = $app->input->get('frontpage', 0, 'int');
-		$img_save  = '';
+		$imgSave   = '';
 
 		$image = new KAImage;
-		$image->loadFile($file_path);
-		$image_prop  = $image->getImageFileProperties($file_path);
-		$orig_width  = $image_prop->width;
-		$orig_height = $image_prop->height;
+
+		try
+		{
+			$image->loadFile($filePath);
+		}
+		catch (Exception $e)
+		{
+			return array('success' => false, 'message' => $e->getMessage());
+		}
+
+		$imageProp  = $image->getImageFileProperties($filePath);
+		$origWidth  = $imageProp->width;
+		$origHeight = $imageProp->height;
 
 		if ($section == 'movie')
 		{
@@ -433,17 +446,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($tab == 1)
 				{
 					$width  = (int) $params->get('size_x_wallpp');
-					$height = ($width * $orig_height) / $orig_width;
+					$height = ($width * $origHeight) / $origWidth;
 				}
 				elseif ($tab == 2)
 				{
 					$width  = (int) $params->get('size_x_posters');
-					$height = ($width * $orig_height) / $orig_width;
+					$height = ($width * $origHeight) / $origWidth;
 				}
 				elseif ($tab == 3)
 				{
 					$width  = (int) $params->get('size_x_scr');
-					$height = ($width * $orig_height) / $orig_width;
+					$height = ($width * $origHeight) / $origWidth;
 				}
 				else
 				{
@@ -453,57 +466,57 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				// Add watermark
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
-					$watermark_img = $params->get('upload_gallery_watermark_image');
+					$watermarkImg = $params->get('upload_gallery_watermark_image');
 					$options       = array();
 
-					if ($image_prop->type == 2)
+					if ($imageProp->type == 2)
 					{
 						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
 					}
-					elseif ($image_prop->type == 3)
+					elseif ($imageProp->type == 3)
 					{
 						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
 					}
 
-					if (!empty($watermark_img) && file_exists($watermark_img))
+					if (!empty($watermarkImg) && file_exists($watermarkImg))
 					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
+						$image->addWatermark($destDir, $filename, $watermarkImg, 'br', $options);
 					}
 				}
 
-				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-				$img_save = $model->saveImageInDB('movie', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+				$image->makeThumbs($destDir, $filename, $width . 'x' . $height, 1, $destDir, false);
+				$imgSave = $model->saveImageInDB('movie', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
 			}
 			elseif ($type == 'trailers')
 			{
 				$width  = (int) $params->get('player_width');
-				$height = ($width * $orig_height) / $orig_width;
+				$height = ($width * $origHeight) / $origWidth;
 				$image->resize($width, $height, false);
-				$image->toFile($file_path, $image_prop->type);
+				$image->toFile($filePath, $imageProp->type);
 
 				// Add watermark
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
-					$watermark_img = $params->get('upload_gallery_watermark_image');
+					$watermarkImg = $params->get('upload_gallery_watermark_image');
 					$options       = array();
 
-					if ($image_prop->type == 2)
+					if ($imageProp->type == 2)
 					{
 						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
 					}
-					elseif ($image_prop->type == 3)
+					elseif ($imageProp->type == 3)
 					{
 						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
 					}
 
-					if (!empty($watermark_img) && file_exists($watermark_img))
+					if (!empty($watermarkImg) && file_exists($watermarkImg))
 					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
+						$image->addWatermark($destDir, $filename, $watermarkImg, 'br', $options);
 					}
 				}
 
 				// Item ID == id field from #__ka_trailers table
-				$img_save = $model->saveImageInDB('trailer', $app->input->getInt('item_id', 0), $filename);
+				$imgSave = $model->saveImageInDB('trailer', $app->input->getInt('item_id', 0), $filename);
 			}
 		}
 		elseif ($section == 'name')
@@ -513,17 +526,17 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($tab == 1)
 				{
 					$width  = (int) $params->get('size_x_wallpp');
-					$height = ($width * $orig_height) / $orig_width;
+					$height = ($width * $origHeight) / $origWidth;
 				}
 				elseif ($tab == 2)
 				{
 					$width  = (int) $params->get('size_x_posters');
-					$height = ($width * $orig_height) / $orig_width;
+					$height = ($width * $origHeight) / $origWidth;
 				}
 				elseif ($tab == 3)
 				{
 					$width  = (int) $params->get('size_x_photo');
-					$height = ($width * $orig_height) / $orig_width;
+					$height = ($width * $origHeight) / $origWidth;
 				}
 				else
 				{
@@ -533,54 +546,55 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				// Add watermark
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
-					$watermark_img = $params->get('upload_gallery_watermark_image');
+					$watermarkImg = $params->get('upload_gallery_watermark_image');
 					$options       = array();
 
-					if ($image_prop->type == 2)
+					if ($imageProp->type == 2)
 					{
 						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
 					}
-					elseif ($image_prop->type == 3)
+					elseif ($imageProp->type == 3)
 					{
 						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
 					}
 
-					if (!empty($watermark_img) && file_exists($watermark_img))
+					if (!empty($watermarkImg) && file_exists($watermarkImg))
 					{
-						$image->addWatermark($dest_dir, $filename, $watermark_img, 'br', $options);
+						$image->addWatermark($destDir, $filename, $watermarkImg, 'br', $options);
 					}
 				}
 
-				$image->makeThumbs($dest_dir, $filename, $width . 'x' . $height, 1, $dest_dir, false);
-				$img_save = $model->saveImageInDB('name', $id, $filename, array($orig_width, $orig_height), $tab, $frontpage);
+				$image->makeThumbs($destDir, $filename, $width . 'x' . $height, 1, $destDir, false);
+				$imgSave = $model->saveImageInDB('name', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
 			}
 		}
 
-		return $img_save;
+		return $imgSave;
 	}
 
 	/**
 	 * Post process uploaded video.
 	 *
-	 * @param   string  $dest_dir  Path to a folder.
+	 * @param   string  $destDir   Path to a folder.
 	 * @param   string  $filename  Filename.
 	 *
 	 * @return  mixed  Boolean true on success, array with errors otherwise.
 	 *
 	 * @since   3.1
 	 */
-	private function postProcessVideoUploads($dest_dir, $filename)
+	private function postProcessVideoUploads($destDir, $filename)
 	{
 		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 		jimport('administrator.components.com_kinoarhiv.libraries.media', JPATH_ROOT);
 
-		$model     = $this->getModel('mediamanagerItem');
-		$media     = KAMedia::getInstance();
-		$file_path = JPath::clean($dest_dir . '/' . $filename);
-		$finfo     = json_decode($media->getVideoInfo($file_path), true);
-		$file_mime = KAFilesystem::getInstance()->detectMime($file_path);
-		$width     = 0;
-		$height    = 0;
+		/** @var KinoarhivModelMediamanagerItem $model */
+		$model    = $this->getModel('mediamanagerItem');
+		$media    = KAMedia::getInstance();
+		$filePath = JPath::clean($destDir . '/' . $filename);
+		$finfo    = json_decode($media->getVideoInfo($filePath), true);
+		$fileMime = KAFilesystem::getInstance()->detectMime($filePath);
+		$width    = 0;
+		$height   = 0;
 
 		if (is_null($finfo) || count($finfo) < 1)
 		{
@@ -598,7 +612,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		$data = array(
 			'src'        => $filename,
-			'type'       => $file_mime,
+			'type'       => $fileMime,
 			'resolution' => $width . 'x' . $height
 		);
 
@@ -620,27 +634,27 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	{
 		jimport('administrator.components.com_kinoarhiv.libraries.language', JPATH_ROOT);
 
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model = $this->getModel('mediamanagerItem');
-		$lang_list = KALanguage::listOfLanguages();
+		$langList = KALanguage::listOfLanguages();
 
 		if (preg_match('#subtitles\.(.*?)\.#si', $filename, $matches))
 		{
-			$lang_code = strtolower($matches[1]);
+			$langCode = strtolower($matches[1]);
 		}
 		else
 		{
-			$lang_code = 'en';
+			$langCode = 'en';
 		}
 
 		$data   = array(
 			'file'      => $filename,
-			'lang'      => $lang_list[$lang_code],
-			'lang_code' => $lang_code,
+			'lang'      => $langList[$langCode],
+			'lang_code' => $langCode,
 			'default'   => false
 		);
-		$result = $model->saveFileinfoData($data, array('list' => 'subtitles', 'new' => 1));
 
-		return $result;
+		return $model->saveFileinfoData($data, array('list' => 'subtitles', 'new' => 1));
 	}
 
 	/**
@@ -654,6 +668,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 */
 	private function postProcessChapterUploads($filename)
 	{
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model  = $this->getModel('mediamanagerItem');
 		$data   = array('file' => $filename);
 		$result = $model->saveFileinfoData($data, array('list' => 'chapters', 'new' => 1));
@@ -664,13 +679,13 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	/**
 	 * Check file extention.
 	 *
-	 * @param   string  $file_ext  File extention to check.
+	 * @param   string  $fileExt  File extention to check.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	private function checkFileExt($file_ext)
+	private function checkFileExt($fileExt)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 
@@ -701,20 +716,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		$allowed = preg_split('/[\s*,\s*]*,+[\s*,\s*]*/', trim($allowed));
 
-		return (bool) in_array($file_ext, $allowed);
+		return (bool) in_array($fileExt, $allowed);
 	}
 
 	/**
 	 * Check file mime-type. Do not check mime by upload type.
 	 *
-	 * @param   string  $path      File to check.
-	 * @param   string  $file_ext  File extension.
+	 * @param   string  $path     File to check.
+	 * @param   string  $fileExt  File extension.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	private function checkMime($path, $file_ext)
+	private function checkMime($path, $fileExt)
 	{
 		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 
@@ -746,20 +761,20 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$fs = KAFilesystem::getInstance();
-		$file_mime = $fs->detectMime($path);
+		$fileMime = $fs->detectMime($path);
 
 		// Get all allowed extensions from settings and reduce array with mimes to these extensions.
 		$mimes = array_intersect_key($fs->mimes(), array_flip($exts));
 
-		if (array_key_exists($file_ext, $mimes))
+		if (array_key_exists($fileExt, $mimes))
 		{
-			$mime = $mimes[$file_ext];
+			$mime = $mimes[$fileExt];
 
 			if (is_array($mime))
 			{
 				foreach ($mime as $value)
 				{
-					if ($value == $file_mime)
+					if ($value == $fileMime)
 					{
 						return true;
 					}
@@ -767,7 +782,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			}
 			else
 			{
-				if ($mime == $file_mime)
+				if ($mime == $fileMime)
 				{
 					return true;
 				}

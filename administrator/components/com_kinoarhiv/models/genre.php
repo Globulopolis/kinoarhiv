@@ -78,29 +78,18 @@ class KinoarhivModelGenre extends JModelForm
 	 */
 	public function getItem()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'array');
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$table = '#__ka_music_genres';
-		}
-		else
-		{
-			$table = '#__ka_genres';
-		}
-
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('id', null, 'array');
 		$query = $db->getQuery(true);
 
-		$query->select($db->quoteName(array('id', 'name', 'alias', 'stats', 'state', 'access', 'language')))
-			->from($db->quoteName($table))
+		$query->select($db->quoteName(array('id', 'name', 'alias', 'desc', 'type', 'stats', 'state', 'access', 'language')))
+			->from($db->quoteName('#__ka_genres'))
 			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
 
-		return $result;
+		return $db->loadObject();
 	}
 
 	/**
@@ -114,23 +103,13 @@ class KinoarhivModelGenre extends JModelForm
 	 */
 	public function publish($isUnpublish)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$ids   = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$table = '#__ka_music_genres';
-		}
-		else
-		{
-			$table = '#__ka_genres';
-		}
-
 		$query = $db->getQuery(true);
 
-		$query->update($db->quoteName($table))
+		$query->update($db->quoteName('#__ka_genres'))
 			->set($db->quoteName('state') . ' = ' . (int) $state)
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
@@ -159,22 +138,12 @@ class KinoarhivModelGenre extends JModelForm
 	 */
 	public function remove()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$table = '#__ka_music_genres';
-		}
-		else
-		{
-			$table = '#__ka_genres';
-		}
-
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$ids   = $app->input->get('id', array(), 'array');
 		$query = $db->getQuery(true);
 
-		$query->delete($db->quoteName($table))
+		$query->delete($db->quoteName('#__ka_genres'))
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
@@ -204,34 +173,21 @@ class KinoarhivModelGenre extends JModelForm
 	 */
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
 		$user = JFactory::getUser();
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$table = '#__ka_music_genres';
-		}
-		else
-		{
-			$table = '#__ka_genres';
-		}
-
 		$name = trim($data['name']);
 
 		// Automatic handling of alias for empty fields
-		if (in_array($app->input->get('task'), array('genres.apply', 'genres.save', 'genres.save2new')) && (int) $app->input->get('id') == 0)
+		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new')) && $data['alias'] == '')
 		{
-			if ($data['alias'] === null)
+			if (JFactory::getConfig()->get('unicodeslugs') == 1)
 			{
-				if (JFactory::getConfig()->get('unicodeslugs') == 1)
-				{
-					$data['alias'] = JFilterOutput::stringUrlUnicodeSlug($name);
-				}
-				else
-				{
-					$data['alias'] = JFilterOutput::stringURLSafe($name);
-				}
+				$data['alias'] = JFilterOutput::stringUrlUnicodeSlug($name);
+			}
+			else
+			{
+				$data['alias'] = JFilterOutput::stringURLSafe($name);
 			}
 		}
 
@@ -241,7 +197,7 @@ class KinoarhivModelGenre extends JModelForm
 			$query = $db->getQuery(true);
 
 			$query->select('COUNT(id)')
-				->from($db->quoteName($table))
+				->from($db->quoteName('#__ka_genres'))
 				->where($db->quoteName('name') . " = '" . $db->escape($name) . "'");
 
 			$db->setQuery($query);
@@ -249,24 +205,36 @@ class KinoarhivModelGenre extends JModelForm
 
 			if ($count > 0)
 			{
-				$app->enqueueMessage(JText::_('COM_KA_COUNTRY_EXISTS'), 'error');
+				$app->enqueueMessage(JText::_('COM_KA_GENRE_EXISTS'), 'error');
 
 				return false;
 			}
 
-			$query = $db->getQuery(true);
+			$query  = $db->getQuery(true);
+			$values = array(
+				'id'       => '',
+				'name'     => $db->escape($name),
+				'desc'     => $db->escape($data['desc']),
+				'type'     => (int) $data['type'],
+				'stats'    => (int) $data['stats'],
+				'state'    => $data['state'],
+				'access'   => (int) $data['access'],
+				'language' => $db->escape($data['language'])
+			);
 
-			$query->insert($db->quoteName($table))
-				->columns($db->quoteName(array('id', 'name', 'alias', 'stats', 'state', 'access', 'language')))
-				->values("'','" . $db->escape($name) . "','" . $data['alias'] . "','" . (int) $data['stats'] . "','" . $data['state'] . "','" . (int) $data['access'] . "','" . $db->escape($data['language']) . "'");
+			$query->insert($db->quoteName('#__ka_genres'))
+				->columns($db->quoteName(array_keys($values)))
+				->values("'" . implode("','", array_values($values)) . "'");
 		}
 		else
 		{
 			$query = $db->getQuery(true);
 
-			$query->update($db->quoteName($table))
+			$query->update($db->quoteName('#__ka_genres'))
 				->set($db->quoteName('name') . " = '" . $db->escape($name) . "'")
 				->set($db->quoteName('alias') . " = '" . $data['alias'] . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->set($db->quoteName('type') . " = '" . (int) $data['type'] . "'")
 				->set($db->quoteName('stats') . " = '" . (int) $data['stats'] . "'")
 				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
 				->set($db->quoteName('access') . " = '" . (int) $data['access'] . "'")
@@ -304,8 +272,8 @@ class KinoarhivModelGenre extends JModelForm
 	/**
 	 * Method to update stats for genres.
 	 *
-	 * @param   array   $ids   Items.
-	 * @param   string  $type  Item type.
+	 * @param   array    $ids   Items.
+	 * @param   integer  $type  Item type.
 	 *
 	 * @return  mixed   Total numbers of items, false otherwise.
 	 *
@@ -315,9 +283,9 @@ class KinoarhivModelGenre extends JModelForm
 	{
 		switch ($type)
 		{
-			case 'movie':
+			case 0:
 				return $this->updateMovieGenresStat($ids);
-			case 'music':
+			case 1:
 				return $this->updateMusicGenresStat($ids);
 			default:
 				return false;
@@ -430,18 +398,19 @@ class KinoarhivModelGenre extends JModelForm
 		}
 
 		$db->setDebug(true);
-		$db->lockTable('#__ka_music_genres');
+		$db->lockTable('#__ka_genres');
 		$db->transactionStart();
 
 		foreach ($ids as $genreID)
 		{
 			$query = $db->getQuery(true)
-				->update($db->quoteName('#__ka_music_genres'));
+				->update($db->quoteName('#__ka_genres'));
 
 				$subquery = $db->getQuery(true)
 					->select('COUNT(genre_id)')
 					->from($db->quoteName('#__ka_music_rel_genres'))
-					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID . ' AND ' . $db->quoteName('type') . ' = 0');
+					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID)
+					->where($db->quoteName('type') . ' = 0');
 
 			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
 				->where($db->quoteName('id') . ' = ' . (int) $genreID . ';');
@@ -469,7 +438,7 @@ class KinoarhivModelGenre extends JModelForm
 			{
 				$query = $db->getQuery(true)
 					->select($db->quoteName('stats'))
-					->from($db->quoteName('#__ka_music_genres'))
+					->from($db->quoteName('#__ka_genres'))
 					->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
 
 				$db->setQuery($query);

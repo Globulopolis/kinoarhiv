@@ -100,12 +100,22 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 		// Check if movie allready exists in DB
 		$('.field_title').blur(function(){
 			if (!empty(this.value)) {
-				$.getJSON('index.php?option=com_kinoarhiv&task=api.data&content=movies&multiple=0&format=json&data_lang=*&showAll=0&term=' + this.value + '&' + Kinoarhiv.getFormToken() + '=1&ignore_ids[]=<?php echo $this->id; ?>')
-					.done(function(response){
-						if (Object.keys(response).length > 0) {
-							Aurora.message([{text: '<?php echo JText::_('COM_KA_MOVIES_EXISTS'); ?>', type: 'alert'}], '#system-message-container', {replace: true});
-						}
-					});
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_kinoarhiv&task=api.data&content=movies&multiple=0&data_lang=*&ignore_ids[]=<?php echo $this->id; ?>&format=json&term=' + this.value,
+					data: {'<?php echo JSession::getFormToken(); ?>': 1}
+				}).done(function(response){
+					if (Object.keys(response).length > 0) {
+						var _text = '<?php echo JText::_('COM_KA_NAMES_EXISTS', true); ?> ' +
+							'<a href="index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' + response[0].id + '">' +
+							Kinoarhiv.formatItemTitle(response[0].name, response[0].latin_name, response[0].date_of_birth, '/') +
+							'</a>';
+						Aurora.message([{text: _text, type: 'alert'}], '#system-message-container', {replace: true});
+					}
+				}).fail(function (xhr, status, error) {
+					var _error = JSON.parse(xhr.responseText);
+					Aurora.message([{text: _error.msg, type: 'error'}], '#system-message-container', {replace: true});
+				});
 			}
 		});
 
@@ -261,7 +271,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieCastAndCrew&format=json&showAll=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieCastAndCrew&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieCast&item_id=' . $this->id),
@@ -337,7 +347,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json&showAll=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
@@ -402,7 +412,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=moviePremieres&format=json&showAll=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=moviePremieres&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
@@ -464,7 +474,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json&showAll=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),

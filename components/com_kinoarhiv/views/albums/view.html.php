@@ -19,26 +19,10 @@ use Joomla\Registry\Registry;
  */
 class KinoarhivViewAlbums extends JViewLegacy
 {
-	protected $state = null;
-
-	/**
-	 * Albums data object
-	 *
-	 * @var    object
-	 * @since  1.6
-	 */
 	protected $items = null;
 
 	protected $pagination = null;
 
-	protected $filtersData = null;
-
-	/**
-	 * Component parameters object
-	 *
-	 * @var    object
-	 * @since  1.6
-	 */
 	protected $params;
 
 	protected $user;
@@ -58,7 +42,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$user              = JFactory::getUser();
+		$this->user        = JFactory::getUser();
 		$app               = JFactory::getApplication();
 		$lang              = JFactory::getLanguage();
 		$params            = JComponentHelper::getParams('com_kinoarhiv');
@@ -75,9 +59,9 @@ class KinoarhivViewAlbums extends JViewLegacy
 			return false;
 		}
 
-		$menu         = $app->getMenu()->getActive();
-		$this->menu   = $menu;
-		$menuParams   = new Registry;
+		$menu       = $app->getMenu()->getActive();
+		$this->menu = $menu;
+		$menuParams = new Registry;
 
 		if ($menu)
 		{
@@ -88,14 +72,44 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$mergedParams->merge($params);
 		$this->params = $mergedParams;
 
+		// Get proper itemid for &view=?&Itemid=? links.
+		$namesItemid = KAContentHelper::getItemid('names');
+
+		$introtextLinks = $this->params->get('introtext_links', 1);
+
 		// Prepare the data
 		foreach ($this->items as $item)
 		{
 			$item->attribs  = json_decode($item->attribs);
-			$item->text     = '';
-			$item->composer = (!empty($item->name) || !empty($item->latin_name))
-				? KAContentHelper::formatItemTitle($item->name, $item->latin_name) : $item->composer;
-			$checkingPath   = JPath::clean($item->covers_path . '/' . $item->cover_filename);
+
+			// Replace genres BB-code
+			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
+			{
+				return JText::_($matches[1]) . $matches[2];
+			},
+				$item->text
+			);
+
+			// Replace person BB-code
+			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid, $introtextLinks)
+			{
+				$html = JText::_($matches[1]);
+
+				if ($introtextLinks)
+				{
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
+				}
+				else
+				{
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
+				}
+
+				return $html . $name;
+			},
+				$item->text
+			);
+
+			$checkingPath = JPath::clean($item->covers_path . '/' . $item->cover_filename);
 
 			if (!is_file($checkingPath))
 			{
@@ -160,7 +174,6 @@ class KinoarhivViewAlbums extends JViewLegacy
 		}
 
 		$this->pagination = $pagination;
-		$this->user       = $user;
 		$this->lang       = $lang;
 		$this->view       = $app->input->getWord('view');
 

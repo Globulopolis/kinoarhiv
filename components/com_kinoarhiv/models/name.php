@@ -120,16 +120,12 @@ class KinoarhivModelName extends JModelList
 
 		// Select career
 		$queryCareer = $db->getQuery(true)
-			->select('id, title')
-			->from($db->quoteName('#__ka_names_career'));
-
-			$subqueryCareer = $db->getQuery(true)
-				->select('career_id')
-				->from($db->quoteName('#__ka_rel_names_career'))
-				->where('name_id = ' . (int) $id);
-
-		$queryCareer->where('id IN (' . $subqueryCareer . ') AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
-			->order('title ASC');
+			->select($db->quoteName(array('c.id', 'c.title')))
+			->from($db->quoteName('#__ka_rel_names_career', 'r'))
+			->leftJoin($db->quoteName('#__ka_names_career', 'c') . ' ON c.id = r.career_id')
+			->where($db->quoteName('r.name_id') . ' = ' . (int) $id)
+			->where($db->quoteName('c.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->order($db->quoteName('r.ordering') . ' ASC');
 
 		$db->setQuery($queryCareer);
 
@@ -145,17 +141,14 @@ class KinoarhivModelName extends JModelList
 
 		// Select genres
 		$queryGenres = $db->getQuery(true)
-			->select('id, name, alias')
-			->from($db->quoteName('#__ka_genres'));
-
-			$subqueryGenres = $db->getQuery(true)
-				->select('genre_id')
-				->from($db->quoteName('#__ka_rel_names_genres'))
-				->where('name_id = ' . (int) $id);
-
-		$queryGenres->where('id IN (' . $subqueryGenres . ') AND state = 1 AND access IN (' . $groups . ')')
-			->where('language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
-			->order('name ASC');
+			->select($db->quoteName(array('g.id', 'g.name', 'g.alias')))
+			->from($db->quoteName('#__ka_rel_names_genres', 'r'))
+			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON g.id = r.genre_id')
+			->where($db->quoteName('r.name_id') . ' = ' . (int) $id)
+			->where($db->quoteName('g.state') . ' = 1')
+			->where($db->quoteName('g.access') . ' IN (' . $groups . ')')
+			->where($db->quoteName('g.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->order($db->quoteName('r.ordering') . ' ASC');
 
 		$db->setQuery($queryGenres);
 
@@ -171,9 +164,9 @@ class KinoarhivModelName extends JModelList
 
 		// Select movies
 		$queryMovies = $db->getQuery(true)
-			->select('m.id, m.title, m.alias, m.year, r.role')
+			->select($db->quoteName(array('m.id', 'm.title', 'm.alias', 'm.year', 'r.role')))
 			->from($db->quoteName('#__ka_movies', 'm'))
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 'r') . ' ON r.name_id = ' . (int) $id . ' AND r.movie_id = m.id');
+			->leftJoin($db->quoteName('#__ka_rel_names', 'r') . ' ON r.name_id = ' . (int) $id . ' AND r.movie_id = m.id');
 
 			$subqueryMovies = $db->getQuery(true)
 				->select('movie_id')

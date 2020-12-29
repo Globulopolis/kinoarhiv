@@ -25,13 +25,8 @@
 				   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
 				<option value=""></option>
 			</field>
-			<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL" filter="integer"
-				   class="span10 uk-width-1-1" data-content="vendors" data-allow-clear="true" data-key="id"
-				   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
-				<option value=""></option>
-			</field>
 			<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
-				   data-content="movieGenres" data-allow-clear="true" data-key="id" multiple="true"
+				   data-content="genres" data-allow-clear="true" data-key="id" multiple="true" data-type="0,1"
 				   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 				<option value=""></option>
 			</field>
@@ -135,9 +130,14 @@
 				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_COUNTRY" class="span7 uk-width-1-4 hasAutocomplete">
 				<option value=""></option>
 			</field>
+			<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL" filter="integer"
+				   class="span10 uk-width-1-1" data-content="vendors" data-allow-clear="true" data-key="id"
+				   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+				<option value=""></option>
+			</field>
 			<field name="tags" type="autocomplete" label="JTAG" class="span10 uk-width-1-1" data-content="tags"
 				   data-allow-clear="true" data-key="id" multiple="true" data-placeholder="JGLOBAL_SELECT_AN_OPTION"
-				   data-minimum-input-length="1" data-maximum-selection-size="5" filter="array">
+				   data-maximum-selection-size="5" filter="array">
 				<option value=""></option>
 			</field>
 		</fieldset>
@@ -174,7 +174,7 @@
 			<option value=""></option>
 		</field>
 		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
-			   data-content="movieGenres" data-allow-clear="true" data-key="id" multiple="true"
+			   data-content="genres" data-allow-clear="true" data-key="id" multiple="true"
 			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
 		</field>
@@ -192,9 +192,9 @@
 			   labelto="COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL" filter="array">
 			<option value="">-</option>
 		</field>
-		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
-			   data-content="albumGenres" data-allow-clear="true" data-key="id" multiple="true"
-			   data-maximum-selection-size="5" data-minimum-input-length="1" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1" data-type="1"
+			   data-content="genres" data-allow-clear="true" data-key="id" multiple="true"
+			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
 		</field>
 	</fields>

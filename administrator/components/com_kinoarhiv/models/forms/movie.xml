@@ -36,15 +36,15 @@
 			   size="45"/>
 
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
-			   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" default="" data-content="movieGenres"
+			   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-remote-show-all="true" data-maximum-selection-size="5"/>
+			   data-maximum-selection-size="5" data-type="0"/>
 		<field name="genres_orig" type="hidden"/>
 
 		<field name="countries" type="autocomplete" label="COM_KA_FIELD_MOVIE_COUNTRIES"
 			   description="COM_KA_FIELD_MOVIE_COUNTRIES_DESC" class="span11" default="" data-content="countries"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-remote-show-all="true" data-maximum-selection-size="10"/>
+			   data-maximum-selection-size="10" data-minimum-input-length="1" data-lang="*"/>
 		<field name="countries_orig" type="hidden"/>
 
 		<field name="mpaa" type="list" label="COM_KA_FIELD_MOVIE_RATES_MPAA"

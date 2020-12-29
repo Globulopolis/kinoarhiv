@@ -472,20 +472,18 @@ class KinoarhivModelName extends JModelForm
 		$user = JFactory::getUser();
 
 		// Automatic handling of alias for empty fields
-		if (in_array($app->input->get('task'), array('names.apply', 'names.save', 'names.save2new')) && (!isset($data['id']) || (int) $data['id'] == 0))
+		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new'))
+			&& (!isset($data['id']) || (int) $data['id'] == 0 || $data['alias'] == ''))
 		{
-			if ($data['alias'] === null)
-			{
-				$name = empty($data['latin_name']) ? $data['name'] : $data['latin_name'];
+			$name = empty($data['latin_name']) ? $data['name'] : $data['latin_name'];
 
-				if (JFactory::getConfig()->get('unicodeslugs') == 1)
-				{
-					$data['alias'] = JFilterOutput::stringUrlUnicodeSlug($name);
-				}
-				else
-				{
-					$data['alias'] = JFilterOutput::stringURLSafe($name);
-				}
+			if (JFactory::getConfig()->get('unicodeslugs') == 1)
+			{
+				$data['alias'] = JFilterOutput::stringUrlUnicodeSlug($name);
+			}
+			else
+			{
+				$data['alias'] = JFilterOutput::stringURLSafe($name);
 			}
 		}
 
@@ -797,9 +795,9 @@ class KinoarhivModelName extends JModelForm
 	 */
 	protected function saveCareers($id, $careers)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$careers = explode(',', $careers);
+		$app         = JFactory::getApplication();
+		$db          = $this->getDbo();
+		$careers     = explode(',', $careers);
 		$queryResult = true;
 
 		$db->setDebug(true);

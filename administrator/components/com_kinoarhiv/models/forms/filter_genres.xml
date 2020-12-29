@@ -6,6 +6,11 @@
 			   description="COM_CONTENT_FILTER_PUBLISHED_DESC" onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_PUBLISHED</option>
 		</field>
+		<field name="type" type="list" label="COM_KA_FIELD_GENRE_TYPE" default="" onchange="this.form.submit();">
+			<option value="">COM_KA_GENRES_TYPE_SELECT</option>
+			<option value="0">COM_KA_GENRES_MOVIE_TITLE</option>
+			<option value="1">COM_KA_GENRES_MUSIC_TITLE</option>
+		</field>
 		<field name="access" type="accesslevel" label="JOPTION_FILTER_ACCESS" description="JOPTION_FILTER_ACCESS_DESC"
 			   onchange="this.form.submit();">
 			<option value="">JOPTION_SELECT_ACCESS</option>
@@ -18,10 +23,12 @@
 	</fields>
 	<fields name="list">
 		<field name="fullordering" type="list" label="COM_CONTENT_LIST_FULL_ORDERING"
-			   description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.name ASC">
+			   description="COM_CONTENT_LIST_FULL_ORDERING_DESC" onchange="this.form.submit();" default="a.id DESC">
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="a.state ASC">JSTATUS_ASC</option>
 			<option value="a.state DESC">JSTATUS_DESC</option>
+			<option value="a.type ASC">COM_KA_GENRES_TYPE_ASC</option>
+			<option value="a.type DESC">COM_KA_GENRES_TYPE_DESC</option>
 			<option value="a.name ASC">JGLOBAL_TITLE_ASC</option>
 			<option value="a.name DESC">JGLOBAL_TITLE_DESC</option>
 			<option value="a.stats ASC">COM_KA_GENRES_STATS_ASC</option>

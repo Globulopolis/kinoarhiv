@@ -81,8 +81,7 @@
 			<menu view="names">COM_KA_MENU_NAMES</menu>
 			<menu view="careers">COM_KA_MENU_CAREERS</menu>
 			<menu view="countries">COM_KA_MENU_COUNTRIES</menu>
-			<menu link="option=com_kinoarhiv&amp;view=genres&amp;type=movie">COM_KA_MENU_GENRES</menu>
-			<menu link="option=com_kinoarhiv&amp;view=genres&amp;type=music">COM_KA_MENU_GENRES_MUSIC</menu>
+			<menu view="genres">COM_KA_MENU_GENRES</menu>
 			<menu view="vendors">COM_KA_MENU_VENDORS</menu>
 			<menu view="awards">COM_KA_MENU_AWARDS</menu>
 			<menu view="reviews">COM_KA_MENU_REVIEWS</menu>

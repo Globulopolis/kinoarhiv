@@ -59,7 +59,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Proxy to KinoarhivControllerMovies::save()
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -71,7 +71,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Proxy to KinoarhivControllerMovies::save()
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -83,16 +83,17 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
 	public function save()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$app = JFactory::getApplication();
+
+		$app  = JFactory::getApplication();
 		$user = JFactory::getUser();
-		$id = $app->input->get('id', 0, 'int');
+		$id   = $app->input->get('id', 0, 'int');
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))
@@ -103,9 +104,11 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
+
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
-		$data = $this->input->post->get('jform', array(), 'array');
-		$form = $model->getForm($data, false);
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
 
 		if (!$form)
 		{
@@ -136,7 +139,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data');
+		$sessionData = $app->getUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -151,7 +154,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 				break;
 
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $session_data['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=movie&task=movies.edit&id=' . $sessionData['id'], $message);
 				break;
 
 			case 'save':
@@ -194,6 +197,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$result = $model->publish($isUnpublish);
 
@@ -247,6 +251,8 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+
+		/** @var KinoarhivModelMovie $model */
 		$model  = $this->getModel('movie');
 		$fs     = KAFilesystem::getInstance();
 		$paths  = KAContentHelper::getPath('movie', 'gallery', array(1, 2, 3), $ids);
@@ -365,6 +371,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
+		/** @var KinoarhivModelMovies $model */
 		$model = $this->getModel('movies');
 		$result = $model->saveOrder();
 
@@ -398,6 +405,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 
 		if (count($ids) != 0)
 		{
+			/** @var KinoarhivModelMovies $model */
 			$model = $this->getModel('movies');
 			$result = $model->batch();
 
@@ -451,6 +459,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
@@ -483,7 +492,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id');
+		$sessionData = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -491,8 +500,8 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.c_id', null);
 
-		$row_id = '&row_id=' . $session_data['type'];
-		$input_name = '&input_name=cc_' . $session_data['name_id'] . '_' . $session_data['type'];
+		$row_id = '&row_id=' . $sessionData['type'];
+		$input_name = '&input_name=cc_' . $sessionData['name_id'] . '_' . $sessionData['type'];
 
 		//$this->setRedirect($url . $row_id . $input_name, $message);
 	}
@@ -515,7 +524,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to save a record for editNameAwards.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -535,6 +544,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
@@ -567,7 +577,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id');
+		$sessionData = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -575,9 +585,9 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.aw_id', null);
 
-		$award_id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+		$awardId = $sessionData['id'] ? '&row_id=' . $sessionData['id'] : '&row_id=' . $validData['id'];
 
-		$this->setRedirect($url . $award_id, $message);
+		$this->setRedirect($url . $awardId, $message);
 	}
 
 	/**
@@ -598,7 +608,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to save a record for editMoviePremieres.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -618,6 +628,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
@@ -650,7 +661,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id');
+		$sessionData = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -658,7 +669,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.p_id', null);
 
-		$id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+		$id = $sessionData['id'] ? '&row_id=' . $sessionData['id'] : '&row_id=' . $validData['id'];
 
 		$this->setRedirect($url . $id, $message);
 	}
@@ -681,7 +692,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to save a record for editMovieReleases.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
@@ -701,6 +712,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
@@ -733,7 +745,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$session_data = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id');
+		$sessionData = $app->getUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
@@ -741,7 +753,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Delete session data taken from model
 		$app->setUserState('com_kinoarhiv.movie.' . $user->id . '.edit_data.r_id', null);
 
-		$id = $session_data['id'] ? '&row_id=' . $session_data['id'] : '&row_id=' . $validData['id'];
+		$id = $sessionData['id'] ? '&row_id=' . $sessionData['id'] : '&row_id=' . $validData['id'];
 
 		$this->setRedirect($url . $id, $message);
 	}

@@ -764,7 +764,7 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="search_names_amplua_disabled" type="autocomplete" data-remote="true" data-remote-show-all="true"
+		<field name="search_names_amplua_disabled" type="autocomplete" data-remote="true"
 			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="array" class="span10 uk-width-1-1"
 			   data-content="careers" data-allow-clear="true" data-key="id" multiple="true"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">

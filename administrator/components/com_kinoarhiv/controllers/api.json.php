@@ -44,13 +44,22 @@ class KinoarhivControllerApi extends JControllerLegacy
 		$content = $this->input->get('content', '', 'word');
 		$method  = 'get' . ucfirst($content);
 
-		if (method_exists($model, $method))
+		// Method getName() is reserved for internal Joomla platform use.
+		if (method_exists($model, $method) && $method !== 'getName')
 		{
 			$result = $model->$method();
+
+			if (!$result)
+			{
+				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
+
+				return;
+			}
 		}
 		else
 		{
-			echo json_encode(array('success' => false, 'message' => $method . '() not found in class KinoarhivModelAPI'));
+			header('HTTP/1.0 500 Server error', true, 500);
+			echo json_encode(array('success' => false, 'message' => 'Method ' . $method . '() not found in class KinoarhivModelAPI'));
 
 			return;
 		}

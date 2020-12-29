@@ -4,8 +4,7 @@
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="type" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE" filter="integer"
 			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC" class="span12" data-content="careers"
-			   data-allow-clear="true" data-remote="true" data-key="id" data-sel-size="1" data-remote-show-all="true"
-			   data-lang="*" required="true">
+			   data-allow-clear="true" data-remote="true" data-key="id" data-sel-size="1" data-lang="*" required="true">
 			<option value=""></option>
 		</field>
 		<field name="name_id" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" filter="integer"

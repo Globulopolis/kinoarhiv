@@ -169,18 +169,16 @@ class KinoarhivModelVendor extends JModelForm
 		$companyName = trim($data['company_name']);
 
 		// Automatic handling of alias for empty fields
-		if (in_array($app->input->get('task'), array('vendors.apply', 'vendors.save', 'vendors.save2new')) && (int) $app->input->get('id') == 0)
+		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new'))
+			&& (int) $app->input->get('id') == 0 || $data['company_name_alias'] == '')
 		{
-			if ($data['company_name_alias'] === null)
+			if (JFactory::getConfig()->get('unicodeslugs') == 1)
 			{
-				if (JFactory::getConfig()->get('unicodeslugs') == 1)
-				{
-					$data['company_name_alias'] = JFilterOutput::stringUrlUnicodeSlug($companyName);
-				}
-				else
-				{
-					$data['company_name_alias'] = JFilterOutput::stringURLSafe($companyName);
-				}
+				$data['company_name_alias'] = JFilterOutput::stringUrlUnicodeSlug($companyName);
+			}
+			else
+			{
+				$data['company_name_alias'] = JFilterOutput::stringURLSafe($companyName);
 			}
 		}
 

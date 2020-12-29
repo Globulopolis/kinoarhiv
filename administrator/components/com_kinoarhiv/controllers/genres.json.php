@@ -44,9 +44,11 @@ class KinoarhivControllerGenres extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
+
+		/** @var KinoarhivModelGenre $model */
 		$model = $this->getModel('genre');
-		$data = $this->input->post->get('form', array(), 'array');
-		$form = $model->getForm($data, false);
+		$data  = $this->input->post->get('form', array(), 'array');
+		$form  = $model->getForm($data, false);
 
 		if (!$form)
 		{
@@ -111,7 +113,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		$app  = JFactory::getApplication();
 		$ids  = $app->input->get('id', array(), 'array');
-		$type = $app->input->get('type', 'movie', 'word');
+		$type = $app->input->get('type', -1, 'int');
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
@@ -120,8 +122,9 @@ class KinoarhivControllerGenres extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelGenre $model */
 		$model  = $this->getModel('genre');
-		$result = $model->updateStats($ids, $type);
+		$result = $model->updateStats($ids, (int) $type);
 
 		if ($result === false)
 		{
@@ -130,7 +133,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 			return;
 		}
 
-		if ($type == 'movie')
+		if ($type == 0)
 		{
 			$msg = JText::_('COM_KA_GENRES_STATS_UPDATED') . ' ' . JText::sprintf('COM_KA_GENRES_STATS_UPDATED_COUNT', $result);
 		}

@@ -42,6 +42,7 @@ class KinoarhivModelGenres extends JModelList
 				'id', 'a.id',
 				'name', 'a.name',
 				'alias', 'a.alias',
+				'type', 'a.type',
 				'access', 'a.access',
 				'stats', 'a.stats',
 				'state', 'a.state',
@@ -68,14 +69,21 @@ class KinoarhivModelGenres extends JModelList
 	 *
 	 * @since   3.0
 	 */
-	protected function populateState($ordering = null, $direction = null)
+	protected function populateState($ordering = 'a.id', $direction = 'desc')
 	{
 		$app = JFactory::getApplication();
+		$forcedLanguage = $app->input->get('forcedLanguage', '', 'cmd');
 
 		// Adjust the context to support modal layouts.
 		if ($layout = $app->input->get('layout'))
 		{
 			$this->context .= '.' . $layout;
+		}
+
+		// Adjust the context to support forced languages.
+		if ($forcedLanguage)
+		{
+			$this->context .= '.' . $forcedLanguage;
 		}
 
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
@@ -84,23 +92,35 @@ class KinoarhivModelGenres extends JModelList
 		$access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
 		$this->setState('filter.access', $access);
 
+		$type = $this->getUserStateFromRequest($this->context . '.filter.type', 'filter_type', '');
+		$this->setState('filter.type', $type);
+
 		$published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
-		// Force a language
-		$forcedLanguage = $app->input->get('forcedLanguage');
+		$formSubmited = $app->input->post->get('form_submited');
 
+		if ($formSubmited)
+		{
+			$type = $app->input->post->get('type');
+			$this->setState('filter.type', $type);
+
+			$access = $app->input->post->get('access');
+			$this->setState('filter.access', $access);
+		}
+
+		// List state information.
+		parent::populateState($ordering, $direction);
+
+		// Force a language
 		if (!empty($forcedLanguage))
 		{
 			$this->setState('filter.language', $forcedLanguage);
 			$this->setState('filter.forcedLanguage', $forcedLanguage);
 		}
-
-		// List state information.
-		parent::populateState('a.name', 'asc');
 	}
 
 	/**
@@ -120,6 +140,7 @@ class KinoarhivModelGenres extends JModelList
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.type');
 		$id .= ':' . $this->getState('filter.access');
 		$id .= ':' . $this->getState('filter.published');
 		$id .= ':' . $this->getState('filter.language');
@@ -136,26 +157,16 @@ class KinoarhivModelGenres extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
-
-		if ($app->input->get('type', 'movie', 'word') == 'music')
-		{
-			$table = '#__ka_music_genres';
-		}
-		else
-		{
-			$table = '#__ka_genres';
-		}
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				$db->quoteName(array('a.id', 'a.name', 'a.alias', 'a.stats', 'a.language', 'a.state', 'a.access'))
+				$db->quoteName(array('a.id', 'a.name', 'a.alias', 'a.type', 'a.stats', 'a.language', 'a.state', 'a.access'))
 			)
 		);
-		$query->from($db->quoteName($table, 'a'));
+		$query->from($db->quoteName('#__ka_genres', 'a'));
 
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
@@ -164,6 +175,14 @@ class KinoarhivModelGenres extends JModelList
 		// Join over the asset groups.
 		$query->select($db->quoteName('ag.title', 'access_level'))
 			->join('LEFT', $db->quoteName('#__viewlevels', 'ag') . ' ON ag.id = a.access');
+
+		// Filter by type.
+		$type = $this->getState('filter.type');
+
+		if ($type !== '')
+		{
+			$query->where('a.type = ' . (int) $type);
+		}
 
 		// Filter by access level.
 		if ($access = $this->getState('filter.access'))
@@ -216,7 +235,7 @@ class KinoarhivModelGenres extends JModelList
 
 		// Add the list ordering clause.
 		$orderCol = $this->state->get('list.ordering', 'a.name');
-		$orderDirn = $this->state->get('list.direction', 'asc');
+		$orderDirn = $this->state->get('list.direction', 'desc');
 
 		// SQL server change
 		if ($orderCol == 'language')
@@ -273,9 +292,9 @@ class KinoarhivModelGenres extends JModelList
 	 */
 	public function batch()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->post->get('id', array(), 'array');
+		$app       = JFactory::getApplication();
+		$db        = $this->getDbo();
+		$ids       = $app->input->post->get('id', array(), 'array');
 		$batchData = $app->input->post->get('batch', array(), 'array');
 
 		if (empty($batchData))

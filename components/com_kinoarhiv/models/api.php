@@ -301,7 +301,7 @@ class KinoarhivModelAPI extends JModelLegacy
 			{
 				if (!empty($term))
 				{
-					$query->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote($term . '%'));
+					$query->where('(' . $this->db->quoteName('title') . ' LIKE ' . $this->db->quote($term . '%') . ')');
 				}
 
 				$query->order($this->db->quoteName('title') . ' ASC');
@@ -491,8 +491,8 @@ class KinoarhivModelAPI extends JModelLegacy
 				if (!empty($term))
 				{
 					$query->where(
-						$this->db->quoteName('name') . " LIKE '" . $this->db->escape($term) . "%' OR " .
-						$this->db->quoteName('latin_name') . " LIKE '" . $this->db->escape($term) . "%'"
+						'(' . $this->db->quoteName('name') . " LIKE '" . $this->db->escape($term) . "%' OR " .
+						$this->db->quoteName('latin_name') . " LIKE '" . $this->db->escape($term) . "%')"
 					);
 				}
 

@@ -470,9 +470,9 @@ class KAFilesystem
 		// Give up and try to get from predefined mimes.
 		if ($mime === false)
 		{
-			$ext = pathinfo($path, PATHINFO_EXTENSION);
+			$ext   = pathinfo($path, PATHINFO_EXTENSION);
 			$mimes = $this->mimes();
-			$mime = $mimes[$ext];
+			$mime  = $mimes[$ext];
 
 			// Returns first matched mime.
 			if (is_array($mime))
@@ -527,6 +527,7 @@ class KAFilesystem
 			'mj2'   => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
 			'mjp2'  => array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
 			'png'   => array('image/png', 'image/x-png'),
+			'webp'  => 'image/webp',
 			'xml'   => array('application/xml', 'text/xml', 'text/plain'),
 			'mpeg'  => 'video/mpeg',
 			'mpg'   => 'video/mpeg',

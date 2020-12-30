@@ -142,21 +142,15 @@ class KinoarhivModelAlbums extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.title, a.alias, a.composer, DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', ' .
-				'a.length, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, a.buy_urls, ' .
+				'a.id, a.title, a.alias, ' . $db->quoteName('a.introtext', 'text') . ', ' .
+				'DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', a.length, a.rate, a.rate_sum, ' .
+				'a.covers_path, a.covers_path_www, a.cover_filename, a.buy_urls, ' .
 				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
 				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
 				'a.attribs, a.state'
 			)
 		);
 		$query->from($db->quoteName('#__ka_music_albums', 'a'));
-
-		// Join over composer
-		$query->select($db->quoteName(array('n.name', 'n.latin_name')))
-			->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id IN (' .
-				'SELECT name_id FROM ' . $db->quoteName('#__ka_music_rel_composers') . ' WHERE album_id = a.id' .
-				')'
-			);
 
 		// Join over favorited
 		if (!$user->get('guest'))

@@ -32,6 +32,8 @@ class KinoarhivViewGenres extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		$app         = JFactory::getApplication();
+		$this->menu  = $app->getMenu()->getActive();
 		$this->items = $this->get('Items');
 
 		if (count($errors = $this->get('Errors')) || is_null($this->items))
@@ -43,6 +45,11 @@ class KinoarhivViewGenres extends JViewLegacy
 
 		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+
+		// Merge the menu item params with the component params so that the menu params take priority
+		$temp         = clone $this->params;
+		$temp->merge($this->menu->params);
+		$this->params = $temp;
 
 		$this->prepareDocument();
 

@@ -5,4 +5,19 @@
 			<![CDATA[COM_KINOARHIV_VIEW_GENRES_DESC]]>
 		</message>
 	</layout>
+
+	<!-- Add fields to the parameters object for the layout. -->
+	<fields name="params">
+
+		<!-- Basic options. -->
+		<fieldset name="advanced" label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
+			<field name="genres_type" type="radio" class="btn-group" default="-1" label="COM_KA_FIELD_GENRE_TYPE"
+				   filter="integer">
+				<option value="-1">JALL</option>
+				<option value="0">COM_KA_GENRES_MOVIE_TITLE</option>
+				<option value="1">COM_KA_GENRES_MUSIC_TITLE</option>
+			</field>
+			<field name="genres_cols" type="number" default="3" label="COM_KA_FIELD_GENRE_TYPE" filter="integer"/>
+		</fieldset>
+	</fields>
 </metadata>

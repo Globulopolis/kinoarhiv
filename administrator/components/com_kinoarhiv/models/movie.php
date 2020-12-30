@@ -1205,18 +1205,18 @@ echo $query;
 		$metadata = json_encode((object) array('robots' => $data['robots']));
 
 		// Prepare some data
-		$year = str_replace(' ', '', $data['year']);
-		$rateLocalRounded = ((int) $data['rate_loc'] > 0 && (int) $data['rate_sum_loc'] > 0)
-							? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
-		$rateImdbRounded = $data['imdb_votesum'] > 0 ? round($data['imdb_votesum'], 0) : 0;
-		$rateKPRounded = $data['kp_votesum'] > 0 ? round($data['kp_votesum'], 0) : 0;
-		$introtext = $this->createIntroText($data, $params, $data['id']);
-		$createdBy = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
-		$modifiedBy = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
-		$data['created'] = (empty($data['created']) || $data['created'] == $db->getNullDate()) ? $date->toSql() : $data['created'];
-		$data['publish_up'] = (empty($data['publish_up']) || $data['publish_up'] == $db->getNullDate()) ? $date->toSql() : $data['publish_up'];
+		$year                 = str_replace(' ', '', $data['year']);
+		$rateLocalRounded     = ((int) $data['rate_loc'] > 0 && (int) $data['rate_sum_loc'] > 0)
+			? round($data['rate_sum_loc'] / $data['rate_loc'], 0) : 0;
+		$rateImdbRounded      = $data['imdb_votesum'] > 0 ? round($data['imdb_votesum'], 0) : 0;
+		$rateKPRounded        = $data['kp_votesum'] > 0 ? round($data['kp_votesum'], 0) : 0;
+		$introtext            = $this->createIntroText($data, $params, $data['id']);
+		$createdBy            = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
+		$modifiedBy           = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
+		$data['created']      = (empty($data['created']) || $data['created'] == $db->getNullDate()) ? $date->toSql() : $data['created'];
+		$data['publish_up']   = (empty($data['publish_up']) || $data['publish_up'] == $db->getNullDate()) ? $date->toSql() : $data['publish_up'];
 		$data['publish_down'] = ($data['publish_down'] == $db->getNullDate()) ? $date->toSql() : $data['publish_down'];
-		$data['modified'] = $date->toSql();
+		$data['modified']     = $date->toSql();
 
 		if (empty($data['id']))
 		{
@@ -1237,46 +1237,65 @@ echo $query;
 				return false;
 			}
 
+			$values = array(
+				'id'                => '',
+				'asset_id'          => 0,
+				'parent_id'         => (int) $data['parent_id'],
+				'title'             => $db->escape($title),
+				'alias'             => $data['alias'],
+				'fs_alias'          => $data['fs_alias'],
+				'introtext'         => $db->escape($introtext),
+				'plot'              => $db->escape($data['plot']),
+				'desc'              => $db->escape($data['desc']),
+				'known'             => $db->escape($data['known']),
+				'year'              => $db->escape($year),
+				'slogan'            => $db->escape($data['slogan']),
+				'budget'            => $data['budget'],
+				'age_restrict'      => $data['age_restrict'],
+				'ua_rate'           => $data['ua_rate'],
+				'mpaa'              => $data['mpaa'],
+				'length'            => $data['length'],
+				'rate_loc'          => (int) $data['rate_loc'],
+				'rate_sum_loc'      => (int) $data['rate_sum_loc'],
+				'imdb_votesum'      => $data['imdb_votesum'],
+				'imdb_votes'        => (int) $data['imdb_votes'],
+				'imdb_id'           => $data['imdb_id'],
+				'kp_votesum'        => $data['kp_votesum'],
+				'kp_votes'          => (int) $data['kp_votes'],
+				'kp_id'             => (int) $data['kp_id'],
+				'rate_fc'           => (int) $data['rate_fc'],
+				'rottentm_id'       => $data['rottentm_id'],
+				'metacritics'       => (int) $data['metacritics'],
+				'metacritics_id'    => $data['metacritics_id'],
+				'myshows_votesum'   => $data['myshows_votesum'],
+				'myshows_votes'     => (int) $data['myshows_votes'],
+				'myshows_id'        => (int) $data['myshows_id'],
+				'rate_custom'       => $db->escape($data['rate_custom']),
+				'rate_loc_rounded'  => $rateLocalRounded,
+				'rate_imdb_rounded' => $rateImdbRounded,
+				'rate_kp_rounded'   => $rateKPRounded,
+				'urls'              => $db->escape($data['urls']),
+				'buy_urls'          => $db->escape($data['buy_urls']),
+				'attribs'           => $attribs,
+				'created'           => $data['created'],
+				'created_by'        => $createdBy,
+				'modified'          => $data['modified'],
+				'modified_by'       => $modifiedBy,
+				'publish_up'        => $data['publish_up'],
+				'publish_down'      => $data['publish_down'],
+				'state'             => $data['state'],
+				'ordering'          => (int) $data['ordering'],
+				'metakey'           => $db->escape($data['metakey']),
+				'metadesc'          => $db->escape($data['metadesc']),
+				'access'            => (int) $data['access'],
+				'metadata'          => $metadata,
+				'language'          => $data['language']
+			);
+
 			$query = $db->getQuery(true)
 				->insert($db->quoteName('#__ka_movies'))
-				->columns(
-					$db->quoteName(
-						array('id', 'asset_id', 'parent_id', 'title', 'alias', 'fs_alias', 'introtext', 'plot', 'desc',
-							'known', 'year', 'slogan', 'budget', 'age_restrict', 'ua_rate', 'mpaa', 'length', 'rate_loc',
-							'rate_sum_loc', 'imdb_votesum', 'imdb_votes', 'imdb_id', 'kp_votesum', 'kp_votes', 'kp_id',
-							'rate_fc', 'rottentm_id', 'metacritics', 'metacritics_id', 'myshows_votesum', 'myshows_votes',
-							'myshows_id', 'rate_custom', 'rate_loc_rounded', 'rate_imdb_rounded', 'rate_kp_rounded',
-							'urls', 'buy_urls', 'attribs', 'created', 'created_by', 'modified', 'modified_by',
-							'publish_up', 'publish_down', 'state', 'ordering', 'metakey', 'metadesc', 'access',
-							'metadata', 'language'
-						)
-					)
-				)
-				->values(
-					"'', '0', '" . (int) $data['parent_id'] . "', '" . $db->escape($title) . "', "
-					. "'" . $data['alias'] . "', '" . $data['fs_alias'] . "', '" . $db->escape($introtext) . "', "
-					. "'" . $db->escape($data['plot']) . "', '" . $db->escape($data['desc']) . "', "
-					. "'" . $db->escape($data['known']) . "', '" . $db->escape($year) . "', "
-					. "'" . $db->escape($data['slogan']) . "', '" . $data['budget'] . "', "
-					. "'" . $data['age_restrict'] . "', '" . $data['ua_rate'] . "', '" . $data['mpaa'] . "', "
-					. "'" . $data['length'] . "', '" . (int) $data['rate_loc'] . "', "
-					. "'" . (int) $data['rate_sum_loc'] . "', '" . $data['imdb_votesum'] . "', "
-					. "'" . (int) $data['imdb_votes'] . "', '" . $data['imdb_id'] . "', "
-					. "'" . $data['kp_votesum'] . "', '" . (int) $data['kp_votes'] . "', "
-					. "'" . (int) $data['kp_id'] . "', '" . (int) $data['rate_fc'] . "', "
-					. "'" . $data['rottentm_id'] . "', '" . (int) $data['metacritics'] . "', "
-					. "'" . $data['metacritics_id'] . "', '" . $data['myshows_votesum'] . "', "
-					. "'" . (int) $data['myshows_votes'] . "', '" . (int) $data['myshows_id'] . "', "
-					. "'" . $db->escape($data['rate_custom']) . "', "
-					. "'" . $rateLocalRounded . "', '" . $rateImdbRounded . "', '" . $rateKPRounded . "', "
-					. "'" . $db->escape($data['urls']) . "', '" . $db->escape($data['buy_urls']) . "', "
-					. "'" . $attribs . "', '" . $data['created'] . "', '" . $createdBy . "', "
-					. "'" . $data['modified'] . "', '" . $modifiedBy . "', '" . $data['publish_up'] . "', "
-					. "'" . $data['publish_down'] . "', '" . $data['state'] . "', "
-					. "'" . (int) $data['ordering'] . "', '" . $db->escape($data['metakey']) . "', "
-					. "'" . $db->escape($data['metadesc']) . "', '" . (int) $data['access'] . "', "
-					. "'" . $metadata . "', '" . $data['language'] . "'"
-				);
+				->columns($db->quoteName(array_keys($values)))
+				->values("'" . implode("','", array_values($values)) . "'");
 		}
 		else
 		{
@@ -1394,6 +1413,11 @@ echo $query;
 			{
 				KAComponentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.movie.' . $data['id'], $title, $data['rules']);
 			}
+		}
+
+		if (empty($data['id']))
+		{
+			$data['id'] = $insertID;
 		}
 
 		// Update countries.

@@ -49,7 +49,7 @@ class KinoarhivControllerApi extends JControllerLegacy
 		{
 			$result = $model->$method();
 
-			if (!$result)
+			if ($result === false)
 			{
 				echo json_encode(array('success' => false, 'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
 

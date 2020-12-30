@@ -86,10 +86,14 @@ $this->id    = $this->form->getValue('id');
 					data: {'<?php echo JSession::getFormToken(); ?>': 1}
 				}).done(function(response){
 					if (Object.keys(response).length > 0) {
-						var _text = '<?php echo JText::_('COM_KA_NAMES_EXISTS', true); ?> ' +
-							'<a href="index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' + response[0].id + '">' +
-								Kinoarhiv.formatItemTitle(response[0].name, response[0].latin_name, response[0].date_of_birth, '/') +
-							'</a>';
+						var _text = '<?php echo JText::_('COM_KA_NAMES_EXISTS', true); ?><br/>';
+
+						$.each(response, function(i, val){
+							_text += '<a href="index.php?option=com_kinoarhiv&view=name&task=names.edit&id=' + val.id + '">' +
+								Kinoarhiv.formatItemTitle(val.name, val.latin_name, val.date_of_birth, '/') +
+							'</a><br/>';
+						});
+
 						Aurora.message([{text: _text, type: 'alert'}], '#system-message-container', {replace: true});
 					}
 				}).fail(function (xhr, status, error) {
@@ -236,6 +240,10 @@ $this->id    = $this->form->getValue('id');
 							<div class="control-group">
 								<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
 								<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
+							</div>
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('ordering'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('ordering'); ?></div>
 							</div>
 						</fieldset>
 					</div>

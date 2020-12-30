@@ -629,6 +629,11 @@ class KinoarhivModelName extends JModelForm
 			}
 		}
 
+		if (empty($data['id']))
+		{
+			$data['id'] = $insertid;
+		}
+
 		// Update genres.
 		if (!empty($data['genres']) && ($data['genres_orig'] != $data['genres'][0]))
 		{
@@ -723,33 +728,40 @@ class KinoarhivModelName extends JModelForm
 	protected function saveGenres($id, $genres)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$genres = explode(',', $genres);
+
+		if (empty($id))
+		{
+			$app->enqueueMessage('Failed to update genres! Empty person ID.', 'error');
+
+			return false;
+		}
+
+		$db          = $this->getDbo();
+		$genres      = explode(',', $genres);
 		$queryResult = true;
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_rel_names_genres');
 		$db->transactionStart();
 
-		if (!empty($id))
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_rel_names_genres'))
+			->where($db->quoteName('name_id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
 		{
-			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__ka_rel_names_genres'))
-				->where($db->quoteName('name_id') . ' = ' . (int) $id);
-
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-			}
-			catch (RuntimeException $e)
-			{
-				$app->enqueueMessage($e->getMessage(), 'error');
-
-				return false;
-			}
+			$db->execute();
 		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		// Remove empty values
+		$genres = array_filter($genres);
 
 		foreach ($genres as $key => $genreID)
 		{
@@ -778,7 +790,6 @@ class KinoarhivModelName extends JModelForm
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
 	}
@@ -795,12 +806,19 @@ class KinoarhivModelName extends JModelForm
 	 */
 	protected function saveCareers($id, $careers)
 	{
-		$app         = JFactory::getApplication();
+		$app = JFactory::getApplication();
+
+		if (empty($id))
+		{
+			$app->enqueueMessage('Failed to update careers! Empty person ID.', 'error');
+
+			return false;
+		}
+
 		$db          = $this->getDbo();
 		$careers     = explode(',', $careers);
 		$queryResult = true;
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_rel_names_career');
 		$db->transactionStart();
 
@@ -823,6 +841,9 @@ class KinoarhivModelName extends JModelForm
 				return false;
 			}
 		}
+
+		// Remove empty values
+		$careers = array_filter($careers);
 
 		foreach ($careers as $key => $careerID)
 		{
@@ -851,7 +872,6 @@ class KinoarhivModelName extends JModelForm
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
 	}

@@ -61,7 +61,10 @@ class KinoarhivModelGenre extends JModelForm
 				$data = (object) array(
 					'state'    => ((isset($filters['published']) && $filters['published'] !== '') ? $filters['published'] : null),
 					'language' => $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)),
-					'access'   => $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')))
+					'access'   => $app->input->getInt(
+						'access',
+						(!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access'))
+					)
 				);
 			}
 		}
@@ -272,41 +275,19 @@ class KinoarhivModelGenre extends JModelForm
 	/**
 	 * Method to update stats for genres.
 	 *
-	 * @param   array    $ids   Items.
-	 * @param   integer  $type  Item type.
+	 * @param   array  $ids    Items.
+	 * @param   array  $types  Item type.
 	 *
 	 * @return  mixed   Total numbers of items, false otherwise.
 	 *
 	 * @since   3.1
 	 */
-	public function updateStats($ids, $type)
+	public function updateStats($ids, $types)
 	{
-		switch ($type)
-		{
-			case 0:
-				return $this->updateMovieGenresStat($ids);
-			case 1:
-				return $this->updateMusicGenresStat($ids);
-			default:
-				return false;
-		}
-	}
-
-	/**
-	 * Method to update stats for movie genres.
-	 *
-	 * @param   array   $ids   Items.
-	 *
-	 * @return  mixed   Total numbers of items, false otherwise.
-	 *
-	 * @since   3.1
-	 */
-	private function updateMovieGenresStat($ids)
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
+		$app        = JFactory::getApplication();
+		$db         = $this->getDbo();
 		$boxchecked = $app->input->get('boxchecked', 0, 'int');
-		$total = 0;
+		$total      = 0;
 		$queryResut = true;
 
 		// Check if control number is the same with selected.
@@ -315,7 +296,6 @@ class KinoarhivModelGenre extends JModelForm
 			return false;
 		}
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_genres');
 		$db->transactionStart();
 
@@ -324,10 +304,19 @@ class KinoarhivModelGenre extends JModelForm
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_genres'));
 
-				$subquery = $db->getQuery(true)
-					->select('COUNT(genre_id)')
-					->from($db->quoteName('#__ka_rel_genres'))
-					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID);
+			$subquery = $db->getQuery(true)
+				->select('COUNT(genre_id)');
+
+			if ($types[$genreID] == 0)
+			{
+				$subquery->from($db->quoteName('#__ka_rel_genres'));
+			}
+			else
+			{
+				$subquery->from($db->quoteName('#__ka_music_rel_genres'));
+			}
+
+			$subquery->where($db->quoteName('genre_id') . ' = ' . (int) $genreID);
 
 			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
 				->where($db->quoteName('id') . ' = ' . (int) $genreID . ';');
@@ -364,90 +353,6 @@ class KinoarhivModelGenre extends JModelForm
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
-
-		if ($queryResut === false)
-		{
-			return false;
-		}
-
-		return (int) $total;
-	}
-
-	/**
-	 * Method to update stats for music genres.
-	 *
-	 * @param   array   $ids   Items.
-	 *
-	 * @return  mixed   Total numbers of items, false otherwise.
-	 *
-	 * @since   3.1
-	 */
-	private function updateMusicGenresStat($ids)
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$boxchecked = $app->input->get('boxchecked', 0, 'int');
-		$total = 0;
-		$queryResut = true;
-
-		// Check if control number is the same with selected.
-		if (count($ids) != $boxchecked)
-		{
-			return false;
-		}
-
-		$db->setDebug(true);
-		$db->lockTable('#__ka_genres');
-		$db->transactionStart();
-
-		foreach ($ids as $genreID)
-		{
-			$query = $db->getQuery(true)
-				->update($db->quoteName('#__ka_genres'));
-
-				$subquery = $db->getQuery(true)
-					->select('COUNT(genre_id)')
-					->from($db->quoteName('#__ka_music_rel_genres'))
-					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID)
-					->where($db->quoteName('type') . ' = 0');
-
-			$query->set($db->quoteName('stats') . " = (" . $subquery . ")")
-				->where($db->quoteName('id') . ' = ' . (int) $genreID . ';');
-
-			$db->setQuery($query);
-			$queryResut = $db->execute();
-
-			if ($queryResut === false)
-			{
-				break;
-			}
-		}
-
-		if ($queryResut === false)
-		{
-			$db->transactionRollback();
-			$app->enqueueMessage('Commit failed!', 'error');
-		}
-		else
-		{
-			$db->transactionCommit();
-
-			// Count total genres for genre ID. Required for single row update.
-			if (count($ids) == 1)
-			{
-				$query = $db->getQuery(true)
-					->select($db->quoteName('stats'))
-					->from($db->quoteName('#__ka_genres'))
-					->where($db->quoteName('id') . ' = ' . (int) $ids[0]);
-
-				$db->setQuery($query);
-				$total = $db->loadResult();
-			}
-		}
-
-		$db->unlockTables();
-		$db->setDebug(false);
 
 		if ($queryResut === false)
 		{

@@ -17,7 +17,7 @@
 				<option value="0">COM_KA_GENRES_MOVIE_TITLE</option>
 				<option value="1">COM_KA_GENRES_MUSIC_TITLE</option>
 			</field>
-			<field name="genres_cols" type="number" default="3" label="COM_KA_FIELD_GENRE_TYPE" filter="integer"/>
+			<field name="genres_cols" type="number" default="3" label="COM_KA_COLS" filter="integer"/>
 		</fieldset>
 	</fields>
 </metadata>

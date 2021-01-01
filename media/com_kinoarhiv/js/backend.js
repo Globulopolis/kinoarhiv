@@ -576,7 +576,7 @@ jQuery(document).ready(function($){
 		e.preventDefault();
 		var $this = $(this);
 
-		$.post('index.php?option=com_kinoarhiv&task=genres.updateStat&type=' + $this.data('gs-type') + '&id[]=' + $this.data('gs-id') + '&boxchecked=1&format=json', '&' + Kinoarhiv.getFormToken() + '=1', function(response){
+		$.post($this.attr('href'), '&' + Kinoarhiv.getFormToken() + '=1', function(response){
 			if (response.success) {
 				var tagName = document.querySelector($this.data('gs-update')).tagName.toLowerCase();
 

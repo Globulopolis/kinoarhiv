@@ -111,9 +111,9 @@ class KinoarhivControllerGenres extends JControllerLegacy
 			return;
 		}
 
-		$app  = JFactory::getApplication();
-		$ids  = $app->input->get('id', array(), 'array');
-		$type = $app->input->get('type', -1, 'int');
+		$app   = JFactory::getApplication();
+		$ids   = $app->input->get('id', array(), 'array');
+		$types = $app->input->get('type', array(), 'array');
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
@@ -124,24 +124,15 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		/** @var KinoarhivModelGenre $model */
 		$model  = $this->getModel('genre');
-		$result = $model->updateStats($ids, (int) $type);
+		$result = $model->updateStats($ids, $types);
 
 		if ($result === false)
 		{
 			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR')));
-
-			return;
-		}
-
-		if ($type == 0)
-		{
-			$msg = JText::_('COM_KA_GENRES_STATS_UPDATED') . ' ' . JText::sprintf('COM_KA_GENRES_STATS_UPDATED_COUNT', $result);
 		}
 		else
 		{
-			$msg = JText::_('COM_KA_GENRES_STATS_UPDATED') . ' ' . JText::sprintf('COM_KA_GENRES_MUSIC_STATS_UPDATED_COUNT', $result);
+			echo json_encode(array('success' => true, 'message' => JText::_('COM_KA_GENRES_STATS_UPDATED'), 'total' => $result));
 		}
-
-		echo json_encode(array('success' => true, 'message' => $msg, 'total' => $result));
 	}
 }

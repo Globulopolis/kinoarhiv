@@ -294,7 +294,9 @@ class KinoarhivControllerGenres extends JControllerLegacy
 			return;
 		}
 
-		$ids  = JFactory::getApplication()->input->get('id', array(), 'array');
+		$app   = JFactory::getApplication();
+		$ids   = $app->input->get('id', array(), 'array');
+		$types = $app->input->get('type', array(), 'array');
 
 		if (!is_array($ids) || count($ids) < 1)
 		{
@@ -305,7 +307,7 @@ class KinoarhivControllerGenres extends JControllerLegacy
 
 		/** @var KinoarhivModelGenre $model */
 		$model   = $this->getModel('genre');
-		$result  = $model->updateStats($ids, (int) $type);
+		$result  = $model->updateStats($ids, $types);
 		$message = $result !== false ? JText::_('COM_KA_GENRES_STATS_UPDATED') : JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR');
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=genres', $message);

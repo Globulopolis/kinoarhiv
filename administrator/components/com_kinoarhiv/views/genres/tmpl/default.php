@@ -76,6 +76,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 				<tr class="row<?php echo $i % 2; ?>">
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
+						<input type="hidden" name="type[<?php echo $item->id; ?>]" value="<?php echo $item->type; ?>" />
 					</td>
 					<td class="center hidden-phone">
 						<?php echo JHtml::_('jgrid.published', $item->state, $i, 'genres.', $this->canEditState, 'cb'); ?>
@@ -103,8 +104,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 
 							<?php if ($this->canUpdateStat): ?>
 								<span class="span6">
-									<a href="#" class="hasTooltip cmd-update-genre-stat" data-gs-type="<?php echo $item->type; ?>"
-									   data-gs-id="<?php echo $item->id; ?>" data-gs-update="#total_<?php echo $item->id; ?>"
+									<a href="<?php echo 'index.php?option=com_kinoarhiv&task=genres.updateStat&type[' . $item->id . ']=' . $item->type .'&id[]=' . $item->id . '&boxchecked=1&format=json'; ?>"
+									   class="hasTooltip cmd-update-genre-stat" data-gs-update="#total_<?php echo $item->id; ?>"
 									   title="<?php echo JText::_('COM_KA_GENRES_STATS_UPDATE'); ?>">
 										<span class="icon-refresh"></span>
 									</a>

@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
 $data = $displayData;
 $attr = array();
 $attr[] = array_key_exists('chunk_size', $data) ? ' data-chunk_size="' . $data['chunk_size'] . '"' : '';

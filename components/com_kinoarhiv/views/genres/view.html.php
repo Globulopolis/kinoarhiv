@@ -43,8 +43,9 @@ class KinoarhivViewGenres extends JViewLegacy
 			return false;
 		}
 
-		$this->itemid = JFactory::getApplication()->input->get('Itemid', 0, 'int');
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->moviesItemid = KAContentHelper::getItemid('movies');
+		$this->albumsItemid = KAContentHelper::getItemid('albums');
+		$this->params       = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Merge the menu item params with the component params so that the menu params take priority
 		$temp         = clone $this->params;

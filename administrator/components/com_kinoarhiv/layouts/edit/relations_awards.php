@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
 $form = $displayData['form'];
 
 JHtml::_('behavior.formvalidator');

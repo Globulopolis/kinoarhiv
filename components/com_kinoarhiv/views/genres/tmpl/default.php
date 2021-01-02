@@ -24,11 +24,11 @@ $total = count($this->items);
 
 			if ($item->type == 1)
 			{
-				$url = 'index.php?option=com_kinoarhiv&view=albums&content=albums&albums[genre][]=' . $item->id . '&Itemid=' . $this->itemid;
+				$url = 'index.php?option=com_kinoarhiv&view=albums&content=albums&albums[genre][]=' . $item->id . '&Itemid=' . $this->albumsItemid;
 			}
 			else
 			{
-				$url = 'index.php?option=com_kinoarhiv&view=movies&content=movies&movies[genre][]=' . $item->id . '&Itemid=' . $this->itemid;
+				$url = 'index.php?option=com_kinoarhiv&view=movies&content=movies&movies[genre][]=' . $item->id . '&Itemid=' . $this->moviesItemid;
 			}
 		?>
 		<?php if ($i % $cols == 0): ?>

@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
 $data = $displayData;
 
 if (isset($data['url']) && !empty($data['url']))
@@ -22,8 +23,8 @@ else
 		. '&type=' . $data['view']->type . '&tab=' . $data['view']->tab . '&id=' . $data['view']->id . '&upload=images';
 }
 
-$remote_upload = false;
-$remote_url = '';
+$remoteUpload = false;
+$remoteUrl = '';
 
 if (isset($data['refresh']) && !empty($data['refresh']))
 {
@@ -36,11 +37,11 @@ else
 
 if (isset($data['remote_upload']) && $data['remote_upload'] === true)
 {
-	$remote_upload = true;
-	$remote_url = $data['remote_url'];
+	$remoteUpload = true;
+	$remoteUrl = $data['remote_url'];
 }
 
-$max_files = isset($data['max_files']) && !empty($data['max_files']) ? (int) $data['max_files'] : '';
+$maxFiles = isset($data['max_files']) && !empty($data['max_files']) ? (int) $data['max_files'] : '';
 $token = JSession::getFormToken();
 ?>
 <div>
@@ -52,32 +53,38 @@ $token = JSession::getFormToken();
 	echo JLayoutHelper::render(
 		'layouts.edit.upload_file_body',
 		array(
-			'url' => $url,
-			'max_files' => $max_files,
+			'url'              => $url,
+			'max_files'        => $maxFiles,
 			'multipart_params' => '{"' . $token . '": 1}',
-			'multi_selection' => isset($data['multi_selection']) && $data['multi_selection'] ? $data['multi_selection'] : false,
-			'content-type' => isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images',
-			'max_file_size' => $data['params']->get('upload_limit'),
-			'multiple_queues' => 'true',
-			'filters' => '{"title": "Images", "extensions": "' . $data['params']->get('upload_mime_images') . '"}',
-			'chunk_size' => $data['params']->get('upload_chunk_size')
+			'multi_selection'  => isset($data['multi_selection']) && $data['multi_selection'] ? $data['multi_selection'] : false,
+			'content-type'     => isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images',
+			'max_file_size'    => $data['params']->get('upload_limit'),
+			'multiple_queues'  => 'true',
+			'filters'          => '{"title": "Images", "extensions": "' . $data['params']->get('upload_mime_images') . '"}',
+			'chunk_size'       => $data['params']->get('upload_chunk_size')
 		),
 		JPATH_COMPONENT
 	);
 	?>
 
 	<?php echo JHtml::_('bootstrap.endTab'); ?>
-	<?php if ($remote_upload):
+	<?php if ($remoteUpload):
 		echo JHtml::_('bootstrap.addTab', 'upload_tab', 'remote', JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_REMOTE')); ?>
 
 		<div class="container-fluid">
 			<fieldset class="form-horizontal">
 				<div class="control-group">
 					<div class="control-label">
-						<label for="remote_urls" class="hasPopover" title="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?>" data-content="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL_HELP'); ?>"><?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?></label>
+						<label for="remote_urls" class="hasPopover"
+							   title="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?>"
+							   data-content="<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL_HELP'); ?>">
+								<?php echo JText::_('COM_KA_TRAILERS_UPLOAD_IMAGE_URL'); ?>
+						</label>
 					</div>
 					<div class="controls">
-						<textarea name="remote_urls" id="remote_urls" rows="7" cols="32" class="span12" spellcheck="false" data-url="<?php echo $remote_url; ?>" data-content-type="<?php echo isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images'; ?>"></textarea>
+						<textarea name="remote_urls" id="remote_urls" rows="7" cols="32" class="span12"
+								  spellcheck="false" data-url="<?php echo $remoteUrl; ?>"
+								  data-content-type="<?php echo isset($data['content-type']) && !empty($data['content-type']) ? $data['content-type'] : 'images'; ?>"></textarea>
 					</div>
 				</div>
 				<input type="button" class="btn btn-success cmd-remote-urls" value="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>" />

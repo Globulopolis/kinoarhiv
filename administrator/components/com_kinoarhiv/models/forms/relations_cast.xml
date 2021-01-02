@@ -20,20 +20,21 @@
 		<field name="role" type="text" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE"
 			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE_DESC" class="span12" size="55" maxlength="255"
 			   default=""/>
-		<field name="is_actors" type="radio" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR_DESC" filter="integer" class="btn-group">
+		<field name="is_actors" type="list" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR"
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ACTOR_DESC" filter="integer" class="chzn-color-state"
+			   size="1">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="is_directors" type="radio" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR_DESC" filter="integer" class="btn-group"
-			   labelclass="is_directors">
+		<field name="is_directors" type="list" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR"
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DIRECTOR_DESC" filter="integer" class="chzn-color-state"
+			   size="1" showon="voice_artists:0">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="voice_artists" type="radio" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB"
-			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB_DESC" filter="integer"
-			   class="btn-group cmd-voice-artists">
+		<field name="voice_artists" type="list" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB"
+			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB_DESC" filter="integer" class="chzn-color-state"
+			   size="1">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

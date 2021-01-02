@@ -167,6 +167,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
+	 * @throws  Exception
 	 * @since   3.1
 	 */
 	protected function trailer($content)
@@ -177,6 +178,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		$fsAlias  = $this->input->get('fa', '', 'string');
 		$filename = $this->input->get('fn', '', 'string');
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 
 		if (!$model->getTrailerAccessLevel($itemID))
@@ -331,7 +333,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	private function getImagePath($content, $type, $fsAlias, $itemID, $filename)
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$path = '';
+		$path   = '';
 
 		if ($content === 'movie')
 		{
@@ -372,10 +374,6 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		elseif ($content === 'trailer')
 		{
 			$path = $params->get('media_trailers_root') . '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
-		}
-		elseif ($content === 'music')
-		{
-			$path = $params->get('media_music_root') . '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
 		}
 
 		return JPath::clean($path . $filename);

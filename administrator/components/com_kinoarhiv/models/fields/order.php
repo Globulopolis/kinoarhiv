@@ -34,9 +34,10 @@ class JFormFieldOrder extends JFormField
 	 */
 	protected function getInput()
 	{
-		$db = JFactory::getDbo();
-		$html = array();
-		$attr = '';
+		$db    = JFactory::getDbo();
+		$input = JFactory::getApplication()->input;
+		$html  = array();
+		$attr  = '';
 
 		// Initialize some field attributes.
 		$attr .= $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
@@ -58,7 +59,7 @@ class JFormFieldOrder extends JFormField
 				->from($db->quoteName('#__ka_rel_countries', 'rel'))
 				->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON cn.id = rel.country_id')
 				->where('rel.movie_id = ' . (int) $movieID)
-				->order('rel.ordering');
+				->order('rel.ordering ASC');
 
 			$html[] = JHtml::_('list.ordering', $this->name, $query, trim($attr), $this->value, $countryID ? 0 : 1);
 		}
@@ -73,43 +74,61 @@ class JFormFieldOrder extends JFormField
 				->from($db->quoteName('#__ka_rel_genres', 'rel'))
 				->join('LEFT', $db->quoteName('#__ka_genres', 'g') . ' ON g.id = rel.genre_id')
 				->where('rel.movie_id = ' . (int) $movieID)
-				->order('rel.ordering');
+				->order('rel.ordering ASC');
 
 			$html[] = JHtml::_('list.ordering', $this->name, $query, trim($attr), $this->value, $genreID ? 0 : 1);
 		}
 		elseif ($this->element['data'] == 'premieres')
 		{
-			$input = JFactory::getApplication()->input;
-
 			// Get some field values from the form.
 			$premiereID = $input->get('id', array(), 'array');
 			$movieID = (int) $this->form->getValue('movie_id');
+			$subQueryCountries = $db->getQuery(true)
+				->select($db->quoteName('name'))
+				->from($db->quoteName('#__ka_countries'))
+				->where($db->quoteName('id') . ' = ' . $db->quoteName('country_id'));
 
 			$query = $db->getQuery(true)
 				->select('ordering AS value')
-				->select("CONCAT_WS(' | ', (DATE_FORMAT(premiere_date, '%Y-%m-%d')), (SELECT name FROM #__ka_countries WHERE id = country_id)) AS text")
+				->select("CONCAT_WS(' | ', (DATE_FORMAT(premiere_date, '%Y-%m-%d')), (" . $subQueryCountries . ")) AS text")
 				->from($db->quoteName('#__ka_premieres'))
 				->where('movie_id = ' . (int) $movieID)
-				->order('ordering');
+				->order('ordering ASC');
 
-			$html[] = JHtml::_('list.ordering', $this->name, $query, trim($attr), $this->value, (isset($premiereID[0]) && !empty($premiereID[0])) ? 0 : 1);
+			$html[] = JHtml::_(
+				'list.ordering',
+				$this->name,
+				$query,
+				trim($attr),
+				$this->value,
+				(isset($premiereID[0]) && !empty($premiereID[0])) ? 0 : 1
+			);
 		}
 		elseif ($this->element['data'] == 'releases')
 		{
-			$input = JFactory::getApplication()->input;
-
 			// Get some field values from the form.
 			$releaseID = $input->get('id', array(), 'array');
 			$movieID = (int) $this->form->getValue('movie_id');
+			$subQueryCountries = $db->getQuery(true)
+				->select($db->quoteName('name'))
+				->from($db->quoteName('#__ka_countries'))
+				->where($db->quoteName('id') . ' = ' . $db->quoteName('country_id'));
 
 			$query = $db->getQuery(true)
 				->select('ordering AS value')
-				->select("CONCAT_WS(' | ', (DATE_FORMAT(release_date, '%Y-%m-%d')), (SELECT name FROM #__ka_countries WHERE id = country_id)) AS text")
+				->select("CONCAT_WS(' | ', (DATE_FORMAT(release_date, '%Y-%m-%d')), (" . $subQueryCountries . ")) AS text")
 				->from($db->quoteName('#__ka_releases'))
 				->where('movie_id = ' . (int) $movieID)
-				->order('ordering');
+				->order('ordering ASC');
 
-			$html[] = JHtml::_('list.ordering', $this->name, $query, trim($attr), $this->value, (isset($releaseID[0]) && !empty($releaseID[0])) ? 0 : 1);
+			$html[] = JHtml::_(
+				'list.ordering',
+				$this->name,
+				$query,
+				trim($attr),
+				$this->value,
+				(isset($releaseID[0]) && !empty($releaseID[0])) ? 0 : 1
+			);
 		}
 
 		return implode($html);

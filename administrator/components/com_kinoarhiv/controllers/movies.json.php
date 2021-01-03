@@ -46,6 +46,8 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
+
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$data = $this->input->post->get('jform', array(), 'array');
 		$form = $model->getForm($data, false);
@@ -132,6 +134,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			$newIDs['row_ids'][] = $rowID;
 		}
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$result = $model->removeMovieCast($newIDs);
 
@@ -193,6 +196,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Make sure the item ids are integers
 		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
+		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
 		$result = $model->removeMovieAwards($newIDs);
 
@@ -254,6 +258,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Make sure the item ids are integers
 		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
+		/** @var KinoarhivModelPremiere $model */
 		$model = $this->getModel('premiere');
 		$result = $model->remove($newIDs);
 
@@ -315,6 +320,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		// Make sure the item ids are integers
 		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
 
+		/** @var KinoarhivModelRelease $model */
 		$model = $this->getModel('release');
 		$result = $model->remove($newIDs);
 

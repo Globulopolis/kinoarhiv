@@ -71,6 +71,7 @@ class KinoarhivViewNames extends JViewLegacy
 
 		$this->itemid   = $app->input->get('Itemid', 0, 'int');
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$introtextLinks = $this->params->get('introtext_links', 1);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -92,6 +93,22 @@ class KinoarhivViewNames extends JViewLegacy
 				$item->date_range .= ')';
 			}
 
+			// Replace genres BB-code
+			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
+			{
+				return JText::_($matches[1]) . $matches[2];
+			},
+				$item->text
+			);
+
+			// Replace careers BB-code
+			$item->text = preg_replace_callback('#\[careers\s+ln=(.+?)\](.*?)\[/careers\]#i', function ($matches)
+			{
+				return JText::_($matches[1]) . $matches[2];
+			},
+				$item->text
+			);
+
 			// Compose title
 			$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
@@ -100,13 +117,13 @@ class KinoarhivViewNames extends JViewLegacy
 				$checkingPath = JPath::clean(
 					$this->params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
 				);
-				$no_cover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+				$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 				if (!is_file($checkingPath))
 				{
-					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/' . $no_cover . '.png';
+					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/' . $noCover . '.png';
 					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/' . $no_cover . '.png',
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/' . $noCover . '.png',
 						false
 					);
 					$item->poster_width = $dimension['width'];

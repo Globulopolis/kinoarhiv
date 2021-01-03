@@ -1439,7 +1439,7 @@ echo $query;
 	}
 
 	/**
-	 * Create intro text for movie
+	 * Create intro text.
 	 *
 	 * @param   array    $data    Movie info
 	 * @param   object   $params  Component parameters

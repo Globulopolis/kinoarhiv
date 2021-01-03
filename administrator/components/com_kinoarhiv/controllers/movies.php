@@ -363,7 +363,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	/**
 	 * Method to save the submitted ordering values for records.
 	 *
-	 * @return  string
+	 * @return  void
 	 *
 	 * @since   3.0
 	 */
@@ -532,9 +532,9 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
 		$user = JFactory::getUser();
-		$id = $app->input->get('item_id', 0, 'int');
+		$id   = $app->input->get('item_id', 0, 'int');
 
 		// Check if the user is authorized to do this.
 		if (!$user->authorise('core.create', 'com_kinoarhiv.movie.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.movie.' . $id))

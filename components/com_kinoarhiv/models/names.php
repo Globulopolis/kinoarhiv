@@ -139,10 +139,9 @@ class KinoarhivModelNames extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				"n.id, n.name, n.latin_name, n.alias, n.fs_alias, DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, " .
-				"DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, n.birthplace, n.gender, n.attribs, " .
-				"cn.name AS country, cn.code, GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, " .
-				"GROUP_CONCAT(DISTINCT cr.title SEPARATOR ', ') AS career"
+				"n.id, n.name, n.latin_name, n.alias, n.fs_alias, " . $db->quoteName('n.introtext', 'text') . ", " .
+				"DATE_FORMAT(n.date_of_birth, '%Y') AS date_of_birth, DATE_FORMAT(n.date_of_death, '%Y') AS date_of_death, " .
+				"n.birthplace, n.gender, n.attribs, cn.name AS country, cn.code"
 			)
 		)
 			->from($db->quoteName('#__ka_names', 'n'))
@@ -151,10 +150,6 @@ class KinoarhivModelNames extends JModelList
 		// Join over gallery item
 		$query->select($db->quoteName(array('gal.filename', 'gal.dimension')))
 			->leftJoin($db->quoteName('#__ka_names_gallery', 'gal') . ' ON gal.name_id = n.id AND gal.type = 3 AND gal.frontpage = 1 AND gal.state = 1');
-
-		// Ordering in subqueries cannot be applied due SQL standards.
-		$query->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON g.id IN (SELECT genre_id FROM ' . $db->quoteName('#__ka_rel_names_genres') . ' WHERE name_id = n.id)')
-			->leftJoin($db->quoteName('#__ka_names_career', 'cr') . ' ON cr.id IN (SELECT career_id FROM ' . $db->quoteName('#__ka_rel_names_career') . ' WHERE name_id = n.id)');
 
 		if (!$user->get('guest'))
 		{

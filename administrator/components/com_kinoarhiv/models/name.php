@@ -104,9 +104,10 @@ class KinoarhivModelName extends JModelForm
 
 		$query = $db->getQuery(true)->select(
 			$db->quoteName(
-				array('n.id', 'n.asset_id', 'n.name', 'n.latin_name', 'n.alias', 'n.fs_alias', 'n.date_of_birth',
-					'n.date_of_death', 'n.birthplace', 'n.birthcountry', 'n.gender', 'n.height', 'n.desc', 'n.attribs',
-					'n.ordering', 'n.state', 'n.access', 'n.metakey', 'n.metadesc', 'n.metadata', 'n.language'
+				array('n.id', 'n.asset_id', 'n.name', 'n.latin_name', 'n.alias', 'n.fs_alias', 'n.introtext',
+					'n.date_of_birth', 'n.date_of_death', 'n.birthplace', 'n.birthcountry', 'n.gender', 'n.height',
+					'n.desc', 'n.attribs', 'n.ordering', 'n.state', 'n.access', 'n.metakey', 'n.metadesc', 'n.metadata',
+					'n.language'
 				)
 			)
 		)
@@ -467,9 +468,10 @@ class KinoarhivModelName extends JModelForm
 	{
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$app  = JFactory::getApplication();
-		$db   = $this->getDbo();
-		$user = JFactory::getUser();
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$user   = JFactory::getUser();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
 
 		// Automatic handling of alias for empty fields
 		if (in_array($app->input->get('task'), array('apply', 'save', 'save2new'))
@@ -498,8 +500,9 @@ class KinoarhivModelName extends JModelForm
 		// Get metadata
 		$metadata = json_encode((object) array('robots' => $data['robots']));
 
-		$name = $db->escape(trim($data['name']));
+		$name      = $db->escape(trim($data['name']));
 		$latinName = $db->escape(trim($data['latin_name']));
+		$introtext = $this->createIntroText($data, $params, $data['id']);
 
 		if (empty($data['id']))
 		{
@@ -522,24 +525,35 @@ class KinoarhivModelName extends JModelForm
 
 			$query = $db->getQuery(true);
 
-			$query->insert($db->quoteName('#__ka_names'))
-				->columns(
-					$db->quoteName(
-						array('id', 'asset_id', 'name', 'latin_name', 'alias', 'fs_alias', 'date_of_birth',
-							'date_of_death', 'birthplace', 'birthcountry', 'gender', 'height', 'desc', 'attribs',
-							'ordering', 'state', 'access', 'metakey', 'metadesc', 'metadata', 'language'
-						)
-					)
-				)
-				->values("'', '0', '" . $name . "', '" . $latinName . "', '" . $data['alias'] . "',"
-					. "'" . $data['fs_alias'] . "', '" . $data['date_of_birth'] . "', '" . $data['date_of_death'] . "',"
-					. "'" . $db->escape(trim($data['birthplace'])) . "', '" . (int) $data['birthcountry'] . "',"
-					. "'" . (int) $data['gender'] . "', '" . $db->escape($data['height']) . "',"
-					. "'" . $db->escape($data['desc']) . "', '" . $attribs . "', '" . (int) $data['ordering'] . "',"
-					. "'" . $data['state'] . "', '" . (int) $data['access'] . "', '" . $db->escape($data['metakey']) . "',"
-					. "'" . $db->escape($data['metadesc']) . "', '" . $metadata . "',"
-					. "'" . $db->escape($data['language']) . "'"
-				);
+			$values = array(
+				'id'            => '',
+				'asset_id'      => 0,
+				'name'          => $name,
+				'latin_name'    => $latinName,
+				'alias'         => $data['alias'],
+				'fs_alias'      => $data['fs_alias'],
+				'introtext'     => $db->escape($introtext),
+				'date_of_birth' => $data['date_of_birth'],
+				'date_of_death' => $data['date_of_death'],
+				'birthplace'    => $db->escape(trim($data['birthplace'])),
+				'birthcountry'  => (int) $data['birthcountry'],
+				'gender'        => (int) $data['gender'],
+				'height'        => $db->escape($data['height']),
+				'desc'          => $db->escape($data['desc']),
+				'attribs'       => $attribs,
+				'ordering'      => (int) $data['ordering'],
+				'state'         => $data['state'],
+				'access'        => (int) $data['access'],
+				'metakey'       => $db->escape($data['metakey']),
+				'metadesc'      => $db->escape($data['metadesc']),
+				'metadata'      => $metadata,
+				'language'      => $data['language']
+			);
+
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_names'))
+				->columns($db->quoteName(array_keys($values)))
+				->values("'" . implode("','", array_values($values)) . "'");
 		}
 		else
 		{
@@ -550,6 +564,7 @@ class KinoarhivModelName extends JModelForm
 				->set($db->quoteName('latin_name') . " = '" . $latinName . "'")
 				->set($db->quoteName('alias') . " = '" . $data['alias'] . "'")
 				->set($db->quoteName('fs_alias') . " = '" . $data['fs_alias'] . "'")
+				->set($db->quoteName('introtext') . " = '" . $db->escape($introtext) . "'")
 				->set($db->quoteName('date_of_birth') . " = '" . $data['date_of_birth'] . "'")
 				->set($db->quoteName('date_of_death') . " = '" . $data['date_of_death'] . "'")
 				->set($db->quoteName('birthplace') . " = '" . $db->escape($data['birthplace']) . "'")
@@ -647,6 +662,73 @@ class KinoarhivModelName extends JModelForm
 		}
 
 		return true;
+	}
+
+	/**
+	 * Create intro text.
+	 *
+	 * @param   array  $data  Person info
+	 *
+	 * @return  string
+	 *
+	 * @since   3.1
+	 */
+	private function createIntroText($data)
+	{
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
+		$db = $this->getDbo();
+		$introtext = array();
+
+		// Process intro text for careers
+		if (!empty($data['careers']))
+		{
+			$_careers = implode(',', $data['careers']);
+			$query = $db->getQuery(true)
+				->select($db->quoteName('title'))
+				->from($db->quoteName('#__ka_names_career'))
+				->where($db->quoteName('id') . ' IN (' . $_careers . ')')
+				// Preserve row ordering
+				->order('FIELD (' . $db->quoteName('id') . ', ' . $_careers . ')');
+
+			$db->setQuery($query);
+			$careers = $db->loadObjectList();
+			$careersStr = '';
+
+			foreach ($careers as $career)
+			{
+				$careersStr .= StringHelper::strtolower($career->title) . ', ';
+			}
+
+			$introtext[] = '<span class="cr-list">[careers ln=COM_KA_NAMES_CAREER]: ' . StringHelper::substr($careersStr, 0, -2) . '[/careers]</span>';
+		}
+
+		// Process intro text for genres
+		if (!empty($data['genres']))
+		{
+			$_genres = implode(',', $data['genres']);
+			$query = $db->getQuery(true)
+				->select($db->quoteName('name'))
+				->from($db->quoteName('#__ka_genres'))
+				->where($db->quoteName('id') . ' IN (' . $_genres . ')')
+				// Preserve row ordering
+				->order('FIELD (' . $db->quoteName('id') . ', ' . $_genres . ')');
+
+			$db->setQuery($query);
+			$genres = $db->loadObjectList();
+
+			$languageConst = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
+			$genresStr = '';
+
+			foreach ($genres as $genre)
+			{
+				$genresStr .= StringHelper::strtolower($genre->name) . ', ';
+			}
+
+			$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+		}
+
+		return implode('', $introtext);
 	}
 
 	/**

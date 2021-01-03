@@ -228,6 +228,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_names` (
   `latin_name` varchar(128) NOT NULL DEFAULT '',
   `alias` varchar(255) NOT NULL DEFAULT '',
   `fs_alias` varchar(10) NOT NULL DEFAULT '',
+  `introtext` mediumtext NOT NULL COMMENT 'Use only in frontpage',
   `date_of_birth` date NOT NULL DEFAULT '0000-00-00',
   `date_of_death` date NOT NULL DEFAULT '0000-00-00',
   `birthplace` varchar(255) NOT NULL DEFAULT '',

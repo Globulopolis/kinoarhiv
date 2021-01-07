@@ -93,12 +93,12 @@ class KinoarhivModelReview extends JModelForm
 	{
 		$app   = JFactory::getApplication();
 		$db    = $this->getDbo();
-		$id    = $app->input->get('id', null, 'array');
+		$id    = $app->input->get('id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'uid', 'item_id', 'item_type', 'review', 'created', 'type', 'ip', 'state')))
 			->from($db->quoteName('#__ka_reviews'))
-			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
+			->where($db->quoteName('id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
 

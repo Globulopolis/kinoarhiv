@@ -105,7 +105,7 @@ $columns   = 9;
 					<td>
 						<span class="<?php echo $textClass; ?>"><?php echo JHtml::_('string.truncate', $this->escape($item->review), 400); ?></span><br />
 						<?php if ($this->canEdit) : ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $item->item_type . '&id[]=' . $item->id); ?>"
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $item->item_type . '&id=' . $item->id); ?>"
 							   title="<?php echo JText::_('JACTION_EDIT'); ?>"><?php echo JText::_('JACTION_EDIT'); ?></a>
 						<?php endif; ?>
 					</td>

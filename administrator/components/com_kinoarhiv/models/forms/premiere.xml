@@ -18,7 +18,7 @@
 		</field>
 		<field name="premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" size="22"
 			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="datetime" filter="user_utc" required="true"/>
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
 		<field name="ordering" type="order" data="premieres" class="inputbox span5" label="JFIELD_ORDERING_LABEL"

@@ -24,8 +24,7 @@
 				   description="COM_KA_FIELD_MOVIE_LENGTH_DESC" class="input-medium" datatype="time" timeformat="HH:mm:ss"/>
 			<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
 				   size="1"/>
-			<field name="language" type="language" client="site" default="*"
-				   label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+			<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 				<option value="*">JALL</option>
 			</field>
 			<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" filter="integer"

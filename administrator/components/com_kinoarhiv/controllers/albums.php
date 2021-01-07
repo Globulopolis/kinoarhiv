@@ -11,18 +11,18 @@
 defined('_JEXEC') or die;
 
 /**
- * Music controller class
+ * Music albums controller class
  *
- * @since  3.0
+ * @since  3.1
  */
-class KinoarhivControllerMusic extends JControllerLegacy
+class KinoarhivControllerAlbums extends JControllerLegacy
 {
 	/**
 	 * Method to add a new record.
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function add()
 	{
@@ -36,13 +36,11 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function edit($isNew = false)
 	{
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
-
-		$view = $this->getView('music', 'html');
+		$view = $this->getView('album', 'html');
 		$model = $this->getModel('album');
 		$view->setModel($model, true);
 
@@ -63,7 +61,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  mixed
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function save2new()
 	{
@@ -75,7 +73,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  mixed
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function apply()
 	{
@@ -87,11 +85,11 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  mixed
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	/*public function save() {
+	public function save() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		$document = JFactory::getDocument();
+		/*$document = JFactory::getDocument();
 		$user = JFactory::getUser();
 
 		// Check if the user is authorized to do this.
@@ -196,12 +194,12 @@ class KinoarhivControllerMusic extends JControllerLegacy
 			echo json_encode($session_data);
 		}
 
-		return true;
-	}*/
+		return true;*/
+	}
 
 	public function saveAccessRules()
 	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		/*JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv'))
@@ -209,11 +207,11 @@ class KinoarhivControllerMusic extends JControllerLegacy
 			return array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
-		$model = $this->getModel('album');
+		/** @var KinoarhivModelAlbum $model */
+		/*$model = $this->getModel('album');
 		$result = $model->saveAccessRules();
 
-		echo json_encode($result);
+		echo json_encode($result);*/
 	}
 
 	/**
@@ -221,7 +219,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function unpublish()
 	{
@@ -235,7 +233,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function publish($isUnpublish = false)
 	{
@@ -249,23 +247,19 @@ class KinoarhivControllerMusic extends JControllerLegacy
 			return;
 		}
 
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
+		/** @var KinoarhivModelAlbum $model */
 		$model = $this->getModel('album');
 		$result = $model->publish($isUnpublish);
 
 		if ($result === false)
 		{
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=albums&type=' . $this->input->get('type', 'albums', 'word'), JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
 
 			return;
 		}
 
-		// Clean the session data.
-		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.music.global.data', null);
-
 		$message = $isUnpublish ? JText::_('COM_KA_ITEMS_EDIT_UNPUBLISHED') : JText::_('COM_KA_ITEMS_EDIT_PUBLISHED');
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'), $message);
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=albums&type=' . $this->input->get('type', 'albums', 'word'), $message);
 	}
 
 	/**
@@ -273,7 +267,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	/*public function remove() {
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -306,7 +300,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function cancel()
 	{
@@ -322,33 +316,32 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		}
 
 		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.music.' . $user->id . '.data', null);
-		$app->setUserState('com_kinoarhiv.music.' . $user->id . '.edit_data', null);
+		$app->setUserState('com_kinoarhiv.albums.' . $user->id . '.edit_data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=albums');
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=albums');
 	}
 
 	public function getComposers()
 	{
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
+		/*$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
 		$model = $this->getModel('album');
 		$result = $model->getComposers();
 
-		echo json_encode($result);
+		echo json_encode($result);*/
 	}
 
 	public function deleteComposers()
 	{
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
+		/*$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
 		$model = $this->getModel('album');
 		$result = $model->deleteComposers();
 
-		echo json_encode($result);
+		echo json_encode($result);*/
 	}
 
 	public function saveRelNames()
 	{
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		/*JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		// Check if the user is authorized to do this.
 		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.music'))
@@ -361,7 +354,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 		$model = $this->getModel('relations');
 		$result = $model->saveRelNames();
 
-		echo json_encode($result);
+		echo json_encode($result);*/
 	}
 
 	/**
@@ -369,14 +362,14 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function saveOrder()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
-		$model = $this->getModel('album');
+		/** @var KinoarhivModelAlbums $model */
+		$model = $this->getModel('albums');
 		$result = $model->saveOrder();
 
 		echo json_encode($result);
@@ -387,7 +380,7 @@ class KinoarhivControllerMusic extends JControllerLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function batch()
 	{
@@ -409,34 +402,35 @@ class KinoarhivControllerMusic extends JControllerLegacy
 
 		if (count($ids) != 0)
 		{
-			$model = $this->getModel('music');
+			/** @var KinoarhivModelAlbums $model */
+			$model = $this->getModel('albums');
 			$result = $model->batch();
 
 			if ($result === false)
 			{
 				KAComponentHelper::renderErrors($model->getErrors(), 'html');
-				$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=albums&type=' . $this->input->get('type', 'albums', 'word'));
 
 				return;
 			}
 		}
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=music&type=' . $this->input->get('type', 'albums', 'word'));
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=albums&type=' . $this->input->get('type', 'albums', 'word'));
 	}
 
 	/**
 	 * Method to encode item alias for using in filesystem paths and url.
 	 *
 	 * @return  void
-	 *
+	 * // TODO Refactor
 	 * @since  3.0
 	 */
 	public function getFilesystemAlias()
 	{
-		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		/*jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$input = JFactory::getApplication()->input;
 
-		echo KAContentHelper::getFilesystemAlias($input->get('form_album_alias', '', 'string'), $input->get('form_album_title', '', 'string'));
+		echo KAContentHelper::getFilesystemAlias($input->get('form_album_alias', '', 'string'), $input->get('form_album_title', '', 'string'));*/
 	}
 }

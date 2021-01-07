@@ -84,7 +84,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=genres.edit&id[]=' . $item->id); ?>"
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=genres.edit&id=' . $item->id); ?>"
 								   title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>
 								<div class="small">(<?php echo JText::_('JFIELD_ALIAS_LABEL'); ?>: <?php echo $this->escape($item->alias); ?>)</div>

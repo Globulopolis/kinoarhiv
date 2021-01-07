@@ -79,15 +79,18 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app                = JFactory::getApplication();
-		$this->user         = JFactory::getUser();
-		$this->page         = $app->input->get('page', '', 'cmd');
-		$this->itemid       = $app->input->get('Itemid');
+		$app          = JFactory::getApplication();
+		$this->user   = JFactory::getUser();
+		$this->page   = $app->input->get('page', '', 'cmd');
+		$this->itemid = $app->input->get('Itemid');
+
+		// Used in layouts
 		$this->moviesItemid = $this->itemid;
-		$params             = JComponentHelper::getParams('com_kinoarhiv');
-		$menu               = $app->getMenu()->getActive();
-		$this->menu         = $menu;
-		$menuParams         = new Registry;
+
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
+		$menu       = $app->getMenu()->getActive();
+		$this->menu = $menu;
+		$menuParams = new Registry;
 
 		if ($menu)
 		{

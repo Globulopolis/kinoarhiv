@@ -69,12 +69,12 @@ class KinoarhivModelPremiere extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'array');
+		$id = $app->input->get('id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'movie_id', 'vendor_id', 'premiere_date', 'country_id', 'info', 'language', 'ordering')))
 			->from($db->quoteName('#__ka_premieres'))
-			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
+			->where($db->quoteName('id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();

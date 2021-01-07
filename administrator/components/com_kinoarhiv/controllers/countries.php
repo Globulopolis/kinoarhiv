@@ -117,7 +117,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		if ($validData === false)
 		{
 			KAComponentHelper::renderErrors($model->getErrors());
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.edit&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.edit&id=' . $data['id']);
 
 			return;
 		}
@@ -129,7 +129,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 		if (!$result)
 		{
 			// Errors enqueue in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.edit&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.edit&id=' . $data['id']);
 
 			return;
 		}
@@ -149,7 +149,7 @@ class KinoarhivControllerCountries extends JControllerLegacy
 				$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.add', $message);
 				break;
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.edit&id[]=' . $sessionData['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=countries.edit&id=' . $sessionData['id'], $message);
 				break;
 
 			case 'save':

@@ -10,10 +10,12 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 /**
  * Class KinoarhivModelAlbum
  *
- * @since  3.0
+ * @since  3.1
  */
 class KinoarhivModelAlbum extends JModelForm
 {
@@ -62,86 +64,72 @@ class KinoarhivModelAlbum extends JModelForm
 	 * Method to get a single record.
 	 *
 	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since   3.0
 	 */
 	public function getItem()
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$tmpl = $app->input->get('template', '', 'string');
-		$id = $app->input->get('id', array(), 'array');
+		$db  = $this->getDbo();
+		$id  = $app->input->get('id', array(), 'array');
 
-		if ($tmpl == 'names_edit')
-		{
-			$album_id = $app->input->get('album_id', 0, 'int');
-			$name_id = $app->input->get('name_id', 0, 'int');
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName(array('name_id', 'role')))
-				->select($db->quoteName('ordering', 'r_ordering') . ',' . $db->quoteName('desc', 'r_desc'))
-				->from($db->quoteName('#__ka_music_rel_composers'))
-				->where($db->quoteName('name_id') . ' = ' . (int) $name_id . ' AND ' . $db->quoteName('album_id') . ' = ' . (int) $album_id);
-
-			$db->setQuery($query);
-			$result = $db->loadObject();
-
-			if (!empty($result))
-			{
-				$result->type = $app->input->get('career_id', 0, 'int');
-			}
-		}
-		else
-		{
-			$result = array('album' => (object) array());
-
-			if (count($id) == 0 || empty($id) || empty($id[0]))
-			{
-				return $result;
-			}
-
-			$query = $db->getQuery(true);
-
-			$query->select(
+		$query = $db->getQuery(true)
+			->select(
 				$db->quoteName(
-					array('a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.year', 'a.length',
-						'a.isrc', 'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.tracks_path',
-						'a.tracks_preview_path', 'a.buy_url', 'a.attribs', 'a.created', 'a.created_by', 'a.modified',
-						'a.ordering', 'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state', 'a.cover_filename'
+					array('a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.year', 'a.length', 'a.isrc',
+						'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.cover_filename',
+						'a.tracks_path', 'a.tracks_path_www', 'a.tracks_preview_path', 'a.buy_urls', 'a.attribs',
+						'a.created', 'a.created_by', 'a.modified', 'a.modified_by', 'a.publish_up', 'a.publish_down',
+						'a.ordering', 'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state'
 					)
 				)
 			)
 			->select($db->quoteName('a.fs_alias', 'fs_alias_orig'))
 			->from($db->quoteName('#__ka_music_albums', 'a'))
-			->where($db->quoteName('a.id') . ' = ' . (int) $id[0]);
+			->where($db->quoteName('a.id') . ' = ' . (int) $id);
 
-			// Join over gallery item
-			$query->select($db->quoteName('g.filename'))
-				->join('LEFT', $db->quoteName('#__ka_music_gallery', 'g') . ' ON ' . $db->quoteName('g.item_id') . ' = ' . $db->quoteName('a.id') . ' AND ' . $db->quoteName('g.frontpage') . ' = 1');
+		// Join over the language
+		$query->select($db->quoteName('l.title', 'language_title'))
+			->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
 
-			// Join over the language
-			$query->select($db->quoteName('l.title', 'language_title'))
-				->join('LEFT', $db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
+		$db->setQuery($query);
 
-			$db->setQuery($query);
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (Exception $e)
+		{
+			$this->setError($e->getMessage());
 
-			try
-			{
-				$result['album'] = $db->loadObject();
-			}
-			catch (Exception $e)
-			{
-				$this->setError($e->getMessage());
+			return array();
+		}
 
-				return array();
-			}
+		if (empty($id))
+		{
+			return $result;
+		}
 
-			$result['album']->genres = $this->getGenres();
-			$result['album']->genres_orig = implode(',', $result['album']->genres['ids']);
-			$result['album']->tags = $this->getTags();
+		$genres = $this->getGenres($id);
 
-			if (!empty($result['album']->attribs))
-			{
-				$result['attribs'] = json_decode($result['album']->attribs);
-			}
+		if ($genres)
+		{
+			$genres = implode(',', $genres['id']);
+			$result->genres = $genres;
+			$result->genres_orig = $genres;
+		}
+
+		$registry = new Registry($result->attribs);
+		$result->attribs = $registry->toArray();
+
+		$registry = new Registry($result->metadata);
+		$result->metadata = $registry->toArray();
+
+		if ($id)
+		{
+			$tags = new JHelperTags;
+			$tags->getTagIds($result->id, 'com_kinoarhiv.album');
+			$result->tags = $tags;
 		}
 
 		return $result;
@@ -149,9 +137,9 @@ class KinoarhivModelAlbum extends JModelForm
 
 	public function publish($isUnpublish)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->get('id', array(), 'array');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$ids   = $app->input->get('id', array(), 'array');
 		$state = $isUnpublish ? 0 : 1;
 		$query = $db->getQuery(true);
 
@@ -175,36 +163,52 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 	}
 
-	protected function getGenres()
+	/**
+	 * Get list of genres for field.
+	 *
+	 * @param   integer  $id  Item ID.
+	 *
+	 * @return  mixed    Array with data, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	protected function getGenres($id)
 	{
 		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', array(0), 'array');
-		$result = array('data' => array(), 'ids' => array());
-		$query = $db->getQuery(true);
+		$db  = $this->getDbo();
 
-		$query->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
-			->from($db->quoteName('#__ka_music_genres', 'g'))
-			->join('LEFT', $db->quoteName('#__ka_music_rel_genres', 'rel') . ' ON ' . $db->quoteName('rel.genre_id') . ' = ' . $db->quoteName('g.id') . ' AND ' . $db->quoteName('rel.item_id') . ' = ' . (int) $id[0] . ' AND ' . $db->quoteName('rel.type') . ' = 0');
-
-		$subquery = $db->getQuery(true)
-			->select($db->quoteName('genre_id'))
-			->from($db->quoteName('#__ka_music_rel_genres'))
-			->where($db->quoteName('item_id') . ' = ' . (int) $id[0]);
-
-		$query->where($db->quoteName('g.id') . ' IN (' . $subquery . ')');
+		$query = $db->getQuery(true)
+			->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
+			->from($db->quoteName('#__ka_music_rel_genres', 'rel'))
+			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON ' . $db->quoteName('g.id') . ' = ' . $db->quoteName('rel.genre_id'))
+			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id)
+			->where($db->quoteName('rel.type') . ' = 0')
+			->order($db->quoteName('rel.ordering') . ' ASC');
 
 		$db->setQuery($query);
-		$result['data'] = $db->loadObjectList();
 
-		foreach ($result['data'] as $value)
+		try
 		{
-			$result['ids'][] = $value->id;
+			$_genres = $db->loadAssocList();
+			$genres = array();
+
+			foreach ($_genres as $key => $id)
+			{
+				$genres['id'][$key] = $id['id'];
+				$genres['title'][$key] = $id['title'];
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
 		}
 
-		return $result;
+		return $genres;
 	}
 
+	// TODO Refactor
 	protected function getTags()
 	{
 		$app = JFactory::getApplication();
@@ -251,6 +255,7 @@ class KinoarhivModelAlbum extends JModelForm
 		return $result;
 	}
 
+	// TODO Refactor
 	public function getComposers()
 	{
 		$app = JFactory::getApplication();
@@ -396,6 +401,7 @@ class KinoarhivModelAlbum extends JModelForm
 		return $result;
 	}
 
+	// TODO Refactor
 	public function deleteComposers()
 	{
 		$app = JFactory::getApplication();
@@ -449,10 +455,10 @@ class KinoarhivModelAlbum extends JModelForm
 
 	public function saveAccessRules()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$data = $app->input->post->get('form', array(), 'array');
-		$id = $app->input->get('id', null, 'int');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$data  = $app->input->post->get('form', array(), 'array');
+		$id    = $app->input->get('id', null, 'int');
 		$rules = array();
 
 		if (empty($id))
@@ -485,13 +491,14 @@ class KinoarhivModelAlbum extends JModelForm
 			->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
 
 		$db->setQuery($query);
-		$parent_id = $db->loadResult();
+		$parentID = $db->loadResult();
 
 		$query = $db->getQuery(true);
 
 		$query->update($db->quoteName('#__assets'))
 			->set($db->quoteName('rules') . " = '" . $rules . "'")
-			->where($db->quoteName('#__assets') . " = 'com_kinoarhiv.album." . (int) $id . "' AND " . $db->quoteName('level') . " = 2 AND " . $db->quoteName('parent_id') . " = " . (int) $parent_id);
+			->where($db->quoteName('#__assets') . ' = ' . $db->quote('com_kinoarhiv.album.' . (int) $id))
+			->where($db->quoteName('level') . ' = 2 AND ' . $db->quoteName('parent_id') . " = " . (int) $parentID);
 
 		$db->setQuery($query);
 

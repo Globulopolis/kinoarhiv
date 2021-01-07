@@ -100,7 +100,7 @@ $columns   = 7;
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=careers.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=careers.edit&id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->title); ?></a>
 							<?php else : ?>
 								<span><?php echo $this->escape($item->title); ?></span>

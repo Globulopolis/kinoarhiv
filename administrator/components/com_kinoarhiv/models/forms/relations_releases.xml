@@ -22,7 +22,7 @@
 		</field>
 		<field name="desc" type="textarea" default="" label="JGLOBAL_DESCRIPTION"
 			   description="COM_KA_FIELD_RELEASE_DESC_LABEL_DESC" class="span12" filter="raw" cols="6" rows="5"/>
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
 		<field name="ordering" type="text" label="JFIELD_ORDERING_LABEL" description="JFIELD_ORDERING_DESC"

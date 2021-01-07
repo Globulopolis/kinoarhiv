@@ -70,16 +70,17 @@ $columns   = 7;
 						</td>
 						<td class="center hidden-phone">
 							<div class="btn-group">
-								<?php echo JHtml::_('jgrid.published', $item->state, $i, 'music.', $canChange, 'cb'); ?>
+								<?php echo JHtml::_('jgrid.published', $item->state, $i, 'albums.', $canChange, 'cb'); ?>
 							</div>
 						</td>
 						<td>
 							<?php if ($canEdit): ?>
-								<a href="index.php?option=com_kinoarhiv&task=music.edit&type=albums&id[]=<?php echo $item->id; ?>"><?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?> (<?php echo $item->year; ?>)</a>
+								<a href="index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=<?php echo $item->id; ?>"><?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?> (<?php echo $item->year; ?>)</a>
 							<?php else: ?>
 								<?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?> (<?php echo $item->year; ?>)
 							<?php endif; ?>
 							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
+							<div class="small"><?php echo $item->tracks_path; ?></div>
 						</td>
 						<td class="small hidden-phone">
 							<?php echo $this->escape($item->access_level); ?>

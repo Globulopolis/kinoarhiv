@@ -69,15 +69,25 @@ class KinoarhivModelCareer extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'array');
+		$id = $app->input->get('id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'title', 'is_mainpage', 'is_amplua', 'ordering', 'language')))
 			->from($db->quoteName('#__ka_names_career'))
-			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
+			->where($db->quoteName('id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (Exception $e)
+		{
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 
 		return $result;
 	}

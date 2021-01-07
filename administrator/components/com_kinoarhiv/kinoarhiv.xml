@@ -87,7 +87,7 @@
 			<menu view="reviews">COM_KA_MENU_REVIEWS</menu>
 			<menu view="premieres">COM_KA_MENU_PREMIERES</menu>
 			<menu view="releases">COM_KA_MENU_RELEASES</menu>
-			<menu link="option=com_kinoarhiv&amp;view=music&amp;type=albums">COM_KA_MENU_MUSIC_ALBUMS</menu>
+			<menu view="albums">COM_KA_MENU_MUSIC_ALBUMS</menu>
 			<menu view="settings">COM_KA_MENU_SETTINGS</menu>
 		</submenu>
 	</administration>

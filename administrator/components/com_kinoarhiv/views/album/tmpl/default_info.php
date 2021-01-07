@@ -15,53 +15,17 @@ use Joomla\String\StringHelper;
 if (StringHelper::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
 {
 	$poster_url = JUri::root() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
-		. urlencode($this->form->getValue('fs_alias', $this->form_edit_group)) . '/' . $this->form->getValue('id', $this->form_edit_group);
+		. urlencode($this->form->getValue('fs_alias')) . '/' . $this->form->getValue('id');
 }
 else
 {
-	$poster_url = $this->params->get('media_music_images_root_www') . '/' . urlencode($this->form->getValue('fs_alias', $this->form_edit_group))
-		. '/' . $this->form->getValue('id', $this->form_edit_group);
+	$poster_url = $this->params->get('media_music_images_root_www') . '/' . urlencode($this->form->getValue('fs_alias'))
+		. '/' . $this->form->getValue('id');
 }
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
-		$('#form_album_genres').select2({
-			placeholder: '<?php echo JText::_('COM_KA_SEARCH_AJAX'); ?>',
-			quietMillis: 100,
-			minimumInputLength: 1,
-			maximumSelectionSize: 5,
-			multiple: true,
-			ajax: {
-				cache: true,
-				url: 'index.php?option=com_kinoarhiv&task=ajaxData&element=genres&type=music&format=json',
-				data: function(term, page){
-					return { term: term, showAll: 0 }
-				},
-				results: function(data, page){
-					return { results: data };
-				}
-			},
-			<?php $genres = $this->form->getValue('genres', $this->form_edit_group);
-			if (!empty($genres) && is_array($genres)): ?>
-			initSelection: function(element, callback){
-				var data = <?php echo json_encode($genres['data']); ?>;
-				callback(data);
-			},
-			<?php endif; ?>
-			formatResult: function(data){
-				return data.title;
-			},
-			formatSelection: function(data, container){
-				return data.title;
-			},
-			escapeMarkup: function(m) { return m; }
-		}).select2('container').find('ul.select2-choices').sortable({
-			containment: 'parent',
-			start: function() { $("#form_album_genres").select2('onSortStart'); },
-			update: function() { $("#form_album_genres").select2('onSortEnd'); }
-		});
-
-		<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+		<?php if ($this->form->getValue('id') != 0): ?>
 		$('.album-cover-preview').parent().click(function(e){
 			e.preventDefault();
 
@@ -79,7 +43,7 @@ else
 
 			$('#image_uploader').pluploadQueue({
 				runtimes: 'html5,flash,silverlight,html4',
-				url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&frontpage=1',
+				url: 'index.php?option=com_kinoarhiv&controller=mediamanager&task=upload&format=raw&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : 0; ?>&frontpage=1',
 				multipart_params: {
 					'<?php echo JSession::getFormToken(); ?>': 1
 				},
@@ -113,14 +77,14 @@ else
 							url = '<?php echo $poster_url; ?>';
 
 						blockUI('show');
-						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&format=raw',
+						$.post('index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=fpOff&section=movie&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : 0; ?>&format=raw',
 							{ '_id[]': response_obj.id, '<?php echo JSession::getFormToken(); ?>': 1, 'reload': 0 }
 						).done(function(response){
 							var cover_preview = $('img.album-cover-preview');
 
 							cover_preview.attr('src', url + 'thumb_' + response_obj.filename + '?_=' + new Date().getTime());
 							cover_preview.parent('a').attr('href', url + response_obj.filename + '?_=' + new Date().getTime());
-							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>&_id[]=' + response_obj.id + '&format=raw');
+							$('.cmd-scr-delete').attr('href', 'index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&tab=2&id=<?php echo ($this->form->getValue('id') != 0) ? $this->form->getValue('id') : 0; ?>&_id[]=' + response_obj.id + '&format=raw');
 							blockUI();
 							$('#imgModalUpload').modal('hide');
 						}).fail(function(xhr, status, error){
@@ -172,7 +136,7 @@ else
 		$('.cmd-alias').click(function(e){
 			e.preventDefault();
 
-			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_posters_root') . '/' . $this->form->getValue('fs_alias', $this->form_edit_group) . '/' . $this->form->getValue('id', $this->form_edit_group) . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_ALBUMS_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
+			var dialog = $('<div id="dialog_alias" title="<?php echo JText::_('NOTICE'); ?>"><p><?php echo $this->params->get('media_posters_root') . '/' . $this->form->getValue('fs_alias') . '/' . $this->form->getValue('id') . '/'; ?><hr /><?php echo JText::_('COM_KA_FIELD_ALBUMS_ALIAS_CHANGE_NOTICE', true); ?><hr /><?php echo JText::_('COM_KA_FIELD_MOVIE_ALIAS_CHANGE_NOTICE', true); ?></p></div>');
 
 			if ($(this).hasClass('info')) {
 				$(dialog).dialog({
@@ -200,36 +164,35 @@ else
 	<div class="span6">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('title', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('title', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('title'); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
 				<div class="controls">
-					<?php echo $this->form->getInput('alias', $this->form_edit_group); ?>
+					<?php echo $this->form->getInput('alias'); ?>
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('fs_alias', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('fs_alias'); ?></div>
 				<div class="controls">
 					<div class="input-append">
-						<?php echo $this->form->getInput('fs_alias', $this->form_edit_group); ?>
-						<?php echo $this->form->getInput('fs_alias_orig', $this->form_edit_group); ?>
+						<?php echo $this->form->getInput('fs_alias'); ?>
+						<?php echo $this->form->getInput('fs_alias_orig'); ?>
 						<button class="btn btn-default cmd-alias get-alias hasTooltip" title="<?php echo JText::_('COM_KA_FIELD_MOVIE_FS_ALIAS_GET'); ?>"><i class="icon-refresh"></i></button>
 						<button class="btn btn-default cmd-alias info"><i class="icon-help"></i></button>
 					</div>
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('composer', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('composer', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('composer'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('composer'); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('genres', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('genres'); ?></div>
 				<div class="controls">
-					<?php echo $this->form->getInput('genres', $this->form_edit_group); ?>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&controller=genres&task=add&type=music" target="_blank"><span class="icon-new"></a></span>
-					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=movies&mid=<?php echo ($this->form->getValue('id', $this->form_edit_group) != 0) ? $this->form->getValue('id', $this->form_edit_group) : 0; ?>" class="hasTip" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>" target="_blank"><span class="icon-out-2"></span></a></span>
+					<?php echo $this->form->getInput('genres'); ?>
+					<span class="rel-link"><a href="index.php?option=com_kinoarhiv&task=genres.add" target="_blank"><span class="icon-new"></span></a></span>
 				</div>
 			</div>
 		</fieldset>
@@ -238,24 +201,24 @@ else
 		<div class="span9">
 			<fieldset class="form-horizontal">
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('year', $this->form_edit_group); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('year', $this->form_edit_group); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('year'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('year'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('length', $this->form_edit_group); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('length', $this->form_edit_group); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('length'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('length'); ?></div>
 				</div>
 				<div class="control-group">
-					<div class="control-label"><?php echo $this->form->getLabel('isrc', $this->form_edit_group); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('isrc', $this->form_edit_group); ?></div>
+					<div class="control-label"><?php echo $this->form->getLabel('isrc'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('isrc'); ?></div>
 				</div>
 			</fieldset>
 		</div>
 		<div class="span3">
-			<?php if ($this->form->getValue('id', $this->form_edit_group) != 0): ?>
+			<?php if ($this->form->getValue('id') != 0): ?>
 			<a href="<?php echo $this->items->get('poster'); ?>"><img src="<?php echo $this->items->get('th_poster'); ?>" class="album-cover-preview" height="110" /></a>
 			<a href="#" class="file-upload-scr hasTip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
-			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&id=<?php echo $this->form->getValue('id', $this->form_edit_group); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
+			<a href="index.php?option=com_kinoarhiv&controller=mediamanager&view=mediamanager&task=remove&section=music&type=gallery&id=<?php echo $this->form->getValue('id'); ?>&format=raw" class="cmd-scr-delete hasTip" title="<?php echo JText::_('JTOOLBAR_DELETE'); ?>"><span class="icon-delete"></span></a>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -264,15 +227,29 @@ else
 	<div class="span12">
 		<fieldset class="form-horizontal">
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('desc', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('desc', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('desc'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('desc'); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('buy_url', $this->form_edit_group); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('buy_url', $this->form_edit_group); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('buy_url'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('buy_url'); ?></div>
 			</div>
 		</fieldset>
 	</div>
 </div>
 
-<?php echo JLayoutHelper::render('layouts.edit.upload_image', array(), JPATH_COMPONENT); ?>
+<?php
+// TODO Remove?
+$path = JPath::clean(
+	$this->params->get('media_posters_root') . '/' . $this->form->getValue('fs_alias') . '/' . $this->id . '/'
+);
+
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'helpAliasModal',
+	array(
+		'title'  => JText::_('NOTICE'),
+		'footer' => '<a class="btn" data-dismiss="modal">' . JText::_('COM_KA_CLOSE') . '</a>'
+	),
+	'<div class="container-fluid">' . JText::sprintf('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', $path) . '</div>'
+);

@@ -43,10 +43,8 @@ class KinoarhivViewCareers extends JViewLegacy
 
 		switch ($task)
 		{
-			case 'add':
-				$this->edit($tpl);
-				break;
 			case 'edit':
+			case 'add':
 				$this->edit($tpl);
 				break;
 			default:
@@ -57,14 +55,13 @@ class KinoarhivViewCareers extends JViewLegacy
 
 	protected function listItems($tpl)
 	{
-		$user = JFactory::getUser();
-
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state = $this->get('State');
-		$this->filterForm = $this->get('FilterForm');
+		$user                = JFactory::getUser();
+		$this->items         = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
-		$errors = $this->get('Errors');
+		$errors              = $this->get('Errors');
 
 		if (count($errors))
 		{
@@ -126,7 +123,10 @@ class KinoarhivViewCareers extends JViewLegacy
 		}
 		elseif ($task == 'edit')
 		{
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE') . ': ' . $this->form->getValue('title')), 'address');
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_CAREERS_TITLE') . ': ' . $this->form->getValue('title')),
+				'address'
+			);
 			JToolbarHelper::apply('careers.apply');
 			JToolbarHelper::save('careers.save');
 			JToolbarHelper::save2new('careers.save2new');

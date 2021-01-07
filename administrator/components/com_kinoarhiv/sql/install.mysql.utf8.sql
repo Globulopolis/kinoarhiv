@@ -178,6 +178,9 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modified_by` int(10) unsigned NOT NULL DEFAULT '0',
+  `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ordering` int(11) NOT NULL DEFAULT '0',
   `metakey` text NOT NULL,
   `metadesc` text NOT NULL,
@@ -211,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_rel_genres` (
   `genre_id` int(11) NOT NULL,
   `item_id` bigint(20) NOT NULL,
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-album, 1-track, 2-artist',
+  `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`genre_id`,`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

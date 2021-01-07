@@ -77,7 +77,7 @@ $columns   = 6;
 						<div class="pull-left">
 							<img class="flag-dd" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png" />
 							<?php if ($this->canEdit) : ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=countries.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=countries.edit&id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->name); ?></a>
 							<?php else : ?>
 								<span><?php echo $this->escape($item->name); ?></span>

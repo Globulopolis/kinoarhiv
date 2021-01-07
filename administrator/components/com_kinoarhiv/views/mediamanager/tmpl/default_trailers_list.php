@@ -86,7 +86,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<?php endif; ?>
 
 					<?php if ($canEdit): ?>
-						<a href="index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=<?php echo $this->id; ?>&item_id[]=<?php echo $item->id; ?>"><?php echo $this->escape($item->title) == '' ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></a>
+						<a href="index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=<?php echo $this->id; ?>&item_id=<?php echo $item->id; ?>"><?php echo $this->escape($item->title) == '' ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></a>
 					<?php else: ?>
 						<span><?php echo $this->escape($item->title) == '' ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?></span>
 					<?php endif; ?>

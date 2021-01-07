@@ -70,7 +70,7 @@ $columns   = 5;
 					<td class="nowrap has-context">
 						<div class="pull-left">
 							<?php if ($this->canEdit): ?>
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=vendors.edit&id[]=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&task=vendors.edit&id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
 									<?php echo $this->escape($item->company_name); ?></a>
 								<?php if (!empty($item->company_name)): ?><br /><span class="small" title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->company_name_alias)); ?>">(<?php echo JText::_('JFIELD_ALIAS_LABEL') . ': ' . $this->escape($item->company_name_alias); ?>)</span><?php endif; ?>
 							<?php else: ?>

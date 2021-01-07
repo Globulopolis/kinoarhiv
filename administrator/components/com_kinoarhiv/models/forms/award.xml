@@ -3,7 +3,7 @@
 	<fieldset name="edit">
 		<field name="title" type="text" default="" label="COM_KA_FIELD_AW_LABEL" class="span5" required="true"
 			   filter="string" size="45"/>
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
 		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"

@@ -107,7 +107,7 @@ $columns   = 8;
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
 					<td class="center">
-						<a href="index.php?option=com_kinoarhiv&view=premieres&task=premieres.edit&id[]=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->premiere_date; ?></a>
+						<a href="index.php?option=com_kinoarhiv&view=premieres&task=premieres.edit&id=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->premiere_date; ?></a>
 					</td>
 					<td>
 						<?php echo $this->escape($item->title); ?><?php echo $item->year != '0000' ? ' (' . $item->year . ')' : ''; ?>

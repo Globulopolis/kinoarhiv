@@ -85,7 +85,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if ($validData === false)
 		{
 			KAComponentHelper::renderErrors($model->getErrors());
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id=' . $data['id']);
 
 			return;
 		}
@@ -97,7 +97,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		if (!$result)
 		{
 			// Errors enqueue in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id=' . $data['id']);
 
 			return;
 		}
@@ -112,7 +112,7 @@ class KinoarhivControllerReviews extends JControllerLegacy
 		switch ($this->getTask())
 		{
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id[]=' . $data['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=reviews.edit&item_type=' . $data['item_type'] . '&id=' . $data['id'], $message);
 				break;
 
 			case 'save':

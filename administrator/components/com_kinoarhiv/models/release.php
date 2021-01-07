@@ -69,7 +69,7 @@ class KinoarhivModelRelease extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'array');
+		$id = $app->input->get('id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select(
@@ -80,7 +80,7 @@ class KinoarhivModelRelease extends JModelForm
 			->select($db->quoteName('c.code') . ',' . $db->quoteName('c.name', 'title'))
 			->from($db->quoteName('#__ka_releases', 'r'))
 			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
-			->where($db->quoteName('r.id') . ' = ' . (int) $id[0]);
+			->where($db->quoteName('r.id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();

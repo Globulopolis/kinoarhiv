@@ -116,7 +116,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		{
 			KAComponentHelper::renderErrors($model->getErrors());
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $data['id']);
 
 			return;
 		}
@@ -128,7 +128,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		if (!$result)
 		{
 			// Errors enqueue in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id[]=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $data['id']);
 
 			return;
 		}
@@ -148,7 +148,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.add', $message);
 				break;
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id[]=' . $sessionData['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $sessionData['id'], $message);
 				break;
 
 			case 'save':

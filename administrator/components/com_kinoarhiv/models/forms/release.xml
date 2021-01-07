@@ -23,7 +23,7 @@
 			   data-content="mediatypes" data-allow-clear="true" data-key="id">
 			<option value=""></option>
 		</field>
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
 		<field name="ordering" type="order" data="releases" class="span6" label="JFIELD_ORDERING_LABEL"

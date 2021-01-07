@@ -5,7 +5,7 @@
 			   filter="string" required="true" size="45"/>
 		<field name="company_name_alias" type="text" default="" label="JFIELD_ALIAS_LABEL"
 			   description="JFIELD_ALIAS_DESC" class="span5" size="45" labelclass="control-label" filter="string"/>
-		<field name="language" type="language" client="site" default="*" label="COM_KA_FIELD_COUNTRY_LANGUAGE_LABEL">
+		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>
 		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox"

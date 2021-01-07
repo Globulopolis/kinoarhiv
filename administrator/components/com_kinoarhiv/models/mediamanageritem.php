@@ -232,7 +232,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		}
 
 		$db = $this->getDbo();
-		$itemID = $app->input->get('item_id', null, 'array');
+		$itemID = $app->input->get('item_id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select(
@@ -256,7 +256,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$query->select($db->quoteName('ag.title', 'access_level'))
 			->leftJoin($db->quoteName('#__viewlevels', 'ag') . ' ON ag.id = g.access');
 
-		$query->where($db->quoteName('g.id') . ' = ' . (int) $itemID[0]);
+		$query->where($db->quoteName('g.id') . ' = ' . (int) $itemID);
 
 		$db->setQuery($query);
 
@@ -266,7 +266,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			if ($result['trailer'])
 			{
-				$files = $this->getTrailerFiles('screenshot, video, subtitles, chapters', (int) $itemID[0], '', '');
+				$files = $this->getTrailerFiles('screenshot, video, subtitles, chapters', (int) $itemID, '', '');
 				$result['trailer']->video = json_encode($files['video']);
 				$result['trailer']->subtitles = json_encode($files['subtitles']);
 				$result['trailer']->chapters = json_encode($files['chapters']);

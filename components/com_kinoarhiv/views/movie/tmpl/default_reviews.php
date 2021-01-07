@@ -71,7 +71,9 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 								 class="hasTooltip permalink"><img src="media/com_kinoarhiv/images/icons/link_16.png" alt="" /></a></span>
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
+
 					<?php if (!$this->user->guest && ($allowReviewForm == 1 && $itemAllowReviewsForm == 1)): ?>
+
 						<div class="review review-content <?php echo $uiClass; ?>"><?php echo $review->review; ?></div>
 						<div class="review-footer corner-bottom">
 							<a href="#" class="cmd-insert-quote"><?php echo JText::_('COM_KA_REVIEWS_QUOTELINK'); ?></a>
@@ -80,6 +82,7 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 								   class="cmd-delete-review" rel="nofollow"><?php echo JText::_('JACTION_DELETE'); ?></a>
 							<?php endif; ?>
 						</div>
+
 					<?php else: ?>
 						<div class="review-footer corner-bottom review-content <?php echo $uiClass; ?>"><?php echo $review->review; ?></div>
 					<?php endif; ?>

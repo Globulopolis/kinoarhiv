@@ -27,8 +27,8 @@ $this->section    = $input->get('section', '', 'word');
 $this->type       = $input->get('type', '', 'word');
 $this->tab        = $input->get('tab', '', 'int');
 $this->id         = $input->get('id', 0, 'int');
-$trailerID        = $input->get('item_id', null, 'array');
-$this->trailer_id = $trailerID[0];
+$trailerID        = $input->get('item_id', 0, 'int');
+$this->trailer_id = $trailerID;
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -69,7 +69,7 @@ $this->trailer_id = $trailerID[0];
 
 					target_form.val(
 						target_form.val()
-						+ (target_form.val() != '' ? "\n" : '')
+						+ (target_form.val() !== '' ? "\n" : '')
 						+ '[url="' + url_subtitle.val() + '" kind="subtitles" srclang="' + lang.val() + '" label="' + $(':selected', lang).text() + '" default="' + $('#urls_url_subtitles_default').val() + '"]');
 					$('#urls_layout_subtitles_form')[0].reset();
 
@@ -123,7 +123,7 @@ $this->trailer_id = $trailerID[0];
 					// Update row with screenshot
 					if (typeof response.screenshot !== 'undefined' && !empty(response.screenshot.file)) {
 						var screenshot_row = $this.closest('table').find('tfoot .screenshot'),
-							screenshot_filename_class = response.screenshot.is_file == 0 ? ' error_image' : '';
+							screenshot_filename_class = response.screenshot.is_file === 0 ? ' error_image' : '';
 
 						screenshot_row.find('div').remove();
 						screenshot_row.prepend('<div class="item-row"><a href="<?php echo $this->folder_path_www; ?>' + response.screenshot.file + '?_=' + Kinoarhiv.datetime('now') + '" id="screenshot_file" class="more' + screenshot_filename_class + '">' + response.screenshot.file + '</a></div>');
@@ -131,7 +131,7 @@ $this->trailer_id = $trailerID[0];
 					}
 
 					// Run updates only if total > 0
-					if (total == 0) {
+					if (total === 0) {
 						tbody.find('tr').remove();
 						tbody.prepend('<tr><td colspan="4"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
 						Kinoarhiv.showLoading('hide', table);
@@ -143,7 +143,7 @@ $this->trailer_id = $trailerID[0];
 					$.each(response[list], function(key, object){
 						var file_info = Kinoarhiv.formatItemTitle(object.type, object.resolution, '', ', '),
 							file_info_text = !empty(file_info) ? ' <span class="gray">(' + file_info + ')</span>': '',
-							filename_class = object.is_file == 0 ? ' red' : '';
+							filename_class = object.is_file === 0 ? ' red' : '';
 
 						html += '<tr>' +
 							'<td width="1%" class="order">' +
@@ -163,7 +163,7 @@ $this->trailer_id = $trailerID[0];
 					tbody.find('tr').remove();
 					tbody.prepend(html);
 				} else if (list === 'subtitles') {
-					if (total == 0) {
+					if (total === 0) {
 						tbody.find('tr').remove();
 						tbody.prepend('<tr><td colspan="5"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
 						Kinoarhiv.showLoading('hide', table);
@@ -173,7 +173,7 @@ $this->trailer_id = $trailerID[0];
 
 					$.each(response[list], function(key, object){
 						var lang = !empty(object.lang) ? ' <span class="gray">(' + object.lang + ')</span>' : '',
-							filename_class = object.is_file == 0 ? ' red' : '';
+							filename_class = object.is_file === 0 ? ' red' : '';
 
 						html += '<tr>' +
 							'<td width="1%" class="order">' +
@@ -202,7 +202,7 @@ $this->trailer_id = $trailerID[0];
 					tbody.find('tr').remove();
 					tbody.prepend(html);
 				} else if (list === 'chapters') {
-					if (total == 0) {
+					if (total === 0) {
 						tbody.find('tr').remove();
 						tbody.prepend('<tr><td colspan="4"><?php echo JText::_('COM_KA_NO_FILES'); ?></td></tr>');
 						Kinoarhiv.showLoading('hide', table);
@@ -210,7 +210,7 @@ $this->trailer_id = $trailerID[0];
 						return;
 					}
 
-					var filename_class = response[list].is_file == 0 ? ' red' : '';
+					var filename_class = response[list].is_file === 0 ? ' red' : '';
 
 					html += '<tr>' +
 						'<td class="item-row"><span class="more' + filename_class + '">' + response[list].file + '</span></td>' +
@@ -246,8 +246,7 @@ $this->trailer_id = $trailerID[0];
 		filelist.on('click', '.cmd-subtitle-default', function(e){
 			e.preventDefault();
 
-			var $this = $(this),
-				item_state = $this.hasClass('is_default');
+			var $this = $(this);
 
 			$.ajax({
 				type: 'POST',
@@ -271,7 +270,7 @@ $this->trailer_id = $trailerID[0];
 			e.preventDefault();
 
 			var tab = $(this).data('upload-tab'),
-				modal = {};
+				modal;
 
 			if (tab === 'screenshot') {
 				modal = $('#imgModalUpload');
@@ -290,8 +289,6 @@ $this->trailer_id = $trailerID[0];
 			e.preventDefault();
 
 			var $this = $(this),
-				list  = $this.closest('table').data('list'),
-				title = '',
 				modal = $('#editFileModal');
 
 			$('.modal-header h3', modal).text('<?php echo JText::_('COM_KA_TRAILERS_HEADING_VIDEOS_DATA_EDIT'); ?>');

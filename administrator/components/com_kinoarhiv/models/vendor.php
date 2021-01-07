@@ -69,12 +69,12 @@ class KinoarhivModelVendor extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'array');
+		$id = $app->input->get('id', 0, 'int');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName(array('id', 'company_name', 'company_name_alias', 'description', 'language', 'state')))
 			->from($db->quoteName('#__ka_vendors'))
-			->where($db->quoteName('id') . ' = ' . (int) $id[0]);
+			->where($db->quoteName('id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
 		$result = $db->loadObject();

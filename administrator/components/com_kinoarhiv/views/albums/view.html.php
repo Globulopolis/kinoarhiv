@@ -10,12 +10,7 @@
 
 defined('_JEXEC') or die;
 
-/**
- * View class for list of movies.
- *
- * @since  3.0
- */
-class KinoarhivViewMovies extends JViewLegacy
+class KinoarhivViewAlbums extends JViewLegacy
 {
 	protected $items;
 
@@ -23,27 +18,28 @@ class KinoarhivViewMovies extends JViewLegacy
 
 	protected $state;
 
+	protected $params;
+
 	/**
-	 * Display the view
+	 * Execute and display a template script.
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  void
+	 * @return  mixed|void  A string if successful, otherwise an Error object.
 	 *
-	 * @throws  Exception
-	 *
-	 * @since   3.0
+	 * @see     \JViewLegacy::loadTemplate()
+	 * @since   3.1
 	 */
 	public function display($tpl = null)
 	{
-		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
-
+		$app                 = JFactory::getApplication();
 		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items         = $this->get('Items');
 		$this->pagination    = $this->get('Pagination');
 		$this->state         = $this->get('State');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
+		$tpl                 = $app->input->get('type', 'albums', 'word');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -58,39 +54,46 @@ class KinoarhivViewMovies extends JViewLegacy
 		parent::display($tpl);
 	}
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @return  void
-	 *
-	 * @since   3.0
-	 */
 	protected function addToolbar()
 	{
+		$app  = JFactory::getApplication();
 		$user = JFactory::getUser();
 
-		JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE')), 'play');
+		if ($app->input->get('type', 'albums', 'word') == 'albums')
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_MUSIC_ALBUMS_TITLE')),
+				'play'
+			);
+		}
+		elseif ($app->input->get('type', 'albums', 'word') == 'tracks')
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_MUSIC_TRACKS_TITLE')),
+				'play'
+			);
+		}
 
 		if ($user->authorise('core.create', 'com_kinoarhiv'))
 		{
-			JToolbarHelper::addNew('movies.add');
+			JToolbarHelper::addNew('albums.add');
 		}
 
 		if ($user->authorise('core.edit', 'com_kinoarhiv'))
 		{
-			JToolbarHelper::editList('movies.edit');
+			JToolbarHelper::editList('albums.edit');
 			JToolbarHelper::divider();
 		}
 
 		if ($user->authorise('core.edit.state', 'com_kinoarhiv'))
 		{
-			JToolbarHelper::publishList('movies.publish');
-			JToolbarHelper::unpublishList('movies.unpublish');
+			JToolbarHelper::publishList('albums.publish');
+			JToolbarHelper::unpublishList('albums.unpublish');
 		}
 
 		if ($user->authorise('core.delete', 'com_kinoarhiv'))
 		{
-			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'movies.remove');
+			JToolbarHelper::deleteList(JText::_('COM_KA_DELETE_SELECTED'), 'albums.remove');
 		}
 
 		JToolbarHelper::divider();

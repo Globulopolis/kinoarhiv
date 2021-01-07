@@ -192,12 +192,12 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		if (!$result)
 		{
 			// Errors enqueued in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id[]=' . $itemID[0]);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id=' . $itemID[0]);
 
 			return;
 		}
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id[]=' . $itemID[0]);
+		$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section=movie&type=trailers&id=' . $id . '&item_id=' . $itemID[0]);
 	}
 
 	/**
@@ -268,7 +268,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		{
 			KAComponentHelper::renderErrors($model->getErrors());
 			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section='
-				. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $itemID
+				. $section . '&type=' . $type . '&id=' . $id . '&item_id=' . $itemID
 			);
 
 			return;
@@ -282,7 +282,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		{
 			// Errors enqueue in the model
 			$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section='
-				. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $itemID
+				. $section . '&type=' . $type . '&id=' . $id . '&item_id=' . $itemID
 			);
 
 			return;
@@ -306,7 +306,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 			case 'apply':
 				$this->setRedirect('index.php?option=com_kinoarhiv&task=mediamanager.edit&section='
-					. $section . '&type=' . $type . '&id=' . $id . '&item_id[]=' . $sessionData[$formGroup]['item_id'], $message
+					. $section . '&type=' . $type . '&id=' . $id . '&item_id=' . $sessionData[$formGroup]['item_id'], $message
 				);
 				break;
 

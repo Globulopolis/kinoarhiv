@@ -1328,6 +1328,90 @@ class KinoarhivModelAPI extends JModelLegacy
 	}
 
 	/**
+	 * Method to get list of album tracks based on filters.
+	 *
+	 * @return  object|array
+	 *
+	 * @since   3.1
+	 */
+	public function getAlbumTraks()
+	{
+		jimport('administrator.components.com_kinoarhiv.helpers.database', JPATH_ROOT);
+
+		$id         = $this->input->get('id', 0, 'int');
+		$limit      = $this->input->get('rows', 25, 'int');
+		$page       = $this->input->get('page', 0, 'int');
+		$limitstart = $limit * $page - $limit;
+		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
+		$orderby    = $this->input->get('sidx', '1', 'string');
+		$order      = $this->input->get('sord', 'asc', 'word');
+		$field      = $this->input->get('searchField', '', 'cmd');
+		$term       = $this->input->get('searchString', '', 'string');
+		$operand    = $this->input->get('searchOper', '', 'word');
+		$result     = (object) array();
+		$where      = "";
+
+		if (!empty($term))
+		{
+			$where = " AND " . KADatabaseHelper::transformOperands($this->db->quoteName($field), $operand, $this->db->escape($term));
+		}
+
+		$query = $this->db->getQuery(true)
+			->select('COUNT(t.id)')
+			->from($this->db->quoteName('#__ka_music', 't'))
+			->where($this->db->quoteName('t.album_id') . ' = ' . (int) $id . $where);
+
+		$this->db->setQuery($query);
+
+		try
+		{
+			$total = $this->db->loadResult();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return array();
+		}
+
+		$totalPages = ($total > 0) ? ceil($total / $limit) : 0;
+		$page = ($page > $totalPages) ? $totalPages : $page;
+
+		$query = $this->db->getQuery(true)
+			->select(
+				$this->db->quoteName(
+					array(
+						't.id', 't.album_id', 't.title', 't.year', 't.length', 't.cd_number', 't.track_number', 't.filename'
+					)
+				)
+			)
+			->from($this->db->quoteName('#__ka_music', 't'))
+			->where($this->db->quoteName('t.album_id') . ' = ' . (int) $id . $where)
+			->order($this->db->quoteName($orderby) . ' ' . strtoupper($this->db->escape($order)))
+			->setLimit($limit, $limitstart);
+
+		$this->db->setQuery($query);
+
+		try
+		{
+			$rows = $this->db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return array();
+		}
+
+		$result->rows    = $rows;
+		$result->page    = $page;
+		$result->total   = $totalPages;
+		$result->records = (int) $total;
+
+		return $result;
+	}
+
+	/**
 	 * Sanitize list of IDs.
 	 *
 	 * @param   string  $ids  List of IDs separated by commas.

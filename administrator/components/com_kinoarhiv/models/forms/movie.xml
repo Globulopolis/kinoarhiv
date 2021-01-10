@@ -10,9 +10,6 @@
 			   data-allow-clear="true" data-remote="true" data-lang="*" data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
-		<field name="parent_id" type="movies" default="0" label="COM_KA_FIELD_MOVIE_PARENT_LABEL"
-			   description="COM_KA_FIELD_MOVIE_PARENT_DESC" class="span12" filter="integer" size="11"
-			   data-ac-type="movies" data-sel-size="1" data-allow-clear="true" data-ignore-ids="true"/>
 		<field name="title" type="text" default="" label="COM_KA_FIELD_MOVIE_LABEL" class="span12 field_title"
 			   required="true" filter="string" size="45"/>
 		<field name="year" type="text" default="" label="COM_KA_FIELD_MOVIE_YEAR" class="span6" required="true"

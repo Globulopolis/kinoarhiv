@@ -175,8 +175,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 
 		$fsAlias = rawurlencode(StringHelper::substr($alias, 0, 1));
 
-		echo json_encode(
-			array('success' => true, 'fs_alias' => $fsAlias)
-		);
+		echo json_encode(array('success' => true, 'fs_alias' => $fsAlias));
 	}
 }

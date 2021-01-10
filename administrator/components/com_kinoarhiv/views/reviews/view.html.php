@@ -163,6 +163,20 @@ class KinoarhivViewReviews extends JViewLegacy
 			{
 				JToolbarHelper::trash('reviews.trash');
 			}
+
+			if ($this->user->authorise('core.admin', 'com_kinoarhiv') || $this->user->authorise('core.options', 'com_kinoarhiv'))
+			{
+				$uri = (string) JUri::getInstance();
+				$return = urlencode(base64_encode($uri));
+
+				// Add a button linking to config for component.
+				JToolbar::getInstance('toolbar')->appendButton(
+					'Link',
+					'options',
+					'JToolbar_Options',
+					'index.php?option=com_kinoarhiv&amp;view=settings&amp;return=' . $return
+				);
+			}
 		}
 	}
 }

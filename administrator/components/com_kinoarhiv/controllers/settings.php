@@ -91,7 +91,22 @@ class KinoarhivControllerSettings extends JControllerLegacy
 	 */
 	public function cancel()
 	{
-		$this->setRedirect('index.php?option=com_kinoarhiv');
+		$app = JFactory::getApplication();
+
+		if (!JSession::checkToken())
+		{
+			$app->enqueueMessage(JText::_('JINVALID_TOKEN_NOTICE'));
+			$app->redirect('index.php');
+		}
+
+		$redirect = base64_decode($app->input->getBase64('return'));
+
+		if (!JUri::isInternal($redirect))
+		{
+			$app->redirect(JUri::base());
+		}
+
+		$this->setRedirect($redirect);
 	}
 
 	/**
@@ -154,13 +169,11 @@ class KinoarhivControllerSettings extends JControllerLegacy
 				$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_FILE'), 'error');
 			}
 
-			return;
 		}
 		else
 		{
 			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
 
-			return;
 		}
 	}
 }

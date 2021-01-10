@@ -4,17 +4,20 @@
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
 			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
-		<field name="title" type="text" default="" label="COM_KA_MUSIC_ALBUMS_HEADING" class="span12"
+		<field name="title" type="text" default="" label="COM_KA_MUSIC_ALBUMS_HEADING" class="span12 field_title"
 			   required="true" filter="string" size="45"/>
 		<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC"
-			   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12" size="45"/>
+			   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12 field_alias" size="45"/>
+
+		<!-- // TODO Left for future file uploads. -->
 		<field name="fs_alias" type="text" label="COM_KA_FIELD_MOVIE_FS_ALIAS"
-			   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9" size="45"/>
+			   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9 field_fs_alias" size="45"/>
 		<field name="fs_alias_orig" type="hidden"/>
+
 		<field name="composer" type="text" default="" label="COM_KA_FIELD_ALBUMS_COMPOSER" class="span12"
 			   filter="string" size="45"/>
 		<field name="year" type="datetime" default="NOW" label="COM_KA_MUSIC_ALBUMS_FIELD_DATETIME" class="span6"
-			   datatype="date" dateformat="yy-mm-dd" filter="user_utc"/>
+			   datatype="date" dateformat="yy-mm-dd" data-sel-year="true" data-sel-month="true" filter="user_utc"/>
 		<field name="length" type="datetime" default="" label="COM_KA_MUSIC_ALBUMS_FIELD_LENGTH" class="span6"
 			   datatype="time" timeformat="HH:mm:ss"/>
 		<field name="isrc" type="text" label="COM_KA_FIELD_ALBUMS_FIELD_ISRC_LABEL" class="span9" size="45"/>
@@ -22,7 +25,6 @@
 			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
 			   data-lang="*" data-type="1"/>
-		<field name="covers_path" type="text" label="JFIELD_ALIAS_LABEL" class="span9" size="45"/>
 		<field name="buy_url" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL"
 			   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="false"/>
 		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="false"/>
@@ -74,6 +76,14 @@
 		</field>
 		<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules"
 			   component="com_kinoarhiv" section="movie" validate="rules"/>
+
+		<field name="covers_path" type="text" label="COM_KA_FIELD_COVER_PATH_LABEL" class="span12" default=""/>
+		<field name="covers_path_www" type="text" label="COM_KA_FIELD_COVER_PATH_WWW_LABEL" class="span12" default=""/>
+		<field name="cover_filename" type="text" label="COM_KA_FIELD_COVER_FILE_LABEL" class="span12" default=""/>
+		<field name="tracks_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_LABEL" class="span12" default=""/>
+		<field name="tracks_path_www" type="text" label="COM_KA_FIELD_TRACKS_PATH_WWW_LABEL" class="span12" default=""/>
+		<field name="tracks_preview_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_PREVIEW_LABEL" class="span12"
+			   default=""/>
 	</fieldset>
 
 	<fields name="attribs" label="COM_KA_MOVIES_TAB_PUB">
@@ -113,7 +123,7 @@
 				<option value="1">JYES</option>
 				<option value="0">JNO</option>
 			</field>
-			<field name="allow_reviews" type="list" default="1" label="COM_KA_FIELD_AP_MOVIE_ALLOW_REVIEWS_LABEL">
+			<field name="allow_reviews" type="list" default="1" label="COM_KA_FIELD_AP_MUSIC_ALLOW_REVIEWS_LABEL">
 				<option value="1">JYES</option>
 				<option value="0">JNO</option>
 			</field>

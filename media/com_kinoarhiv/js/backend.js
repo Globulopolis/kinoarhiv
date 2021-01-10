@@ -181,6 +181,9 @@ jQuery(document).ready(function($){
 				keyboardNavigation: false
 			});
 		} else {
+			var changeMonth = input.data('sel-month'),
+				changeYear = input.data('sel-year');
+
 			if (input.data('type') === 'time') {
 				input.timepicker({
 					timeFormat: $this.data('time-format'),
@@ -189,6 +192,8 @@ jQuery(document).ready(function($){
 			} else if (input.data('type') === 'date') {
 				input.datepicker({
 					dateFormat: $this.data('date-format'),
+					changeMonth: Boolean(Number(changeMonth)),
+					changeYear: Boolean(Number(changeYear)),
 					showButtonPanel: true,
 					showOn: 'button'
 				});
@@ -196,6 +201,8 @@ jQuery(document).ready(function($){
 				input.datetimepicker({
 					dateFormat: $this.data('date-format'),
 					timeFormat: $this.data('time-format'),
+					changeMonth: Boolean(Number(changeMonth)),
+					changeYear: Boolean(Number(changeYear)),
 					showButtonPanel: true,
 					showOn: 'button'
 				});

@@ -14,7 +14,7 @@
 		</field>
 		<field name="release_date" type="datetime" default="NOW" label="COM_KA_FIELD_RELEASE_DATE_LABEL"
 			   class="inputbox validate-date" datatype="date" size="22" dateformat="yy-mm-dd" validate="date"
-			   required="true"/>
+			   required="true" data-sel-year="true" data-sel-month="true"/>
 		<field name="media_type" type="autocomplete" label="COM_KA_RELEASES_MEDIATYPE_TITLE" data-lang="*"
 			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" class="span12"
 			   data-content="mediatypes" data-allow-clear="true" data-key="id">

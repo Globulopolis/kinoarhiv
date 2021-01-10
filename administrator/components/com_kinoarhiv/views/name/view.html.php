@@ -151,7 +151,7 @@ class KinoarhivViewName extends JViewLegacy
 			$this->form->setValue('type', '', 1);
 		}
 
-		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);
+		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
 
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}

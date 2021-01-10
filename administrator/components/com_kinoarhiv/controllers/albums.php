@@ -419,6 +419,21 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 	}
 
 	/**
+	 * Display add/edit track form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editTracks()
+	{
+		$view = $this->getView('album', 'html');
+		$model = $this->getModel('album');
+		$view->setModel($model, true);
+		$view->display('tracks');
+	}
+
+	/**
 	 * Method to encode item alias for using in filesystem paths and url.
 	 *
 	 * @return  void

@@ -17,7 +17,7 @@
 			<option value=""></option>
 		</field>
 		<field name="release_date" default="NOW" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="span9" size="22"
-			   dateformat="yy-mm-dd" datatype="date" required="true"/>
+			   dateformat="yy-mm-dd" datatype="date" required="true" data-sel-year="true" data-sel-month="true"/>
 		<field name="media_type" type="autocomplete" label="COM_KA_RELEASES_MEDIATYPE_TITLE" data-lang="*"
 			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" class="span6"
 			   data-content="mediatypes" data-allow-clear="true" data-key="id">

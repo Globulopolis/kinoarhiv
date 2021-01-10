@@ -10,8 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\Registry\Registry;
-
 class KinoarhivViewAlbum extends JViewLegacy
 {
 	protected $items;
@@ -38,22 +36,10 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app  = JFactory::getApplication();
-		$task = $app->input->get('task', '', 'cmd');
-
-		switch ($task)
+		switch (JFactory::getApplication()->input->get('task', '', 'cmd'))
 		{
-			case 'editMovieCast':
-				$this->editMovieCast($tpl);
-				break;
-			case 'editMovieAwards':
-				$this->editMovieAwards($tpl);
-				break;
-			case 'editMoviePremieres':
-				$this->editMoviePremieres($tpl);
-				break;
-			case 'editMovieReleases':
-				$this->editMovieReleases($tpl);
+			case 'editTracks':
+				$this->editTracks($tpl);
 				break;
 			default:
 				$this->edit();
@@ -76,7 +62,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$form   = $this->get('Form');
-		$items  = new Registry;
+		$item   = new StdClass;
 		$errors = $this->get('Errors');
 
 		if (count($errors))
@@ -84,36 +70,33 @@ class KinoarhivViewAlbum extends JViewLegacy
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		/*if (substr($params->get('media_posters_root_www'), 0, 1) == '/')
+		$checkingPath = JPath::clean($form->getValue('covers_path') . '/' . $form->getValue('cover_filename'));
+
+		if (!is_file($checkingPath))
 		{
-			$imgFolder = JUri::root() . substr($params->get('media_posters_root_www'), 1) . '/'
-				. urlencode($form->getValue('fs_alias')) . '/' . $form->getValue('id') . '/posters/';
+			$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$dimension   = KAContentHelper::getImageSize(
+				JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
+				false
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
 		}
 		else
 		{
-			$imgFolder = $params->get('media_posters_root_www') . '/' . urlencode($form->getValue('fs_alias'))
-				. '/' . $form->getValue('id') . '/posters/';
+			$item->cover = $form->getValue('covers_path_www') . '/' . $form->getValue('cover_filename');
+			$item->cover = (filter_var($item->cover, FILTER_VALIDATE_URL) || mb_substr($item->cover, 0, 1) == '/')
+						   ? $item->cover : JUri::root() . $item->cover;
+			$dimension   = KAContentHelper::getImageSize(
+				$checkingPath,
+				true,
+				(int) $params->get('music_covers_size')
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
 		}
 
-		if ($form->getValue('filename') == '')
-		{
-			$items->set(
-				'poster',
-				JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png'
-			);
-			$items->set(
-				'th_poster',
-				JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png'
-			);
-		}
-		else
-		{
-			$items->set('poster', $imgFolder . $form->getValue('filename'));
-			$items->set('th_poster', $imgFolder . 'thumb_' . $form->getValue('filename'));
-		}
-
-		$items->set('img_folder', $imgFolder);*/
-		$this->items  = $items;
+		$this->item   = $item;
 		$this->form   = $form;
 		$this->params = $params;
 		$this->lang   = JFactory::getLanguage();
@@ -124,6 +107,37 @@ class KinoarhivViewAlbum extends JViewLegacy
 		}
 
 		parent::display();
+		JFactory::getApplication()->input->set('hidemainmenu', true);
+	}
+
+	/**
+	 * Display the view for a track edit.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.1
+	 */
+	protected function editTracks($tpl)
+	{
+		$this->form = $this->get('Form');
+		$errors = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
+
+		if ($this->getLayout() !== 'modal')
+		{
+			$this->addToolbar($tpl);
+		}
+
+		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
+
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}
 
@@ -143,7 +157,10 @@ class KinoarhivViewAlbum extends JViewLegacy
 			if ($this->form->getValue('id') != 0)
 			{
 				JToolbarHelper::title(
-					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')),
+					JText::sprintf(
+						'COM_KINOARHIV',
+						JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')
+					),
 					'play'
 				);
 				JToolbarHelper::apply('albums.apply');
@@ -151,10 +168,6 @@ class KinoarhivViewAlbum extends JViewLegacy
 				JToolbarHelper::save2new('albums.save2new');
 				JToolbarHelper::divider();
 				JToolbarHelper::cancel('albums.cancel', 'JTOOLBAR_CLOSE');
-				JToolbarHelper::divider();
-				JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
-				JToolbarHelper::custom('trailers', 'camera', 'camera', JText::_('COM_KA_MOVIES_TRAILERS'), false);
-				JToolbarHelper::custom('soundtracks', 'music', 'music', JText::_('COM_KA_MOVIES_SOUNDS'), false);
 			}
 			else
 			{
@@ -165,6 +178,27 @@ class KinoarhivViewAlbum extends JViewLegacy
 				JToolbarHelper::divider();
 				JToolbarHelper::cancel('albums.cancel');
 			}
+		}
+		elseif ($task == 'tracks')
+		{
+			if ($this->form->getValue('id') != 0)
+			{
+				JToolbarHelper::title(
+					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
+					'play'
+				);
+			}
+			else
+			{
+				JToolbarHelper::title(
+					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE')),
+					'play'
+				);
+			}
+
+			JToolbarHelper::apply('movies.saveMovieReleases');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 		else
 		{

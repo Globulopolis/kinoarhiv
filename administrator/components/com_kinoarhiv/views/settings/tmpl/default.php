@@ -322,6 +322,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
 			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="return" value="<?php echo $this->return; ?>" />
 			<?php echo JHtml::_('form.token'); ?>
 		</div>
 	</div>

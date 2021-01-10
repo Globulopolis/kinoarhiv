@@ -135,6 +135,16 @@ class JFormFieldDatetime extends JFormField
 				$formats .= 'data-time-format="' . $this->element['timeformat'] . '" ';
 			}
 
+			if (!empty($this->element['data-sel-year']))
+			{
+				$attributes .= 'data-sel-year="' . ($this->element['data-sel-year'] == 'true' ? 1 : 0) . '" ';
+			}
+
+			if (!empty($this->element['data-sel-month']))
+			{
+				$attributes .= 'data-sel-month="' . ($this->element['data-sel-month'] == 'true' ? 1 : 0) . '" ';
+			}
+
 			$html = '<div class="hasDatetime date input-append" data-framework="' . $framework . '"'
 				. ' data-date="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $formats . '>
 				<input type="text" name="' . $this->name . '" id="' . $this->id . '" class="' . $this->class . '"'

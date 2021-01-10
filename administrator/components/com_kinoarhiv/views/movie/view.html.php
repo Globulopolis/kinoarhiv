@@ -43,22 +43,13 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app = JFactory::getApplication();
-		$task = $app->input->get('task', '', 'cmd');
-
-		switch ($task)
+		switch (JFactory::getApplication()->input->get('task', '', 'cmd'))
 		{
 			case 'editMovieCast':
-				$this->editMovieCast($tpl);
-				break;
 			case 'editMovieAwards':
-				$this->editMovieAwards($tpl);
-				break;
 			case 'editMoviePremieres':
-				$this->editMoviePremieres($tpl);
-				break;
 			case 'editMovieReleases':
-				$this->editMovieReleases($tpl);
+				$this->editMovieInfo($tpl);
 				break;
 			default:
 				$this->edit();
@@ -133,7 +124,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	}
 
 	/**
-	 * Display the view for an award edit.
+	 * Display the view for an advanced info edit.
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
@@ -143,7 +134,7 @@ class KinoarhivViewMovie extends JViewLegacy
 	 *
 	 * @since   3.1
 	 */
-	protected function editMovieCast($tpl)
+	protected function editMovieInfo($tpl)
 	{
 		$this->form = $this->get('Form');
 		$errors = $this->get('Errors');
@@ -158,100 +149,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			$this->addToolbar($tpl);
 		}
 
-		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);
-
-		JFactory::getApplication()->input->set('hidemainmenu', true);
-	}
-
-	/**
-	 * Display the view for an award edit.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 *
-	 * @since   3.1
-	 */
-	protected function editMovieAwards($tpl)
-	{
-		$this->form = $this->get('Form');
-		$errors = $this->get('Errors');
-
-		if (count($errors))
-		{
-			throw new Exception(implode("\n", $this->get('Errors')), 500);
-		}
-
-		if ($this->getLayout() !== 'modal')
-		{
-			$this->addToolbar($tpl);
-		}
-
-		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);
-
-		JFactory::getApplication()->input->set('hidemainmenu', true);
-	}
-
-	/**
-	 * Display the view for a premiere edit.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 *
-	 * @since   3.1
-	 */
-	protected function editMoviePremieres($tpl)
-	{
-		$this->form = $this->get('Form');
-		$errors = $this->get('Errors');
-
-		if (count($errors))
-		{
-			throw new Exception(implode("\n", $this->get('Errors')), 500);
-		}
-
-		if ($this->getLayout() !== 'modal')
-		{
-			$this->addToolbar($tpl);
-		}
-
-		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);
-
-		JFactory::getApplication()->input->set('hidemainmenu', true);
-	}
-
-	/**
-	 * Display the view for a release edit.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 *
-	 * @throws  Exception
-	 *
-	 * @since   3.1
-	 */
-	protected function editMovieReleases($tpl)
-	{
-		$this->form = $this->get('Form');
-		$errors = $this->get('Errors');
-
-		if (count($errors))
-		{
-			throw new Exception(implode("\n", $this->get('Errors')), 500);
-		}
-
-		if ($this->getLayout() !== 'modal')
-		{
-			$this->addToolbar($tpl);
-		}
-
-		echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.relations_' . $tpl, array('form' => $this->form), JPATH_ROOT);
+		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
 
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}
@@ -272,7 +170,10 @@ class KinoarhivViewMovie extends JViewLegacy
 			if ($this->form->getValue('id') != 0)
 			{
 				JToolbarHelper::title(
-					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')),
+					JText::sprintf(
+						'COM_KINOARHIV',
+						JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')
+					),
 					'play'
 				);
 				JToolbarHelper::apply('movies.apply');

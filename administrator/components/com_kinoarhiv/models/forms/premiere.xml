@@ -17,7 +17,8 @@
 			<option value=""></option>
 		</field>
 		<field name="premiere_date" type="datetime" label="COM_KA_FIELD_PREMIERE_DATE_LABEL" class="inputbox" size="22"
-			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="datetime" filter="user_utc" required="true"/>
+			   dateformat="yy-mm-dd" timeformat="HH:mm:ss" datatype="datetime" filter="user_utc" required="true"
+			   data-sel-year="true" data-sel-month="true"/>
 		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

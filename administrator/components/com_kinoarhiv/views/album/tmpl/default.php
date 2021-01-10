@@ -75,20 +75,105 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page1', JText::_('COM_KA_MUSIC_GROUP_HEADING')); ?>
 
-				<div id="page1">
-					<div class="row-fluid">
-						<?php //echo $this->loadTemplate('edit_composer'); ?>
-					</div>
+				<div class="row-fluid">
+					<?php //echo $this->loadTemplate('edit_composer'); ?>
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page2', JText::_('COM_KA_MUSIC_TRACKS_TITLE')); ?>
 
-				<div id="page2">
-					<div class="row-fluid">
-						<?php //echo $this->loadTemplate('edit_tracks'); ?>
+				<div class="row-fluid">
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('tracks_path'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('tracks_path'); ?></div>
+							</div>
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('tracks_path_www'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('tracks_path_www'); ?></div>
+							</div>
+						</fieldset>
+					</div>
+					<div class="span6">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="control-label"><?php echo $this->form->getLabel('tracks_preview_path'); ?></div>
+								<div class="controls"><?php echo $this->form->getInput('tracks_preview_path'); ?></div>
+							</div>
+						</fieldset>
 					</div>
 				</div>
+				<?php
+				if ($this->id != 0)
+				{
+					$options = array(
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=albumTraks&format=json'
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTracks&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTracks&item_id=' . $this->id),
+						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.removeTracks&format=json&id=' . $this->id),
+						'width' => '#j-main-container', 'height' => '#item-form',
+						'order' => 't.id', 'orderby' => 'asc',
+						'idprefix' => 't_',
+						'rowlist'  => array(5, 10, 15, 20, 25, 30, 50, 100, 200, 500),
+						'colModel' => array(
+							'JGRID_HEADING_ID' => (object) array(
+								'name' => 'id', 'index' => 't.id', 'width' => 50, 'title' => false,
+								'sorttype' => 'int', 'search' => false
+							),
+							'COM_KA_MUSIC_TRACKS_CD_NUMBER' => (object) array(
+								'name' => 'cd_number', 'index' => 't.cd_number', 'width' => 50, 'title' => false,
+								'sorttype' => 'int', 'search' => false
+							),
+							'COM_KA_MUSIC_TRACKS_NUMBER' => (object) array(
+								'name' => 'track_number', 'index' => 't.track_number', 'width' => 50, 'title' => false,
+								'sorttype' => 'int', 'search' => false
+							),
+							'COM_KA_TRACK_TITLE' => (object) array(
+								'name' => 'title', 'index' => 't.title', 'width' => 250, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							'COM_KA_MOVIES_GALLERY_HEADING_FILENAME' => (object) array(
+								'name' => 'filename', 'index' => 't.filename', 'width' => 250, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							'COM_KA_MUSIC_ALBUMS_FIELD_LENGTH' => (object) array(
+								'name' => 'length', 'index' => 't.length', 'width' => 80, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							/*'COM_KA_RELEASES_MEDIATYPE_TITLE' => (object) array(
+								'name' => 'title', 'index' => 'mt.title', 'width' => 200, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							/*'JGRID_HEADING_ORDERING' => (object) array(
+								'name' => 'ordering', 'index' => 'r.ordering', 'width' => 60, 'title' => false,
+								'sorttype' => 'int', 'search' => false
+							)*/
+						),
+						'navgrid' => $navgridOpts
+					);
+
+					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
+				}
+				else
+				{
+					echo JText::_('COM_KA_NO_ID');
+				}
+				?>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page3', JText::_('COM_KA_MOVIES_TAB_RATE')); ?>

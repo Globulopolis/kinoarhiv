@@ -31,7 +31,21 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$form = $this->loadForm('com_kinoarhiv.album', 'album', array('control' => 'form', 'load_data' => $loadData));
+		$input    = JFactory::getApplication()->input;
+		$task     = $input->getCmd('task', '');
+		$formName = 'com_kinoarhiv.album';
+		$formOpts = array('control' => 'jform', 'load_data' => $loadData);
+
+		switch ($task)
+		{
+			case 'editTracks':
+			case 'saveTracks':
+				$form = $this->loadForm($formName, 'relations_tracks', $formOpts);
+				break;
+			default:
+				$form = $this->loadForm($formName, 'album', $formOpts);
+				break;
+		}
 
 		if (empty($form))
 		{
@@ -69,9 +83,15 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function getItem()
 	{
-		$app = JFactory::getApplication();
-		$db  = $this->getDbo();
-		$id  = $app->input->get('id', array(), 'array');
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$task = $app->input->get('task', '', 'cmd');
+		$id   = $app->input->get('id', 0, 'int');
+
+		if ($task == 'editTracks')
+		{
+			return $this->editTracks();
+		}
 
 		$query = $db->getQuery(true)
 			->select(
@@ -208,48 +228,43 @@ class KinoarhivModelAlbum extends JModelForm
 		return $genres;
 	}
 
-	// TODO Refactor
-	protected function getTags()
+	/**
+	 * Method to get a single record for track edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editTracks()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', array(), 'array');
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('row_id', 0, 'int');
+		$query = $db->getQuery(true);
 
-		if (!empty($id[0]))
+		$query->select(
+			$db->quoteName(
+				array(
+					'id', 'album_id', 'artist_id', 'title', 'genre_rel_id', 'xgenre_id', 'year', 'composer',
+					'publisher', 'performer', 'label', 'isrc', 'length', 'cd_number', 'track_number', 'filename',
+					'buy_url', 'access', 'state'
+				)
+			)
+		)
+			->from($db->quoteName('#__ka_music'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
 		{
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName('metadata'))
-				->from($db->quoteName('#__ka_music_albums'))
-				->where($db->quoteName('id') . ' = ' . (int) $id[0]);
-
-			$db->setQuery($query);
-			$metadata = $db->loadResult();
-			$meta_arr = json_decode($metadata);
-
-			if (is_null($meta_arr) || count($meta_arr->tags) == 0)
-			{
-				return array('data' => array(), 'ids' => '');
-			}
-
-			$query = $db->getQuery(true);
-
-			$query->select($db->quoteName(array('id', 'title')))
-				->from($db->quoteName('#__tags'))
-				->where($db->quoteName('id') . ' IN (' . implode(',', $meta_arr->tags) . ')')
-				->order($db->quoteName('lft') . ' ASC');
-
-			$db->setQuery($query);
-			$result['data'] = $db->loadObjectList();
-
-			foreach ($result['data'] as $value)
-			{
-				$result['ids'][] = $value->id;
-			}
+			$result = $db->loadObject();
 		}
-		else
+		catch (RuntimeException $e)
 		{
-			$result = array('data' => array(), 'ids' => '');
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
 		}
 
 		return $result;
@@ -451,67 +466,6 @@ class KinoarhivModelAlbum extends JModelForm
 		$db->setDebug(false);
 
 		return array('success' => $success, 'message' => $message);
-	}
-
-	public function saveAccessRules()
-	{
-		$app   = JFactory::getApplication();
-		$db    = $this->getDbo();
-		$data  = $app->input->post->get('form', array(), 'array');
-		$id    = $app->input->get('id', null, 'int');
-		$rules = array();
-
-		if (empty($id))
-		{
-			return array('success' => false, 'message' => 'Error');
-		}
-
-		foreach ($data['album']['rules'] as $rule => $groups)
-		{
-			foreach ($groups as $group => $value)
-			{
-				if ($value != '')
-				{
-					$rules[$rule][$group] = (int) $value;
-				}
-				else
-				{
-					unset($data['rules'][$rule][$group]);
-				}
-			}
-		}
-
-		$rules = json_encode($rules);
-
-		// Get parent id
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('id'))
-			->from($db->quoteName('#__assets'))
-			->where($db->quoteName('name') . " = 'com_kinoarhiv' AND " . $db->quoteName('parent_id') . " = 1");
-
-		$db->setQuery($query);
-		$parentID = $db->loadResult();
-
-		$query = $db->getQuery(true);
-
-		$query->update($db->quoteName('#__assets'))
-			->set($db->quoteName('rules') . " = '" . $rules . "'")
-			->where($db->quoteName('#__assets') . ' = ' . $db->quote('com_kinoarhiv.album.' . (int) $id))
-			->where($db->quoteName('level') . ' = 2 AND ' . $db->quoteName('parent_id') . " = " . (int) $parentID);
-
-		$db->setQuery($query);
-
-		try
-		{
-			$db->execute();
-
-			return array('success' => true);
-		}
-		catch (Exception $e)
-		{
-			return array('success' => false, 'message' => $e->getMessage());
-		}
 	}
 
 	/**

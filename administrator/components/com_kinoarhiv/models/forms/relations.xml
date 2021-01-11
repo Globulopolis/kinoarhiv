@@ -33,7 +33,7 @@
 			   filter="integer" size="11" data-ac-type="awards"/>
 		<field name="item_id" type="awards" label="COM_KA_FIELD_AW_ITEM_LABEL" required="true" class="span12"
 			   filter="integer" size="11" data-ac-type="awards"/>
-		<field name="desc" type="editor" label="COM_KA_FIELD_AW_DESC" filter="raw" buttons="false"/>
+		<field name="desc" type="editor" label="COM_KA_FIELD_AW_DESC" filter="KAComponentHelper::cleanHTML" buttons="false"/>
 		<field name="year" type="text" class="span6" label="COM_KA_FIELD_AW_YEAR" filter="integer" maxlength="4"/>
 		<field name="type" type="list" label="COM_KA_FIELD_AW_TYPE" class="span6" filter="integer" size="1">
 			<option value="0">COM_KA_MOVIES_TITLE</option>

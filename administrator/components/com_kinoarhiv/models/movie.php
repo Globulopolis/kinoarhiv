@@ -1432,8 +1432,11 @@ echo $query;
 			$this->saveGenres($data['id'], $data['genres'][0]);
 		}
 
-		$this->updateGenresStat($data['genres_orig'], $data['genres']);
-		$this->updateTagMapping($data['id'], $data['tags']);
+		KAComponentHelperBackend::updateGenresStat($data['genres_orig'], $data['genres'], '#__ka_rel_genres');
+		KAComponentHelperBackend::updateTagMapping($data['id'], $data['tags'], 'com_kinoarhiv.movie');
+
+		// Clear the cache
+		$this->cleanCache();
 
 		return true;
 	}
@@ -1453,8 +1456,10 @@ echo $query;
 	{
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$db = $this->getDbo();
-		$introtext = array();
+		$db                = $this->getDbo();
+		$data['countries'] = array_filter($data['countries']);
+		$data['genres']    = array_filter($data['genres']);
+		$introtext         = array();
 
 		// Process intro text for countries
 		if (!empty($data['countries']))
@@ -1500,7 +1505,7 @@ echo $query;
 
 			foreach ($genres as $genre)
 			{
-				$genresStr .= $genre->name . ', ';
+				$genresStr .= StringHelper::strtolower($genre->name) . ', ';
 			}
 
 			$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
@@ -1664,7 +1669,6 @@ echo $query;
 		$genres      = explode(',', $genres);
 		$queryResult = true;
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_rel_genres');
 		$db->transactionStart();
 
@@ -1715,76 +1719,8 @@ echo $query;
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
-	}
-
-	/**
-	 * Method to update tags mapping.
-	 *
-	 * @param   int     $itemID     Item ID
-	 * @param   mixed   $ids        New tags IDs. Array of IDs or string with IDs separated by commas.
-	 * @param   string  $typeAlias  Type alias. In form: component_name.item_type
-	 *
-	 * @return  boolean   True on success
-	 *
-	 * @since   3.1
-	 */
-	protected function updateTagMapping($itemID, $ids, $typeAlias = 'com_kinoarhiv.movie')
-	{
-		$app = JFactory::getApplication();
-		$db  = $this->getDbo();
-		$ids = (!is_array($ids)) ? explode(',', $ids) : $ids;
-
-		if (!empty($ids))
-		{
-			// Remove existing tags from mapping table
-			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__contentitem_tag_map'))
-				->where($db->quoteName('content_item_id') . ' = ' . (int) $itemID);
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-			}
-			catch (Exception $e)
-			{
-				$app->enqueueMessage($e->getMessage(), 'error');
-
-				return false;
-			}
-
-			if ((is_array($ids) && empty($ids[0])) || empty($ids))
-			{
-				return true;
-			}
-
-			$query = $db->getQuery(true)
-				->insert($db->quoteName('#__contentitem_tag_map'))
-				->columns($db->quoteName(array('type_alias', 'core_content_id', 'content_item_id', 'tag_id', 'tag_date', 'type_id')));
-
-			foreach ($ids as $tagID)
-			{
-				$query->values("'" . (string) $typeAlias . "', '0', '" . (int) $itemID . "', '" . (int) $tagID . "', " . $query->currentTimestamp() . ", '0'");
-			}
-
-			$db->setQuery($query);
-
-			try
-			{
-				$db->execute();
-			}
-			catch (Exception $e)
-			{
-				$app->enqueueMessage($e->getMessage(), 'error');
-
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**
@@ -1863,69 +1799,6 @@ echo $query;
 		}
 
 		return true;
-	}
-
-	/**
-	 * Update statistics on genres
-	 *
-	 * @param   string  $old  Original genres list(before edit).
-	 * @param   string  $new  New genres list.
-	 *
-	 * @return  mixed   True on success, exception otherwise
-	 *
-	 * @since   3.1
-	 */
-	protected function updateGenresStat($old, $new)
-	{
-		$db = $this->getDbo();
-		$oldArr = !is_array($old) ? explode(',', $old) : $old;
-		$newArr = !is_array($new) ? explode(',', $new) : $new;
-		$all = array_unique(array_merge($oldArr, $newArr));
-
-		$queryResult = true;
-		$db->setDebug(true);
-		$db->lockTable('#__ka_genres');
-		$db->transactionStart();
-
-		foreach ($all as $genreID)
-		{
-			$query = $db->getQuery(true);
-
-			$query->update($db->quoteName('#__ka_genres'));
-
-				$subquery = $db->getQuery(true)
-					->select('COUNT(genre_id)')
-					->from($db->quoteName('#__ka_rel_genres'))
-					->where($db->quoteName('genre_id') . ' = ' . (int) $genreID);
-
-			$query->set($db->quoteName('stats') . ' = (' . $subquery . ')')
-				->where($db->quoteName('id') . ' = ' . (int) $genreID);
-			$db->setQuery($query . ';');
-
-			if ($db->execute() === false)
-			{
-				$queryResult = false;
-				break;
-			}
-		}
-
-		if ($queryResult === false)
-		{
-			$db->transactionRollback();
-			JFactory::getApplication()->enqueueMessage(
-				JText::_('COM_KA_GENRES_TITLE') . ': ' . JText::_('COM_KA_GENRES_STATS_UPDATE_ERROR'),
-				'error'
-			);
-		}
-		else
-		{
-			$db->transactionCommit();
-		}
-
-		$db->unlockTables();
-		$db->setDebug(false);
-
-		return $queryResult;
 	}
 
 	/**

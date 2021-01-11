@@ -33,7 +33,7 @@
 				<option value="0">JUNPUBLISHED</option>
 			</field>
 			<field name="embed_code" type="textarea" label="COM_KA_TRAILERS_UPLOAD_EMBED" class="span12"
-				   rows="5" filter="raw" spellcheck="false"/>
+				   rows="5" filter="KAComponentHelper::cleanHTML" spellcheck="false"/>
 			<field name="urls" type="textarea" label="COM_KA_TRAILERS_UPLOAD_URLS" class="span12" rows="5"
 				   spellcheck="false"/>
 			<field name="item_id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"

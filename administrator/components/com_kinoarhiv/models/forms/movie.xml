@@ -21,12 +21,12 @@
 		<field name="fs_alias" type="text" label="COM_KA_FIELD_MOVIE_FS_ALIAS" required="true"
 			   class="span9 field_fs_alias" size="45"/>
 		<field name="fs_alias_orig" type="hidden"/>
-		<field name="plot" type="editor" label="COM_KA_FIELD_MOVIE_PLOT" filter="raw" buttons="false"/>
-		<field name="known" type="editor" label="COM_KA_FIELD_MOVIE_KNOWN" filter="raw" buttons="false"/>
-		<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="raw"
+		<field name="plot" type="editor" label="COM_KA_FIELD_MOVIE_PLOT" filter="KAComponentHelper::cleanHTML" buttons="false"/>
+		<field name="known" type="editor" label="COM_KA_FIELD_MOVIE_KNOWN" filter="KAComponentHelper::cleanHTML" buttons="false"/>
+		<field name="desc" type="textarea" default="" label="COM_KA_FIELD_MOVIE_DESC" class="span12" filter="KAComponentHelper::cleanHTML"
 			   cols="6" rows="15"/>
-		<field name="urls" type="editor" label="COM_KA_FIELD_MOVIE_URLS" filter="raw" buttons="false"/>
-		<field name="buy_urls" type="editor" label="COM_KA_FIELD_MOVIE_BUY_URLS" filter="raw" buttons="false"/>
+		<field name="urls" type="editor" label="COM_KA_FIELD_MOVIE_URLS" filter="KAComponentHelper::cleanHTML" buttons="false"/>
+		<field name="buy_urls" type="editor" label="COM_KA_FIELD_MOVIE_BUY_URLS" filter="KAComponentHelper::cleanHTML" buttons="false"/>
 		<field name="slogan" type="text" default="" label="COM_KA_FIELD_MOVIE_SLOGAN" class="span12" filter="string"
 			   size="45"/>
 		<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string"
@@ -101,7 +101,7 @@
 		<field name="rate_sum_loc" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM"
 			   class="span6 field_rate_sum_loc" filter="integer" size="45"/>
 		<field name="rate_custom" type="editor" label="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT"
-			   description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" filter="raw" buttons="false"/>
+			   description="COM_KA_FIELD_MOVIE_CUSTOM_RATE_FORMAT_DESC" filter="KAComponentHelper::cleanHTML" buttons="false"/>
 
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL"
 			   description="JFIELD_META_KEYWORDS_DESC" class="span10" rows="3" cols="30"

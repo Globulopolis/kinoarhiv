@@ -21,7 +21,8 @@
 			<option value=""></option>
 		</field>
 		<field name="desc" type="textarea" default="" label="JGLOBAL_DESCRIPTION"
-			   description="COM_KA_FIELD_RELEASE_DESC_LABEL_DESC" class="span12" filter="raw" cols="6" rows="5"/>
+			   description="COM_KA_FIELD_RELEASE_DESC_LABEL_DESC" class="span12" filter="KAComponentHelper::cleanHTML"
+			   cols="6" rows="5"/>
 		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

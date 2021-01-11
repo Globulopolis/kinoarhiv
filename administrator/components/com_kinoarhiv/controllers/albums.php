@@ -83,135 +83,85 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 	/**
 	 * Method to save a record.
 	 *
-	 * @return  mixed
+	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public function save() {
+	public function save()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-		/*$document = JFactory::getDocument();
+
+		$app  = JFactory::getApplication();
 		$user = JFactory::getUser();
+		$id   = $app->input->get('id', 0, 'int');
 
 		// Check if the user is authorized to do this.
-		if (!$user->authorise('core.create.award', 'com_kinoarhiv') && !$user->authorise('core.edit.award', 'com_kinoarhiv')) {
-			if ($document->getType() == 'html') {
-				JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-				return;
-			} else {
-				$document->setName('response');
-				echo json_encode(array('success'=>false, 'message'=>JText::_('JERROR_ALERTNOAUTHOR')));
-				return;
-			}
+		if (!$user->authorise('core.create', 'com_kinoarhiv') && !$user->authorise('core.edit', 'com_kinoarhiv.album.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('award');
-		$data = $this->input->post->get('form', array(), 'array');
-		$form = $model->getForm($data, false);
 
-		if (!$form) {
-			if ($document->getType() == 'html') {
-				$app->enqueueMessage($model->getError(), 'error');
+		/** @var KinoarhivModelAlbum $model */
+		$model = $this->getModel('album');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
 
-				return false;
-			} else {
-				$document->setName('response');
-				echo json_encode(array('success'=>false, 'message'=>$model->getError()));
-				return;
-			}
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
 		}
 
-		// Process aliases for columns name
-		if ($app->input->get('alias', 0, 'int') == 1) {
-			foreach ($data as $key=>$value) {
-				$key = substr($key, 2);
-				$data[$key] = $value;
-				unset($data['a_'.$key]);
-			}
-		}
-
-		// Store data for use in KinoarhivModelAward::loadFormData()
-		$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.edit_data', $data);
 		$validData = $model->validate($form, $data);
 
-		if ($validData === false) {
-			$errors = KAComponentHelperBackend::renderErrors($model->getErrors(), $document->getType());
+		if ($validData === false)
+		{
+			KAComponentHelper::renderErrors($model->getErrors());
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=' . $id);
 
-			if ($document->getType() == 'html') {
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]='.$data['id']);
-
-				return false;
-			} else {
-				$document->setName('response');
-				echo json_encode(array('success'=>false, 'message'=>$errors));
-				return;
-			}
+			return;
 		}
 
+		// Store data for use in KinoarhivModelAlbum::loadFormData()
+		$app->setUserState('com_kinoarhiv.albums.' . $user->id . '.edit_data', $validData);
 		$result = $model->save($validData);
-		$session_data = $app->getUserState('com_kinoarhiv.awards.'.$user->id.'.data');
 
-		if (!$result) {
-			if ($document->getType() == 'html') {
-				$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
-				$this->setMessage($this->getError(), 'error');
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=' . $id);
 
-				$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]='.$data['id']);
-
-				return false;
-			} else {
-				$document->setName('response');
-				echo json_encode($session_data);
-				return;
-			}
+			return;
 		}
+
+		$sessionData = $app->getUserState('com_kinoarhiv.albums.' . $user->id . '.edit_data');
 
 		// Set the success message.
 		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
 		// Delete session data taken from model
-		$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.data', null);
-		$app->setUserState('com_kinoarhiv.awards.'.$user->id.'.edit_data', null);
+		$app->setUserState('com_kinoarhiv.albums.' . $user->id . '.edit_data', null);
 
-		if ($document->getType() == 'html') {
-			$id = $session_data['data']['id'];
-
-			// Set the redirect based on the task.
-			switch ($this->getTask()) {
-				case 'save2new':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=add', $message);
-					break;
-				case 'apply':
-					$this->setRedirect('index.php?option=com_kinoarhiv&controller=awards&task=edit&id[]='.$id, $message);
-					break;
-
-				case 'save':
-				default:
-					$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', $message);
-					break;
-			}
-		} else {
-			$document->setName('response');
-			echo json_encode($session_data);
-		}
-
-		return true;*/
-	}
-
-	public function saveAccessRules()
-	{
-		/*JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.admin', 'com_kinoarhiv') && !JFactory::getUser()->authorise('core.edit.access', 'com_kinoarhiv'))
+		switch ($this->getTask())
 		{
-			return array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR'));
+			case 'save2new':
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=album&task=albums.add', $message);
+				break;
+
+			case 'apply':
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=' . $sessionData['id'], $message);
+				break;
+
+			case 'save':
+			default:
+				$this->setRedirect('index.php?option=com_kinoarhiv&view=albums', $message);
+				break;
 		}
-
-		/** @var KinoarhivModelAlbum $model */
-		/*$model = $this->getModel('album');
-		$result = $model->saveAccessRules();
-
-		echo json_encode($result);*/
 	}
 
 	/**
@@ -359,7 +309,7 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 
 	/**
 	 * Method to save the submitted ordering values for records.
-	 *
+	 * // TODO Refactor
 	 * @return  void
 	 *
 	 * @since   3.1

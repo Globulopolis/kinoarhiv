@@ -25,9 +25,11 @@
 			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
 			   data-lang="*" data-type="1"/>
-		<field name="buy_url" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL"
-			   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="raw" buttons="false"/>
-		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="false"/>
+		<field name="genres_orig" type="hidden"/>
+
+		<field name="buy_urls" type="editor" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL"
+			   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" filter="KAComponentHelper::cleanHTML" buttons="true"/>
+		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="KAComponentHelper::cleanHTML" buttons="true"/>
 		<field name="rate" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTES" class="span6 field_rate"
 			   filter="integer" size="45"/>
 		<field name="rate_sum" type="text" default="" label="COM_KA_FIELD_MOVIE_VOTESUMM"

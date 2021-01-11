@@ -2,8 +2,8 @@
 <form addrulepath="administrator/components/com_kinoarhiv/models/rules"
 	  addfieldpath="/components/com_kinoarhiv/models/fields">
 	<fieldset name="edit">
-		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="raw" buttons="false"
-			   required="true"/>
+		<field name="review" type="editor" label="COM_KA_REVIEWS_FIELD_REVIEW" filter="KAComponentHelper::cleanHTML"
+			   buttons="false" required="true"/>
 		<field name="item_id" type="autocomplete" label="COM_KA_MUSIC_ALBUMS_HEADING" filter="integer" required="true"
 			   class="span12" data-content="albums" data-allow-clear="true" data-remote="true" data-lang="*"
 			   data-minimum-input-length="1" data-key="id">

@@ -16,8 +16,8 @@
 			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>
 		</field>
-		<field name="release_date" default="NOW" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="span9" size="22"
-			   dateformat="yy-mm-dd" datatype="date" required="true" data-sel-year="true" data-sel-month="true"/>
+		<field name="release_date" default="NOW" type="datetime" label="COM_KA_FIELD_RELEASE_DATE_LABEL" class="span9"
+			   size="22" dateformat="yy-mm-dd" datatype="date" required="true" data-sel-year="true" data-sel-month="true"/>
 		<field name="media_type" type="autocomplete" label="COM_KA_RELEASES_MEDIATYPE_TITLE" data-lang="*"
 			   description="COM_KA_FIELD_RELEASES_MEDIATYPE_DESC" filter="integer" class="span6"
 			   data-content="mediatypes" data-allow-clear="true" data-key="id">
@@ -28,7 +28,7 @@
 		</field>
 		<field name="ordering" type="order" data="releases" class="span6" label="JFIELD_ORDERING_LABEL"
 			   description="JFIELD_ORDERING_DESC"/>
-		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="raw" buttons="false"/>
+		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="KAComponentHelper::cleanHTML" buttons="false"/>
 		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
 			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
 	</fieldset>

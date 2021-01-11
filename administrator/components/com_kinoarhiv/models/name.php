@@ -502,7 +502,7 @@ class KinoarhivModelName extends JModelForm
 
 		$name      = $db->escape(trim($data['name']));
 		$latinName = $db->escape(trim($data['latin_name']));
-		$introtext = $this->createIntroText($data, $params, $data['id']);
+		$introtext = $this->createIntroText($data);
 
 		if (empty($data['id']))
 		{
@@ -661,6 +661,9 @@ class KinoarhivModelName extends JModelForm
 			$this->saveCareers($data['id'], $data['careers'][0]);
 		}
 
+		// Clear the cache
+		$this->cleanCache();
+
 		return true;
 	}
 
@@ -677,8 +680,10 @@ class KinoarhivModelName extends JModelForm
 	{
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$db = $this->getDbo();
-		$introtext = array();
+		$db              = $this->getDbo();
+		$data['careers'] = array_filter($data['careers']);
+		$data['genres']  = array_filter($data['genres']);
+		$introtext       = array();
 
 		// Process intro text for careers
 		if (!empty($data['careers']))

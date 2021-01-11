@@ -167,6 +167,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   `desc` text NOT NULL,
   `rate` int(10) NOT NULL DEFAULT '0',
   `rate_sum` int(10) NOT NULL DEFAULT '0',
+  `rate_rounded` tinyint(1) NOT NULL DEFAULT '0',
   `covers_path` varchar(255) NOT NULL,
   `covers_path_www` varchar(255) NOT NULL,
   `cover_filename` varchar(128) NOT NULL,

@@ -579,7 +579,7 @@
 		<field name="html_allowed_tags" type="textarea"
 			   default="br,h1,h2,h3,h4,h5,h6,ul,ol,li,u,div[class],i,strong,b,q[cite],span[class],blockquote[cite],hr,p[class]"
 			   label="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL" description="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL_DESC"
-			   filter="string" cols="60" rows="5" class="span11"/>
+			   filter="string" cols="60" rows="5" class="span11" spellcheck="false"/>
 	</fieldset>
 
 	<fieldset name="reviews_save" label="COM_KA_REVIEWS_SETTINGS_SAVE_LABEL">

@@ -116,7 +116,7 @@ class KAComponentHelper
 		$params    = JComponentHelper::getParams('com_kinoarhiv');
 		$cachePath = JPath::clean($params->get('def_cache'));
 
-		require_once JPath::clean(JPATH_COMPONENT . '/libraries/vendor/htmlpurifier/HTMLPurifier.standalone.php');
+		require_once JPath::clean(JPATH_ROOT . '/components/com_kinoarhiv/libraries/vendor/htmlpurifier/HTMLPurifier.standalone.php');
 
 		$purifierConfig = HTMLPurifier_Config::createDefault();
 

@@ -106,8 +106,8 @@ defined('_JEXEC') or die;
 				<div class="controls"><?php echo $this->form->getInput('desc'); ?></div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('buy_url'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('buy_url'); ?></div>
+				<div class="control-label"><?php echo $this->form->getLabel('buy_urls'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('buy_urls'); ?></div>
 			</div>
 		</fieldset>
 	</div>

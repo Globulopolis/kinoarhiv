@@ -12,7 +12,7 @@
 		</field>
 		<field name="stats" type="text" default="0" label="COM_KA_FIELD_GENRES_STATS_TITLE"
 			   description="COM_KA_FIELD_GENRES_STATS_DESC" class="inputbox" required="true" filter="integer" size="6"/>
-		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="JComponentHelper::filterText" buttons="true"/>
+		<field name="desc" type="editor" label="JGLOBAL_DESCRIPTION" filter="KAComponentHelper::cleanHTML" buttons="true"/>
 		<field name="language" type="contentlanguage" label="JFIELD_LANGUAGE_LABEL">
 			<option value="*">JALL</option>
 		</field>

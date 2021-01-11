@@ -99,6 +99,8 @@ class KinoarhivModelReviews extends JModelForm
 		$user     = JFactory::getUser();
 		$params   = JComponentHelper::getParams('com_kinoarhiv');
 		$itemID   = $app->input->get('id', 0, 'int');
+
+		// Remove all tags for character counting.
 		$stripTag = KAComponentHelper::cleanHTML($data['review'], null);
 
 		if ($params->get('allow_reviews') == 0)

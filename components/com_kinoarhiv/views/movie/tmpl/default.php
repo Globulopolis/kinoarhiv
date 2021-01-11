@@ -102,7 +102,7 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 		}).resize();
 	});
 </script>
-<div class="uk-article ka-content" itemscope itemtype="https://schema.org/Movie">
+<div class="uk-article ka-content" itemscope itemtype="http://schema.org/Movie">
 	<meta itemprop="contentRating" content="MPAA <?php echo strtoupper($this->item->mpaa); ?>">
 	<meta itemprop="duration" content="<?php echo $this->item->_length; ?>">
 	<meta itemprop="isFamilyFriendly" content="<?php echo ($this->item->mpaa == 'g' || $this->item->mpaa == 'pg') ? 'True' : 'False';?>">

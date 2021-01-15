@@ -35,10 +35,6 @@ defined('_JEXEC') or die;
 				</div>
 			</div>
 			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('composer'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('composer'); ?></div>
-			</div>
-			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('genres'); ?></div>
 				<div class="controls">
 					<?php echo $this->form->getInput('genres'); ?>

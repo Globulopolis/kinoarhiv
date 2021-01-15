@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+JLoader::register('KAContentHelperBackend', JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php'));
+
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
@@ -39,6 +41,10 @@ class KinoarhivModelAlbum extends JModelForm
 
 		switch ($task)
 		{
+			case 'editAlbumCrew':
+			case 'saveAlbumCrew':
+				$form = $this->loadForm($formName, 'relations_album_crew', $formOpts);
+				break;
 			case 'editTracks':
 			case 'saveTracks':
 				$form = $this->loadForm($formName, 'relations_tracks', $formOpts);
@@ -89,7 +95,11 @@ class KinoarhivModelAlbum extends JModelForm
 		$task = $app->input->get('task', '', 'cmd');
 		$id   = $app->input->get('id', 0, 'int');
 
-		if ($task == 'editTracks')
+		if ($task == 'editAlbumCrew')
+		{
+			return $this->editAlbumCrew();
+		}
+		elseif ($task == 'editTracks')
 		{
 			return $this->editTracks();
 		}
@@ -202,7 +212,7 @@ class KinoarhivModelAlbum extends JModelForm
 		// Prepare some data
 		$rateLocalRounded     = ((int) $data['rate'] > 0 && (int) $data['rate_sum'] > 0)
 			? round($data['rate_sum'] / $data['rate'], 0) : 0;
-		$introtext            = $this->createIntroText($data, $params, $data['id']);
+		$introtext            = $this->createIntroText($data, $params);
 		$coversPath           = JPath::clean($data['covers_path']);
 		$coversPathWWW        = JPath::clean($data['covers_path_www']);
 		$coverFilename        = JPath::clean($data['cover_filename']);
@@ -354,7 +364,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 			if (empty($data['id']))
 			{
-				$assetID = KAComponentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.album.' . $insertID, $title, $data['rules']);
+				$assetID = KAContentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.album.' . $insertID, $title, $data['rules']);
 				$query = $db->getQuery(true)
 					->update($db->quoteName('#__ka_music_albums'))
 					->set($db->quoteName('asset_id') . ' = ' . (int) $assetID);
@@ -374,7 +384,7 @@ class KinoarhivModelAlbum extends JModelForm
 			}
 			else
 			{
-				KAComponentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.album.' . $data['id'], $title, $data['rules']);
+				KAContentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.album.' . $data['id'], $title, $data['rules']);
 			}
 		}
 
@@ -389,8 +399,8 @@ class KinoarhivModelAlbum extends JModelForm
 			$this->saveGenres($data['id'], $data['genres'][0]);
 		}
 
-		KAComponentHelperBackend::updateGenresStat($data['genres_orig'], $data['genres'], '#__ka_music_rel_genres');
-		KAComponentHelperBackend::updateTagMapping($data['id'], $data['tags'], 'com_kinoarhiv.album');
+		KAContentHelperBackend::updateGenresStat($data['genres_orig'], $data['genres'], '#__ka_music_rel_genres');
+		KAContentHelperBackend::updateTagMapping($data['id'], $data['tags'], 'com_kinoarhiv.album');
 
 		// Clear the cache
 		$this->cleanCache();
@@ -403,19 +413,19 @@ class KinoarhivModelAlbum extends JModelForm
 	 *
 	 * @param   array    $data    Movie info
 	 * @param   object   $params  Component parameters
-	 * @param   integer  $id      Item ID
 	 *
 	 * @return  string
 	 *
 	 * @since   3.1
 	 */
-	private function createIntroText($data, $params, $id)
+	private function createIntroText($data, $params)
 	{
-		//jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
-		$db = $this->getDbo();
+		$app            = JFactory::getApplication();
+		$db             = $this->getDbo();
 		$data['genres'] = array_filter($data['genres']);
-		$introtext = array();
+		$introtext      = array();
 
 		// Process intro text for genres
 		if (!empty($data['genres']))
@@ -429,29 +439,37 @@ class KinoarhivModelAlbum extends JModelForm
 				->order('FIELD (' . $db->quoteName('id') . ', ' . $_genres . ')');
 
 			$db->setQuery($query);
-			$genres = $db->loadObjectList();
 
-			$languageConst = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
-			$genresStr = '';
-
-			foreach ($genres as $genre)
+			try
 			{
-				$genresStr .= StringHelper::strtolower($genre->name) . ', ';
-			}
+				$genres = $db->loadObjectList();
 
-			$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+				$languageConst = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
+				$genresStr = '';
+
+				foreach ($genres as $genre)
+				{
+					$genresStr .= StringHelper::strtolower($genre->name) . ', ';
+				}
+
+				$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+			}
 		}
 
-		// Process directors and cast
-		/*if (!empty($id))
+		// Process crew
+		if (!empty($data['id']))
 		{
-			// Start processing intro text for director(s) IDs
 			$query = $db->getQuery(true)
-				->select($db->quoteName(array('rel.name_id', 'n.name', 'n.latin_name')))
-				->from($db->quoteName('#__ka_rel_names', 'rel'))
-				->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('rel.name_id'))
-				->where($db->quoteName('rel.movie_id') . ' = ' . $id . ' AND ' . $db->quoteName('rel.is_directors') . ' = 1')
-				->order($db->quoteName('rel.ordering'));
+				->select($db->quoteName(array('rel.name_id', 'rel.career_id', 'n.name', 'n.latin_name', 'c.title', 'c.is_mainpage')))
+				->from($db->quoteName('#__ka_music_rel_names', 'rel'))
+				->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('rel.name_id'))
+				->leftJoin($db->quoteName('#__ka_names_career', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('rel.career_id'))
+				->where('rel.item_id = ' . (int) $data['id'] . ' AND rel.item_type = 0')
+				->order($db->quoteName('rel.ordering') . ' ASC');
 
 			if ($params->get('introtext_actors_list_limit') > 0)
 			{
@@ -459,53 +477,47 @@ class KinoarhivModelAlbum extends JModelForm
 			}
 
 			$db->setQuery($query);
-			$directors = $db->loadObjectList();
 
-			if (count($directors) > 0)
+			try
 			{
-				$languageConst = count($directors) > 1 ? 'COM_KA_DIRECTORS' : 'COM_KA_DIRECTOR';
-				$directorsStr  = '';
+				$crew = $db->loadObjectList();
 
-				foreach ($directors as $director)
+				if (count($crew) > 0)
 				{
-					$directorsStr .= '[name=' . $director->name_id . ']' . KAContentHelper::formatItemTitle($director->name, $director->latin_name) . '[/name], ';
+					$crewArr = array();
+					$crewStr  = '';
+
+					// Presorting
+					foreach ($crew as $item)
+					{
+						if ($item->is_mainpage == 1)
+						{
+							$crewArr[$item->career_id][] = $item;
+						}
+					}
+
+					foreach ($crewArr as $row)
+					{
+						$crewStr .= '[names ln=' . $row[0]->title . ']';
+						$rows = count($row);
+
+						foreach ($row as $key => $_item)
+						{
+							$crewStr .= '[name=' . $_item->name_id . ']' . KAContentHelper::formatItemTitle($_item->name, $_item->latin_name) . '[/name]';
+							$crewStr .= $rows > ($key + 1) ? ', ' : '';
+						}
+
+						$crewStr .= '[/names]';
+					}
+
+					$introtext[] = '<span class="cr-list">' . $crewStr . '</span>';
 				}
-
-				$introtext[] = '<span class="dc-list">[names ln=' . $languageConst . ']: ' . StringHelper::substr($directorsStr, 0, -2) . '[/names]</span>';
 			}
-
-			// End
-
-			// Start processing intro text for cast
-			$query = $db->getQuery(true)
-				->select($db->quoteName(array('rel.name_id', 'n.name', 'n.latin_name')))
-				->from($db->quoteName('#__ka_rel_names', 'rel'))
-				->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('rel.name_id'))
-				->where('rel.movie_id = ' . $id . ' AND rel.is_actors = 1 AND rel.voice_artists = 0')
-				->order($db->quoteName('rel.ordering'));
-
-			if ($params->get('introtext_actors_list_limit') > 0)
+			catch (RuntimeException $e)
 			{
-				$query->setLimit($params->get('introtext_actors_list_limit'), 0);
+				$app->enqueueMessage($e->getMessage(), 'error');
 			}
-
-			$db->setQuery($query);
-			$cast = $db->loadObjectList();
-
-			if (count($cast) > 0)
-			{
-				$castStr  = '';
-
-				foreach ($cast as $name)
-				{
-					$castStr .= '[name=' . $name->name_id . ']' . KAContentHelper::formatItemTitle($name->name, $name->latin_name) . '[/name], ';
-				}
-
-				$introtext[] = '<span class="cast-list">[names ln=COM_KA_CAST]: ' . StringHelper::substr($castStr, 0, -2) . '[/names]</span>';
-			}
-
-			// End
-		}*/
+		}
 
 		return implode('', $introtext);
 	}
@@ -662,6 +674,146 @@ class KinoarhivModelAlbum extends JModelForm
 	 *
 	 * @since  3.1
 	 */
+	private function editAlbumCrew()
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('row_id', 0, 'int');
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(array('id', 'name_id', 'item_id', 'item_type', 'role', 'career_id', 'ordering', 'desc'))
+		)
+			->from($db->quoteName('#__ka_music_rel_names'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Removes album crew.
+	 *
+	 * @param   array  $ids  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function removeAlbumCrew($ids)
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__ka_music_rel_names'))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Save crew to relation table.
+	 *
+	 * @param   array  $data  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function saveAlbumCrew($data)
+	{
+		$app   = JFactory::getApplication();
+		$user  = JFactory::getUser();
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		if (empty($data['id']))
+		{
+			$values = array(
+				'id'        => '',
+				'name_id'   => (int) $data['name_id'],
+				'item_id'   => $app->input->getInt('item_id', 0),
+				'item_type' => (int) $data['item_type'],
+				'role'      => $db->escape($data['role']),
+				'career_id' => (int) $data['career_id'],
+				'ordering'  => (int) $data['ordering'],
+				'desc'      => $db->escape($data['desc'])
+			);
+
+			$query->insert($db->quoteName('#__ka_music_rel_names'))
+				->columns($db->quoteName(array_keys($values)))
+				->values("'" . implode("','", array_values($values)) . "'");
+		}
+		else
+		{
+			$query->update($db->quoteName('#__ka_music_rel_names'))
+				->set($db->quoteName('name_id') . ' = ' . $db->quote((int) $data['name_id']))
+				->set($db->quoteName('item_id') . ' = ' . $db->quote((int) $data['item_id']))
+				->set($db->quoteName('item_type') . ' = ' . $db->quote((int) $data['item_type']))
+				->set($db->quoteName('role') . ' = ' . $db->quote($data['role']))
+				->set($db->quoteName('career_id') . ' = ' . $db->quote((int) $data['career_id']))
+				->set($db->quoteName('ordering') . ' = ' . $db->quote((int) $data['ordering']))
+				->set($db->quoteName('desc') . ' = ' . $db->quote($data['desc']))
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			if (empty($data['id']))
+			{
+				$insertID = $db->insertid();
+				$sessionData = $app->getUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.i_id');
+				$sessionData['id'] = $insertID;
+				$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.i_id', $sessionData);
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Method to get a single record for track edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
 	private function editTracks()
 	{
 		$app   = JFactory::getApplication();
@@ -695,204 +847,6 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 
 		return $result;
-	}
-
-	// TODO Refactor
-	public function getComposers()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', null, 'int');
-		$orderby = $app->input->get('sidx', '1', 'string');
-		$order = $app->input->get('sord', 'asc', 'word');
-		$page = $app->input->get('page', 0, 'int');
-		$search_field = $app->input->get('searchField', '', 'string');
-		$search_operand = $app->input->get('searchOper', 'eq', 'cmd');
-		$search_string = $app->input->get('searchString', '', 'string');
-		$result = (object) array();
-		$result->rows = array();
-
-		$query = $db->getQuery(true)
-			->select($db->quoteName(array('id', 'title')))
-			->from($db->quoteName('#__ka_names_career'))
-			->order($db->quoteName('ordering') . ' ASC');
-
-		$db->setQuery($query);
-		$_careers = $db->loadObjectList();
-		$careers = array();
-
-		foreach ($_careers as $career)
-		{
-			$careers[$career->id] = $career->title;
-		}
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('n.id', 'name_id') . ',' . $db->quoteName('n.name') . ',' . $db->quoteName('n.latin_name'))
-			->select($db->quoteName(array('t.type', 't.role', 't.ordering')))
-			->from($db->quoteName('#__ka_names', 'n'))
-			->join('LEFT', $db->quoteName('#__ka_music_rel_composers', 't') . ' ON ' . $db->quoteName('t.name_id') . ' = ' . $db->quoteName('n.id') . ' AND ' . $db->quoteName('t.album_id') . ' = ' . (int) $id);
-
-		$where_subquery = $db->getQuery(true)
-			->select($db->quoteName('name_id'))
-			->from($db->quoteName('#__ka_music_rel_composers'))
-			->where($db->quoteName('album_id') . ' = ' . (int) $id);
-
-		$where = "";
-
-		if (!empty($search_string))
-		{
-			if ($search_field == 'n.name')
-			{
-				$where .= " AND (" . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string)) . " OR " . KADatabaseHelper::transformOperands($db->quoteName('n.latin_name'), $search_operand, $db->escape($search_string)) . ")";
-			}
-			else
-			{
-				$where .= " AND " . KADatabaseHelper::transformOperands($db->quoteName($search_field), $search_operand, $db->escape($search_string));
-			}
-		}
-
-		$query->where($db->quoteName('n.id') . ' IN (' . $where_subquery . ')' . $where);
-		$query->group($db->quoteName('n.id'));
-
-		// Preventing 'ordering asc/desc, ordering asc/desc' duplication
-		if (strpos($orderby, 'ordering') !== false)
-		{
-			$query->order($db->quoteName('t.ordering') . ' ASC');
-		}
-		else
-		{
-			// We need this if grid grouping is used. At the first(0) index - grouping field
-			$ord_request = explode(',', $orderby);
-
-			if (count($ord_request) > 1)
-			{
-				$query->order($db->quoteName(trim($ord_request[1])) . ' ' . strtoupper($order) . ', ' . $db->quoteName('t.ordering') . ' ASC');
-			}
-			else
-			{
-				$query->order($db->quoteName(trim($orderby)) . ' ' . strtoupper($order) . ', ' . $db->quoteName('t.ordering') . ' ASC');
-			}
-		}
-
-		$db->setQuery($query);
-		$names = $db->loadObjectList();
-
-		// Presorting based on the type of career person
-		$i = 0;
-		$_result = array();
-
-		foreach ($names as $value)
-		{
-			$name = '';
-
-			if (!empty($value->name))
-			{
-				$name .= $value->name;
-			}
-
-			if (!empty($value->name) && !empty($value->latin_name))
-			{
-				$name .= ' / ';
-			}
-
-			if (!empty($value->latin_name))
-			{
-				$name .= $value->latin_name;
-			}
-
-			foreach (explode(',', $value->type) as $k => $type)
-			{
-				$_result[$type][$i] = array(
-					'name'     => $name,
-					'name_id'  => $value->name_id,
-					'role'     => $value->role,
-					'ordering' => $value->ordering,
-					'type'     => $careers[$type],
-					'type_id'  => $type
-				);
-
-				$i++;
-			}
-		}
-
-		// The final sorting of the array for the grid
-		$k = 0;
-
-		foreach ($_result as $row)
-		{
-			foreach ($row as $elem)
-			{
-				$result->rows[$k]['id'] = $elem['name_id'] . '_' . $id . '_' . $elem['type_id'];
-				$result->rows[$k]['cell'] = array(
-					'name'     => $elem['name'],
-					'name_id'  => $elem['name_id'],
-					'role'     => $elem['role'],
-					'ordering' => $elem['ordering'],
-					'type'     => $elem['type']
-				);
-
-				$k++;
-			}
-		}
-
-		$result->page = $page;
-		$result->total = 1;
-		$result->records = count($result->rows);
-
-		return $result;
-	}
-
-	// TODO Refactor
-	public function deleteComposers()
-	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$data = $app->input->post->get('data', array(), 'array');
-		$query_result = true;
-
-		if (count($data) <= 0)
-		{
-			return array('success' => false, 'message' => JText::_('JERROR_NO_ITEMS_SELECTED'));
-		}
-
-		$db->setDebug(true);
-		$db->lockTable('#__ka_music_rel_composers');
-		$db->transactionStart();
-
-		foreach ($data as $key => $value)
-		{
-			$ids = explode('_', $value['name']);
-			$query = $db->getQuery(true);
-
-			$query->delete($db->quoteName('#__ka_music_rel_composers'))
-				->where($db->quoteName('name_id') . ' = ' . (int) $ids[3] . ' AND ' . $db->quoteName('album_id') . ' = ' . (int) $ids[4] . ' AND FIND_IN_SET("' . (int) $ids[5] . '", ' . $db->quoteName('type') . ')');
-			$db->setQuery($query . ';');
-
-			if ($db->execute() === false)
-			{
-				$query_result = false;
-				break;
-			}
-		}
-
-		if ($query_result === false)
-		{
-			$db->transactionRollback();
-			$success = false;
-			$message = JText::_('COM_KA_ITEMS_DELETED_ERROR');
-		}
-		else
-		{
-			$db->transactionCommit();
-			$success = true;
-			$message = JText::_('COM_KA_ITEMS_DELETED_SUCCESS');
-		}
-
-		$db->unlockTables();
-		$db->setDebug(false);
-
-		return array('success' => $success, 'message' => $message);
 	}
 
 	/**

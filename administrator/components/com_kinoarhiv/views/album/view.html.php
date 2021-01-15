@@ -38,6 +38,9 @@ class KinoarhivViewAlbum extends JViewLegacy
 	{
 		switch (JFactory::getApplication()->input->get('task', '', 'cmd'))
 		{
+			case 'editAlbumCrew':
+				$this->editAlbumCrew($tpl);
+				break;
 			case 'editTracks':
 				$this->editTracks($tpl);
 				break;
@@ -121,6 +124,37 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 *
 	 * @since   3.1
 	 */
+	protected function editAlbumCrew($tpl)
+	{
+		$this->form = $this->get('Form');
+		$errors = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
+
+		if ($this->getLayout() !== 'modal')
+		{
+			$this->addToolbar($tpl);
+		}
+
+		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
+
+		JFactory::getApplication()->input->set('hidemainmenu', true);
+	}
+
+	/**
+	 * Display the view for a track edit.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.1
+	 */
 	protected function editTracks($tpl)
 	{
 		$this->form = $this->get('Form');
@@ -159,7 +193,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 				JToolbarHelper::title(
 					JText::sprintf(
 						'COM_KINOARHIV',
-						JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')
+						JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_EDIT') . ': ' . $this->form->getValue('title')
 					),
 					'play'
 				);
@@ -171,7 +205,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 			}
 			else
 			{
-				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
+				JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 				JToolbarHelper::apply('albums.apply');
 				JToolbarHelper::save('albums.save');
 				JToolbarHelper::save2new('albums.save2new');
@@ -181,28 +215,29 @@ class KinoarhivViewAlbum extends JViewLegacy
 		}
 		elseif ($task == 'tracks')
 		{
-			if ($this->form->getValue('id') != 0)
-			{
-				JToolbarHelper::title(
-					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
-					'play'
-				);
-			}
-			else
-			{
-				JToolbarHelper::title(
-					JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MOVIES_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE')),
-					'play'
-				);
-			}
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
+				'play'
+			);
 
-			JToolbarHelper::apply('movies.saveMovieReleases');
+			JToolbarHelper::apply('albums.saveAlbumTrack');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
+		}
+		elseif ($task == 'crew')
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME')),
+				'play'
+			);
+
+			JToolbarHelper::apply('albums.saveAlbumCrew');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 		else
 		{
-			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
+			JToolbarHelper::title(JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_NEW')), 'play');
 			JToolbarHelper::apply('albums.apply');
 			JToolbarHelper::save('albums.save');
 			JToolbarHelper::save2new('albums.save2new');

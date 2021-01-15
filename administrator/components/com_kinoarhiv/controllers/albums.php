@@ -271,42 +271,6 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=albums');
 	}
 
-	public function getComposers()
-	{
-		/*$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
-		$model = $this->getModel('album');
-		$result = $model->getComposers();
-
-		echo json_encode($result);*/
-	}
-
-	public function deleteComposers()
-	{
-		/*$this->addModelPath(JPATH_COMPONENT . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'music' . DIRECTORY_SEPARATOR);
-		$model = $this->getModel('album');
-		$result = $model->deleteComposers();
-
-		echo json_encode($result);*/
-	}
-
-	public function saveRelNames()
-	{
-		/*JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.edit', 'com_kinoarhiv.music'))
-		{
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-			return;
-		}
-
-		$model = $this->getModel('relations');
-		$result = $model->saveRelNames();
-
-		echo json_encode($result);*/
-	}
-
 	/**
 	 * Method to save the submitted ordering values for records.
 	 * // TODO Refactor
@@ -366,6 +330,100 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 		}
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=albums&type=' . $this->input->get('type', 'albums', 'word'));
+	}
+
+	/**
+	 * Display album crew edit form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editAlbumCrew()
+	{
+		$view = $this->getView('album', 'html');
+		$model = $this->getModel('album');
+		$view->setModel($model, true);
+		$view->display('crew');
+	}
+
+	/**
+	 * Method to save a record for editAlbumCrew.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function saveAlbumCrew()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app       = JFactory::getApplication();
+		$user      = JFactory::getUser();
+		$id        = $app->input->get('item_id', 0, 'int');
+		$rowid     = $app->input->get('row_id', 0, 'int');
+		$inputName = $app->input->get('input_name', '', 'string');
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.album.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.album.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		/** @var KinoarhivModelAlbum $model */
+		$model = $this->getModel('album');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=albums.editAlbumCrew&item_id=' . $id;
+
+		if ($rowid != 0)
+		{
+			$url .= '&row_id=' . $rowid . '&input_name=' . $inputName;
+		}
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelper::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveAlbumCrew($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$sessionData = $app->getUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.i_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.i_id', null);
+
+		if ($rowid == 0)
+		{
+			$url .= '&row_id=' . $sessionData['id'] . '&input_name=c_' . $validData['name_id'] . '_' . $validData['career_id'] . '_' . $sessionData['id'];
+		}
+
+		$this->setRedirect($url, $message);
 	}
 
 	/**

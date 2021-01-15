@@ -93,7 +93,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 			// Replace person BB-code
 			$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid, $introtextLinks)
 			{
-				$html = JText::_($matches[1]);
+				$html = JText::_($matches[1]) . ': ';
 
 				if ($introtextLinks)
 				{
@@ -104,7 +104,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
 				}
 
-				return $html . $name;
+				return $html . $name . '<br/>';
 			},
 				$item->text
 			);

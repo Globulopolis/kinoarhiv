@@ -14,8 +14,6 @@
 			   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9 field_fs_alias" size="45"/>
 		<field name="fs_alias_orig" type="hidden"/>
 
-		<field name="composer" type="text" default="" label="COM_KA_FIELD_ALBUMS_COMPOSER" class="span12"
-			   filter="string" size="45"/>
 		<field name="year" type="datetime" default="NOW" label="COM_KA_MUSIC_ALBUMS_FIELD_DATETIME" class="span6"
 			   datatype="date" dateformat="yy-mm-dd" data-sel-year="true" data-sel-month="true" filter="user_utc"/>
 		<field name="length" type="datetime" default="" label="COM_KA_MUSIC_ALBUMS_FIELD_LENGTH" class="span6"

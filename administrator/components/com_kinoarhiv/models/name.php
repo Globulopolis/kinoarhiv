@@ -620,7 +620,7 @@ class KinoarhivModelName extends JModelForm
 
 			if (empty($data['id']))
 			{
-				$assetID = KAComponentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.name.' . $insertid, $title, $data['rules']);
+				$assetID = KAContentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.name.' . $insertid, $title, $data['rules']);
 				$query = $db->getQuery(true)
 					->update($db->quoteName('#__ka_names'))
 					->set($db->quoteName('asset_id') . ' = ' . (int) $assetID);
@@ -640,7 +640,7 @@ class KinoarhivModelName extends JModelForm
 			}
 			else
 			{
-				KAComponentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.name.' . $data['id'], $title, $data['rules']);
+				KAContentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.name.' . $data['id'], $title, $data['rules']);
 			}
 		}
 

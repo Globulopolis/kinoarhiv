@@ -251,5 +251,8 @@ LICENSE.txt
 /node_modules/
 gulpfile.js
 package.json
+schemaorg-all-http.rdf
+schemaorg-all-http-properties.csv
+schemaorg-all-https.rdf
 
 stubs.php

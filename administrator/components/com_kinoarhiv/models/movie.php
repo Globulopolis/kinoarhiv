@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+JLoader::register('KAContentHelperBackend', JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php'));
+
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
@@ -1391,7 +1393,7 @@ echo $query;
 
 			if (empty($data['id']))
 			{
-				$assetID = KAComponentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.movie.' . $insertID, $title, $data['rules']);
+				$assetID = KAContentHelperBackend::saveAccessRules(null, 'com_kinoarhiv.movie.' . $insertID, $title, $data['rules']);
 				$query = $db->getQuery(true)
 					->update($db->quoteName('#__ka_movies'))
 					->set($db->quoteName('asset_id') . ' = ' . (int) $assetID);
@@ -1411,7 +1413,7 @@ echo $query;
 			}
 			else
 			{
-				KAComponentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.movie.' . $data['id'], $title, $data['rules']);
+				KAContentHelperBackend::saveAccessRules($data['id'], 'com_kinoarhiv.movie.' . $data['id'], $title, $data['rules']);
 			}
 		}
 
@@ -1432,8 +1434,8 @@ echo $query;
 			$this->saveGenres($data['id'], $data['genres'][0]);
 		}
 
-		KAComponentHelperBackend::updateGenresStat($data['genres_orig'], $data['genres'], '#__ka_rel_genres');
-		KAComponentHelperBackend::updateTagMapping($data['id'], $data['tags'], 'com_kinoarhiv.movie');
+		KAContentHelperBackend::updateGenresStat($data['genres_orig'], $data['genres'], '#__ka_rel_genres');
+		KAContentHelperBackend::updateTagMapping($data['id'], $data['tags'], 'com_kinoarhiv.movie');
 
 		// Clear the cache
 		$this->cleanCache();

@@ -62,6 +62,12 @@ class KinoarhivViewReleases extends JViewLegacy
 		}
 
 		$this->form = $this->get('Form');
+		$errors = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
 
 		$this->addToolbar($tpl);
 		$this->params = JComponentHelper::getParams('com_kinoarhiv');

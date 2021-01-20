@@ -35,7 +35,7 @@ class KinoarhivModelMovies extends JModelList
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @see     JModelLegacy
+	 * @see     JModelList
 	 * @since   3.0
 	 */
 	public function __construct($config = array())
@@ -537,11 +537,12 @@ class KinoarhivModelMovies extends JModelList
 				if (count(array_filter($tags)) > 0)
 				{
 					$subqueryTags = $db->getQuery(true)
-						->select('content_item_id')
+						->select($db->quoteName('content_item_id'))
 						->from($db->quoteName('#__contentitem_tag_map'))
-						->where("type_alias = 'com_kinoarhiv.movie' AND tag_id IN (" . implode(',', $tags) . ")");
+						->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_kinoarhiv.movie'))
+						->where($db->quoteName('tag_id') . ' IN (' . implode(',', $tags) . ')');
 
-					$query->where('m.id IN (' . $subqueryTags . ')');
+					$query->where($db->quoteName('m.id') . ' IN (' . $subqueryTags . ')');
 				}
 			}
 		}

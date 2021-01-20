@@ -74,6 +74,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 
 		// Get proper itemid for &view=?&Itemid=? links.
 		$namesItemid = KAContentHelper::getItemid('names');
+		$this->albumsItemid = KAContentHelper::getItemid('albums');
 
 		$introtextLinks = $this->params->get('introtext_links', 1);
 

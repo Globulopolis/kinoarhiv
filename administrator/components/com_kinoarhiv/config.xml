@@ -766,7 +766,7 @@
 		</field>
 		<field name="search_names_amplua_disabled" type="autocomplete" data-remote="true"
 			   label="COM_KA_SEARCH_SETTINGS_FORM_AMPLUA_DISABLED" filter="array" class="span10 uk-width-1-1"
-			   data-content="careers" data-allow-clear="true" data-key="id" multiple="true"
+			   data-content="careers" data-allow-clear="true" data-key="id" multiple="true" data-lang="*"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
 		</field>
@@ -806,8 +806,28 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="search_albums_crew" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_CAST_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_vendor" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_VENDOR_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="search_albums_genre" type="radio" class="btn-group" default="1"
 			   label="COM_KA_SEARCH_SETTINGS_FORM_GENRE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_rate" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_RATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_tags" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_TAGS_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

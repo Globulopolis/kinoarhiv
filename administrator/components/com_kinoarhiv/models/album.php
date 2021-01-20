@@ -427,39 +427,6 @@ class KinoarhivModelAlbum extends JModelForm
 		$data['genres'] = array_filter($data['genres']);
 		$introtext      = array();
 
-		// Process intro text for genres
-		if (!empty($data['genres']))
-		{
-			$_genres = implode(',', $data['genres']);
-			$query = $db->getQuery(true)
-				->select($db->quoteName('name'))
-				->from($db->quoteName('#__ka_genres'))
-				->where($db->quoteName('id') . ' IN (' . $_genres . ')')
-				// Preserve row ordering
-				->order('FIELD (' . $db->quoteName('id') . ', ' . $_genres . ')');
-
-			$db->setQuery($query);
-
-			try
-			{
-				$genres = $db->loadObjectList();
-
-				$languageConst = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
-				$genresStr = '';
-
-				foreach ($genres as $genre)
-				{
-					$genresStr .= StringHelper::strtolower($genre->name) . ', ';
-				}
-
-				$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
-			}
-			catch (RuntimeException $e)
-			{
-				$app->enqueueMessage($e->getMessage(), 'error');
-			}
-		}
-
 		// Process crew
 		if (!empty($data['id']))
 		{
@@ -512,6 +479,39 @@ class KinoarhivModelAlbum extends JModelForm
 
 					$introtext[] = '<span class="cr-list">' . $crewStr . '</span>';
 				}
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+			}
+		}
+
+		// Process intro text for genres
+		if (!empty($data['genres']))
+		{
+			$_genres = implode(',', $data['genres']);
+			$query = $db->getQuery(true)
+				->select($db->quoteName('name'))
+				->from($db->quoteName('#__ka_genres'))
+				->where($db->quoteName('id') . ' IN (' . $_genres . ')')
+				// Preserve row ordering
+				->order('FIELD (' . $db->quoteName('id') . ', ' . $_genres . ')');
+
+			$db->setQuery($query);
+
+			try
+			{
+				$genres = $db->loadObjectList();
+
+				$languageConst = count($genres) > 1 ? 'COM_KA_GENRES' : 'COM_KA_GENRE';
+				$genresStr = '';
+
+				foreach ($genres as $genre)
+				{
+					$genresStr .= StringHelper::strtolower($genre->name) . ', ';
+				}
+
+				$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
 			}
 			catch (RuntimeException $e)
 			{
@@ -748,10 +748,39 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function saveAlbumCrew($data)
 	{
-		$app   = JFactory::getApplication();
-		$user  = JFactory::getUser();
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$app  = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$db   = $this->getDbo();
+
+		if (empty($data['id']))
+		{
+			$query = $db->getQuery(true)
+				->select('COUNT(id)')
+				->from($db->quoteName('#__ka_music_rel_names'))
+				->where($db->quoteName('name_id') . ' = ' . (int) $data['name_id'])
+				->where($db->quoteName('career_id') . ' = ' . (int) $data['career_id'])
+				->where($db->quoteName('item_type') . ' = ' . (int) $data['item_type']);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$total = $db->loadResult();
+
+				if ($total > 0)
+				{
+					$app->enqueueMessage('Duplicate entry for this artist with this career and type!', 'error');
+
+					return false;
+				}
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+		}
 
 		if (empty($data['id']))
 		{
@@ -766,13 +795,15 @@ class KinoarhivModelAlbum extends JModelForm
 				'desc'      => $db->escape($data['desc'])
 			);
 
-			$query->insert($db->quoteName('#__ka_music_rel_names'))
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_music_rel_names'))
 				->columns($db->quoteName(array_keys($values)))
 				->values("'" . implode("','", array_values($values)) . "'");
 		}
 		else
 		{
-			$query->update($db->quoteName('#__ka_music_rel_names'))
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_music_rel_names'))
 				->set($db->quoteName('name_id') . ' = ' . $db->quote((int) $data['name_id']))
 				->set($db->quoteName('item_id') . ' = ' . $db->quote((int) $data['item_id']))
 				->set($db->quoteName('item_type') . ' = ' . $db->quote((int) $data['item_type']))

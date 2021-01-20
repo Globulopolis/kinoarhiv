@@ -107,6 +107,10 @@ span.cn-list, span.gn-list, span.dc-list, span.cast-list, span.cr-list {
 	display: block;
 }
 
+.ka-albums .thumbnail span.gn-list {
+	display: none;
+}
+
 .content .links {
 	clear: both;
 }
@@ -1108,7 +1112,8 @@ div.rating {
 .search_movies_imdbrate_min, .search_movies_imdbrate_max,
 .search_movies_kprate_min, .search_movies_kprate_max,
 .search_movies_rtrate_min, .search_movies_rtrate_max,
-.search_movies_metacritic_min, .search_movies_metacritic_max {
+.search_movies_metacritic_min, .search_movies_metacritic_max,
+.search_albums_rate_min, .search_albums_rate_max {
 	height: 18px;
 	margin: 0;
 	width: 30%;

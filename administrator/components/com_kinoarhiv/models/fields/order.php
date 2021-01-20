@@ -108,7 +108,7 @@ class JFormFieldOrder extends JFormField
 		{
 			// Get some field values from the form.
 			$releaseID = $input->get('id', array(), 'array');
-			$movieID = (int) $this->form->getValue('movie_id');
+			$itemID = (int) $this->form->getValue('item_id');
 			$subQueryCountries = $db->getQuery(true)
 				->select($db->quoteName('name'))
 				->from($db->quoteName('#__ka_countries'))
@@ -118,7 +118,7 @@ class JFormFieldOrder extends JFormField
 				->select('ordering AS value')
 				->select("CONCAT_WS(' | ', (DATE_FORMAT(release_date, '%Y-%m-%d')), (" . $subQueryCountries . ")) AS text")
 				->from($db->quoteName('#__ka_releases'))
-				->where('movie_id = ' . (int) $movieID)
+				->where('item_id = ' . (int) $itemID)
 				->order('ordering ASC');
 
 			$html[] = JHtml::_(

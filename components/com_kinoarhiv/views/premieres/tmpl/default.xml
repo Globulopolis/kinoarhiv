@@ -29,7 +29,7 @@
 			</field>
 			<field name="orderby" type="list" class="inputbox" default="p.ordering"
 				   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL"
-				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
+				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERBY_DESC" filter="string">
 				<option value="p.movie_id">COM_KA_FIELD_MOVIE_ID</option>
 				<option value="m.title">COM_KA_FIELD_MOVIE_LABEL</option>
 				<option value="p.premiere_date">COM_KA_FIELD_PREMIERE_DATE_LABEL</option>

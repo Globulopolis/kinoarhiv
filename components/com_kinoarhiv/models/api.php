@@ -1060,7 +1060,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	/**
 	 * Method to get list of awards based on filters.
 	 *
-	 * @param   integer  $type  Content type. 0 - movie, 1 - name.
+	 * @param   integer  $type  Content type. 0 - movie, 1 - name, 2 - album.
 	 *
 	 * @return  object|array|boolean  False on error.
 	 *
@@ -1092,6 +1092,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$query = $db->getQuery(true)
 			->select('COUNT(rel.id)')
 			->from($db->quoteName('#__ka_rel_awards', 'rel'))
+			->where($db->quoteName('rel.type') . ' = ' . (int) $type)
 			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id . $where);
 
 		$db->setQuery($query);
@@ -1273,7 +1274,8 @@ class KinoarhivModelAPI extends JModelLegacy
 		$query = $db->getQuery(true)
 			->select('COUNT(r.id)')
 			->from($db->quoteName('#__ka_releases', 'r'))
-			->where($db->quoteName('r.movie_id') . ' = ' . (int) $id . $where);
+			->where($db->quoteName('item_type') . ' = 0')
+			->where($db->quoteName('r.item_id') . ' = ' . (int) $id . $where);
 
 		$db->setQuery($query);
 
@@ -1306,7 +1308,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('r.vendor_id'))
 			->leftJoin($db->quoteName('#__ka_media_types', 'mt') . ' ON ' . $db->quoteName('mt.id') . ' = ' . $db->quoteName('r.media_type'))
 			->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('r.language'))
-			->where($db->quoteName('r.movie_id') . ' = ' . (int) $id . $where)
+			->where($db->quoteName('item_type') . ' = 0')
+			->where($db->quoteName('r.item_id') . ' = ' . (int) $id . $where)
 			->order($db->quoteName($orderby) . ' ' . strtoupper($db->escape($order)))
 			->setLimit($limit, $limitstart);
 
@@ -1473,7 +1476,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		// Prevent 'ordering asc/desc, ordering asc/desc' duplication
 		if (strpos($orderby, 'ordering') !== false)
 		{
-			$query->order($db->quoteName('t.ordering') . ' ASC');
+			$query->order($db->quoteName('t.career_id') . ' ASC');
 		}
 		else
 		{
@@ -1508,17 +1511,14 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		foreach ($names as $value)
 		{
-			$name = KAContentHelper::formatItemTitle($value->name, $value->latin_name, $value->date_of_birth);
 			$result->rows[$i] = array(
-				'id'   => $value->name_id . '_' . $value->career_id . '_' . $value->id,
-				'cell' => array(
-					'row_id'   => $value->id,
-					'name'     => $name,
-					'role'     => $value->role,
-					'ordering' => $value->ordering,
-					'type'     => $value->title,
-					'type_id'  => $value->career_id
-				)
+				'id'       => $value->name_id . '_' . $value->career_id . '_' . $value->id,
+				'row_id'   => $value->id,
+				'name'     => KAContentHelper::formatItemTitle($value->name, $value->latin_name, $value->date_of_birth),
+				'role'     => $value->role,
+				'ordering' => $value->ordering,
+				'type'     => $value->title,
+				'type_id'  => $value->career_id
 			);
 
 			$i++;

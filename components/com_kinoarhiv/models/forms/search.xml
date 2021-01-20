@@ -121,13 +121,14 @@
 				<option value=""></option>
 				<option value="0">COM_KA_PREMIERE_DATE_WORLDWIDE</option>
 			</field>
-			<field name="release_date" type="release" data-content="date" data-dateformat="%Y" default=""
+			<field name="release_date" type="release" data-content="date" data-dateformat="%Y" data-type="0" default=""
 				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_DATE" class="span3 uk-width-1-4">
 				<option value="">-</option>
 			</field>
 			<!-- Value of the filter should be a 'string' not 'integer'. -->
-			<field name="release_country" type="release" data-content="countries" default="" filter="string"
-				   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_COUNTRY" class="span7 uk-width-1-4 hasAutocomplete">
+			<field name="release_country" type="release" data-content="countries" data-type="0" default=""
+				   filter="string" label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_COUNTRY"
+				   class="span7 uk-width-1-4 hasAutocomplete">
 				<option value=""></option>
 			</field>
 			<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL" filter="integer"
@@ -182,7 +183,9 @@
 
 	<fields name="albums">
 		<field name="title" type="text" default="" label="COM_KA_SEARCH_ADV_MUSIC_TITLE_LABEL" filter="string"
-			   class="span10 uk-width-1-1" required="false" maxlength="64"/>
+			   class="span12 uk-width-1-1" required="false" maxlength="64"/>
+		<field name="track_title" type="text" default="" label="COM_KA_SEARCH_ADV_TRACK_TITLE_LABEL" filter="string"
+			   class="span12 uk-width-1-1" required="false" maxlength="64"/>
 		<field name="year" type="text" default="" label="COM_KA_YEAR"
 			   description="COM_KA_SEARCH_ADV_MOVIES_YEAR_HELP" maxlength="10" filter="string"
 			   class="span3 uk-width-1-4 validate-date" validate="date"/>
@@ -192,9 +195,35 @@
 			   labelto="COM_KA_SEARCH_ADV_MOVIES_YEAR_TO_LABEL" filter="array">
 			<option value="">-</option>
 		</field>
+		<field name="crew" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_NAMES_LABEL" filter="integer"
+			   description="COM_KA_SEARCH_ADV_MOVIES_NAMES_LABEL_DESC" labelclass="data-uk-tooltip"
+			   class="span10 uk-width-1-1" data-content="names" data-allow-clear="true" data-remote="true"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION" data-minimum-input-length="1" data-key="id">
+			<option value=""></option>
+		</field>
 		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1" data-type="1"
 			   data-content="genres" data-allow-clear="true" data-key="id" multiple="true"
 			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
+		</field>
+
+		<field name="rate_min" type="text" default="" label="COM_KA_MUSIC_RATE" maxlength="2" size="3"
+			   class="search_albums_rate_min" hint="0" filter="allnum" validate="number" min="0"/>
+		<field name="rate_max" type="text" default="" label="COM_KA_MUSIC_RATE" maxlength="2" size="3"
+			   class="search_albums_rate_max" hint="10" filter="allnum" validate="number" min="0"/>
+		<field name="rate_slider" type="slider" data-default="[0,params::vote_summ_num]" label="COM_KA_MUSIC_RATE"
+			   class="search-rate-slider" data-slider-handle="square" data-slider-range="true" data-slider-min="0"
+			   data-slider-max="params::vote_summ_num" data-slider-input-min=".search_albums_rate_min"
+			   data-slider-input-max=".search_albums_rate_max" translateLabel="false"/>
+
+		<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL" filter="integer"
+			   class="span10 uk-width-1-1" data-content="vendors" data-allow-clear="true" data-key="id"
+			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			<option value=""></option>
+		</field>
+		<field name="tags" type="autocomplete" label="JTAG" class="span10 uk-width-1-1" data-content="tags"
+			   data-allow-clear="true" data-key="id" multiple="true" data-placeholder="JGLOBAL_SELECT_AN_OPTION"
+			   data-maximum-selection-size="5" filter="array">
 			<option value=""></option>
 		</field>
 	</fields>

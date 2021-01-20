@@ -35,9 +35,13 @@ class KinoarhivModelRelease extends JModelItem
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		$app = JFactory::getApplication();
-		$pk  = $app->input->getInt('id');
+		$app      = JFactory::getApplication();
+		$menu     = $app->getMenu()->getActive();
+		$pk       = $app->input->getInt('id');
+		$itemType = $menu->params->get('item_type');
+
 		$this->setState('release.id', $pk);
+		$this->setState('item_type', $itemType);
 	}
 
 	/**
@@ -47,8 +51,8 @@ class KinoarhivModelRelease extends JModelItem
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
-	 * @throws Exception
-	 * @since   3.0
+	 * @throws  Exception
+	 * @since   3.1
 	 */
 	public function getItem($pk = null)
 	{
@@ -61,42 +65,89 @@ class KinoarhivModelRelease extends JModelItem
 
 		if (!isset($this->_item[$pk]))
 		{
-			$user = JFactory::getUser();
-			$groups = $user->getAuthorisedViewLevels();
+			$db       = $this->getDbo();
+			$user     = JFactory::getUser();
+			$groups   = $user->getAuthorisedViewLevels();
+			$itemType = (int) $this->getState('item_type');
 
 			try
 			{
-				$db = $this->getDbo();
+				$query = $db->getQuery(true);
 
-				$query = $db->getQuery(true)
-					->select(
+				if ($itemType === 0)
+				{
+					$query->select(
 						$db->quoteName(
-							array('m.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.year', 'm.plot', 'm.rate_loc', 'm.rate_sum_loc',
-									'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id', 'm.kp_votesum', 'm.kp_votes', 'm.kp_id',
-									'm.rate_fc', 'm.rottentm_id', 'm.metacritics', 'm.metacritics_id', 'm.rate_custom',
-									'm.attribs', 'm.created', 'm.modified', 'g.filename', 'g.dimension'
+							array(
+								'm.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.year', 'm.plot', 'm.rate_loc',
+								'm.rate_sum_loc', 'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id', 'm.kp_votesum',
+								'm.kp_votes', 'm.kp_id', 'm.rate_fc', 'm.rottentm_id', 'm.metacritics',
+								'm.metacritics_id', 'm.rate_custom', 'm.attribs', 'm.created', 'm.modified',
+								'g.filename', 'g.dimension'
 							)
 						)
-					)
-					->select("(SELECT COUNT(movie_id) FROM " . $db->quoteName('#__ka_user_votes_movies') . " WHERE movie_id = m.id) AS total_votes")
-					->select($db->quoteName('m.introtext', 'text'))
-					->from($db->quoteName('#__ka_movies', 'm'))
-					->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
+					);
+
+					$subQuery = $db->getQuery(true)
+						->select('COUNT(' . $db->quoteName('movie_id') . ')')
+						->from($db->quoteName('#__ka_user_votes_movies'))
+						->where($db->quoteName('movie_id') . ' = ' . $db->quoteName('m.id'));
+
+					$query->select('(' . $subQuery . ') AS ' . $db->quoteName('total_votes'))
+						->select($db->quoteName('m.introtext', 'text'))
+						->from($db->quoteName('#__ka_movies', 'm'))
+						->leftJoin($db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
+				}
+				elseif ($itemType === 1)
+				{
+					$query->select(
+						$db->quoteName(
+							array(
+								'm.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.year', 'm.length', 'm.isrc', 'm.rate',
+								'm.rate_sum', 'm.covers_path', 'm.covers_path_www', 'm.cover_filename', 'm.attribs',
+								'm.created', 'm.modified'
+							)
+						)
+					);
+
+					$subQuery = $db->getQuery(true)
+						->select('COUNT(' . $db->quoteName('album_id') . ')')
+						->from($db->quoteName('#__ka_user_votes_albums'))
+						->where($db->quoteName('album_id') . ' = ' . $db->quoteName('m.id'));
+
+					$query->select('(' . $subQuery . ') AS ' . $db->quoteName('total_votes'))
+						->select($db->quoteName('m.introtext', 'text'))
+						->from($db->quoteName('#__ka_music_albums', 'm'));
+				}
 
 				if (!$user->get('guest'))
 				{
-					$query->select($db->quoteName(array('u.favorite', 'u.watched')))
-						->join('LEFT', $db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
+					if ($itemType === 0)
+					{
+						$query->select($db->quoteName(array('u.favorite', 'u.watched')))
+							->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
 
-					$query->select('v.vote AS my_vote, v._datetime')
-						->join('LEFT', $db->quoteName('#__ka_user_votes_movies', 'v') . ' ON v.movie_id = m.id AND v.uid = ' . $user->get('id'));
+						$query->select($db->quoteName('v.vote', 'my_vote'))
+							->select($db->quoteName('v._datetime'))
+							->leftJoin($db->quoteName('#__ka_user_votes_movies', 'v') . ' ON v.movie_id = m.id AND v.uid = ' . $user->get('id'));
+					}
+					elseif ($itemType === 1)
+					{
+						$query->select($db->quoteName('u.favorite'))
+							->leftJoin($db->quoteName('#__ka_user_marked_albums', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.album_id = m.id');
+
+						$query->select($db->quoteName('v.vote', 'my_vote'))
+							->select($db->quoteName('v._datetime'))
+							->leftJoin($db->quoteName('#__ka_user_votes_albums', 'v') . ' ON v.album_id = m.id AND v.uid = ' . $user->get('id'));
+					}
 				}
 
-				$query->select('user.name AS username')
-					->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
+				$query->select($db->quoteName('user.name', 'username'))
+					->leftJoin($db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
 
 				$query->where($db->quoteName('m.id') . ' = ' . $pk . ' AND ' . $db->quoteName('m.state') . ' = 1')
 					->where($db->quoteName('m.access') . ' IN (' . implode(',', $groups) . ')');
+
 				$db->setQuery($query);
 
 				$data = $db->loadObject();
@@ -114,9 +165,10 @@ class KinoarhivModelRelease extends JModelItem
 						)
 					)
 					->from($db->quoteName('#__ka_releases', 'r'))
-					->join('LEFT', $db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
-					->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'))
-					->where($db->quoteName('r.movie_id') . ' = ' . $pk)
+					->leftJoin($db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
+					->leftJoin($db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'))
+					->where($db->quoteName('r.item_id') . ' = ' . $pk)
+					->where($db->quoteName('r.item_type') . ' = ' . $itemType)
 					->where($db->quoteName('r.language') . ' IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
 					->order($db->quoteName('r.release_date') . ' DESC');
 
@@ -130,7 +182,7 @@ class KinoarhivModelRelease extends JModelItem
 					return false;
 				}
 
-				$data->items = $db->loadObjectList();
+				$data->items = $rows;
 				$this->_item[$pk] = $data;
 			}
 			catch (Exception $e)
@@ -142,7 +194,7 @@ class KinoarhivModelRelease extends JModelItem
 				}
 				else
 				{
-					$this->setError($e);
+					$this->setError($e->getMessage());
 					$this->_item[$pk] = false;
 				}
 			}

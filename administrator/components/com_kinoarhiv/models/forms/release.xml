@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="edit" addfieldpath="/components/com_kinoarhiv/models/fields">
-		<field name="movie_id" type="autocomplete" label="COM_KA_FIELD_MOVIE_LABEL" filter="integer" required="true"
+		<field name="item_type" type="radio" default="0" label="COM_KA_FIELD_TYPE_LABEL" filter="integer"
+			   class="btn-group" size="1">
+			<option value="0">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_0</option>
+			<option value="1">COM_KA_MUSIC_ALBUM_TITLE</option>
+		</field>
+		<field name="item_id" type="autocomplete" label="COM_KA_TRACK_TITLE" filter="integer" required="true"
 			   class="span6" data-content="movies" data-allow-clear="true" data-remote="true" data-lang="*"
 			   data-minimum-input-length="1" data-key="id">
 			<option value=""></option>

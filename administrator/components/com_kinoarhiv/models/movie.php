@@ -769,9 +769,9 @@ echo $query;
 	 */
 	private function editMovieAwards()
 	{
-		$app   = JFactory::getApplication();
-		$db    = $this->getDbo();
-		$id    = $app->input->get('row_id', 0, 'int');
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+		$id  = $app->input->get('row_id', 0, 'int');
 
 		$query = $db->getQuery(true)
 			->select($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
@@ -783,6 +783,12 @@ echo $query;
 		try
 		{
 			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				$result = (object) array();
+				$result->item_id = $app->input->get('item_id', 0, 'int');
+			}
 		}
 		catch (RuntimeException $e)
 		{
@@ -866,7 +872,6 @@ echo $query;
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$db->setDebug(true);
 		$db->lockTable('#__ka_rel_awards');
 		$db->transactionStart();
 		$result = true;
@@ -908,7 +913,6 @@ echo $query;
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return $result;
 	}
@@ -942,6 +946,12 @@ echo $query;
 		try
 		{
 			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				$result = (object) array();
+				$result->movie_id = $app->input->get('item_id', 0, 'int');
+			}
 		}
 		catch (RuntimeException $e)
 		{
@@ -1033,7 +1043,8 @@ echo $query;
 		$query->select(
 			$db->quoteName(
 				array(
-					'id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering'
+					'id', 'country_id', 'vendor_id', 'item_id', 'item_type', 'media_type', 'release_date', 'desc',
+					'language', 'ordering'
 				)
 			)
 		)
@@ -1045,6 +1056,12 @@ echo $query;
 		try
 		{
 			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				$result = (object) array();
+				$result->item_id = $app->input->get('item_id', 0, 'int');
+			}
 		}
 		catch (RuntimeException $e)
 		{
@@ -1079,13 +1096,15 @@ echo $query;
 				->columns(
 					$db->quoteName(
 						array(
-							'id', 'country_id', 'vendor_id', 'movie_id', 'media_type', 'release_date', 'desc', 'language', 'ordering'
+							'id', 'country_id', 'vendor_id', 'item_id', 'media_type', 'item_type', 'release_date',
+							'desc', 'language', 'ordering'
 						)
 					)
 				)
 				->values("'', '" . (int) $data['country_id'] . "', '" . (int) $data['vendor_id'] . "', "
-					. "'" . (int) $id . "', '" . (int) $data['media_type'] . "', '" . $db->escape($data['release_date']) . "'"
-					. ", '" . $db->escape($data['desc']) . "', '" . $db->escape($data['language']) . "', '" . (int) $data['ordering'] . "'"
+					. "'" . (int) $id . "', '" . (int) $data['media_type'] . "', '" . (int) $data['item_type'] . "', "
+					. "'" . $db->escape($data['release_date']) . "', '" . $db->escape($data['desc']) . "', "
+					. "'" . $db->escape($data['language']) . "', '" . (int) $data['ordering'] . "'"
 				);
 		}
 		else
@@ -1598,7 +1617,6 @@ echo $query;
 		$countries   = explode(',', $countries);
 		$queryResult = true;
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_rel_countries');
 		$db->transactionStart();
 
@@ -1649,7 +1667,6 @@ echo $query;
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
 	}
@@ -1979,7 +1996,6 @@ echo $query;
 
 		// Remove access rules
 		$queryResult = true;
-		$db->setDebug(true);
 		$db->lockTable('#__assets');
 		$db->transactionStart();
 
@@ -2008,7 +2024,6 @@ echo $query;
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		// Remove movie(s) from DB
 		$query = $db->getQuery(true);

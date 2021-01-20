@@ -197,7 +197,7 @@ class KinoarhivViewPremiere extends JViewLegacy
 			'link' => 'index.php?option=com_kinoarhiv&view=premieres&Itemid=' . $this->itemid
 		);
 
-		$title = KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . ' - ' . JText::_('COM_KA_PREMIERES');
+		$title = KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . ' - ' . $title;
 
 		if ($app->get('sitename_pagetitles', 0) == 1)
 		{

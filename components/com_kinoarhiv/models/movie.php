@@ -57,7 +57,7 @@ class KinoarhivModelMovie extends JModelForm
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @see     JModelLegacy
+	 * @see     JModelForm
 	 * @since   3.0
 	 */
 	public function __construct($config = array())
@@ -384,12 +384,12 @@ class KinoarhivModelMovie extends JModelForm
 		if ($params->get('releases_list_limit') > 0)
 		{
 			$queryReleases = $db->getQuery(true)
-				->select('r.id, r.movie_id, r.release_date, r.country_id, c.name AS country, v.company_name, media.title AS media_type')
+				->select('r.id, r.item_id, r.release_date, r.country_id, c.name AS country, v.company_name, media.title AS media_type')
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
 				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
 				->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON media.id = r.media_type')
-				->where('movie_id = ' . (int) $id . ' AND r.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+				->where('item_id = ' . (int) $id . ' AND r.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 				->order('r.ordering ASC')
 				->setLimit((int) $params->get('releases_list_limit'), 0);
 

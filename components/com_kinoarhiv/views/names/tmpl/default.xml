@@ -29,7 +29,7 @@
 			</field>
 			<field name="orderby" type="list" class="inputbox" default="ordering"
 				   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_NAMES_LABEL"
-				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
+				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERBY_DESC" filter="string">
 				<option value="id">COM_KA_FIELD_NAME_ID</option>
 				<option value="name">COM_KA_FIELD_NAME</option>
 				<option value="latin_name">COM_KA_FIELD_NAME_LATIN</option>

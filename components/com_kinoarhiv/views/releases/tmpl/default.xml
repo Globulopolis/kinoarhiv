@@ -11,6 +11,15 @@
 
 		<!-- Basic options. -->
 		<fieldset name="advanced" label="COM_MENUS_LAYOUT_FEATURED_OPTIONS">
+			<field name="item_type" type="list" default="0" label="COM_KA_FIELD_TYPE_LABEL" filter="integer">
+				<option value="0">COM_KA_MOVIES_TITLE</option>
+				<option value="1">COM_KA_MUSIC_ALBUMS_TITLE</option>
+			</field>
+			<field name="page_type" type="radio" class="btn-group" label="COM_KA_MUSIC_PAGE_TYPE" default="artwork"
+				   showon="item_type:1">
+				<option value="list">COM_KA_MUSIC_PAGE_TYPE_1</option>
+				<option value="artwork">COM_KA_MUSIC_PAGE_TYPE_2</option>
+			</field>
 			<field name="show_pagination_limit" type="radio" class="btn-group" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL"
 				   description="JGLOBAL_DISPLAY_SELECT_DESC" filter="integer">
 				<option value="1">JYES</option>
@@ -28,10 +37,10 @@
 				<option value="100">J100</option>
 			</field>
 			<field name="orderby" type="list" class="inputbox" default="r.ordering"
-				   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_MOVIES_LABEL"
-				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERING_LABEL" filter="string">
-				<option value="r.movie_id">COM_KA_FIELD_MOVIE_ID</option>
-				<option value="m.title">COM_KA_FIELD_MOVIE_LABEL</option>
+				   label="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERBY_LABEL"
+				   description="COM_KA_FIELD_SETTINGS_GLOBAL_ORDERBY_DESC" filter="string">
+				<option value="r.item_id">JGLOBAL_FIELD_ID_LABEL</option>
+				<option value="m.title">COM_KA_TRAILERS_TITLE</option>
 				<option value="r.release_date">COM_KA_FIELD_RELEASE_DATE_LABEL</option>
 				<option value="r.ordering">JFIELD_ORDERING_LABEL</option>
 			</field>

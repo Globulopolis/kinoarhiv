@@ -19,6 +19,7 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'r.ordering';
 $columns   = 9;
+$formUrl   = 'index.php?option=com_kinoarhiv&view=releases';
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
@@ -26,6 +27,12 @@ $columns   = 9;
 			alert('<?php echo JText::_('COM_KA_ITEMS_EDIT_DENIED'); ?>');
 			return;
 		}
+
+		if (task === 'releases.add') {
+			jQuery('#selectType').modal('show');
+			return;
+		}
+
 		Joomla.submitform(task);
 	};
 
@@ -33,7 +40,7 @@ $columns   = 9;
 		$('.js-stools-btn-clear').parent().after(
 			'<div class="btn-wrapper">' +
 				'<button class="btn search-help" type="button"' +
-					'onclick="Aurora.message([{text: \'<?php echo JText::sprintf('COM_KA_PREMIERES_SEARCH_HELP', JText::_('COM_KA_FIELD_MOVIE_LABEL')); ?>\'}], \'#system-message-container\', {replace: true});">' +
+					'onclick="Aurora.message([{text: \'<?php echo JText::_('COM_KA_RELEASES_SEARCH_HELP', true); ?>\'}], \'#system-message-container\', {replace: true});">' +
 				'<span class="icon-help"></span></button>' +
 			'</div>'
 		);
@@ -58,7 +65,7 @@ $columns   = 9;
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_RELEASE_DATE_LABEL', 'r.release_date', $listDirn, $listOrder); ?>
 					</th>
 					<th width="30%" style="min-width:55px;">
-						<?php echo JHtml::_('searchtools.sort', 'COM_KA_FIELD_MOVIE_LABEL', 'm.title', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('searchtools.sort', 'COM_KA_TRACK_TITLE', 'm.title', $listDirn, $listOrder); ?>
 					</th>
 					<th width="25%" class="nowrap hidden-phone">
 						<?php echo JText::_('COM_KA_FIELD_PREMIERE_VENDOR'); ?>
@@ -103,14 +110,15 @@ $columns   = 9;
 						<span class="sortable-handler<?php echo $iconClass ?>"><span class="icon-menu"></span></span>
 						<?php if ($canChange && $saveOrder) : ?>
 							<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
-							<input type="hidden" name="movie_id" value="<?php echo $item->movie_id; ?>" />
+							<input type="hidden" name="item_id" value="<?php echo $item->item_id; ?>" />
 						<?php endif; ?>
 					</td>
 					<td class="center">
 						<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
 					</td>
 					<td class="center">
-						<a href="index.php?option=com_kinoarhiv&view=releases&task=releases.edit&id=<?php echo $item->id; ?>" title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->release_date; ?></a>
+						<a href="<?php echo $formUrl; ?>&task=releases.edit&id=<?php echo $item->id; ?>&item_type=<?php echo $item->item_type; ?>"
+						   title="<?php echo JText::_('COM_KA_EDIT'); ?>"><?php echo $item->release_date; ?></a>
 					</td>
 					<td>
 						<?php echo $this->escape($item->title); ?><?php echo $item->year != '0000' ? ' (' . $item->year . ')' : ''; ?>
@@ -120,7 +128,8 @@ $columns   = 9;
 					</td>
 					<td class="nowrap hidden-phone">
 						<?php if ($item->name != ''): ?>
-							<img class="flag-dd" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png" />
+							<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png"
+								 class="flag-dd" />
 						<?php echo $item->name;
 						else:
 							echo 'N/a';
@@ -172,3 +181,17 @@ $columns   = 9;
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 </div>
+<?php
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'selectType',
+	array(
+		'title'      => JText::_('COM_KA_FIELD_TYPE_LABEL'),
+		'footer'     => '<a class="btn" data-dismiss="modal">' . JText::_('COM_KA_CLOSE') . '</a>',
+		'modalWidth' => 20
+	),
+	'<div class="container-fluid">
+		<a href="' . $formUrl . '&task=releases.add&item_type=0" class="btn btn-success">' . JText::_('COM_KA_TABLES_RELATIONS_AWARDS_TYPE_0') . '</a>
+		<a href="' . $formUrl . '&task=releases.add&item_type=1" class="btn btn-info">' . JText::_('COM_KA_MUSIC_ALBUM_TITLE') . '</a>
+	</div>'
+);

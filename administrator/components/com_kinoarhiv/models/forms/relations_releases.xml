@@ -30,7 +30,12 @@
 			   class="inputbox" size="6" default="0"/>
 		<field name="id" type="text" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
 			   default="0" readonly="true"/>
-		<field name="movie_id" type="text" label="COM_KA_FIELD_MOVIE_ID" description="JGLOBAL_FIELD_ID_DESC" size="10"
+		<field name="item_id" type="text" label="COM_KA_FIELD_MOVIE_ID" description="JGLOBAL_FIELD_ID_DESC" size="10"
 			   default="0" readonly="true"/>
+		<field name="item_type" type="radio" default="0" label="COM_KA_FIELD_TYPE_LABEL" filter="integer"
+			   class="btn-group" size="1" readonly="true">
+			<option value="0">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_0</option>
+			<option value="1">COM_KA_MUSIC_ALBUM_TITLE</option>
+		</field>
 	</fieldset>
 </form>

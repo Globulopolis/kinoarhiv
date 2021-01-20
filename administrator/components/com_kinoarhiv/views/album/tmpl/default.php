@@ -78,6 +78,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				<?php
 				if ($this->id != 0)
 				{
+					echo KAComponentHelper::showMsg(JText::_('COM_KA_SAVE_REQUIRED'), 'alert-info', true);
+
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=albumCrew&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
@@ -227,7 +229,141 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				?>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
-				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page3', JText::_('COM_KA_MOVIES_TAB_RATE')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page3', JText::_('COM_KA_MOVIES_TAB_AWARDS')); ?>
+
+				<?php
+				if ($this->id != 0)
+				{
+					$options = array(
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json'
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
+						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieAwards&format=json&id=' . $this->id),
+						'width' => '#j-main-container', 'height' => '#item-form',
+						'order' => 'rel.id', 'orderby' => 'desc',
+						'idprefix' => 'aw_',
+						'rowlist'  => array(5, 10, 15, 20, 25, 30, 50, 100, 200, 500),
+						'colModel' => array(
+							'JGRID_HEADING_ID' => (object) array(
+								'name' => 'id', 'index' => 'rel.id', 'width' => 60, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_AW_ID' => (object) array(
+								'name' => 'award_id', 'index' => 'rel.award_id', 'width' => 55, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_AW_LABEL' => (object) array(
+								'name' => 'title', 'index' => 'aw.title', 'width' => 350, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							'COM_KA_FIELD_AW_YEAR' => (object) array(
+								'name' => 'year', 'index' => 'rel.year', 'width' => 100, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_AW_DESC' => (object) array(
+								'name' => 'desc', 'index' => 'rel.desc', 'width' => 350, 'title' => false,
+								'sortable' => false,
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							)
+						),
+						'navgrid' => $navgridOpts
+					);
+
+					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
+				}
+				else
+				{
+					echo JText::_('COM_KA_NO_ID');
+				}
+				?>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page4', JText::_('COM_KA_MOVIES_TAB_RELEASES')); ?>
+
+				<?php
+				if ($this->id != 0)
+				{
+					$options = array(
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json'
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
+						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieReleases&format=json&id=' . $this->id),
+						'width' => '#j-main-container', 'height' => '#item-form',
+						'order' => 'r.ordering', 'orderby' => 'asc',
+						'idprefix' => 'r_',
+						'rowlist'  => array(5, 10, 15, 20, 25, 30, 50, 100, 200, 500),
+						'colModel' => array(
+							'JGRID_HEADING_ID' => (object) array(
+								'name' => 'id', 'index' => 'r.id', 'width' => 60, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_RELEASE_DATE_LABEL' => (object) array(
+								'name' => 'release_date', 'index' => 'r.release_date', 'width' => 100, 'title' => false,
+								'sorttype' => 'date',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_FIELD_RELEASE_VENDOR' => (object) array(
+								'name' => 'company_name', 'index' => 'v.company_name', 'width' => 350, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							'COM_KA_FIELD_RELEASE_COUNTRY' => (object) array(
+								'name' => 'name', 'index' => 'cn.name', 'width' => 200, 'title' => false,
+								'sorttype' => 'int',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'le', 'ge')
+								)
+							),
+							'COM_KA_RELEASES_MEDIATYPE_TITLE' => (object) array(
+								'name' => 'title', 'index' => 'mt.title', 'width' => 200, 'title' => false,
+								'sorttype' => 'text',
+								'searchoptions' => (object) array(
+									'sopt' => array('cn', 'eq', 'bw', 'ew')
+								)
+							),
+							'JGRID_HEADING_ORDERING' => (object) array(
+								'name' => 'ordering', 'index' => 'r.ordering', 'width' => 60, 'title' => false,
+								'sorttype' => 'int', 'search' => false
+							)
+						),
+						'navgrid' => $navgridOpts
+					);
+
+					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
+				}
+				else
+				{
+					echo JText::_('COM_KA_NO_ID');
+				}
+				?>
+
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page5', JText::_('COM_KA_MOVIES_TAB_RATE')); ?>
 
 				<div class="row-fluid">
 					<div class="span6">
@@ -250,7 +386,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
-				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page4', JText::_('COM_KA_MOVIES_TAB_META')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page6', JText::_('COM_KA_MOVIES_TAB_META')); ?>
 
 				<div class="row-fluid">
 					<div class="span6">
@@ -280,7 +416,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
-				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page5', JText::_('COM_KA_MOVIES_TAB_PUB')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page7', JText::_('COM_KA_MOVIES_TAB_PUB')); ?>
 
 				<div class="row-fluid">
 					<div class="span6">
@@ -346,7 +482,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				</div>
 
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
-				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page6', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page8', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
 
 				<div class="row-fluid">
 					<div class="span12">

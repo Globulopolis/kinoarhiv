@@ -44,6 +44,8 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
+
+		/** @var KinoarhivModelRelease $model */
 		$model = $this->getModel('release');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);

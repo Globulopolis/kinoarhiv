@@ -10,12 +10,10 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
 /**
  * Albums feed View class
  *
- * @since  3.0
+ * @since  3.1
  */
 class KinoarhivViewAlbums extends JViewLegacy
 {
@@ -34,7 +32,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 	 *
 	 * @return  false|void
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function display($tpl = null)
 	{
@@ -47,11 +45,10 @@ class KinoarhivViewAlbums extends JViewLegacy
 			return false;
 		}
 
-		$app             = JFactory::getApplication();
-		$document        = JFactory::getDocument();
-		$params          = JComponentHelper::getParams('com_kinoarhiv');
-		$itemid          = $app->input->get('Itemid', 0, 'int');
-		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$app      = JFactory::getApplication();
+		$document = JFactory::getDocument();
+		$params   = JComponentHelper::getParams('com_kinoarhiv');
+		$itemid   = $app->input->get('Itemid', 0, 'int');
 
 		$document->setTitle(JText::_('COM_KA_MUSIC_ALBUMS'));
 		$document->setDescription($params->get('meta_description'));
@@ -75,41 +72,30 @@ class KinoarhivViewAlbums extends JViewLegacy
 		// Prepare the data
 		foreach ($items as $row)
 		{
-			$row->composer = (!empty($row->name) || !empty($row->latin_name))
-				? KAContentHelper::formatItemTitle($row->name, $row->latin_name) : $row->composer;
-			$row->composer = !empty($row->composer) ? $row->composer . ' - ' : '';
-			$title         = $this->escape(KAContentHelper::formatItemTitle($row->composer . $row->title, '', $row->year));
-			$link          = JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $row->id . '&Itemid=' . $itemid);
-			$attribs       = json_decode($row->attribs);
+			$title   = $this->escape(KAContentHelper::formatItemTitle($row->title, '', $row->year));
+			$link    = JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $row->id . '&Itemid=' . $itemid);
+			$attribs = json_decode($row->attribs);
 
 			$item         = new JFeedItem;
 			$item->title  = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
 			$item->link   = $link;
 			$item->author = ($attribs->show_author === '' && !empty($row->username)) ? $row->username : '';
+			$checkingPath = JPath::clean($row->covers_path . '/' . $row->cover_filename);
 
-			if ($throttleEnable == 0)
+			if (!is_file($checkingPath))
 			{
-				$checkingPath = JPath::clean($row->covers_path . '/' . $row->cover_filename);
-
-				if (!is_file($checkingPath))
-				{
-					$row->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
-				}
-				else
-				{
-					$row->poster = $row->covers_path_www . '/' . $row->cover_filename;
-				}
+				$row->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
 			}
 			else
 			{
-				$row->itemid = $itemid;
-				$row->poster = KAContentHelper::getAlbumCoverLink($row);
+				$row->cover = $row->covers_path_www . '/' . $row->cover_filename;
 			}
 
 			$item->description = '<div class="feed-description">
-				<div class="poster"><img src="' . $row->poster . '" alt="" /></div>
+				<div class="poster"><img src="' . $row->cover . '" alt="" /></div>
 			</div>';
 
+			/** @var $document JDocumentFeed */
 			$document->addItem($item);
 		}
 	}

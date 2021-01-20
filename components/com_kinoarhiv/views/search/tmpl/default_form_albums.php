@@ -19,6 +19,7 @@ if (!$this->params->get('search_albums_enable'))
 	jQuery(document).ready(function($){
 		$('.cmd-reset-albums').click(function(){
 			$('#form_albums_title').select2('val', '');
+			$('.hasSlider').slider('refresh');
 		});
 	});
 </script>
@@ -28,10 +29,16 @@ if (!$this->params->get('search_albums_enable'))
 		<fieldset class="form-horizontal uk-form">
 			<?php if ($this->params->get('search_albums_title') == 1): ?>
 			<div class="row-fluid uk-form-row">
-				<div class="span12 uk-width-1-1">
+				<div class="span6 uk-width-1-1">
 					<div class="control-group uk-width-1-1">
 						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'albums'); ?></div>
 						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'albums'); ?></div>
+					</div>
+				</div>
+				<div class="span6 uk-width-1-1">
+					<div class="control-group uk-width-1-1">
+						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('track_title', 'albums'); ?></div>
+						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('track_title', 'albums'); ?></div>
 					</div>
 				</div>
 			</div>
@@ -59,12 +66,61 @@ if (!$this->params->get('search_albums_enable'))
 				</div>
 			<?php endif; ?>
 
+			<?php if ($this->params->get('search_albums_crew') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('crew', 'albums'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('crew', 'albums'); ?></div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
 			<?php if ($this->params->get('search_albums_genre') == 1): ?>
 				<div class="row-fluid uk-form-row">
 					<div class="span12 uk-width-1-1">
 						<div class="control-group uk-width-1-1">
 							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('genre', 'albums'); ?></div>
 							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('genre', 'albums'); ?></div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_albums_rate') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('rate_min', 'albums'); ?></div>
+							<div class="controls uk-width-1-2" style="padding-top: 4px;">
+								<div class="span3 rate-input">
+									<?php echo $this->form->getInput('rate_min', 'albums'); ?> - <?php echo $this->form->getInput('rate_max', 'albums'); ?>
+								</div>
+								<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rate_slider', 'albums'); ?></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_albums_vendor') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('vendor', 'albums'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('vendor', 'albums'); ?></div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_albums_tags') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('tags', 'albums'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('tags', 'albums'); ?></div>
 						</div>
 					</div>
 				</div>

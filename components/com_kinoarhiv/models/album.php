@@ -55,7 +55,7 @@ class KinoarhivModelAlbum extends JModelForm
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @see     JModelLegacy
+	 * @see     JModelForm
 	 * @since   3.0
 	 */
 	public function __construct($config = array())

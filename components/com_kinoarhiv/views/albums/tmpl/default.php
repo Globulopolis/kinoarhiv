@@ -16,13 +16,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render(
 			'layouts.navigation.album_alphabet',
-			array('url' => 'index.php?option=com_kinoarhiv&view=albums&content=albums&Itemid=' . $this->itemid, 'params' => $this->params),
+			array('url' => 'index.php?option=com_kinoarhiv&view=albums&content=albums&Itemid=' . $this->albumsItemid, 'params' => $this->params),
 			JPATH_COMPONENT
 		);
 	endif; ?>
 
 	<?php if ($this->params->get('show_feed_link', 1)):
-		$link = 'index.php?option=com_kinoarhiv&view=albums&format=feed&Itemid=' . $this->itemid; ?>
+		$link = 'index.php?option=com_kinoarhiv&view=albums&format=feed&Itemid=' . $this->albumsItemid; ?>
 		<div class="feed-link">
 			<a href="<?php echo JRoute::_($link . '&type=rss'); ?>" title="RSS" rel="noindex">RSS</a>
 			<a href="<?php echo JRoute::_($link . '&type=atom'); ?>" title="Atom" rel="noindex">Atom</a>

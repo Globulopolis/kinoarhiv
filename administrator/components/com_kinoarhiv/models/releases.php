@@ -46,6 +46,7 @@ class KinoarhivModelReleases extends JModelList
 				'release_date', 'r.release_date',
 				'name', 'c.name', 'country',
 				'media_type', 'r.media_type',
+				'item_type', 'r.item_type',
 				'vendor', 'v.company_name',
 				'language', 'r.language',
 				'ordering', 'r.ordering');
@@ -94,11 +95,14 @@ class KinoarhivModelReleases extends JModelList
 		$mediaType = $this->getUserStateFromRequest($this->context . '.filter.media_type', 'filter_media_type', '');
 		$this->setState('filter.media_type', $mediaType);
 
+		$itemType = $this->getUserStateFromRequest($this->context . '.filter.item_type', 'filter_item_type', '');
+		$this->setState('filter.item_type', $itemType);
+
 		$language = $this->getUserStateFromRequest($this->context . '.filter.language', 'filter_language', '');
 		$this->setState('filter.language', $language);
 
 		// List state information.
-		parent::populateState('r.ordering', 'desc');
+		parent::populateState('r.release_date', 'DESC');
 
 		$forcedLanguage = $app->input->get('forcedLanguage');
 
@@ -129,6 +133,7 @@ class KinoarhivModelReleases extends JModelList
 		$id .= ':' . $this->getState('filter.country');
 		$id .= ':' . $this->getState('filter.vendor');
 		$id .= ':' . $this->getState('filter.mediatype');
+		$id .= ':' . $this->getState('filter.item_type');
 		$id .= ':' . $this->getState('filter.language');
 
 		return parent::getStoreId($id);
@@ -149,12 +154,12 @@ class KinoarhivModelReleases extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'r.id, r.movie_id, r.release_date, r.language, r.ordering, m.title, m.year, v.company_name, ' .
+				'r.id, r.item_id, r.item_type, r.release_date, r.language, r.ordering, m.title, m.year, v.company_name, ' .
 				'c.name, c.code, media.title AS media_type'
 			)
 		);
 		$query->from($db->quoteName('#__ka_releases', 'r'))
-			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('r.movie_id'))
+			->join('LEFT', $db->quoteName('#__ka_movies', 'm') . ' ON ' . $db->quoteName('m.id') . ' = ' . $db->quoteName('r.item_id'))
 			->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('r.vendor_id'))
 			->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('r.country_id'))
 			->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON ' . $db->quoteName('media.id') . ' = ' . $db->quoteName('r.media_type'));
@@ -185,6 +190,14 @@ class KinoarhivModelReleases extends JModelList
 		if (is_numeric($mediatype))
 		{
 			$query->where('r.media_type = ' . (int) $mediatype);
+		}
+
+		// Filter by item type
+		$itemtype = $this->getState('filter.item_type');
+
+		if (is_numeric($itemtype))
+		{
+			$query->where('r.item_type = ' . (int) $itemtype);
 		}
 
 		// Filter on the language.
@@ -290,7 +303,7 @@ class KinoarhivModelReleases extends JModelList
 	public function saveOrder($data)
 	{
 		$db = $this->getDbo();
-		$movieID = JFactory::getApplication()->input->getInt('movie_id', 0);
+		$itemID = JFactory::getApplication()->input->getInt('item_id', 0);
 		$queryResult = true;
 
 		$db->setDebug(true);
@@ -304,7 +317,7 @@ class KinoarhivModelReleases extends JModelList
 			$query->update($db->quoteName('#__ka_releases'))
 				->set($db->quoteName('ordering') . " = '" . (int) $key . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $value)
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
+				->where($db->quoteName('item_id') . ' = ' . (int) $itemID);
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)

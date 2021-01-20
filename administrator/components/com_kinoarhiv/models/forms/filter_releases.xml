@@ -8,6 +8,11 @@
 			<option value="">COM_KA_FIELD_SORT_BY_COUNTRY</option>
 			<option value="0">COM_KA_RELEASES_WORLD</option>
 		</field>
+		<field name="item_type" type="list" label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">
+			<option value="">COM_KA_FIELD_SORT_BY_TYPE</option>
+			<option value="0">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_0</option>
+			<option value="1">COM_KA_MUSIC_ALBUM_TITLE</option>
+		</field>
 		<field name="vendor" type="sql"
 			   query="SELECT r.vendor_id AS value, v.company_name AS vendor FROM #__ka_releases AS r LEFT JOIN #__ka_vendors AS v ON v.id = r.vendor_id GROUP BY r.vendor_id"
 			   label="JOPTION_FILTER_LANGUAGE" onchange="this.form.submit();">

@@ -19,6 +19,12 @@ use Joomla\String\StringHelper;
  */
 class KinoarhivViewMovies extends JViewLegacy
 {
+	/**
+	 * Movies data object
+	 *
+	 * @var    object
+	 * @since  1.6
+	 */
 	protected $items = null;
 
 	/**
@@ -26,7 +32,7 @@ class KinoarhivViewMovies extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed
+	 * @return  false|void
 	 *
 	 * @since  3.0
 	 */
@@ -41,16 +47,13 @@ class KinoarhivViewMovies extends JViewLegacy
 			return false;
 		}
 
-		$app = JFactory::getApplication();
-		$document = JFactory::getDocument();
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$feedEmail = $app->get('feed_email', 'author');
-		$siteEmail = $app->get('mailfrom');
-		$this->itemid = $app->input->get('Itemid', 0, 'int');
-		$throttle_enable = $params->get('throttle_image_enable', 0);
-
-		// Used in preg_replace_callback
-		$itemid = $this->itemid;
+		$app            = JFactory::getApplication();
+		$document       = JFactory::getDocument();
+		$params         = JComponentHelper::getParams('com_kinoarhiv');
+		$feedEmail      = $app->get('feed_email', 'author');
+		$siteEmail      = $app->get('mailfrom');
+		$itemid         = $app->input->get('Itemid', 0, 'int');
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		$document->setTitle(JText::_('COM_KA_MOVIES'));
 		$document->setDescription($params->get('meta_description'));
@@ -74,14 +77,13 @@ class KinoarhivViewMovies extends JViewLegacy
 		// Prepare the data
 		foreach ($items as $row)
 		{
-			$title = $this->escape(KAContentHelper::formatItemTitle($row->title, '', $row->year));
-			$title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
-			$link = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $row->id . '&Itemid=' . $this->itemid);
+			$title   = $this->escape(KAContentHelper::formatItemTitle($row->title, '', $row->year));
+			$title   = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
 			$attribs = json_decode($row->attribs);
 
-			$item = new JFeedItem;
-			$item->title = $title;
-			$item->link = $link;
+			$item         = new JFeedItem;
+			$item->title  = $title;
+			$item->link   = JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $row->id . '&Itemid=' . $itemid);
 			$item->author = ($attribs->show_author === '' && !empty($row->username)) ? $row->username : '';
 
 			if ($feedEmail == 'site')
@@ -102,7 +104,7 @@ class KinoarhivViewMovies extends JViewLegacy
 
 				return $html . $cn;
 			},
-			$row->text
+				$row->text
 			);
 
 			// Replace genres BB-code
@@ -110,7 +112,7 @@ class KinoarhivViewMovies extends JViewLegacy
 			{
 				return JText::_($matches[1]) . $matches[2];
 			},
-			$row->text
+				$row->text
 			);
 
 
@@ -123,16 +125,16 @@ class KinoarhivViewMovies extends JViewLegacy
 
 				return $html . $name;
 			},
-			$row->text
+				$row->text
 			);
 
-			if ($throttle_enable == 0)
+			if ($throttleEnable == 0)
 			{
-				$checking_path = JPath::clean(
+				$checkingPath = JPath::clean(
 					$params->get('media_posters_root') . '/' . $row->fs_alias . '/' . $row->id . '/posters/' . $row->filename
 				);
 
-				if (!is_file($checking_path))
+				if (!is_file($checkingPath))
 				{
 					$row->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
 				}
@@ -165,6 +167,7 @@ class KinoarhivViewMovies extends JViewLegacy
 				<div class="introtext">' . $row->text . $row->plot . '</div>
 			</div>';
 
+			/** @var $document JDocumentFeed */
 			$document->addItem($item);
 		}
 	}

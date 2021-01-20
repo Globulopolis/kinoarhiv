@@ -105,35 +105,61 @@ class KinoarhivModelReleases extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$db     = $this->getDbo();
-		$user   = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app    = JFactory::getApplication();
-		$lang   = JFactory::getLanguage();
+		$db       = $this->getDbo();
+		$user     = JFactory::getUser();
+		$groups   = implode(',', $user->getAuthorisedViewLevels());
+		$app      = JFactory::getApplication();
+		$lang     = JFactory::getLanguage();
+		$menu     = $app->getMenu()->getActive();
+		$itemType = (int) $menu->params->get('item_type');
 
 		// It's a string because country_id == 0 - all countries
 		$country  = $app->input->get('country', '', 'word');
 		$nullDate = $db->quote($db->getNullDate());
+
+		if ($itemType === 0)
+		{
+			$columns = 'm.id, m.parent_id, m.title, m.alias, m.fs_alias, ' . $db->quoteName('m.introtext', 'text') . ', m.plot, ' .
+				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, ' .
+				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, ' .
+				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
+				'CASE WHEN m.modified = ' . $nullDate . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
+				'CASE WHEN m.publish_up = ' . $nullDate . ' THEN m.created ELSE m.publish_up END AS publish_up, ' .
+				'm.publish_down, m.attribs, m.state';
+			$table = $db->quoteName('#__ka_movies', 'm');
+		}
+		elseif ($itemType === 1)
+		{
+			$columns = 'm.id, m.title, m.alias, ' . $db->quoteName('m.introtext', 'text') . ', ' .
+				'DATE_FORMAT(m.year, "%Y") AS ' . $db->quoteName('year') . ', m.length, m.rate, m.rate_sum, ' .
+				'm.covers_path, m.covers_path_www, m.cover_filename, m.buy_urls, ' .
+				'DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
+				'CASE WHEN m.modified = ' . $nullDate . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
+				'm.attribs, m.state';
+			$table = $db->quoteName('#__ka_music_albums', 'm');
+		}
+		else
+		{
+			// This throws SQL syntax error.
+			return null;
+		}
 
 		$query = $db->getQuery(true);
 
 		$query->select(
 			$this->getState(
 				'list.select',
-				'm.id, m.parent_id, m.title, m.alias, m.fs_alias, ' . $db->quoteName('m.introtext', 'text') . ', m.plot, ' .
-				'm.rate_loc, m.rate_sum_loc, m.imdb_votesum, m.imdb_votes, m.imdb_id, m.kp_votesum, ' .
-				'm.kp_votes, m.kp_id, m.rate_fc, m.rottentm_id, m.metacritics, m.metacritics_id, ' .
-				'm.rate_custom, m.year, DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
-				'CASE WHEN m.modified = ' . $nullDate . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
-				'CASE WHEN m.publish_up = ' . $nullDate . ' THEN m.created ELSE m.publish_up END AS publish_up, ' .
-				'm.publish_down, m.attribs, m.state'
+				$columns
 			)
 		);
-		$query->from($db->quoteName('#__ka_movies', 'm'));
+		$query->from($table);
 
-		// Join over gallery item
-		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
-			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
+		if ($itemType === 0)
+		{
+			// Join over gallery item
+			$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+				->leftJoin($db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
+		}
 
 		if ($country != '')
 		{
@@ -143,7 +169,7 @@ class KinoarhivModelReleases extends JModelList
 				->where('code = "' . $db->escape($country) . '" AND language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 			$query->select('r.release_date, r.vendor_id')
-				->join('LEFT', $db->quoteName('#__ka_releases', 'r') . ' ON r.movie_id = m.id AND r.country_id = (' . $subquery . ')');
+				->join('LEFT', $db->quoteName('#__ka_releases', 'r') . ' ON r.item_id = m.id AND r.country_id = (' . $subquery . ')');
 
 			$query->select('v.company_name, v.company_name_alias')
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id AND v.state = 1');
@@ -151,7 +177,7 @@ class KinoarhivModelReleases extends JModelList
 		else
 		{
 			$query->select('r.release_date, r.vendor_id')
-				->join('LEFT', $db->quoteName('#__ka_releases', 'r') . ' ON r.movie_id = m.id AND r.country_id != 0');
+				->join('LEFT', $db->quoteName('#__ka_releases', 'r') . ' ON r.item_id = m.id AND r.country_id != 0');
 
 			$query->select('v.company_name, v.company_name_alias')
 				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id AND v.state = 1 AND v.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
@@ -159,17 +185,32 @@ class KinoarhivModelReleases extends JModelList
 
 		if (!$user->get('guest'))
 		{
-			$query->select($db->quoteName(array('u.favorite', 'u.watched')))
-				->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
+			if ($itemType === 0)
+			{
+				$query->select($db->quoteName(array('u.favorite', 'u.watched')))
+					->leftJoin($db->quoteName('#__ka_user_marked_movies', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.movie_id = m.id');
+			}
+			elseif ($itemType === 1)
+			{
+				$query->select($db->quoteName('u.favorite'))
+					->leftJoin($db->quoteName('#__ka_user_marked_albums', 'u') . ' ON u.uid = ' . $user->get('id') . ' AND u.album_id = m.id');
+			}
 		}
 
-		$query->select('user.name AS username')
-			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
+		$query->select($db->quoteName('user.name', 'username') . ', ' . $db->quoteName('user.email', 'author_email'))
+			->leftJoin($db->quoteName('#__users', 'user') . ' ON user.id = m.created_by');
 
-		$query->where('m.state = 1 AND m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
-			->where('parent_id = 0 AND m.access IN (' . $groups . ')');
+		$query->where($db->quoteName('m.state') . ' = 1')
+			->where($db->quoteName('m.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->where($db->quoteName('m.access') . ' IN (' . $groups . ')');
 
-		$query->where('r.release_date != ' . $nullDate)
+		if ($itemType === 0)
+		{
+			$query->where('parent_id = 0');
+		}
+
+		$query->where($db->quoteName('r.item_type') . ' = ' . (int) $menu->params->get('item_type'))
+			->where($db->quoteName('r.release_date') . ' != ' . $nullDate)
 			->group($db->quoteName('m.id'))
 			->order($this->getState('list.ordering', 'r.release_date') . ' ' . $this->getState('list.direction', 'DESC'));
 

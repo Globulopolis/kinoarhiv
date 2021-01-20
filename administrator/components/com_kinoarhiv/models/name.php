@@ -48,6 +48,11 @@ class KinoarhivModelName extends JModelForm
 			return false;
 		}
 
+		if ($input == 'editNameAwards')
+		{
+			$form->setFieldAttribute('item_id', 'label', 'COM_KA_FIELD_NAME_ID');
+		}
+
 		return $form;
 	}
 
@@ -286,6 +291,12 @@ class KinoarhivModelName extends JModelForm
 		try
 		{
 			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				$result = (object) array();
+				$result->item_id = $app->input->get('item_id', 0, 'int');
+			}
 		}
 		catch (RuntimeException $e)
 		{

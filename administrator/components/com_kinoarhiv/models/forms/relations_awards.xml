@@ -12,12 +12,11 @@
 		<field name="desc" type="textarea" label="COM_KA_FIELD_AW_DESC" class="span12" default="" cols="6"
 			   rows="5" filter="KAComponentHelper::cleanHTML"/>
 		<field name="type" type="radio" default="0" label="COM_KA_TABLES_RELATIONS_AWARDS_TYPE" filter="integer"
-			   class="btn-group">
+			   class="btn-group" readonly="true">
 			<option value="0">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_0</option>
 			<option value="1">COM_KA_TABLES_RELATIONS_AWARDS_TYPE_1</option>
 		</field>
-		<field name="item_id" type="text" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
-			   default="0" readonly="true"/>
+		<field name="item_id" type="text" label="COM_KA_FIELD_MOVIE_ID" size="10" default="0" readonly="true"/>
 		<field name="id" type="text" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" size="10"
 			   default="0" readonly="true"/>
 	</fieldset>

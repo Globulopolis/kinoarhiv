@@ -34,7 +34,7 @@ class KinoarhivModelNames extends JModelList
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @see     JModelLegacy
+	 * @see     JModelList
 	 * @since   3.0
 	 */
 	public function __construct($config = array())

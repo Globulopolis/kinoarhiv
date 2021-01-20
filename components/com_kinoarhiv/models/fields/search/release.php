@@ -59,7 +59,8 @@ class JFormFieldRelease extends JFormFieldList
 		// A 'data-placeholder' must be always set
 		$attr .= $this->element['data-placeholder'] ? ' data-placeholder="' . JText::_($this->element['data-placeholder']) . '"' : ' data-placeholder=""';
 
-		$options = (array) $this->getOptions();
+		$itemType = (int) $this->element['data-type'];
+		$options  = (array) $this->getOptions();
 
 		if ($this->element['data-content'] == 'date')
 		{
@@ -67,6 +68,7 @@ class JFormFieldRelease extends JFormFieldList
 				->select("DATE_FORMAT(release_date, '" . $this->element['data-dateformat'] . "') AS value")
 				->select("DATE_FORMAT(release_date, '" . $this->element['data-dateformat'] . "') AS text")
 				->from($db->quoteName('#__ka_releases'))
+				->where($db->quoteName('item_type') . ' = ' . $itemType)
 				->where($db->quoteName('language') . " IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
 				->group($db->quoteName('value'))
 				->order($db->quoteName('release_date') . ' DESC');
@@ -77,6 +79,7 @@ class JFormFieldRelease extends JFormFieldList
 				->select($db->quoteName('r.country_id', 'value') . ', ' . $db->quoteName('c.name', 'text'))
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->leftJoin($db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
+				->where($db->quoteName('r.item_type') . ' = ' . $itemType)
 				->where("r.country_id != 0 AND r.language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
 				->group($db->quoteName('r.country_id'))
 				->order($db->quoteName('c.name') . ' ASC');
@@ -87,6 +90,7 @@ class JFormFieldRelease extends JFormFieldList
 				->select($db->quoteName(array('r.id', 'v.company_name')))
 				->from($db->quoteName('#__ka_releases', 'r'))
 				->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
+				->where($db->quoteName('r.item_type') . ' = ' . $itemType)
 				->where("r.vendor_id != 0 AND r.language IN (" . $db->quote(JFactory::getLanguage()->getTag()) . ",'*')")
 				->group($db->quoteName('r.vendor_id'));
 		}

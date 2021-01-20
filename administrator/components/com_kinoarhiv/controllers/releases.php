@@ -101,9 +101,20 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
-		$model = $this->getModel('release');
-		$data = $this->input->post->get('form', array(), 'array');
-		$form = $model->getForm($data, false);
+
+		/** @var KinoarhivModelRelease $model */
+		$model    = $this->getModel('release');
+		$data     = $this->input->post->get('form', array(), 'array');
+		$form     = $model->getForm($data, false);
+
+		if ($this->input->get('task', '', 'cmd') == 'save2new')
+		{
+			$itemType = $this->input->get('new_item_type', 0, 'int');
+		}
+		else
+		{
+			$itemType = $data['item_type'];
+		}
 
 		if (!$form)
 		{
@@ -116,7 +127,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		{
 			KAComponentHelper::renderErrors($model->getErrors());
 
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $data['id'] . '&item_type=' . $data['item_type']);
 
 			return;
 		}
@@ -128,7 +139,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		if (!$result)
 		{
 			// Errors enqueue in the model
-			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $data['id']);
+			$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $data['id'] . '&item_type=' . $data['item_type']);
 
 			return;
 		}
@@ -145,10 +156,10 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		switch ($this->getTask())
 		{
 			case 'save2new':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.add', $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.add&item_type=' . $itemType, $message);
 				break;
 			case 'apply':
-				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $sessionData['id'], $message);
+				$this->setRedirect('index.php?option=com_kinoarhiv&task=releases.edit&id=' . $sessionData['id'] . '&item_type=' . $itemType, $message);
 				break;
 
 			case 'save':
@@ -184,6 +195,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 		// Make sure the item ids are integers
 		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
 
+		/** @var KinoarhivModelRelease $model */
 		$model  = $this->getModel('release');
 		$result = $model->remove($ids);
 
@@ -240,6 +252,7 @@ class KinoarhivControllerReleases extends JControllerLegacy
 
 		if (count($ids) != 0)
 		{
+			/** @var KinoarhivModelReleases $model */
 			$model = $this->getModel('releases');
 			$result = $model->batch();
 

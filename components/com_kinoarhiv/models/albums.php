@@ -133,6 +133,7 @@ class KinoarhivModelAlbums extends JModelList
 		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$app    = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$lang   = JFactory::getLanguage();
 
 		// Define null dates
 		$nullDate = $db->quote($db->getNullDate());
@@ -172,7 +173,6 @@ class KinoarhivModelAlbums extends JModelList
 			// Filter by title
 			$title = trim($filters->get('albums.title'));
 
-			// TODO Add search by track title.
 			if ($params->get('search_albums_title') == 1 && !empty($title))
 			{
 				if (StringHelper::strlen($title) < $params->get('search_albums_length_min')
@@ -206,7 +206,14 @@ class KinoarhivModelAlbums extends JModelList
 						else
 						{
 							$filter = $db->quote($db->escape($filter, true) . '%', false);
-							$query->where($db->quoteName('a.title') . ' LIKE ' . $filter);
+							$subQueryTracks = $db->getQuery(true)
+								->select($db->quoteName('album_id'))
+								->from($db->quoteName('#__ka_music'))
+								->where($db->quoteName('title') . ' LIKE ' . $filter);
+
+							$query->where(
+								$db->quoteName('a.title') . ' LIKE ' . $filter . ' OR ' . $db->quoteName('a.id') . ' IN (' . $subQueryTracks . ')'
+							);
 						}
 					}
 				}
@@ -246,33 +253,16 @@ class KinoarhivModelAlbums extends JModelList
 			}
 
 			// Filter by person name
-			$cast = $filters->get('albums.crew');
+			$crew = $filters->get('albums.crew');
 
-			if ($params->get('search_albums_crew') == 1 && !empty($cast))
+			if ($params->get('search_albums_crew') == 1 && !empty($crew))
 			{
-				// TODO Search albums by crew
-				/*$subqueryCast = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_rel_names'))
-					->where('name_id = ' . (int) $cast);
+				$subqueryCrew = $db->getQuery(true)
+					->select('name_id')
+					->from($db->quoteName('#__ka_music_rel_names'))
+					->where('item_id = ' . (int) $crew);
 
-				$db->setQuery($subqueryCast);
-
-				try
-				{
-					$movieIDs = $db->loadColumn();
-
-					if (count($movieIDs) == 0)
-					{
-						$movieIDs = array(0);
-					}
-
-					$query->where('a.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-				}*/
+				$query->where($db->quoteName('a.id') . ' IN (' . $subqueryCrew . ')');
 			}
 
 			// Filter by vendor
@@ -280,30 +270,41 @@ class KinoarhivModelAlbums extends JModelList
 
 			if ($params->get('search_albums_vendor') == 1 && !empty($vendor))
 			{
-				// TODO Search albums by vendor
-				/*$subqueryVendor = $db->getQuery(true)
-					->select('movie_id')
-					->from($db->quoteName('#__ka_releases'))
-					->where('vendor_id = ' . (int) $vendor)
-					->group('movie_id');
+				$subqueryReleasesVendor = $db->getQuery(true)
+					->select($db->quoteName('r_v.item_id'))
+					->from($db->quoteName('#__ka_releases', 'r_v'))
+					->where($db->quoteName('r_v.vendor_id') . ' = ' . (int) $vendor)
+					->where($db->quoteName('r_v.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
-				$db->setQuery($subqueryVendor);
+				$query->where($db->quoteName('a.id') . ' IN (' . $subqueryReleasesVendor . ')');
+			}
 
-				try
-				{
-					$movieIDs = $db->loadColumn();
+			// Filter by release country.
+			$releaseCountry = $filters->get('albums.release_country');
 
-					if (count($movieIDs) == 0)
-					{
-						$movieIDs = array(0);
-					}
+			if ($params->get('search_albums_release') == 1 && is_numeric($releaseCountry))
+			{
+				$subqueryReleaseCountry = $db->getQuery(true)
+					->select('r_c.item_id')
+					->from($db->quoteName('#__ka_releases', 'r_c'))
+					->where('r_c.country_id = ' . (int) $releaseCountry)
+					->where('r_c.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
-					$query->where('a.id IN (' . implode(',', ArrayHelper::arrayUnique($movieIDs)) . ')');
-				}
-				catch (RuntimeException $e)
-				{
-					KAComponentHelper::eventLog($e->getMessage());
-				}*/
+				$query->where('a.id IN (' . $subqueryReleaseCountry . ')');
+			}
+
+			// Filter by release date.
+			$releaseDate = $filters->get('albums.release_date');
+
+			if ($params->get('search_albums_release') == 1 && !empty($releaseDate))
+			{
+				$subqueryReleaseDate = $db->getQuery(true)
+					->select('r_d.item_id')
+					->from($db->quoteName('#__ka_releases', 'r_d'))
+					->where("r_d.release_date LIKE '" . $db->escape($releaseDate) . "%'")
+					->where('r_d.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+
+				$query->where('a.id IN (' . $subqueryReleaseDate . ')');
 			}
 
 			// Filter by genres

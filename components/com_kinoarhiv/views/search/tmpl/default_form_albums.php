@@ -7,13 +7,8 @@
  * @license     GNU General Public License version 2 or later
  * @url         http://киноархив.com
  */
-// TODO Поиск по альбомам, трекам
-defined('_JEXEC') or die;
 
-if (!$this->params->get('search_albums_enable'))
-{
-	return;
-}
+defined('_JEXEC') or die;
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -28,20 +23,14 @@ if (!$this->params->get('search_albums_enable'))
 		  id="filters_albums" method="post" autocomplete="off" class="form-validate">
 		<fieldset class="form-horizontal uk-form">
 			<?php if ($this->params->get('search_albums_title') == 1): ?>
-			<div class="row-fluid uk-form-row">
-				<div class="span6 uk-width-1-1">
-					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'albums'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'albums'); ?></div>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('title', 'albums'); ?></div>
+							<div class="controls uk-width-1-2"><?php echo $this->form->getInput('title', 'albums'); ?></div>
+						</div>
 					</div>
 				</div>
-				<div class="span6 uk-width-1-1">
-					<div class="control-group uk-width-1-1">
-						<div class="control-label uk-width-1-6"><?php echo $this->form->getLabel('track_title', 'albums'); ?></div>
-						<div class="controls uk-width-1-2"><?php echo $this->form->getInput('track_title', 'albums'); ?></div>
-					</div>
-				</div>
-			</div>
 			<?php endif; ?>
 
 			<?php if ($this->params->get('search_albums_year') == 1): ?>
@@ -98,6 +87,20 @@ if (!$this->params->get('search_albums_enable'))
 									<?php echo $this->form->getInput('rate_min', 'albums'); ?> - <?php echo $this->form->getInput('rate_max', 'albums'); ?>
 								</div>
 								<div class="span6 visible-desktop" style="padding-top: 0.2em;"><?php echo $this->form->getInput('rate_slider', 'albums'); ?></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($this->params->get('search_albums_release') == 1): ?>
+				<div class="row-fluid uk-form-row">
+					<div class="span12 uk-width-1-1">
+						<div class="control-group uk-width-1-1">
+							<div class="control-label uk-width-1-6"><label id="album_release_country-lbl"
+								 for="album_release_country"><?php echo JText::_('COM_KA_SEARCH_ADV_MOVIES_RELEASE'); ?></label></div>
+							<div class="controls uk-width-1-2">
+								<?php echo $this->form->getInput('release_country', 'albums'); ?>&nbsp;&nbsp;&nbsp;<?php echo $this->form->getInput('release_date', 'albums'); ?>
 							</div>
 						</div>
 					</div>

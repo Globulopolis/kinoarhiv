@@ -306,7 +306,6 @@ class KinoarhivModelReleases extends JModelList
 		$itemID = JFactory::getApplication()->input->getInt('item_id', 0);
 		$queryResult = true;
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_releases');
 		$db->transactionStart();
 
@@ -337,7 +336,6 @@ class KinoarhivModelReleases extends JModelList
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
 	}

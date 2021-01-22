@@ -282,7 +282,6 @@ class KinoarhivModelPremieres extends JModelList
 		$movieID = JFactory::getApplication()->input->getInt('movie_id', 0);
 		$queryResult = true;
 
-		$db->setDebug(true);
 		$db->lockTable('#__ka_premieres');
 		$db->transactionStart();
 
@@ -313,7 +312,6 @@ class KinoarhivModelPremieres extends JModelList
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
 	}

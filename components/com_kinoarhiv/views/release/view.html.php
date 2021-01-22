@@ -36,11 +36,35 @@ class KinoarhivViewRelease extends JViewLegacy
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed
+	 * @return  mixed|void
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function display($tpl = null)
+	{
+		$state = $this->get('State');
+		$type  = (int) $state->get('item_type');
+
+		switch ($type)
+		{
+			case 1:
+				$this->displayAlbums('album');
+				break;
+			default:
+				$this->displayMovies('movie');
+		}
+	}
+
+	/**
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed|void
+	 *
+	 * @since  3.1
+	 */
+	protected function displayAlbums($tpl)
 	{
 		$app          = JFactory::getApplication();
 		$user         = JFactory::getUser();
@@ -51,7 +75,164 @@ class KinoarhivViewRelease extends JViewLegacy
 
 		if (count($errors = $this->get('Errors')))
 		{
-			KAComponentHelper::eventLog(is_null($errors) ? $errors : implode("\n", $errors), 'ui');
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
+
+			return false;
+		}
+
+		$params         = JComponentHelper::getParams('com_kinoarhiv');
+		$checkingPath   = JPath::clean($item->covers_path . '/' . $item->cover_filename);
+		$introtextLinks = $this->params->get('introtext_links', 1);
+
+		// Prepare the data
+		$namesItemid = KAContentHelper::getItemid('names');
+		$this->albumsItemid = KAContentHelper::getItemid('albums');
+
+		// Replace genres BB-code
+		$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
+		{
+			return JText::_($matches[1]) . $matches[2];
+		},
+			$item->text
+		);
+
+		// Replace person BB-code
+		$item->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid, $introtextLinks)
+		{
+			$html = JText::_($matches[1]) . ': ';
+
+			if ($introtextLinks)
+			{
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
+			}
+			else
+			{
+				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
+			}
+
+			return $html . $name . '<br/>';
+		},
+			$item->text
+		);
+
+		if (!is_file($checkingPath))
+		{
+			$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$dimension   = KAContentHelper::getImageSize(
+				JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
+				false
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
+		}
+		else
+		{
+			$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
+			$dimension   = KAContentHelper::getImageSize(
+				$checkingPath,
+				true,
+				(int) $params->get('music_covers_size')
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
+		}
+
+		if (!is_file($checkingPath))
+		{
+			$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$dimension   = KAContentHelper::getImageSize(
+				JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
+				false
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
+		}
+		else
+		{
+			$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
+			$dimension   = KAContentHelper::getImageSize(
+				$checkingPath,
+				true,
+				(int) $params->get('music_covers_size')
+			);
+			$item->coverWidth  = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
+		}
+
+		if ($this->params->get('ratings_show_frontpage') == 1)
+		{
+			if (!empty($item->rate_sum) && !empty($item->rate))
+			{
+				$plural = $lang->getPluralSuffixes($item->rate);
+				$item->rate_value = round($item->rate_sum / $item->rate, (int) $this->params->get('vote_summ_precision'));
+				$item->rate_label = JText::sprintf(
+					'COM_KA_RATE_LOCAL_' . $plural[0],
+					$item->rate_value,
+					(int) $this->params->get('vote_summ_num'),
+					$item->rate
+				);
+				$item->rate_label_class = ' has-rating';
+			}
+			else
+			{
+				$item->rate_value = 0;
+				$item->rate_label = JText::_('COM_KA_RATE_NO');
+				$item->rate_label_class = ' no-rating';
+			}
+		}
+
+		$item->event  = new stdClass;
+		$item->params = new JObject;
+		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $item->id . '&Itemid=' . $this->itemid, false));
+
+		$dispatcher = JEventDispatcher::getInstance();
+		JPluginHelper::importPlugin('content');
+		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.releases', &$item, &$this->params, 0));
+
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.release', &$item, &$item->params, 0));
+		$item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.release', &$item, &$item->params, 0));
+		$item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.release', &$item, &$item->params, 0));
+		$item->event->afterDisplayContent = trim(implode("\n", $results));
+
+		$this->item = $item;
+		$this->user = $user;
+		$this->view = $app->input->getWord('view');
+
+		$this->prepareDocument();
+		$pathway = $app->getPathway();
+		$pathway->addItem(
+			KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year),
+			JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
+
+		parent::display($tpl);
+	}
+
+	/**
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed|void
+	 *
+	 * @since  3.1
+	 */
+	protected function displayMovies($tpl)
+	{
+		$app          = JFactory::getApplication();
+		$user         = JFactory::getUser();
+		$lang         = JFactory::getLanguage();
+		$this->itemid = $app->input->get('Itemid', 0, 'int');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$item         = $this->get('Item');
+
+		if (count($errors = $this->get('Errors')))
+		{
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
@@ -191,17 +372,15 @@ class KinoarhivViewRelease extends JViewLegacy
 		$menus   = $app->getMenu();
 		$menu    = $menus->getActive();
 		$pathway = $app->getPathway();
-
-		$pathwayTitle = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=release')
-			? $menu->title : JText::_('COM_KA_RELEASES');
+		$title   = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_RELEASES');
 
 		// Create a new pathway object
 		$path = (object) array(
-			'name' => $pathwayTitle,
+			'name' => $title,
 			'link' => 'index.php?option=com_kinoarhiv&view=releases&Itemid=' . $this->itemid
 		);
 
-		$title = KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . ' - ' . JText::_('COM_KA_RELEASES');
+		$title = KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year) . ' - ' . $title;
 
 		if ($app->get('sitename_pagetitles', 0) == 1)
 		{

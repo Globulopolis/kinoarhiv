@@ -9,11 +9,6 @@
  */
 
 defined('_JEXEC') or die;
-
-if (!$this->params->get('search_movies_enable'))
-{
-	return;
-}
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($){

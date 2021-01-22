@@ -274,6 +274,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				<?php
 				if ($this->id != 0)
 				{
+					echo KAComponentHelper::showMsg(JText::_('COM_KA_SAVE_REQUIRED'), 'alert-info', true);
+
 					$options = array(
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieCastAndCrew&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
@@ -298,28 +300,28 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 						'pginput'   => false,
 						'colModel'  => array(
 							'JGRID_HEADING_ID' => (object) array(
-								'name' => 'row_id', 'index' => 't.id', 'width' => 60, 'title' => false,
+								'name' => 'row_id', 'index' => 't.id', 'width' => 50, 'title' => false,
 								'sorttype' => 'int',
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'le', 'ge')
 								)
 							),
 							'COM_KA_FIELD_NAME' => (object) array(
-								'name' => 'name', 'index' => 'n.name', 'width' => 350, 'title' => false,
+								'name' => 'name', 'index' => 'n.name', 'width' => 300, 'title' => false,
 								'sorttype' => 'text',
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'bw', 'ew')
 								)
 							),
 							'COM_KA_FIELD_NAME_ROLE' => (object) array(
-								'name' => 'role', 'index' => 't.role', 'width' => 325, 'title' => false,
+								'name' => 'role', 'index' => 't.role', 'width' => 300, 'title' => false,
 								'sorttype' => 'text',
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'bw', 'ew')
 								)
 							),
 							'COM_KA_FIELD_NAME_DUB' => (object) array(
-								'name' => 'dub_name', 'index' => 'd.name', 'width' => 325, 'title' => false,
+								'name' => 'dub_name', 'index' => 'd.name', 'width' => 300, 'title' => false,
 								'sorttype' => 'text',
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'bw', 'ew')
@@ -354,8 +356,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
-						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
-						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAward&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAward&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieAwards&format=json&id=' . $this->id),
 						'width' => '#j-main-container', 'height' => '#item-form',
 						'order' => 'rel.id', 'orderby' => 'desc',
@@ -419,8 +421,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=moviePremieres&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
-						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
-						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $this->id),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremiere&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMoviePremiere&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMoviePremieres&format=json&id=' . $this->id),
 						'width' => '#j-main-container', 'height' => '#item-form',
 						'order' => 'p.ordering', 'orderby' => 'asc',
@@ -478,11 +480,11 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json'
-							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=releases&format=json'
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&item_type=0&' . $token . '=1'
 						),
-						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
-						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieRelease&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieRelease&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieReleases&format=json&id=' . $this->id),
 						'width' => '#j-main-container', 'height' => '#item-form',
 						'order' => 'r.ordering', 'orderby' => 'asc',

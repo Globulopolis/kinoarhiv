@@ -104,7 +104,7 @@ class JFormFieldPremiere extends JFormFieldList
 		{
 			KAComponentHelper::eventLog($e->getMessage());
 
-			return false;
+			$values = array();
 		}
 
 		if ($this->element['data-content'] == 'vendors')

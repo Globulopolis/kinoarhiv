@@ -180,6 +180,8 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			// TODO Переделать это г*но.
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -479,6 +481,7 @@ class KinoarhivModelMovie extends JModelForm
 
 			if (empty($result))
 			{
+				$this->setError('');
 				KAComponentHelper::eventLog(JText::_('JERROR_AN_ERROR_HAS_OCCURRED'));
 
 				return false;
@@ -486,6 +489,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -530,6 +534,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -573,6 +578,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -803,8 +809,8 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
-			$this->setError($e->getMessage());
 
 			return false;
 		}
@@ -1206,6 +1212,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return (object) array();
@@ -1587,6 +1594,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -1685,6 +1693,7 @@ class KinoarhivModelMovie extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -1725,6 +1734,7 @@ class KinoarhivModelMovie extends JModelForm
 			}
 			catch (RuntimeException $e)
 			{
+				$this->setError('');
 				KAComponentHelper::eventLog($e->getMessage());
 
 				return false;

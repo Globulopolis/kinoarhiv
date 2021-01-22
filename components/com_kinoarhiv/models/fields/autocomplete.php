@@ -28,6 +28,8 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 */
 	protected $type = 'Autocomplete';
 
+	protected $items = null;
+
 	/**
 	 * Method to get the field input.
 	 * data-allow-clear works only with placeholder(and with first empty <option> if attached to <select>).
@@ -130,7 +132,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 				if (method_exists($this, $method))
 				{
-					$objectsList = $this->{$method}($queryLang);
+					$this->items = $this->{$method}($queryLang);
 				}
 				else
 				{
@@ -142,7 +144,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 
 			if ((string) $this->element['data-sortable'] == 'false' || (string) $this->element['data-sortable'] == '')
 			{
-				$options = $this->multiple ? $objectsList : array_merge($options, $objectsList);
+				$options = $this->multiple ? $this->items : array_merge($options, $this->items);
 
 				foreach ($options as $elementKey => $element)
 				{
@@ -186,7 +188,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 			{
 				$items = array();
 
-				foreach ($objectsList as $item)
+				foreach ($this->items as $item)
 				{
 					if ($this->element['data-content'] == 'countries')
 					{
@@ -336,7 +338,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  mixed
+	 * @return  object|false
 	 *
 	 * @since   3.1
 	 */
@@ -383,7 +385,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  mixed
+	 * @return  object|false
 	 *
 	 * @since   3.1
 	 */
@@ -421,7 +423,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  mixed
+	 * @return  object|false
 	 *
 	 * @since   3.1
 	 */
@@ -461,7 +463,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  mixed
+	 * @return  object|false
 	 *
 	 * @since   3.1
 	 */
@@ -498,7 +500,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  mixed
+	 * @return  object|false
 	 *
 	 * @since   3.1
 	 */
@@ -543,7 +545,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 	 *
 	 * @param   string  $lang  Content language
 	 *
-	 * @return  mixed
+	 * @return  object|false
 	 *
 	 * @since   3.1
 	 */

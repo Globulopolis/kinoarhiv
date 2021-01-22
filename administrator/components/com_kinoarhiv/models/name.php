@@ -382,7 +382,7 @@ class KinoarhivModelName extends JModelForm
 	{
 		$app = JFactory::getApplication();
 		$db = $this->getDbo();
-		$db->setDebug(true);
+
 		$db->lockTable('#__ka_rel_awards');
 		$db->transactionStart();
 		$result = true;
@@ -424,7 +424,6 @@ class KinoarhivModelName extends JModelForm
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return $result;
 	}
@@ -1054,7 +1053,7 @@ class KinoarhivModelName extends JModelForm
 
 		// Remove access rules
 		$queryResult = true;
-		$db->setDebug(true);
+
 		$db->lockTable('#__assets');
 		$db->transactionStart();
 
@@ -1089,7 +1088,6 @@ class KinoarhivModelName extends JModelForm
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		// Remove person from DB
 		$query = $db->getQuery(true)

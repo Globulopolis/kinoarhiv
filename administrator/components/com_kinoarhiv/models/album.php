@@ -45,9 +45,13 @@ class KinoarhivModelAlbum extends JModelForm
 			case 'saveAlbumCrew':
 				$form = $this->loadForm($formName, 'relations_album_crew', $formOpts);
 				break;
-			case 'editTracks':
-			case 'saveTracks':
-				$form = $this->loadForm($formName, 'relations_tracks', $formOpts);
+			case 'editAlbumRelease':
+			case 'saveAlbumRelease':
+				$form = $this->loadForm($formName, 'relations_release', $formOpts);
+				break;
+			case 'editTrack':
+			case 'saveTrack':
+				$form = $this->loadForm($formName, 'relations_track', $formOpts);
 				break;
 			default:
 				$form = $this->loadForm($formName, 'album', $formOpts);
@@ -57,6 +61,12 @@ class KinoarhivModelAlbum extends JModelForm
 		if (empty($form))
 		{
 			return false;
+		}
+
+		if ($task == 'editAlbumRelease')
+		{
+			$form->setFieldAttribute('item_id', 'label', 'COM_KA_FIELD_ALBUMS_FIELD_ID_LABEL');
+			$form->setValue('item_type', null, 1);
 		}
 
 		return $form;
@@ -77,6 +87,8 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			$data = $this->getItem();
 		}
+
+		$this->preprocessData('com_kinoarhiv.album', $data);
 
 		return $data;
 	}
@@ -99,9 +111,13 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			return $this->editAlbumCrew();
 		}
-		elseif ($task == 'editTracks')
+		elseif ($task == 'editAlbumRelease')
 		{
-			return $this->editTracks();
+			return $this->editAlbumRelease();
+		}
+		elseif ($task == 'editTrack')
+		{
+			return $this->editTrack();
 		}
 
 		$query = $db->getQuery(true)
@@ -839,13 +855,170 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
+	 * Method to get a single record for release edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editAlbumRelease()
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$id    = $app->input->get('row_id', 0, 'int');
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$db->quoteName(
+				array(
+					'id', 'country_id', 'vendor_id', 'item_id', 'media_type', 'item_type', 'release_date', 'desc',
+					'language', 'ordering'
+				)
+			)
+		)
+			->from($db->quoteName('#__ka_releases'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				$result = (object) array();
+				$result->item_id = $app->input->get('item_id', 0, 'int');
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Removes album releases.
+	 *
+	 * @param   array  $ids  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function removeAlbumReleases($ids)
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__ka_releases'))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Save release to relation table.
+	 *
+	 * @param   array  $data  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function saveAlbumRelease($data)
+	{
+		$app  = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$db   = $this->getDbo();
+
+		// Skip dupe checks, let user do this.
+		if (empty($data['id']))
+		{
+			$values = array(
+				'id'           => '',
+				'country_id'   => (int) $data['country_id'],
+				'vendor_id'    => (int) $data['vendor_id'],
+				'item_id'      => $app->input->getInt('item_id', 0),
+				'media_type'   => (int) $data['media_type'],
+				'item_type'    => (int) $data['item_type'],
+				'release_date' => $db->escape($data['release_date']),
+				'desc'         => $db->escape($data['desc']),
+				'language'     => $db->escape($data['language']),
+				'ordering'     => (int) $data['ordering']
+			);
+
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_releases'))
+				->columns($db->quoteName(array_keys($values)))
+				->values("'" . implode("','", array_values($values)) . "'");
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_releases'))
+				->set($db->quoteName('country_id') . ' = ' . $db->quote((int) $data['country_id']))
+				->set($db->quoteName('vendor_id') . ' = ' . $db->quote((int) $data['vendor_id']))
+				->set($db->quoteName('item_id') . ' = ' . $db->quote((int) $data['item_id']))
+				->set($db->quoteName('media_type') . ' = ' . $db->quote((int) $data['media_type']))
+				->set($db->quoteName('item_type') . ' = ' . $db->quote((int) $data['item_type']))
+				->set($db->quoteName('release_date') . ' = ' . $db->quote($data['release_date']))
+				->set($db->quoteName('desc') . ' = ' . $db->quote($data['desc']))
+				->set($db->quoteName('language') . ' = ' . $db->quote($data['language']))
+				->set($db->quoteName('ordering') . ' = ' . $db->quote((int) $data['ordering']))
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			if (empty($data['id']))
+			{
+				$insertID = $db->insertid();
+				$sessionData = $app->getUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.r_id');
+				$sessionData['id'] = $insertID;
+				$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.r_id', $sessionData);
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Method to get a single record for track edit.
 	 *
 	 * @return  mixed  Object on success, false on failure.
 	 *
 	 * @since  3.1
 	 */
-	private function editTracks()
+	private function editTrack()
 	{
 		$app   = JFactory::getApplication();
 		$db    = $this->getDbo();

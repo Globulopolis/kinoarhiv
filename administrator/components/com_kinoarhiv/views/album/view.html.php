@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+/**
+ * View to edit an album.
+ *
+ * @since  3.0
+ */
 class KinoarhivViewAlbum extends JViewLegacy
 {
 	protected $items;
@@ -39,10 +44,13 @@ class KinoarhivViewAlbum extends JViewLegacy
 		switch (JFactory::getApplication()->input->get('task', '', 'cmd'))
 		{
 			case 'editAlbumCrew':
-				$this->editAlbumCrew($tpl);
+				$this->editAlbumCrew();
 				break;
-			case 'editTracks':
-				$this->editTracks($tpl);
+			case 'editAlbumRelease':
+				$this->editAlbumRelease();
+				break;
+			case 'editTrack':
+				$this->editTrack();
 				break;
 			default:
 				$this->edit();
@@ -114,9 +122,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	}
 
 	/**
-	 * Display the view for a track edit.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 * Display the layout for a track edit.
 	 *
 	 * @return  void
 	 *
@@ -124,7 +130,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 *
 	 * @since   3.1
 	 */
-	protected function editAlbumCrew($tpl)
+	protected function editAlbumCrew()
 	{
 		$this->form = $this->get('Form');
 		$errors = $this->get('Errors');
@@ -136,7 +142,14 @@ class KinoarhivViewAlbum extends JViewLegacy
 
 		if ($this->getLayout() !== 'modal')
 		{
-			$this->addToolbar($tpl);
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME')),
+				'play'
+			);
+
+			JToolbarHelper::apply('albums.saveAlbumCrew');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 
 		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
@@ -145,9 +158,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	}
 
 	/**
-	 * Display the view for a track edit.
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 * Display the layout for a release edit.
 	 *
 	 * @return  void
 	 *
@@ -155,7 +166,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 *
 	 * @since   3.1
 	 */
-	protected function editTracks($tpl)
+	protected function editAlbumRelease()
 	{
 		$this->form = $this->get('Form');
 		$errors = $this->get('Errors');
@@ -167,7 +178,53 @@ class KinoarhivViewAlbum extends JViewLegacy
 
 		if ($this->getLayout() !== 'modal')
 		{
-			$this->addToolbar($tpl);
+			$rowId = JFactory::getApplication()->input->getInt('row_id');
+			$title = !empty($rowId) ? JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE') : JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_ADD_TITLE');
+
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . $title),
+				'play'
+			);
+
+			JToolbarHelper::apply('albums.saveAlbumRelease');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
+		}
+
+		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
+
+		JFactory::getApplication()->input->set('hidemainmenu', true);
+	}
+
+	/**
+	 * Display the layout for a track edit.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.1
+	 */
+	protected function editTrack()
+	{
+		$this->form = $this->get('Form');
+		$errors = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
+
+		if ($this->getLayout() !== 'modal')
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
+				'play'
+			);
+
+			JToolbarHelper::apply('albums.saveAlbumTrack');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 
 		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
@@ -212,28 +269,6 @@ class KinoarhivViewAlbum extends JViewLegacy
 				JToolbarHelper::divider();
 				JToolbarHelper::cancel('albums.cancel');
 			}
-		}
-		elseif ($task == 'tracks')
-		{
-			JToolbarHelper::title(
-				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
-				'play'
-			);
-
-			JToolbarHelper::apply('albums.saveAlbumTrack');
-			JToolbarHelper::divider();
-			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
-		}
-		elseif ($task == 'crew')
-		{
-			JToolbarHelper::title(
-				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME')),
-				'play'
-			);
-
-			JToolbarHelper::apply('albums.saveAlbumCrew');
-			JToolbarHelper::divider();
-			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 		else
 		{

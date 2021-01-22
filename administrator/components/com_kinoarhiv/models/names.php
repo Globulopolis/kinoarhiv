@@ -283,7 +283,6 @@ class KinoarhivModelNames extends JModelList
 		}
 
 		$queryResult = true;
-		$db->setDebug(true);
 		$db->lockTable('#__ka_names');
 		$db->transactionStart();
 
@@ -314,7 +313,6 @@ class KinoarhivModelNames extends JModelList
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		if ($queryResult)
 		{

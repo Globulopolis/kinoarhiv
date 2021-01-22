@@ -513,22 +513,22 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function editMovieAwards()
+	public function editMovieAward()
 	{
 		$view = $this->getView('movie', 'html');
 		$model = $this->getModel('movie');
 		$view->setModel($model, true);
-		$view->display('awards');
+		$view->display('award');
 	}
 
 	/**
-	 * Method to save a record for editNameAwards.
+	 * Method to save a record for editNameAward.
 	 *
 	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public function saveMovieAwards()
+	public function saveMovieAward()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -548,7 +548,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
-		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $id;
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieAward&item_id=' . $id;
 
 		if (!$form)
 		{
@@ -567,7 +567,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$result = $model->saveMovieAwards($validData);
+		$result = $model->saveMovieAward($validData);
 
 		if (!$result)
 		{
@@ -597,22 +597,22 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function editMoviePremieres()
+	public function editMoviePremiere()
 	{
 		$view = $this->getView('movie', 'html');
 		$model = $this->getModel('movie');
 		$view->setModel($model, true);
-		$view->display('premieres');
+		$view->display('premiere');
 	}
 
 	/**
-	 * Method to save a record for editMoviePremieres.
+	 * Method to save a record for editMoviePremiere.
 	 *
 	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public function saveMoviePremieres()
+	public function saveMoviePremiere()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -632,7 +632,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
-		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMoviePremieres&item_id=' . $id;
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMoviePremiere&item_id=' . $id;
 
 		if (!$form)
 		{
@@ -651,7 +651,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$result = $model->saveMoviePremieres($validData);
+		$result = $model->saveMoviePremiere($validData);
 
 		if (!$result)
 		{
@@ -681,22 +681,22 @@ class KinoarhivControllerMovies extends JControllerLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function editMovieReleases()
+	public function editMovieRelease()
 	{
 		$view = $this->getView('movie', 'html');
 		$model = $this->getModel('movie');
 		$view->setModel($model, true);
-		$view->display('releases');
+		$view->display('release');
 	}
 
 	/**
-	 * Method to save a record for editMovieReleases.
+	 * Method to save a record for editMovieRelease.
 	 *
 	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public function saveMovieReleases()
+	public function saveMovieRelease()
 	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -716,7 +716,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 		$model = $this->getModel('movie');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
-		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $id;
+		$url   = 'index.php?option=com_kinoarhiv&task=movies.editMovieRelease&item_id=' . $id;
 
 		if (!$form)
 		{
@@ -735,7 +735,7 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		$result = $model->saveMovieReleases($validData);
+		$result = $model->saveMovieRelease($validData);
 
 		if (!$result)
 		{

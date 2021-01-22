@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_rel_awards` (
   `award_id` int(11) NOT NULL DEFAULT '0',
   `desc` mediumtext NOT NULL,
   `year` year(4) NOT NULL DEFAULT '0000',
-  `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0-movie, 1-people',
+  `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0-movie, 1-people, 2-album',
   PRIMARY KEY (`id`),
   KEY `idx_item_id` (`item_id`),
   KEY `idx_award_id` (`award_id`),

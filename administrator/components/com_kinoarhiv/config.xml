@@ -777,7 +777,6 @@
 		</field>
 	</fieldset>
 
-	<!-- TODO Поиск по альбомам, трекам -->
 	<fieldset name="search_albums" label="COM_KA_SEARCH_SETTINGS_MUSIC">
 		<field name="search_albums_enable" type="radio" class="btn-group" default="1"
 			   label="COM_KA_SEARCH_SETTINGS_FORM_MUSIC_ENABLE" description="COM_KA_SEARCH_SETTINGS_FORMS_MENU_OVERRIDE"
@@ -807,7 +806,7 @@
 			<option value="0">JNO</option>
 		</field>
 		<field name="search_albums_crew" type="radio" class="btn-group" default="1"
-			   label="COM_KA_SEARCH_SETTINGS_FORM_CAST_ENABLE" filter="integer">
+			   label="COM_KA_SEARCH_SETTINGS_FORM_CREW_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
@@ -823,6 +822,11 @@
 		</field>
 		<field name="search_albums_rate" type="radio" class="btn-group" default="1"
 			   label="COM_KA_SEARCH_SETTINGS_FORM_RATE_ENABLE" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="search_albums_release" type="radio" class="btn-group" default="1"
+			   label="COM_KA_SEARCH_SETTINGS_FORM_RELEASE_ENABLE" filter="integer">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>

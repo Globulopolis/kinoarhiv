@@ -222,7 +222,7 @@ class KinoarhivModelCareers extends JModelList
 	{
 		$db = $this->getDbo();
 		$queryResult = true;
-		$db->setDebug(true);
+
 		$db->lockTable('#__ka_names_career');
 		$db->transactionStart();
 
@@ -252,7 +252,6 @@ class KinoarhivModelCareers extends JModelList
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		return (bool) $queryResult;
 	}

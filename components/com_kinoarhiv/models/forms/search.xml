@@ -183,9 +183,7 @@
 
 	<fields name="albums">
 		<field name="title" type="text" default="" label="COM_KA_SEARCH_ADV_MUSIC_TITLE_LABEL" filter="string"
-			   class="span12 uk-width-1-1" required="false" maxlength="64"/>
-		<field name="track_title" type="text" default="" label="COM_KA_SEARCH_ADV_TRACK_TITLE_LABEL" filter="string"
-			   class="span12 uk-width-1-1" required="false" maxlength="64"/>
+			   class="span10 uk-width-1-1" required="false" maxlength="64"/>
 		<field name="year" type="text" default="" label="COM_KA_YEAR"
 			   description="COM_KA_SEARCH_ADV_MOVIES_YEAR_HELP" maxlength="10" filter="string"
 			   class="span3 uk-width-1-4 validate-date" validate="date"/>
@@ -216,7 +214,18 @@
 			   data-slider-max="params::vote_summ_num" data-slider-input-min=".search_albums_rate_min"
 			   data-slider-input-max=".search_albums_rate_max" translateLabel="false"/>
 
-		<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MOVIES_VENDOR_LABEL" filter="integer"
+		<field name="release_date" type="release" data-content="date" data-dateformat="%Y" data-type="1" default=""
+			   label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_DATE" class="span3 uk-width-1-4">
+			<option value="">-</option>
+		</field>
+		<!-- Value of the filter should be a 'string' not 'integer'. -->
+		<field name="release_country" type="release" data-content="countries" data-type="1" default=""
+			   filter="string" label="COM_KA_SEARCH_ADV_MOVIES_RELEASE_COUNTRY"
+			   class="span7 uk-width-1-4 hasAutocomplete">
+			<option value=""></option>
+		</field>
+
+		<field name="vendor" type="autocomplete" label="COM_KA_SEARCH_ADV_MUSIC_VENDOR_LABEL" filter="integer"
 			   class="span10 uk-width-1-1" data-content="vendors" data-allow-clear="true" data-key="id"
 			   data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>

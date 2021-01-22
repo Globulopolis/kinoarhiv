@@ -1189,7 +1189,6 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			$db->setQuery($query);
 			$rows = $db->loadObjectList();
 
-			$db->setDebug(true);
 			$db->lockTable($table);
 			$db->transactionStart();
 
@@ -1248,7 +1247,6 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			}
 
 			$db->unlockTables();
-			$db->setDebug(false);
 		}
 		else
 		{

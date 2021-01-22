@@ -36,10 +36,10 @@ class JFormFieldYear extends JFormFieldList
 	 */
 	protected function getInput()
 	{
-		$db = JFactory::getDbo();
-		$html = array();
-		$attr = '';
-		$years = array();
+		$db      = JFactory::getDbo();
+		$html    = array();
+		$attr    = '';
+		$years   = array();
 		$options = (array) $this->getOptions();
 
 		// Initialize some field attributes.

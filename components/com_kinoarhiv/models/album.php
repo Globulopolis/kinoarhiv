@@ -142,7 +142,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 		$query = $db->getQuery(true);
 
-		$query->select("a.id, a.title, a.alias, a.fs_alias, a.composer, DATE_FORMAT(a.year, '%Y') AS year, "
+		$query->select("a.id, a.title, a.alias, a.fs_alias, DATE_FORMAT(a.year, '%Y') AS year, "
 			. "a.length, a.isrc, a.desc, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, "
 			. "a.tracks_path, a.tracks_path_www, a.tracks_preview_path, a.buy_urls, a.created_by, a.metakey, a.metadesc, "
 			. "a.attribs, a.state, a.metadata, "
@@ -177,6 +177,7 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError($e->getMessage());
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -187,12 +188,12 @@ class KinoarhivModelAlbum extends JModelForm
 			$result->attribs = json_decode($result->attribs);
 
 			// Get tags
-			/*if ($result->attribs->show_tags == 1)
+			if ($result->attribs->show_tags == 1)
 			{
 				$tags = new JHelperTags;
 				$tags->getItemTags('com_kinoarhiv.album', $result->id);
 				$result->tags = $tags;
-			}*/
+			}
 		}
 
 		// Get tracks for albums
@@ -218,6 +219,7 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError($e->getMessage());
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
@@ -440,12 +442,12 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function getAlbumData()
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$lang = JFactory::getLanguage();
+		$db     = $this->getDbo();
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$lang   = JFactory::getLanguage();
 		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$id = $app->input->get('id', 0, 'int');
+		$id     = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
 			->select("m.id, m.title, m.alias, m.fs_alias, DATE_FORMAT(m.year, '%Y') AS year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .

@@ -427,18 +427,112 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 	}
 
 	/**
+	 * Display album release edit form.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function editAlbumRelease()
+	{
+		$view = $this->getView('album', 'html');
+		$model = $this->getModel('album');
+		$view->setModel($model, true);
+		$view->display('release');
+	}
+
+	/**
+	 * Method to save a record for editAlbumRelease.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function saveAlbumRelease()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app       = JFactory::getApplication();
+		$user      = JFactory::getUser();
+		$id        = $app->input->get('item_id', 0, 'int');
+		$rowid     = $app->input->get('row_id', 0, 'int');
+		$inputName = $app->input->get('input_name', '', 'string');
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.album.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.album.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		/** @var KinoarhivModelAlbum $model */
+		$model = $this->getModel('album');
+		$data  = $this->input->post->get('jform', array(), 'array');
+		$form  = $model->getForm($data, false);
+		$url   = 'index.php?option=com_kinoarhiv&task=albums.editAlbumRelease&item_id=' . $id;
+
+		if ($rowid != 0)
+		{
+			$url .= '&row_id=' . $rowid . '&input_name=' . $inputName;
+		}
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelper::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveAlbumRelease($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$sessionData = $app->getUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.r_id');
+
+		// Set the success message.
+		$message = JText::_('COM_KA_ITEMS_SAVE_SUCCESS');
+
+		// Delete session data taken from model
+		$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.r_id', null);
+
+		if ($rowid == 0)
+		{
+			$url .= '&row_id=' . $sessionData['id'] . '&input_name=r_' . $sessionData['id'];
+		}
+
+		$this->setRedirect($url, $message);
+	}
+
+	/**
 	 * Display add/edit track form.
 	 *
 	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public function editTracks()
+	public function editTrack()
 	{
 		$view = $this->getView('album', 'html');
 		$model = $this->getModel('album');
 		$view->setModel($model, true);
-		$view->display('tracks');
+		$view->display('track');
 	}
 
 	/**

@@ -45,17 +45,17 @@ class KinoarhivModelMovie extends JModelForm
 			case 'saveMovieCast':
 				$form = $this->loadForm($formName, 'relations_cast', $formOpts);
 				break;
-			case 'editMovieAwards':
-			case 'saveMovieAwards':
-				$form = $this->loadForm($formName, 'relations_awards', $formOpts);
+			case 'editMovieAward':
+			case 'saveMovieAward':
+				$form = $this->loadForm($formName, 'relations_award', $formOpts);
 				break;
-			case 'editMoviePremieres':
-			case 'saveMoviePremieres':
-				$form = $this->loadForm($formName, 'relations_premieres', $formOpts);
+			case 'editMoviePremiere':
+			case 'saveMoviePremiere':
+				$form = $this->loadForm($formName, 'relations_premiere', $formOpts);
 				break;
-			case 'editMovieReleases':
-			case 'saveMovieReleases':
-				$form = $this->loadForm($formName, 'relations_releases', $formOpts);
+			case 'editMovieRelease':
+			case 'saveMovieRelease':
+				$form = $this->loadForm($formName, 'relations_release', $formOpts);
 				break;
 			default:
 				$form = $this->loadForm($formName, 'movie', $formOpts);
@@ -120,17 +120,17 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			return $this->editMovieCast();
 		}
-		elseif ($task == 'editMovieAwards')
+		elseif ($task == 'editMovieAward')
 		{
-			return $this->editMovieAwards();
+			return $this->editMovieAward();
 		}
-		elseif ($task == 'editMoviePremieres')
+		elseif ($task == 'editMoviePremiere')
 		{
-			return $this->editMoviePremieres();
+			return $this->editMoviePremiere();
 		}
-		elseif ($task == 'editMovieReleases')
+		elseif ($task == 'editMovieRelease')
 		{
-			return $this->editMovieReleases();
+			return $this->editMovieRelease();
 		}
 
 		$query = $db->getQuery(true)->select(
@@ -767,7 +767,7 @@ echo $query;
 	 *
 	 * @since  3.1
 	 */
-	private function editMovieAwards()
+	private function editMovieAward()
 	{
 		$app = JFactory::getApplication();
 		$db  = $this->getDbo();
@@ -809,7 +809,7 @@ echo $query;
 	 *
 	 * @since   3.1
 	 */
-	public function saveMovieAwards($data)
+	public function saveMovieAward($data)
 	{
 		$app  = JFactory::getApplication();
 		$db   = $this->getDbo();
@@ -924,7 +924,7 @@ echo $query;
 	 *
 	 * @since  3.1
 	 */
-	private function editMoviePremieres()
+	private function editMoviePremiere()
 	{
 		$app   = JFactory::getApplication();
 		$db    = $this->getDbo();
@@ -972,7 +972,7 @@ echo $query;
 	 *
 	 * @since   3.1
 	 */
-	public function saveMoviePremieres($data)
+	public function saveMoviePremiere($data)
 	{
 		$app  = JFactory::getApplication();
 		$db   = $this->getDbo();
@@ -1033,7 +1033,7 @@ echo $query;
 	 *
 	 * @since  3.1
 	 */
-	private function editMovieReleases()
+	private function editMovieRelease()
 	{
 		$app   = JFactory::getApplication();
 		$db    = $this->getDbo();
@@ -1082,7 +1082,7 @@ echo $query;
 	 *
 	 * @since   3.1
 	 */
-	public function saveMovieReleases($data)
+	public function saveMovieRelease($data)
 	{
 		$app  = JFactory::getApplication();
 		$db   = $this->getDbo();

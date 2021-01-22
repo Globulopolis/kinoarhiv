@@ -312,7 +312,7 @@ class KinoarhivModelMovies extends JModelList
 					->where('p_v.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 				$subqueryReleasesVendor = $db->getQuery(true)
-					->select('r_v.movie_id')
+					->select('r_v.item_id')
 					->from($db->quoteName('#__ka_releases', 'r_v'))
 					->where('r_v.vendor_id = ' . (int) $vendor)
 					->where('r_v.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
@@ -355,7 +355,7 @@ class KinoarhivModelMovies extends JModelList
 			if ($params->get('search_movies_release') == 1 && is_numeric($releaseCountry))
 			{
 				$subqueryReleaseCountry = $db->getQuery(true)
-					->select('r_c.movie_id')
+					->select('r_c.item_id')
 					->from($db->quoteName('#__ka_releases', 'r_c'))
 					->where('r_c.country_id = ' . (int) $releaseCountry)
 					->where('r_c.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
@@ -369,7 +369,7 @@ class KinoarhivModelMovies extends JModelList
 			if ($params->get('search_movies_release') == 1 && !empty($releaseDate))
 			{
 				$subqueryReleaseDate = $db->getQuery(true)
-					->select('r_d.movie_id')
+					->select('r_d.item_id')
 					->from($db->quoteName('#__ka_releases', 'r_d'))
 					->where("r_d.release_date LIKE '" . $db->escape($releaseDate) . "%'")
 					->where('r_d.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
@@ -378,7 +378,7 @@ class KinoarhivModelMovies extends JModelList
 			}
 
 			if ($app->input->getWord('view') == 'premieres' && ($params->get('search_movies_premiere') == 1
-				|| $params->get('search_movies_premiere') == 1))
+				|| $params->get('search_movies_release') == 1))
 			{
 				// Join over premieres and releases
 				$query->select($db->quoteName(array('p.vendor_id', 'p.premiere_date', 'v.company_name')))

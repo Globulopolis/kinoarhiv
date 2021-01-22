@@ -361,7 +361,6 @@ class KinoarhivModelMovies extends JModelList
 		}
 
 		$queryResult = true;
-		$db->setDebug(true);
 		$db->lockTable('#__ka_movies');
 		$db->transactionStart();
 
@@ -392,7 +391,6 @@ class KinoarhivModelMovies extends JModelList
 		}
 
 		$db->unlockTables();
-		$db->setDebug(false);
 
 		if ($queryResult)
 		{

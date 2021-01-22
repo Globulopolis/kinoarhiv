@@ -1248,7 +1248,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function getMovieReleases()
+	public function getReleases()
 	{
 		jimport('administrator.components.com_kinoarhiv.helpers.database', JPATH_ROOT);
 
@@ -1263,6 +1263,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$field      = $this->input->get('searchField', '', 'cmd');
 		$term       = $this->input->get('searchString', '', 'string');
 		$operand    = $this->input->get('searchOper', '', 'word');
+		$itemType   = $this->input->get('item_type', null, 'int');
 		$result     = (object) array();
 		$where      = "";
 
@@ -1273,9 +1274,14 @@ class KinoarhivModelAPI extends JModelLegacy
 
 		$query = $db->getQuery(true)
 			->select('COUNT(r.id)')
-			->from($db->quoteName('#__ka_releases', 'r'))
-			->where($db->quoteName('item_type') . ' = 0')
-			->where($db->quoteName('r.item_id') . ' = ' . (int) $id . $where);
+			->from($db->quoteName('#__ka_releases', 'r'));
+
+		if (!is_null($itemType))
+		{
+			$query->where($db->quoteName('r.item_type') . ' = ' . (int) $itemType);
+		}
+
+		$query->where($db->quoteName('r.item_id') . ' = ' . (int) $id . $where);
 
 		$db->setQuery($query);
 
@@ -1297,8 +1303,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			->select(
 				$db->quoteName(
 					array(
-						'r.id', 'r.country_id', 'r.vendor_id', 'r.media_type', 'r.release_date', 'r.desc', 'r.language',
-						'r.ordering', 'cn.name', 'v.company_name', 'mt.title'
+						'r.id', 'r.country_id', 'r.vendor_id', 'r.media_type', 'r.item_type', 'r.release_date',
+						'r.desc', 'r.language', 'r.ordering', 'cn.name', 'v.company_name', 'mt.title'
 					)
 				)
 			)
@@ -1307,9 +1313,14 @@ class KinoarhivModelAPI extends JModelLegacy
 			->leftJoin($db->quoteName('#__ka_countries', 'cn') . ' ON ' . $db->quoteName('cn.id') . ' = ' . $db->quoteName('r.country_id'))
 			->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('r.vendor_id'))
 			->leftJoin($db->quoteName('#__ka_media_types', 'mt') . ' ON ' . $db->quoteName('mt.id') . ' = ' . $db->quoteName('r.media_type'))
-			->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('r.language'))
-			->where($db->quoteName('item_type') . ' = 0')
-			->where($db->quoteName('r.item_id') . ' = ' . (int) $id . $where)
+			->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('r.language'));
+
+		if (!is_null($itemType))
+		{
+			$query->where($db->quoteName('r.item_type') . ' = ' . (int) $itemType);
+		}
+
+		$query->where($db->quoteName('r.item_id') . ' = ' . (int) $id . $where)
 			->order($db->quoteName($orderby) . ' ' . strtoupper($db->escape($order)))
 			->setLimit($limit, $limitstart);
 

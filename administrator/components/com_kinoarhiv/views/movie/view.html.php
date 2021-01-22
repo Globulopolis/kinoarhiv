@@ -46,9 +46,9 @@ class KinoarhivViewMovie extends JViewLegacy
 		switch (JFactory::getApplication()->input->get('task', '', 'cmd'))
 		{
 			case 'editMovieCast':
-			case 'editMovieAwards':
-			case 'editMoviePremieres':
-			case 'editMovieReleases':
+			case 'editMovieAward':
+			case 'editMoviePremiere':
+			case 'editMovieRelease':
 				$this->editMovieInfo($tpl);
 				break;
 			default:
@@ -206,7 +206,7 @@ class KinoarhivViewMovie extends JViewLegacy
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
-		elseif ($task == 'awards')
+		elseif ($task == 'award')
 		{
 			if ($this->form->getValue('id') != 0)
 			{
@@ -223,11 +223,11 @@ class KinoarhivViewMovie extends JViewLegacy
 				);
 			}
 
-			JToolbarHelper::apply('movies.saveMovieAwards');
+			JToolbarHelper::apply('movies.saveMovieAward');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
-		elseif ($task == 'premieres')
+		elseif ($task == 'premiere')
 		{
 			if ($this->form->getValue('id') != 0)
 			{
@@ -244,11 +244,11 @@ class KinoarhivViewMovie extends JViewLegacy
 				);
 			}
 
-			JToolbarHelper::apply('movies.saveMoviePremieres');
+			JToolbarHelper::apply('movies.saveMoviePremiere');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
-		elseif ($task == 'releases')
+		elseif ($task == 'release')
 		{
 			if ($this->form->getValue('id') != 0)
 			{
@@ -265,7 +265,7 @@ class KinoarhivViewMovie extends JViewLegacy
 				);
 			}
 
-			JToolbarHelper::apply('movies.saveMovieReleases');
+			JToolbarHelper::apply('movies.saveMovieRelease');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}

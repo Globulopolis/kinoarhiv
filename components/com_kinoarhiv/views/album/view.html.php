@@ -91,7 +91,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$this->page       = $app->input->get('page', '', 'cmd');
 		$this->pagination->hideEmptyLimitstart = true;
 
-		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 

@@ -175,8 +175,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=albumTraks&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
-						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTracks&item_id=' . $this->id),
-						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTracks&item_id=' . $this->id),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTrack&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTrack&item_id=' . $this->id),
 						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.removeTracks&format=json&id=' . $this->id),
 						'width' => '#j-main-container', 'height' => '#item-form',
 						'order' => 't.id', 'orderby' => 'asc',
@@ -300,12 +300,12 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieReleases&format=json'
-							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=releases&format=json'
+							. '&lang=' . $languageTag . '&id=' . $this->id . '&item_type=1&' . $token . '=1'
 						),
-						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
-						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieReleases&item_id=' . $this->id),
-						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieReleases&format=json&id=' . $this->id),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editAlbumRelease&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editAlbumRelease&item_id=' . $this->id),
+						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.removeAlbumReleases&format=json&id=' . $this->id),
 						'width' => '#j-main-container', 'height' => '#item-form',
 						'order' => 'r.ordering', 'orderby' => 'asc',
 						'idprefix' => 'r_',

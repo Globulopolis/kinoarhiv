@@ -28,6 +28,12 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 	protected $params;
 
+	/**
+	 * The menu object
+	 *
+	 * @var    JMenuItem
+	 * @since  3.1
+	 */
 	protected $menu;
 
 	/**
@@ -62,7 +68,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 		if ($menu)
 		{
-			$menuParams->loadString($menu->params);
+			$menuParams->loadString($menu->getParams());
 		}
 
 		$mergedParams = clone $menuParams;
@@ -90,7 +96,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 				return $html . $cn;
 			},
-			$item->text
+				$item->text
 			);
 
 			// Replace genres BB-code
@@ -98,7 +104,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 			{
 				return JText::_($matches[1]) . $matches[2];
 			},
-			$item->text
+				$item->text
 			);
 
 			// Replace person BB-code
@@ -110,7 +116,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 
 				return $html . $name;
 			},
-			$item->text
+				$item->text
 			);
 
 			if ($throttleEnable == 0)
@@ -167,7 +173,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 				$item->poster_height = $dimension['height'];
 			}
 
-			$item->plot   = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
+			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
 
 			if ($params->get('ratings_show_frontpage') == 1)
 			{
@@ -228,9 +234,10 @@ class KinoarhivViewPremieres extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app     = JFactory::getApplication();
-		$pathway = $app->getPathway();
-		$title   = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_PREMIERES');
+		$app        = JFactory::getApplication();
+		$pathway    = $app->getPathway();
+		$menuParams = $this->menu->getParams();
+		$title      = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_PREMIERES');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -250,27 +257,27 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($this->menu && $this->menu->params->get('menu-meta_description') != '')
+		if ($this->menu && $menuParams->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($this->menu->params->get('menu-meta_description'));
+			$this->document->setDescription($menuParams->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($this->menu && $this->menu->params->get('menu-meta_keywords') != '')
+		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $this->menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($this->menu && $this->menu->params->get('robots') != '')
+		if ($this->menu && $menuParams->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $this->menu->params->get('robots'));
+			$this->document->setMetadata('robots', $menuParams->get('robots'));
 		}
 		else
 		{

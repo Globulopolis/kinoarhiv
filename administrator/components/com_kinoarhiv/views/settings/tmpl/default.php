@@ -14,6 +14,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tabstate');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('bootstrap.modal', 'collapseModal');
+JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $this->form->getValue('ui_theme') . '/jquery-ui.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 ?>
@@ -305,19 +306,19 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 
 			<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php if ($this->userIsSuperAdmin): ?>
-			<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page6', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
+				<?php echo JHtml::_('bootstrap.addTab', 'settings', 'page6', JText::_('COM_KA_PERMISSIONS_LABEL')); ?>
 
-			<div class="row-fluid">
-				<div class="span12">
-					<fieldset class="form-horizontal">
-						<div class="control-group">
-							<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules'); ?></div>
-						</div>
-					</fieldset>
+				<div class="row-fluid">
+					<div class="span12">
+						<fieldset class="form-horizontal">
+							<div class="control-group">
+								<div class="controls" style="margin-left: 0 !important;"><?php echo $this->form->getInput('rules'); ?></div>
+							</div>
+						</fieldset>
+					</div>
 				</div>
-			</div>
 
-			<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
 			<?php endif; ?>
 		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 

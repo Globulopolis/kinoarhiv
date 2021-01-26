@@ -18,6 +18,68 @@ defined('_JEXEC') or die;
 class KinoarhivControllerAlbums extends JControllerLegacy
 {
 	/**
+	 * Removes album awards.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function removeAlbumAwards()
+	{
+		if (!KAComponentHelper::checkToken('post'))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
+
+			return;
+		}
+
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
+		$id     = $app->input->getInt('id', 0);
+		$ids    = $app->input->get('items', array(), 'array');
+		$newIDs = array();
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.edit', 'com_kinoarhiv.album.' . $id) && !$user->authorise('core.delete', 'com_kinoarhiv.album.' . $id))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_ALERTNOAUTHOR')));
+
+			return;
+		}
+
+		if (!is_array($ids) || count($ids) < 1)
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JGLOBAL_NO_ITEM_SELECTED')));
+
+			return;
+		}
+
+		// Get ID from string
+		foreach ($ids as $id)
+		{
+			$_id = explode('_', $id['name']);
+			$newIDs[] = end($_id);
+		}
+
+		// Make sure the item ids are integers
+		$newIDs = Joomla\Utilities\ArrayHelper::toInteger($newIDs);
+
+		/** @var KinoarhivModelAlbum $model */
+		$model = $this->getModel('album');
+		$result = $model->removeAlbumAwards($newIDs);
+
+		if (!$result)
+		{
+			$errors = KAComponentHelper::renderErrors($app->getMessageQueue(), 'json');
+			echo json_encode(array('success' => false, 'message' => $errors));
+
+			return;
+		}
+
+		echo json_encode(array('success' => true, 'message' => ''));
+	}
+
+	/**
 	 * Removes album crew.
 	 *
 	 * @return  void

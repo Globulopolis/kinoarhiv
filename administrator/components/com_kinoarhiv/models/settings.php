@@ -132,14 +132,14 @@ class KinoarhivModelSettings extends JModelForm
 				{
 					if ($key == 'lang')
 					{
-						$_alphabet['movie_alphabet'][$i][$key] = $filter->clean($val, 'string');
+						$_alphabet['movie_alphabet'][$i][$key] = $filter->clean($val);
 					}
 					elseif ($key == 'letters')
 					{
 						$_alphabet['movie_alphabet'][$i][$key] = explode(
 							',',
 							StringHelper::strtoupper(
-								str_replace(' ', '', $filter->clean($val, 'string'))
+								str_replace(' ', '', $filter->clean($val))
 							)
 						);
 					}
@@ -155,14 +155,14 @@ class KinoarhivModelSettings extends JModelForm
 				{
 					if ($key == 'lang')
 					{
-						$_alphabet['name_alphabet'][$i][$key] = $filter->clean($val, 'string');
+						$_alphabet['name_alphabet'][$i][$key] = $filter->clean($val);
 					}
 					elseif ($key == 'letters')
 					{
 						$_alphabet['name_alphabet'][$i][$key] = explode(
 							',',
 							StringHelper::strtoupper(
-								str_replace(' ', '', $filter->clean($val, 'string'))
+								str_replace(' ', '', $filter->clean($val))
 							)
 						);
 					}
@@ -178,14 +178,14 @@ class KinoarhivModelSettings extends JModelForm
 				{
 					if ($key == 'lang')
 					{
-						$_alphabet['album_alphabet'][$i][$key] = $filter->clean($val, 'string');
+						$_alphabet['album_alphabet'][$i][$key] = $filter->clean($val);
 					}
 					elseif ($key == 'letters')
 					{
 						$_alphabet['album_alphabet'][$i][$key] = explode(
 							',',
 							StringHelper::strtoupper(
-								str_replace(' ', '', $filter->clean($val, 'string'))
+								str_replace(' ', '', $filter->clean($val))
 							)
 						);
 					}

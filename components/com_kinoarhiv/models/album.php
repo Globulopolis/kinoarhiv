@@ -186,14 +186,6 @@ class KinoarhivModelAlbum extends JModelForm
 		if (isset($result->attribs))
 		{
 			$result->attribs = json_decode($result->attribs);
-
-			// Get tags
-			if ($result->attribs->show_tags == 1)
-			{
-				$tags = new JHelperTags;
-				$tags->getItemTags('com_kinoarhiv.album', $result->id);
-				$result->tags = $tags;
-			}
 		}
 
 		// Get tracks for albums
@@ -249,18 +241,19 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			$result->countries = array();
 			KAComponentHelper::eventLog($e->getMessage());
-		}
+		}*/
 
 		// Genres
-		/*$queryGenres = $db->getQuery(true)
+		$queryGenres = $db->getQuery(true)
 			->select('g.id, g.name, g.alias, t.ordering')
 			->from($db->quoteName('#__ka_genres', 'g'))
-			->join('LEFT', $db->quoteName('#__ka_rel_genres', 't') . ' ON t.genre_id = g.id AND t.movie_id = ' . (int) $id);
+			->leftJoin($db->quoteName('#__ka_music_rel_genres', 't') . ' ON t.genre_id = g.id AND t.item_id = ' . (int) $id);
 
 			$subqueryGenres = $db->getQuery(true)
-				->select('genre_id')
-				->from($db->quoteName('#__ka_rel_genres'))
-				->where('movie_id = ' . (int) $id);
+				->select($db->quoteName('genre_id'))
+				->from($db->quoteName('#__ka_music_rel_genres'))
+				->where($db->quoteName('type') . ' = 0')
+				->where($db->quoteName('item_id') . ' = ' . (int) $id);
 
 		$queryGenres->where('id IN (' . $subqueryGenres . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
 			->order('ordering ASC');
@@ -376,19 +369,21 @@ class KinoarhivModelAlbum extends JModelForm
 		catch (RuntimeException $e)
 		{
 			KAComponentHelper::eventLog($e->getMessage());
-		}
+		}*/
 
 		// Release dates
-		/*if ($params->get('releases_list_limit') > 0)
+		if ($params->get('releases_list_limit') > 0)
 		{
 			$queryReleases = $db->getQuery(true)
-				->select('r.id, r.movie_id, r.release_date, c.name AS country, v.company_name, media.title AS media_type')
+				->select('r.id, r.item_id, r.release_date, c.name AS country, v.company_name, media.title AS media_type')
 				->from($db->quoteName('#__ka_releases', 'r'))
-				->join('LEFT', $db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
-				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
-				->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON media.id = r.media_type')
-				->where('movie_id = ' . (int) $id . ' AND r.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
-				->order('r.ordering ASC')
+				->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON v.id = r.vendor_id')
+				->leftJoin($db->quoteName('#__ka_countries', 'c') . ' ON c.id = r.country_id')
+				->leftJoin($db->quoteName('#__ka_media_types', 'media') . ' ON media.id = r.media_type')
+				->where($db->quoteName('item_id') . ' = ' . (int) $id)
+				->where($db->quoteName('item_type') . ' = 1')
+				->where($db->quoteName('r.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+				->order($db->quoteName('r.ordering') . ' ASC')
 				->setLimit((int) $params->get('releases_list_limit'), 0);
 
 			$db->setQuery($queryReleases);
@@ -488,13 +483,13 @@ class KinoarhivModelAlbum extends JModelForm
 	 *
 	 * @return  object|boolean
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function getAwards()
 	{
-		$db = $this->getDbo();
+		$db  = $this->getDbo();
 		$app = JFactory::getApplication();
-		$id = $app->input->get('id', 0, 'int');
+		$id  = $app->input->get('id', 0, 'int');
 
 		if ($id == 0)
 		{
@@ -507,8 +502,9 @@ class KinoarhivModelAlbum extends JModelForm
 			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
 			->from($db->quoteName('#__ka_rel_awards', 'a'))
 			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON aw.id = a.award_id')
-			->where('type = 0 AND item_id = ' . (int) $id)
-			->order('year ASC');
+			->where($db->quoteName('type') . ' = 2')
+			->where($db->quoteName('item_id') . ' = ' . (int) $id)
+			->order($db->quoteName('year') . ' ASC');
 
 		$db->setQuery($query);
 

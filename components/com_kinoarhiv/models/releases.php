@@ -53,7 +53,7 @@ class KinoarhivModelReleases extends JModelList
 
 		if ($menu = $app->getMenu()->getActive())
 		{
-			$params->loadString($menu->params);
+			$params->loadString($menu->getParams());
 		}
 
 		$this->setState('params', $params);
@@ -111,7 +111,7 @@ class KinoarhivModelReleases extends JModelList
 		$app      = JFactory::getApplication();
 		$lang     = JFactory::getLanguage();
 		$menu     = $app->getMenu()->getActive();
-		$itemType = (int) $menu->params->get('item_type');
+		$itemType = (int) $menu->getParams()->get('item_type');
 
 		// It's a string because country_id == 0 - all countries
 		$country  = $app->input->get('country', '', 'word');
@@ -209,7 +209,7 @@ class KinoarhivModelReleases extends JModelList
 			$query->where('parent_id = 0');
 		}
 
-		$query->where($db->quoteName('r.item_type') . ' = ' . (int) $menu->params->get('item_type'))
+		$query->where($db->quoteName('r.item_type') . ' = ' . (int) $itemType)
 			->where($db->quoteName('r.release_date') . ' != ' . $nullDate)
 			->group($db->quoteName('m.id'))
 			->order($this->getState('list.ordering', 'r.release_date') . ' ' . $this->getState('list.direction', 'DESC'));

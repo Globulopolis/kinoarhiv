@@ -49,7 +49,7 @@ class KinoarhivViewGenres extends JViewLegacy
 
 		// Merge the menu item params with the component params so that the menu params take priority
 		$temp         = clone $this->params;
-		$temp->merge($this->menu->params);
+		$temp->merge($this->menu->getParams());
 		$this->params = $temp;
 
 		$this->prepareDocument();
@@ -66,10 +66,11 @@ class KinoarhivViewGenres extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app   = JFactory::getApplication();
-		$menus = $app->getMenu();
-		$menu  = $menus->getActive();
-		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_GENRES');
+		$app        = JFactory::getApplication();
+		$menus      = $app->getMenu();
+		$menu       = $menus->getActive();
+		$menuParams = $menu->getParams();
+		$title      = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_GENRES');
 
 		if ($app->get('sitename_pagetitles', 0) == 1)
 		{
@@ -82,27 +83,27 @@ class KinoarhivViewGenres extends JViewLegacy
 
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
+		if ($menu && $menuParams->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			$this->document->setDescription($menuParams->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		if ($menu && $menuParams->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
+		if ($menu && $menuParams->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menu->params->get('robots'));
+			$this->document->setMetadata('robots', $menuParams->get('robots'));
 		}
 		else
 		{

@@ -38,7 +38,7 @@ class KinoarhivModelRelease extends JModelItem
 		$app      = JFactory::getApplication();
 		$menu     = $app->getMenu()->getActive();
 		$pk       = $app->input->getInt('id');
-		$itemType = $menu->params->get('item_type');
+		$itemType = $menu->getParams()->get('item_type');
 
 		$this->setState('release.id', $pk);
 		$this->setState('item_type', $itemType);

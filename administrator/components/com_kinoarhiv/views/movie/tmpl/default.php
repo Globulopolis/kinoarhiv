@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('formbehavior.chosen', '#jform_tags', null, array('placeholder_text_multiple' => JText::_('JGLOBAL_TYPE_OR_SELECT_SOME_TAGS')));
 JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $this->params->get('ui_theme') . '/jquery-ui.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');

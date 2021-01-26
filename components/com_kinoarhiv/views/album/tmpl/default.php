@@ -117,12 +117,12 @@ defined('_JEXEC') or die;
 							</span>
 						</div>
 					<?php endif; ?>
-					<?php if (isset($this->item->releases) && count($this->item->releases) > 0):
+					<?php if (count($this->item->releases) > 0):
 						foreach ($this->item->releases as $release): ?>
 							<div>
 								<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JHtml::_('string.truncate', $release->media_type, 14)); ?></span>
 								<span class="s-col">
-									<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if (!empty($release->company_name)): ?>, <?php echo $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', ' . $release->country : ''; ?>&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $release->movie_id . '&Itemid=' . $this->itemid); ?>#row-<?php echo $release->id; ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
+									<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if (!empty($release->company_name)): ?>, <?php echo $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', ' . $release->country : ''; ?>&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $release->item_id . '&Itemid=' . $this->releasesItemid); ?>#row-<?php echo $release->id; ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
 								</span>
 							</div>
 						<?php endforeach;
@@ -132,15 +132,13 @@ defined('_JEXEC') or die;
 						<span class="s-col"><?php echo $this->item->minutes; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?>
 							| <?php echo $this->item->length; ?></span>
 					</div>
-					<?php if (isset($this->item->tags->itemTags) && count($this->item->tags->itemTags) > 0): ?>
-					<div>
-						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
-						<span class="s-col">
-						<?php foreach ($this->item->tags->itemTags as $tag): ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&filters[albums][tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->title; ?>"><?php echo $tag->title; ?></a>
-						<?php endforeach; ?>
-						</span>
-					</div>
+					<?php if (
+						(($this->item->attribs->show_tags === '' && $this->params->get('show_tags') == 1) || $this->item->attribs->show_tags == 1)
+						&& !empty($this->item->tags->itemTags)): ?>
+						<div>
+							<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
+							<span class="s-col"><?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?></span>
+						</div>
 					<?php endif; ?>
 				</div>
 			</div>

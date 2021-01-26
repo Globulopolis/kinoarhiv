@@ -118,7 +118,7 @@ class KinoarhivModelReviews extends JModelForm
 			return false;
 		}
 
-		$cleanedText = KAComponentHelper::cleanHTML($data['review']);
+		$cleanedText = KAComponentHelper::cleanHTML($data['review'], $params->get('reviews_allowed_tags'));
 		$datetime    = date('Y-m-d H:i:s');
 		$state       = $params->get('reviews_premod') == 1 ? 0 : 1;
 		$itemType    = $app->input->getCmd('view', 'movie') == 'movie' ? 0 : 1;
@@ -428,47 +428,5 @@ class KinoarhivModelReviews extends JModelForm
 		}
 
 		return true;
-	}
-
-	/**
-	 * Method to validate the form data.
-	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
-	 *
-	 * @see     JFormRule
-	 * @see     JFilterInput
-	 * @since   12.2
-	 */
-	public function validate($form, $data, $group = null)
-	{
-		// Filter and validate the form data.
-		$data = $form->filter($data);
-		$return = $form->validate($data, $group);
-
-		// Check for an error.
-		if ($return instanceof Exception)
-		{
-			$this->setError($return->getMessage());
-
-			return false;
-		}
-
-		// Check the validation results.
-		if ($return === false)
-		{
-			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message)
-			{
-				$this->setError($message);
-			}
-
-			return false;
-		}
-
-		return $data;
 	}
 }

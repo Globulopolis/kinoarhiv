@@ -384,11 +384,10 @@ h3.title {
 	vertical-align: top;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-	/*width: 68.5%;*/
 }
 
-.movie-info .s-col a:after {
-	/*content: '&#8203;';*/
+.s-col ul.tags {
+	margin-bottom: 0;
 }
 
 /* Quote style */

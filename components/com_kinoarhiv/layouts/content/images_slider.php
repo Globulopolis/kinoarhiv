@@ -16,7 +16,7 @@ $items   = $displayData['items'];
 $attribs = $displayData['attribs'];
 ?>
 <?php if (isset($items) && !empty($items)):
-	if (($attribs == '' && $params->get('slider') == 1) || $attribs == 1):
+	if (($attribs === '' && $params->get('slider') == 1) || $attribs == 1):
 		JHtml::_('jquery.framework');
 		JHtml::_('stylesheet', 'media/com_kinoarhiv/css/jquery.bxslider.min.css');
 		JHtml::_('script', 'media/com_kinoarhiv/js/jquery.bxslider.min.js');
@@ -39,7 +39,10 @@ $attribs = $displayData['attribs'];
 			<ul class="slider-images">
 				<?php foreach ($items as $slide): ?>
 					<li>
-						<a href="<?php echo $slide->image; ?>" target="_blank" rel="slideGroup"><img src="<?php echo $slide->th_image; ?>" width="<?php echo $slide->th_image_width; ?>" height="<?php echo $slide->th_image_height; ?>"/></a>
+						<a href="<?php echo $slide->image; ?>" target="_blank" rel="slideGroup">
+							<img src="<?php echo $slide->th_image; ?>" width="<?php echo $slide->th_image_width; ?>"
+								 height="<?php echo $slide->th_image_height; ?>" alt=""/>
+						</a>
 					</li>
 				<?php endforeach; ?>
 			</ul>

@@ -67,17 +67,26 @@ class KinoarhivModelAward extends JModelForm
 	 */
 	public function getItem()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$id = $app->input->get('id', 0, 'int');
-		$query = $db->getQuery(true);
+		$app    = JFactory::getApplication();
+		$db     = $this->getDbo();
+		$id     = $app->input->get('id', 0, 'int');
+		$query  = $db->getQuery(true);
+		$result = array();
 
 		$query->select($db->quoteName(array('id', 'title', 'desc', 'language', 'state')))
 			->from($db->quoteName('#__ka_awards'))
 			->where($db->quoteName('id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
-		$result = $db->loadObject();
+
+		try
+		{
+			$result = $db->loadObject();
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+		}
 
 		return $result;
 	}
@@ -230,53 +239,5 @@ class KinoarhivModelAward extends JModelForm
 		$this->cleanCache();
 
 		return true;
-	}
-
-	/**
-	 * Method to validate the form data.
-	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 *
-	 * @return  mixed   Array of filtered data if valid, false otherwise.
-	 *
-	 * @see     JFormRule
-	 * @see     JFilterInput
-	 * @since   12.2
-	 */
-	public function validate($form, $data, $group = null)
-	{
-		// Include the plugins for the delete events.
-		JPluginHelper::importPlugin($this->events_map['validate']);
-
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
-
-		// Filter and validate the form data.
-		$data = $form->filter($data);
-		$return = $form->validate($data, $group);
-
-		// Check for an error.
-		if ($return instanceof Exception)
-		{
-			$this->setError($return->getMessage());
-
-			return false;
-		}
-
-		// Check the validation results.
-		if ($return === false)
-		{
-			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message)
-			{
-				$this->setError($message);
-			}
-
-			return false;
-		}
-
-		return $data;
 	}
 }

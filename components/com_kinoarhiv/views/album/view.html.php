@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
 /**
@@ -33,7 +34,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 * @var    object
 	 * @since  1.6
 	 */
-	public $item;
+	protected $item = null;
 
 	/**
 	 * The items details
@@ -41,44 +42,89 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 * @var    object
 	 * @since  1.6
 	 */
-	public $items;
+	protected $items = null;
 
 	protected $filters = null;
 
 	protected $pagination = null;
 
+	/**
+	 * @var    string
+	 * @since  1.6
+	 */
 	protected $page;
 
 	/**
 	 * Component config object
 	 *
-	 * @var    object
+	 * @var    JObject
 	 * @since  3.0
 	 */
 	protected $params;
 
-	/**
-	 * The Joomla config object
-	 *
-	 * @var    object
-	 * @since  3.0
-	 */
-	protected $config;
-
-	public $user;
+	protected $user;
 
 	protected $itemid;
+
+	/**
+	 * The menu object
+	 *
+	 * @var    JMenuItem
+	 * @since  3.1
+	 */
+	protected $menu;
 
 	/**
 	 * Execute and display a template script.
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed|void
+	 * @return  void
 	 *
 	 * @since  3.0
 	 */
 	public function display($tpl = null)
+	{
+		$app          = JFactory::getApplication();
+		$this->user   = JFactory::getUser();
+		$this->page   = $app->input->get('page', '', 'cmd');
+		$this->itemid = $app->input->get('Itemid');
+
+		// Used in layouts
+		$this->moviesItemid = $this->itemid;
+
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
+		$menu       = $app->getMenu()->getActive();
+		$this->menu = $menu;
+		$menuParams = new Registry;
+
+		if ($menu)
+		{
+			$menuParams->loadString($menu->getParams());
+		}
+
+		$mergedParams = clone $menuParams;
+		$mergedParams->merge($params);
+		$this->params = $mergedParams;
+
+		if (method_exists($this, $this->page))
+		{
+			$this->{$this->page}();
+		}
+		else
+		{
+			$this->info();
+		}
+	}
+
+	/**
+	 * Method to get and show album info data.
+	 *
+	 * @return  mixed  A string if successful, otherwise a Error object.
+	 *
+	 * @since  3.0
+	 */
+	public function info()
 	{
 		$this->user       = JFactory::getUser();
 		$app              = JFactory::getApplication();
@@ -103,10 +149,15 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$checkingPath = JPath::clean($item->covers_path . '/' . $item->cover_filename);
 
 		// Prepare the data
-		$this->profileItemid = KAContentHelper::getItemid('profile');
+		$this->releasesItemid = KAContentHelper::getItemid('releases', array('params' => array('item_type' => 1, 'page_type' => 'list')));
+		$this->profileItemid  = KAContentHelper::getItemid('profile');
 
 		// Workaround for plugin interaction. Article must contain $text item.
 		$item->text = '';
+
+		$item->tagLayout = new JLayoutFile('components.com_kinoarhiv.layouts.content.tags', JPATH_ROOT);
+		$item->tags      = new JHelperTags;
+		$item->tags->getItemTags('com_kinoarhiv.album', $item->id);
 
 		if (!is_file($checkingPath))
 		{
@@ -218,53 +269,56 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$item   = $this->get('Awards');
 
-		if (count($errors = $this->get('Errors')) || is_null($item) || !$item)
+		if (count($errors = $this->get('Errors')))
 		{
 			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
 
 			return false;
 		}
 
-		if (($item->attribs->tab_movie_awards === '' && $params->get('tab_movie_awards') === '0') || $item->attribs->tab_movie_awards === '0')
+		if (($item->attribs->tab_album_awards === '' && $params->get('tab_album_awards') === '0') || $item->attribs->tab_album_awards === '0')
 		{
 			$id = $app->input->get('id', null, 'int');
-			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $id . '&Itemid=' . $this->itemid, false));
+			$app->redirect(JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $id . '&Itemid=' . $this->itemid, false));
 
 			return false;
 		}
 
 		// Prepare the data
-		$item->text = '';
-		$item->event = new stdClass;
+		$item->text   = '';
+		$item->event  = new stdClass;
 		$item->params = new JObject;
-		$item->params->set('url', JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=awards&id=' . $item->id . '&Itemid=' . $this->itemid, false));
+		$item->params->set(
+			'url',
+			JRoute::_('index.php?option=com_kinoarhiv&view=album&page=awards&id=' . $item->id . '&Itemid=' . $this->itemid, false)
+		);
 
 		$dispatcher = JEventDispatcher::getInstance();
 		JPluginHelper::importPlugin('content');
-		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.movies', &$item, &$params, 0));
+		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.albums', &$item, &$params, 0));
 
-		$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.album', &$item, &$item->params, 0));
 		$item->event->afterDisplayTitle = trim(implode("\n", $results));
 
-		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.album', &$item, &$item->params, 0));
 		$item->event->beforeDisplayContent = trim(implode("\n", $results));
 
-		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.album', &$item, &$item->params, 0));
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
-		$this->params = $params;
-		$this->item = $item;
+		$this->params   = $params;
+		$this->item     = $item;
 		$this->metadata = json_decode($item->metadata);
 
 		$this->prepareDocument();
 		$pathway = $app->getPathway();
 		$pathway->addItem(
 			$this->item->title,
-			JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+			JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 		$pathway->addItem(
 			JText::_('COM_KA_MOVIE_TAB_AWARDS'),
-			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=awards&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+			JRoute::_('index.php?option=com_kinoarhiv&view=album&page=awards&id=' . $this->item->id . '&Itemid=' . $this->itemid)
 		);
 
 		parent::display('awards');
@@ -279,10 +333,11 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app     = JFactory::getApplication();
-		$menus   = $app->getMenu();
-		$menu    = $menus->getActive();
-		$pathway = $app->getPathway();
+		$app        = JFactory::getApplication();
+		$menus      = $app->getMenu();
+		$menu       = $menus->getActive();
+		$pathway    = $app->getPathway();
+		$menuParams = $menu->getParams();
 
 		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=albums')
 				  ? $menu->title
@@ -309,27 +364,27 @@ class KinoarhivViewAlbum extends JViewLegacy
 
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
+		if ($menu && $menuParams->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			$this->document->setDescription($menuParams->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		if ($menu && $menuParams->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
+		if ($menu && $menuParams->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menu->params->get('robots'));
+			$this->document->setMetadata('robots', $menuParams->get('robots'));
 		}
 		else
 		{

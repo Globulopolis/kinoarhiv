@@ -13,6 +13,10 @@
 			<option value="php">COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_PHP</option>
 			<option value="syslog">COM_KA_FIELD_SETTINGS_GLOBAL_LOGGER_SYS</option>
 		</field>
+		<field name="html_allowed_tags" type="textarea"
+			   default="br,h1,h2,h3,h4,h5,h6,ul,ol,li,u,div[class],i,strong,b,q[cite],span[class],blockquote[cite],hr,p[class]"
+			   label="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL" description="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL_DESC"
+			   filter="string" cols="60" rows="5" class="span11" spellcheck="false"/>
 	</fieldset>
 
 	<fieldset name="metadata" label="COM_KA_SETTINGS_META_LABEL">
@@ -267,8 +271,23 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="show_tags" type="radio" class="btn-group" default="1" label="COM_KA_MOVIES_FIELD_SHOW_TAGS_LABEL"
+			   description="COM_KA_MOVIES_FIELD_SHOW_TAGS_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="show_author" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_AUTHOR_LABEL"
 			   description="JGLOBAL_SHOW_AUTHOR_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="show_create_date" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_CREATE_DATE_LABEL"
+			   description="JGLOBAL_SHOW_CREATE_DATE_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="show_modify_date" type="radio" class="btn-group" default="1" label="JGLOBAL_SHOW_MODIFY_DATE_LABEL"
+			   description="JGLOBAL_SHOW_MODIFY_DATE_DESC">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
@@ -499,6 +518,12 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="tab_album_awards" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_ALBUM_AWARDS_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
 		<field name="pagevan_top" type="radio" class="btn-group" default="0" label="COM_KA_FIELD_AP_PAGENAV_TOP_LABEL"
 			   description="COM_KA_FIELD_AP_PAGENAV_LABEL_DESC" filter="integer">
 			<option value="1">JYES</option>
@@ -540,6 +565,11 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL"
+			   description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="custom_review_component" type="list" class="inputbox" default="default"
 			   label="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL"
 			   description="COM_KA_FIELD_REVIEWS_CUSTOMCOMPONENT_LABEL_DESC">
@@ -550,11 +580,6 @@
 		<field name="review_editor" type="folderlist" directory="media/com_kinoarhiv/editors"
 			   default="wysihtml5" label="COM_KA_FIELD_REVIEWS_EDITOR_TYPE_LABEL"
 			   description="COM_KA_FIELD_REVIEWS_EDITOR_TYPE_DESC" hide_none="true" hide_default="true"/>
-		<field name="show_reviews" type="radio" class="btn-group" default="1" label="COM_KA_FIELD_SHOWREVIEWS_LABEL"
-			   description="COM_KA_FIELD_SHOWREVIEWS_LABEL_DESC" filter="integer">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 		<field name="reviews_show_pagination_limit" type="radio" class="btn-group" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL"
 			   description="JGLOBAL_DISPLAY_SELECT_DESC" filter="integer">
 			<option value="1">JYES</option>
@@ -576,7 +601,7 @@
 			   description="COM_KA_FIELD_REVIEWS_LENGTH_MIN_LABEL_DESC" required="true" filter="integer" size="6"/>
 		<field name="reviews_length_max" type="text" default="5000" label="COM_KA_FIELD_REVIEWS_LENGTH_MAX_LABEL"
 			   description="COM_KA_FIELD_REVIEWS_LENGTH_MAX_LABEL_DESC" required="true" filter="integer" size="6"/>
-		<field name="html_allowed_tags" type="textarea"
+		<field name="reviews_allowed_tags" type="textarea"
 			   default="br,h1,h2,h3,h4,h5,h6,ul,ol,li,u,div[class],i,strong,b,q[cite],span[class],blockquote[cite],hr,p[class]"
 			   label="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL" description="COM_KA_FIELD_REVIEWS_HTML_TAGS_LABEL_DESC"
 			   filter="string" cols="60" rows="5" class="span11" spellcheck="false"/>

@@ -36,7 +36,7 @@ class KinoarhivModelName extends JModelForm
 
 		if ($input == 'editNameAwards' || $input == 'saveNameAwards')
 		{
-			$form = $this->loadForm('com_kinoarhiv.name', 'relations_awards', array('control' => 'jform', 'load_data' => $loadData));
+			$form = $this->loadForm('com_kinoarhiv.name', 'relations_award', array('control' => 'jform', 'load_data' => $loadData));
 		}
 		else
 		{
@@ -51,6 +51,7 @@ class KinoarhivModelName extends JModelForm
 		if ($input == 'editNameAwards')
 		{
 			$form->setFieldAttribute('item_id', 'label', 'COM_KA_FIELD_NAME_ID');
+			$form->setValue('type', null, 1);
 		}
 
 		return $form;
@@ -1124,53 +1125,5 @@ class KinoarhivModelName extends JModelForm
 		}
 
 		return true;
-	}
-
-	/**
-	 * Method to validate the form data.
-	 *
-	 * @param   JForm   $form   The form to validate against.
-	 * @param   array   $data   The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 *
-	 * @return  mixed   Array of filtered data if valid, false otherwise.
-	 *
-	 * @see     JFormRule
-	 * @see     JFilterInput
-	 * @since   12.2
-	 */
-	public function validate($form, $data, $group = null)
-	{
-		// Include the plugins for the delete events.
-		JPluginHelper::importPlugin($this->events_map['validate']);
-
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
-
-		// Filter and validate the form data.
-		$data = $form->filter($data);
-		$return = $form->validate($data, $group);
-
-		// Check for an error.
-		if ($return instanceof Exception)
-		{
-			$this->setError($return->getMessage());
-
-			return false;
-		}
-
-		// Check the validation results.
-		if ($return === false)
-		{
-			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message)
-			{
-				$this->setError($message);
-			}
-
-			return false;
-		}
-
-		return $data;
 	}
 }

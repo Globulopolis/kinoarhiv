@@ -126,7 +126,9 @@ class KinoarhivViewProfile extends JViewLegacy
 				$this->data   = $profileModel->getData();
 				$this->form   = $profileModel->getForm(new JObject(array('id' => $user->id)));
 				$this->params = JComponentHelper::getParams('com_users');
-				$this->db     = JFactory::getDbo();
+
+				// Used in components/com_users/views/profile/tmpl/default_core.php
+				$this->db = JFactory::getDbo();
 
 				// Check for errors.
 				if (count($errors = $this->get('Errors')) || count($errors = $profileModel->getErrors()))

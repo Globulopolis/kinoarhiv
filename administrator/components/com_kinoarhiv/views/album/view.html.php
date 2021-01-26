@@ -43,6 +43,9 @@ class KinoarhivViewAlbum extends JViewLegacy
 	{
 		switch (JFactory::getApplication()->input->get('task', '', 'cmd'))
 		{
+			case 'editAlbumAward':
+				$this->editAlbumAward();
+				break;
 			case 'editAlbumCrew':
 				$this->editAlbumCrew();
 				break;
@@ -59,13 +62,13 @@ class KinoarhivViewAlbum extends JViewLegacy
 	}
 
 	/**
-	 * Display the view for a movie edit.
+	 * Display the view for a album edit.
 	 *
 	 * @return  void
 	 *
 	 * @throws  Exception
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	protected function edit()
 	{
@@ -122,7 +125,43 @@ class KinoarhivViewAlbum extends JViewLegacy
 	}
 
 	/**
-	 * Display the layout for a track edit.
+	 * Display the layout for an award edit.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.1
+	 */
+	protected function editAlbumAward()
+	{
+		$this->form = $this->get('Form');
+		$errors = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
+
+		if ($this->getLayout() !== 'modal')
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_AW_LAYOUT_ADD_TITLE')),
+				'play'
+			);
+
+			JToolbarHelper::apply('albums.saveAlbumAward');
+			JToolbarHelper::divider();
+			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
+		}
+
+		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
+
+		JFactory::getApplication()->input->set('hidemainmenu', true);
+	}
+
+	/**
+	 * Display the layout for a crew edit.
 	 *
 	 * @return  void
 	 *

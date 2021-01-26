@@ -237,7 +237,7 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 					<?php if (count($this->item->premieres) > 0):
 						foreach ($this->item->premieres as $premiere): ?>
 							<div>
-								<span class="f-col"><?php echo ($premiere->country == '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
+								<span class="f-col"><?php echo ($premiere->country === '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
 								<span class="s-col">
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[premiere_date]=' . date('Y-m', strtotime($premiere->premiere_date)) . '&Itemid=' . $this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if (!empty($premiere->company_name)): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[vendor]=' . $premiere->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $premiere->company_name; ?></a>
 										<?php if ($premiere->info != ''): ?>
@@ -296,14 +296,12 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 						<span class="s-col"><?php echo $this->item->_hr_length; ?><?php echo JText::_('COM_KA_LENGTH_MINUTES'); ?>
 							| <?php echo $this->item->_length; ?></span>
 					</div>
-					<?php if (count($this->item->tags->itemTags) > 0): ?>
+					<?php if (
+						(($this->item->attribs->show_tags === '' && $this->params->get('show_tags') == 1) || $this->item->attribs->show_tags == 1)
+						&& !empty($this->item->tags->itemTags)): ?>
 					<div>
 						<span class="f-col"><?php echo JText::_('JTAG'); ?></span>
-						<span class="s-col">
-						<?php foreach ($this->item->tags->itemTags as $tag): ?>
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[tags]=' . $tag->tag_id . '&Itemid=' . $this->itemid); ?>" class="label label-info uk-badge tags" title="<?php echo $tag->title; ?>"><?php echo $tag->title; ?></a>
-						<?php endforeach; ?>
-						</span>
+						<span class="s-col"><?php echo $this->item->tagLayout->render($this->item->tags->itemTags); ?></span>
 					</div>
 					<?php endif; ?>
 				</div>

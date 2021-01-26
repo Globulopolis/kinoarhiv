@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('formbehavior.chosen', '#jform_tags', null, array('placeholder_text_multiple' => JText::_('JGLOBAL_TYPE_OR_SELECT_SOME_TAGS')));
 JHtml::_('stylesheet', 'media/com_kinoarhiv/jqueryui/' . $this->params->get('ui_theme') . '/jquery-ui.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
@@ -235,12 +237,12 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=movieAwards&format=json'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=albumAwards&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
-						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
-						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=movies.editMovieAwards&item_id=' . $this->id),
-						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=movies.removeMovieAwards&format=json&id=' . $this->id),
+						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editAlbumAward&item_id=' . $this->id),
+						'edit_url' => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editAlbumAward&item_id=' . $this->id),
+						'del_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.removeAlbumAwards&format=json&id=' . $this->id),
 						'width' => '#j-main-container', 'height' => '#item-form',
 						'order' => 'rel.id', 'orderby' => 'desc',
 						'idprefix' => 'aw_',

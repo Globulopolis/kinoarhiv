@@ -130,9 +130,12 @@ class KAComponentHelper
 
 		$purifierConfig->set('Cache.SerializerPath', $cachePath);
 
-		if (empty($tags))
+		if ($tags === '')
 		{
-			$tags = $params->get('html_allowed_tags');
+			if (JFactory::getApplication()->isClient('administrator'))
+			{
+				$tags = $params->get('html_allowed_tags');
+			}
 		}
 
 		$purifierConfig->set('HTML.Allowed', $tags);

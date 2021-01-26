@@ -41,6 +41,10 @@ class KinoarhivModelAlbum extends JModelForm
 
 		switch ($task)
 		{
+			case 'editAlbumAward':
+			case 'saveAlbumAward':
+				$form = $this->loadForm($formName, 'relations_award', $formOpts);
+				break;
 			case 'editAlbumCrew':
 			case 'saveAlbumCrew':
 				$form = $this->loadForm($formName, 'relations_album_crew', $formOpts);
@@ -63,7 +67,12 @@ class KinoarhivModelAlbum extends JModelForm
 			return false;
 		}
 
-		if ($task == 'editAlbumRelease')
+		if ($task == 'editAlbumAward')
+		{
+			$form->setFieldAttribute('item_id', 'label', 'COM_KA_FIELD_ALBUMS_FIELD_ID_LABEL');
+			$form->setValue('type', null, 2);
+		}
+		elseif ($task == 'editAlbumRelease')
 		{
 			$form->setFieldAttribute('item_id', 'label', 'COM_KA_FIELD_ALBUMS_FIELD_ID_LABEL');
 			$form->setValue('item_type', null, 1);
@@ -107,7 +116,11 @@ class KinoarhivModelAlbum extends JModelForm
 		$task = $app->input->get('task', '', 'cmd');
 		$id   = $app->input->get('id', 0, 'int');
 
-		if ($task == 'editAlbumCrew')
+		if ($task == 'editAlbumAward')
+		{
+			return $this->editAlbumAward();
+		}
+		elseif ($task == 'editAlbumCrew')
 		{
 			return $this->editAlbumCrew();
 		}
@@ -684,6 +697,163 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
+	 * Method to get a single record for award edit.
+	 *
+	 * @return  mixed  Object on success, false on failure.
+	 *
+	 * @since  3.1
+	 */
+	private function editAlbumAward()
+	{
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+		$id  = $app->input->get('row_id', 0, 'int');
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
+			->from($db->quoteName('#__ka_rel_awards'))
+			->where($db->quoteName('id') . ' = ' . (int) $id);
+
+		$db->setQuery($query);
+
+		try
+		{
+			$result = $db->loadObject();
+
+			if (empty($result))
+			{
+				$result = (object) array();
+				$result->item_id = $app->input->get('item_id', 0, 'int');
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Method to save the form data for award edit.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  mixed  True on success, False on error, lastInsertID on save.
+	 *
+	 * @since   3.1
+	 */
+	public function saveAlbumAward($data)
+	{
+		$app  = JFactory::getApplication();
+		$db   = $this->getDbo();
+		$user = JFactory::getUser();
+		$id   = $app->input->get('item_id', 0, 'int');
+
+		if (empty($data['id']))
+		{
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_rel_awards'))
+				->columns($db->quoteName(array('id', 'item_id', 'award_id', 'desc', 'year', 'type')))
+				->values("'', '" . (int) $id . "', '" . (int) $data['award_id'] . "', "
+					. "'" . $db->escape($data['desc']) . "', '" . (int) $data['year'] . "', '2'"
+				);
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_rel_awards'))
+				->set($db->quoteName('award_id') . " = '" . (int) $data['award_id'] . "'")
+				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
+				->set($db->quoteName('year') . " = '" . (int) $data['year'] . "'")
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			// We need to store LastInsertID in session for later use in controller.
+			if (empty($data['id']))
+			{
+				$sessionData = $app->getUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.aw_id');
+				$sessionData['id'] = $db->insertid();
+				$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.aw_id', $sessionData);
+			}
+
+			return true;
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+	}
+
+	/**
+	 * Method to remove award(s) in awards list on 'awards tab'.
+	 *
+	 * @param   array  $ids  Items ID
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function removeAlbumAwards($ids)
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+		$db->lockTable('#__ka_rel_awards');
+		$db->transactionStart();
+		$result = true;
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_rel_awards'))
+				->where('id = ' . (int) $id . ';');
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+				$result = false;
+
+				break;
+			}
+		}
+
+		if (!$result)
+		{
+			try
+			{
+				$db->transactionRollback();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+			}
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+
+		return $result;
+	}
+
+	/**
 	 * Method to get a single record for track edit.
 	 *
 	 * @return  mixed  Object on success, false on failure.
@@ -1060,38 +1230,28 @@ class KinoarhivModelAlbum extends JModelForm
 	 * @param   array   $data   The data to validate.
 	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed  Array of filtered data if valid, false otherwise.
+	 * @return  array|boolean  Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
-	 * @since   12.2
+	 * @since   3.7.0
 	 */
 	public function validate($form, $data, $group = null)
 	{
-		// Filter and validate the form data.
-		$data = $form->filter($data);
-		$return = $form->validate($data, $group);
-
-		// Check for an error.
-		if ($return instanceof Exception)
+		// Don't allow to change the users if not allowed to access com_users.
+		if (JFactory::getApplication()->isClient('administrator') && !JFactory::getUser()->authorise('core.manage', 'com_users'))
 		{
-			$this->setError($return->getMessage());
-
-			return false;
-		}
-
-		// Check the validation results.
-		if ($return === false)
-		{
-			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message)
+			if (isset($data['created_by']))
 			{
-				$this->setError($message);
+				unset($data['created_by']);
 			}
 
-			return false;
+			if (isset($data['modified_by']))
+			{
+				unset($data['modified_by']);
+			}
 		}
 
-		return $data;
+		return parent::validate($form, $data, $group);
 	}
 }

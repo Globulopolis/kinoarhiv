@@ -183,10 +183,11 @@ class KinoarhivViewPremiere extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app     = JFactory::getApplication();
-		$menus   = $app->getMenu();
-		$menu    = $menus->getActive();
-		$pathway = $app->getPathway();
+		$app        = JFactory::getApplication();
+		$menus      = $app->getMenu();
+		$menu       = $menus->getActive();
+		$menuParams = $menu->getParams();
+		$pathway    = $app->getPathway();
 
 		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=premiere')
 				 ? $menu->title : JText::_('COM_KA_PREMIERES');
@@ -211,27 +212,27 @@ class KinoarhivViewPremiere extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu && $menu->params->get('menu-meta_description') != '')
+		if ($menu && $menuParams->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menu->params->get('menu-meta_description'));
+			$this->document->setDescription($menuParams->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($menu && $menu->params->get('menu-meta_keywords') != '')
+		if ($menu && $menuParams->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($menu && $menu->params->get('robots') != '')
+		if ($menu && $menuParams->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menu->params->get('robots'));
+			$this->document->setMetadata('robots', $menuParams->get('robots'));
 		}
 		else
 		{

@@ -1040,9 +1040,9 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function getNameAwards()
+	public function getAlbumAwards()
 	{
-		return $this->getRelationAwards(1);
+		return $this->getRelationAwards(2);
 	}
 
 	/**
@@ -1055,6 +1055,18 @@ class KinoarhivModelAPI extends JModelLegacy
 	public function getMovieAwards()
 	{
 		return $this->getRelationAwards(0);
+	}
+
+	/**
+	 * Method to get list of name awards based on filters.
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	public function getNameAwards()
+	{
+		return $this->getRelationAwards(1);
 	}
 
 	/**

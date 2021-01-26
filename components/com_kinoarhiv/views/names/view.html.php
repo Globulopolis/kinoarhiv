@@ -28,6 +28,12 @@ class KinoarhivViewNames extends JViewLegacy
 
 	protected $user;
 
+	/**
+	 * The menu object
+	 *
+	 * @var    JMenuItem
+	 * @since  3.1
+	 */
 	protected $menu;
 
 	/**
@@ -62,7 +68,7 @@ class KinoarhivViewNames extends JViewLegacy
 
 		if ($menu)
 		{
-			$menuParams->loadString($menu->params);
+			$menuParams->loadString($menu->getParams());
 		}
 
 		$mergedParams = clone $menuParams;
@@ -71,7 +77,6 @@ class KinoarhivViewNames extends JViewLegacy
 
 		$this->itemid   = $app->input->get('Itemid', 0, 'int');
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
-		$introtextLinks = $this->params->get('introtext_links', 1);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -187,9 +192,10 @@ class KinoarhivViewNames extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app     = JFactory::getApplication();
-		$pathway = $app->getPathway();
-		$title   = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_PERSONS');
+		$app        = JFactory::getApplication();
+		$pathway    = $app->getPathway();
+		$menuParams = $this->menu->getParams();
+		$title      = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_PERSONS');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -209,27 +215,27 @@ class KinoarhivViewNames extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($this->menu && $this->menu->params->get('menu-meta_description') != '')
+		if ($this->menu && $menuParams->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($this->menu->params->get('menu-meta_description'));
+			$this->document->setDescription($menuParams->get('menu-meta_description'));
 		}
 		else
 		{
 			$this->document->setDescription($this->params->get('meta_description'));
 		}
 
-		if ($this->menu && $this->menu->params->get('menu-meta_keywords') != '')
+		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $this->menu->params->get('menu-meta_keywords'));
+			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
 		}
 		else
 		{
 			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
-		if ($this->menu && $this->menu->params->get('robots') != '')
+		if ($this->menu && $menuParams->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $this->menu->params->get('robots'));
+			$this->document->setMetadata('robots', $menuParams->get('robots'));
 		}
 		else
 		{

@@ -50,6 +50,7 @@ class KinoarhivControllerSettings extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelSettings $model */
 		$model = $this->getModel('settings');
 		$data = $this->input->post->get('jform', array(), 'array');
 		$result = $model->save($data);
@@ -133,6 +134,7 @@ class KinoarhivControllerSettings extends JControllerLegacy
 		jimport('joomla.filesystem.file');
 		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
 
+		/** @var KinoarhivModelSettings $model */
 		$model = $this->getModel('settings');
 		$file = $this->input->files->get('form_upload_config', '', 'array');
 		$file['name'] = JFile::makeSafe($file['name']);
@@ -168,12 +170,10 @@ class KinoarhivControllerSettings extends JControllerLegacy
 			{
 				$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_FILE'), 'error');
 			}
-
 		}
 		else
 		{
 			$app->redirect($url, JText::_('COM_KA_SETTINGS_RESTORE_INVALID_REQUEST'), 'error');
-
 		}
 	}
 }

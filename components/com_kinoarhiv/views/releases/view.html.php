@@ -28,6 +28,12 @@ class KinoarhivViewReleases extends JViewLegacy
 
 	protected $params;
 
+	/**
+	 * The menu object
+	 *
+	 * @var    JMenuItem
+	 * @since  3.1
+	 */
 	protected $menu;
 
 	/**
@@ -43,7 +49,7 @@ class KinoarhivViewReleases extends JViewLegacy
 	{
 		$app      = JFactory::getApplication();
 		$menu     = $app->getMenu()->getActive();
-		$itemType = (int) $menu->params->get('item_type');
+		$itemType = (int) $menu->getParams()->get('item_type');
 
 		if ($itemType === 0)
 		{
@@ -88,7 +94,7 @@ class KinoarhivViewReleases extends JViewLegacy
 
 		if ($menu)
 		{
-			$menuParams->loadString($menu->params);
+			$menuParams->loadString($menu->getParams());
 		}
 
 		$mergedParams = clone $menuParams;
@@ -278,7 +284,7 @@ class KinoarhivViewReleases extends JViewLegacy
 
 		if ($menu)
 		{
-			$menuParams->loadString($menu->params);
+			$menuParams->loadString($menu->getParams());
 		}
 
 		$mergedParams = clone $menuParams;

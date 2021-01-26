@@ -402,37 +402,93 @@ class KAContentHelper
 	/**
 	 * Get proper itemid for menu &view=?&Itemid=? links based on view type.
 	 *
-	 * @param   string  $view  View name.
+	 * @param   string  $view     View name.
+	 * @param   array   $options  Extra options.
 	 *
 	 * @return  integer
 	 *
 	 * @since   3.1
 	 */
-	public static function getItemid($view)
+	public static function getItemid($view, $options = array())
 	{
 		$app          = JFactory::getApplication();
 		$lang         = JFactory::getLanguage();
 		$itemid       = $app->input->get('Itemid', 0, 'int');
 		$properItemid = $itemid;
 		$menus        = $app->getMenu();
-		$allMenus     = $menus->getItems(array('link', 'language'), array('index.php?option=com_kinoarhiv&view=' . $view, $lang->getTag()), true);
+		$_options     = array(
+			'link'     => 'index.php?option=com_kinoarhiv&view=' . $view,
+			'language' => $lang->getTag()
+		);
+
+		if (!empty($options))
+		{
+			$_options = array_merge($_options, $options);
+		}
+
+		$menu = self::searchMenu($menus, $_options);
 
 		// Get menu ID for current link and language.
-		if (!empty($allMenus))
+		if (!empty($menu))
 		{
-			$properItemid = $allMenus->id;
+			$properItemid = $menu->id;
 		}
 		// Try to get menu for all languages.
 		else
 		{
-			$allMenus = $menus->getItems(array('link', 'language'), array('index.php?option=com_kinoarhiv&view=' . $view, '*'), true);
+			$_options['language'] = '*';
+			$menu = self::searchMenu($menus, $_options);
 
-			if (!empty($allMenus))
+			if (!empty($menu))
 			{
-				$properItemid = $allMenus->id;
+				$properItemid = $menu->id;
 			}
 		}
 
 		return (int) $properItemid;
+	}
+
+	/**
+	 * Search for menu by parameters.
+	 *
+	 * @param   JMenu  $menus    MenuItems.
+	 * @param   array  $options  Options.
+	 *
+	 * @return  object
+	 *
+	 * @since   3.1
+	 */
+	private static function searchMenu($menus, $options)
+	{
+		$menu = array();
+
+		// Check for keyword 'params' to search by menu params.
+		if (array_key_exists('params', $options))
+		{
+			// Save params to temporary variable and remove from search.
+			$_menuParams = $options['params'];
+			unset($options['params']);
+
+			$_menus = $menus->getItems(array_keys($options), array_values($options));
+
+			foreach ($_menus as $_menu)
+			{
+				$_params = $_menu->getParams()->toArray();
+				$diff = array_diff_assoc($_menuParams, $_params);
+
+				// We found menu by parameter(s)
+				if (empty($diff))
+				{
+					$menu = $_menu;
+					break;
+				}
+			}
+		}
+		else
+		{
+			$menu = $menus->getItems(array_keys($options), array_values($options), true);
+		}
+
+		return $menu;
 	}
 }

@@ -190,14 +190,6 @@ class KinoarhivModelMovie extends JModelForm
 		if (isset($result->attribs))
 		{
 			$result->attribs = json_decode($result->attribs);
-
-			// Get tags
-			if ($result->attribs->show_tags == 1)
-			{
-				$tags = new JHelperTags;
-				$tags->getItemTags('com_kinoarhiv.movie', $result->id);
-				$result->tags = $tags;
-			}
 		}
 
 		// Countries
@@ -1583,8 +1575,9 @@ class KinoarhivModelMovie extends JModelForm
 			->select('a.desc, a.year, aw.id, aw.title AS aw_title, aw.desc AS aw_desc')
 			->from($db->quoteName('#__ka_rel_awards', 'a'))
 			->join('LEFT', $db->quoteName('#__ka_awards', 'aw') . ' ON aw.id = a.award_id')
-			->where('type = 0 AND item_id = ' . (int) $id)
-			->order('year ASC');
+			->where($db->quoteName('type') . ' = 0')
+			->where($db->quoteName('item_id') . ' = ' . (int) $id)
+			->order($db->quoteName('year') . ' ASC');
 
 		$db->setQuery($query);
 

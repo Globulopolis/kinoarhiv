@@ -86,30 +86,29 @@
 	<fields name="attribs" label="COM_KA_NAMES_TAB_PUB">
 		<fieldset name="basic" label="COM_KA_NAMES_TAB_PUB">
 			<field name="link_titles" type="list" label="JGLOBAL_LINKED_TITLES_LABEL"
-				   description="JGLOBAL_LINKED_TITLES_DESC">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
+				   description="JGLOBAL_LINKED_TITLES_DESC" class="chzn-color" useglobal="true">
+				<option	value="0">JHIDE</option>
+				<option	value="1">JSHOW</option>
 			</field>
-			<field name="tab_name_wallpp" type="list" label="COM_KA_FIELD_AP_TAB_NAME_WALLPP_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
+			<field name="tab_name_wallpp" type="list" label="COM_KA_FIELD_AP_TAB_NAME_WALLPP_LABEL" class="chzn-color"
+				   useglobal="true">
+				<option	value="0">JHIDE</option>
+				<option	value="1">JSHOW</option>
 			</field>
-			<field name="tab_name_posters" type="list" label="COM_KA_FIELD_AP_TAB_NAME_POSTERS_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
+			<field name="tab_name_posters" type="list" label="COM_KA_FIELD_AP_TAB_NAME_POSTERS_LABEL" class="chzn-color"
+				   useglobal="true">
+				<option	value="0">JHIDE</option>
+				<option	value="1">JSHOW</option>
 			</field>
-			<field name="tab_name_photos" type="list" label="COM_KA_FIELD_AP_TAB_NAME_PHOTO_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
+			<field name="tab_name_photos" type="list" label="COM_KA_FIELD_AP_TAB_NAME_PHOTO_LABEL" class="chzn-color"
+				   useglobal="true">
+				<option	value="0">JHIDE</option>
+				<option	value="1">JSHOW</option>
 			</field>
-			<field name="tab_name_awards" type="list" label="COM_KA_FIELD_AP_TAB_NAME_AWARDS_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
+			<field name="tab_name_awards" type="list" label="COM_KA_FIELD_AP_TAB_NAME_AWARDS_LABEL" class="chzn-color"
+				   useglobal="true">
+				<option	value="0">JHIDE</option>
+				<option	value="1">JSHOW</option>
 			</field>
 		</fieldset>
 	</fields>

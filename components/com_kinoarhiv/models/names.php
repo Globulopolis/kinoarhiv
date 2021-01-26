@@ -73,7 +73,7 @@ class KinoarhivModelNames extends JModelList
 
 		if ($menu = $app->getMenu()->getActive())
 		{
-			$params->loadString($menu->params);
+			$params->loadString($menu->getParams());
 		}
 
 		$this->setState('params', $params);

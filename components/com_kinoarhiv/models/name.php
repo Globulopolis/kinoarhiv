@@ -204,6 +204,8 @@ class KinoarhivModelName extends JModelList
 	 */
 	public function getZodiacSign($month, $day)
 	{
+		$zodiac = '';
+
 		if ($day > 31 || $day < 0)
 		{
 			return '';
@@ -386,7 +388,7 @@ class KinoarhivModelName extends JModelList
 		$app    = JFactory::getApplication();
 		$db     = $this->getDbo();
 		$id     = $app->input->get('id', 0, 'int');
-		$page   = $app->input->get('page', null, 'cmd');
+		$page   = $app->input->getCmd('page');
 		$result = array();
 
 		if ($page == 'wallpapers')
@@ -428,7 +430,7 @@ class KinoarhivModelName extends JModelList
 		$app    = JFactory::getApplication();
 		$db     = $this->getDbo();
 		$id     = $app->input->get('id', 0, 'int');
-		$page   = $app->input->get('page', '', 'cmd');
+		$page   = $app->input->getCmd('page', '');
 		$filter = $app->input->get('dim_filter', '0', 'string');
 		$query  = null;
 

@@ -21,13 +21,17 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 		if ($this->params->get('custom_review_component') == 'jc' && file_exists(JPATH_ROOT . '/components/com_jcomments/jcomments.php')):
 			include_once JPATH_ROOT . '/components/com_jcomments/jcomments.php';
 			$jc = new JComments;
-			echo $jc::show($this->item->id, 'com_kinoarhiv', $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)));
+			echo $jc::show(
+				$this->item->id,
+				'com_kinoarhiv',
+				$this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year))
+			);
 		endif;
 	elseif ($this->params->get('custom_review_component') == 'default'):
 		$reviewNumber = $this->pagination->limitstart + 1;
 		$cmdInsertUsername = '';
 
-		if ($allowReviewForm == 1 && !$this->user->guest && $itemAllowReviewsForm == 1):
+		if (!$this->user->guest && (($itemAllowReviewsForm === '' && $allowReviewForm == 1) || $itemAllowReviewsForm == 1)):
 			// Default review system
 			$cmdInsertUsername = ' cmd-insert-username';
 		endif; ?>
@@ -72,7 +76,7 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 						<span class="date"><?php echo $review->created; ?></span>
 					</div>
 
-					<?php if (!$this->user->guest && ($allowReviewForm == 1 && $itemAllowReviewsForm == 1)): ?>
+					<?php if (!$this->user->guest && (($itemAllowReviewsForm === '' && $allowReviewForm == 1) || $itemAllowReviewsForm == 1)): ?>
 
 						<div class="review review-content <?php echo $uiClass; ?>"><?php echo $review->review; ?></div>
 						<div class="review-footer corner-bottom">
@@ -102,7 +106,7 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 	<?php
 		// Show "Add review" form
 		if (!$this->user->guest):
-			if ($allowReviewForm == 1 && $itemAllowReviewsForm == 1):
+			if (($itemAllowReviewsForm === '' && $allowReviewForm == 1) || $itemAllowReviewsForm == 1):
 				echo JLayoutHelper::render(
 					'layouts.editors.editor_' . $this->params->get('review_editor'),
 					(object) array(
@@ -115,7 +119,7 @@ $itemAllowReviewsForm = $this->item->attribs->allow_reviews;
 					JPATH_COMPONENT
 				);
 			else:
-				echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_DISABLED'), 'alert-error');
+				echo KAComponentHelper::showMsg(JText::_('COM_KA_REVIEWS_DISABLED'), 'alert-warning');
 			endif;
 		else: ?>
 		<br/>

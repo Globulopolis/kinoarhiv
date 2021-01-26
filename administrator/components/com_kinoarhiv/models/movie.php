@@ -41,13 +41,13 @@ class KinoarhivModelMovie extends JModelForm
 
 		switch ($task)
 		{
-			case 'editMovieCast':
-			case 'saveMovieCast':
-				$form = $this->loadForm($formName, 'relations_cast', $formOpts);
-				break;
 			case 'editMovieAward':
 			case 'saveMovieAward':
 				$form = $this->loadForm($formName, 'relations_award', $formOpts);
+				break;
+			case 'editMovieCast':
+			case 'saveMovieCast':
+				$form = $this->loadForm($formName, 'relations_cast', $formOpts);
 				break;
 			case 'editMoviePremiere':
 			case 'saveMoviePremiere':
@@ -65,6 +65,11 @@ class KinoarhivModelMovie extends JModelForm
 		if (empty($form))
 		{
 			return false;
+		}
+
+		if ($task === 'editMovieAward')
+		{
+			$form->setValue('type', null, 0);
 		}
 
 		return $form;
@@ -2068,44 +2073,28 @@ echo $query;
 	 * @param   array   $data   The data to validate.
 	 * @param   string  $group  The name of the field group to validate.
 	 *
-	 * @return  mixed   Array of filtered data if valid, false otherwise.
+	 * @return  array|boolean  Array of filtered data if valid, false otherwise.
 	 *
 	 * @see     JFormRule
 	 * @see     JFilterInput
-	 * @since   12.2
+	 * @since   3.7.0
 	 */
 	public function validate($form, $data, $group = null)
 	{
-		// Include the plugins for the delete events.
-		JPluginHelper::importPlugin($this->events_map['validate']);
-
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onUserBeforeDataValidation', array($form, &$data));
-
-		// Filter and validate the form data.
-		$data = $form->filter($data);
-		$return = $form->validate($data, $group);
-
-		// Check for an error.
-		if ($return instanceof Exception)
+		// Don't allow to change the users if not allowed to access com_users.
+		if (JFactory::getApplication()->isClient('administrator') && !JFactory::getUser()->authorise('core.manage', 'com_users'))
 		{
-			$this->setError($return->getMessage());
-
-			return false;
-		}
-
-		// Check the validation results.
-		if ($return === false)
-		{
-			// Get the validation messages from the form.
-			foreach ($form->getErrors() as $message)
+			if (isset($data['created_by']))
 			{
-				$this->setError($message);
+				unset($data['created_by']);
 			}
 
-			return false;
+			if (isset($data['modified_by']))
+			{
+				unset($data['modified_by']);
+			}
 		}
 
-		return $data;
+		return parent::validate($form, $data, $group);
 	}
 }

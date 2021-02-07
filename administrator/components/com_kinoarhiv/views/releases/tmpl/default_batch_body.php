@@ -33,7 +33,7 @@ JHtml::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR . '/libraries/html/');
 		</div>
 		<div class="control-group span6">
 			<div class="controls">
-				<?php echo JHtml::_('batch.language'); ?>
+				<?php echo JLayoutHelper::render('joomla.html.batch.language', array()); ?>
 			</div>
 		</div>
 	</div>

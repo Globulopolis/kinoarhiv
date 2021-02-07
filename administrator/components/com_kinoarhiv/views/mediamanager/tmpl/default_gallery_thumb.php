@@ -66,7 +66,7 @@ $canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->secti
 											<?php
 											echo JHtml::_('jgrid.published', $item->state, $i, 'mediamanager.', $canChange, 'cb');
 
-											if (($this->section == 'movie' && $this->tab == 2) || ($this->section == 'name' && $this->tab == 3) && $canChange):
+											if (($this->section == 'movie' && $this->tab == 2) || ($this->section == 'name' && $this->tab == 3) || ($this->section == 'album') && $canChange):
 												echo JHtml::_(
 													'jgrid.state',
 													array(

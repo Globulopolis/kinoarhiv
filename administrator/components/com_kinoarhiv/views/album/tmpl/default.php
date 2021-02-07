@@ -37,12 +37,85 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task === 'albums.cancel' || document.formvalidator.isValid(document.getElementById('item-form'))) {
+		if ((task === 'albums.cancel' || task === 'gallery') || document.formvalidator.isValid(document.getElementById('item-form'))) {
+			if (task === 'gallery') {
+				var tab = (task === 'gallery') ? '&tab=1' : '',
+					url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=' + task + tab
+						+ '<?php echo $this->id != 0 ? '&id=' . $this->id : ''; ?>';
+				Kinoarhiv.openWindow(url);
+
+				return false;
+			}
+
 			Joomla.submitform(task, document.getElementById('item-form'));
 		}
 	};
 
 	jQuery(document).ready(function($){
+		// Bind 'remove poster' functional
+		$('.cmd-file-remove').click(function(e){
+			e.preventDefault();
+
+			var item_id  = parseInt($('input[name="image_id"]').val(), 10),
+				no_cover = KA_vars.uri_root + 'media/com_kinoarhiv/images/themes/<?php echo $this->params->get('ka_theme'); ?>/no_album_cover.png';
+
+			if (isNaN(item_id)) {
+				return false;
+			}
+
+			if (!confirm('<?php echo JText::_('JTOOLBAR_DELETE'); ?>?')) {
+				return;
+			}
+
+			Kinoarhiv.showLoading('show', $('body'));
+
+			$.ajax({
+				type: 'POST',
+				url: 'index.php?option=com_kinoarhiv&task=mediamanager.removePoster&section=album&type=gallery&tab=1&id=<?php echo $this->id; ?>&item_id[]=' + item_id + '&format=json',
+				data: {'<?php echo $token ?>': 1}
+			}).done(function(response){
+				Aurora.message([{text: response.message ? response.message : $(response).text()}], '#system-message-container', {replace: true});
+
+				$('a.img-preview').attr('href', no_cover);
+				$('a.img-preview img').attr({
+					src: no_cover,
+					width: 120,
+					height: 120,
+					style: 'width: 120px; height: 120px;'
+				});
+				Kinoarhiv.showLoading('hide', $('body'));
+			}).fail(function (xhr, status, error) {
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
+				Kinoarhiv.showLoading('hide', $('body'));
+			});
+		});
+
+		// Check if album allready exists in DB
+		$('.field_title').blur(function(){
+			if (!empty(this.value)) {
+				$.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_kinoarhiv&task=api.data&content=albums&multiple=0&data_lang=*&ignore_ids[]=<?php echo $this->id; ?>&format=json&term=' + this.value,
+					data: {'<?php echo JSession::getFormToken(); ?>': 1}
+				}).done(function(response){
+					if (Object.keys(response).length > 0) {
+						var _text = '<?php echo JText::_('COM_KA_MUSIC_ALBUMS_EXISTS', true); ?><br/>';
+
+						$.each(response, function(i, val){
+							_text += '<a href="index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=' + val.id + '">' +
+								Kinoarhiv.formatItemTitle(val.title, '', val.year, '/') +
+								'</a><br/>';
+						});
+
+						Aurora.message([{text: _text, type: 'alert'}], '#system-message-container', {replace: true});
+					}
+				}).fail(function (xhr, status, error) {
+					var _error = JSON.parse(xhr.responseText);
+					Aurora.message([{text: _error.msg, type: 'error'}], '#system-message-container', {replace: true});
+				});
+			}
+		});
+
 		// Update total votes
 		$('.field_rate_sum, .field_rate').blur(function(){
 			var rate = parseInt($('.field_rate').val(), 10),
@@ -504,6 +577,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 
 	<?php echo $this->form->getInput('genres_orig') . "\n"; ?>
 	<?php echo $this->form->getInput('id') . "\n"; ?>
+	<input type="hidden" name="image_id" value="<?php echo $this->form->getValue('image_id'); ?>" />
+	<input type="hidden" name="img_folder" value="<?php echo $this->item->img_folder; ?>" />
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

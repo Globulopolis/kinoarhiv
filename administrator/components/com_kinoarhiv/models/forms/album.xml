@@ -9,7 +9,6 @@
 		<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC"
 			   hint="JFIELD_ALIAS_PLACEHOLDER" class="span12 field_alias" size="45"/>
 
-		<!-- // TODO Left for future file uploads. -->
 		<field name="fs_alias" type="text" label="COM_KA_FIELD_MOVIE_FS_ALIAS"
 			   description="COM_KA_FIELD_MOVIE_FS_ALIAS_DESC" class="span9 field_fs_alias" size="45"/>
 		<field name="fs_alias_orig" type="hidden"/>
@@ -77,13 +76,19 @@
 		<field name="rules" type="rules" label="JGLOBAL_ACTION_PERMISSIONS_LABEL" class="inputbox" filter="rules"
 			   component="com_kinoarhiv" section="movie" validate="rules"/>
 
-		<field name="covers_path" type="text" label="COM_KA_FIELD_COVER_PATH_LABEL" class="span12" default=""/>
-		<field name="covers_path_www" type="text" label="COM_KA_FIELD_COVER_PATH_WWW_LABEL" class="span12" default=""/>
-		<field name="cover_filename" type="text" label="COM_KA_FIELD_COVER_FILE_LABEL" class="span12" default=""/>
-		<field name="tracks_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_LABEL" class="span12" default=""/>
-		<field name="tracks_path_www" type="text" label="COM_KA_FIELD_TRACKS_PATH_WWW_LABEL" class="span12" default=""/>
-		<field name="tracks_preview_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_PREVIEW_LABEL" class="span12"
-			   default=""/>
+		<field name="covers_path" type="text" label="COM_KA_FIELD_COVER_PATH_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" class="span12" default=""/>
+		<field name="covers_path_www" type="text" label="COM_KA_FIELD_COVER_PATH_WWW_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" class="span12" default=""/>
+		<field name="tracks_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" class="span12" default=""/>
+		<field name="tracks_path_www" type="text" label="COM_KA_FIELD_TRACKS_PATH_WWW_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" class="span12" default=""/>
+		<field name="tracks_preview_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_PREVIEW_LABEL"
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" class="span12" default=""/>
+
+		<field name="image_id" type="hidden" class="readonly" default="0" readonly="true"/>
+		<field name="filename" type="hidden" class="readonly" default="" readonly="true"/>
 	</fieldset>
 
 	<fields name="attribs" label="COM_KA_MOVIES_TAB_PUB">
@@ -126,13 +131,7 @@
 		</fieldset>
 
 		<fieldset name="tabs" label="COM_KA_MOVIES_TAB_PUB">
-			<!-- // TODO Нужно только одно поле -->
-			<field name="tab_album_wallpp" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_WALLPP_LABEL" class="chzn-color"
-				   useglobal="true">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-			<field name="tab_album_posters" type="list" label="COM_KA_FIELD_AP_TAB_MOVIE_POSTERS_LABEL"
+			<field name="tab_album_covers" type="list" label="COM_KA_FIELD_AP_TAB_ALBUM_COVERS_LABEL"
 				   class="chzn-color" useglobal="true">
 				<option value="1">JYES</option>
 				<option value="0">JNO</option>

@@ -104,15 +104,16 @@ class KAContentHelper
 	}
 
 	/**
-	 * Method to get the filesystem path to a file.
+	 * Method to get the filesystem path to a folder.
+	 * TODO Need refactor
 	 *
-	 * @param   string  $section  Type of the item. Can be 'movie' or 'name'.
+	 * @param   string  $section  Type of the item. Can be 'movie', 'name', 'album'.
 	 * @param   string  $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
 	 * @param   mixed   $tab      Tab number from gallery(or null value for 'trailers', 'soundtracks').
 	 *                            If $tab is array when return array of paths for each type of $tab.
-	 * @param   mixed   $id       The item IDs(movie or name).
+	 * @param   mixed   $id       The item IDs(movie, name, album).
 	 *
-	 * @return  mixed   Absolute filesystem path to a file, array of paths, false otherwise.
+	 * @return  mixed   Absolute filesystem path to a folder, array of paths, false otherwise.
 	 *
 	 * @since   3.0
 	 * @throws  Exception
@@ -157,7 +158,7 @@ class KAContentHelper
 						3 => array(
 							'path'   => $params->get('media_scr_root'),
 							'folder' => 'screenshots'
-						),
+						)
 					);
 				}
 			}
@@ -200,8 +201,86 @@ class KAContentHelper
 						3 => array(
 							'path'   => $params->get('media_actor_photo_root'),
 							'folder' => 'photo'
-						),
+						)
 					);
+				}
+			}
+		}
+		elseif ($section == 'album')
+		{
+			// Get album covers and tracks path
+			$db = JFactory::getDbo();
+
+			$query = $db->getQuery(true)
+				->select(
+					$db->quoteName(
+						array(
+							'covers_path', 'covers_path_www', 'tracks_path', 'tracks_path_www', 'tracks_preview_path'
+						)
+					)
+				)
+				->from($db->quoteName('#__ka_music_albums'));
+
+			if (is_array($id))
+			{
+				$_id = ' IN (' . implode(',', $id) . ')';
+			}
+			else
+			{
+				$_id = ' = ' . (int) $id;
+			}
+
+			$query->where($db->quoteName('id') . $_id);
+			$db->setQuery($query);
+
+			try
+			{
+				if (is_array($id))
+				{
+					$result = $db->loadObjectList();
+				}
+				else
+				{
+					$result = $db->loadObject();
+				}
+			}
+			catch (RuntimeException $e)
+			{
+				JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+
+			if ($type == 'gallery')
+			{
+				$path = !empty($result->covers_path) ? $result->covers_path : $params->get('media_music_images_root');
+				$folder = '';
+
+				if (is_array($tab))
+				{
+					$paths = array(
+						1 => array(
+							'path'   => $path,
+							'folder' => $folder
+						),
+						2 => array(
+							'path'   => $path,
+							'folder' => $folder
+						),
+						3 => array(
+							'path'   => $path,
+							'folder' => $folder
+						),
+						4 => array(
+							'path'   => $path,
+							'folder' => $folder
+						)
+					);
+				}
+
+				if (!empty($result->covers_path))
+				{
+					return JPath::clean($path);
 				}
 			}
 		}
@@ -277,6 +356,11 @@ class KAContentHelper
 			$table = '#__ka_names';
 			$cols  = array('id', 'name', 'latin_name', 'alias', 'fs_alias');
 		}
+		elseif ($section == 'album')
+		{
+			$table = '#__ka_music_albums';
+			$cols  = array('id', 'title', 'alias', 'fs_alias');
+		}
 		else
 		{
 			KAComponentHelper::eventLog('Wrong section type!');
@@ -313,7 +397,7 @@ class KAContentHelper
 			{
 				if (empty($row['alias']))
 				{
-					if ($section == 'movie')
+					if ($section == 'movie' || $section == 'album')
 					{
 						$string = $row['title'];
 					}
@@ -397,6 +481,104 @@ class KAContentHelper
 		}
 
 		return $time;
+	}
+
+	/**
+	 * Get checkingPath to search for covers based on item content.
+	 *
+	 * @param   string  $path    Path to a folder with covers from item.
+	 * @param   string  $folder  Path to a folder with covers from component settings.
+	 * @param   object  $item    Item object.
+	 *
+	 * @return  string
+	 *
+	 * @since   3.1
+	 */
+	public static function getAlbumCheckingPath($path, $folder, $item)
+	{
+		$filename = property_exists($item, 'filename') ? $item->filename : '';
+
+		// Check for path from item first.
+		if (!empty($path))
+		{
+			$checkingPath = JPath::clean($path . '/' . $filename);
+		}
+		else
+		{
+			$checkingPath = JPath::clean(
+				$folder . '/' . rawurlencode($item->fs_alias) . '/' . $item->id . '/' . $filename
+			);
+		}
+
+		return $checkingPath;
+	}
+
+	/**
+	 * Get album covers.
+	 * TODO Refactor this
+	 * @param   string  $path  Path where to search covers.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.1
+	 */
+	public static function getAlbumCovers($path)
+	{
+		jimport('joomla.filesystem.folder');
+
+		$params        = JComponentHelper::getParams('com_kinoarhiv');
+		$files         = array();
+		$frontCovers   = self::cleanCoverFilename($params->get('music_covers_front'));
+		$backCovers    = self::cleanCoverFilename($params->get('music_covers_back'));
+		$artistCovers  = self::cleanCoverFilename($params->get('music_covers_artist'));
+		$discCovers    = self::cleanCoverFilename($params->get('music_covers_disc'));
+		$coversListArr = array_merge($frontCovers, $backCovers, $artistCovers, $discCovers);
+		$coversList    = implode('|', array_filter($coversListArr));
+		$_files        = JFolder::files($path, $coversList . '$', 1, true);
+
+		// Filter files because JFolder::files() return all files which contains listed names.
+		foreach ($_files as $i => $file)
+		{
+			if (in_array(basename($file), $coversListArr))
+			{
+				$files[$i]['folder'] = dirname(JPath::clean($file));
+				$files[$i]['file']   = basename($file);
+			}
+
+			// Search for preview image
+			if (StringHelper::strpos($file, 'thumb_', 0) !== false)
+			{
+				$files['thumb']['folder'] = dirname(JPath::clean($file));
+				$files['thumb']['file']   = basename($file);
+			}
+		}
+
+		return $files;
+	}
+
+	/**
+	 * Clean covers filenames.
+	 *
+	 * @param   string  $covers  Cover filenames as string separated by new line.
+	 *
+	 * @return  array
+	 *
+	 * @since   3.1
+	 */
+	private static function cleanCoverFilename($covers)
+	{
+		jimport('joomla.filesystem.file');
+
+		$coversList = explode("\n", $covers);
+		array_walk(
+			$coversList,
+			function (&$file)
+			{
+				$file = JFile::makeSafe($file);
+			}
+		);
+
+		return $coversList;
 	}
 
 	/**
@@ -490,5 +672,63 @@ class KAContentHelper
 		}
 
 		return $menu;
+	}
+
+	/**
+	 * Method to get some album data from database, if not in cache.
+	 * This cache can be deleted via administrator/index.php?option=com_cache&filter[search]=com_kinoarhiv_media
+	 *
+	 * @param   integer  $id  Album ID.
+	 *
+	 * @return  array|boolean
+	 *
+	 * @since   3.1
+	 * @throws  RuntimeException
+	 */
+	public static function getAlbumMetadata($id)
+	{
+		/** @var JCache $cache */
+		$cache   = JFactory::getCache('com_kinoarhiv_media', '');
+		$cacheId = 'album_meta_' . $id;
+
+		// If caching is disabled, we force it only for caching metadata.
+		if (!$cache->getCaching())
+		{
+			$cache->setCaching(true);
+
+			// Set lifetime to one year
+			$cache->setLifeTime(31536000);
+		}
+
+		// Check the cached results.
+		if ($cache->contains($cacheId))
+		{
+			$meta = $cache->get($cacheId);
+		}
+		else
+		{
+			$db = JFactory::getDbo();
+
+			$query = $db->getQuery(true)
+				->select($db->quoteName(array('covers_path', 'covers_path_www', 'tracks_path', 'tracks_path_www', 'tracks_preview_path')))
+				->from($db->quoteName('#__ka_music_albums'))
+				->where($db->quoteName('id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$meta = $db->loadAssoc();
+			}
+			catch (RuntimeException $e)
+			{
+				throw new RuntimeException($e->getMessage(), 500);
+			}
+
+			// Store the data in cache.
+			$cache->store($meta, $cacheId);
+		}
+
+		return $meta;
 	}
 }

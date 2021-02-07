@@ -87,7 +87,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
 			$path = $this->getImagePath('movie', $type, $fsAlias, $id, $filename);
 
-			if (!file_exists($path) && !is_file($path))
+			if (!is_file($path))
 			{
 				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
 			}
@@ -135,7 +135,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
 			$path = $this->getImagePath('name', $type, $fsAlias, $id, $filename);
 
-			if (!file_exists($path) && !is_file($path))
+			if (!is_file($path))
 			{
 				$noCover = ($gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
@@ -192,7 +192,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			$type = $this->input->get('type', 2, 'int');
 			$path = $this->getImagePath('trailer', $type, $fsAlias, $id, $filename);
 
-			if (!file_exists($path) && !is_file($path))
+			if (!is_file($path))
 			{
 				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/video_off.png';
 			}
@@ -220,7 +220,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 			$path = $this->getVideoPath(urldecode($fsAlias), $id, $filename);
 
-			if (!file_exists($path) && !is_file($path))
+			if (!is_file($path))
 			{
 				header('HTTP/1.0 404 Not Found');
 				die();
@@ -245,7 +245,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		{
 			$path = $this->getVideoPath(urldecode($fsAlias), $id, $filename);
 
-			if (!file_exists($path) && !is_file($path))
+			if (!is_file($path))
 			{
 				header('HTTP/1.0 404 Not Found');
 				die();
@@ -279,7 +279,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	 *
 	 * @since   3.1
 	 */
-	protected function music($content)
+	protected function album($content)
 	{
 		$params    = JComponentHelper::getParams('com_kinoarhiv');
 		$id        = $this->input->get('id', 0, 'int');
@@ -291,9 +291,9 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		{
 			$type = $this->input->get('type', 2, 'int');
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('music', $type, $fsAlias, $id, $filename);
+			$path = $this->getImagePath('album', $type, $fsAlias, $id, $filename);
 
-			if (!file_exists($path) && !is_file($path))
+			if (!is_file($path))
 			{
 				$path = JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
 			}
@@ -369,6 +369,23 @@ class KinoarhivControllerMedia extends JControllerLegacy
 			elseif ($type == 3)
 			{
 				$path = $params->get('media_actor_photo_root') . $middle . 'photo/';
+			}
+		}
+		elseif ($content === 'album')
+		{
+			// 1-front, 2-back, 3-artist, 4-cd
+			if ($type == 1 || $type == 2 || $type == 3 || $type == 4)
+			{
+				$meta = KAContentHelper::getAlbumMetadata($itemID);
+
+				if (!empty($meta['covers_path']))
+				{
+					$path = JPath::clean($meta['covers_path'] . '/');
+				}
+				else
+				{
+					$path = $params->get('media_music_images_root') . '/' . rawurlencode($fsAlias) . '/' . $itemID . '/';
+				}
 			}
 		}
 		elseif ($content === 'trailer')

@@ -10,9 +10,18 @@
 
 defined('_JEXEC') or die;
 
-$image  = @getimagesize($this->items->get('th_poster'));
-$height = $image[1];
-$width  = $image[0];
+$image = @getimagesize($this->items->get('th_poster'));
+
+if ($image === false)
+{
+	$height = 0;
+	$width  = 0;
+}
+else
+{
+	$height = $image[1];
+	$width  = $image[0];
+}
 ?>
 <div class="row-fluid">
 	<div class="span6">

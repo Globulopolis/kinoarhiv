@@ -26,7 +26,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	 */
 	public function upload()
 	{
-		if (!KAComponentHelper::checkToken('post'))
+		if (!KAComponentHelper::checkToken())
 		{
 			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
 
@@ -111,18 +111,22 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$fileExt = JFile::getExt($filename);
 		$fileKey = 'com_kinoarhiv.uploads.' . $user->get('id');
 
-		// Validate filename
-		if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $filename))
+		// Check platform and PHP version. PHP < 7 on Windows platform doesn't support unicode filenames.
+		if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN' && PHP_MAJOR_VERSION < 7)
 		{
-			if ($app->getUserState($fileKey) == '')
+			if (preg_match("/[^a-z0-9_.,\[\]@'%()\s-]/i", $filename))
 			{
 				$filename = str_replace('.', '', uniqid(rand(), true)) . '.' . $fileExt;
-				$app->setUserState($fileKey, $filename);
 			}
-			else
-			{
-				$filename = $app->getUserState($fileKey);
-			}
+		}
+		else
+		{
+			$filename = preg_replace("#\x{00a0}#siu", ' ', $filename);
+		}
+
+		if ($app->getUserState($fileKey) == '')
+		{
+			$app->setUserState($fileKey, $filename);
 		}
 
 		$filePath = JPath::clean($destDir . '/' . $filename);
@@ -347,7 +351,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	}
 
 	/**
-	 * Post process uploaded file.
+	 * Proxy method to post process uploaded file.
 	 *
 	 * @param   string  $destDir   Path to a folder.
 	 * @param   string  $filename  Filename.
@@ -365,7 +369,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$upload  = $app->input->get('upload', '', 'word');
 
 		if (($section == 'movie' && $type == 'gallery')
-			|| ($section == 'name' && $type == 'gallery'))
+			|| ($section == 'name' && $type == 'gallery')
+			|| ($section == 'album' && $type == 'gallery'))
 		{
 			$result = $this->postProcessImageUploads($destDir, $filename, $section, $type, $tab);
 		}
@@ -467,7 +472,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
 					$watermarkImg = $params->get('upload_gallery_watermark_image');
-					$options       = array();
+					$options      = array();
 
 					if ($imageProp->type == 2)
 					{
@@ -498,7 +503,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
 					$watermarkImg = $params->get('upload_gallery_watermark_image');
-					$options       = array();
+					$options      = array();
 
 					if ($imageProp->type == 2)
 					{
@@ -547,7 +552,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				if ($params->get('upload_gallery_watermark_image_on') == 1)
 				{
 					$watermarkImg = $params->get('upload_gallery_watermark_image');
-					$options       = array();
+					$options      = array();
 
 					if ($imageProp->type == 2)
 					{
@@ -566,6 +571,45 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 				$image->makeThumbs($destDir, $filename, $width . 'x' . $height, 1, $destDir, false);
 				$imgSave = $model->saveImageInDB('name', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
+			}
+		}
+		elseif ($section == 'album')
+		{
+			if ($type == 'gallery')
+			{
+				if ($tab == 1 || $tab == 2 || $tab == 3 || $tab == 4)
+				{
+					$width  = (int) $params->get('music_covers_size');
+					$height = ($width * $origHeight) / $origWidth;
+				}
+				else
+				{
+					return array('success' => false, 'message' => 'Wrong tab');
+				}
+
+				// Add watermark
+				if ($params->get('upload_gallery_watermark_image_on') == 1)
+				{
+					$watermarkImg = $params->get('upload_gallery_watermark_image');
+					$options      = array();
+
+					if ($imageProp->type == 2)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_jpg');
+					}
+					elseif ($imageProp->type == 3)
+					{
+						$options['output_quality'] = (int) $params->get('upload_quality_images_png');
+					}
+
+					if (!empty($watermarkImg) && file_exists($watermarkImg))
+					{
+						$image->addWatermark($destDir, $filename, $watermarkImg, 'br', $options);
+					}
+				}
+
+				$image->makeThumbs($destDir, $filename, $width . 'x' . $height, 1, $destDir, false);
+				$imgSave = $model->saveImageInDB('album', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
 			}
 		}
 
@@ -616,9 +660,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			'resolution' => $width . 'x' . $height
 		);
 
-		$result = $model->saveFileinfoData($data, array('list' => 'video', 'new' => 1));
-
-		return $result;
+		return $model->saveFileinfoData($data, array('list' => 'video', 'new' => 1));
 	}
 
 	/**
@@ -671,9 +713,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		/** @var KinoarhivModelMediamanagerItem $model */
 		$model  = $this->getModel('mediamanagerItem');
 		$data   = array('file' => $filename);
-		$result = $model->saveFileinfoData($data, array('list' => 'chapters', 'new' => 1));
 
-		return $result;
+		return $model->saveFileinfoData($data, array('list' => 'chapters', 'new' => 1));
 	}
 
 	/**

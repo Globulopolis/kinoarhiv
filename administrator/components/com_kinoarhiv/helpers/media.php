@@ -13,15 +13,16 @@ defined('_JEXEC') or die;
 /**
  * Class KAMediaHelper
  *
- * @since  3.0
+ * @since  3.1
  */
 class KAMediaHelper
 {
 	/**
 	 * Method to get a front cover for music album
+	 * TODO Need to be changed.
 	 *
 	 * @param   object  $item_data  Item data. Should contain these fields from albums table - id, fs_alias, filename,
-	 *                              covers_path, covers_path_www, cover_filename.
+	 *                              covers_path, covers_path_www.
 	 *
 	 * @return  array
 	 */

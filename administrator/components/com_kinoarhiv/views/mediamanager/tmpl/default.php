@@ -25,7 +25,7 @@ $this->id      = $this->input->get('id', 0, 'int');
 $this->layout  = $this->input->get('layoutview', 'list', 'word');
 ?>
 <div id="j-main-container">
-<?php if ($this->section == 'movie' || $this->section == 'name')
+<?php if ($this->section == 'movie' || $this->section == 'name' || $this->section == 'album')
 {
 	if ($this->type == 'gallery')
 	{

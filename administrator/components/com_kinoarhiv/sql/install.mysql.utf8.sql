@@ -115,11 +115,11 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__ka_movies_gallery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(128) NOT NULL DEFAULT '',
   `dimension` varchar(10) NOT NULL DEFAULT '',
-  `movie_id` int(10) NOT NULL DEFAULT '0',
-  `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1-wallpapers, 2-posters, 3-screenshots, 4-soundtracks album cover',
+  `movie_id` int(11) NOT NULL DEFAULT '0',
+  `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1-wallpapers, 2-posters, 3-screenshots',
   `frontpage` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `state` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -167,7 +167,6 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_albums` (
   `rate_rounded` tinyint(1) NOT NULL DEFAULT '0',
   `covers_path` varchar(255) NOT NULL,
   `covers_path_www` varchar(255) NOT NULL,
-  `cover_filename` varchar(128) NOT NULL,
   `tracks_path` text NOT NULL,
   `tracks_path_www` text NOT NULL,
   `tracks_preview_path` varchar(255) NOT NULL,
@@ -257,10 +256,10 @@ CREATE TABLE IF NOT EXISTS `#__ka_names_career` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__ka_names_gallery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(128) NOT NULL DEFAULT '',
   `dimension` varchar(10) NOT NULL DEFAULT '',
-  `name_id` int(10) NOT NULL DEFAULT '0',
+  `name_id` int(11) NOT NULL DEFAULT '0',
   `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1-wallpapers, 2-posters, 3-photo',
   `frontpage` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `state` tinyint(1) NOT NULL DEFAULT '0',

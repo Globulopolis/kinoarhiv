@@ -220,6 +220,10 @@ class KinoarhivModelMediamanager extends JModelList
 		{
 			$query = $this->listQueryNameImages();
 		}
+		elseif ($section == 'album' && $type == 'gallery')
+		{
+			$query = $this->listQueryAlbumImages();
+		}
 
 		if (empty($query))
 		{
@@ -319,6 +323,79 @@ class KinoarhivModelMediamanager extends JModelList
 
 		$query->where($db->quoteName('g.type') . ' = ' . (int) $tab)
 			->where($db->quoteName('g.name_id') . ' = ' . (int) $id);
+
+		// Filter by published state
+		$published = $this->getState('filter.published');
+
+		if (is_numeric($published))
+		{
+			$query->where('g.state = ' . (int) $published);
+		}
+		elseif ($published === '')
+		{
+			$query->where('(g.state = 0 OR g.state = 1)');
+		}
+
+		// Filter by search in title.
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
+		{
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where('g.id = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape(trim($search), true) . '%');
+				$query->where('(g.filename LIKE ' . $search . ')');
+			}
+		}
+
+		// Add the list ordering clause.
+		$orderCol = $this->state->get('list.ordering', 'g.filename');
+		$orderDirn = $this->state->get('list.direction', 'asc');
+
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+
+		return $query;
+	}
+
+	/**
+	 * Method to get a JDatabaseQuery object for retrieving the data set for album images.
+	 *
+	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
+	 *
+	 * @since   3.0
+	 */
+	private function listQueryAlbumImages()
+	{
+		$input = JFactory::getApplication()->input;
+		$tab   = $input->get('tab', 0, 'int');
+		$id    = $input->get('id', 0, 'int');
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select(
+			$this->getState(
+				'list.select',
+				$db->quoteName(
+					array(
+						'g.id', 'g.filename', 'g.dimension', 'g.item_id', 'g.frontpage', 'g.state', 'a.alias',
+						'a.fs_alias', 'a.covers_path', 'a.covers_path_www'
+					)
+				)
+			)
+		);
+		$query->from($db->quoteName('#__ka_music_albums_gallery', 'g'))
+			->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON ' . $db->quoteName('a.id') . ' = ' . $db->quoteName('g.item_id'));
+
+		if ($tab !== 0)
+		{
+			$query->where($db->quoteName('g.type') . ' = ' . (int) $tab);
+		}
+
+		$query->where($db->quoteName('g.item_id') . ' = ' . (int) $id);
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
@@ -497,20 +574,24 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	public function getItemTitle($section = null, $id = null)
 	{
-		$db = $this->getDbo();
-		$app = JFactory::getApplication();
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
+		$db      = $this->getDbo();
+		$app     = JFactory::getApplication();
 		$section = empty($section) ? $app->input->get('section', '', 'word') : $section;
-		$id = empty($id) ? $app->input->get('id', 0, 'int') : $id;
+		$id      = empty($id) ? $app->input->get('id', 0, 'int') : $id;
 
 		if ($section == 'movie')
 		{
 			$query = $db->getQuery(true)
-				->select($db->quoteName('title'))
+				->select($db->quoteName(array('title', 'year')))
 				->from($db->quoteName('#__ka_movies'))
 				->where($db->quoteName('id') . ' = ' . (int) $id);
 
 			$db->setQuery($query);
-			$data = $db->loadResult();
+			$result = $db->loadObject();
+
+			$data = KAContentHelper::formatItemTitle($result->title, '', $result->year);
 		}
 		elseif ($section == 'name')
 		{
@@ -522,9 +603,20 @@ class KinoarhivModelMediamanager extends JModelList
 			$db->setQuery($query);
 			$result = $db->loadObject();
 
-			jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
-
 			$data = KAContentHelper::formatItemTitle($result->name, $result->latin_name);
+		}
+		elseif ($section == 'album')
+		{
+			$query = $db->getQuery(true)
+				->select($db->quoteName('title'))
+				->select('DATE_FORMAT (' . $db->quoteName('year') . ', "%Y") AS ' . $db->quoteName('year'))
+				->from($db->quoteName('#__ka_music_albums'))
+				->where($db->quoteName('id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+			$result = $db->loadObject();
+
+			$data = KAContentHelper::formatItemTitle($result->title, '', $result->year);
 		}
 		else
 		{
@@ -570,6 +662,13 @@ class KinoarhivModelMediamanager extends JModelList
 				$itemCol = 'name_id';
 				$typeNum = 3;
 			}
+			elseif ($section == 'album')
+			{
+				$table   = '#__ka_music_albums_gallery';
+				$pubCol  = 'frontpage';
+				$itemCol = 'item_id';
+				$typeNum = 0;
+			}
 			else
 			{
 				$app->enqueueMessage('Unknown gallery type', 'error');
@@ -581,7 +680,13 @@ class KinoarhivModelMediamanager extends JModelList
 			$query = $db->getQuery(true)
 				->update($db->quoteName($table))
 				->set($db->quoteName($pubCol) . " = 0")
-				->where($db->quoteName($itemCol) . ' = ' . (int) $id . ' AND ' . $db->quoteName('type') . ' = ' . $typeNum);
+				->where($db->quoteName($itemCol) . ' = ' . (int) $id);
+
+			if ($section !== 'album')
+			{
+				$query->where($db->quoteName('type') . ' = ' . $typeNum);
+			}
+
 			$db->setQuery($query);
 
 			try
@@ -767,9 +872,9 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	public function batch()
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$ids = $app->input->post->get('item_id', array(), 'array');
+		$app       = JFactory::getApplication();
+		$db        = $this->getDbo();
+		$ids       = $app->input->post->get('item_id', array(), 'array');
 		$batchData = $app->input->post->get('batch', array(), 'array');
 
 		if (empty($batchData))
@@ -784,6 +889,11 @@ class KinoarhivModelMediamanager extends JModelList
 			$fields[] = $db->quoteName('language') . " = '" . $db->escape((string) $batchData['language_id']) . "'";
 		}
 
+		if (!empty($batchData['type_id']))
+		{
+			$fields[] = $db->quoteName('type') . " = '" . (int) $batchData['type_id'] . "'";
+		}
+
 		if (empty($fields))
 		{
 			return false;
@@ -791,8 +901,16 @@ class KinoarhivModelMediamanager extends JModelList
 
 		$query = $db->getQuery(true);
 
-		$query->update($db->quoteName('#__ka_trailers'))
-			->set(implode(', ', $fields))
+		if ($app->input->getWord('section') == 'album')
+		{
+			$query->update($db->quoteName('#__ka_music_albums_gallery'));
+		}
+		else
+		{
+			$query->update($db->quoteName('#__ka_trailers'));
+		}
+
+		$query->set(implode(', ', $fields))
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);

@@ -61,7 +61,11 @@ class KinoarhivViewPremiere extends JViewLegacy
 		{
 			$html = JText::_($matches[1]);
 
-			$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+			$cn = preg_replace(
+				'#\[cn=(.+?)\](.+?)\[/cn\]#',
+				'<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2',
+				$matches[2]
+			);
 
 			return $html . $cn;
 		},
@@ -81,7 +85,11 @@ class KinoarhivViewPremiere extends JViewLegacy
 		{
 			$html = JText::_($matches[1]);
 
-			$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
+			$name = preg_replace(
+				'#\[name=(.+?)\](.+?)\[/name\]#',
+				'<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>',
+				$matches[2]
+			);
 
 			return $html . $name;
 		},
@@ -90,7 +98,9 @@ class KinoarhivViewPremiere extends JViewLegacy
 
 		if ($this->params->get('throttle_image_enable', 0) == 0)
 		{
-			$checkingPath = JPath::clean($this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename);
+			$checkingPath = JPath::clean(
+				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
+			);
 
 			if (!is_file($checkingPath))
 			{
@@ -107,7 +117,8 @@ class KinoarhivViewPremiere extends JViewLegacy
 				}
 				else
 				{
-					$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+					$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
+						. $item->id . '/posters/thumb_' . $item->filename;
 				}
 			}
 		}

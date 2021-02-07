@@ -143,15 +143,19 @@ class KinoarhivModelAlbums extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.title, a.alias, ' . $db->quoteName('a.introtext', 'text') . ', ' .
+				'a.id, a.title, a.alias, a.fs_alias, ' . $db->quoteName('a.introtext', 'text') . ', ' .
 				'DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', a.length, a.rate, a.rate_sum, ' .
-				'a.covers_path, a.covers_path_www, a.cover_filename, a.buy_urls, ' .
+				'a.covers_path, a.covers_path_www, a.buy_urls, ' .
 				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
 				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
 				'a.attribs, a.state'
 			)
 		);
 		$query->from($db->quoteName('#__ka_music_albums', 'a'));
+
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->leftJoin($db->quoteName('#__ka_music_albums_gallery', 'g') . ' ON g.item_id = a.id AND g.type = 1 AND g.frontpage = 1 AND g.state = 1');
 
 		// Join over favorited
 		if (!$user->get('guest'))

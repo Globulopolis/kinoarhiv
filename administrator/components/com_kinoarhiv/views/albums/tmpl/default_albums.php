@@ -17,7 +17,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 $user      = JFactory::getUser();
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
-$columns   = 7;
+$saveOrder = $listOrder == 'a.ordering';
+$columns   = 8;
 ?>
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
 	<div id="j-main-container">
@@ -39,6 +40,7 @@ $columns   = 7;
 					<th>
 						<?php echo JHtml::_('searchtools.sort', 'COM_KA_MUSIC_ALBUMS_HEADING', 'a.title', $listDirn, $listOrder); ?>
 					</th>
+					<th width="7%" style="min-width:35px;" class="nowrap center hidden-phone hidden-tablet"></th>
 					<th width="10%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
@@ -59,11 +61,25 @@ $columns   = 7;
 					foreach ($this->items as $i => $item):
 						$canEdit   = $user->authorise('core.edit',       'com_kinoarhiv.album.' . $item->id);
 						$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.album.' . $item->id);
+						$title     = KAContentHelper::formatItemTitle($item->title, '', $item->year);
+						$iconClass = '';
 					?>
 					<tr class="row<?php echo $i % 2; ?>">
 						<td class="order nowrap center hidden-phone">
-							<span class="sortable-handler<?php echo (count($this->items) < 2 || !$user->authorise('core.edit', 'com_kinoarhiv.album.'.$item->id)) ? ' inactive tip-top' : ''; ?>"><i class="icon-menu"></i></span>
-							<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+							<?php
+							if (!$canChange)
+							{
+								$iconClass = ' inactive';
+							}
+							elseif (!$saveOrder)
+							{
+								$iconClass = ' inactive tip-top hasTooltip" title="' . JHtml::tooltipText('JORDERINGDISABLED');
+							}
+							?>
+							<span class="sortable-handler<?php echo $iconClass ?>"><span class="icon-menu"></span></span>
+							<?php if ($canChange && $saveOrder) : ?>
+								<input type="hidden" name="ord[]" value="<?php echo $item->id; ?>" />
+							<?php endif; ?>
 						</td>
 						<td class="center">
 							<?php echo JHtml::_('grid.id', $i, $item->id, false, 'id'); ?>
@@ -73,14 +89,76 @@ $columns   = 7;
 								<?php echo JHtml::_('jgrid.published', $item->state, $i, 'albums.', $canChange, 'cb'); ?>
 							</div>
 						</td>
-						<td>
-							<?php if ($canEdit): ?>
-								<a href="index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=<?php echo $item->id; ?>"><?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?> (<?php echo $item->year; ?>)</a>
-							<?php else: ?>
-								<?php echo ($this->escape($item->title) == '') ? JText::_('COM_KA_NOTITLE') : $this->escape($item->title); ?> (<?php echo $item->year; ?>)
-							<?php endif; ?>
-							<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
-							<div class="small"><?php echo $item->tracks_path; ?></div>
+						<td class="has-context">
+							<div class="pull-left">
+								<?php
+								if ($item->language == '*')
+								{
+									$language = JText::alt('JALL', 'language');
+								}
+								else
+								{
+									$language = $item->language_title ? $this->escape($item->language_title) : JText::_('JUNDEFINED');
+								}
+								?>
+								<?php if ($canEdit): ?>
+									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&task=albums.edit&id=' . $item->id); ?>" title="<?php echo JText::_('JACTION_EDIT'); ?>">
+										<?php echo $this->escape($title); ?></a>
+								<?php else: ?>
+									<span><?php echo $this->escape($title); ?></span>
+								<?php endif; ?>
+								<div class="small"><?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $item->alias); ?></div>
+								<div class="small"><?php echo $item->tracks_path; ?></div>
+							</div>
+							<div class="hidden-desktop" style="float: left; clear: both;">
+								<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=gallery&tab=1&id=<?php echo (int) $item->id; ?>"
+								   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank">
+									<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" />
+								</a>
+								<a href="index.php?option=com_kinoarhiv&view=reviews&item_type=1&item_id=<?php echo (int) $item->id; ?>"
+								   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
+									<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
+								</a>
+								<div class="dropdown" style="display: inline-block;">
+									<a class="dropdown-toggle hasTooltip" data-toggle="dropdown" href="#"
+									   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span class="icon-out-2"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+										<li>
+											<a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=albums&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a>
+										</li>
+										<li>
+											<a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=albums&award_type=0&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</td>
+						<td class="icons-list hidden-phone hidden-tablet">
+							<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=gallery&tab=0&id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_GALLERY'); ?>" target="_blank">
+								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/picture.png" border="0" />
+							</a>
+							<a href="index.php?option=com_kinoarhiv&view=reviews&item_type=1&item_id=<?php echo (int) $item->id; ?>"
+							   class="hasTooltip" title="<?php echo JText::_('COM_KA_REVIEWS_TAB'); ?>" target="_blank">
+								<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
+							</a>
+							<div class="dropdown" style="display: inline-block;">
+								<a class="dropdown-toggle hasTooltip" data-toggle="dropdown" href="#"
+								   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span class="icon-out-2"></span>
+								</a>
+								<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+									<li>
+										<a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=albums&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a>
+									</li>
+									<li>
+										<a href="index.php?option=com_kinoarhiv&view=relations&task=genres&element=albums&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_GENRES_TITLE'); ?></a>
+									</li>
+									<li>
+										<a href="index.php?option=com_kinoarhiv&view=relations&task=awards&element=albums&award_type=0&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_AWARDS_TITLE'); ?></a>
+									</li>
+								</ul>
+							</div>
 						</td>
 						<td class="small hidden-phone">
 							<?php echo $this->escape($item->access_level); ?>

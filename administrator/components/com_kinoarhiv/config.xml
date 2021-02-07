@@ -225,15 +225,20 @@
 
 	<fieldset name="music_arts" label="COM_KA_FIELD_MUSIC_COVERS_SPACER">
 		<field name="music_covers_front" type="textarea" default="front.jpg" label="COM_KA_FIELD_MUSIC_COVERS_FRONT"
-			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"
+			   spellcheck="false"/>
 		<field name="music_covers_back" type="textarea" default="back.jpg" label="COM_KA_FIELD_MUSIC_COVERS_BACK"
-			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"
+			   spellcheck="false"/>
 		<field name="music_covers_artist" type="textarea" default="artist.jpg" label="COM_KA_FIELD_MUSIC_COVERS_ARTIST"
-			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"
+			   spellcheck="false"/>
 		<field name="music_covers_disc" type="textarea" default="disc.jpg" label="COM_KA_FIELD_MUSIC_COVERS_DISC"
-			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"/>
+			   description="COM_KA_FIELD_MUSIC_COVERS_DESC" filter="string" cols="60" rows="3" class="span11"
+			   spellcheck="false"/>
 		<field name="music_covers_size" type="text" default="150" label="COM_KA_FIELD_MUSIC_COVERS_SIZE"
-			   description="COM_KA_FIELD_MUSIC_COVERS_SIZE_DESC" filter="integer" size="3" class="span11"/>
+			   description="COM_KA_FIELD_MUSIC_COVERS_SIZE_DESC" filter="integer" size="3" class="span11"
+			   spellcheck="false"/>
 	</fieldset>
 
 	<fieldset name="ap_global" label="COM_KA_SETTINGS_AP_GLOBAL_LABEL">
@@ -260,7 +265,7 @@
 			   label="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL"
 			   description="COM_KA_FIELD_AP_VEGAS_BG_SELECTOR_LABEL_DESC" filter="string" class="span12"/>
 		<field name="vegas_bg" type="textarea" default="" label="COM_KA_FIELD_AP_VEGAS_BG_LABEL"
-			   description="COM_KA_FIELD_AP_VEGAS_BG_LABEL_DESC" rows="3" cols="6" class="span12"/>
+			   description="COM_KA_FIELD_AP_VEGAS_BG_LABEL_DESC" rows="3" cols="6" class="span12" spellcheck="false"/>
 		<field name="vegas_slideshow_delay" type="text" default="10" label="COM_KA_FIELD_AP_VEGAS_BGDELAY_LABEL"
 			   filter="integer" size="3"/>
 	</fieldset>
@@ -360,12 +365,8 @@
 		<field name="player_type" type="folderlist" default="videojs"
 			   directory="media/com_kinoarhiv/players" label="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL"
 			   description="COM_KA_FIELD_AP_PLAYER_TYPE_LABEL_DESC" hide_default="true"/>
-		<field name="player_key" type="text" default="" label="COM_KA_FIELD_AP_PLAYER_KEY_LABEL"
-			   description="COM_KA_FIELD_AP_PLAYER_KEY_LABEL_DESC" size="6" class="span12"/>
-		<field name="player_logo" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL"
-			   description="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL_DESC" rows="3" cols="6" class="span12"/>
-		<field name="player_swf" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_SWF_LABEL"
-			   description="COM_KA_FIELD_AP_PLAYER_SWF_LABEL_DESC" rows="3" cols="6" class="span12"/>
+		<field name="player_logo" type="textarea" default="" label="COM_KA_FIELD_AP_PLAYER_LOGO_LABEL" rows="3" cols="6"
+			   class="span12" spellcheck="false"/>
 	</fieldset>
 
 	<fieldset name="ap_rate" label="COM_KA_SETTINGS_AP_RATE_LABEL">
@@ -518,6 +519,11 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+		<field name="tab_album_covers" type="radio" class="btn-group" default="1"
+			   label="COM_KA_FIELD_AP_TAB_ALBUM_COVERS_LABEL" filter="integer">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="tab_album_awards" type="radio" class="btn-group" default="1"
 			   label="COM_KA_FIELD_AP_TAB_ALBUM_AWARDS_LABEL" filter="integer">
 			<option value="1">JYES</option>
@@ -628,7 +634,7 @@
 		</field>
 		<field name="reviews_emails" type="textarea" default="" label="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL"
 			   description="COM_KA_REVIEWS_SETTINGS_SAVE_SEND_EMAIL_LABEL_DESC" filter="string" cols="60" rows="5"
-			   class="span11"/>
+			   class="span11" spellcheck="false"/>
 	</fieldset>
 
 	<fieldset name="search_movies" label="COM_KA_SEARCH_SETTINGS_MOVIES">

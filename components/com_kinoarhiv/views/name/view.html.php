@@ -88,6 +88,7 @@ class KinoarhivViewName extends JViewLegacy
 		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
 		$item->moviesItemid = KAContentHelper::getItemid('movies');
+		$item->albumsItemid = KAContentHelper::getItemid('albums');
 
 		// Build date string
 		$item->dates = '';
@@ -104,11 +105,12 @@ class KinoarhivViewName extends JViewLegacy
 
 		$item->dates .= ')';
 
+		$checkingPath = JPath::clean(
+			$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
+		);
+
 		if ($throttleEnable == 0)
 		{
-			$checkingPath = JPath::clean(
-				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
-			);
 			$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 			if (!is_file($checkingPath))
@@ -132,11 +134,12 @@ class KinoarhivViewName extends JViewLegacy
 				}
 				else
 				{
-					$item->poster = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+					$item->poster = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/'
+						. $item->id . '/photo/thumb_' . $item->filename;
 				}
 
 				$dimension = KAContentHelper::getImageSize(
-					$item->poster,
+					$checkingPath,
 					true,
 					(int) $params->get('size_x_posters'),
 					$item->dimension
@@ -153,7 +156,7 @@ class KinoarhivViewName extends JViewLegacy
 				'&thumbnail=1&gender=' . $item->gender
 			);
 			$dimension = KAContentHelper::getImageSize(
-				JUri::base() . $item->poster,
+				$checkingPath,
 				true,
 				(int) $params->get('size_x_posters'),
 				$item->dimension
@@ -240,11 +243,13 @@ class KinoarhivViewName extends JViewLegacy
 
 		foreach ($items as $_item)
 		{
+			$checkingPath = JPath::clean(
+				$params->get('media_actor_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
+			);
+
 			if ($params->get('throttle_image_enable', 0) == 0)
 			{
-				$checkingPath = JPath::clean(
-					$params->get('media_actor_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
-				);
+				$item->fs_alias = rawurlencode($item->fs_alias);
 
 				if (!is_file($checkingPath))
 				{
@@ -259,25 +264,23 @@ class KinoarhivViewName extends JViewLegacy
 				}
 				else
 				{
-					$_item->fs_alias = rawurlencode($item->fs_alias);
-
 					if (StringHelper::substr($params->get('media_actor_wallpapers_root_www'), 0, 1) == '/')
 					{
 						$_item->image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-							. $_item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
+							. $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename;
 						$_item->th_image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-							. $_item->fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
+							. $item->fs_alias . '/' . $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 					else
 					{
-						$_item->image = $params->get('media_actor_wallpapers_root_www') . '/' . $_item->fs_alias . '/'
+						$_item->image = $params->get('media_actor_wallpapers_root_www') . '/' . $item->fs_alias . '/'
 							. $item->id . '/wallpapers/' . $_item->filename;
-						$_item->th_image = $params->get('media_actor_wallpapers_root_www') . '/' . $_item->fs_alias . '/'
+						$_item->th_image = $params->get('media_actor_wallpapers_root_www') . '/' . $item->fs_alias . '/'
 							. $item->id . '/wallpapers/thumb_' . $_item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-							$_item->image,
+						$checkingPath,
 						true,
 						(int) $params->get('size_x_wallpp'),
 						$_item->dimension
@@ -299,7 +302,7 @@ class KinoarhivViewName extends JViewLegacy
 					'&thumbnail=1&gender=' . $item->gender
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $_item->image,
+					$checkingPath,
 					true,
 					(int) $params->get('size_x_wallpp'),
 					$_item->dimension
@@ -359,11 +362,13 @@ class KinoarhivViewName extends JViewLegacy
 
 		foreach ($items as $_item)
 		{
+			$checkingPath = JPath::clean(
+				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename
+			);
+
 			if ($params->get('throttle_image_enable', 0) == 0)
 			{
-				$checkingPath = JPath::clean(
-					$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename
-				);
+				$item->fs_alias = rawurlencode($item->fs_alias);
 
 				if (!is_file($checkingPath))
 				{
@@ -379,23 +384,23 @@ class KinoarhivViewName extends JViewLegacy
 				}
 				else
 				{
-					$_item->fs_alias = rawurlencode($item->fs_alias);
-
 					if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
 						$_item->image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-							. $_item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
+							. $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
 						$_item->th_image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-							. $_item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
+							. $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
 					}
 					else
 					{
-						$_item->image = $params->get('media_actor_photo_root_www') . '/' . $_item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
-						$_item->th_image = $params->get('media_actor_photo_root_www') . '/' . $_item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
+						$_item->image = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/'
+							. $item->id . '/photo/' . $_item->filename;
+						$_item->th_image = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/'
+							. $item->id . '/photo/thumb_' . $_item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-							$_item->image,
+						$checkingPath,
 						true,
 						(int) $params->get('size_x_photo'),
 						$_item->dimension
@@ -417,7 +422,7 @@ class KinoarhivViewName extends JViewLegacy
 					'&thumbnail=1&gender=' . $item->gender
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $_item->image,
+					$checkingPath,
 					true,
 					(int) $params->get('size_x_photo'),
 					$_item->dimension

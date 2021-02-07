@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 if ($this->getLayout() !== 'modal')
 {
+	JHtml::_('formbehavior.chosen', 'select');
 	KAComponentHelperBackend::loadMediamanagerAssets();
 	JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select2.min.css');
 	JHtml::_('script', 'media/com_kinoarhiv/js/select2.min.js');
@@ -60,43 +61,80 @@ else
 </script>
 
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" autocomplete="off">
-<?php if ($this->getLayout() !== 'modal'): ?>
+<?php if ($this->getLayout() !== 'modal'):
+	$url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $this->section . '&type=' . $this->type . '&id=' . $this->id;
+	?>
 
 	<div class="btn-group pull-left" style="margin: 0 10px 0 0;">
 
 	<?php if ($this->section == 'movie'): ?>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=3&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 3) ? 'btn-success' : ''; ?>">
+
+		<a href="<?php echo $url; ?>&tab=3&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 3) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_SCRSHOTS'); ?>
 		</a>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=2&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 2) ? 'btn-success' : ''; ?>">
+		<a href="<?php echo $url; ?>&tab=2&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 2) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_POSTERS'); ?>
 		</a>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=1&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 1) ? 'btn-success' : ''; ?>">
+		<a href="<?php echo $url; ?>&tab=1&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 1) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_MOVIES_WALLPP'); ?>
 		</a>
+
 	<?php elseif ($this->section == 'name'): ?>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=3&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 3) ? 'btn-success' : ''; ?>">
+
+		<a href="<?php echo $url; ?>&tab=3&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 3) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_PHOTO'); ?>
 		</a>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=2&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 2) ? 'btn-success' : ''; ?>">
+		<a href="<?php echo $url; ?>&tab=2&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 2) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_POSTERS'); ?>
 		</a>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=1&id=<?php echo $this->id; ?>&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 1) ? 'btn-success' : ''; ?>">
+		<a href="<?php echo $url; ?>&tab=1&layoutview=<?php echo $this->layout; ?>" class="btn <?php echo ($this->tab == 1) ? 'btn-success' : ''; ?>">
 			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_NAMES_GALLERY_WALLPP'); ?>
 		</a>
+
+	<?php elseif ($this->section == 'album'): ?>
+
+		<a href="<?php echo $url; ?>&tab=1&layoutview=<?php echo $this->layout; ?>"
+		   class="btn <?php echo ($this->tab == 0 || $this->tab == 1) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_FIELD_MUSIC_COVERS_FRONT'); ?>
+		</a>
+		<a href="<?php echo $url; ?>&tab=2&layoutview=<?php echo $this->layout; ?>"
+		   class="btn <?php echo ($this->tab == 0 || $this->tab == 2) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_FIELD_MUSIC_COVERS_BACK'); ?>
+		</a>
+		<a href="<?php echo $url; ?>&tab=3&layoutview=<?php echo $this->layout; ?>"
+		   class="btn <?php echo ($this->tab == 0 || $this->tab == 3) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_FIELD_MUSIC_COVERS_ARTIST'); ?>
+		</a>
+		<a href="<?php echo $url; ?>&tab=4&layoutview=<?php echo $this->layout; ?>"
+		   class="btn <?php echo ($this->tab == 0 || $this->tab == 4) ? 'btn-success' : ''; ?>">
+			<span class="icon-picture icon-white"></span> <?php echo JText::_('COM_KA_FIELD_MUSIC_COVERS_DISC'); ?>
+		</a>
+
 	<?php endif; ?>
 
 	</div>
 	<div class="btn-group pull-left" style="margin: 0 10px 0 0;">
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=<?php echo $this->tab; ?>&id=<?php echo $this->id; ?>&layoutview=list" class="btn <?php echo ($this->layout == 'list') ? 'btn-success' : ''; ?>">
+		<a href="<?php echo $url; ?>&tab=<?php echo $this->tab; ?>&layoutview=list"
+		   class="btn <?php echo ($this->layout == 'list') ? 'btn-success' : ''; ?>">
 			<span class="icon-list icon-white"></span>
 		</a>
-		<a href="index.php?option=com_kinoarhiv&view=mediamanager&section=<?php echo $this->section; ?>&type=<?php echo $this->type; ?>&tab=<?php echo $this->tab; ?>&id=<?php echo $this->id; ?>&layoutview=thumb" class="btn <?php echo ($this->layout == 'thumb') ? 'btn-success' : ''; ?>">
+		<a href="<?php echo $url; ?>&tab=<?php echo $this->tab; ?>&layoutview=thumb"
+		   class="btn <?php echo ($this->layout == 'thumb') ? 'btn-success' : ''; ?>">
 			<span class="icon-grid icon-white"></span>
 		</a>
 	</div>
 
-<?php endif; ?>
+	<?php
+	echo JHtml::_(
+		'bootstrap.renderModal',
+		'collapseModal',
+		array(
+			'title' => JText::_('COM_KA_BATCH_OPTIONS'),
+			'footer' => $this->loadTemplate('batch_footer')
+		),
+		$this->loadTemplate('batch_body')
+	);
+endif; ?>
 
 	<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 	<div class="clearfix"> </div>
@@ -151,14 +189,16 @@ endif;
 
 <?php if ($this->getLayout() !== 'modal'): ?>
 <form action="<?php echo htmlspecialchars(JUri::getInstance()->toString()); ?>" method="post" id="copyForm" autocomplete="off">
-<?php echo JHtml::_(
-	'bootstrap.renderModal',
-	'copyfromModal',
-	array(
-		'title'  => JText::_('JTOOLBAR_COPYFROM'),
-		'footer' => $this->loadTemplate('copyfrom_footer')
-	),
-	$this->loadTemplate('copyfrom_body')
-); ?>
+	<?php
+	echo JHtml::_(
+		'bootstrap.renderModal',
+		'copyfromModal',
+		array(
+			'title'  => JText::_('JTOOLBAR_COPYFROM'),
+			'footer' => $this->loadTemplate('copyfrom_footer')
+		),
+		$this->loadTemplate('copyfrom_body')
+	);
+	?>
 </form>
-<?php endif; ?>
+<?php endif;

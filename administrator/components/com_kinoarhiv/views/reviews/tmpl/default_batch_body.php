@@ -28,7 +28,7 @@ $batch_types = array(
 		</div>
 		<div class="control-group span6">
 			<div class="controls">
-				<?php echo JHtml::_('batch.user'); ?>
+				<?php echo JLayoutHelper::render('joomla.html.batch.user', array()); ?>
 			</div>
 		</div>
 	</div>

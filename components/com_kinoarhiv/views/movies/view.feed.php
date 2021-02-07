@@ -128,15 +128,19 @@ class KinoarhivViewMovies extends JViewLegacy
 				$row->text
 			);
 
+			$checkingPath = JPath::clean($params->get('media_posters_root') . '/' . $row->fs_alias . '/' . $row->id . '/posters/' . $row->filename);
+
 			if ($throttleEnable == 0)
 			{
-				$checkingPath = JPath::clean(
-					$params->get('media_posters_root') . '/' . $row->fs_alias . '/' . $row->id . '/posters/' . $row->filename
-				);
-
 				if (!is_file($checkingPath))
 				{
 					$row->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
+					$dimension = KAContentHelper::getImageSize(
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
+						false
+					);
+					$row->poster_width  = $dimension['width'];
+					$row->poster_height = $dimension['height'];
 				}
 				else
 				{
@@ -149,8 +153,18 @@ class KinoarhivViewMovies extends JViewLegacy
 					}
 					else
 					{
-						$row->poster = $params->get('media_posters_root_www') . '/' . $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
+						$row->poster = $params->get('media_posters_root_www') . '/' . $row->fs_alias . '/'
+							. $row->id . '/posters/thumb_' . $row->filename;
 					}
+
+					$dimension = KAContentHelper::getImageSize(
+						$checkingPath,
+						true,
+						(int) $params->get('size_x_posters'),
+						$row->dimension
+					);
+					$row->poster_width  = $dimension['width'];
+					$row->poster_height = $dimension['height'];
 				}
 			}
 			else
@@ -159,11 +173,19 @@ class KinoarhivViewMovies extends JViewLegacy
 					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $row->id .
 					'&fa=' . urlencode($row->fs_alias) . '&fn=' . $row->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
 				);
+				$dimension = KAContentHelper::getImageSize(
+					$checkingPath,
+					true,
+					(int) $params->get('size_x_posters'),
+					$row->dimension
+				);
+				$row->poster_width  = $dimension['width'];
+				$row->poster_height = $dimension['height'];
 			}
 
 			$row->plot = '<div class="feed-plot">' . JHtml::_('string.truncate', $row->plot, $params->get('limit_text')) . '</div>';
 			$item->description = '<div class="feed-description">
-				<div class="poster"><img src="' . $row->poster . '" /></div>
+				<div class="poster"><img src="' . $row->poster . '" width="' . $row->poster_width . '" height="' . $row->poster_height . '" /></div>
 				<div class="introtext">' . $row->text . $row->plot . '</div>
 			</div>';
 

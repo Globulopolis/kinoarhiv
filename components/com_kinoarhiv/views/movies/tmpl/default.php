@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
-
 ?>
 <div class="uk-article ka-content">
 	<?php if ($this->params->get('use_alphabet') == 1):

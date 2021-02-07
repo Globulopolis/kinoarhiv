@@ -47,7 +47,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$input   = JFactory::getApplication()->input;
 		$section = $input->get('section', '', 'word');
 		$type    = $input->get('type', '', 'word');
-		$task    = $input->get('task', '', 'cmd');
+		$task    = $input->get('task', '');
 
 		if (strpos($task, '.') !== false)
 		{
@@ -73,6 +73,10 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		{
 			$this->listNameImages($tpl);
 		}
+		elseif ($section == 'album' && $type == 'gallery')
+		{
+			$this->listAlbumImages($tpl);
+		}
 		else
 		{
 			throw new Exception('Wrong \'section\' or \'type\' variables from URL', 500);
@@ -92,8 +96,8 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	 */
 	protected function listMovieImages($tpl)
 	{
-		$app  = JFactory::getApplication();
-		$tab  = $app->input->get('tab', 0, 'int');
+		$app = JFactory::getApplication();
+		$tab = $app->input->get('tab', 0, 'int');
 
 		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
 		$items               = $this->get('Items');
@@ -101,7 +105,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->state         = $this->get('State');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
-		$page_title          = $this->get('ItemTitle');
+		$pageTitle           = $this->get('ItemTitle');
 		$errors              = $this->get('Errors');
 
 		if (count($errors))
@@ -112,19 +116,19 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		if ($tab == 1)
 		{
 			$path = $this->params->get('media_wallpapers_root');
-			$path_www = $this->params->get('media_wallpapers_root_www');
+			$pathWWW = $this->params->get('media_wallpapers_root_www');
 			$folder = 'wallpapers';
 		}
 		elseif ($tab == 2)
 		{
 			$path = $this->params->get('media_posters_root');
-			$path_www = $this->params->get('media_posters_root_www');
+			$pathWWW = $this->params->get('media_posters_root_www');
 			$folder = 'posters';
 		}
 		elseif ($tab == 3)
 		{
 			$path = $this->params->get('media_scr_root');
-			$path_www = $this->params->get('media_scr_root_www');
+			$pathWWW = $this->params->get('media_scr_root_www');
 			$folder = 'screenshots';
 		}
 		else
@@ -134,13 +138,10 @@ class KinoarhivViewMediamanager extends JViewLegacy
 
 		foreach ($items as $item)
 		{
-			$file_path = JPath::clean(
-				$path . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->movie_id
-				. DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR
-			);
+			$filePath = JPath::clean($path . '/' . $item->fs_alias . '/' . $item->movie_id . '/' . $folder . '/');
 			$item->error = '';
 
-			if (!file_exists($file_path . $item->filename))
+			if (!is_file($filePath . $item->filename))
 			{
 				$item->filepath = 'javascript:void(0);';
 				$item->folderpath = '';
@@ -148,45 +149,45 @@ class KinoarhivViewMediamanager extends JViewLegacy
 			}
 			else
 			{
-				$item->folderpath = $file_path;
+				$item->folderpath = $filePath;
 
-				if (StringHelper::substr($path_www, 0, 1) == '/')
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
 				{
-					$item->filepath = JUri::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias)
+					$item->filepath = JUri::root() . StringHelper::substr($pathWWW, 1) . '/' . urlencode($item->fs_alias)
 						. '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
 				}
 				else
 				{
-					$item->filepath = $path_www . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
+					$item->filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/' . $item->filename;
 				}
 			}
 
-			if (!file_exists($file_path . 'thumb_' . $item->filename))
+			if (!is_file($filePath . 'thumb_' . $item->filename))
 			{
 				$item->th_filepath = '';
 				$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_THUMB_FILENOTFOUND');
 			}
 			else
 			{
-				if (StringHelper::substr($path_www, 0, 1) == '/')
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
 				{
-					$item->th_filepath = JUri::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias)
+					$item->th_filepath = JUri::root() . StringHelper::substr($pathWWW, 1) . '/' . urlencode($item->fs_alias)
 						. '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
 				}
 				else
 				{
-					$item->th_filepath = $path_www . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
+					$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
 				}
 			}
 		}
 
-		JToolbarHelper::title(
-			JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $page_title),
-			'images'
-		);
-
 		if ($this->getLayout() !== 'modal')
 		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $pageTitle),
+				'images'
+			);
+
 			$this->addToolbar();
 		}
 
@@ -213,8 +214,8 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	 */
 	protected function listNameImages($tpl)
 	{
-		$app  = JFactory::getApplication();
-		$tab  = $app->input->get('tab', 0, 'int');
+		$app = JFactory::getApplication();
+		$tab = $app->input->get('tab', 0, 'int');
 
 		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
 		$items               = $this->get('Items');
@@ -222,7 +223,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->state         = $this->get('State');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
-		$page_title          = $this->get('ItemTitle');
+		$pageTitle           = $this->get('ItemTitle');
 		$errors              = $this->get('Errors');
 
 		if (count($errors))
@@ -233,19 +234,19 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		if ($tab == 1)
 		{
 			$path = $this->params->get('media_actor_wallpapers_root');
-			$path_www = $this->params->get('media_actor_wallpapers_root_www');
+			$pathWWW = $this->params->get('media_actor_wallpapers_root_www');
 			$folder = 'wallpapers';
 		}
 		elseif ($tab == 2)
 		{
 			$path = $this->params->get('media_actor_posters_root');
-			$path_www = $this->params->get('media_actor_posters_root_www');
+			$pathWWW = $this->params->get('media_actor_posters_root_www');
 			$folder = 'posters';
 		}
 		elseif ($tab == 3)
 		{
 			$path = $this->params->get('media_actor_photo_root');
-			$path_www = $this->params->get('media_actor_photo_root_www');
+			$pathWWW = $this->params->get('media_actor_photo_root_www');
 			$folder = 'photo';
 		}
 		else
@@ -255,13 +256,10 @@ class KinoarhivViewMediamanager extends JViewLegacy
 
 		foreach ($items as $item)
 		{
-			$file_path = JPath::clean(
-				$path . DIRECTORY_SEPARATOR . $item->fs_alias . DIRECTORY_SEPARATOR . $item->name_id
-				. DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR
-			);
+			$filePath = JPath::clean($path . '/' . $item->fs_alias . '/' . $item->name_id . '/' . $folder . '/');
 			$item->error = '';
 
-			if (!file_exists($file_path . $item->filename))
+			if (!is_file($filePath . $item->filename))
 			{
 				$item->filepath = 'javascript:void(0);';
 				$item->folderpath = '';
@@ -269,46 +267,198 @@ class KinoarhivViewMediamanager extends JViewLegacy
 			}
 			else
 			{
-				$item->folderpath = $file_path;
+				$item->folderpath = $filePath;
 
-				if (StringHelper::substr($path_www, 0, 1) == '/')
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
 				{
-					$item->filepath = JUri::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias)
+					$item->filepath = JUri::root() . StringHelper::substr($pathWWW, 1) . '/' . urlencode($item->fs_alias)
 						. '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
 				}
 				else
 				{
-					$item->filepath = $path_www . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
+					$item->filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/' . $item->filename;
 				}
 			}
 
-			if (!file_exists($file_path . 'thumb_' . $item->filename))
+			if (!is_file($filePath . 'thumb_' . $item->filename))
 			{
 				$item->th_filepath = '';
 				$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_THUMB_FILENOTFOUND');
 			}
 			else
 			{
-				if (StringHelper::substr($path_www, 0, 1) == '/')
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
 				{
-					$item->th_filepath = JUri::root() . StringHelper::substr($path_www, 1) . '/' . urlencode($item->fs_alias)
+					$item->th_filepath = JUri::root() . StringHelper::substr($pathWWW, 1) . '/' . urlencode($item->fs_alias)
 						. '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
 				}
 				else
 				{
-					$item->th_filepath = $path_www . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
+					$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
 				}
 			}
 		}
 
-		JToolbarHelper::title(
-			JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $page_title),
-			'images'
-		);
+		if ($this->getLayout() !== 'modal')
+		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $pageTitle),
+				'images'
+			);
+
+			$this->addToolbar();
+		}
+
+		// Remove language filter as it is not needed in the image gallery.
+		$languageXml = new SimpleXMLElement('<field name="language" type="hidden" default="*" />');
+		$this->filterForm->setField($languageXml, 'filter', true);
+		unset($this->activeFilters['language']);
+
+		$this->items = $items;
+
+		parent::display($tpl);
+	}
+
+	/**
+	 * Display the view for a album images gallery
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   3.0
+	 */
+	protected function listAlbumImages($tpl)
+	{
+		$app = JFactory::getApplication();
+		$tab = $app->input->get('tab', 0, 'int');
+
+		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
+		$items               = $this->get('Items');
+		$this->pagination    = $this->get('Pagination');
+		$this->state         = $this->get('State');
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
+		$pageTitle           = $this->get('ItemTitle');
+		$errors              = $this->get('Errors');
+
+		if (count($errors))
+		{
+			throw new Exception(implode("\n", $this->get('Errors')), 500);
+		}
+
+		if ($tab == 0 || $tab == 1 || $tab == 2 || $tab == 3 || $tab == 4)
+		{
+			$path = $this->params->get('media_music_images_root');
+			$pathWWW = $this->params->get('media_music_images_root_www');
+		}
+		else
+		{
+			throw new Exception('Wrong \'section\' ot \'type\' variables from URL', 500);
+		}
+
+		foreach ($items as $item)
+		{
+			if (!empty($item->covers_path))
+			{
+				$filePath = JPath::clean($item->covers_path . '/');
+			}
+			else
+			{
+				$filePath = JPath::clean($path . '/' . $item->fs_alias . '/' . $item->item_id . '/');
+			}
+
+			if ($item->covers_path_www !== '')
+			{
+				$pathWWW = $item->covers_path_www;
+			}
+
+			$item->error = '';
+
+			if (!is_file($filePath . $item->filename))
+			{
+				$item->filepath = 'javascript:void(0);';
+				$item->folderpath = '';
+				$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND');
+			}
+			else
+			{
+				$item->folderpath = $filePath;
+
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
+				{
+					if ($item->covers_path_www !== '')
+					{
+						$item->filepath = JUri::root() . '/' . $item->covers_path_www . '/' . $item->filename;
+					}
+					else
+					{
+						$item->filepath = JUri::root() . StringHelper::substr($pathWWW, 1) . '/'
+							. urlencode($item->fs_alias) . '/' . $item->item_id . '/' . $item->filename;
+					}
+				}
+				else
+				{
+					if ($item->covers_path_www !== '')
+					{
+						$item->filepath = JUri::root() . $item->covers_path_www . '/' . $item->filename;
+					}
+					else
+					{
+						$item->filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->item_id . '/' . $item->filename;
+					}
+				}
+			}
+
+			if (!is_file($filePath . 'thumb_' . $item->filename))
+			{
+				$item->th_filepath = '';
+				$item->error .= JText::_('COM_KA_MOVIES_GALLERY_ERROR_THUMB_FILENOTFOUND');
+			}
+			else
+			{
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
+				{
+					if ($item->covers_path_www !== '')
+					{
+						$item->th_filepath = JUri::root() . '/'. $item->covers_path_www . '/thumb_' . $item->filename;
+					}
+					else
+					{
+						$item->th_filepath = JUri::root() . StringHelper::substr($pathWWW, 1) . '/'
+							. urlencode($item->fs_alias) . '/' . $item->item_id . '/thumb_' . $item->filename;
+					}
+				}
+				else
+				{
+					if ($item->covers_path_www !== '')
+					{
+						$item->th_filepath = JUri::root() . '/' . $item->covers_path_www . '/thumb_' . $item->filename;
+					}
+					else
+					{
+						$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->item_id . '/thumb_' . $item->filename;
+					}
+				}
+			}
+		}
 
 		if ($this->getLayout() !== 'modal')
 		{
+			JToolbarHelper::title(
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $pageTitle),
+				'images'
+			);
+
 			$this->addToolbar();
+
+			$title = JText::_('JTOOLBAR_BATCH');
+			$layout = new JLayoutFile('joomla.toolbar.batch');
+
+			$dhtml = $layout->render(array('title' => $title));
+			JToolbar::getInstance()->appendButton('Custom', $dhtml, 'batch');
 		}
 
 		// Remove language filter as it is not needed in the image gallery.
@@ -340,7 +490,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		$this->state         = $this->get('State');
 		$this->filterForm    = $this->get('FilterForm');
 		$this->activeFilters = $this->get('ActiveFilters');
-		$page_title          = $this->get('ItemTitle');
+		$pageTitle           = $this->get('ItemTitle');
 		$errors              = $this->get('Errors');
 
 		if (count($errors))
@@ -349,7 +499,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		}
 
 		JToolbarHelper::title(
-			JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_TRAILERS') . ' - ' . $page_title),
+			JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MEDIAMANAGER') . ': ' . JText::_('COM_KA_MOVIES_TRAILERS') . ' - ' . $pageTitle),
 			'images'
 		);
 
@@ -382,12 +532,12 @@ class KinoarhivViewMediamanager extends JViewLegacy
 			throw new Exception(JText::_('COM_KA_NO_ACCESS_RIGHTS'), 403);
 		}
 
-		$this->params = JComponentHelper::getParams('com_kinoarhiv');
-		$this->form = $this->get('Form');
-		$this->lang_list = KALanguage::listOfLanguages();
-		$this->folder_path = '';
+		$this->params          = JComponentHelper::getParams('com_kinoarhiv');
+		$this->form            = $this->get('Form');
+		$this->lang_list       = KALanguage::listOfLanguages();
+		$this->folder_path     = '';
 		$this->folder_path_www = '';
-		$errors = $this->get('Errors');
+		$errors                = $this->get('Errors');
 
 		if (count($errors))
 		{
@@ -449,9 +599,9 @@ class KinoarhivViewMediamanager extends JViewLegacy
 	protected function addToolbar()
 	{
 		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
-		$task = $app->input->get('task', '', 'cmd');
-		$type = $app->input->get('type', '', 'cmd');
+		$app  = JFactory::getApplication();
+		$task = $app->input->get('task', '');
+		$type = $app->input->get('type', '');
 
 		if (strpos($task, '.') !== false)
 		{
@@ -476,7 +626,12 @@ class KinoarhivViewMediamanager extends JViewLegacy
 				if ($user->authorise('core.create', 'com_kinoarhiv'))
 				{
 					JToolbarHelper::custom('mediamanager.upload', 'upload', 'upload', JText::_('JTOOLBAR_UPLOAD'), false);
-					JToolbarHelper::custom('mediamanager.copyfrom', 'copy', 'copy', JText::_('JTOOLBAR_COPYFROM'), false);
+
+					if ($app->input->get('section', '') !== 'album')
+					{
+						JToolbarHelper::custom('mediamanager.copyfrom', 'copy', 'copy', JText::_('JTOOLBAR_COPYFROM'), false);
+					}
+
 					JToolbarHelper::divider();
 				}
 
@@ -522,7 +677,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 					$layout = new JLayoutFile('joomla.toolbar.batch');
 
 					$dhtml = $layout->render(array('title' => $title));
-					JToolbar::getInstance('toolbar')->appendButton('Custom', $dhtml, 'batch');
+					JToolbar::getInstance()->appendButton('Custom', $dhtml, 'batch');
 				}
 			}
 
@@ -532,7 +687,7 @@ class KinoarhivViewMediamanager extends JViewLegacy
 				$return = urlencode(base64_encode($uri));
 
 				// Add a button linking to config for component.
-				JToolbar::getInstance('toolbar')->appendButton(
+				JToolbar::getInstance()->appendButton(
 					'Link',
 					'options',
 					'JToolbar_Options',

@@ -401,7 +401,7 @@ jQuery(document).ready(function($){
 					}
 				},
 				FileUploaded: function(up, file, info){
-					if (content_type === 'poster') {
+					if (content_type === 'poster' || content_type === 'cover') {
 						Kinoarhiv.updatePoster(info.response);
 					}
 				},

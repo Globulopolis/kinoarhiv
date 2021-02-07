@@ -9,6 +9,19 @@
  */
 
 defined('_JEXEC') or die;
+
+$image = @getimagesize($this->item->th_poster);
+
+if ($image === false)
+{
+	$height = 0;
+	$width  = 0;
+}
+else
+{
+	$height = $image[1];
+	$width  = $image[0];
+}
 ?>
 <div class="row-fluid">
 	<div class="span6">
@@ -73,21 +86,21 @@ defined('_JEXEC') or die;
 				<div class="control-label"><?php echo $this->form->getLabel('covers_path_www'); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('covers_path_www'); ?></div>
 			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('cover_filename'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('cover_filename'); ?></div>
-			</div>
 		</fieldset>
 	</div>
 	<div class="span3">
 		<?php if ($this->form->getValue('id') != 0): ?>
 			<ul class="thumbnails">
-				<li>
+				<li class="span12">
 					<div class="thumbnail center">
-						<a href="<?php echo $this->item->cover . '?_=' . time(); ?>" class="img-preview">
-							<img src="<?php echo $this->item->cover . '?_=' . time(); ?>"
-								 style="width: <?php echo $this->item->coverWidth; ?>px; height: <?php echo $this->item->coverHeight; ?>px;" />
+						<a href="<?php echo $this->item->poster . '?_=' . time(); ?>" class="img-preview">
+							<img src="<?php echo $this->item->th_poster . '?_=' . time(); ?>" style="width: <?php echo $width; ?>px; height: <?php echo $height; ?>px;" />
 						</a>
+						<div class="caption">
+							<a class="hasTooltip" data-toggle="modal" data-target="#selectPosterModal" title="<?php echo JText::_('JSELECT'); ?>" style="cursor: pointer;"><span class="icon-pictures"></span></a>
+							<a href="#" class="cmd-file-upload hasTooltip" title="<?php echo JText::_('JTOOLBAR_UPLOAD'); ?>"><span class="icon-upload"></span></a>
+							<a href="#" class="cmd-file-remove"><span class="icon-delete"></span></a>
+						</div>
 					</div>
 				</li>
 			</ul>
@@ -110,7 +123,6 @@ defined('_JEXEC') or die;
 </div>
 
 <?php
-// TODO Left for future file uploads.
 echo JHtml::_(
 	'bootstrap.renderModal',
 	'imgModalUpload',
@@ -122,13 +134,13 @@ echo JHtml::_(
 		'layouts.edit.upload_image',
 		array(
 			'view'            => $this,
-			'url'             => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=raw&section=movie&type=gallery&tab=2&id=' . $this->id . '&frontpage=1&upload=images',
+			'url'             => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=raw&section=album&type=gallery&tab=1&id=' . $this->id . '&frontpage=1&upload=images',
 			'params'          => $this->params,
-			'content-type'    => 'poster',
+			'content-type'    => 'cover', // Required to update an image after upload.
 			'multi_selection' => false,
 			'max_files'       => 1,
 			'remote_upload'   => true,
-			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section=movie&type=gallery&tab=2&id=' . $this->id . '&max_files=1&frontpage=1'
+			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section=album&type=gallery&tab=1&id=' . $this->id . '&max_files=1&frontpage=1'
 		),
 		JPATH_COMPONENT
 	)
@@ -146,4 +158,16 @@ echo JHtml::_(
 		'footer' => '<a class="btn" data-dismiss="modal">' . JText::_('COM_KA_CLOSE') . '</a>'
 	),
 	'<div class="container-fluid">' . JText::sprintf('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', $path) . '</div>'
+);
+
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'selectPosterModal',
+	array(
+		'title'  => JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $this->form->getValue('title'),
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT),
+		'animation' => false,
+		'height' => '500',
+		'url' => 'index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=gallery&tab=1&id=' . $this->id . '&layout=modal&tmpl=component'
+	)
 );

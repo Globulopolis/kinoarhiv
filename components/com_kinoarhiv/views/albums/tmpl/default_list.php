@@ -71,5 +71,6 @@ foreach ($this->items as $item): ?>
 			</div>
 		</div>
 	</article>
+
 	<?php echo $item->event->afterDisplayContent;
 endforeach;

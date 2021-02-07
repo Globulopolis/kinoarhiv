@@ -244,7 +244,7 @@ h3.title {
 	padding-left: 20px;
 }
 
-.tab-posters, .tab-photo {
+.tab-posters, .tab-photo, .tab-covers {
 	background: url("../../../../images/icons/tab_posters_16.png") no-repeat left center;
 	padding-left: 20px;
 }
@@ -580,7 +580,7 @@ div.rating {
 	margin-right: .5em;
 }
 
-.known, .plot, .desc, .reviews, .movies-list-row, .urls {
+.known, .plot, .desc, .reviews, .movies-list-row, .albums-list-row, .urls {
 	margin-top: 1em;
 }
 
@@ -593,7 +593,7 @@ div.rating {
 	padding: 4px 6px;
 }
 
-.plot .content, .known .content, .desc .content, .r-row .content, .movies-list-content, .urls .content {
+.plot .content, .known .content, .desc .content, .r-row .content, .movies-list-content, .albums-list-content, .urls .content {
 	padding: 0 6px;
 }
 
@@ -956,11 +956,11 @@ div.rating {
 	margin: 1em;
 }
 
-.movies-list-row {
+.movies-list-row, .albums-list-row {
 	font-size: .9em !important;
 }
 
-.movies-list-title {
+.movies-list-title, .albums-list-title {
 	background-color: #f9f9f9;
 	border: 1px solid #ddd;
 	color: #333;
@@ -969,33 +969,33 @@ div.rating {
 	padding: 8px 15px;
 }
 
-.movies-list-content {
+.movies-list-content, .albums-list-content {
 	border-top: none !important;
 }
 
-.movies-list-footer {
+.movies-list-footer, .albums-list-footer {
 	border: 1px solid #ddd;
 	color: #333;
 	margin-bottom: .8em;
 	padding: 4px 15px;
 }
 
-.movies-list-row .item {
+.movies-list-row .item, .albums-list-row .item {
 	border-bottom: 1px solid #ddd;
 	margin: .5em 0;
 	padding: .2em 0;
 }
 
-.movies-list-row .item .number {
+.movies-list-row .item .number, .albums-list-row .item .number {
 	float: left;
 	width: 2em;
 }
 
-.movies-list-row .item .data {
+.movies-list-row .item .data, .albums-list-row .item .data {
 	float: left;
 }
 
-.movies-list-row .role {
+.movies-list-row .role, .albums-list-row .role {
 	color: #787d81;
 }
 

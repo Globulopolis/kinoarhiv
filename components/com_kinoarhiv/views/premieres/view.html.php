@@ -92,7 +92,11 @@ class KinoarhivViewPremieres extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
+				$cn = preg_replace(
+					'#\[cn=(.+?)\](.+?)\[/cn\]#',
+					'<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2',
+					$matches[2]
+				);
 
 				return $html . $cn;
 			},
@@ -112,17 +116,23 @@ class KinoarhivViewPremieres extends JViewLegacy
 			{
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
+				$name = preg_replace(
+					'#\[name=(.+?)\](.+?)\[/name\]#',
+					'<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>',
+					$matches[2]
+				);
 
 				return $html . $name;
 			},
 				$item->text
 			);
 
+			$checkingPath = JPath::clean(
+				$params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
+			);
+
 			if ($throttleEnable == 0)
 			{
-				$checkingPath = JPath::clean($params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename);
-
 				if (!is_file($checkingPath))
 				{
 					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
@@ -144,11 +154,12 @@ class KinoarhivViewPremieres extends JViewLegacy
 					}
 					else
 					{
-						$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+						$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
+							. $item->id . '/posters/thumb_' . $item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$item->poster,
+						$checkingPath,
 						true,
 						(int) $params->get('size_x_posters'),
 						$item->dimension
@@ -164,7 +175,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $item->poster,
+					$checkingPath,
 					true,
 					(int) $params->get('size_x_posters'),
 					$item->dimension

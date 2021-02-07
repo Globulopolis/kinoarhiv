@@ -130,9 +130,9 @@ class KinoarhivModelReleases extends JModelList
 		}
 		elseif ($itemType === 1)
 		{
-			$columns = 'm.id, m.title, m.alias, ' . $db->quoteName('m.introtext', 'text') . ', ' .
+			$columns = 'm.id, m.title, m.alias, m.fs_alias, ' . $db->quoteName('m.introtext', 'text') . ', ' .
 				'DATE_FORMAT(m.year, "%Y") AS ' . $db->quoteName('year') . ', m.length, m.rate, m.rate_sum, ' .
-				'm.covers_path, m.covers_path_www, m.cover_filename, m.buy_urls, ' .
+				'm.covers_path, m.covers_path_www, m.buy_urls, ' .
 				'DATE_FORMAT(m.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', m.created_by, ' .
 				'CASE WHEN m.modified = ' . $nullDate . ' THEN m.created ELSE DATE_FORMAT(m.modified, "%Y-%m-%d") END AS modified, ' .
 				'm.attribs, m.state';
@@ -159,6 +159,12 @@ class KinoarhivModelReleases extends JModelList
 			// Join over gallery item
 			$query->select($db->quoteName(array('g.filename', 'g.dimension')))
 				->leftJoin($db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
+		}
+		else
+		{
+			// Join over gallery item
+			$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+				->leftJoin($db->quoteName('#__ka_music_albums_gallery', 'g') . ' ON g.item_id = m.id AND g.type = 1 AND g.frontpage = 1 AND g.state = 1');
 		}
 
 		if ($country != '')

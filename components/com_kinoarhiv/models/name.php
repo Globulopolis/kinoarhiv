@@ -189,6 +189,34 @@ class KinoarhivModelName extends JModelList
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 
+		// Select music albums
+		$queryAlbums = $db->getQuery(true)
+			->select($db->quoteName(array('a.id', 'a.title', 'a.alias', 'r.role')))
+			->select('DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year'))
+			->from($db->quoteName('#__ka_music_albums', 'a'))
+			->leftJoin($db->quoteName('#__ka_music_rel_names', 'r') . ' ON r.name_id = ' . (int) $id . ' AND r.item_id = a.id');
+
+		$subqueryAlbums = $db->getQuery(true)
+			->select('item_id')
+			->from($db->quoteName('#__ka_music_rel_names'))
+			->where('name_id = ' . (int) $id);
+
+		$queryAlbums->where('a.id IN (' . $subqueryAlbums . ') AND a.state = 1 AND a.access IN (' . $groups . ')')
+			->where('a.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->order('a.year ASC');
+
+		$db->setQuery($queryAlbums);
+
+		try
+		{
+			$result->albums = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			$result->albums = array();
+			KAComponentHelper::eventLog($e->getMessage());
+		}
+
 		return $result;
 	}
 

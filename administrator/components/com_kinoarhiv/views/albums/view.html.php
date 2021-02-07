@@ -32,6 +32,8 @@ class KinoarhivViewAlbums extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+
 		$app                 = JFactory::getApplication();
 		$this->params        = JComponentHelper::getParams('com_kinoarhiv');
 		$this->items         = $this->get('Items');

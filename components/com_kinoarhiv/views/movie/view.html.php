@@ -141,11 +141,6 @@ class KinoarhivViewMovie extends JViewLegacy
 			return false;
 		}
 
-		$throttleEnable = $this->params->get('throttle_image_enable', 0);
-		$checkingPath   = JPath::clean(
-			$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
-		);
-
 		// Prepare the data
 		$this->namesItemid    = KAContentHelper::getItemid('names');
 		$this->releasesItemid = KAContentHelper::getItemid('releases');
@@ -158,24 +153,31 @@ class KinoarhivViewMovie extends JViewLegacy
 		$item->tags      = new JHelperTags;
 		$item->tags->getItemTags('com_kinoarhiv.movie', $item->id);
 
+		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+
 		if ($throttleEnable == 0)
 		{
-			if (!is_file($checkingPath))
+			$checkingPosterPath = JPath::clean(
+				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
+			);
+
+			if (!is_file($checkingPosterPath))
 			{
 				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
 			}
 			else
 			{
-				$fsAlias = rawurlencode($item->fs_alias);
+				$posterFsAlias = rawurlencode($item->fs_alias);
 
 				if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 				{
-					$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/' . $fsAlias
-						. '/' . $item->id . '/posters/thumb_' . $item->filename;
+					$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1)
+						. '/' . $posterFsAlias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 				}
 				else
 				{
-					$item->poster = $this->params->get('media_posters_root_www') . '/' . $fsAlias . '/' . $item->id . '/posters/thumb_' . $item->filename;
+					$item->poster = $this->params->get('media_posters_root_www') . '/' . $posterFsAlias . '/'
+						. $item->id . '/posters/thumb_' . $item->filename;
 				}
 			}
 		}
@@ -222,9 +224,14 @@ class KinoarhivViewMovie extends JViewLegacy
 			{
 				foreach ($item->slides as $key => $slide)
 				{
+					$slideFsAlias = rawurlencode($item->fs_alias);
+					$checkingSlidePath = JPath::clean(
+						$this->params->get('media_scr_root') . '/' . $item->fs_alias . '/' . $item->id . '/screenshots/' . $slide->filename
+					);
+
 					if ($throttleEnable == 0)
 					{
-						if (!is_file($checkingPath))
+						if (!is_file($checkingSlidePath))
 						{
 							$noCover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
 							$item->slides[$key]->image = $noCover;
@@ -238,9 +245,7 @@ class KinoarhivViewMovie extends JViewLegacy
 						}
 						else
 						{
-							$slideFsAlias = rawurlencode($item->fs_alias);
-
-							if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
+							if (StringHelper::substr($this->params->get('media_scr_root_www'), 0, 1) == '/')
 							{
 								$item->slides[$key]->image = JUri::base() . StringHelper::substr($this->params->get('media_scr_root_www'), 1)
 									. '/' . $slideFsAlias . '/' . $item->id . '/screenshots/' . $slide->filename;
@@ -256,7 +261,7 @@ class KinoarhivViewMovie extends JViewLegacy
 							}
 
 							$dimension = KAContentHelper::getImageSize(
-								$item->slides[$key]->th_image,
+								dirname($checkingSlidePath) . '/thumb_' . $slide->filename,
 								true,
 								(int) $this->params->get('size_x_scr'),
 								$slide->dimension
@@ -276,7 +281,7 @@ class KinoarhivViewMovie extends JViewLegacy
 							'&fa=' . urlencode($item->fs_alias) . '&fn=' . $slide->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
 						);
 						$dimension = KAContentHelper::getImageSize(
-							JUri::base() . $item->slides[$key]->th_image,
+							dirname($checkingSlidePath) . '/thumb_' . $slide->filename,
 							true,
 							(int) $this->params->get('size_x_scr'),
 							$slide->dimension
@@ -416,15 +421,16 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$item->text = '';
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$fsAlias = rawurlencode($item->fs_alias);
 
 		foreach ($items as $key => $_item)
 		{
+			$checkingPath = JPath::clean(
+				$this->params->get('media_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
+			);
+
 			if ($throttleEnable == 0)
 			{
-				$checkingPath = JPath::clean(
-					$this->params->get('media_wallpapers_root') . '/' . $item->fs_alias . '/' . $item->id . '/wallpapers/' . $_item->filename
-				);
-
 				if (!is_file($checkingPath))
 				{
 					$items[$key]->image = 'javascript:void(0);';
@@ -438,8 +444,6 @@ class KinoarhivViewMovie extends JViewLegacy
 				}
 				else
 				{
-					$fsAlias = rawurlencode($item->fs_alias);
-
 					if (StringHelper::substr($this->params->get('media_wallpapers_root_www'), 0, 1) == '/')
 					{
 						$items[$key]->image = JUri::base() . StringHelper::substr($this->params->get('media_wallpapers_root_www'), 1) . '/'
@@ -449,13 +453,14 @@ class KinoarhivViewMovie extends JViewLegacy
 					}
 					else
 					{
-						$items[$key]->image = $this->params->get('media_wallpapers_root_www') . '/' . $fsAlias . '/' . $item->id . '/wallpapers/' . $item->_filename;
-						$items[$key]->th_image = $this->params->get('media_wallpapers_root_www') . '/' . $fsAlias . '/'
-							. $item->id . '/wallpapers/thumb_' . $item->_filename;
+						$items[$key]->image = $this->params->get('media_wallpapers_root_www') . '/'
+							. $fsAlias . '/' . $item->id . '/wallpapers/' . $item->_filename;
+						$items[$key]->th_image = $this->params->get('media_wallpapers_root_www') . '/'
+							. $fsAlias . '/' . $item->id . '/wallpapers/thumb_' . $item->_filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$items[$key]->th_image,
+						dirname($checkingPath) . '/thumb_' . $_item->filename,
 						true,
 						(int) $this->params->get('size_x_wallpp'),
 						$_item->dimension
@@ -475,7 +480,7 @@ class KinoarhivViewMovie extends JViewLegacy
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $items[$key]->th_image,
+					dirname($checkingPath) . '/thumb_' . $_item->filename,
 					true,
 					(int) $this->params->get('size_x_wallpp'),
 					$_item->dimension
@@ -556,15 +561,16 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$item->text = '';
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$fsAlias = rawurlencode($item->fs_alias);
 
 		foreach ($items as $key => $_item)
 		{
+			$checkingPath = JPath::clean(
+				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $_item->filename
+			);
+
 			if ($throttleEnable == 0)
 			{
-				$checkingPath = JPath::clean(
-					$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $_item->filename
-				);
-
 				if (!is_file($checkingPath))
 				{
 					$items[$key]->image = 'javascript:void(0);';
@@ -578,8 +584,6 @@ class KinoarhivViewMovie extends JViewLegacy
 				}
 				else
 				{
-					$fsAlias = rawurlencode($item->fs_alias);
-
 					if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 					{
 						$items[$key]->image = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
@@ -589,13 +593,14 @@ class KinoarhivViewMovie extends JViewLegacy
 					}
 					else
 					{
-						$items[$key]->image = $this->params->get('media_posters_root_www') . '/' . $fsAlias . '/' . $item->id . '/posters/' . $item->_filename;
-						$items[$key]->th_image = $this->params->get('media_posters_root_www') . '/' . $fsAlias . '/'
-							. $item->id . '/posters/thumb_' . $item->_filename;
+						$items[$key]->image = $this->params->get('media_posters_root_www') . '/'
+							. $fsAlias . '/' . $item->id . '/posters/' . $_item->_filename;
+						$items[$key]->th_image = $this->params->get('media_posters_root_www') . '/'
+							. $fsAlias . '/'	. $item->id . '/posters/thumb_' . $_item->_filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$items[$key]->th_image,
+						dirname($checkingPath) . '/thumb_' . $_item->filename,
 						true,
 						(int) $this->params->get('size_x_posters'),
 						$_item->dimension
@@ -615,7 +620,7 @@ class KinoarhivViewMovie extends JViewLegacy
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $items[$key]->th_image,
+					dirname($checkingPath) . '/thumb_' . $_item->filename,
 					true,
 					(int) $this->params->get('size_x_posters'),
 					$_item->dimension
@@ -695,19 +700,21 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$item->text = '';
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$fsAlias = rawurlencode($item->fs_alias);
 
 		foreach ($items as $key => $_item)
 		{
+			$checkingPath = JPath::clean(
+				$this->params->get('media_scr_root') . '/' . $item->fs_alias . '/' . $item->id . '/screenshots/' . $_item->filename
+			);
+
 			if ($throttleEnable == 0)
 			{
-				$checkingPath = JPath::clean(
-					$this->params->get('media_scr_root') . '/' . $item->fs_alias . '/' . $item->id . '/screenshots/' . $_item->filename
-				);
-
 				if (!is_file($checkingPath))
 				{
 					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
+					$items[$key]->th_image = JUri::base() . 'media/com_kinoarhiv/images/themes/'
+						. $this->params->get('ka_theme') . '/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png',
 						false
@@ -717,8 +724,6 @@ class KinoarhivViewMovie extends JViewLegacy
 				}
 				else
 				{
-					$fsAlias = rawurlencode($item->fs_alias);
-
 					if (StringHelper::substr($this->params->get('media_scr_root_www'), 0, 1) == '/')
 					{
 						$items[$key]->image = JUri::base() . StringHelper::substr($this->params->get('media_scr_root_www'), 1) . '/'
@@ -728,13 +733,14 @@ class KinoarhivViewMovie extends JViewLegacy
 					}
 					else
 					{
-						$items[$key]->image = $this->params->get('media_scr_root_www') . '/' . $fsAlias . '/' . $item->id . '/screenshots/' . $item->_filename;
-						$items[$key]->th_image = $this->params->get('media_scr_root_www') . '/' . $fsAlias . '/'
-							. $item->id . '/screenshots/thumb_' . $item->_filename;
+						$items[$key]->image = $this->params->get('media_scr_root_www') . '/'
+							. $fsAlias . '/' . $item->id . '/screenshots/' . $_item->filename;
+						$items[$key]->th_image = $this->params->get('media_scr_root_www') . '/'
+							. $fsAlias . '/' . $item->id . '/screenshots/thumb_' . $_item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$items[$key]->th_image,
+						dirname($checkingPath) . '/thumb_' . $_item->filename,
 						true,
 						(int) $this->params->get('size_x_scr'),
 						$_item->dimension
@@ -754,7 +760,7 @@ class KinoarhivViewMovie extends JViewLegacy
 					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $items[$key]->th_image,
+					dirname($checkingPath) . '/thumb_' . $_item->filename,
 					true,
 					(int) $this->params->get('size_x_scr'),
 					$_item->dimension
@@ -943,9 +949,10 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	protected function soundtracks()
 	{
-		$app  = JFactory::getApplication();
-		$lang = JFactory::getLanguage();
-		$item = $this->get('SoundtrackAlbums');
+		$app   = JFactory::getApplication();
+		$lang  = JFactory::getLanguage();
+		$item  = $this->get('MovieData');
+		$items = $this->get('SoundtrackAlbums');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -962,68 +969,143 @@ class KinoarhivViewMovie extends JViewLegacy
 			return false;
 		}
 
+		// Get proper itemid for &view=?&Itemid=? links.
+		$namesItemid = KAContentHelper::getItemid('names');
 		$this->albumsItemid = KAContentHelper::getItemid('albums');
-		$albums             = $item->albums;
-		$item->text         = '';
-		$throttleEnable     = $this->params->get('throttle_image_enable', 0);
 
-		foreach ($albums as $key => $album)
+		$introtextLinks = $this->params->get('introtext_links', 1);
+		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$item->text     = '';
+
+		foreach ($items as $key => $album)
 		{
-			if (!empty($album->rate) && !empty($album->rate_sum))
-			{
-				$plural = $lang->getPluralSuffixes($album->rate);
-				$albums[$key]->rate_loc = round($album->rate_sum / $album->rate, (int) $this->params->get('vote_summ_precision'));
-				$albums[$key]->rate_loc_label = JText::sprintf(
-					'COM_KA_RATE_LOCAL_' . $plural[0],
-					$album->rate_loc,
-					(int) $this->params->get('vote_summ_num')
-				);
-				$albums[$key]->rate_loc_label_class = ' has-rating';
-			}
-			else
-			{
-				$albums[$key]->rate_loc = 0;
-				$albums[$key]->rate_loc_label = JText::_('COM_KA_RATE_NO');
-				$albums[$key]->rate_loc_label_class = ' no-rating';
-			}
+			$album->attribs = json_decode($album->attribs);
 
-			$checkingPath = JPath::clean($albums[$key]->covers_path . '/' . $albums[$key]->cover_filename);
-
-			if ($throttleEnable == 0)
+			// Replace genres BB-code
+			$album->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
 			{
-				if (!is_file($checkingPath))
+				return JText::_($matches[1]) . $matches[2];
+			},
+				$album->text
+			);
+
+			// Replace person BB-code
+			$album->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid, $introtextLinks)
+			{
+				$html = JText::_($matches[1]) . ': ';
+
+				if ($introtextLinks)
 				{
-					$albums[$key]->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
-					$albums[$key]->coverWidth  = 250;
-					$albums[$key]->coverHeight = 250;
+					$name = preg_replace(
+						'#\[name=(.+?)\](.+?)\[/name\]#',
+						'<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>',
+						$matches[2]
+					);
 				}
 				else
 				{
-					$albums[$key]->cover = $albums[$key]->covers_path_www . '/' . $albums[$key]->cover_filename;
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
+				}
+
+				return $html . $name . '<br/>';
+			},
+				$album->text
+			);
+
+			$checkingPath = KAContentHelper::getAlbumCheckingPath($album->covers_path, $this->params->get('media_music_images_root'), $album);
+
+			if ($throttleEnable == 0)
+			{
+				$album->fs_alias = rawurlencode($album->fs_alias);
+
+				if (!is_file($checkingPath))
+				{
+					$album->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
 					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
 						true,
 						(int) $this->params->get('music_covers_size')
 					);
-					$albums[$key]->coverWidth  = $dimension['width'];
-					$albums[$key]->coverHeight = $dimension['height'];
+					$album->coverWidth  = $dimension['width'];
+					$album->coverHeight = $dimension['height'];
+				}
+				else
+				{
+					$filename = (!is_file(JPath::clean($checkingPath . '/thumb_' . $album->filename)))
+						? $album->filename : 'thumb_' . $album->filename;
+
+					if (!empty($album->covers_path))
+					{
+						if (StringHelper::substr($album->covers_path_www, 0, 1) == '/')
+						{
+							$album->cover = JUri::base() . StringHelper::substr($album->covers_path_www, 1) . '/' . $filename;
+						}
+						else
+						{
+							$album->cover = $album->covers_path_www . '/' . $filename;
+						}
+					}
+					else
+					{
+						if (StringHelper::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
+						{
+							$album->cover = JUri::base() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
+								. $album->fs_alias . '/' . $album->id . '/' . $filename;
+						}
+						else
+						{
+							$album->cover = $this->params->get('media_music_images_root_www') . '/' . $album->fs_alias
+								. '/' . $album->id . '/' . $filename;
+						}
+					}
+
+					$dimension = KAContentHelper::getImageSize(
+						$checkingPath,
+						true,
+						(int) $this->params->get('music_covers_size'),
+						$album->dimension
+					);
+					$album->coverWidth  = $dimension['width'];
+					$album->coverHeight = $dimension['height'];
 				}
 			}
 			else
 			{
-				$albums[$key]->itemid = $this->itemid;
-				$albums[$key]->cover  = KAContentHelper::getAlbumCoverLink($albums[$key]);
-				$dimension            = KAContentHelper::getImageSize(
+				// Check for thumbnail image. If not found when load full image.
+				$thumbnail = (!is_file(JPath::clean($checkingPath . '/thumb_' . $album->filename))) ? 0 : 1;
+
+				$album->cover = JRoute::_(
+					'index.php?option=com_kinoarhiv&task=media.view&element=album&content=image&type=1&id=' . $album->id .
+					'&fa=' . urlencode($album->fs_alias) . '&fn=' . $album->filename . '&format=raw&Itemid=' . $this->itemid .
+					'&thumbnail=' . $thumbnail
+				);
+				$dimension = KAContentHelper::getImageSize(
 					$checkingPath,
 					true,
-					(int) $this->params->get('music_covers_size')
+					(int) $this->params->get('music_covers_size'),
+					$album->dimension
 				);
-				$albums[$key]->coverWidth  = $dimension['width'];
-				$albums[$key]->coverHeight = $dimension['height'];
+				$album->coverWidth  = $dimension['width'];
+				$album->coverHeight = $dimension['height'];
 			}
 
-			$registry = new Registry($album->attribs);
-			$albums[$key]->attribs = $registry->toArray();
+			if (!empty($album->rate) && !empty($album->rate_sum))
+			{
+				$plural = $lang->getPluralSuffixes($album->rate);
+				$album->rate_value = round($album->rate_sum / $album->rate, (int) $this->params->get('vote_summ_precision'));
+				$album->rate_label = JText::sprintf(
+					'COM_KA_RATE_LOCAL_' . $plural[0],
+					$album->rate_value,
+					(int) $this->params->get('vote_summ_num')
+				);
+				$album->rate_label_class = ' has-rating';
+			}
+			else
+			{
+				$album->rate_value = 0;
+				$album->rate_label = JText::_('COM_KA_RATE_NO');
+				$album->rate_label_class = ' no-rating';
+			}
 		}
 
 		$item->event = new stdClass;
@@ -1046,7 +1128,8 @@ class KinoarhivViewMovie extends JViewLegacy
 		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.movie', &$item, &$item->params, 0));
 		$item->event->afterDisplayContent = trim(implode("\n", $results));
 
-		$this->item = $item;
+		$this->item     = $item;
+		$this->items    = $items;
 		$this->metadata = json_decode($item->metadata);
 
 		$this->prepareDocument();

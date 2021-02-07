@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 if ($this->section != 'movie' && $this->section != 'name')
 {
-	echo 'Wrong \'section\' variable in request!';
+	echo KAComponentHelper::showMsg('Wrong \'section\' variable in request!', 'alert');
 
 	return;
 }
@@ -25,7 +25,10 @@ if ($this->section != 'movie' && $this->section != 'name')
 					<label id="from_id-lbl" for="from_id"><?php echo JText::_('COM_KA_' . strtoupper($this->section) . 'S_GALLERY_COPYFROM_LABEL'); ?><span class="star">&nbsp;*</span></label>
 				</div>
 				<div class="controls copy-from">
-					<input type="hidden" name="from_id" value="" id="from_id" class="hasAutocomplete span12 required" data-allow-clear="true" data-minimum-input-length="1" data-lang="*" data-content="<?php echo $this->section . 's'; ?>" data-key="id" data-remote="true" data-ignore-ids="[<?php echo $this->id; ?>]" required="required" />
+					<input type="hidden" name="from_id" value="" id="from_id" class="hasAutocomplete span12 required"
+						   data-allow-clear="true" data-minimum-input-length="1" data-lang="*"
+						   data-content="<?php echo $this->section . 's'; ?>" data-key="id" data-remote="true"
+						   data-ignore-ids="[<?php echo $this->id; ?>]" required="required" />
 				</div>
 			</div>
 			<div class="control-group">

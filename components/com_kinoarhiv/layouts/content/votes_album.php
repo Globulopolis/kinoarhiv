@@ -72,7 +72,7 @@ if ($view == 'album')
 				<span class="total-votes small" title="<?php echo JText::_('COM_KA_RATE_VOTES_TOTAL'); ?>">(<?php echo $item->total_votes; ?>)</span>
 				<?php endif; ?>
 
-				<?php if ($params->get('allow_votes') && $view == 'album'): ?>
+				<?php if ($params->get('allow_votes') && $view === 'album'): ?>
 					<div>
 					<?php echo KAComponentHelper::showMsg(
 						JText::sprintf(

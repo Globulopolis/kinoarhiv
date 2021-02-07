@@ -104,8 +104,7 @@ class KinoarhivModelRelease extends JModelItem
 						$db->quoteName(
 							array(
 								'm.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.year', 'm.length', 'm.isrc', 'm.rate',
-								'm.rate_sum', 'm.covers_path', 'm.covers_path_www', 'm.cover_filename', 'm.attribs',
-								'm.created', 'm.modified'
+								'm.rate_sum', 'm.covers_path', 'm.covers_path_www', 'm.attribs', 'm.created', 'm.modified'
 							)
 						)
 					);
@@ -118,6 +117,10 @@ class KinoarhivModelRelease extends JModelItem
 					$query->select('(' . $subQuery . ') AS ' . $db->quoteName('total_votes'))
 						->select($db->quoteName('m.introtext', 'text'))
 						->from($db->quoteName('#__ka_music_albums', 'm'));
+
+					// Join over gallery item
+					$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+						->leftJoin($db->quoteName('#__ka_music_albums_gallery', 'g') . ' ON g.item_id = m.id AND g.type = 1 AND g.frontpage = 1 AND g.state = 1');
 				}
 
 				if (!$user->get('guest'))
@@ -177,7 +180,7 @@ class KinoarhivModelRelease extends JModelItem
 
 				if (empty($rows))
 				{
-					$this->setError(JText::_('COM_KA_MOVIE_NOT_FOUND'));
+					$this->setError(($itemType === 0) ? JText::_('COM_KA_MOVIE_NOT_FOUND') : JText::_('COM_KA_MUSIC_ALBUM_NOT_FOUND'));
 
 					return false;
 				}

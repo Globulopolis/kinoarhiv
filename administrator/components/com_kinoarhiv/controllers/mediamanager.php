@@ -93,6 +93,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$tab = $app->input->get('tab', 0, 'int') != 0 ? '&tab=' . $app->input->get('tab', 0, 'int') : '';
 		$redirect = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $app->input->get('section', '', 'word')
 			. '&type=' . $app->input->get('type', '', 'word') . $tab . '&id=' . $app->input->get('id', 0, 'int');
+
+		/** @var KinoarhivModelMediamanager $model */
 		$model = $this->getModel('mediamanager');
 		$result = $model->setFrontpage($state);
 
@@ -145,6 +147,8 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		$tab = $app->input->get('tab', 0, 'int') != 0 ? '&tab=' . $app->input->get('tab', 0, 'int') : '';
 		$redirect = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $app->input->get('section', '', 'word')
 			. '&type=' . $app->input->get('type', '', 'word') . $tab . '&id=' . $app->input->get('id', 0, 'int');
+
+		/** @var KinoarhivModelMediamanager $model */
 		$model = $this->getModel('mediamanager');
 		$result = $model->publish($isUnpublish);
 
@@ -184,6 +188,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	{
 		JSession::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model  = $this->getModel('mediamanagerItem');
 		$id     = $this->input->get('id', 0, 'int');
 		$itemID = $this->input->get('item_id', null, 'array');
@@ -246,7 +251,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$app       = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model     = $this->getModel('mediamanagerItem');
+
 		$section   = $app->input->get('section', '', 'word');
 		$type      = $app->input->get('type', '', 'word');
 		$id        = $app->input->get('id', 0, 'int');
@@ -364,7 +372,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('joomla.filesystem.file');
 
 		$app         = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model       = $this->getModel('mediamanagerItem');
+
 		$section     = $app->input->get('section', '', 'word');
 		$type        = $app->input->get('type', '', 'word');
 		$tab         = $app->input->get('tab', 0, 'int');
@@ -444,6 +455,16 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				JFile::delete($path . '/thumb_' . $item->filename);
 			}
 		}
+		elseif ($section == 'album')
+		{
+			$galleryItems = $model->getGalleryFiles($section, $type, $ids);
+
+			foreach ($galleryItems as $item)
+			{
+				JFile::delete($path . '/' . $item->filename);
+				JFile::delete($path . '/thumb_' . $item->filename);
+			}
+		}
 
 		$result = $model->remove($section, $type, $tab, $id, $ids);
 
@@ -478,26 +499,31 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
-		$app = JFactory::getApplication();
-		$ids = $app->input->post->get('item_id', array(), 'array');
-		$redirect = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $app->input->get('section', '', 'word')
-			. '&type=' . $app->input->get('type', '', 'word') . '&id=' . $app->input->get('id', 0, 'int');
+		$app     = JFactory::getApplication();
+		$ids     = $app->input->post->get('item_id', array(), 'array');
+		$section = $app->input->get('section', '', 'word');
+		$type    = $app->input->get('type', '', 'word');
+		$tab     = $app->input->get('tab', 0, 'int');
+		$id      = $app->input->get('id', 0, 'int');
+		$url     = 'index.php?option=com_kinoarhiv&view=mediamanager&section=' . $section . '&type=' . $type
+			. '&tab=' . $tab . '&id=' . $id . '&layoutview=' . $app->input->get('layoutview', '', 'word');
 
-		if (count($ids) != 0)
+		if (count($ids) !== 0)
 		{
+			/** @var KinoarhivModelMediamanager $model */
 			$model = $this->getModel('mediamanager');
 			$result = $model->batch();
 
 			if ($result === false)
 			{
 				KAComponentHelper::renderErrors($model->getErrors());
-				$this->setRedirect($redirect);
+				$this->setRedirect($url);
 
 				return;
 			}
 		}
 
-		$this->setRedirect($redirect);
+		$this->setRedirect($url);
 	}
 
 	/**
@@ -525,7 +551,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$app     = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model   = $this->getModel('mediamanagerItem');
+
 		$section = $app->input->get('section', '', 'word');
 		$type    = $app->input->get('type', '', 'word');
 		$tab     = $app->input->get('tab', 0, 'int');

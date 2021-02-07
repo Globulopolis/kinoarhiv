@@ -157,7 +157,7 @@ class KAComponentHelper
 	 * Logger
 	 *
 	 * @param   string  $message  Text to log.
-	 * @param   mixed   $silent   Throw exception or not. True - throw, false - not, 'ui' - show message.
+	 * @param   mixed   $silent   Throw an exception or not. True - do not throw, false - throw, 'ui' - show message.
 	 *
 	 * @return  void
 	 *
@@ -208,16 +208,13 @@ class KAComponentHelper
 			$message .= '<br/>' . $uri->current() . '?' . $uri->getQuery();
 		}
 
-		if (!$silent || is_string($silent))
+		if ($silent === 'ui')
 		{
-			if ($silent == 'ui')
-			{
-				echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '. ' . $message, 'alert-error');
-			}
-			else
-			{
-				throw new Exception($message, 500);
-			}
+			echo self::showMsg(JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '. ' . $message, 'alert-error');
+		}
+		elseif ($silent === false)
+		{
+			throw new Exception($message, 500);
 		}
 	}
 

@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
+use Joomla\String\StringHelper;
 
 /**
  * Albums View class
@@ -83,11 +84,12 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$this->albumsItemid = KAContentHelper::getItemid('albums');
 
 		$introtextLinks = $this->params->get('introtext_links', 1);
+		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($this->items as $item)
 		{
-			$item->attribs  = json_decode($item->attribs);
+			$item->attribs = json_decode($item->attribs);
 
 			// Replace genres BB-code
 			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
@@ -104,7 +106,11 @@ class KinoarhivViewAlbums extends JViewLegacy
 
 				if ($introtextLinks)
 				{
-					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>', $matches[2]);
+					$name = preg_replace(
+						'#\[name=(.+?)\](.+?)\[/name\]#',
+						'<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>',
+						$matches[2]
+					);
 				}
 				else
 				{
@@ -116,27 +122,80 @@ class KinoarhivViewAlbums extends JViewLegacy
 				$item->text
 			);
 
-			$checkingPath = JPath::clean($item->covers_path . '/' . $item->cover_filename);
+			$checkingPath = KAContentHelper::getAlbumCheckingPath($item->covers_path, $params->get('media_music_images_root'), $item);
 
-			if (!is_file($checkingPath))
+			if ($throttleEnable == 0)
 			{
-				$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
-				$dimension   = KAContentHelper::getImageSize(
-					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
-					false
-				);
-				$item->coverWidth  = $dimension['width'];
-				$item->coverHeight = $dimension['height'];
+				$item->fs_alias = rawurlencode($item->fs_alias);
+
+				if (!is_file($checkingPath))
+				{
+					$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
+					$dimension = KAContentHelper::getImageSize(
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
+						true,
+						(int) $this->params->get('music_covers_size')
+					);
+					$item->coverWidth = $dimension['width'];
+					$item->coverHeight = $dimension['height'];
+				}
+				else
+				{
+					$filename = (!is_file(JPath::clean($checkingPath . '/thumb_' . $item->filename)))
+						? $item->filename : 'thumb_' . $item->filename;
+
+					if (!empty($item->covers_path))
+					{
+						if (StringHelper::substr($item->covers_path_www, 0, 1) == '/')
+						{
+							$item->cover = JUri::base() . StringHelper::substr($item->covers_path_www, 1) . '/' . $filename;
+						}
+						else
+						{
+							$item->cover = $item->covers_path_www . '/' . $filename;
+						}
+					}
+					else
+					{
+						if (StringHelper::substr($params->get('media_music_images_root_www'), 0, 1) == '/')
+						{
+							$item->cover = JUri::base() . StringHelper::substr($params->get('media_music_images_root_www'), 1) . '/'
+								. $item->fs_alias . '/' . $item->id . '/' . $filename;
+						}
+						else
+						{
+							$item->cover = $params->get('media_music_images_root_www') . '/' . $item->fs_alias
+								. '/' . $item->id . '/' . $filename;
+						}
+					}
+
+					$dimension = KAContentHelper::getImageSize(
+						$checkingPath,
+						true,
+						(int) $this->params->get('music_covers_size'),
+						$item->dimension
+					);
+					$item->coverWidth = $dimension['width'];
+					$item->coverHeight = $dimension['height'];
+				}
 			}
 			else
 			{
-				$item->cover = $item->covers_path_www . '/' . $item->cover_filename;
-				$dimension   = KAContentHelper::getImageSize(
+				// Check for thumbnail image. If not found when load full image.
+				$thumbnail = (!is_file(JPath::clean($checkingPath . '/thumb_' . $item->filename))) ? 0 : 1;
+
+				$item->cover = JRoute::_(
+					'index.php?option=com_kinoarhiv&task=media.view&element=album&content=image&type=1&id=' . $item->id .
+					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $this->itemid .
+					'&thumbnail=' . $thumbnail
+				);
+				$dimension = KAContentHelper::getImageSize(
 					$checkingPath,
 					true,
-					(int) $this->params->get('music_covers_size')
+					(int) $this->params->get('music_covers_size'),
+					$item->dimension
 				);
-				$item->coverWidth  = $dimension['width'];
+				$item->coverWidth = $dimension['width'];
 				$item->coverHeight = $dimension['height'];
 			}
 
@@ -199,6 +258,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 	protected function prepareDocument()
 	{
 		$app        = JFactory::getApplication();
+		$document   = JFactory::getDocument();
 		$pathway    = $app->getPathway();
 		$menuParams = $this->menu->getParams();
 		$title      = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_MUSIC_ALBUMS');
@@ -219,46 +279,46 @@ class KinoarhivViewAlbums extends JViewLegacy
 		}
 
 		$pathway->setPathway(array($path));
-		$this->document->setTitle($title);
+		$document->setTitle($title);
 
 		if ($this->menu && $menuParams->get('menu-meta_description') != '')
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
+			$document->setDescription($menuParams->get('menu-meta_description'));
 		}
 		else
 		{
-			$this->document->setDescription($this->params->get('meta_description'));
+			$document->setDescription($this->params->get('meta_description'));
 		}
 
 		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
 		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
+			$document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
 		}
 		else
 		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$document->setMetadata('keywords', $this->params->get('meta_keywords'));
 		}
 
 		if ($this->menu && $menuParams->get('robots') != '')
 		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
+			$document->setMetadata('robots', $menuParams->get('robots'));
 		}
 		else
 		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
+			$document->setMetadata('robots', $this->params->get('robots'));
 		}
 
 		if ($this->params->get('generator') == 'none')
 		{
-			$this->document->setGenerator('');
+			$document->setGenerator('');
 		}
 		elseif ($this->params->get('generator') == 'site')
 		{
-			$this->document->setGenerator($this->document->getGenerator());
+			$document->setGenerator($document->getGenerator());
 		}
 		else
 		{
-			$this->document->setGenerator($this->params->get('generator'));
+			$document->setGenerator($this->params->get('generator'));
 		}
 
 		// Add feed links
@@ -266,7 +326,8 @@ class KinoarhivViewAlbums extends JViewLegacy
 		{
 			$link = 'index.php?option=com_kinoarhiv&view=albums&Itemid=' . $this->itemid . '&format=feed';
 
-			$this->document->addHeadLink(
+			/** @var $document JDocumentHtml */
+			$document->addHeadLink(
 				JRoute::_($link . '&type=rss'),
 				'alternate',
 				'rel',

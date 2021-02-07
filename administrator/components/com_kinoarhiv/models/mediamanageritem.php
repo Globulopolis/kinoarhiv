@@ -134,6 +134,50 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 				}
 			}
 		}
+		elseif ($section == 'album')
+		{
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_music_albums_gallery'), 'id')
+				->columns($db->quoteName(array('id', 'filename', 'dimension', 'item_id', 'type', 'frontpage', 'state')))
+				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $itemID . "', '" . (int) $itemType . "', '" . (int) $frontpage . "', '1'");
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+				$insertID = $db->insertid();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+
+			// Unpublish all items from frontpage and set last one to frontpage
+			if ($frontpage == 1)
+			{
+				$query = $db->getQuery(true);
+
+				$query->update($db->quoteName('#__ka_music_albums_gallery'))
+					->set($db->quoteName('frontpage') . " = 0")
+					->where($db->quoteName('item_id') . ' = ' . (int) $itemID . ' AND ' . $db->quoteName('type') . ' = 1')
+					->where($db->quoteName('id') . ' != ' . (int) $insertID);
+				$db->setQuery($query);
+
+				try
+				{
+					$db->execute();
+				}
+				catch (RuntimeException $e)
+				{
+					$app->enqueueMessage($e->getMessage(), 'error');
+
+					return false;
+				}
+			}
+		}
 		elseif ($section == 'trailer')
 		{
 			$query = $db->getQuery(true);
@@ -310,9 +354,16 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		{
 			$table = '#__ka_names_gallery';
 		}
+		elseif ($section == 'album' && $type == 'gallery')
+		{
+			$table = '#__ka_music_albums_gallery';
+
+			// Adjust partial column name for album gallery.
+			$section = 'item';
+		}
 		else
 		{
-			throw new RuntimeException(JText::_('ERROR'), 500);
+			throw new RuntimeException(JText::_('Wrong \'section\' and/or \'type\' in request!'), 500);
 		}
 
 		$query->select($db->quoteName(array('id', 'filename', $section . '_id', 'type')))
@@ -638,12 +689,12 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 */
 	public function save($data)
 	{
-		$app = JFactory::getApplication();
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$type = $app->input->get('type', '', 'word');
+		$app     = JFactory::getApplication();
+		$db      = $this->getDbo();
+		$user    = JFactory::getUser();
+		$type    = $app->input->get('type', '', 'word');
 		$section = $app->input->get('section', '', 'word');
-		$id = $app->input->get('id', 0, 'int');
+		$id      = $app->input->get('id', 0, 'int');
 
 		if ($section == 'movie')
 		{
@@ -693,12 +744,17 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 					$query = $db->getQuery(true);
 
 					$query->update($db->quoteName('#__ka_trailers'))
-						->set($db->quoteName('title') . " = '" . $db->escape($data['title']) . "'," . $db->quoteName('embed_code') . " = '" . $data['embed_code'] . "'")
-						->set($db->quoteName('urls') . " = '" . $data['urls'] . "'," . $db->quoteName('resolution') . " = '" . $data['resolution'] . "'")
-						->set($db->quoteName('dar') . " = '" . $data['dar'] . "'," . $db->quoteName('duration') . " = '" . $data['duration'] . "'")
-						->set($db->quoteName('frontpage') . " = '" . (int) $data['frontpage'] . "'," . $db->quoteName('access') . " = '" . (int) $data['access'] . "'")
-						->set($db->quoteName('state') . " = '" . (int) $data['state'] . "'," . $db->quoteName('language') . " = '" . $data['language'] . "'")
-						->set($db->quoteName('is_movie') . " = '" . $data['is_movie'] . "'")
+						->set($db->quoteName('title') . ' = ' . $db->quote($data['title']))
+						->set($db->quoteName('embed_code') . ' = ' . $db->quote($data['embed_code']))
+						->set($db->quoteName('urls') . ' = ' . $db->quote($data['urls']))
+						->set($db->quoteName('resolution') . ' = ' . $db->quote($data['resolution']))
+						->set($db->quoteName('dar') . ' = ' . $db->quote($data['dar']))
+						->set($db->quoteName('duration') . ' = ' . $db->quote($data['duration']))
+						->set($db->quoteName('frontpage') . ' = ' . $db->quote((int) $data['frontpage']))
+						->set($db->quoteName('access') . ' = ' . $db->quote((int) $data['access']))
+						->set($db->quoteName('state') . ' = ' . $db->quote((int) $data['state']))
+						->set($db->quoteName('language') . ' = ' . $db->quote($data['language']))
+						->set($db->quoteName('is_movie') . ' = ' . $db->quote($data['is_movie']))
 						->where($db->quoteName('id') . ' = ' . (int) $data['item_id']);
 				}
 
@@ -778,6 +834,14 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 			$query = $db->getQuery(true)
 				->delete($db->quoteName('#__ka_names_gallery'))
 				->where($db->quoteName('name_id') . ' = ' . (int) $id)
+				->where($db->quoteName('type') . ' = ' . (int) $tab)
+				->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+		}
+		elseif ($section == 'album')
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_music_albums_gallery'))
+				->where($db->quoteName('item_id') . ' = ' . (int) $id)
 				->where($db->quoteName('type') . ' = ' . (int) $tab)
 				->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 		}

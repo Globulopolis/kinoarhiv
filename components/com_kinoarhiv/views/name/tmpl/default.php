@@ -151,9 +151,30 @@ use Joomla\String\StringHelper;
 						<div class="item">
 							<div class="number"><?php echo $mi; ?>.</div>
 							<div class="data">
-								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $movie->id . '&Itemid=' . $this->item->moviesItemid); ?>" target="_blank"><?php echo $movie->title; ?><?php echo ($movie->year != '0000') ? '&nbsp;(' . $movie->year . ')' : ''; ?></a>
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&id=' . $movie->id . '&Itemid=' . $this->item->moviesItemid); ?>" target="_blank"><?php echo $movie->title; ?><?php echo ($movie->year !== '0000') ? '&nbsp;(' . $movie->year . ')' : ''; ?></a>
 
 								<div class="role"><?php echo $movie->role; ?></div>
+							</div>
+							<div class="clear"></div>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php endif; ?>
+
+		<?php if (count($this->item->albums) > 0): ?>
+			<div class="albums-list-row">
+				<div class="albums-list-title corner-top"><?php echo JText::_('COM_KA_NAMES_DISCOGRAPHY'); ?></div>
+				<div class="albums-list-footer corner-bottom albums-list-content">
+					<?php $mi = 0;
+					foreach ($this->item->albums as $album):
+						$mi++; ?>
+						<div class="item">
+							<div class="number"><?php echo $mi; ?>.</div>
+							<div class="data">
+								<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $album->id . '&Itemid=' . $this->item->albumsItemid); ?>" target="_blank"><?php echo $album->title; ?><?php echo ($album->year !== '0000') ? '&nbsp;(' . $album->year . ')' : ''; ?></a>
+
+								<div class="role"><?php echo $album->role; ?></div>
 							</div>
 							<div class="clear"></div>
 						</div>

@@ -245,7 +245,9 @@ class KAImage extends JImage
 
 			if (isset($properties['watermark_y']) && is_numeric($properties['watermark_y']))
 			{
-				$watermarkY = ($wtProperties->height < 0) ? $imgProperties->height - $watermarkDstHeight + $wtProperties->height : $wtProperties->height;
+				$watermarkY = $wtProperties->height < 0
+					? $imgProperties->height - $watermarkDstHeight + $wtProperties->height
+					: $wtProperties->height;
 			}
 			else
 			{

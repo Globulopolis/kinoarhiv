@@ -46,13 +46,5 @@ $chapters  = $item->files['chapters'];
 	if (count($chapters) > 0): ?>
 		<track kind="chapters" src="<?php echo $chapters['file']; ?>" srclang="en" default="default"/>
 	<?php endif; ?>
-		<object width="<?php echo $item->player_width; ?>" height="<?php echo $item->player_height; ?>"
-				type="application/x-shockwave-flash"
-				data="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/mediaelement/mediaelement-flash-video.swf">
-			<param name="movie" value="<?php echo JUri::base(); ?>media/com_kinoarhiv/players/mediaelement/mediaelement-flash-video.swf"/>
-			<param name="flashvars" value="controls=true&file=<?php echo $mp4_file; ?>"/>
-			<img src="<?php echo $item->screenshot; ?>" width="<?php echo $item->player_width; ?>" height="<?php echo $item->player_height; ?>"
-				 alt="No video playback capabilities"/>
-		</object>
 	</video>
 </div>

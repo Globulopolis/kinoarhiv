@@ -10,11 +10,11 @@
 
 defined('_JEXEC') or die;
 
-// TODO Refactor
 JHtml::_('bootstrap.loadcss');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/css/colorbox.css');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.colorbox.min.js');
 KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js/i18n/colorbox');
+JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 ?>
 <div class="ka-content">
@@ -45,41 +45,52 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 		<?php echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="snd-list">
-			<?php if (!empty($this->item->albums)): ?>
-			<ul class="media-list">
+		<?php if (!empty($this->items)): ?>
+			<?php foreach ($this->items as $album):
 
-			<?php foreach ($this->item->albums as $album):
-					$composer = KAContentHelper::formatItemTitle($album->name, $album->latin_name);
-			?>
+				echo JLayoutHelper::render(
+					'layouts.navigation.album_item_header',
+					array(
+						'params' => $this->params,
+						'item'   => $album,
+						'itemid' => $this->albumsItemid,
+						'guest'  => $this->user->get('guest'),
+						'url'    => 'index.php?option=com_kinoarhiv&view=album&id=' . $album->id . '&Itemid=' . $this->albumsItemid,
+						'meta'   => false
+					),
+					JPATH_COMPONENT
+				);
+				?>
 
-				<li class="media">
-					<a class="pull-left album-art poster" href="<?php echo $album->cover; ?>"><img src="<?php echo $album->cover; ?>" class="media-object" width="<?php echo $album->coverWidth; ?>" height="<?php echo $album->coverHeight; ?>" /></a>
-					<div class="media-body">
-						<h3 class="media-heading album-title">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $album->id . '&Itemid=' . $this->albumsItemid); ?>"><?php echo $this->escape($album->title); ?></a>
-						</h3>
-						<span class="album-info">
-							<?php if (!empty($composer)): ?>
-							<span class="album-composer"><?php echo $composer; ?></span>
-							<?php endif; ?>
-							<?php if (!empty($album->year) && $album->year != '0000'): ?>
-							<span class="album-year">(<?php echo $album->year; ?>)</span>
-							<?php endif; ?>
-						</span>
+			<div class="clear"></div>
+			<div class="content content-list clearfix">
+				<div>
+					<div class="poster">
+						<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $album->id . '&Itemid=' . $this->albumsItemid); ?>"
+						   title="<?php echo $this->escape($album->title); ?>">
+							<img data-original="<?php echo $album->cover; ?>" class="lazy"
+								 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($album->title); ?>"
+								 width="<?php echo $album->coverWidth; ?>" height="<?php echo $album->coverHeight; ?>" />
+						</a>
+					</div>
+					<div class="introtext">
+						<div class="text"><?php echo $album->text; ?></div>
+
+						<?php if ($this->params->get('ratings_show_frontpage') == 1):
+							echo JLayoutHelper::render('layouts.content.votes_album',
+								array(
+									'params' => $this->params,
+									'item'   => $album,
+									'guest'  => $this->user->get('guest'),
+									'itemid' => $this->itemid,
+									'view'   => 'movie'
+								),
+								JPATH_COMPONENT
+							);
+						endif; ?>
 
 						<?php
-						/*echo JLayoutHelper::render('layouts.content.votes_album',
-							array(
-								'params' => $this->params,
-								'item'   => $album,
-								'guest'  => $this->user->get('guest'),
-								'itemid' => $this->itemid
-							),
-							JPATH_COMPONENT
-						);*/
-						?>
-
-						<?php
+						// TODO Not yet ready
 						/*echo JLayoutHelper::render('layouts.content.tracklist',
 							array(
 								'tracks'  => $this->item->tracks,
@@ -90,12 +101,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 						);*/
 						?>
 					</div>
-				</li>
+				</div>
+			</div>
+
 			<?php endforeach; ?>
-			</ul>
-			<?php else: ?>
-				<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
-			<?php endif; ?>
+		<?php else: ?>
+			<div><?php echo KAComponentHelper::showMsg(JText::_('COM_KA_NO_ITEMS')); ?></div>
+		<?php endif; ?>
 		</div>
 	</article>
 	<?php echo $this->item->event->afterDisplayContent; ?>

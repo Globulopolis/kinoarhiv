@@ -174,19 +174,7 @@ defined('_JEXEC') or die;
 			);
 		endif; ?>
 
-		<?php
-		echo JLayoutHelper::render('layouts.content.images_slider',
-			array(
-				'params'  => $this->params,
-				'items'   => isset($this->item->slides) ? $this->item->slides : null,
-				'attribs' => $this->item->attribs->slider
-			),
-			JPATH_COMPONENT
-		);
-		?>
-
 		<?php if (!empty($this->item->desc)): ?>
-			<br />
 			<div class="desc" id="desc">
 				<div class="accordion-group">
 					<div class="accordion-heading">

@@ -1601,7 +1601,7 @@ class KinoarhivModelMovie extends JModelForm
 	 *
 	 * @return  object|boolean
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function getSoundtrackAlbums()
 	{
@@ -1616,22 +1616,22 @@ class KinoarhivModelMovie extends JModelForm
 			return false;
 		}
 
-		$result = $this->getMovieData();
+		// Define null dates
+		$nullDate = $db->quote($db->getNullDate());
 
 		// Get albums for movie
 		$query = $db->getQuery(true)
 			->select(
-				$db->quoteName(
-					array(
-						'a.id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.length', 'a.isrc',
-						'a.rate', 'a.rate_sum', 'a.cover_filename', 'a.covers_path', 'a.covers_path_www',
-						'a.tracks_path', 'a.tracks_preview_path', 'a.buy_urls', 'a.attribs', 'n.name', 'n.latin_name'
-					)
-				)
+				'a.id, a.title, a.alias, a.fs_alias, ' . $db->quoteName('a.introtext', 'text') . ', ' .
+				'DATE_FORMAT(a.year, "%Y") AS ' . $db->quoteName('year') . ', a.length, a.rate, a.rate_sum, ' .
+				'a.covers_path, a.covers_path_www, a.buy_urls, ' .
+				'DATE_FORMAT(a.created, "%Y-%m-%d") AS ' . $db->quoteName('created') . ', a.created_by, ' .
+				'CASE WHEN a.modified = ' . $nullDate . ' THEN a.created ELSE DATE_FORMAT(a.modified, "%Y-%m-%d") END AS modified, ' .
+				'a.attribs, a.state'
 			)
+			->select($db->quoteName('a.introtext', 'text'))
 			->select($db->quoteName('a.year', 'date'))
 			->select('YEAR(' . $db->quoteName('a.year') . ') AS ' . $db->quoteName('year'))
-			->select($db->quoteName('n.id', 'artist_id'))
 			->from($db->quoteName('#__ka_music_albums', 'a'));
 
 			$subquery1 = $db->getQuery(true)
@@ -1639,10 +1639,9 @@ class KinoarhivModelMovie extends JModelForm
 				->from($db->quoteName('#__ka_music_rel_movies'))
 				->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
 
-			$subquery2 = $db->getQuery(true)
-				->select($db->quoteName('name_id'))
-				->from($db->quoteName('#__ka_music_rel_composers'))
-				->where('album_id = a.id');
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->leftJoin($db->quoteName('#__ka_music_albums_gallery', 'g') . ' ON g.item_id = a.id AND g.type = 1 AND g.frontpage = 1 AND g.state = 1');
 
 		if (!$user->get('guest'))
 		{
@@ -1651,15 +1650,25 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		$query->join('LEFT', $db->quoteName('#__ka_music_rel_movies', 'rel') . ' ON a.id = rel.album_id')
-			->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id = (' . $subquery2 . ')')
 			->where('a.id IN (' . $subquery1 . ') AND a.state = 1 AND a.access IN (' . $groups . ')')
 			->order('rel.ordering ASC');
 
 		$db->setQuery($query);
-		$result->albums = $db->loadObjectList();
 
+		try
+		{
+			$result = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError('');
+
+			return false;
+		}
+
+		// TODO Not yet ready
 		// Get tracks for albums
-		$query = $db->getQuery(true)
+		/*$query = $db->getQuery(true)
 			->select(
 				$db->quoteName(
 					array(
@@ -1690,7 +1699,7 @@ class KinoarhivModelMovie extends JModelForm
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
-		}
+		}*/
 
 		return $result;
 	}

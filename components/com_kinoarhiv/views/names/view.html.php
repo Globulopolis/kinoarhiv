@@ -117,11 +117,12 @@ class KinoarhivViewNames extends JViewLegacy
 			// Compose title
 			$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
+			$checkingPath = JPath::clean(
+				$this->params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
+			);
+
 			if ($throttleEnable == 0)
 			{
-				$checkingPath = JPath::clean(
-					$this->params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
-				);
 				$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
 
 				if (!is_file($checkingPath))
@@ -140,15 +141,17 @@ class KinoarhivViewNames extends JViewLegacy
 
 					if (StringHelper::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1) . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1)
+							. '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 					}
 					else
 					{
-						$item->poster = $this->params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
+						$item->poster = $this->params->get('media_actor_photo_root_www') . '/' . $item->fs_alias
+							. '/' . $item->id . '/photo/thumb_' . $item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
-						$item->poster,
+						$checkingPath,
 						true,
 						(int) $this->params->get('size_x_posters'),
 						$item->dimension
@@ -165,7 +168,7 @@ class KinoarhivViewNames extends JViewLegacy
 					'&thumbnail=1&gender=' . $item->gender
 				);
 				$dimension = KAContentHelper::getImageSize(
-					JUri::base() . $item->poster,
+					$checkingPath,
 					true,
 					(int) $this->params->get('size_x_posters'),
 					$item->dimension

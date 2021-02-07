@@ -84,32 +84,45 @@ class KinoarhivViewAlbum extends JViewLegacy
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		$checkingPath = JPath::clean($form->getValue('covers_path') . '/' . $form->getValue('cover_filename'));
+		$_path = $form->getValue('covers_path_www');
 
-		if (!is_file($checkingPath))
+		if (!empty($_path))
 		{
-			$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
-			$dimension   = KAContentHelper::getImageSize(
-				JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
-				false
-			);
-			$item->coverWidth  = $dimension['width'];
-			$item->coverHeight = $dimension['height'];
+			if (substr($_path, 0, 1) == '/')
+			{
+				$imgFolder = JUri::root() . substr($_path, 1) . '/';
+			}
+			else
+			{
+				$imgFolder = JUri::root() . $_path . '/';
+			}
 		}
 		else
 		{
-			$item->cover = $form->getValue('covers_path_www') . '/' . $form->getValue('cover_filename');
-			$item->cover = (filter_var($item->cover, FILTER_VALIDATE_URL) || mb_substr($item->cover, 0, 1) == '/')
-						   ? $item->cover : JUri::root() . $item->cover;
-			$dimension   = KAContentHelper::getImageSize(
-				$checkingPath,
-				true,
-				(int) $params->get('music_covers_size')
-			);
-			$item->coverWidth  = $dimension['width'];
-			$item->coverHeight = $dimension['height'];
+			if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
+			{
+				$imgFolder = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . '/'
+					. urlencode($form->getValue('fs_alias')) . '/' . $form->getValue('id') . '/';
+			}
+			else
+			{
+				$imgFolder = $params->get('media_music_images_root_www') . '/' . urlencode($form->getValue('fs_alias'))
+					. '/' . $form->getValue('id') . '/';
+			}
 		}
 
+		if ($form->getValue('filename') == '')
+		{
+			$item->poster = JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$item->th_poster = JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+		}
+		else
+		{
+			$item->poster = $imgFolder . $form->getValue('filename');
+			$item->th_poster = $imgFolder . 'thumb_' . $form->getValue('filename');
+		}
+
+		$item->img_folder = $imgFolder;
 		$this->item   = $item;
 		$this->form   = $form;
 		$this->params = $params;
@@ -298,6 +311,8 @@ class KinoarhivViewAlbum extends JViewLegacy
 				JToolbarHelper::save2new('albums.save2new');
 				JToolbarHelper::divider();
 				JToolbarHelper::cancel('albums.cancel', 'JTOOLBAR_CLOSE');
+				JToolbarHelper::divider();
+				JToolbarHelper::custom('gallery', 'picture', 'picture', JText::_('COM_KA_MOVIES_GALLERY'), false);
 			}
 			else
 			{

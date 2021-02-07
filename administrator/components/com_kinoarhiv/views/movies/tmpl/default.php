@@ -91,7 +91,7 @@ $columns   = 10;
 					<td colspan="<?php echo $columns; ?>" class="center"><?php echo JText::_('COM_KA_NO_ITEMS'); ?></td>
 				</tr>
 			<?php else:
-				foreach ($this->items as $i => $item) :
+				foreach ($this->items as $i => $item):
 					$canEdit   = $user->authorise('core.edit', 'com_kinoarhiv.movie.' . $item->id);
 					$canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.movie.' . $item->id);
 					$title     = KAContentHelper::formatItemTitle($item->title, '', $item->year);

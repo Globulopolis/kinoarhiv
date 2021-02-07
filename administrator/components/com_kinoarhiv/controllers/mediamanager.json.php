@@ -29,7 +29,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 	public function getTrailerFiles()
 	{
 		$app    = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model  = $this->getModel('mediamanagerItem');
+
 		$id     = $app->input->get('id', 0, 'int');
 		$data   = $app->input->get('data', '', 'string');
 		$result = $model->getTrailerFiles($data, $id, '', '');
@@ -61,7 +64,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$app    = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model  = $this->getModel('mediamanagerItem');
+
 		$itemID = $app->input->get('item_id', 0, 'int');
 		$items  = $app->input->get('ord', array(), 'array');
 		$type   = $app->input->get('type', '', 'word');
@@ -107,6 +113,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model = $this->getModel('mediamanagerItem');
 		$result = $model->subtitleSetDefault($isDefault);
 
@@ -146,6 +153,7 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 			return;
 		}
 
+		/** @var KinoarhivModelMediamanager $model */
 		$model = $this->getModel('mediamanager');
 		$result = $model->setFrontpage(1);
 
@@ -186,7 +194,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		}
 
 		$app = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model = $this->getModel('mediamanagerItem');
+
 		$type = $app->input->get('list', '', 'word');
 		$data = $this->input->post->get('form', array(), 'array');
 		$form = $model->getForm($data, false);
@@ -263,7 +274,9 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 		jimport('joomla.filesystem.file');
 
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model  = $this->getModel('mediamanagerItem');
+
 		$item   = $app->input->getInt('item', 0);
 		$itemID = $app->input->getInt('item_id', 0);
 		$all    = $app->input->getInt('all', 0);
@@ -397,7 +410,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('joomla.filesystem.file');
 
 		$app     = JFactory::getApplication();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model   = $this->getModel('mediamanagerItem');
+
 		$section = $app->input->get('section', '', 'word');
 		$type    = $app->input->get('type', '', 'word');
 		$tab     = $app->input->get('tab', 0, 'int');
@@ -438,6 +454,22 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 				JFile::delete($path . '/' . $item->filename);
 				JFile::delete($path . '/thumb_' . $item->filename);
 			}
+		}
+		elseif ($section == 'album')
+		{
+			$galleryItems = $model->getGalleryFiles($section, $type, $ids);
+
+			foreach ($galleryItems as $item)
+			{
+				JFile::delete($path . '/' . $item->filename);
+				JFile::delete($path . '/thumb_' . $item->filename);
+			}
+		}
+		else
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('ERROR')));
+
+			return;
 		}
 
 		$result = $model->remove($section, $type, $tab, $id, $ids);
@@ -493,7 +525,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
 
 		$media         = KAMedia::getInstance();
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model         = $this->getModel('mediamanagerItem');
+
 		$id            = $app->input->get('id', 0, 'int');
 		$itemID        = $app->input->get('item_id', null, 'int');
 		$files         = $model->getTrailerFiles('screenshot,video', $itemID, '', '');
@@ -586,7 +621,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		$app       = JFactory::getApplication();
 		$params    = JComponentHelper::getParams('com_kinoarhiv');
+
+		/** @var KinoarhivModelMediamanagerItem $model */
 		$model     = $this->getModel('mediamanagerItem');
+
 		$errors    = array();
 		$urls      = $app->input->post->get('urls', '', 'string');
 		$urlsArr   = explode("\n", $urls);
@@ -780,6 +818,10 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 								$image->makeThumbs($dstDir, $filename, $width . 'x' . $height, 1, $dstDir, false);
 								$insertid = $model->saveImageInDB('name', $id, $filename, array($origWidth, $origHeight), $tab, $frontpage);
 							}
+						}
+						elseif ($section == 'album')
+						{
+							// TODO Implement code for remote upload
 						}
 					}
 					else

@@ -127,7 +127,7 @@ class KinoarhivModelAlbum extends JModelForm
 	 *
 	 * @return  object|boolean
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
 	public function getData()
 	{
@@ -143,13 +143,17 @@ class KinoarhivModelAlbum extends JModelForm
 		$query = $db->getQuery(true);
 
 		$query->select("a.id, a.title, a.alias, a.fs_alias, DATE_FORMAT(a.year, '%Y') AS year, "
-			. "a.length, a.isrc, a.desc, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.cover_filename, "
-			. "a.tracks_path, a.tracks_path_www, a.tracks_preview_path, a.buy_urls, a.created_by, a.metakey, a.metadesc, "
+			. "a.length, a.isrc, a.desc, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.tracks_path, "
+			. "a.tracks_path_www, a.tracks_preview_path, a.buy_urls, a.created_by, a.metakey, a.metadesc, "
 			. "a.attribs, a.state, a.metadata, "
 			. "DATE_FORMAT(a.created, '%Y-%m-%d') AS created, DATE_FORMAT(a.modified, '%Y-%m-%d') AS modified, "
 			. "(SELECT COUNT(album_id) FROM " . $db->quoteName('#__ka_user_votes_albums') . " WHERE album_id = a.id) AS total_votes"
-		)
-			->from($db->quoteName('#__ka_music_albums', 'a'));
+		);
+		$query->from($db->quoteName('#__ka_music_albums', 'a'));
+
+		// Join over gallery item
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
+			->leftJoin($db->quoteName('#__ka_music_albums_gallery', 'g') . ' ON g.item_id = a.id AND g.type = 1 AND g.frontpage = 1 AND g.state = 1');
 
 		if (!$user->get('guest'))
 		{
@@ -172,7 +176,9 @@ class KinoarhivModelAlbum extends JModelForm
 
 			if (empty($result))
 			{
-				return (object) array();
+				$this->setError(JText::_('COM_KA_NO_DATA'));
+
+				return false;
 			}
 		}
 		catch (RuntimeException $e)
@@ -217,32 +223,6 @@ class KinoarhivModelAlbum extends JModelForm
 			return false;
 		}
 
-		// Countries
-		/*$queryCountries = $db->getQuery(true)
-			->select('c.id, c.name, c.code, t.ordering')
-			->from($db->quoteName('#__ka_countries', 'c'))
-			->join('LEFT', $db->quoteName('#__ka_rel_countries', 't') . ' ON t.country_id = c.id AND t.movie_id = ' . (int) $id);
-
-			$subqueryCountries = $db->getQuery(true)
-				->select('country_id')
-				->from($db->quoteName('#__ka_rel_countries'))
-				->where('movie_id = ' . (int) $id);
-
-		$queryCountries->where('id IN (' . $subqueryCountries . ') AND state = 1')
-			->order('ordering ASC');
-
-		$db->setQuery($queryCountries);
-
-		try
-		{
-			$result->countries = $db->loadObjectList();
-		}
-		catch (RuntimeException $e)
-		{
-			$result->countries = array();
-			KAComponentHelper::eventLog($e->getMessage());
-		}*/
-
 		// Genres
 		$queryGenres = $db->getQuery(true)
 			->select('g.id, g.name, g.alias, t.ordering')
@@ -270,7 +250,7 @@ class KinoarhivModelAlbum extends JModelForm
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 
-		// Cast and crew
+		// Crew
 		/*$careers = array();
 		$queryCareer = $db->getQuery(true)
 			->select($db->quoteName(array('id', 'title')))
@@ -403,28 +383,6 @@ class KinoarhivModelAlbum extends JModelForm
 			$result->releases = array();
 		}
 
-		// Get Slider items
-		/*if (($result->attribs->slider == '' && $params->get('slider') == 1) || $result->attribs->slider == 1)
-		{
-			$querySlider = $db->getQuery(true)
-				->select($db->quoteName(array('id', 'filename', 'dimension')))
-				->from($db->quoteName('#__ka_movies_gallery'))
-				->where('movie_id = ' . (int) $id . ' AND state = 1 AND type = 3')
-				->setLimit((int) $params->get('slider_max_item'), 0);
-
-			$db->setQuery($querySlider);
-
-			try
-			{
-				$result->slides = $db->loadObjectList();
-			}
-			catch (RuntimeException $e)
-			{
-				$result->slides = array();
-				KAComponentHelper::eventLog($e->getMessage());
-			}
-		}*/
-
 		return $result;
 	}
 
@@ -445,13 +403,25 @@ class KinoarhivModelAlbum extends JModelForm
 		$id     = $app->input->get('id', 0, 'int');
 
 		$query = $db->getQuery(true)
-			->select("m.id, m.title, m.alias, m.fs_alias, DATE_FORMAT(m.year, '%Y') AS year, DATE_FORMAT(m.created, '%Y-%m-%d') AS created, " .
-				"DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified, m.metakey, m.metadesc, m.metadata, m.attribs, user.name AS username"
+			->select(
+				$db->quoteName(
+					array(
+						'm.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.covers_path', 'm.covers_path_www',
+						'm.tracks_path', 'm.tracks_path_www', 'm.tracks_preview_path', 'm.metakey', 'm.metadesc',
+						'm.metadata', 'm.attribs'
+					)
+				)
 			)
+			->select("DATE_FORMAT(m.year, '%Y') AS year")
+			->select("DATE_FORMAT(m.created, '%Y-%m-%d') AS created")
+			->select("DATE_FORMAT(m.modified, '%Y-%m-%d') AS modified")
+			->select($db->quoteName('user.name', 'username'))
 			->from($db->quoteName('#__ka_music_albums', 'm'))
-			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = m.created_by')
-			->where('m.id = ' . (int) $id . ' AND m.state = 1 AND m.access IN (' . $groups . ')')
-			->where('m.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
+			->leftJoin($db->quoteName('#__users', 'user') . ' ON user.id = m.created_by')
+			->where($db->quoteName('m.id') . ' = ' . (int) $id)
+			->where($db->quoteName('m.state') . ' = 1')
+			->where($db->quoteName('m.access') . ' IN (' . $groups . ')')
+			->where($db->quoteName('m.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')');
 
 		$db->setQuery($query);
 
@@ -479,7 +449,7 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
-	 * Get winned awards for movie
+	 * Get winned awards for album
 	 *
 	 * @return  object|boolean
 	 *
@@ -515,6 +485,51 @@ class KinoarhivModelAlbum extends JModelForm
 		catch (RuntimeException $e)
 		{
 			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get covers for album
+	 *
+	 * @return  object|boolean
+	 *
+	 * @since   3.1
+	 */
+	public function getCovers()
+	{
+		$db  = $this->getDbo();
+		$app = JFactory::getApplication();
+		$id  = $app->input->get('id', 0, 'int');
+
+		if ($id == 0)
+		{
+			$this->setError('Wrong ID.');
+
+			return false;
+		}
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('id', 'filename', 'dimension', 'type')))
+			->from($db->quoteName('#__ka_music_albums_gallery'))
+			->where($db->quoteName('state') . ' = 1')
+			->where($db->quoteName('item_id') . ' = ' . (int) $id)
+			->order($db->quoteName('type') . ' ASC');
+
+		$db->setQuery($query);
+
+		// Get album metadata from cache
+		try
+		{
+			$result = $db->loadObjectList();
+			//$meta = KAContentHelper::getAlbumMetadata($id);
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError('');
 
 			return false;
 		}

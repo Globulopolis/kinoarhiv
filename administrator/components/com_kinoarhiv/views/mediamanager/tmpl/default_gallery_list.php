@@ -28,7 +28,7 @@ $canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->secti
 			<?php
 				echo JHtml::_('searchtools.sort', 'JSTATUS', 'g.state', $listDirn, $listOrder);
 
-				if (($this->section == 'movie' && $this->tab == 2) || ($this->section == 'name' && $this->tab == 3)):
+				if (($this->section == 'movie' && $this->tab == 2) || ($this->section == 'name' && $this->tab == 3) || $this->section == 'album'):
 					echo '|' . JHtml::_('searchtools.sort', 'COM_KA_MOVIES_GALLERY_HEADING_FRONTPAGE', 'g.frontpage', $listDirn, $listOrder);
 				endif;
 			?>
@@ -71,7 +71,7 @@ $canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->secti
 
 						echo JHtml::_('jgrid.published', $item->state, $i, 'mediamanager.', $canChange, 'cb');
 
-						if (($this->section == 'movie' && $this->tab == 2) || ($this->section == 'name' && $this->tab == 3)):
+						if (($this->section == 'movie' && $this->tab == 2) || ($this->section == 'name' && $this->tab == 3) || ($this->section == 'album') && $canChange):
 							echo JHtml::_(
 								'jgrid.state',
 								array(
@@ -93,18 +93,18 @@ $canChange = $user->authorise('core.edit.state', 'com_kinoarhiv.' . $this->secti
 					endif;
 
 					if ($this->getLayout() !== 'modal'):
-				?>
+					?>
 					<a href="<?php echo $item->filepath; ?>" class="tooltip-img" rel="group_<?php echo $this->tab; ?>"><?php echo $item->filename; ?></a>
-				<?php
+					<?php
 					else:
 						$func = "Kinoarhiv.selectFrontpageImage(this, '" . $this->section . "', '" . $this->type . "', " . (int) $this->id . ", " . (int) $item->id . ", '" . $this->escape($item->filename) . "')";
-				?>
+						?>
 					<a href="#" class="tooltip-img" onclick="<?php echo $func; ?>"><?php echo $item->filename; ?></a>
-				<?php
+						<?php
 					endif;
-				?>
-					<?php if ($item->th_filepath != ''): ?><img src="<?php echo $item->th_filepath; ?>" class="tooltip-img-content" /><?php endif; ?>
-					<?php if ($item->folderpath != ''): ?> <span class="small gray hidden-phone">(<?php echo $item->folderpath . $item->filename; ?>)</span><?php endif; ?>
+					?>
+					<?php if ($item->th_filepath !== ''): ?><img src="<?php echo $item->th_filepath; ?>" class="tooltip-img-content" /><?php endif; ?>
+					<?php if ($item->folderpath !== ''): ?> <span class="small gray hidden-phone">(<?php echo $item->folderpath . $item->filename; ?>)</span><?php endif; ?>
 				</td>
 				<td class="center hidden-phone">
 					<?php echo $item->dimension; ?>

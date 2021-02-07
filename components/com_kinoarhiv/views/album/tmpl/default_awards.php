@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render(
 			'layouts.navigation.album_alphabet',
-			array('url' => 'index.php?option=com_kinoarhiv&view=albums&content=albums&Itemid=' . $this->moviesItemid, 'params' => $this->params),
+			array('url' => 'index.php?option=com_kinoarhiv&view=albums&content=albums&Itemid=' . $this->itemid, 'params' => $this->params),
 			JPATH_COMPONENT
 		);
 	endif; ?>
@@ -42,7 +42,7 @@ defined('_JEXEC') or die;
 				foreach ($this->item->awards as $award): ?>
 					<div class="well uk-panel uk-panel-box">
 						<h5 class="uk-panel-title">
-							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=awards&id=' . $award->id . '&Itemid=' . $this->itemid); ?>"><?php echo $this->escape($award->aw_title); ?></a><?php echo (!empty($award->year) && $award->year != '0000') ? ', ' . $award->year : ''; ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=awards&id=' . $award->id . '&Itemid=' . $this->awardsItemid); ?>"><?php echo $this->escape($award->aw_title); ?></a><?php echo (!empty($award->year) && $award->year != '0000') ? ', ' . $award->year : ''; ?>
 						</h5>
 						<?php echo $award->desc; ?>
 					</div>

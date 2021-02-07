@@ -11,10 +11,11 @@
 defined('_JEXEC') or die;
 
 /** @var array $displayData */
-$item   = $displayData['item'];
-$params = $displayData['params'];
-$itemid = $displayData['itemid'];
-$title  = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));
+$item     = $displayData['item'];
+$showMeta = !isset($displayData['meta']);
+$params   = $displayData['params'];
+$itemid   = $displayData['itemid'];
+$title    = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item->year));
 ?>
 <header>
 	<h1 class="uk-article-title title" itemprop="name">
@@ -32,6 +33,7 @@ $title  = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item
 	</h1>
 </header>
 <div class="middle-nav clearfix">
+	<?php if ($showMeta): ?>
 	<p class="meta">
 		<?php if ($item->attribs->show_author === '' && !empty($item->username)): ?>
 			<?php if ($params->get('show_author') == 1): ?>
@@ -71,6 +73,7 @@ $title  = $this->escape(KAContentHelper::formatItemTitle($item->title, '', $item
 			<time itemprop="dateModified" datetime="<?php echo JHtml::_('date', $item->modified, 'c'); ?>"><?php echo JHtml::_('date', $item->modified, JText::_('DATE_FORMAT_LC3')); ?></time>
 		<?php endif; ?>
 	</p>
+	<?php endif; ?>
 
 	<?php
 	echo JLayoutHelper::render(

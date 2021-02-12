@@ -219,31 +219,52 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 	 *
 	 * @since   3.1
 	 */
-	/*public function remove() {
+	public function remove()
+	{
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		// Check if the user is authorized to do this.
-		if (!JFactory::getUser()->authorise('core.delete.award', 'com_kinoarhiv')) {
-			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
-
-			return;
-		}
-
-		$model = $this->getModel('award');
-		$result = $model->remove();
-
-		if ($result === false) {
-			$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_EDIT_ERROR'), 'error');
-
-			return;
-		}
-
-		// Clean the session data.
+		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
-		$app->setUserState('com_kinoarhiv.awards.global.data', null);
 
-		$this->setRedirect('index.php?option=com_kinoarhiv&view=awards', JText::_('COM_KA_ITEMS_DELETED_SUCCESS'));
-	}*/
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.delete', 'com_kinoarhiv'))
+		{
+			$app->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
+		jimport('components.com_kinoarhiv.libraries.filesystem', JPATH_ROOT);
+		jimport('joomla.filesystem.folder');
+
+		$ids = $app->input->get('id', array(), 'array');
+
+		if (!is_array($ids) || count($ids) < 1)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=albums', JText::_('JGLOBAL_NO_ITEM_SELECTED'), 'error');
+
+			return;
+		}
+
+		// Make sure the item ids are integers
+		$ids = Joomla\Utilities\ArrayHelper::toInteger($ids);
+
+		/** @var KinoarhivModelAlbum $model */
+		$model = $this->getModel('album');
+
+		// Call this after removes files, not before.
+		$result = $model->remove($ids);
+
+		if (!$result)
+		{
+			$this->setRedirect('index.php?option=com_kinoarhiv&view=albums', JText::plural('COM_KA_ITEMS_N_DELETED_ERROR', count($ids)), 'error');
+
+			return;
+		}
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&view=albums', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
+	}
 
 	/**
 	 * Method to cancel an edit.
@@ -273,7 +294,7 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 
 	/**
 	 * Method to save the submitted ordering values for records.
-	 * // TODO Refactor
+	 *
 	 * @return  void
 	 *
 	 * @since   3.1
@@ -627,21 +648,5 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 		$model = $this->getModel('album');
 		$view->setModel($model, true);
 		$view->display('track');
-	}
-
-	/**
-	 * Method to encode item alias for using in filesystem paths and url.
-	 *
-	 * @return  void
-	 * // TODO Refactor
-	 * @since  3.0
-	 */
-	public function getFilesystemAlias()
-	{
-		/*jimport('components.com_kinoarhiv.helpers.content', JPATH_ROOT);
-
-		$input = JFactory::getApplication()->input;
-
-		echo KAContentHelper::getFilesystemAlias($input->get('form_album_alias', '', 'string'), $input->get('form_album_title', '', 'string'));*/
 	}
 }

@@ -47,7 +47,7 @@ class KinoarhivModelMovie extends JModelForm
 	/**
 	 * An internal cache for the last query used.
 	 *
-	 * @var    \JDatabaseQuery[]
+	 * @var    JDatabaseQuery[]
 	 * @since  1.6
 	 */
 	protected $query = array();
@@ -355,7 +355,7 @@ class KinoarhivModelMovie extends JModelForm
 				->join('LEFT', $db->quoteName('#__ka_countries', 'c') . ' ON c.id = p.country_id')
 				->where('movie_id = ' . (int) $id . ' AND p.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 				->order('p.ordering ASC')
-				->setLimit((int) $params->get('premieres_list_limit'), 0);
+				->setLimit((int) $params->get('premieres_list_limit'));
 
 			$db->setQuery($queryPremieres);
 
@@ -385,7 +385,7 @@ class KinoarhivModelMovie extends JModelForm
 				->join('LEFT', $db->quoteName('#__ka_media_types', 'media') . ' ON media.id = r.media_type')
 				->where('item_id = ' . (int) $id . ' AND r.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 				->order('r.ordering ASC')
-				->setLimit((int) $params->get('releases_list_limit'), 0);
+				->setLimit((int) $params->get('releases_list_limit'));
 
 			$db->setQuery($queryReleases);
 
@@ -414,7 +414,7 @@ class KinoarhivModelMovie extends JModelForm
 				->select($db->quoteName(array('id', 'filename', 'dimension')))
 				->from($db->quoteName('#__ka_movies_gallery'))
 				->where('movie_id = ' . (int) $id . ' AND state = 1 AND type = 3')
-				->setLimit((int) $params->get('slider_max_item'), 0);
+				->setLimit((int) $params->get('slider_max_item'));
 
 			$db->setQuery($querySlider);
 
@@ -735,7 +735,7 @@ class KinoarhivModelMovie extends JModelForm
 		$result->dub  = $_result['dub'];
 
 		// Create a new array with name career, remove duplicate items and sort it
-		$newCareers = array_unique($_careersCrew, SORT_STRING);
+		$newCareers = array_unique($_careersCrew);
 
 		foreach ($newCareers as $row)
 		{
@@ -1189,7 +1189,7 @@ class KinoarhivModelMovie extends JModelForm
 			->where('tr.movie_id = ' . (int) $id . ' AND tr.state = 1 AND tr.access IN (' . $groups . ')')
 			->where('tr.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ') AND tr.is_movie = ' . $isMovie)
 			->where('tr.frontpage = 1')
-			->setLimit(1, 0);
+			->setLimit(1);
 
 		$db->setQuery($query);
 
@@ -1716,7 +1716,7 @@ class KinoarhivModelMovie extends JModelForm
 		$app    = JFactory::getApplication();
 		$db     = $this->getDbo();
 		$id     = $app->input->get('id', 0, 'int');
-		$page   = $app->input->get('page', null, 'cmd');
+		$page   = $app->input->get('page');
 		$result = array();
 
 		if ($page == 'wallpapers')
@@ -1816,7 +1816,7 @@ class KinoarhivModelMovie extends JModelForm
 		$app    = JFactory::getApplication();
 		$db     = $this->getDbo();
 		$id     = $app->input->get('id', 0, 'int');
-		$page   = $app->input->get('page', 'reviews', 'cmd');
+		$page   = $app->input->get('page', 'reviews');
 		$filter = $app->input->get('dim_filter', '0', 'string');
 
 		if ($page == 'wallpapers')

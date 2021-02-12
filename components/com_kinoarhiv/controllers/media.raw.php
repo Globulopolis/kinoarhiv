@@ -83,9 +83,10 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'image')
 		{
-			$type = $this->input->get('type', 2, 'int');
+			$type     = $this->input->get('type', 2, 'int');
+			$filename = basename($filename);
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('movie', $type, $fsAlias, $id, $filename);
+			$path     = $this->getImagePath('movie', $type, $fsAlias, $id, $filename);
 
 			if (!is_file($path))
 			{
@@ -130,10 +131,11 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'image')
 		{
-			$type = $this->input->get('type', 3, 'int');
-			$gender = $this->input->get('gender', 0, 'int');
+			$type     = $this->input->get('type', 3, 'int');
+			$gender   = $this->input->get('gender', 0, 'int');
+			$filename = basename($filename);
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('name', $type, $fsAlias, $id, $filename);
+			$path     = $this->getImagePath('name', $type, $fsAlias, $id, $filename);
 
 			if (!is_file($path))
 			{
@@ -177,6 +179,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 		$itemID   = $this->input->get('item_id', 0, 'int');
 		$fsAlias  = $this->input->get('fa', '', 'string');
 		$filename = $this->input->get('fn', '', 'string');
+		$filename = basename($filename);
 
 		/** @var KinoarhivModelMovie $model */
 		$model = $this->getModel('movie');
@@ -289,9 +292,10 @@ class KinoarhivControllerMedia extends JControllerLegacy
 
 		if ($content === 'image')
 		{
-			$type = $this->input->get('type', 2, 'int');
+			$type     = $this->input->get('type', 2, 'int');
+			$filename = basename($filename);
 			$filename = ($thumbnail == 1) ? 'thumb_' . $filename : $filename;
-			$path = $this->getImagePath('album', $type, $fsAlias, $id, $filename);
+			$path     = $this->getImagePath('album', $type, $fsAlias, $id, $filename);
 
 			if (!is_file($path))
 			{
@@ -397,7 +401,7 @@ class KinoarhivControllerMedia extends JControllerLegacy
 	}
 
 	/**
-	 * Method to get the filesystem path for image content
+	 * Method to get the filesystem path for trailers content
 	 *
 	 * @param   string   $fsAlias   Filesystem alias(`fs_alias` column).
 	 * @param   integer  $itemID    Item ID.

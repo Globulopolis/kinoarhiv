@@ -159,12 +159,15 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 						<div>
-							<span class="f-col"><?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?></span>
+							<span class="f-col">
+								<?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?>
+							</span>
 							<span class="s-col">
-								<?php $cn_count = count($this->item->countries);
-								for ($i = 0, $n = $cn_count; $i < $n; $i++):
+								<?php $totalCountries = count($this->item->countries);
+								for ($i = 0, $n = $totalCountries; $i < $n; $i++):
 									$country = $this->item->countries[$i]; ?>
-									<img src="media/com_kinoarhiv/images/icons/countries/<?php echo $country->code; ?>.png" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
+									<img src="media/com_kinoarhiv/images/icons/countries/<?php echo $country->code; ?>.png"
+										 class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>" rel="nofollow"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
@@ -183,8 +186,8 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 							<div>
 								<span class="f-col"><?php echo $person['career']; ?></span>
 								<span class="s-col">
-									<?php $person_count = count($person['items']);
-									for ($i = 0, $n = $person_count; $i < $n; $i++):
+									<?php
+									for ($i = 0, $n = $person['total_items']; $i < $n; $i++):
 										$name = $person['items'][$i];
 										$itemprop = ($name['directors'] == 1) ? 'itemprop="director"' : '';
 									?>
@@ -203,8 +206,8 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 							<div>
 								<span class="f-col"><?php echo $person['career']; ?></span>
 								<span class="s-col">
-									<?php $person_count = count($person['items']);
-									for ($i = 0, $n = $person_count; $i < $n; $i++):
+									<?php
+									for ($i = 0, $n = $person['total_items']; $i < $n; $i++):
 										$name = $person['items'][$i]; ?>
 										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->namesItemid); ?>" title="<?php echo $name['name']; ?>" itemprop="actor"><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
@@ -220,8 +223,8 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_GENRE'); ?></span>
 							<span class="s-col">
-								<?php $genre_count = count($this->item->genres);
-								for ($i = 0, $n = $genre_count; $i < $n; $i++):
+								<?php $totalGenres = count($this->item->genres);
+								for ($i = 0, $n = $totalGenres; $i < $n; $i++):
 									$genre = $this->item->genres[$i]; ?>
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre" rel="nofollow"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
@@ -237,7 +240,9 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 					<?php if (count($this->item->premieres) > 0):
 						foreach ($this->item->premieres as $premiere): ?>
 							<div>
-								<span class="f-col"><?php echo ($premiere->country === '') ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?></span>
+								<span class="f-col">
+									<?php echo (empty($premiere->country)) ? JText::_('COM_KA_PREMIERE_DATE_WORLDWIDE') : JText::sprintf(JText::_('COM_KA_PREMIERE_DATE_LOC'), $premiere->country); ?>
+								</span>
 								<span class="s-col">
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[premiere_date]=' . date('Y-m', strtotime($premiere->premiere_date)) . '&Itemid=' . $this->itemid); ?>"><?php echo JHtml::_('date', $premiere->premiere_date, JText::_('DATE_FORMAT_LC3')); ?></a><?php if (!empty($premiere->company_name)): ?>, <a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movies&content=movies&movies[vendor]=' . $premiere->vendor_id . '&Itemid=' . $this->itemid); ?>"><?php echo $premiere->company_name; ?></a>
 										<?php if ($premiere->info != ''): ?>
@@ -276,15 +281,17 @@ KAComponentHelper::getScriptLanguage('jquery.countdown-', 'media/com_kinoarhiv/j
 								<?php endif; ?>
 								<?php if ($this->item->age_restrict > -1): ?>
 									<div class="rating">
-										<div id="rrate" class="rrate-icon hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>">
-											<strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong></div>
+										<div id="rrate" class="rrate-icon hasTooltip"
+											 title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_RU_RATE')); ?>">
+											<strong><?php echo strtoupper($this->item->age_restrict); ?>+</strong>
+										</div>
 										<div class="rrate-desc"><?php echo JText::_('COM_KA_RU_RATE_DESC'); ?></div>
 									</div>
 								<?php endif; ?>
 								<?php if ($this->item->ua_rate > -1): ?>
 									<div class="rating">
-										<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int) $this->item->ua_rate; ?> hasTooltip" title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">
-											&nbsp;</div>
+										<div id="ua-rate" class="uar-icon uar-icon-<?php echo (int) $this->item->ua_rate; ?> hasTooltip"
+											 title="<?php echo JText::sprintf(JText::_('COM_KA_RATE_HELP'), JText::_('COM_KA_UA_RATE')); ?>">&nbsp;</div>
 										<div class="uarate-desc"><?php echo JText::_('COM_KA_UA_RATE_DESC'); ?></div>
 									</div>
 								<?php endif; ?>

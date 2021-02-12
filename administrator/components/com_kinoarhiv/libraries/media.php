@@ -17,8 +17,22 @@ defined('_JEXEC') or die;
  */
 class KAMedia
 {
+	/**
+	 * Class instance
+	 *
+	 * @var  KAMedia
+	 *
+	 * @since 3.0
+	 */
 	protected static $instance;
 
+	/**
+	 * Component params
+	 *
+	 * @var  object
+	 *
+	 * @since 3.0
+	 */
 	protected $params;
 
 	/**
@@ -63,11 +77,11 @@ class KAMedia
 	public function createVideoScreenshot($folder, $filename, $time)
 	{
 		$app = JFactory::getApplication();
-		$ffmpeg_path = JPath::clean($this->params->get('ffmpeg_path'));
+		$ffmpegPath = JPath::clean($this->params->get('ffmpeg_path'));
 
-		if (empty($ffmpeg_path))
+		if (empty($ffmpegPath))
 		{
-			$app->enqueueMessage(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND') . ' ' . $ffmpeg_path, 'error');
+			$app->enqueueMessage(JText::_('COM_KA_MOVIES_GALLERY_ERROR_FILENOTFOUND') . ' ' . $ffmpegPath, 'error');
 
 			return false;
 		}
@@ -79,20 +93,20 @@ class KAMedia
 			return false;
 		}
 
-		$check_lib = $this->checkLibrary($this->params->get('ffmpeg_path'));
+		$checkLibrary = $this->checkLibrary($this->params->get('ffmpeg_path'));
 
-		if ($check_lib !== true)
+		if ($checkLibrary !== true)
 		{
-			$app->enqueueMessage($check_lib[1], 'error');
+			$app->enqueueMessage($checkLibrary[1], 'error');
 
 			return false;
 		}
 
-		$finfo           = pathinfo($folder . $filename);
-		$result_filename = $finfo['filename'] . '.png';
-		$video_info      = $this->getVideoInfo($folder . $filename);
+		$finfo          = pathinfo($folder . $filename);
+		$resultFilename = $finfo['filename'] . '.png';
+		$videoInfo      = $this->getVideoInfo($folder . $filename);
 
-		if ($video_info === false)
+		if ($videoInfo === false)
 		{
 			$app->enqueueMessage(JText::_('ERROR'), 'error');
 
@@ -105,15 +119,15 @@ class KAMedia
 		 */
 		jimport('joomla.filesystem.file');
 
-		$config     = JFactory::getConfig();
-		$tmp_folder = JPath::clean($config->get('tmp_path') . '/');
-		$video_info = json_decode($video_info);
-		$scr_w      = (int) $this->params->get('player_width');
-		$scr_h      = ($video_info->streams[0]->height * $scr_w) / $video_info->streams[0]->width;
+		$config    = JFactory::getConfig();
+		$tmpFolder = JPath::clean($config->get('tmp_path') . '/');
+		$videoInfo = json_decode($videoInfo);
+		$scrWidth  = (int) $this->params->get('player_width');
+		$scrHeight = ($videoInfo->streams[0]->height * $scrWidth) / $videoInfo->streams[0]->width;
 
 		@set_time_limit(0);
-		$cmd = $ffmpeg_path . ' -hide_banner -nostats -i ' . $folder . $filename . ' -ss ' . $time
-			. ' -f image2 -vframes 1 -s ' . floor($scr_w) . 'x' . floor($scr_h) . ' ' . $tmp_folder . $result_filename . ' -y';
+		$cmd = $ffmpegPath . ' -hide_banner -nostats -i ' . $folder . $filename . ' -ss ' . $time
+			. ' -f image2 -vframes 1 -s ' . floor($scrWidth) . 'x' . floor($scrHeight) . ' ' . $tmpFolder . $resultFilename . ' -y';
 
 		if (IS_WIN)
 		{
@@ -127,11 +141,11 @@ class KAMedia
 		$output = shell_exec($cmd);
 
 		// Copy screenshot from tmp to dest folder. We need to copy/delete instead of move to avoid bugs on Windows platform.
-		JFile::copy($tmp_folder . $result_filename, $folder . $result_filename);
-		JFile::delete($tmp_folder . $result_filename);
+		JFile::copy($tmpFolder . $resultFilename, $folder . $resultFilename);
+		JFile::delete($tmpFolder . $resultFilename);
 
 		return array(
-			'filename' => $result_filename,
+			'filename' => $resultFilename,
 			'stdout'   => '<pre>' . $cmd . '<br />' . $output . '</pre>'
 		);
 	}
@@ -159,9 +173,9 @@ class KAMedia
 			return false;
 		}
 
-		$check_lib = $this->checkLibrary($this->params->get('ffprobe_path'));
+		$checkLibrary = $this->checkLibrary($this->params->get('ffprobe_path'));
 
-		if ($check_lib !== true)
+		if ($checkLibrary !== true)
 		{
 			return false;
 		}
@@ -178,9 +192,7 @@ class KAMedia
 			$cmd .= ' 2>%1';
 		}
 
-		$output = shell_exec($cmd);
-
-		return $output;
+		return shell_exec($cmd);
 	}
 
 	/**
@@ -205,11 +217,11 @@ class KAMedia
 			return array(false, 'Video file not found at path ' . $path);
 		}
 
-		$check_lib = $this->checkLibrary($this->params->get('ffprobe_path'));
+		$checkLibrary = $this->checkLibrary($this->params->get('ffprobe_path'));
 
-		if ($check_lib !== true)
+		if ($checkLibrary !== true)
 		{
-			return $check_lib;
+			return $checkLibrary;
 		}
 
 		$cmd = $this->params->get('ffprobe_path') . ' -loglevel error -show_format -show_streams ' . $path . ' -print_format json';
@@ -258,76 +270,6 @@ class KAMedia
 			JLog::add($error . ' in ' . __METHOD__, JLog::CRITICAL);
 
 			return array(false, $error);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Validate subtitle file. Subrip (.srt), WebVTT (.vtt), Substation Alpha (.ass), Youtube Subtitles (.sbv)
-	 * JSON (TED.com) Subtitles (.json)
-	 *
-	 * @param   string  $path      Path to a file.
-	 * @param   string  $filename  Filename.
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @throws  Exception
-	 *
-	 * @since  3.1
-	 */
-	public function validateSubtitles($path, $filename)
-	{
-		// jimport('components.com_kinoarhiv.libraries.vendor.captioning.src.Captioning.Format', JPATH_ROOT);
-	}
-
-	/**
-	 * Normalize some strings in WEBVTT file and save
-	 *
-	 * @param   string   $path          Path to a file.
-	 * @param   string   $filename      Filename.
-	 * @param   boolean  $replace       Overwrite existing file or not.
-	 * @param   string   $new_filename  New filename.
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @throws  Exception
-	 *
-	 * @since  3.1
-	 */
-	public function normalizeVTT($path, $filename, $replace=true, $new_filename='')
-	{
-		$filepath = JPath::clean($path . $filename);
-
-		if (!is_file($filepath))
-		{
-			throw new Exception('File not found or inaccessible!');
-		}
-		else
-		{
-			$content = file_get_contents($filepath);
-
-			if (!mb_detect_encoding($content, 'UTF-8', true) || strpos($content, "\xEF\xBB\xBF") !== false)
-			{
-				throw new Exception('Wrong file encoding! UTF-8 encoding required! See https://w3c.github.io/webvtt/#file-structure');
-			}
-
-			// Check file header
-			if (strstr($content, 'WEBVTT') === false)
-			{
-				throw new Exception('\'WEBVTT\' reqired at file start! See https://w3c.github.io/webvtt/#webvtt-file-body');
-			}
-
-			$content = preg_replace('#\d+[\s+]+(\d{2}):(\d{2}):(\d{2}),(\d{3})#sm', '$1:$2:$3.$4', $content);
-
-			if ($replace)
-			{
-				file_put_contents($filepath, $content);
-			}
-			else
-			{
-				file_put_contents($path . $new_filename, $content);
-			}
 		}
 
 		return true;

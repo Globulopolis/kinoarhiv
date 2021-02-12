@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 /**
  * View to edit an album.
  *
@@ -84,7 +86,18 @@ class KinoarhivViewAlbum extends JViewLegacy
 			throw new Exception(implode("\n", $this->get('Errors')), 500);
 		}
 
-		$_path = $form->getValue('covers_path_www');
+		$path    = $form->getValue('covers_path');
+		$pathWWW = $form->getValue('covers_path_www');
+		$checkingPath = KAContentHelper::getAlbumCheckingPath(
+			$path,
+			$params->get('media_music_images_root'),
+			(object) array(
+				'id'       => $form->getValue('id'),
+				'filename' => $form->getValue('filename'),
+				'fs_alias' => $form->getValue('fs_alias')
+			)
+		);
+		$fsAlias = rawurlencode($form->getValue('fs_alias'));
 
 		if (!empty($_path))
 		{
@@ -111,15 +124,61 @@ class KinoarhivViewAlbum extends JViewLegacy
 			}
 		}
 
-		if ($form->getValue('filename') == '')
+		if (!is_file($checkingPath))
 		{
-			$item->poster = JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
-			$item->th_poster = JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$item->cover = JUri::root() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png';
+			$item->th_cover = $item->cover;
+			$dimension = KAContentHelper::getImageSize(
+				JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_album_cover.png',
+				false
+			);
+			$item->coverWidth = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
 		}
 		else
 		{
-			$item->poster = $imgFolder . $form->getValue('filename');
-			$item->th_poster = $imgFolder . 'thumb_' . $form->getValue('filename');
+			$filename = (!is_file(JPath::clean(dirname($checkingPath) . '/thumb_' . $form->getValue('filename'))))
+				? $form->getValue('filename') : 'thumb_' . $form->getValue('filename');
+
+			if (!empty($path))
+			{
+				if (StringHelper::substr($pathWWW, 0, 1) == '/')
+				{
+					$item->cover = JUri::root() . JPath::clean(StringHelper::substr($pathWWW, 1) . '/' . $form->getValue('filename'), '/');
+					$item->th_cover = JUri::root() . JPath::clean(StringHelper::substr($pathWWW, 1) . '/' . $filename, '/');
+				}
+				else
+				{
+					$item->cover = JUri::root() . JPath::clean($pathWWW . '/' . $form->getValue('filename'), '/');
+					$item->th_cover = JUri::root() . JPath::clean($pathWWW . '/' . $filename, '/');
+				}
+			}
+			else
+			{
+				if (StringHelper::substr($params->get('media_music_images_root_www'), 0, 1) == '/')
+				{
+					$item->cover = JUri::root() . StringHelper::substr($params->get('media_music_images_root_www'), 1) . '/'
+						. $fsAlias . '/' . $form->getValue('id') . '/' . $form->getValue('filename');
+					$item->th_cover = JUri::root() . StringHelper::substr($params->get('media_music_images_root_www'), 1) . '/'
+						. $fsAlias . '/' . $form->getValue('id') . '/' . $filename;
+				}
+				else
+				{
+					$item->cover = $params->get('media_music_images_root_www') . '/' . $fsAlias
+						. '/' . $form->getValue('id') . '/' . $form->getValue('filename');
+					$item->th_cover = $params->get('media_music_images_root_www') . '/' . $fsAlias
+						. '/' . $form->getValue('id') . '/' . $filename;
+				}
+			}
+
+			$dimension = KAContentHelper::getImageSize(
+				$item->th_cover,
+				true,
+				(int) $params->get('music_covers_size'),
+				$form->getValue('dimension')
+			);
+			$item->coverWidth = $dimension['width'];
+			$item->coverHeight = $dimension['height'];
 		}
 
 		$item->img_folder = $imgFolder;

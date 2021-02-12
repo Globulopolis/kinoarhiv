@@ -135,6 +135,15 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				$('#vote').text(vote);
 			}
 		}).trigger('blur');
+
+		$('#importAlbumImageModal').on('show', function(){
+			var covers_path_input = document.querySelector('.covers_path_input'),
+				import_path_input = document.querySelector('#import_images_path');
+
+			if (!empty(covers_path_input.value)) {
+				import_path_input.value = covers_path_input.value;
+			}
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . (int) $this->id); ?>" method="post" name="adminForm"
@@ -582,3 +591,67 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
+
+<?php
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'imgModalUpload',
+	array(
+		'title'  => JText::_('COM_KA_TRAILERS_UPLOAD_IMAGES'),
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT)
+	),
+	JLayoutHelper::render(
+		'layouts.edit.upload_image',
+		array(
+			'view'            => $this,
+			'url'             => 'index.php?option=com_kinoarhiv&task=mediamanager.upload&format=raw&section=album&type=gallery&tab=1&id=' . $this->id . '&frontpage=1&upload=images',
+			'params'          => $this->params,
+			'content-type'    => 'cover', // Required to update an image after upload.
+			'multi_selection' => false,
+			'max_files'       => 1,
+			'remote_upload'   => true,
+			'remote_url'      => 'index.php?option=com_kinoarhiv&task=mediamanager.uploadRemote&format=json&section=album&type=gallery&tab=1&id=' . $this->id . '&max_files=1&frontpage=1'
+		),
+		JPATH_COMPONENT
+	)
+);
+
+// Required for load 'default_import_album_images_body' and 'default_import_album_images_footer' temlpates from mediamanager folder.
+$this->addTemplatePath(JPATH_COMPONENT . '/views/mediamanager/tmpl/');
+
+// This layout should be placed here to not validate input field.
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'importAlbumImageModal',
+	array(
+		'title' => JText::_('JLIB_HTML_TOOLBAR_IMPORT_IMAGES_TITLE'),
+		'footer' => $this->loadTemplate('import_album_images_footer')
+	),
+	$this->loadTemplate('import_album_images_body')
+);
+
+$path = JPath::clean(
+	$this->params->get('media_music_root') . '/' . $this->form->getValue('fs_alias') . '/' . $this->id . '/'
+);
+
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'helpAliasModal',
+	array(
+		'title'  => JText::_('NOTICE'),
+		'footer' => '<a class="btn" data-dismiss="modal">' . JText::_('COM_KA_CLOSE') . '</a>'
+	),
+	'<div class="container-fluid">' . JText::sprintf('COM_KA_FIELD_MOVIE_FS_ALIAS_DESC', $path) . '</div>'
+);
+
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'selectPosterModal',
+	array(
+		'title'  => JText::_('COM_KA_MOVIES_GALLERY') . ' - ' . $this->form->getValue('title'),
+		'footer' => JLayoutHelper::render('layouts.edit.upload_file_footer', array(), JPATH_COMPONENT),
+		'animation' => false,
+		'height' => '500',
+		'url' => 'index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=gallery&tab=1&id=' . $this->id . '&layout=modal&tmpl=component'
+	)
+);

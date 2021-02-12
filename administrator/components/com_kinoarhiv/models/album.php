@@ -113,7 +113,7 @@ class KinoarhivModelAlbum extends JModelForm
 	{
 		$app  = JFactory::getApplication();
 		$db   = $this->getDbo();
-		$task = $app->input->get('task', '', 'cmd');
+		$task = $app->input->get('task', '');
 		$id   = $app->input->get('id', 0, 'int');
 
 		if ($task == 'editAlbumAward')
@@ -137,10 +137,10 @@ class KinoarhivModelAlbum extends JModelForm
 			->select(
 				$db->quoteName(
 					array('a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.year', 'a.length', 'a.isrc',
-						'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.cover_filename',
-						'a.tracks_path', 'a.tracks_path_www', 'a.tracks_preview_path', 'a.buy_urls', 'a.attribs',
-						'a.created', 'a.created_by', 'a.modified', 'a.modified_by', 'a.publish_up', 'a.publish_down',
-						'a.ordering', 'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state'
+						'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.tracks_path',
+						'a.tracks_path_www', 'a.tracks_preview_path', 'a.buy_urls', 'a.attribs', 'a.created',
+						'a.created_by', 'a.modified', 'a.modified_by', 'a.publish_up', 'a.publish_down', 'a.ordering',
+						'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state'
 					)
 				)
 			)
@@ -151,6 +151,12 @@ class KinoarhivModelAlbum extends JModelForm
 		// Join over the language
 		$query->select($db->quoteName('l.title', 'language_title'))
 			->leftJoin($db->quoteName('#__languages', 'l') . ' ON ' . $db->quoteName('l.lang_code') . ' = ' . $db->quoteName('a.language'));
+
+		// Join over the gallery item
+		$query->select($db->quoteName('g.id', 'image_id') . ',' . $db->quoteName('g.filename') . ',dimension')
+			->leftJoin($db->quoteName('#__ka_music_albums_gallery', 'g') . ' ON ' . $db->quoteName('g.item_id') . ' = ' . $db->quoteName('a.id')
+				. ' AND ' . $db->quoteName('g.frontpage') . ' = 1'
+			);
 
 		$db->setQuery($query);
 
@@ -240,14 +246,13 @@ class KinoarhivModelAlbum extends JModelForm
 
 		// Prepare some data
 		$rateLocalRounded     = ((int) $data['rate'] > 0 && (int) $data['rate_sum'] > 0)
-			? round($data['rate_sum'] / $data['rate'], 0) : 0;
+			? round($data['rate_sum'] / $data['rate']) : 0;
 		$introtext            = $this->createIntroText($data, $params);
-		$coversPath           = JPath::clean($data['covers_path']);
-		$coversPathWWW        = JPath::clean($data['covers_path_www']);
-		$coverFilename        = JPath::clean($data['cover_filename']);
-		$tracksPath           = JPath::clean($data['tracks_path']);
-		$tracksPathWWW        = JPath::clean($data['tracks_path_www']);
-		$tracksPreviewPath    = JPath::clean($data['tracks_preview_path']);
+		$coversPath           = empty($data['covers_path']) ? '' : JPath::clean($data['covers_path']);
+		$coversPathWWW        = empty($data['covers_path_www']) ? '' : JPath::clean($data['covers_path_www'], '/');
+		$tracksPath           = empty($data['tracks_path']) ? '' : JPath::clean($data['tracks_path']);
+		$tracksPathWWW        = empty($data['tracks_path_www']) ? '' : JPath::clean($data['tracks_path_www'], '/');
+		$tracksPreviewPath    = empty($data['tracks_preview_path']) ? '' : JPath::clean($data['tracks_preview_path']);
 		$createdBy            = empty($data['created_by']) ? $user->get('id') : $data['created_by'];
 		$modifiedBy           = empty($data['modified_by']) ? $user->get('id') : $data['modified_by'];
 		$data['created']      = (empty($data['created']) || $data['created'] == $db->getNullDate()) ? $date->toSql() : $data['created'];
@@ -290,7 +295,6 @@ class KinoarhivModelAlbum extends JModelForm
 				'rate_loc_rounded'    => $rateLocalRounded,
 				'covers_path'         => $db->escape($coversPath),
 				'covers_path_www'     => $db->escape($coversPathWWW),
-				'cover_filename'      => $db->escape($coverFilename),
 				'tracks_path'         => $db->escape($tracksPath),
 				'tracks_path_www'     => $db->escape($tracksPathWWW),
 				'tracks_preview_path' => $db->escape($tracksPreviewPath),
@@ -333,7 +337,6 @@ class KinoarhivModelAlbum extends JModelForm
 				->set($db->quoteName('rate_rounded') . " = '" . $rateLocalRounded . "'")
 				->set($db->quoteName('covers_path') . " = '" . $db->escape($coversPath) . "'")
 				->set($db->quoteName('covers_path_www') . " = '" . $db->escape($coversPathWWW) . "'")
-				->set($db->quoteName('cover_filename') . " = '" . $db->escape($coverFilename) . "'")
 				->set($db->quoteName('tracks_path') . " = '" . $db->escape($tracksPath) . "'")
 				->set($db->quoteName('tracks_path_www') . " = '" . $db->escape($tracksPathWWW) . "'")
 				->set($db->quoteName('tracks_preview_path') . " = '" . $db->escape($tracksPreviewPath) . "'")
@@ -372,9 +375,9 @@ class KinoarhivModelAlbum extends JModelForm
 			else
 			{
 				// Alias was changed? Move all linked items into new filesystem location.
-				if ($data['fs_alias'] != $data['fs_alias_orig'])
+				if (!empty($coversPath) && $data['fs_alias'] != $data['fs_alias_orig'])
 				{
-					// TODO Required if upload will be implemented.
+					// NOTE! This is not needed. User must change path to folder and rename folder manually.
 					//$this->moveMediaItems($data['id'], $data['fs_alias_orig'], $data['fs_alias']);
 				}
 			}
@@ -469,7 +472,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 			if ($params->get('introtext_actors_list_limit') > 0)
 			{
-				$query->setLimit($params->get('introtext_actors_list_limit'), 0);
+				$query->setLimit($params->get('introtext_actors_list_limit'));
 			}
 
 			$db->setQuery($query);
@@ -1221,6 +1224,238 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Removes an item.
+	 *
+	 * @param   array  $ids  Array of ID to remove.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function remove($ids = array())
+	{
+		$app = JFactory::getApplication();
+		$db = $this->getDbo();
+
+		// Remove associated awards
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_rel_awards'))
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			->where($db->quoteName('type') . ' = 2');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove associated genres
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_music_rel_genres'))
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			// For 'type' value see column description in table.
+			->where($db->quoteName('type') . ' = 0');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove associated movies
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_music_rel_movies'))
+			->where($db->quoteName('album_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove associated names
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_music_rel_names'))
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			->where($db->quoteName('item_type') . ' = 0');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove associated releases
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_releases'))
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			->where($db->quoteName('item_type') . ' = 1');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove reviews
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_reviews'))
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			->where($db->quoteName('item_type') . ' = 1');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove favorited albums
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_user_marked_albums'))
+			->where($db->quoteName('album_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove user votes
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_user_votes_albums'))
+			->where($db->quoteName('album_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove tags mapping
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__contentitem_tag_map'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_kinoarhiv.album'))
+			->where($db->quoteName('content_item_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove access rules
+		$queryResult = true;
+		$db->lockTable('#__assets');
+		$db->transactionStart();
+
+		foreach ($ids as $id)
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__assets'))
+				->where($db->quoteName('name') . " = 'com_kinoarhiv.album." . (int) $id . "' AND " . $db->quoteName('level') . " = 2");
+
+			$db->setQuery($query . ';');
+
+			if ($db->execute() === false)
+			{
+				$queryResult = false;
+				break;
+			}
+		}
+
+		if ($queryResult === false)
+		{
+			$db->transactionRollback();
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+
+		// Remove album(s) from DB
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__ka_music_albums'))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove gallery items
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_music_albums_gallery'))
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

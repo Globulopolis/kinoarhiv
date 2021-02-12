@@ -9,10 +9,16 @@
  */
 
 defined('_JEXEC') or die;
+
+$totalTracks = count($this->item->tracks);
 ?>
 <div class="uk-article ka-content" itemscope itemtype="https://schema.org/MusicAlbum">
-	<meta content="8" itemprop="numTracks" />
-	<meta content="Alt/Punk" itemprop="genre" />
+	<meta content="<?php echo $totalTracks; ?>" itemprop="numTracks" />
+<?php if (isset($this->item->genres) && count($this->item->genres) > 0):
+	$totalGenres = count($this->item->genres);
+	$genres = $totalGenres > 1 ? implode(', ', $this->item->genres) : $this->item->genres; ?>
+	<meta content="<?php echo $genres; ?>" itemprop="genre" />
+<?php endif; ?>
 
 	<?php if ($this->params->get('use_alphabet') == 1):
 		echo JLayoutHelper::render(
@@ -52,16 +58,21 @@ defined('_JEXEC') or die;
 				<div class="album-info">
 					<div>
 						<span class="f-col"><?php echo JText::_('COM_KA_YEAR'); ?></span>
-						<span class="s-col"><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&content=albums&albums[year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->year; ?></a></span>
+						<span class="s-col">
+							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&content=albums&albums[year]=' . $this->item->year . '&Itemid=' . $this->itemid); ?>" rel="nofollow"><?php echo $this->item->year; ?></a>
+						</span>
 					</div>
 					<?php if (!empty($this->item->countries)): ?>
 						<div>
-							<span class="f-col"><?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?></span>
+							<span class="f-col">
+								<?php echo count($this->item->countries) > 1 ? JText::_('COM_KA_COUNTRIES') : JText::_('COM_KA_COUNTRY'); ?>
+							</span>
 							<span class="s-col">
 								<?php $cn_count = count($this->item->countries);
 								for ($i = 0, $n = $cn_count; $i < $n; $i++):
 									$country = $this->item->countries[$i]; ?>
-									<img src="media/com_kinoarhiv/images/icons/countries/<?php echo $country->code; ?>.png" class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
+									<img src="media/com_kinoarhiv/images/icons/countries/<?php echo $country->code; ?>.png"
+										 class="ui-icon-country" alt="<?php echo $country->name; ?>"/>
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&filters[albums][country]=' . $country->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $country->name; ?>" rel="nofollow"><?php echo $country->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
 							</span>
@@ -72,45 +83,22 @@ defined('_JEXEC') or die;
 							<div>
 								<span class="f-col"><?php echo $person['career']; ?></span>
 								<span class="s-col">
-									<?php $person_count = count($person['items']);
-									for ($i = 0, $n = $person_count; $i < $n; $i++):
-										$name = $person['items'][$i];
-										$itemprop = ($name['directors'] == 1) ? 'itemprop="director"' : '';
-									?>
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>" <?php echo $itemprop; ?>><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
-									<?php else:
-										echo ', ';
-									endif; ?>
-									<?php endfor; ?>
-								</span>
-							</div>
-						<?php endforeach;
-					endif; ?>
-					<?php if (isset($this->item->cast) && count($this->item->cast) > 0):
-						foreach ($this->item->cast as $person): ?>
-							<div>
-								<span class="f-col"><?php echo $person['career']; ?></span>
-								<span class="s-col">
-									<?php $person_count = count($person['items']);
-									for ($i = 0, $n = $person_count; $i < $n; $i++):
+									<?php
+									for ($i = 0, $n = $person['total_items']; $i < $n; $i++):
 										$name = $person['items'][$i]; ?>
-										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>" itemprop="actor"><?php echo $name['name']; ?></a><?php if ($i + 1 == $n): ?><?php if ($n < $person['total_items']): ?>,&nbsp;
-									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a><?php endif; ?>
-									<?php else:
-										echo ', ';
-									endif; ?>
+										<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $name['id'] . '&Itemid=' . $this->itemid); ?>" title="<?php echo $name['name']; ?>"><?php echo $name['name']; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 									<?php endfor; ?>
+									&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&page=crew&id=' . $this->item->id . '&Itemid=' . $this->itemid); ?>#<?php echo JFilterOutput::stringURLSafe($person['career']); ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
 								</span>
 							</div>
-						<?php endforeach;
-					endif; ?>
+						<?php endforeach; ?>
+					<?php endif; ?>
 					<?php if (isset($this->item->genres) && count($this->item->genres) > 0): ?>
 						<div>
 							<span class="f-col"><?php echo JText::_('COM_KA_GENRE'); ?></span>
 							<span class="s-col">
-								<?php $genre_count = count($this->item->genres);
-								for ($i = 0, $n = $genre_count; $i < $n; $i++):
+								<?php
+								for ($i = 0, $n = $totalGenres; $i < $n; $i++):
 									$genre = $this->item->genres[$i]; ?>
 									<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=albums&filters[albums][genre][]=' . $genre->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $genre->name; ?>" itemprop="genre" rel="nofollow"><?php echo $genre->name; ?></a><?php echo ($i + 1 == $n) ? '' : ', '; ?>
 								<?php endfor; ?>
@@ -120,7 +108,9 @@ defined('_JEXEC') or die;
 					<?php if (count($this->item->releases) > 0):
 						foreach ($this->item->releases as $release): ?>
 							<div>
-								<span class="f-col"><?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JHtml::_('string.truncate', $release->media_type, 14)); ?></span>
+								<span class="f-col">
+									<?php echo JText::sprintf('COM_KA_RELEASES_MEDIATYPE', JHtml::_('string.truncate', $release->media_type, 14)); ?>
+								</span>
 								<span class="s-col">
 									<?php echo JHtml::_('date', $release->release_date, JText::_('DATE_FORMAT_LC3')); ?><?php if (!empty($release->company_name)): ?>, <?php echo $release->company_name; ?><?php endif; ?><?php echo ($release->country != '') ? ', ' . $release->country : ''; ?>&nbsp;<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=release&id=' . $release->item_id . '&Itemid=' . $this->releasesItemid); ?>#row-<?php echo $release->id; ?>" title="<?php echo JText::_('COM_KA_READMORE'); ?>" class="hasTooltip ui-icon-next"></a>
 								</span>
@@ -149,7 +139,7 @@ defined('_JEXEC') or die;
 			<p><?php echo $this->item->buy_urls; ?></p>
 		</div>
 
-		<?php if (count($this->item->tracks) > 0 && $this->params->get('watch_trailer') == 1):
+		<?php if ($totalTracks > 0 && $this->params->get('watch_trailer') == 1):
 			echo JLayoutHelper::render('layouts.content.tracklist',
 				array(
 					'params' => $this->params,

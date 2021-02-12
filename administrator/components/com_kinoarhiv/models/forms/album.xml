@@ -2,7 +2,7 @@
 <form>
 	<fieldset addrulepath="administrator/components/com_kinoarhiv/models/rules"
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
-		<field name="id" type="hidden" class="readonly" label="JGLOBAL_FIELD_ID_LABEL"
+		<field name="id" type="hidden" class="album_id readonly" label="JGLOBAL_FIELD_ID_LABEL"
 			   description="JGLOBAL_FIELD_ID_DESC" size="10" default="0" readonly="true"/>
 		<field name="title" type="text" default="" label="COM_KA_MUSIC_ALBUMS_HEADING" class="span12 field_title"
 			   required="true" filter="string" size="45"/>
@@ -77,7 +77,7 @@
 			   component="com_kinoarhiv" section="movie" validate="rules"/>
 
 		<field name="covers_path" type="text" label="COM_KA_FIELD_COVER_PATH_LABEL"
-			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" class="span12" default=""/>
+			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" class="span12 covers_path_input" size="95" default=""/>
 		<field name="covers_path_www" type="text" label="COM_KA_FIELD_COVER_PATH_WWW_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" class="span12" default=""/>
 		<field name="tracks_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_LABEL"
@@ -89,6 +89,7 @@
 
 		<field name="image_id" type="hidden" class="readonly" default="0" readonly="true"/>
 		<field name="filename" type="hidden" class="readonly" default="" readonly="true"/>
+		<field name="dimension" type="hidden" class="readonly" default="" readonly="true"/>
 	</fieldset>
 
 	<fields name="attribs" label="COM_KA_MOVIES_TAB_PUB">

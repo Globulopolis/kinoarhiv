@@ -134,6 +134,18 @@ else
 		),
 		$this->loadTemplate('batch_body')
 	);
+
+	if ($this->section == 'album'):
+		echo JHtml::_(
+			'bootstrap.renderModal',
+			'importAlbumImageModal',
+			array(
+				'title' => JText::_('JLIB_HTML_TOOLBAR_IMPORT_IMAGES_TITLE'),
+				'footer' => $this->loadTemplate('import_album_images_footer')
+			),
+			$this->loadTemplate('import_album_images_body')
+		);
+	endif;
 endif; ?>
 
 	<?php echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
@@ -156,7 +168,7 @@ endif; ?>
 	<input type="hidden" name="section" value="<?php echo $this->section; ?>" />
 	<input type="hidden" name="type" value="<?php echo $this->type; ?>" />
 	<input type="hidden" name="tab" value="<?php echo $this->tab; ?>" />
-	<input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+	<input type="hidden" name="id" class="album_id" value="<?php echo $this->id; ?>" />
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type="hidden" name="file_uploaded" value="0" />

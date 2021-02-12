@@ -295,9 +295,6 @@ class KinoarhivControllerNames extends JControllerLegacy
 			return;
 		}
 
-		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.names.' . $user->id . '.edit_data', null);
-
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=names', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
 	}
 

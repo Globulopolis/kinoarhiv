@@ -176,7 +176,8 @@ class KinoarhivViewMediamanager extends JViewLegacy
 				}
 				else
 				{
-					$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/' . $folder . '/thumb_' . $item->filename;
+					$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->movie_id . '/'
+						. $folder . '/thumb_' . $item->filename;
 				}
 			}
 		}
@@ -294,7 +295,8 @@ class KinoarhivViewMediamanager extends JViewLegacy
 				}
 				else
 				{
-					$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/' . $folder . '/thumb_' . $item->filename;
+					$item->th_filepath = $pathWWW . '/' . urlencode($item->fs_alias) . '/' . $item->name_id . '/'
+						. $folder . '/thumb_' . $item->filename;
 				}
 			}
 		}
@@ -454,11 +456,13 @@ class KinoarhivViewMediamanager extends JViewLegacy
 
 			$this->addToolbar();
 
-			$title = JText::_('JTOOLBAR_BATCH');
 			$layout = new JLayoutFile('joomla.toolbar.batch');
-
-			$dhtml = $layout->render(array('title' => $title));
+			$dhtml = $layout->render(array('title' => JText::_('JTOOLBAR_BATCH')));
 			JToolbar::getInstance()->appendButton('Custom', $dhtml, 'batch');
+
+			$layout = new JLayoutFile('components.com_kinoarhiv.layouts.toolbar.import', JPATH_ADMINISTRATOR);
+			$dhtml = $layout->render(array('title' => JText::_('JTOOLBAR_IMPORT')));
+			JToolbar::getInstance()->appendButton('Custom', $dhtml, 'import');
 		}
 
 		// Remove language filter as it is not needed in the image gallery.
@@ -548,7 +552,8 @@ class KinoarhivViewMediamanager extends JViewLegacy
 		{
 			// Path to a folder with file. E.g. /var/www/htdocs/etc...
 			$this->folder_path = JPath::clean(
-				$this->params->get('media_trailers_root') . '/' . $this->form->getValue('trailer.fs_alias') . '/' . $app->input->get('id', 0, 'int') . '/'
+				$this->params->get('media_trailers_root') . '/' . $this->form->getValue('trailer.fs_alias')
+					. '/' . $app->input->get('id', 0, 'int') . '/'
 			);
 
 			// URL to a screenshot

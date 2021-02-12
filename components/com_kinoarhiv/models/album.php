@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 /**
  * Music album item class
  *
@@ -45,7 +47,7 @@ class KinoarhivModelAlbum extends JModelForm
 	/**
 	 * An internal cache for the last query used.
 	 *
-	 * @var    \JDatabaseQuery[]
+	 * @var    JDatabaseQuery[]
 	 * @since  1.6
 	 */
 	protected $query = array();
@@ -251,7 +253,7 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 
 		// Crew
-		/*$careers = array();
+		$careers = array();
 		$queryCareer = $db->getQuery(true)
 			->select($db->quoteName(array('id', 'title')))
 			->from($db->quoteName('#__ka_names_career'))
@@ -270,14 +272,14 @@ class KinoarhivModelAlbum extends JModelForm
 			}
 
 			$queryCrew = $db->getQuery(true)
-				->select('n.id, n.name, n.latin_name, n.alias, t.type, t.is_actors, t.is_directors, t.voice_artists')
+				->select('n.id, n.name, n.latin_name, n.alias, t.career_id')
 				->from($db->quoteName('#__ka_names', 'n'))
-				->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id);
+				->leftJoin($db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id . ' AND t.item_type = 0');
 
 			$subqueryCrew = $db->getQuery(true)
 				->select('name_id')
-				->from($db->quoteName('#__ka_rel_names'))
-				->where('movie_id = ' . (int) $id);
+				->from($db->quoteName('#__ka_music_rel_names'))
+				->where('item_id = ' . (int) $id);
 
 			$queryCrew->where('n.id IN (' . $subqueryCrew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
 				->order('t.ordering ASC');
@@ -289,28 +291,16 @@ class KinoarhivModelAlbum extends JModelForm
 
 			foreach ($crew as $key => $value)
 			{
-				foreach (explode(',', $value->type) as $k => $type)
-				{
-					if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
-					{
-						$_result['crew'][$type]['career']  = $careers[$type];
-						$_result['crew'][$type]['items'][] = array(
-							'id'        => $value->id,
-							'name'      => !empty($value->name) ? $value->name : $value->latin_name,
-							'alias'     => $value->alias,
-							'directors' => $value->is_directors
-						);
-					}
+				$careerID = $value->career_id;
 
-					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
-					{
-						$_result['cast'][$type]['career']  = $careers[$type];
-						$_result['cast'][$type]['items'][] = array(
-							'id'    => $value->id,
-							'name'  => !empty($value->name) ? $value->name : $value->latin_name,
-							'alias' => $value->alias
-						);
-					}
+				if (!empty($careers[$careerID]))
+				{
+					$_result['crew'][$careerID]['career']  = $careers[$careerID];
+					$_result['crew'][$careerID]['items'][] = array(
+						'id'    => $value->id,
+						'name'  => KAContentHelper::formatItemTitle($value->name, $value->latin_name),
+						'alias' => $value->alias,
+					);
 				}
 			}
 
@@ -330,26 +320,12 @@ class KinoarhivModelAlbum extends JModelForm
 					$result->crew[] = $row;
 				}
 			}
-
-			if (!empty($_result['cast']))
-			{
-				foreach ($_result['cast'] as $row)
-				{
-					$row['total_items'] = count($row['items']);
-
-					if ($row['total_items'] > 0)
-					{
-						$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
-					}
-
-					$result->cast[] = $row;
-				}
-			}
 		}
 		catch (RuntimeException $e)
 		{
+			echo $e->getMessage();
 			KAComponentHelper::eventLog($e->getMessage());
-		}*/
+		}
 
 		// Release dates
 		if ($params->get('releases_list_limit') > 0)
@@ -364,7 +340,7 @@ class KinoarhivModelAlbum extends JModelForm
 				->where($db->quoteName('item_type') . ' = 1')
 				->where($db->quoteName('r.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
 				->order($db->quoteName('r.ordering') . ' ASC')
-				->setLimit((int) $params->get('releases_list_limit'), 0);
+				->setLimit((int) $params->get('releases_list_limit'));
 
 			$db->setQuery($queryReleases);
 
@@ -521,11 +497,10 @@ class KinoarhivModelAlbum extends JModelForm
 
 		$db->setQuery($query);
 
-		// Get album metadata from cache
+		// Get album data
 		try
 		{
 			$result = $db->loadObjectList();
-			//$meta = KAContentHelper::getAlbumMetadata($id);
 		}
 		catch (RuntimeException $e)
 		{
@@ -538,99 +513,254 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
-	 * Get the list of albums and their tracks for movie
+	 * Method to get crew for album
 	 *
 	 * @return  object|boolean
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	public function getSoundtrackAlbums()
+	public function getCrew()
 	{
-		$db = $this->getDbo();
-		$user = JFactory::getUser();
-		$groups = implode(',', $user->getAuthorisedViewLevels());
-		$app = JFactory::getApplication();
-		$movie_id = $app->input->get('id', 0, 'int');
+		$db             = $this->getDbo();
+		$app            = JFactory::getApplication();
+		$user           = JFactory::getUser();
+		$lang           = JFactory::getLanguage();
+		$groups         = implode(',', $user->getAuthorisedViewLevels());
+		$params         = JComponentHelper::getParams('com_kinoarhiv');
+		$id             = $app->input->get('id', 0, 'int');
+		$itemid         = $app->input->get('Itemid', 0, 'int');
+		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$result         = $this->getAlbumData();
+		$careers        = array();
 
-		if ($movie_id == 0)
-		{
-			return false;
-		}
-
-		$result = $this->getAlbumData();
-
-		// Get albums for movie
 		$query = $db->getQuery(true)
-			->select(
-				$db->quoteName(
-					array(
-						'a.id', 'a.title', 'a.alias', 'a.fs_alias', 'a.composer', 'a.length', 'a.isrc',
-						'a.rate', 'a.rate_sum', 'a.cover_filename', 'a.covers_path', 'a.covers_path_www',
-						'a.tracks_path', 'a.tracks_preview_path', 'a.buy_url', 'a.attribs', 'n.name', 'n.latin_name'
-					)
-				)
-			)
-			->select($db->quoteName('a.year', 'date'))
-			->select('YEAR(' . $db->quoteName('a.year') . ') AS ' . $db->quoteName('year'))
-			->select($db->quoteName('n.id', 'artist_id'))
-			->from($db->quoteName('#__ka_music_albums', 'a'));
-
-			$subquery1 = $db->getQuery(true)
-				->select($db->quoteName('album_id'))
-				->from($db->quoteName('#__ka_music_rel_movies'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
-
-			$subquery2 = $db->getQuery(true)
-				->select($db->quoteName('name_id'))
-				->from($db->quoteName('#__ka_music_rel_composers'))
-				->where('album_id = a.id');
-
-		if (!$user->get('guest'))
-		{
-			$query->select('v.vote AS my_vote, v._datetime')
-				->join('LEFT', $db->quoteName('#__ka_user_votes_albums', 'v') . ' ON v.album_id = a.id AND v.uid = ' . $user->get('id'));
-		}
-
-		$query->join('LEFT', $db->quoteName('#__ka_music_rel_movies', 'rel') . ' ON a.id = rel.album_id')
-			->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id = (' . $subquery2 . ')')
-			->where('a.id IN (' . $subquery1 . ') AND a.state = 1 AND a.access IN (' . $groups . ')')
-			->order('rel.ordering ASC');
-
-		$db->setQuery($query);
-		$result->albums = $db->loadObjectList();
-
-		// Get tracks for albums
-		$query = $db->getQuery(true)
-			->select(
-				$db->quoteName(
-					array(
-						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
-						't.performer', 't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename'
-					)
-				)
-			)
-			->from($db->quoteName('#__ka_music', 't'));
-
-			$subquery = $db->getQuery(true)
-				->select($db->quoteName('album_id'))
-				->from($db->quoteName('#__ka_music_rel_movies'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movie_id);
-
-		$query->where('t.album_id IN (' . $subquery . ')')
-			->order('t.track_number ASC');
+			->select('id, title')
+			->from($db->quoteName('#__ka_names_career'))
+			->order('ordering ASC');
 
 		$db->setQuery($query);
 
 		try
 		{
-			$result->tracks = $db->loadObjectList();
+			$_careers = $db->loadObjectList();
 		}
 		catch (RuntimeException $e)
 		{
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;
 		}
+
+		foreach ($_careers as $career)
+		{
+			$careers[$career->id] = $career->title;
+		}
+
+		$queryCrew = $db->getQuery(true)
+			->select(
+				"n.id, n.name, n.latin_name, n.alias, n.fs_alias, n.gender, t.career_id, t.role, " .
+				"ac.desc, g.filename AS url_photo"
+			)
+			->from($db->quoteName('#__ka_names', 'n'))
+			->join('LEFT', $db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id)
+			->join('LEFT', $db->quoteName('#__ka_music_rel_names', 'ac') . ' ON ac.name_id = n.id AND ac.item_id = ' . (int) $id)
+			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1');
+
+		$subqueryCrew = $db->getQuery(true)
+			->select('name_id')
+			->from($db->quoteName('#__ka_music_rel_names'))
+			->where('item_id = ' . (int) $id);
+
+		$queryCrew->where('n.id IN (' . $subqueryCrew . ') AND n.state = 1 AND n.access IN (' . $groups . ')')
+			->where('n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->group('n.id')
+			->order('t.ordering ASC');
+
+		$db->setQuery($queryCrew);
+
+		try
+		{
+			$crew = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError('');
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
+echo '<pre>';
+print_r($crew);
+echo '</pre>';
+		$_result = array('crew' => array(), 'cast' => array(), 'dub' => array());
+		$_careersCrew = array();
+
+		foreach ($crew as $key => $value)
+		{
+			foreach (explode(',', $value->type) as $k => $type)
+			{
+				// Process posters
+				if ($throttleEnable == 0)
+				{
+					// Cast and crew photo
+					$checkingPath = JPath::clean(
+						$params->get('media_actor_photo_root') . '/' . $value->fs_alias . '/' . $value->id . '/photo/' . $value->url_photo
+					);
+					$noCover = ($value->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+
+					if (!is_file($checkingPath))
+					{
+						$value->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
+					}
+					else
+					{
+						$value->fs_alias = rawurlencode($value->fs_alias);
+
+						// This trick will remove double slash in URL if alias is empty.
+						$value->fs_alias = empty($value->fs_alias) ? '' : $value->fs_alias . '/';
+
+						if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+						{
+							$value->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+								. $value->fs_alias . $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+						else
+						{
+							$value->poster = $params->get('media_actor_photo_root_www') . '/' . $value->fs_alias
+								. $value->id . '/photo/thumb_' . $value->url_photo;
+						}
+					}
+
+					// Dub actors photo
+					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
+					{
+						$checkingPath1 = JPath::clean(
+							$params->get('media_actor_photo_root') . '/' . $value->dub_fs_alias . '/' .
+							$value->dub_id . '/photo/' . $value->dub_url_photo
+						);
+						$noCover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
+
+						if (!is_file($checkingPath1))
+						{
+							$value->dub_url_photo = JUri::base() . 'media/com_kinoarhiv/images/themes/' .
+								$params->get('ka_theme') . '/' . $noCover1 . '.png';
+						}
+						else
+						{
+							$value->dub_fs_alias = rawurlencode($value->dub_fs_alias);
+
+							// This trick will remove double slash in URL if alias is empty.
+							$value->dub_fs_alias = empty($value->dub_fs_alias) ? '' : $value->dub_fs_alias . '/';
+
+							if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
+							{
+								$value->dub_url_photo = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
+									. $value->dub_fs_alias . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
+							}
+							else
+							{
+								$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . $value->dub_fs_alias
+									. $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
+							}
+						}
+					}
+				}
+				else
+				{
+					$value->poster = JRoute::_(
+						'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $value->id .
+						'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->url_photo . '&format=raw&Itemid=' . $itemid .
+						'&thumbnail=1&gender=' . $value->gender
+					);
+
+					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
+					{
+						$value->dub_url_photo = JRoute::_(
+							'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $value->dub_id .
+							'&fa=' . urlencode($value->dub_fs_alias) . '&fn=' . $value->dub_url_photo . '&format=raw&Itemid=' . $itemid .
+							'&thumbnail=1&gender=' . $value->dub_gender
+						);
+					}
+				}
+
+				// Crew
+				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
+				{
+					$_result['crew'][$type]['career'] = $careers[$type];
+					$_careersCrew[] = $careers[$type];
+					$_result['crew'][$type]['items'][] = array(
+						'id'         => $value->id,
+						'name'       => $value->name,
+						'latin_name' => $value->latin_name,
+						'alias'      => $value->alias,
+						'poster'     => $value->poster,
+						'gender'     => $value->gender,
+						'role'       => $value->role,
+						'desc'       => $value->desc
+					);
+				}
+
+				// Cast
+				if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
+				{
+					$_result['cast'][$type]['career'] = $careers[$type];
+
+					// Only one value for actors. So we don't need to build an array of items
+					$_careersCast = $careers[$type];
+					$_result['cast'][$type]['items'][] = array(
+						'id'             => $value->id,
+						'name'           => $value->name,
+						'latin_name'     => $value->latin_name,
+						'alias'          => $value->alias,
+						'poster'         => $value->poster,
+						'gender'         => $value->gender,
+						'role'           => $value->role,
+						'dub_id'         => $value->dub_id,
+						'dub_name'       => $value->dub_name,
+						'dub_latin_name' => $value->dub_latin_name,
+						'dub_alias'      => $value->dub_alias,
+						'dub_url_photo'  => $value->dub_url_photo,
+						'dub_gender'     => $value->dub_gender,
+						'dub_role'       => $value->dub_role,
+						'desc'           => $value->desc
+					);
+				}
+
+				// Dub
+				if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 1)
+				{
+					$_result['dub'][$type]['career'] = $careers[$type];
+					$_careersDub = $careers[$type];
+					$_result['dub'][$type]['items'][] = array(
+						'id'         => $value->id,
+						'name'       => $value->name,
+						'latin_name' => $value->latin_name,
+						'alias'      => $value->alias,
+						'poster'     => $value->poster,
+						'gender'     => $value->gender,
+						'role'       => $value->dub_role,
+						'desc'       => $value->desc
+					);
+				}
+			}
+		}
+
+		ksort($_result['crew']);
+		$result->crew = $_result['crew'];
+		$result->cast = $_result['cast'];
+		$result->dub  = $_result['dub'];
+
+		// Create a new array with name career, remove duplicate items and sort it
+		$newCareers = array_unique($_careersCrew);
+
+		foreach ($newCareers as $row)
+		{
+			$result->careers['crew'][] = $row;
+		}
+
+		$result->careers['cast'] = isset($_careersCast) ? $_careersCast : '';
+		$result->careers['dub']  = isset($_careersDub) ? $_careersDub : '';
 
 		return $result;
 	}
@@ -705,7 +835,7 @@ class KinoarhivModelAlbum extends JModelForm
 		$app    = JFactory::getApplication();
 		$db     = $this->getDbo();
 		$id     = $app->input->get('id', 0, 'int');
-		$page   = $app->input->get('page', 'reviews', 'cmd');
+		$page   = $app->input->get('page', 'reviews');
 		$filter = $app->input->get('dim_filter', '0', 'string');
 
 		if ($page == 'wallpapers')

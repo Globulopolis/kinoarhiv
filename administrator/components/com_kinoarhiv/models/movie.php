@@ -1906,7 +1906,8 @@ echo $query;
 		// Remove associated releases
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ka_releases'))
-			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			->where($db->quoteName('item_type') . ' = 0');
 
 		$db->setQuery($query);
 
@@ -1938,7 +1939,8 @@ echo $query;
 		// Remove reviews
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ka_reviews'))
-			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
+			->where($db->quoteName('item_type') . ' = 0');
 
 		$db->setQuery($query);
 
@@ -1986,6 +1988,7 @@ echo $query;
 		// Remove tags mapping
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__contentitem_tag_map'))
+			->where($db->quoteName('type_alias') . ' = ' . $db->quote('com_kinoarhiv.movie'))
 			->where($db->quoteName('content_item_id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);

@@ -628,4 +628,46 @@ jQuery(document).ready(function($){
 			}
 		});
 	});
+
+	$('.cmd-import-album-images').click(function(e){
+		e.preventDefault();
+
+		if (document.getElementById('import_images_path').value === '') {
+			Aurora.message([{text: KA_vars.language.COM_KA_REQUIRED, type: 'error'}], '.import-result', {replace: true});
+
+			return;
+		}
+
+		var token = Kinoarhiv.getFormToken(),
+			data  = {};
+
+		data[token] = 1;
+		data['id'] = document.querySelector('.album_id').value;
+		data['import_images_path'] = document.getElementById('import_images_path').value;
+
+		$.ajax({
+			type: 'POST',
+			url: 'index.php?option=com_kinoarhiv&task=mediamanager.importAlbumImages&format=json',
+			data: data
+		}).done(function(response){
+			if (!response.success) {
+				Aurora.message([{text: response.message, type: 'error'}], '.import-result', {replace: true});
+
+				return false;
+			}
+
+			$('.import-result').html(response.message);
+		}).fail(function (xhr, status, error) {
+			var _error = '';
+
+			try {
+				_error = JSON.parse(xhr.responseText);
+				_error = _error.msg;
+			} catch (e) {
+				_error = xhr.status + ' ' + xhr.statusText;
+			}
+
+			Aurora.message([{text: _error, type: 'error'}], '.import-result', {replace: true});
+		});
+	});
 });

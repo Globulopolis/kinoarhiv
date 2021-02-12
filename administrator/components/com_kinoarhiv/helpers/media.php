@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\String\StringHelper;
+
 /**
  * Class KAMediaHelper
  *
@@ -18,105 +20,91 @@ defined('_JEXEC') or die;
 class KAMediaHelper
 {
 	/**
-	 * Method to get a front cover for music album
-	 * TODO Need to be changed.
+	 * Get album covers.
 	 *
-	 * @param   object  $item_data  Item data. Should contain these fields from albums table - id, fs_alias, filename,
-	 *                              covers_path, covers_path_www.
+	 * @param   string  $path  Path where to search covers.
+	 *
+	 * @return  array|boolean  Array with paths, false if nothing found.
+	 *
+	 * @since   3.1
+	 */
+	public static function getAlbumCovers($path)
+	{
+		jimport('joomla.filesystem.folder');
+
+		$params        = JComponentHelper::getParams('com_kinoarhiv');
+		$files         = array();
+		$frontCovers   = self::cleanCoverFilename($params->get('music_covers_front'));
+		$backCovers    = self::cleanCoverFilename($params->get('music_covers_back'));
+		$artistCovers  = self::cleanCoverFilename($params->get('music_covers_artist'));
+		$discCovers    = self::cleanCoverFilename($params->get('music_covers_disc'));
+		$coversListArr = array_merge($frontCovers, $backCovers, $artistCovers, $discCovers);
+		$coversList    = implode('|', array_filter($coversListArr));
+		$_files        = JFolder::files(
+			$path,
+			$coversList . '$',
+			false,
+			true,
+			array('.svn', 'CVS', '.DS_Store', '__MACOSX'),
+			$excludeFilter = array('^\..*', '.*~'),
+			$naturalSort = true
+		);
+
+		if (empty($_files))
+		{
+			return false;
+		}
+
+		// Filter files because JFolder::files() return all files which contains searched names.
+		foreach ($_files as $i => $file)
+		{
+			list($width, $height) = @getimagesize($file);
+
+			if (in_array(basename($file), $coversListArr))
+			{
+				$files['images'][] = array(
+					'folder'    => dirname(JPath::clean($file)),
+					'filename'  => basename($file),
+					'dimension' => $width . 'x' . $height,
+					'type'      => '' // TODO Get item type?
+				);
+			}
+			// Search for preview image
+			elseif (StringHelper::strpos($file, 'thumb_', 0) !== false)
+			{
+				$files['thumbs'][] = array(
+					'folder'    => dirname(JPath::clean($file)),
+					'filename'  => basename($file),
+					'dimension' => $width . 'x' . $height
+				);
+			}
+		}
+
+		return $files;
+	}
+
+	/**
+	 * Clean covers filenames.
+	 *
+	 * @param   string  $covers  Cover filenames as string separated by new line.
 	 *
 	 * @return  array
+	 *
+	 * @since   3.1
 	 */
-	public static function getAlbumCover($item_data)
+	private static function cleanCoverFilename($covers)
 	{
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$path = $params->get('media_music_images_root') . DIRECTORY_SEPARATOR . $item_data->fs_alias . DIRECTORY_SEPARATOR
-			. $item_data->id . DIRECTORY_SEPARATOR;
-		$covers = array('poster' => '', 'th_poster' => '');
+		jimport('joomla.filesystem.file');
 
-		if (is_file(JPath::clean($path . $item_data->filename)))
-		{
-			if (substr($params->get('media_music_images_root_www'), 0, 1) == '/')
+		$coversList = explode("\n", $covers);
+		array_walk(
+			$coversList,
+			function (&$file)
 			{
-				$covers['poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . '/'
-					. urlencode($item_data->fs_alias) . '/' . $item_data->id . '/' . $item_data->filename;
-				$covers['th_poster'] = JUri::root() . substr($params->get('media_music_images_root_www'), 1) . '/'
-					. urlencode($item_data->fs_alias) . '/' . $item_data->id . '/' . 'thumb_' . $item_data->filename;
+				$file = JFile::makeSafe($file);
 			}
-			else
-			{
-				$covers['poster'] = $params->get('media_music_images_root_www') . '/' . urlencode($item_data->fs_alias)
-					. '/' . $item_data->id . '/' . $item_data->filename;
-				$covers['th_poster'] = $params->get('media_music_images_root_www') . '/' . urlencode($item_data->fs_alias)
-					. '/' . $item_data->id . '/' . 'thumb_' . $item_data->filename;
-			}
-		}
-		else
-		{
-			if (is_file(JPath::clean($item_data->covers_path . $item_data->cover_filename)))
-			{
-				$covers['poster'] = $item_data->covers_path_www . $item_data->cover_filename;
-				$covers['th_poster'] = $item_data->covers_path_www . 'thumb_' . $item_data->cover_filename;
-			}
-			else
-			{
-				// Nothing found in previous two locations. Search for files by pattern in previous locations.
-				$file_patterns = preg_split('/(:\r\n|[\r\n])/', $params->get('music_covers_front'), null, PREG_SPLIT_NO_EMPTY);
-				$paths = array();
+		);
 
-				foreach ($file_patterns as $file_pattern)
-				{
-					$paths[] = array(
-						'folder'      => $path,
-						'url'         => $params->get('media_music_images_root_www') . '/' . urlencode($item_data->fs_alias) . '/' . $item_data->id . '/',
-						'file'        => $file_pattern,
-						'from_config' => 1 // For additional checks
-					);
-
-					if (!empty($item_data->covers_path) && JPath::clean($path . $file_pattern) != JPath::clean($item_data->covers_path . $file_pattern))
-					{
-						$paths[] = array(
-							'folder'    => $item_data->covers_path,
-							'url'       => $item_data->covers_path_www,
-							'file'      => $file_pattern,
-							'from_item' => 1
-						);
-					}
-				}
-
-				foreach ($paths as $filepath)
-				{
-					if (is_file(JPath::clean($filepath['folder'] . $filepath['file'])))
-					{
-						if (array_key_exists('from_config', $filepath))
-						{
-							if (substr($filepath['url'], 0, 1) == '/')
-							{
-								$covers['poster'] = JUri::root() . substr($filepath['url'], 1) . $filepath['file'];
-								$covers['th_poster'] = JUri::root() . substr($filepath['url'], 1) . 'thumb_' . $filepath['file'];
-							}
-							else
-							{
-								$covers['poster'] = $filepath['url'] . $filepath['file'];
-								$covers['th_poster'] = $filepath['url'] . 'thumb_' . $filepath['file'];
-							}
-						}
-						else
-						{
-							$covers['poster'] = $filepath['url'] . $filepath['file'];
-							$covers['th_poster'] = $filepath['url'] . 'thumb_' . $filepath['file'];
-						}
-
-						break;
-					}
-					else
-					{
-						$covers['poster'] = JUri::root() . 'components/com_kinoarhiv/assets/themes/component/default/images/no_album_cover.png';
-						$covers['th_poster'] = JUri::root() . 'components/com_kinoarhiv/assets/themes/component/default/images/no_album_cover.png';
-					}
-				}
-			}
-		}
-
-		return $covers;
+		return $coversList;
 	}
 }

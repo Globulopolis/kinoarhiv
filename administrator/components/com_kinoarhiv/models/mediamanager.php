@@ -18,13 +18,47 @@ defined('_JEXEC') or die;
 class KinoarhivModelMediamanager extends JModelList
 {
 	/**
-	 * Context string for the model type.  This is used to handle uniqueness
+	 * Context string for the model type. This is used to handle uniqueness
 	 * when dealing with the getStoreId() method and caching data structures.
 	 *
 	 * @var    string
 	 * @since  1.6
 	 */
 	protected $context = null;
+
+	/**
+	 * Section items.
+	 *
+	 * @var    string
+	 * @see    KinoarhivModelMediamanagerItem::saveImageInDB() $section
+	 * @since  3.1
+	 */
+	protected $section = '';
+
+	/**
+	 * Tab item.
+	 *
+	 * @var    integer
+	 * @see    KinoarhivModelMediamanagerItem::saveImageInDB() $itemType
+	 * @since  3.1
+	 */
+	protected $tab = 0;
+
+	/**
+	 * Items type.
+	 *
+	 * @var    string
+	 * @since  3.1
+	 */
+	protected $type = '';
+
+	/**
+	 * Item ID.
+	 *
+	 * @var    integer
+	 * @since  3.1
+	 */
+	protected $id = 0;
 
 	/**
 	 * Constructor.
@@ -60,6 +94,11 @@ class KinoarhivModelMediamanager extends JModelList
 		{
 			$this->context = 'com_kinoarhiv.mediamanager.' . $input->get('section', '', 'word') . '.gallery.' . $input->get('tab', 0, 'int');
 		}
+
+		$this->section = (!empty($config['section'])) ? (string) $config['section'] : $input->get('section', '', 'word');
+		$this->tab     = (!empty($config['tab'])) ? (int) $config['tab'] : $input->get('tab', 0, 'int');
+		$this->type    = (!empty($config['type'])) ? (string) $config['type'] : $input->get('type', '', 'word');
+		$this->id      = (!empty($config['id'])) ? $config['id'] : $input->get('id', 0, 'int');
 
 		parent::__construct($config);
 	}
@@ -204,25 +243,23 @@ class KinoarhivModelMediamanager extends JModelList
 	 */
 	protected function getListQuery()
 	{
-		$input   = JFactory::getApplication()->input;
-		$section = $input->get('section', '', 'word');
-		$type    = $input->get('type', '', 'word');
+		$query = null;
 
-		if ($section == 'movie' && $type == 'gallery')
+		if ($this->section == 'movie' && $this->type == 'gallery')
 		{
-			$query = $this->listQueryMovieImages();
+			$query = $this->listQueryMovieImages($this->id, $this->tab);
 		}
-		elseif ($section == 'movie' && $type == 'trailers')
+		elseif ($this->section == 'movie' && $this->type == 'trailers')
 		{
-			$query = $this->listQueryMovieTrailers();
+			$query = $this->listQueryMovieTrailers($this->id);
 		}
-		elseif ($section == 'name' && $type == 'gallery')
+		elseif ($this->section == 'name' && $this->type == 'gallery')
 		{
-			$query = $this->listQueryNameImages();
+			$query = $this->listQueryNameImages($this->id, $this->tab);
 		}
-		elseif ($section == 'album' && $type == 'gallery')
+		elseif ($this->section == 'album' && $this->type == 'gallery')
 		{
-			$query = $this->listQueryAlbumImages();
+			$query = $this->listQueryAlbumImages($this->id, $this->tab);
 		}
 
 		if (empty($query))
@@ -236,15 +273,15 @@ class KinoarhivModelMediamanager extends JModelList
 	/**
 	 * Method to get a JDatabaseQuery object for retrieving the data set for movie images.
 	 *
+	 * @param   integer  $id   Item id.
+	 * @param   integer  $tab  Tab value from request.
+	 *
 	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
 	 * @since   3.0
 	 */
-	private function listQueryMovieImages()
+	private function listQueryMovieImages($id, $tab)
 	{
-		$input = JFactory::getApplication()->input;
-		$tab   = $input->get('tab', 0, 'int');
-		$id    = $input->get('id', 0, 'int');
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 
@@ -300,15 +337,15 @@ class KinoarhivModelMediamanager extends JModelList
 	/**
 	 * Method to get a JDatabaseQuery object for retrieving the data set for name images.
 	 *
+	 * @param   integer  $id   Item id.
+	 * @param   integer  $tab  Tab value from request.
+	 *
 	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
 	 * @since   3.0
 	 */
-	private function listQueryNameImages()
+	private function listQueryNameImages($id, $tab)
 	{
-		$input = JFactory::getApplication()->input;
-		$tab   = $input->get('tab', 0, 'int');
-		$id    = $input->get('id', 0, 'int');
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 
@@ -364,15 +401,15 @@ class KinoarhivModelMediamanager extends JModelList
 	/**
 	 * Method to get a JDatabaseQuery object for retrieving the data set for album images.
 	 *
+	 * @param   integer  $id   Item id.
+	 * @param   integer  $tab  Tab value from request.
+	 *
 	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
 	 * @since   3.0
 	 */
-	private function listQueryAlbumImages()
+	private function listQueryAlbumImages($id, $tab)
 	{
-		$input = JFactory::getApplication()->input;
-		$tab   = $input->get('tab', 0, 'int');
-		$id    = $input->get('id', 0, 'int');
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 
@@ -437,14 +474,14 @@ class KinoarhivModelMediamanager extends JModelList
 	/**
 	 * Method to get a JDatabaseQuery object for retrieving the data set for trailers list.
 	 *
+	 * @param   integer  $id   Item id.
+	 *
 	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
 	 * @since   3.0
 	 */
-	private function listQueryMovieTrailers()
+	private function listQueryMovieTrailers($id)
 	{
-		$input = JFactory::getApplication()->input;
-		$id    = $input->get('id', 0, 'int');
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 

@@ -328,9 +328,6 @@ class KinoarhivControllerMovies extends JControllerLegacy
 			return;
 		}
 
-		// Clean the session data.
-		$app->setUserState('com_kinoarhiv.movies.' . $user->id . '.edit_data', null);
-
 		$this->setRedirect('index.php?option=com_kinoarhiv&view=movies', JText::plural('COM_KA_ITEMS_N_DELETED_SUCCESS', count($ids)));
 	}
 

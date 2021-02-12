@@ -24,13 +24,14 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	/**
 	 * Method to save image information into DB. Accept gallery items for movie and poster for trailer.
 	 *
-	 * @param   string   $section     Section. (can be: movie, name, trailer, soundtrack)
+	 * @param   string   $section     Section. (can be: movie, name, album, trailer)
 	 * @param   integer  $itemID      Item ID(for trailer it's a trailer ID).
 	 * @param   string   $filename    System filename.
 	 * @param   array    $imageSizes  Array with the sizes. array(width, height)
 	 * @param   mixed    $itemType    Item type.
 	 *                                For movie: 2 - poster, 1 - wallpaper, 3 - screenshot.
 	 *                                For name: 2 - poster, 1 - wallpaper, 3 - photo.
+	 *                                For album: 1 - front cover is only used.
 	 *                                For trailer: null
 	 * @param   integer  $frontpage   Item published on frontpage.
 	 *
@@ -45,6 +46,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 		$imageSizes = (count($imageSizes) == 0) ? array(0 => 0, 1 => 0) : $imageSizes;
 		$dimension  = floor($imageSizes[0]) . 'x' . floor($imageSizes[1]);
 		$insertID   = '';
+		$values     = array('', $filename, $dimension, (int) $itemID, (int) $itemType, (int) $frontpage, 1);
 
 		if ($section == 'movie')
 		{
@@ -52,7 +54,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_movies_gallery'), 'id')
 				->columns($db->quoteName(array('id', 'filename', 'dimension', 'movie_id', 'type', 'frontpage', 'state')))
-				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $itemID . "', '" . (int) $itemType . "', '" . (int) $frontpage . "', '1'");
+				->values("'" . implode("','", $values) . "'");
 			$db->setQuery($query);
 
 			try
@@ -96,7 +98,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_names_gallery'), 'id')
 				->columns($db->quoteName(array('id', 'filename', 'dimension', 'name_id', 'type', 'frontpage', 'state')))
-				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $itemID . "', '" . (int) $itemType . "', '" . (int) $frontpage . "', '1'");
+				->values("'" . implode("','", $values) . "'");
 			$db->setQuery($query);
 
 			try
@@ -140,7 +142,7 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_music_albums_gallery'), 'id')
 				->columns($db->quoteName(array('id', 'filename', 'dimension', 'item_id', 'type', 'frontpage', 'state')))
-				->values("'', '" . $filename . "', '" . $dimension . "', '" . (int) $itemID . "', '" . (int) $itemType . "', '" . (int) $frontpage . "', '1'");
+				->values("'" . implode("','", $values) . "'");
 			$db->setQuery($query);
 
 			try
@@ -791,8 +793,8 @@ class KinoarhivModelMediamanagerItem extends JModelForm
 	 * Removes an item.
 	 *
 	 * @param   string   $section  Type of the item. Can be 'movie' or 'name'.
-	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers', 'soundtracks'
-	 * @param   integer  $tab      Tab number from gallery(or empty value for 'trailers', 'soundtracks').
+	 * @param   string   $type     Type of the section. Can be 'gallery', 'trailers'
+	 * @param   integer  $tab      Tab number from gallery(or empty value for 'trailers').
 	 * @param   integer  $id       The item ID (movie or name).
 	 * @param   array    $ids      Array of IDs to remove(file id).
 	 *

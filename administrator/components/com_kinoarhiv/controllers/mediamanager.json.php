@@ -856,4 +856,113 @@ class KinoarhivControllerMediamanager extends JControllerLegacy
 
 		echo json_encode($result);
 	}
+
+	/**
+	 * Method to import music album images from folder into database.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function importAlbumImages()
+	{
+		if (!KAComponentHelper::checkToken())
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JINVALID_TOKEN')));
+
+			return;
+		}
+
+		$app  = JFactory::getApplication();
+		$id   = $app->input->get('id', 0, 'int');
+		$data = $app->input->get('import_images_path', '', 'string');
+
+		if (empty($id))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED')));
+
+			return;
+		}
+
+		/** @var KinoarhivModelMediamanager $model */
+		$model = $this->getModel('mediamanager', '', array('section' => 'album', 'type' => 'gallery', 'tab' => 0, 'id' => $id));
+
+		/** @var KinoarhivModelMediamanagerItem $modelItem */
+		$modelItem = $this->getModel('mediamanagerItem');
+
+		$itemFiles = $model->getItems();
+		$itemFiles = \Joomla\Utilities\ArrayHelper::getColumn($itemFiles, 'filename');
+		$errors    = array();
+		$success   = array();
+
+		try
+		{
+			$path = JPath::clean($data);
+		}
+		catch (UnexpectedValueException $e)
+		{
+			echo json_encode(array('success' => false, 'message' => $e->getMessage()));
+
+			return;
+		}
+
+		JLoader::register('KAMediaHelper', JPath::clean(JPATH_ADMINISTRATOR . '/components/com_kinoarhiv/helpers/media.php'));
+		jimport('administrator.components.com_kinoarhiv.libraries.image', JPATH_ROOT);
+
+		$files = KAMediaHelper::getAlbumCovers($path);
+		$image = new KAImage;
+
+		if (empty($files))
+		{
+			echo json_encode(array('success' => false, 'message' => JText::_('COM_KA_NO_FILES')));
+
+			return;
+		}
+
+		foreach ($files['images'] as $key => $fileInfo)
+		{
+			$filePath = JPath::clean($fileInfo['folder'] . '/' . $fileInfo['filename']);
+
+			// Check if filename allready in database and skip adding this file.
+			if (in_array($fileInfo['filename'], $itemFiles))
+			{
+				$errors[] = $filePath . ' - <span class="text-error">fail. Allready in database!</span>';
+
+				continue;
+			}
+
+			try
+			{
+				$image->loadFile($filePath);
+				$imageProp = $image->getImageFileProperties($filePath);
+
+				if (!$modelItem->saveImageInDB('album', $id, $fileInfo['filename'], array($imageProp->width, $imageProp->height), 1))
+				{
+					$errors[] = $filePath . ' - <span class="text-error">fail.</span>';
+				}
+				else
+				{
+					$success[] = $filePath . ' - <span class="text-success">done.</span>';
+				}
+			}
+			catch (Exception $e)
+			{
+				$errors[] = $e->getMessage() . ' ' . $filePath;
+			}
+		}
+
+		if (!empty($errors))
+		{
+			echo json_encode(
+				array(
+					'success' => false,
+					'message' => JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . ':<br/>' . implode('<br/>', $errors)
+				)
+			);
+
+			return;
+		}
+
+		echo json_encode(array('success' => true, 'message' => implode('<br/>', $success), 'folder' => $path));
+	}
 }

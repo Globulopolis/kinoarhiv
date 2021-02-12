@@ -32,7 +32,9 @@ $attribs = $displayData['attribs'];
 					infiniteLoop: true
 				});
 
-				$('.screenshot-slider li a').colorbox({returnFocus: false, maxHeight: '90%', maxWidth: '90%', rel: 'slideGroup', photo: true});
+				$('.screenshot-slider li:not(.bx-clone) a').colorbox({
+					returnFocus: false, maxHeight: '90%', maxWidth: '90%', rel: 'slideGroup', photo: true
+				});
 			});
 		</script>
 		<div class="screenshot-slider">

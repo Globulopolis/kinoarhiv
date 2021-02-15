@@ -74,6 +74,10 @@ else
 					<div class="control-label"><?php echo $this->form->getLabel('budget'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('budget'); ?></div>
 				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('albums'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('albums'); ?></div>
+				</div>
 			</fieldset>
 		</div>
 		<div class="span3">

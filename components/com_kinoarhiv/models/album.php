@@ -140,7 +140,7 @@ class KinoarhivModelAlbum extends JModelForm
 		$groups      = implode(',', $user->getAuthorisedViewLevels());
 		$params      = JComponentHelper::getParams('com_kinoarhiv');
 		$id          = $app->input->get('id', 0, 'int');
-		$langQueryIN = 'language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')';
+		$langQueryIN = $db->quoteName('language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')';
 
 		$query = $db->getQuery(true);
 
@@ -196,6 +196,7 @@ class KinoarhivModelAlbum extends JModelForm
 			$result->attribs = json_decode($result->attribs);
 		}
 
+		// TODO Temporary
 		// Get tracks for albums
 		$query = $db->getQuery(true)
 			->select(
@@ -249,6 +250,27 @@ class KinoarhivModelAlbum extends JModelForm
 		catch (RuntimeException $e)
 		{
 			$result->genres = array();
+			KAComponentHelper::eventLog($e->getMessage());
+		}
+
+		// Labels(vendors)
+		$queryVendors = $db->getQuery(true)
+			->select($db->quoteName(array('v.id', 'v.company_name', 'v.company_name_alias')))
+			->from($db->quoteName('#__ka_music_rel_vendors', 'rel'))
+			->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON v.id = rel.vendor_id AND rel.item_id = ' . (int) $id);
+
+		$queryVendors->where('rel.item_type = 0 AND v.state = 1')
+			->order('rel.ordering ASC');
+
+		$db->setQuery($queryVendors);
+
+		try
+		{
+			$result->vendors = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			$result->vendors = array();
 			KAComponentHelper::eventLog($e->getMessage());
 		}
 

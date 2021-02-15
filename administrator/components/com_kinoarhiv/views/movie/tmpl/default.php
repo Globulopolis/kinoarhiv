@@ -37,7 +37,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if ((task === 'movies.cancel' || task === 'gallery' || task === 'trailers' || task === 'soundtracks')
+		if ((task === 'movies.cancel' || task === 'gallery' || task === 'trailers')
 			|| document.formvalidator.isValid(document.getElementById('item-form'))) {
 			if (task === 'gallery') {
 				var tab = (task === 'gallery') ? '&tab=2' : '',
@@ -48,10 +48,6 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				return false;
 			} else if (task === 'trailers') {
 				Kinoarhiv.openWindow('index.php?option=com_kinoarhiv&view=mediamanager&section=movie&type=' + task + '&id=<?php echo $this->id; ?>');
-
-				return false;
-			} else if (task === 'soundtracks') {
-				Kinoarhiv.openWindow('index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo $this->id; ?>');
 
 				return false;
 			}
@@ -659,8 +655,9 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 		</div>
 	</div>
 
-	<?php echo $this->form->getInput('genres_orig') . "\n"; ?>
+	<?php echo $this->form->getInput('albums_orig') . "\n"; ?>
 	<?php echo $this->form->getInput('countries_orig') . "\n"; ?>
+	<?php echo $this->form->getInput('genres_orig') . "\n"; ?>
 	<?php echo $this->form->getInput('id') . "\n"; ?>
 	<input type="hidden" name="image_id" value="<?php echo $this->form->getValue('image_id'); ?>" />
 	<input type="hidden" name="img_folder" value="<?php echo $this->items->get('img_folder'); ?>" />

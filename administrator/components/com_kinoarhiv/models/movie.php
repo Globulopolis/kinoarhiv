@@ -203,6 +203,15 @@ class KinoarhivModelMovie extends JModelForm
 			$result->countries_orig = $countries;
 		}
 
+		$albums = $this->getAlbums($id);
+
+		if ($albums)
+		{
+			$albums = implode(',', $albums['id']);
+			$result->albums = $albums;
+			$result->albums_orig = $albums;
+		}
+
 		$registry = new Registry($result->attribs);
 		$result->attribs = $registry->toArray();
 
@@ -220,23 +229,23 @@ class KinoarhivModelMovie extends JModelForm
 	}
 
 	/**
-	 * Get list of genres for field.
+	 * Get list of music albums for field.
 	 *
 	 * @param   integer  $id  Item ID.
 	 *
 	 * @return  mixed    Array with data, false otherwise.
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	private function getGenres($id)
+	private function getAlbums($id)
 	{
 		$app = JFactory::getApplication();
 		$db  = $this->getDbo();
 
 		$query = $db->getQuery(true)
-			->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
-			->from($db->quoteName('#__ka_rel_genres', 'rel'))
-			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON ' . $db->quoteName('g.id') . ' = ' . $db->quoteName('rel.genre_id'))
+			->select($db->quoteName(array('a.id', 'a.title')))
+			->from($db->quoteName('#__ka_music_rel_movies', 'rel'))
+			->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON ' . $db->quoteName('a.id') . ' = ' . $db->quoteName('rel.album_id'))
 			->where($db->quoteName('rel.movie_id') . ' = ' . (int) $id)
 			->order($db->quoteName('rel.ordering') . ' ASC');
 
@@ -244,13 +253,13 @@ class KinoarhivModelMovie extends JModelForm
 
 		try
 		{
-			$_genres = $db->loadAssocList();
-			$genres = array();
+			$_albums = $db->loadAssocList();
+			$albums = array();
 
-			foreach ($_genres as $key => $id)
+			foreach ($_albums as $key => $id)
 			{
-				$genres['id'][$key] = $id['id'];
-				$genres['title'][$key] = $id['title'];
+				$albums['id'][$key] = $id['id'];
+				$albums['title'][$key] = $id['title'];
 			}
 		}
 		catch (RuntimeException $e)
@@ -260,7 +269,7 @@ class KinoarhivModelMovie extends JModelForm
 			return false;
 		}
 
-		return $genres;
+		return $albums;
 	}
 
 	/**
@@ -305,6 +314,50 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		return $countries;
+	}
+
+	/**
+	 * Get list of genres for field.
+	 *
+	 * @param   integer  $id  Item ID.
+	 *
+	 * @return  mixed    Array with data, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	private function getGenres($id)
+	{
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('g.id') . ',' . $db->quoteName('g.name', 'title'))
+			->from($db->quoteName('#__ka_rel_genres', 'rel'))
+			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON ' . $db->quoteName('g.id') . ' = ' . $db->quoteName('rel.genre_id'))
+			->where($db->quoteName('rel.movie_id') . ' = ' . (int) $id)
+			->order($db->quoteName('rel.ordering') . ' ASC');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$_genres = $db->loadAssocList();
+			$genres = array();
+
+			foreach ($_genres as $key => $id)
+			{
+				$genres['id'][$key] = $id['id'];
+				$genres['title'][$key] = $id['title'];
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $genres;
 	}
 
 	/**
@@ -1446,6 +1499,12 @@ echo $query;
 			$data['id'] = $insertID;
 		}
 
+		// Update music albums.
+		if (!empty($data['albums']) && ($data['albums_orig'] != $data['albums'][0]))
+		{
+			$this->saveAlbums($data['id'], $data['albums'][0]);
+		}
+
 		// Update countries.
 		if (!empty($data['countries']) && ($data['countries_orig'] != $data['countries'][0]))
 		{
@@ -1603,6 +1662,77 @@ echo $query;
 		}
 
 		return implode('', $introtext);
+	}
+
+	/**
+	 * Save music albums to relation table.
+	 *
+	 * @param   integer  $id      Item ID.
+	 * @param   string   $albums  Comma separated string with countries ID.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	protected function saveAlbums($id, $albums)
+	{
+		$app         = JFactory::getApplication();
+		$db          = $this->getDbo();
+		$albums      = explode(',', $albums);
+		$queryResult = true;
+
+		$db->lockTable('#__ka_music_rel_movies');
+		$db->transactionStart();
+
+		if (!empty($id))
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_music_rel_movies'))
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
+
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+		}
+
+		foreach ($albums as $key => $albumID)
+		{
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_music_rel_movies'))
+				->columns($db->quoteName(array('movie_id', 'album_id', 'ordering')))
+				->values("'" . (int) $id . "', '" . (int) $albumID . "', '" . $key . "'");
+			$db->setQuery($query . ';');
+
+			if ($db->execute() === false)
+			{
+				$queryResult = false;
+				break;
+			}
+		}
+
+		if ($queryResult === false)
+		{
+			$db->transactionRollback();
+			$app->enqueueMessage('Failed to update albums!', 'error');
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+
+		return (bool) $queryResult;
 	}
 
 	/**

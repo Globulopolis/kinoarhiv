@@ -18,6 +18,13 @@
 		<field name="length" type="datetime" default="" label="COM_KA_MUSIC_ALBUMS_FIELD_LENGTH" class="span6"
 			   datatype="time" timeformat="HH:mm:ss"/>
 		<field name="isrc" type="text" label="COM_KA_FIELD_ALBUMS_FIELD_ISRC_LABEL" class="span9" size="45"/>
+
+		<field name="vendors" type="autocomplete" label="COM_KA_MUSIC_VENDORS"
+			   class="span12" default="" data-content="vendors"
+			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
+			   data-maximum-selection-size="5" data-minimum-input-length="1" data-lang="*"/>
+		<field name="vendors_orig" type="hidden"/>
+
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
 			   description="COM_KA_FIELD_NAME_GENRES_DESC" class="span10" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"

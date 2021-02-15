@@ -185,6 +185,15 @@ class KinoarhivModelAlbum extends JModelForm
 			$result->genres_orig = $genres;
 		}
 
+		$vendors = $this->getVendors($id);
+
+		if ($vendors)
+		{
+			$vendors = implode(',', $vendors['id']);
+			$result->vendors = $vendors;
+			$result->vendors_orig = $vendors;
+		}
+
 		$registry = new Registry($result->attribs);
 		$result->attribs = $registry->toArray();
 
@@ -431,6 +440,12 @@ class KinoarhivModelAlbum extends JModelForm
 			$this->saveGenres($data['id'], $data['genres'][0]);
 		}
 
+		// Update labels(vendors).
+		if (!empty($data['vendors']) && ($data['vendors_orig'] != $data['vendors'][0]))
+		{
+			$this->saveGenres($data['id'], $data['vendors'][0]);
+		}
+
 		KAContentHelperBackend::updateGenresStat($data['genres_orig'], $data['genres'], '#__ka_music_rel_genres');
 		KAContentHelperBackend::updateTagMapping($data['id'], $data['tags'], 'com_kinoarhiv.album');
 
@@ -600,6 +615,51 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
+	 * Get list of labels(vendors) for field.
+	 *
+	 * @param   integer  $id  Item ID.
+	 *
+	 * @return  mixed    Array with data, false otherwise.
+	 *
+	 * @since   3.0
+	 */
+	protected function getVendors($id)
+	{
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName('v.id') . ',' . $db->quoteName('v.company_name', 'title'))
+			->from($db->quoteName('#__ka_music_rel_vendors', 'rel'))
+			->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('rel.vendor_id'))
+			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id)
+			->where($db->quoteName('rel.item_type') . ' = 0')
+			->order($db->quoteName('rel.ordering') . ' ASC');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$_vendors = $db->loadAssocList();
+			$vendors = array();
+
+			foreach ($_vendors as $key => $id)
+			{
+				$vendors['id'][$key] = $id['id'];
+				$vendors['title'][$key] = $id['title'];
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $vendors;
+	}
+
+	/**
 	 * Save genres to relation table.
 	 *
 	 * @param   integer  $id      Item ID.
@@ -660,6 +720,78 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			$db->transactionRollback();
 			$app->enqueueMessage('Failed to update genres!', 'error');
+		}
+		else
+		{
+			$db->transactionCommit();
+		}
+
+		$db->unlockTables();
+
+		return (bool) $queryResult;
+	}
+
+	/**
+	 * Save labels(vendors) to relation table.
+	 *
+	 * @param   integer  $id       Item ID.
+	 * @param   string   $vendors  Comma separated string with ID.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	protected function saveVendors($id, $vendors)
+	{
+		$app         = JFactory::getApplication();
+		$db          = $this->getDbo();
+		$vendors     = explode(',', $vendors);
+		$queryResult = true;
+
+		$db->lockTable('#__ka_music_rel_vendors');
+		$db->transactionStart();
+
+		if (!empty($id))
+		{
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__ka_music_rel_vendors'))
+				->where($db->quoteName('item_id') . ' = ' . (int) $id)
+				->where($db->quoteName('item_type') . ' = 0');
+
+			$db->setQuery($query);
+
+			try
+			{
+				$db->execute();
+			}
+			catch (RuntimeException $e)
+			{
+				$app->enqueueMessage($e->getMessage(), 'error');
+
+				return false;
+			}
+		}
+
+		foreach ($vendors as $key => $vendorID)
+		{
+			$query = $db->getQuery(true);
+
+			$query->insert($db->quoteName('#__ka_music_rel_vendors'))
+				->columns($db->quoteName(array('item_type', 'item_id', 'vendor_id', 'ordering')))
+				->values("'0', '" . (int) $id . "', '" . (int) $vendorID . "', '" . $key . "'");
+			$db->setQuery($query . ';');
+
+			if ($db->execute() === false)
+			{
+				$queryResult = false;
+				break;
+			}
+		}
+
+		if ($queryResult === false)
+		{
+			$db->transactionRollback();
+			$app->enqueueMessage('Failed to update labels!', 'error');
 		}
 		else
 		{

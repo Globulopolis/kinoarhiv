@@ -585,6 +585,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 	</div>
 
 	<?php echo $this->form->getInput('genres_orig') . "\n"; ?>
+	<?php echo $this->form->getInput('vendors_orig') . "\n"; ?>
 	<?php echo $this->form->getInput('id') . "\n"; ?>
 	<input type="hidden" name="image_id" value="<?php echo $this->form->getValue('image_id'); ?>" />
 	<input type="hidden" name="img_folder" value="<?php echo $this->item->img_folder; ?>" />

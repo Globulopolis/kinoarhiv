@@ -151,7 +151,7 @@ $columns   = 10;
 							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank">
 								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
 							</a>
-							<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int) $item->id; ?>"
+							<a href="index.php?option=com_kinoarhiv&view=albums&type=albums&movie_id=<?php echo (int) $item->id; ?>"
 							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
 								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
 							</a>
@@ -185,7 +185,7 @@ $columns   = 10;
 							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_TRAILERS'); ?>" target="_blank">
 								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/film.png" border="0" />
 							</a>
-							<a href="index.php?option=com_kinoarhiv&view=music&type=albums&movie_id=<?php echo (int) $item->id; ?>"
+							<a href="index.php?option=com_kinoarhiv&view=albums&type=albums&movie_id=<?php echo (int) $item->id; ?>"
 							   class="hasTooltip" title="<?php echo JText::_('COM_KA_MOVIES_SOUNDS'); ?>" target="_blank">
 								<img src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/music.png" border="0" />
 							</a>
@@ -195,7 +195,8 @@ $columns   = 10;
 							<img border="0" src="<?php echo JUri::root(); ?>media/com_kinoarhiv/images/icons/comments_16.png" />
 						</a>
 						<div class="dropdown" style="display: inline-block;">
-							<a class="dropdown-toggle hasTooltip" data-toggle="dropdown" href="#" title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span	class="icon-out-2"></span></a>
+							<a class="dropdown-toggle hasTooltip" data-toggle="dropdown" href="#"
+							   title="<?php echo JText::_('COM_KA_TABLES_RELATIONS'); ?>"><span class="icon-out-2"></span></a>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 								<li>
 									<a href="index.php?option=com_kinoarhiv&view=relations&task=countries&element=movies&mid=<?php echo (int) $item->id; ?>" target="_blank"><?php echo JText::_('COM_KA_COUNTRIES_TITLE'); ?></a>

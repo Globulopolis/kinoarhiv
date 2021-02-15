@@ -48,14 +48,16 @@ use Joomla\String\StringHelper;
 				<div class="poster">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $this->item->id); ?>"
 					   title="<?php echo $this->item->title; ?>">
-					   <img src="<?php echo $this->item->poster; ?>" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/>
+						<img src="<?php echo $this->item->poster; ?>" width="<?php echo $this->item->posterWidth; ?>"
+							 height="<?php echo $this->item->posterHeight; ?>"
+							 alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/>
 					</a>
 				</div>
 			</div>
 			<div class="right-col">
 				<div class="name-info">
 				<?php if ($this->item->date_of_birth_raw != '0000-00-00'): ?>
-					<div>
+					<div class="item-info-row">
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_BIRTH'); ?></span>
 						<span class="s-col">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=names&content=names&names[birthday]=' . $this->item->date_of_birth_raw); ?>" rel="nofollow">
@@ -69,14 +71,14 @@ use Joomla\String\StringHelper;
 				<?php endif; ?>
 
 				<?php if ($this->item->date_of_death_raw != '0000-00-00'): ?>
-					<div>
+					<div class="item-info-row">
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_DATE_OF_DEATH'); ?></span>
 						<span class="s-col"><?php echo JHtml::_('date', $this->item->date_of_death_raw, JText::_('DATE_FORMAT_LC3')); ?></span>
 					</div>
 				<?php endif; ?>
 
 				<?php if (!empty($this->item->birthplace) || !empty($this->item->country)): ?>
-					<div>
+					<div class="item-info-row">
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_BIRTHPLACE_1'); ?></span>
 						<span class="s-col">
 							<?php echo !empty($this->item->birthplace) ? $this->item->birthplace : ''; ?><?php if (!empty($this->item->birthplace) && !empty($this->item->country)): ?>, <?php endif; ?><?php if (!empty($this->item->country)): ?>
@@ -87,14 +89,14 @@ use Joomla\String\StringHelper;
 				<?php endif; ?>
 
 				<?php if (!empty($this->item->height)): ?>
-					<div>
+					<div class="item-info-row">
 						<span class="f-col"><?php echo JText::_('COM_KA_NAMES_HEIGHT'); ?></span>
 						<span class="s-col"><?php echo $this->item->height; ?></span>
 					</div>
 				<?php endif; ?>
 
 				<?php if (!empty($this->item->career)): ?>
-					<div>
+					<div class="item-info-row">
 						<span class="f-col"><?php echo JText::_('COM_KA_FILTERS_NAMES_CAREER_PLACEHOLDER'); ?></span>
 						<span class="s-col">
 							<?php $career_count = count($this->item->career);
@@ -107,7 +109,7 @@ use Joomla\String\StringHelper;
 				<?php endif; ?>
 
 				<?php if (!empty($this->item->genres)): ?>
-					<div>
+					<div class="item-info-row">
 						<span class="f-col"><?php echo JText::_('COM_KA_GENRES'); ?></span>
 						<span class="s-col">
 							<?php $genres_count = count($this->item->genres);

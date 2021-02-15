@@ -356,7 +356,8 @@ class KinoarhivViewReleases extends JViewLegacy
 					$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
 					$dimension = KAContentHelper::getImageSize(
 						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
-						false
+						true,
+						(int) $this->params->get('music_covers_size')
 					);
 					$item->coverWidth = $dimension['width'];
 					$item->coverHeight = $dimension['height'];

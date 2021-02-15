@@ -120,8 +120,8 @@ class KinoarhivViewName extends JViewLegacy
 					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
 					false
 				);
-				$item->poster_width = $dimension['width'];
-				$item->poster_height = $dimension['height'];
+				$item->posterWidth = $dimension['width'];
+				$item->posterHeight = $dimension['height'];
 			}
 			else
 			{
@@ -144,8 +144,8 @@ class KinoarhivViewName extends JViewLegacy
 					(int) $params->get('size_x_posters'),
 					$item->dimension
 				);
-				$item->poster_width = $dimension['width'];
-				$item->poster_height = $dimension['height'];
+				$item->posterWidth = $dimension['width'];
+				$item->posterHeight = $dimension['height'];
 			}
 		}
 		else
@@ -161,8 +161,8 @@ class KinoarhivViewName extends JViewLegacy
 				(int) $params->get('size_x_posters'),
 				$item->dimension
 			);
-			$item->poster_width = $dimension['width'];
-			$item->poster_height = $dimension['height'];
+			$item->posterWidth = $dimension['width'];
+			$item->posterHeight = $dimension['height'];
 		}
 
 		$localeOffset      = JFactory::getConfig()->get('offset');

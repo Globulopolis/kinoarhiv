@@ -32,6 +32,12 @@
 		<field name="budget" type="text" default="" label="COM_KA_FIELD_MOVIE_BUDGET" class="span6" filter="string"
 			   size="45"/>
 
+		<field name="albums" type="autocomplete" label="COM_KA_MOVIES_SOUNDS"
+			   class="span12" default="" data-content="albums"
+			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
+			   data-maximum-selection-size="10" data-minimum-input-length="1" data-lang="*"/>
+		<field name="albums_orig" type="hidden"/>
+
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
 			   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"

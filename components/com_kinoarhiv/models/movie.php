@@ -314,9 +314,10 @@ class KinoarhivModelMovie extends JModelForm
 
 				foreach ($_result['crew'] as $row)
 				{
+					// Count total items before limit from settings
 					$row['total_items'] = count($row['items']);
 
-					if ($row['total_items'] > 0)
+					if (!empty($row['items']))
 					{
 						$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
 					}
@@ -329,9 +330,10 @@ class KinoarhivModelMovie extends JModelForm
 			{
 				foreach ($_result['cast'] as $row)
 				{
+					// Count total items before limit from settings
 					$row['total_items'] = count($row['items']);
 
-					if ($row['total_items'] > 0)
+					if (!empty($row['items']))
 					{
 						$row['items'] = array_slice($row['items'], 0, $params->get('person_list_limit'));
 					}

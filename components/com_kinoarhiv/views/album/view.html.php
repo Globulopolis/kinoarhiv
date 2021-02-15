@@ -87,7 +87,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	{
 		$app          = JFactory::getApplication();
 		$this->user   = JFactory::getUser();
-		$this->page   = $app->input->get('page', '', 'cmd');
+		$this->page   = $app->input->get('page', '');
 		$this->itemid = $app->input->get('Itemid');
 
 		// Used in layouts
@@ -134,7 +134,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$this->form       = $this->get('Form');
 		$this->pagination = $this->get('Pagination');
 		$this->itemid     = $app->input->get('Itemid');
-		$this->page       = $app->input->get('page', '', 'cmd');
+		$this->page       = $app->input->get('page', '');
 		$this->pagination->hideEmptyLimitstart = true;
 
 		if (count($errors = $this->get('Errors')))
@@ -152,6 +152,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 		// Prepare the data
 		$this->releasesItemid = KAContentHelper::getItemid('releases', array('params' => array('item_type' => 1, 'page_type' => 'list')));
 		$this->profileItemid  = KAContentHelper::getItemid('profile');
+		$this->namesItemid    = KAContentHelper::getItemid('names');
 
 		// Workaround for plugin interaction. Article must contain $text item.
 		$item->text = '';
@@ -547,6 +548,67 @@ class KinoarhivViewAlbum extends JViewLegacy
 		);
 
 		parent::display('covers');
+	}
+
+	/**
+	 * Method to get and show album crew.
+	 *
+	 * @return  mixed
+	 *
+	 * @since  3.0
+	 */
+	protected function crew()
+	{
+		$app    = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item   = $this->get('Crew');
+
+		if (count($errors = $this->get('Errors')))
+		{
+			KAComponentHelper::eventLog(implode("\n", $errors), 'ui');
+
+			return false;
+		}
+
+		// Prepare the data
+		//$this->nameItemid = KAContentHelper::getItemid('names');
+		$item->text         = '';
+		$item->event        = new stdClass;
+		$item->params       = new JObject;
+		$item->params->set(
+			'url',
+			JRoute::_('index.php?option=com_kinoarhiv&view=album&page=crew&id=' . $item->id . '&Itemid=' . $this->itemid, false)
+		);
+
+		$dispatcher = JEventDispatcher::getInstance();
+		JPluginHelper::importPlugin('content');
+		$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.albums', &$item, &$params, 0));
+
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.album', &$item, &$item->params, 0));
+		$item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_kinoarhiv.album', &$item, &$item->params, 0));
+		$item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_kinoarhiv.album', &$item, &$item->params, 0));
+		$item->event->afterDisplayContent = trim(implode("\n", $results));
+
+		$this->params   = $params;
+		$this->item     = $item;
+		$this->metadata = json_decode($item->metadata);
+
+		$this->prepareDocument();
+		$pathway = $app->getPathway();
+		$pathway->addItem(
+			$this->item->title,
+			JRoute::_('index.php?option=com_kinoarhiv&view=album&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
+		$pathway->addItem(
+			JText::_('COM_KA_ALBUM_TAB_CREW'),
+			JRoute::_('index.php?option=com_kinoarhiv&view=album&page=crew&id=' . $this->item->id . '&Itemid=' . $this->itemid)
+		);
+
+		parent::display('crew');
 	}
 
 	/**

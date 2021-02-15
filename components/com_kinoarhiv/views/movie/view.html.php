@@ -352,9 +352,10 @@ class KinoarhivViewMovie extends JViewLegacy
 			return false;
 		}
 
-		$item->text   = '';
-		$item->event  = new stdClass;
-		$item->params = new JObject;
+		$this->namesItemid = KAContentHelper::getItemid('names');
+		$item->text        = '';
+		$item->event       = new stdClass;
+		$item->params      = new JObject;
 		$item->params->set(
 			'url',
 			JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=cast&id=' . $item->id . '&Itemid=' . $this->itemid, false)

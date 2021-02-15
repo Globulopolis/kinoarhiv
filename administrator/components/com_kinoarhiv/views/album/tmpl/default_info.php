@@ -46,7 +46,7 @@ defined('_JEXEC') or die;
 		</fieldset>
 	</div>
 	<div class="span6">
-		<div class="span9">
+		<div class="span12">
 			<fieldset class="form-horizontal">
 				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('year'); ?></div>
@@ -59,6 +59,10 @@ defined('_JEXEC') or die;
 				<div class="control-group">
 					<div class="control-label"><?php echo $this->form->getLabel('isrc'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('isrc'); ?></div>
+				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('vendors'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('vendors'); ?></div>
 				</div>
 			</fieldset>
 		</div>

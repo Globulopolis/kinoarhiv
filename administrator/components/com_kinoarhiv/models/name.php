@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+JLoader::register('KAContentHelperBackend', JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php'));
+
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 

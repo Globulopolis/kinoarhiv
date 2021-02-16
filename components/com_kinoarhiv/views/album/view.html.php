@@ -555,7 +555,7 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 *
 	 * @return  mixed
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	protected function crew()
 	{
@@ -571,10 +571,10 @@ class KinoarhivViewAlbum extends JViewLegacy
 		}
 
 		// Prepare the data
-		//$this->nameItemid = KAContentHelper::getItemid('names');
-		$item->text         = '';
-		$item->event        = new stdClass;
-		$item->params       = new JObject;
+		$this->namesItemid = KAContentHelper::getItemid('names');
+		$item->text        = '';
+		$item->event       = new stdClass;
+		$item->params      = new JObject;
 		$item->params->set(
 			'url',
 			JRoute::_('index.php?option=com_kinoarhiv&view=album&page=crew&id=' . $item->id . '&Itemid=' . $this->itemid, false)

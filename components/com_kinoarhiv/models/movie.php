@@ -516,9 +516,9 @@ class KinoarhivModelMovie extends JModelForm
 		$careers        = array();
 
 		$query = $db->getQuery(true)
-			->select('id, title')
+			->select($db->quoteName(array('id', 'title')))
 			->from($db->quoteName('#__ka_names_career'))
-			->order('ordering ASC');
+			->order($db->quoteName('ordering') . ' ASC');
 
 		$db->setQuery($query);
 
@@ -540,29 +540,40 @@ class KinoarhivModelMovie extends JModelForm
 		}
 
 		$queryCrew = $db->getQuery(true)
-			->select("n.id, n.name, n.latin_name, n.alias, n.fs_alias, n.gender, t.type, t.role, t.is_actors, " .
-				"t.voice_artists, d.id AS dub_id, d.name AS dub_name, d.latin_name AS dub_latin_name, " .
-				"d.alias AS dub_alias, d.fs_alias AS dub_fs_alias, d.gender AS dub_gender, " .
-				"GROUP_CONCAT(r.role SEPARATOR ', ') AS dub_role, ac.desc, g.filename AS url_photo, " .
-				"dg.filename AS dub_url_photo"
+			->select(
+				$db->quoteName(
+					array(
+						'n.id', 'n.name', 'n.latin_name', 'n.alias', 'n.fs_alias', 'n.gender', 't.type', 't.role',
+						't.is_actors', 't.voice_artists', 'ac.desc', 'g.filename', 'g.dimension'
+					)
+				)
+			)
+			->select(
+				$db->quoteName('d.id', 'dub_id') . ',' . $db->quoteName('d.name', 'dub_name') . ',' .
+				$db->quoteName('d.latin_name', 'dub_latin_name') . ', ' . $db->quoteName('d.alias', 'dub_alias') . ',' .
+				$db->quoteName('d.fs_alias', 'dub_fs_alias') . ', ' . $db->quoteName('d.gender', 'dub_gender') . ',' .
+				'GROUP_CONCAT(' . $db->quoteName('r.role') . ' SEPARATOR ", ") AS dub_role, ' .
+				$db->quoteName('dg.filename', 'dub_filename') . ',' . $db->quoteName('dg.dimension', 'dub_dimension')
 			)
 			->from($db->quoteName('#__ka_names', 'n'))
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id)
-			->join('LEFT', $db->quoteName('#__ka_names', 'd') . ' ON d.id = t.dub_id AND d.state = 1 AND d.access IN (' . $groups . ') AND d.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 'r') . ' ON r.dub_id = n.id AND r.movie_id = ' . (int) $id)
-			->join('LEFT', $db->quoteName('#__ka_rel_names', 'ac') . ' ON ac.name_id = n.id AND ac.movie_id = ' . (int) $id)
-			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1')
-			->join('LEFT', $db->quoteName('#__ka_names_gallery', 'dg') . ' ON dg.name_id = d.id AND dg.type = 3 AND dg.frontpage = 1');
+			->leftJoin($db->quoteName('#__ka_rel_names', 't') . ' ON t.name_id = n.id AND t.movie_id = ' . (int) $id)
+			->leftJoin($db->quoteName('#__ka_names', 'd') . ' ON d.id = t.dub_id AND d.state = 1 AND d.access IN (' . $groups . ') AND d.language IN (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ')')
+			->leftJoin($db->quoteName('#__ka_rel_names', 'r') . ' ON r.dub_id = n.id AND r.movie_id = ' . (int) $id)
+			->leftJoin($db->quoteName('#__ka_rel_names', 'ac') . ' ON ac.name_id = n.id AND ac.movie_id = ' . (int) $id)
+			->leftJoin($db->quoteName('#__ka_names_gallery', 'g') . ' ON g.name_id = n.id AND g.type = 3 AND g.frontpage = 1')
+			->leftJoin($db->quoteName('#__ka_names_gallery', 'dg') . ' ON dg.name_id = d.id AND dg.type = 3 AND dg.frontpage = 1');
 
 			$subqueryCrew = $db->getQuery(true)
-				->select('name_id')
+				->select($db->quoteName('name_id'))
 				->from($db->quoteName('#__ka_rel_names'))
-				->where('movie_id = ' . (int) $id);
+				->where($db->quoteName('movie_id') . ' = ' . (int) $id);
 
-		$queryCrew->where('n.id IN (' . $subqueryCrew . ') AND n.state = 1 AND n.access IN (' . $groups . ')')
-			->where('n.language IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
-			->group('n.id')
-			->order('t.ordering ASC');
+		$queryCrew->where($db->quoteName('n.id') . ' IN (' . $subqueryCrew . ')')
+			->where($db->quoteName('n.state') . ' = 1')
+			->where($db->quoteName('n.access') . ' IN (' . $groups . ')')
+			->where($db->quoteName('n.language') . ' IN (' . $db->quote($lang->getTag()) . ',' . $db->quote('*') . ')')
+			->group($db->quoteName('n.id'))
+			->order($db->quoteName('t.ordering') . ' ASC');
 
 		$db->setQuery($queryCrew);
 
@@ -585,90 +596,6 @@ class KinoarhivModelMovie extends JModelForm
 		{
 			foreach (explode(',', $value->type) as $k => $type)
 			{
-				// Process posters
-				if ($throttleEnable == 0)
-				{
-					// Cast and crew photo
-					$checkingPath = JPath::clean(
-						$params->get('media_actor_photo_root') . '/' . $value->fs_alias . '/' . $value->id . '/photo/' . $value->url_photo
-					);
-					$noCover = ($value->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-					if (!is_file($checkingPath))
-					{
-						$value->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
-					}
-					else
-					{
-						$value->fs_alias = rawurlencode($value->fs_alias);
-
-						// This trick will remove double slash in URL if alias is empty.
-						$value->fs_alias = empty($value->fs_alias) ? '' : $value->fs_alias . '/';
-
-						if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-						{
-							$value->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-								. $value->fs_alias . $value->id . '/photo/thumb_' . $value->url_photo;
-						}
-						else
-						{
-							$value->poster = $params->get('media_actor_photo_root_www') . '/' . $value->fs_alias
-								. $value->id . '/photo/thumb_' . $value->url_photo;
-						}
-					}
-
-					// Dub actors photo
-					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
-					{
-						$checkingPath1 = JPath::clean(
-							$params->get('media_actor_photo_root') . '/' . $value->dub_fs_alias . '/' .
-							$value->dub_id . '/photo/' . $value->dub_url_photo
-						);
-						$noCover1 = ($value->dub_gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-						if (!is_file($checkingPath1))
-						{
-							$value->dub_url_photo = JUri::base() . 'media/com_kinoarhiv/images/themes/' .
-							$params->get('ka_theme') . '/' . $noCover1 . '.png';
-						}
-						else
-						{
-							$value->dub_fs_alias = rawurlencode($value->dub_fs_alias);
-
-							// This trick will remove double slash in URL if alias is empty.
-							$value->dub_fs_alias = empty($value->dub_fs_alias) ? '' : $value->dub_fs_alias . '/';
-
-							if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-							{
-								$value->dub_url_photo = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-									. $value->dub_fs_alias . $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
-							}
-							else
-							{
-								$value->dub_url_photo = $params->get('media_actor_photo_root_www') . '/' . $value->dub_fs_alias
-									. $value->dub_id . '/photo/thumb_' . $value->dub_url_photo;
-							}
-						}
-					}
-				}
-				else
-				{
-					$value->poster = JRoute::_(
-						'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $value->id .
-						'&fa=' . urlencode($value->fs_alias) . '&fn=' . $value->url_photo . '&format=raw&Itemid=' . $itemid .
-						'&thumbnail=1&gender=' . $value->gender
-					);
-
-					if (isset($careers[$type]) && $value->is_actors == 1 && $value->voice_artists == 0)
-					{
-						$value->dub_url_photo = JRoute::_(
-							'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $value->dub_id .
-							'&fa=' . urlencode($value->dub_fs_alias) . '&fn=' . $value->dub_url_photo . '&format=raw&Itemid=' . $itemid .
-							'&thumbnail=1&gender=' . $value->dub_gender
-						);
-					}
-				}
-
 				// Crew
 				if (isset($careers[$type]) && $value->is_actors == 0 && $value->voice_artists == 0)
 				{
@@ -679,7 +606,16 @@ class KinoarhivModelMovie extends JModelForm
 						'name'       => $value->name,
 						'latin_name' => $value->latin_name,
 						'alias'      => $value->alias,
-						'poster'     => $value->poster,
+						'poster'     => KAContentHelper::getPersonPoster(
+							(object) array(
+								'id'        => $value->id,
+								'fs_alias'  => $value->fs_alias,
+								'filename'  => $value->filename,
+								'gender'    => $value->gender,
+								'dimension' => $value->dimension
+							),
+							$params
+						),
 						'gender'     => $value->gender,
 						'role'       => $value->role,
 						'desc'       => $value->desc
@@ -698,14 +634,32 @@ class KinoarhivModelMovie extends JModelForm
 						'name'           => $value->name,
 						'latin_name'     => $value->latin_name,
 						'alias'          => $value->alias,
-						'poster'         => $value->poster,
+						'poster'         => KAContentHelper::getPersonPoster(
+							(object) array(
+								'id'        => $value->id,
+								'fs_alias'  => $value->fs_alias,
+								'filename'  => $value->filename,
+								'gender'    => $value->gender,
+								'dimension' => $value->dimension
+							),
+							$params
+						),
 						'gender'         => $value->gender,
 						'role'           => $value->role,
 						'dub_id'         => $value->dub_id,
 						'dub_name'       => $value->dub_name,
 						'dub_latin_name' => $value->dub_latin_name,
 						'dub_alias'      => $value->dub_alias,
-						'dub_url_photo'  => $value->dub_url_photo,
+						'posterDub'      => KAContentHelper::getPersonPoster(
+							(object) array(
+								'id'        => $value->dub_id,
+								'fs_alias'  => $value->dub_fs_alias,
+								'filename'  => $value->dub_filename,
+								'gender'    => $value->dub_gender,
+								'dimension' => $value->dub_dimension
+							),
+							$params
+						),
 						'dub_gender'     => $value->dub_gender,
 						'dub_role'       => $value->dub_role,
 						'desc'           => $value->desc
@@ -722,7 +676,16 @@ class KinoarhivModelMovie extends JModelForm
 						'name'       => $value->name,
 						'latin_name' => $value->latin_name,
 						'alias'      => $value->alias,
-						'poster'     => $value->poster,
+						'poster'     => KAContentHelper::getPersonPoster(
+							(object) array(
+								'id'        => $value->id,
+								'fs_alias'  => $value->fs_alias,
+								'filename'  => $value->filename,
+								'gender'    => $value->gender,
+								'dimension' => $value->dimension
+							),
+							$params
+						),
 						'gender'     => $value->gender,
 						'role'       => $value->dub_role,
 						'desc'       => $value->desc

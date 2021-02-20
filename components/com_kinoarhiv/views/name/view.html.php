@@ -70,8 +70,9 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	protected function info($tpl)
 	{
-		$app  = JFactory::getApplication();
-		$item = $this->get('Data');
+		$app    = JFactory::getApplication();
+		$params = JComponentHelper::getParams('com_kinoarhiv');
+		$item   = $this->get('Data');
 
 		if (count($errors = $this->get('Errors')))
 		{
@@ -79,9 +80,6 @@ class KinoarhivViewName extends JViewLegacy
 
 			return false;
 		}
-
-		$params = JComponentHelper::getParams('com_kinoarhiv');
-		$throttleEnable = $params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		// Build title string
@@ -105,65 +103,7 @@ class KinoarhivViewName extends JViewLegacy
 
 		$item->dates .= ')';
 
-		$checkingPath = JPath::clean(
-			$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
-		);
-
-		if ($throttleEnable == 0)
-		{
-			$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-			if (!is_file($checkingPath))
-			{
-				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
-				$dimension = KAContentHelper::getImageSize(
-					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
-					false
-				);
-				$item->posterWidth = $dimension['width'];
-				$item->posterHeight = $dimension['height'];
-			}
-			else
-			{
-				$item->fs_alias = rawurlencode($item->fs_alias);
-
-				if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-				{
-					$item->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-						. $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
-				}
-				else
-				{
-					$item->poster = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/'
-						. $item->id . '/photo/thumb_' . $item->filename;
-				}
-
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $params->get('size_x_posters'),
-					$item->dimension
-				);
-				$item->posterWidth = $dimension['width'];
-				$item->posterHeight = $dimension['height'];
-			}
-		}
-		else
-		{
-			$item->poster = JRoute::_(
-				'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
-				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $this->itemid .
-				'&thumbnail=1&gender=' . $item->gender
-			);
-			$dimension = KAContentHelper::getImageSize(
-				$checkingPath,
-				true,
-				(int) $params->get('size_x_posters'),
-				$item->dimension
-			);
-			$item->posterWidth = $dimension['width'];
-			$item->posterHeight = $dimension['height'];
-		}
+		$item->photo = KAContentHelper::getPersonPhoto($item, $params);
 
 		$localeOffset      = JFactory::getConfig()->get('offset');
 		$dateOfBirthFirst  = new DateTime($item->date_of_birth_raw . ' ' . date('H:i:s'), new DateTimeZone($localeOffset));
@@ -358,78 +298,18 @@ class KinoarhivViewName extends JViewLegacy
 		// Build title string
 		$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
-		$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-		foreach ($items as $_item)
+		foreach ($items as $key => $value)
 		{
-			$checkingPath = JPath::clean(
-				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename
+			$items[$key]->photo = KAContentHelper::getPersonPhoto(
+				(object) array(
+					'id'        => $value->name_id,
+					'fs_alias'  => $value->fs_alias,
+					'filename'  => $value->filename,
+					'gender'    => $value->gender,
+					'dimension' => $value->dimension
+				),
+				$params
 			);
-
-			if ($params->get('throttle_image_enable', 0) == 0)
-			{
-				$item->fs_alias = rawurlencode($item->fs_alias);
-
-				if (!is_file($checkingPath))
-				{
-					$_item->image = 'javascript:void(0);';
-					$_item->th_image = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme')
-						. '/' . $noCover . '.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
-						false
-					);
-					$_item->th_image_width = $dimension['width'];
-					$_item->th_image_height = $dimension['height'];
-				}
-				else
-				{
-					if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
-					{
-						$_item->image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-							. $item->fs_alias . '/' . $item->id . '/photo/' . $_item->filename;
-						$_item->th_image = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1) . '/'
-							. $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $_item->filename;
-					}
-					else
-					{
-						$_item->image = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/'
-							. $item->id . '/photo/' . $_item->filename;
-						$_item->th_image = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias . '/'
-							. $item->id . '/photo/thumb_' . $_item->filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $params->get('size_x_photo'),
-						$_item->dimension
-					);
-					$_item->th_image_width = $dimension['width'];
-					$_item->th_image_height = $dimension['height'];
-				}
-			}
-			else
-			{
-				$_item->image = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid .
-					'&gender=' . $item->gender
-				);
-				$_item->th_image = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid .
-					'&thumbnail=1&gender=' . $item->gender
-				);
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $params->get('size_x_photo'),
-					$_item->dimension
-				);
-				$_item->th_image_width = $dimension['width'];
-				$_item->th_image_height = $dimension['height'];
-			}
 		}
 
 		$this->params     = $params;
@@ -526,11 +406,10 @@ class KinoarhivViewName extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$menus      = $app->getMenu();
-		$menu       = $menus->getActive();
-		$menuParams = $menu->getParams();
-		$pathway    = $app->getPathway();
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
+		$pathway = $app->getPathway();
 
 		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_PERSONS');
 
@@ -544,29 +423,25 @@ class KinoarhivViewName extends JViewLegacy
 		$titleAdd = empty($this->page) ? '' : ' - ' . JText::_('COM_KA_NAMES_TAB_' . StringHelper::ucwords($this->page));
 		$this->document->setTitle($this->item->title . $titleAdd);
 
-		if ($menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->item->metadesc)
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
+			$this->document->setDescription($this->item->metadesc);
 		}
-		else
+		elseif ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('meta_description'));
-		}
-
-		if ($menu && $menuParams->get('menu-meta_keywords') != '')
-		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($menu && $menuParams->get('robots') != '')
+		if ($this->item->metakey)
 		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
+			$this->document->setMetadata('keywords', $this->item->metakey);
 		}
-		else
+		elseif ($this->params->get('menu-meta_keywords'))
+		{
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+		}
+
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

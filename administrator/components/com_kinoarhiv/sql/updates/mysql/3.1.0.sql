@@ -34,7 +34,6 @@ ALTER TABLE `#__ka_music_albums`
   ADD COLUMN `created_by` INT(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `created`,
   ADD COLUMN `modified` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `created_by`,
   ADD COLUMN `length` VARCHAR (16) DEFAULT '' NOT NULL AFTER `year`,
-  ADD COLUMN `isrc` VARCHAR(16) NOT NULL AFTER `length`,
   ADD COLUMN `ordering` INT (11) DEFAULT 0 NOT NULL AFTER `tracks_preview_path`,
   ADD COLUMN `metakey` TEXT NOT NULL AFTER `ordering`,
   ADD COLUMN `metadesc` TEXT NOT NULL AFTER `metakey`,

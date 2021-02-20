@@ -275,7 +275,7 @@ class KinoarhivModelNames extends JModelList
 
 		$orderCol = $this->state->get('list.ordering', $db->quoteName('n.ordering'));
 		$orderDirn = $this->state->get('list.direction', 'DESC');
-		$query->order($db->escape('n.' . $orderCol . ' ' . $orderDirn));
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 
 		return $query;
 	}

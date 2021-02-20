@@ -73,6 +73,10 @@ defined('_JEXEC') or die;
 		});
 	});
 </script>
-<div class="player">
-	<audio controls style="width: 100%;" id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
+<div class="player-layout">
+	<div class="row-fluid player">
+		<div class="span12">
+			<audio controls style="width: 100%;" id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
+		</div>
+	</div>
 </div>

@@ -465,7 +465,7 @@ class KinoarhivModelName extends JModelList
 		if ($page == 'wallpapers')
 		{
 			$query = $db->getQuery(true)
-				->select('id, filename, dimension')
+				->select($db->quoteName(array('id', 'filename', 'dimension')))
 				->from($db->quoteName('#__ka_names_gallery'))
 				->where('name_id = ' . (int) $id . ' AND state = 1 AND type = 1');
 
@@ -477,14 +477,15 @@ class KinoarhivModelName extends JModelList
 		elseif ($page == 'posters')
 		{
 			$query = $db->getQuery(true)
-				->select('id, filename, dimension')
+				->select($db->quoteName(array('id', 'filename', 'dimension')))
 				->from($db->quoteName('#__ka_names_gallery'))
 				->where('name_id = ' . (int) $id . ' AND state = 1 AND type = 2');
 		}
 		elseif ($page == 'photos')
 		{
 			$query = $db->getQuery(true)
-				->select('g.id, g.filename, g.dimension, n.gender')
+				->select($db->quoteName(array('g.id', 'g.filename', 'g.dimension', 'n.gender', 'n.fs_alias')))
+				->select($db->quoteName('n.id', 'name_id'))
 				->from($db->quoteName('#__ka_names_gallery', 'g'))
 				->join('LEFT', $db->quoteName('#__ka_names', 'n') . ' ON n.id = g.name_id')
 				->where('g.name_id = ' . (int) $id . ' AND g.state = 1 AND g.type = 3');

@@ -10,8 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
 JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 ?>
 <div class="uk-article ka-content">
@@ -51,9 +49,10 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 						<div class="poster">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $this->escape($item->title); ?>">
 								<div>
-									<img data-original="<?php echo $item->poster; ?>" class="lazy"
+									<img data-original="<?php echo $item->photo->photoThumb; ?>" class="lazy"
 										 alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->escape($item->title); ?>"
-										 width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
+										 width="<?php echo $item->photo->photoThumbWidth; ?>"
+										 height="<?php echo $item->photo->photoThumbHeight; ?>"/>
 								</div>
 							</a>
 						</div>
@@ -64,7 +63,8 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 										<?php echo JText::_('COM_KA_NAMES_BIRTHPLACE'); ?>
 										<?php echo !empty($item->birthplace) ? $item->birthplace . ', ' : ''; ?>
 										<img class="ui-icon-country" alt="<?php echo $item->country; ?>"
-											 src="media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png"> <?php echo $item->country; ?>
+											 src="media/com_kinoarhiv/images/icons/countries/<?php echo $item->code; ?>.png"/>
+											&nbsp;<?php echo $item->country; ?>
 									</div>
 								<?php endif; ?>
 

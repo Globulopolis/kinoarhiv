@@ -19,7 +19,7 @@ defined('_JEXEC') or die;
 
 	<?php echo $this->form->getLabel('alphabet_movies'); ?>
 
-	<div class="movie-ab">
+	<div class="alphabet">
 	<?php $movieAlphabet = $this->data->params->get('movie_alphabet');
 
 	if (empty($movieAlphabet)): ?>
@@ -40,8 +40,8 @@ defined('_JEXEC') or die;
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[movie][letters][]" value="" class="letters span12" />
-							<button type="button" class="btn btn-success cmd-abm-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-danger cmd-abm-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>
@@ -69,8 +69,8 @@ defined('_JEXEC') or die;
 						<div class="btn-group span10">
 							<input type="text" name="letters[movie][letters][]" value="<?php echo implode(',', $letters->letters); ?>"
 								   class="letters span12" />
-							<button type="button" class="btn btn-success cmd-abm-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-danger cmd-abm-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>
@@ -82,7 +82,7 @@ defined('_JEXEC') or die;
 
 	<?php echo $this->form->getLabel('alphabet_names'); ?>
 
-	<div class="name-ab">
+	<div class="alphabet">
 	<?php $nameAlphabet = $this->data->params->get('name_alphabet');
 
 	if (empty($nameAlphabet)): ?>
@@ -103,8 +103,8 @@ defined('_JEXEC') or die;
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[name][letters][]" value="" class="letters span12" />
-							<button type="button" class="btn btn-success cmd-abn-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-danger cmd-abn-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>
@@ -132,8 +132,8 @@ defined('_JEXEC') or die;
 						<div class="btn-group span10">
 							<input type="text" name="letters[name][letters][]" value="<?php echo implode(',', $letters->letters); ?>"
 								   class="letters span12" />
-							<button type="button" class="btn btn-success cmd-abn-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-danger cmd-abn-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>
@@ -145,7 +145,7 @@ defined('_JEXEC') or die;
 
 	<?php echo $this->form->getLabel('alphabet_albums'); ?>
 
-	<div class="album-ab">
+	<div class="alphabet">
 	<?php $albumAlphabet = $this->data->params->get('album_alphabet');
 
 	if (empty($albumAlphabet)): ?>
@@ -166,8 +166,8 @@ defined('_JEXEC') or die;
 					<div class="controls">
 						<div class="btn-group span10">
 							<input type="text" name="letters[album][letters][]" value="" class="letters span12" />
-							<button type="button" class="btn btn-success cmd-abn-new-row"><span class="icon-plus"></span></button>
-							<button type="button" class="btn btn-danger cmd-abn-remove-row"><span class="icon-minus"></span></button>
+							<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+							<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 						</div>
 					</div>
 				</div>
@@ -195,8 +195,8 @@ defined('_JEXEC') or die;
 							<div class="btn-group span10">
 								<input type="text" name="letters[album][letters][]" value="<?php echo implode(',', $letters->letters); ?>"
 									   class="letters span12" />
-								<button type="button" class="btn btn-success cmd-abn-new-row"><span class="icon-plus"></span></button>
-								<button type="button" class="btn btn-danger cmd-abn-remove-row"><span class="icon-minus"></span></button>
+								<button type="button" class="btn btn-success cmd-ab-new-row"><span class="icon-plus"></span></button>
+								<button type="button" class="btn btn-danger cmd-ab-remove-row"><span class="icon-minus"></span></button>
 							</div>
 						</div>
 					</div>

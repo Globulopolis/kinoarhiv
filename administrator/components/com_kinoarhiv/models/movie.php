@@ -2083,6 +2083,22 @@ echo $query;
 			$app->enqueueMessage($e->getMessage(), 'error');
 		}
 
+		// Remove associated music albums
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_music_rel_movies'))
+			->where($db->quoteName('movie_id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
 		// Remove favorited and watched movies
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__ka_user_marked_movies'))

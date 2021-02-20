@@ -75,8 +75,7 @@ class KinoarhivViewNames extends JViewLegacy
 		$mergedParams->merge($params);
 		$this->params = $mergedParams;
 
-		$this->itemid   = $app->input->get('Itemid', 0, 'int');
-		$throttleEnable = $this->params->get('throttle_image_enable', 0);
+		$this->itemid = $app->input->get('Itemid', 0, 'int');
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -117,65 +116,7 @@ class KinoarhivViewNames extends JViewLegacy
 			// Compose title
 			$item->title = KAContentHelper::formatItemTitle($item->name, $item->latin_name);
 
-			$checkingPath = JPath::clean(
-				$this->params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename
-			);
-
-			if ($throttleEnable == 0)
-			{
-				$noCover = ($item->gender == 0) ? 'no_name_cover_f' : 'no_name_cover_m';
-
-				if (!is_file($checkingPath))
-				{
-					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/' . $noCover . '.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/' . $noCover . '.png',
-						false
-					);
-					$item->poster_width = $dimension['width'];
-					$item->poster_height = $dimension['height'];
-				}
-				else
-				{
-					$item->fs_alias = rawurlencode($item->fs_alias);
-
-					if (StringHelper::substr($this->params->get('media_actor_photo_root_www'), 0, 1) == '/')
-					{
-						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_actor_photo_root_www'), 1)
-							. '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
-					}
-					else
-					{
-						$item->poster = $this->params->get('media_actor_photo_root_www') . '/' . $item->fs_alias
-							. '/' . $item->id . '/photo/thumb_' . $item->filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $this->params->get('size_x_posters'),
-						$item->dimension
-					);
-					$item->poster_width = $dimension['width'];
-					$item->poster_height = $dimension['height'];
-				}
-			}
-			else
-			{
-				$item->poster = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $this->itemid .
-					'&thumbnail=1&gender=' . $item->gender
-				);
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $this->params->get('size_x_posters'),
-					$item->dimension
-				);
-				$item->poster_width = $dimension['width'];
-				$item->poster_height = $dimension['height'];
-			}
+			$item->photo = KAContentHelper::getPersonPhoto($item, $params);
 		}
 
 		$this->user = $user;
@@ -195,10 +136,9 @@ class KinoarhivViewNames extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$pathway    = $app->getPathway();
-		$menuParams = $this->menu->getParams();
-		$title      = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_PERSONS');
+		$app     = JFactory::getApplication();
+		$pathway = $app->getPathway();
+		$title   = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_PERSONS');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -218,29 +158,17 @@ class KinoarhivViewNames extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($this->menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
-		}
-		else
-		{
-			$this->document->setDescription($this->params->get('meta_description'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
+		if ($this->params->get('menu-meta_keywords'))
 		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 		}
 
-		if ($this->menu && $menuParams->get('robots') != '')
-		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
-		}
-		else
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

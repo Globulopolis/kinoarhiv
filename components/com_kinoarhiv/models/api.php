@@ -875,7 +875,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$page    = $this->input->get('page', 0, 'int');
 		$orderby = $this->input->get('sidx', '1', 'string');
 		$order   = $this->input->get('sord', 'asc', 'word');
-		$field   = $this->input->get('searchField', '', 'cmd');
+		$field   = $this->input->get('searchField', '');
 		$term    = $this->input->get('searchString', '', 'string');
 		$operand = $this->input->get('searchOper', '', 'word');
 		$careers = array();
@@ -1090,7 +1090,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$orderby    = $this->input->get('sidx', '1', 'string');
 		$order      = $this->input->get('sord', 'asc', 'word');
-		$field      = $this->input->get('searchField', '', 'cmd');
+		$field      = $this->input->get('searchField', '');
 		$term       = $this->input->get('searchString', '', 'string');
 		$operand    = $this->input->get('searchOper', '', 'word');
 		$result     = (object) array();
@@ -1174,7 +1174,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$orderby    = $this->input->get('sidx', '1', 'string');
 		$order      = $this->input->get('sord', 'asc', 'word');
-		$field      = $this->input->get('searchField', '', 'cmd');
+		$field      = $this->input->get('searchField', '');
 		$term       = $this->input->get('searchString', '', 'string');
 		$operand    = $this->input->get('searchOper', '', 'word');
 		$result     = (object) array();
@@ -1272,7 +1272,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$orderby    = $this->input->get('sidx', '1', 'string');
 		$order      = $this->input->get('sord', 'asc', 'word');
-		$field      = $this->input->get('searchField', '', 'cmd');
+		$field      = $this->input->get('searchField', '');
 		$term       = $this->input->get('searchString', '', 'string');
 		$operand    = $this->input->get('searchOper', '', 'word');
 		$itemType   = $this->input->get('item_type', null, 'int');
@@ -1376,7 +1376,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$limitstart = $limitstart <= 0 ? 0 : $limitstart;
 		$orderby    = $this->input->get('sidx', '1', 'string');
 		$order      = $this->input->get('sord', 'asc', 'word');
-		$field      = $this->input->get('searchField', '', 'cmd');
+		$field      = $this->input->get('searchField', '');
 		$term       = $this->input->get('searchString', '', 'string');
 		$operand    = $this->input->get('searchOper', '', 'word');
 		$result     = (object) array();
@@ -1459,7 +1459,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$page    = $this->input->get('page', 0, 'int');
 		$orderby = $this->input->get('sidx', '1', 'string');
 		$order   = $this->input->get('sord', 'asc', 'word');
-		$field   = $this->input->get('searchField', '', 'cmd');
+		$field   = $this->input->get('searchField', '');
 		$term    = $this->input->get('searchString', '', 'string');
 		$operand = $this->input->get('searchOper', '', 'word');
 		$query   = $db->getQuery(true);
@@ -1467,7 +1467,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$query->select($db->quoteName('n.id', 'name_id'))
 			->select($db->quoteName(array('n.name', 'n.latin_name', 'n.date_of_birth', 't.career_id', 't.id', 't.role', 't.ordering', 'c.title')))
 			->from($db->quoteName('#__ka_names', 'n'))
-			->leftJoin($db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id)
+			->leftJoin($db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id . ' AND t.item_type = 0')
 			->leftJoin($db->quoteName('#__ka_names_career', 'c') . ' ON c.id = t.career_id');
 
 		$subqueryWhere = $db->getQuery(true)

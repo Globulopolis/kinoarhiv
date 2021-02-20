@@ -121,4 +121,20 @@ jQuery(document).ready(function($){
 	$('.cmd-delete-review').click(function(e){
 		return confirm($(this).text() + '?');
 	});
+
+	$('.cmd-track-info').click(function(e){
+		e.preventDefault();
+
+		$.colorbox({
+			html: '<div class="desc">' + $('span#info_' + $(this).data('id')).html() + '</div>',
+			height: '80%',
+			width: '80%'
+		});
+	});
+
+	$('.cmd-playlist-add').click(function(e){
+		e.preventDefault();
+
+		alert('Not implemented.');
+	});
 });

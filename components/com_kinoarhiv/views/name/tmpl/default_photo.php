@@ -49,8 +49,11 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 				foreach ($this->items as $photo): ?>
 					<div class="thumb">
 						<div class="item">
-							<a href="<?php echo $photo->image; ?>" title="<?php echo $this->item->title; ?>" rel="photos">
-								<img data-original="<?php echo $photo->th_image; ?>" class="lazy" alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>" width="<?php echo $photo->th_image_width; ?>" height="<?php echo $photo->th_image_height; ?>"/>
+							<a href="<?php echo $photo->photo->photo; ?>" title="<?php echo $this->item->title; ?>" rel="photos">
+								<img data-original="<?php echo $photo->photo->photoThumb; ?>" class="lazy"
+									 alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"
+									 width="<?php echo $photo->photo->photoThumbWidth; ?>"
+									 height="<?php echo $photo->photo->photoThumbHeight; ?>"/>
 							</a>
 						</div>
 						<ul>

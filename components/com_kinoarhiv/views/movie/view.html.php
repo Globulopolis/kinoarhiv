@@ -1185,10 +1185,9 @@ class KinoarhivViewMovie extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$pathway    = $app->getPathway();
-		$menuParams = $this->menu->getParams();
-		$title      = ($this->menu && $this->menu->title && $this->menu->link == 'index.php?option=com_kinoarhiv&view=movies')
+		$app     = JFactory::getApplication();
+		$pathway = $app->getPathway();
+		$title   = ($this->menu && $this->menu->title && $this->menu->link == 'index.php?option=com_kinoarhiv&view=movies')
 			? $this->menu->title
 			: JText::_('COM_KA_MOVIES');
 
@@ -1213,29 +1212,25 @@ class KinoarhivViewMovie extends JViewLegacy
 
 		$this->document->setTitle($title);
 
-		if ($this->menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->item->metadesc)
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
+			$this->document->setDescription($this->item->metadesc);
 		}
-		else
+		elseif ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('meta_description'));
-		}
-
-		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
-		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($this->menu && $menuParams->get('robots') != '')
+		if ($this->item->metakey)
 		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
+			$this->document->setMetadata('keywords', $this->item->metakey);
 		}
-		else
+		elseif ($this->params->get('menu-meta_keywords'))
+		{
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+		}
+
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

@@ -66,11 +66,10 @@ class KinoarhivViewGenres extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$menus      = $app->getMenu();
-		$menu       = $menus->getActive();
-		$menuParams = $menu->getParams();
-		$title      = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_GENRES');
+		$app   = JFactory::getApplication();
+		$menus = $app->getMenu();
+		$menu  = $menus->getActive();
+		$title = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_GENRES');
 
 		if ($app->get('sitename_pagetitles', 0) == 1)
 		{
@@ -83,29 +82,17 @@ class KinoarhivViewGenres extends JViewLegacy
 
 		$this->document->setTitle($title);
 
-		if ($menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
-		}
-		else
-		{
-			$this->document->setDescription($this->params->get('meta_description'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($menu && $menuParams->get('menu-meta_keywords') != '')
+		if ($this->params->get('menu-meta_keywords'))
 		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 		}
 
-		if ($menu && $menuParams->get('robots') != '')
-		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
-		}
-		else
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

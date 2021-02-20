@@ -90,15 +90,14 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.rateit.min.js');
 						endif; ?>
 
 						<?php
-						// TODO Not yet ready
-						/*echo JLayoutHelper::render('layouts.content.tracklist',
+						echo JLayoutHelper::render('layouts.content.tracklist',
 							array(
-								'tracks'  => $this->item->tracks,
-								'guest'   => $this->user->get('guest'),
-								'albumID' => $album->id
+								'params' => $this->params,
+								'item'   => $album,
+								'guest'  => $this->user->get('guest')
 							),
 							JPATH_COMPONENT
-						);*/
+						);
 						?>
 					</div>
 				</div>

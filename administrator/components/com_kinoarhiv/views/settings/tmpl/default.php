@@ -92,9 +92,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 			}
 		});
 
-		// For movie alphabet
-		var cloned_m_rows = $('.movie-ab .letters-lang').length;
-		$('.cmd-abm-new-row').click(function(e){
+		// For alphabet
+		var cloned_rows = $('.alphabet .letters-lang').length;
+		$('.cmd-ab-new-row').click(function(e){
 			e.preventDefault();
 			var row = $(this).closest('.row-fluid');
 			var cloned_row = row.clone(true);
@@ -102,36 +102,14 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery-ui.min.js');
 			row.after(cloned_row);
 			$('.letters-lang', cloned_row).val('');
 			$('.letters', cloned_row).val('');
-			cloned_m_rows++;
+			cloned_rows++;
 		});
-		$('.cmd-abm-remove-row').click(function(e){
+		$('.cmd-ab-remove-row').click(function(e){
 			e.preventDefault();
 
-			if (cloned_m_rows > 1) {
+			if (cloned_rows > 1) {
 				$(this).closest('.row-fluid').remove();
-				cloned_m_rows--;
-			}
-		});
-		// End
-
-		// For persons(names) alphabet
-		var cloned_n_rows = $('.name-ab .letters-lang').length;
-		$('.cmd-abn-new-row').click(function(e){
-			e.preventDefault();
-			var row = $(this).closest('.row-fluid');
-			var cloned_row = row.clone(true);
-
-			row.after(cloned_row);
-			$('.letters-lang', cloned_row).val('');
-			$('.letters', cloned_row).val('');
-			cloned_n_rows++;
-		});
-		$('.cmd-abn-remove-row').click(function(e){
-			e.preventDefault();
-
-			if (cloned_n_rows > 1) {
-				$(this).closest('.row-fluid').remove();
-				cloned_n_rows--;
+				cloned_rows--;
 			}
 		});
 		// End

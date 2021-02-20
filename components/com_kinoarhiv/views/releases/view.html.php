@@ -47,9 +47,21 @@ class KinoarhivViewReleases extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		$app      = JFactory::getApplication();
-		$menu     = $app->getMenu()->getActive();
-		$itemType = (int) $menu->getParams()->get('item_type');
+		$app        = JFactory::getApplication();
+		$params     = JComponentHelper::getParams('com_kinoarhiv');
+		$menu       = $app->getMenu()->getActive();
+		$itemType   = (int) $menu->getParams()->get('item_type');
+		$this->menu = $menu;
+		$menuParams = new Registry;
+
+		if ($menu)
+		{
+			$menuParams->loadString($menu->getParams());
+		}
+
+		$mergedParams = clone $menuParams;
+		$mergedParams->merge($params);
+		$this->params = $mergedParams;
 
 		if ($itemType === 0)
 		{
@@ -87,26 +99,12 @@ class KinoarhivViewReleases extends JViewLegacy
 			return false;
 		}
 
-		$params     = JComponentHelper::getParams('com_kinoarhiv');
-		$menu       = $app->getMenu()->getActive();
-		$this->menu = $menu;
-		$menuParams = new Registry;
-
-		if ($menu)
-		{
-			$menuParams->loadString($menu->getParams());
-		}
-
-		$mergedParams = clone $menuParams;
-		$mergedParams->merge($params);
-		$params       = $mergedParams;
-
 		// Get proper itemid for &view=names&Itemid=? links.
 		$namesItemid = KAContentHelper::getItemid('names');
 		$this->moviesItemid = KAContentHelper::getItemid('movies');
 
 		$itemid         = $this->itemid;
-		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$throttleEnable = $this->params->get('throttle_image_enable', 0);
 
 		// Prepare the data
 		foreach ($this->items as $item)
@@ -154,16 +152,16 @@ class KinoarhivViewReleases extends JViewLegacy
 			);
 
 			$checkingPath = JPath::clean(
-				$params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
+				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
 			);
 
 			if ($throttleEnable == 0)
 			{
 				if (!is_file($checkingPath))
 				{
-					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
+					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
 					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
+						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png',
 						false
 					);
 					$item->poster_width = $dimension['width'];
@@ -173,21 +171,21 @@ class KinoarhivViewReleases extends JViewLegacy
 				{
 					$item->fs_alias = rawurlencode($item->fs_alias);
 
-					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
+					if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
 					{
-						$item->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
+						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
 							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
 					}
 					else
 					{
-						$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
+						$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
 							. $item->id . '/posters/thumb_' . $item->filename;
 					}
 
 					$dimension = KAContentHelper::getImageSize(
 						$checkingPath,
 						true,
-						(int) $params->get('size_x_posters'),
+						(int) $this->params->get('size_x_posters'),
 						$item->dimension
 					);
 					$item->poster_width = $dimension['width'];
@@ -203,25 +201,25 @@ class KinoarhivViewReleases extends JViewLegacy
 				$dimension = KAContentHelper::getImageSize(
 					$checkingPath,
 					true,
-					(int) $params->get('size_x_posters'),
+					(int) $this->params->get('size_x_posters'),
 					$item->dimension
 				);
 				$item->poster_width = $dimension['width'];
 				$item->poster_height = $dimension['height'];
 			}
 
-			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
+			$item->plot = JHtml::_('string.truncate', $item->plot, $this->params->get('limit_text'));
 
-			if ($params->get('ratings_show_frontpage') == 1)
+			if ($this->params->get('ratings_show_frontpage') == 1)
 			{
 				if (!empty($item->rate_sum_loc) && !empty($item->rate_loc))
 				{
 					$plural = $this->lang->getPluralSuffixes($item->rate_loc);
-					$item->rate_loc_value = round($item->rate_sum_loc / $item->rate_loc, (int) $params->get('vote_summ_precision'));
+					$item->rate_loc_value = round($item->rate_sum_loc / $item->rate_loc, (int) $this->params->get('vote_summ_precision'));
 					$item->rate_loc_label = JText::sprintf(
 						'COM_KA_RATE_LOCAL_' . $plural[0],
 						$item->rate_loc_value,
-						(int) $params->get('vote_summ_num'),
+						(int) $this->params->get('vote_summ_num'),
 						$item->rate_loc
 					);
 					$item->rate_loc_label_class = ' has-rating';
@@ -240,7 +238,7 @@ class KinoarhivViewReleases extends JViewLegacy
 
 			$dispatcher = JEventDispatcher::getInstance();
 			JPluginHelper::importPlugin('content');
-			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.releases', &$item, &$params, 0));
+			$dispatcher->trigger('onContentPrepare', array('com_kinoarhiv.releases', &$item, &$this->params, 0));
 
 			$results = $dispatcher->trigger('onContentAfterTitle', array('com_kinoarhiv.releases', &$item, &$item->params, 0));
 			$item->event->afterDisplayTitle = trim(implode("\n", $results));
@@ -252,7 +250,6 @@ class KinoarhivViewReleases extends JViewLegacy
 			$item->event->afterDisplayContent = trim(implode("\n", $results));
 		}
 
-		$this->params = $params;
 		$this->view   = $app->input->getWord('view');
 
 		$this->prepareDocument();
@@ -275,7 +272,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		$this->user        = JFactory::getUser();
 		$app               = JFactory::getApplication();
 		$lang              = JFactory::getLanguage();
-		$params            = JComponentHelper::getParams('com_kinoarhiv');
 		$this->filtersData = $this->get('FiltersData');
 		$this->items       = $this->get('Items');
 		$pagination        = $this->get('Pagination');
@@ -288,19 +284,6 @@ class KinoarhivViewReleases extends JViewLegacy
 
 			return false;
 		}
-
-		$menu       = $app->getMenu()->getActive();
-		$this->menu = $menu;
-		$menuParams = new Registry;
-
-		if ($menu)
-		{
-			$menuParams->loadString($menu->getParams());
-		}
-
-		$mergedParams = clone $menuParams;
-		$mergedParams->merge($params);
-		$this->params = $mergedParams;
 
 		// Get proper itemid for &view=?&Itemid=? links.
 		$namesItemid = KAContentHelper::getItemid('names');
@@ -345,7 +328,7 @@ class KinoarhivViewReleases extends JViewLegacy
 				$item->text
 			);
 
-			$checkingPath = KAContentHelper::getAlbumCheckingPath($item->covers_path, $params->get('media_music_images_root'), $item);
+			$checkingPath = KAContentHelper::getAlbumCheckingPath($item->covers_path, $this->params->get('media_music_images_root'), $item);
 
 			if ($throttleEnable == 0)
 			{
@@ -380,14 +363,14 @@ class KinoarhivViewReleases extends JViewLegacy
 					}
 					else
 					{
-						if (StringHelper::substr($params->get('media_music_images_root_www'), 0, 1) == '/')
+						if (StringHelper::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
 						{
-							$item->cover = JUri::base() . StringHelper::substr($params->get('media_music_images_root_www'), 1) . '/'
+							$item->cover = JUri::base() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
 								. $item->fs_alias . '/' . $item->id . '/' . $filename;
 						}
 						else
 						{
-							$item->cover = $params->get('media_music_images_root_www') . '/' . $item->fs_alias
+							$item->cover = $this->params->get('media_music_images_root_www') . '/' . $item->fs_alias
 								. '/' . $item->id . '/' . $filename;
 						}
 					}
@@ -503,29 +486,17 @@ class KinoarhivViewReleases extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($this->params && $this->params->get('menu-meta_description') != '')
+		if ($this->params->get('menu-meta_description'))
 		{
 			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
-		else
-		{
-			$this->document->setDescription($this->params->get('meta_description'));
-		}
 
-		if ($this->params && $this->params->get('menu-meta_keywords') != '')
+		if ($this->params->get('menu-meta_keywords'))
 		{
 			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
-		}
 
-		if ($this->params && $this->params->get('robots') != '')
-		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
-		}
-		else
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

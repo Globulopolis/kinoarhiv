@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * Music album item class
@@ -145,7 +145,7 @@ class KinoarhivModelAlbum extends JModelForm
 		$query = $db->getQuery(true);
 
 		$query->select("a.id, a.title, a.alias, a.fs_alias, DATE_FORMAT(a.year, '%Y') AS year, "
-			. "a.length, a.isrc, a.desc, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.tracks_path, "
+			. "a.length, a.desc, a.rate, a.rate_sum, a.covers_path, a.covers_path_www, a.tracks_path, "
 			. "a.tracks_path_www, a.tracks_preview_path, a.buy_urls, a.created_by, a.metakey, a.metadesc, "
 			. "a.attribs, a.state, a.metadata, "
 			. "DATE_FORMAT(a.created, '%Y-%m-%d') AS created, DATE_FORMAT(a.modified, '%Y-%m-%d') AS modified, "
@@ -196,39 +196,9 @@ class KinoarhivModelAlbum extends JModelForm
 			$result->attribs = json_decode($result->attribs);
 		}
 
-		// TODO Temporary
-		// Get tracks for albums
-		$query = $db->getQuery(true)
-			->select(
-				$db->quoteName(
-					array(
-						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
-						't.performer', 't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename',
-						't.buy_url'
-					)
-				)
-			)
-			->from($db->quoteName('#__ka_music', 't'))
-			->where('t.album_id = ' . (int) $id)
-			->order('t.track_number ASC');
-
-		$db->setQuery($query);
-
-		try
-		{
-			$result->tracks = $db->loadObjectList();
-		}
-		catch (RuntimeException $e)
-		{
-			$this->setError($e->getMessage());
-			KAComponentHelper::eventLog($e->getMessage());
-
-			return false;
-		}
-
 		// Genres
 		$queryGenres = $db->getQuery(true)
-			->select('g.id, g.name, g.alias, t.ordering')
+			->select('g.id, g.name, g.alias')
 			->from($db->quoteName('#__ka_genres', 'g'))
 			->leftJoin($db->quoteName('#__ka_music_rel_genres', 't') . ' ON t.genre_id = g.id AND t.item_id = ' . (int) $id);
 
@@ -380,6 +350,10 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			$result->releases = array();
 		}
+
+		$tracks           = $this->getTracks($id);
+		$result->tracks   = $tracks->tracks;
+		$result->playlist = $tracks->playlist;
 
 		return $result;
 	}
@@ -638,13 +612,85 @@ class KinoarhivModelAlbum extends JModelForm
 					'gender'     => $value->gender,
 					'role'       => $value->role,
 					'desc'       => $value->desc,
-					'poster'     => KAContentHelper::getPersonPoster($value, $params)
+					'photo'      => KAContentHelper::getPersonPhoto($value, $params)
 				);
 			}
 		}
 
 		// Remove duplicate items.
 		$result->careers = array_unique($result->careers);
+
+		return $result;
+	}
+
+	/**
+	 * Get tracklist for album.
+	 *
+	 * @param   integer  $id  Album ID.
+	 *
+	 * @return  object|boolean
+	 *
+	 * @since   3.1
+	 */
+	public function getTracks($id)
+	{
+		$db = JFactory::getDbo();
+		$result = (object) array('tracks' => array(), 'playlist' => array());
+
+		// TODO Refactoring
+		$query = $db->getQuery(true)
+			->select(
+				$db->quoteName(
+					array(
+						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
+						't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename',
+						't.buy_url', 'rel.name_id', 'a.tracks_path', 'a.tracks_path_www', 'a.tracks_preview_path'
+					)
+				)
+			)
+			->select($db->quoteName('a.fs_alias', 'album_fs_alias'))
+			->select($db->quoteName('n.name', 'performer_name') . ',' . $db->quoteName('n.latin_name', 'performer_latin_name'))
+			->from($db->quoteName('#__ka_music', 't'));
+
+		$query->leftJoin($db->quoteName('#__ka_music_rel_names', 'rel') . ' ON rel.item_id = t.id AND rel.item_type = 1')
+			->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON a.id = t.album_id')
+			->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON n.id = rel.name_id')
+			->where($db->quoteName('t.album_id') . ' = ' . (int) $id)
+			->order($db->quoteName('t.track_number') . ' ASC');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$tracks = $db->loadObjectList();
+
+			if (!empty($tracks))
+			{
+				foreach ($tracks as $key => $track)
+				{
+					// TODO Need to change this.
+					$src = $track->tracks_path_www . '/' . $track->filename;
+					$_track = array(
+						'src' => $src,
+						'performer' => KAContentHelper::formatItemTitle($track->performer_name, $track->performer_latin_name)
+					);
+					$result->tracks[$key] = (object) array_merge($_track, ArrayHelper::fromObject($track));
+
+					$result->playlist[$key] = array(
+						'id'    => $track->id,
+						'src'   => $src,
+						'title' => $track->title
+					);
+				}
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+			KAComponentHelper::eventLog($e->getMessage());
+
+			return false;
+		}
 
 		return $result;
 	}
@@ -716,50 +762,17 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	protected function getListQuery()
 	{
-		$app    = JFactory::getApplication();
-		$db     = $this->getDbo();
-		$id     = $app->input->get('id', 0, 'int');
-		$page   = $app->input->get('page', 'reviews');
-		$filter = $app->input->get('dim_filter', '0', 'string');
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+		$id  = $app->input->get('id', 0, 'int');
 
-		if ($page == 'wallpapers')
-		{
-			$query = $db->getQuery(true)
-				->select('id, filename, dimension')
-				->from($db->quoteName('#__ka_movies_gallery'))
-				->where('movie_id = ' . (int) $id . ' AND state = 1 AND type = 1');
-
-			if ($filter !== '0')
-			{
-				$query->where("dimension LIKE " . $db->quote($db->escape($filter, true) . "%", false));
-			}
-		}
-		elseif ($page == 'posters')
-		{
-			$query = $db->getQuery(true)
-				->select('id, filename, dimension')
-				->from($db->quoteName('#__ka_movies_gallery'))
-				->where('movie_id = ' . (int) $id . ' AND state = 1 AND type = 2');
-		}
-		elseif ($page == 'screenshots')
-		{
-			$query = $db->getQuery(true)
-				->select('id, filename, dimension')
-				->from($db->quoteName('#__ka_movies_gallery'))
-				->where('movie_id = ' . (int) $id . ' AND state = 1 AND type = 3');
-		}
-		else
-		{
-			// Select reviews
-			$query = $db->getQuery(true)
-				->select('rev.id, rev.uid, rev.item_id, rev.review, rev.created, rev.type, rev.state, u.name, u.username')
-				->from($db->quoteName('#__ka_reviews', 'rev'))
-				->join('LEFT', $db->quoteName('#__users', 'u') . ' ON u.id = rev.uid')
-				->where('rev.item_id = ' . (int) $id . ' AND item_type = 1 AND rev.state = 1 AND u.id != 0')
-				->order('rev.id DESC');
-		}
-
-		return $query;
+		// Select reviews
+		return $db->getQuery(true)
+			->select('rev.id, rev.uid, rev.item_id, rev.review, rev.created, rev.type, rev.state, u.name, u.username')
+			->from($db->quoteName('#__ka_reviews', 'rev'))
+			->join('LEFT', $db->quoteName('#__users', 'u') . ' ON u.id = rev.uid')
+			->where('rev.item_id = ' . (int) $id . ' AND item_type = 1 AND rev.state = 1 AND u.id != 0')
+			->order('rev.id DESC');
 	}
 
 	/**

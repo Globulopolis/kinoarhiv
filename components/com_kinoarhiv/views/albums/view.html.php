@@ -45,7 +45,7 @@ class KinoarhivViewAlbums extends JViewLegacy
 	 *
 	 * @return  mixed  A string if successful, otherwise a Error object.
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function display($tpl = null)
 	{
@@ -257,11 +257,10 @@ class KinoarhivViewAlbums extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$document   = JFactory::getDocument();
-		$pathway    = $app->getPathway();
-		$menuParams = $this->menu->getParams();
-		$title      = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_MUSIC_ALBUMS');
+		$app      = JFactory::getApplication();
+		$document = JFactory::getDocument();
+		$pathway  = $app->getPathway();
+		$title    = ($this->menu && $this->menu->title) ? $this->menu->title : JText::_('COM_KA_MUSIC_ALBUMS');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -281,31 +280,19 @@ class KinoarhivViewAlbums extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$document->setTitle($title);
 
-		if ($this->menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->params->get('menu-meta_description'))
 		{
-			$document->setDescription($menuParams->get('menu-meta_description'));
-		}
-		else
-		{
-			$document->setDescription($this->params->get('meta_description'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
+		if ($this->params->get('menu-meta_keywords'))
 		{
-			$document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 		}
 
-		if ($this->menu && $menuParams->get('robots') != '')
+		if ($this->params->get('robots'))
 		{
-			$document->setMetadata('robots', $menuParams->get('robots'));
-		}
-		else
-		{
-			$document->setMetadata('robots', $this->params->get('robots'));
+			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}
 
 		if ($this->params->get('generator') == 'none')

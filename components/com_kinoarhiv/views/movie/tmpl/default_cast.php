@@ -82,7 +82,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 								<div class="actor-photo">
 									<span class="number"><?php echo $key + 1; ?>. </span>
 									<span class="photo">
-										<img src="<?php echo $name['poster']->posterThumb; ?>" width="64"
+										<img src="<?php echo $name['photo']->photoThumb; ?>" width="64"
 											 class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/>
 									</span>
 								</div>
@@ -126,7 +126,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 								<div class="actor-photo">
 									<span class="number"><?php echo $key + 1; ?>. </span>
 									<span class="photo">
-										<img src="<?php echo $name['poster']->posterThumb; ?>" width="64"
+										<img src="<?php echo $name['photo']->photoThumb; ?>" width="64"
 											 class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/>
 									</span>
 								</div>
@@ -142,7 +142,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 								<?php if (!empty($name['dub_id'])): ?>
 									<div class="actor-dub-photo">
 										<span class="photo">
-											<img src="<?php echo $name['posterDub']->posterThumb; ?>" width="64"
+											<img src="<?php echo $name['photoDub']->photoThumb; ?>" width="64"
 												 class="<?php echo $name['dub_gender'] ? 'm' : 'f'; ?>"/>
 										</span>
 									</div>
@@ -179,7 +179,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 								<div class="actor-photo">
 									<span class="number"><?php echo $key + 1; ?>. </span>
 									<span class="photo">
-										<img src="<?php echo $name['poster']->posterThumb; ?>" width="64"
+										<img src="<?php echo $name['photo']->photoThumb; ?>" width="64"
 											 class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/>
 									</span>
 								</div>

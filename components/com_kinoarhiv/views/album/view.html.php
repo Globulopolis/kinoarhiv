@@ -145,7 +145,6 @@ class KinoarhivViewAlbum extends JViewLegacy
 		}
 
 		$params         = JComponentHelper::getParams('com_kinoarhiv');
-		$this->config   = JFactory::getConfig();
 		$checkingPath   = KAContentHelper::getAlbumCheckingPath($item->covers_path, $params->get('media_music_images_root'), $item);
 		$throttleEnable = $params->get('throttle_image_enable', 0);
 
@@ -233,22 +232,6 @@ class KinoarhivViewAlbum extends JViewLegacy
 			);
 			$item->coverWidth = $dimension['width'];
 			$item->coverHeight = $dimension['height'];
-		}
-
-		$item->playlist = array();
-
-		if (!empty($item->tracks))
-		{
-			foreach ($item->tracks as $key => $track)
-			{
-				$item->tracks[$key]->src = $item->tracks_path_www . '/' . $track->filename;
-				unset($item->tracks[$key]->filename);
-
-				$item->playlist[$key] = array(
-					'id'  => $item->tracks[$key]->id,
-					'src' => $item->tracks[$key]->src
-				);
-			}
 		}
 
 		if (!empty($item->desc))
@@ -624,7 +607,6 @@ class KinoarhivViewAlbum extends JViewLegacy
 		$menus      = $app->getMenu();
 		$menu       = $menus->getActive();
 		$pathway    = $app->getPathway();
-		$menuParams = $menu->getParams();
 
 		$title = ($menu && $menu->title && $menu->link == 'index.php?option=com_kinoarhiv&view=albums')
 				  ? $menu->title
@@ -651,29 +633,25 @@ class KinoarhivViewAlbum extends JViewLegacy
 
 		$this->document->setTitle($title);
 
-		if ($menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->item->metadesc)
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
+			$this->document->setDescription($this->item->metadesc);
 		}
-		else
+		elseif ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('meta_description'));
-		}
-
-		if ($menu && $menuParams->get('menu-meta_keywords') != '')
-		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($menu && $menuParams->get('robots') != '')
+		if ($this->item->metakey)
 		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
+			$this->document->setMetadata('keywords', $this->item->metakey);
 		}
-		else
+		elseif ($this->params->get('menu-meta_keywords'))
+		{
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+		}
+
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

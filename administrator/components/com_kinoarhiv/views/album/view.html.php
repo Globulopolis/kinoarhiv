@@ -328,12 +328,16 @@ class KinoarhivViewAlbum extends JViewLegacy
 
 		if ($this->getLayout() !== 'modal')
 		{
+			$rowId = JFactory::getApplication()->input->getInt('row_id');
+			$title = !empty($rowId) ? JText::_('COM_KA_MUSIC_TRACK_LAYOUT_EDIT_TITLE') : JText::_('COM_KA_MUSIC_TRACK_LAYOUT_ADD_TITLE');
+
 			JToolbarHelper::title(
-				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . JText::_('COM_KA_MOVIES_RELEASE_LAYOUT_EDIT_TITLE')),
+				JText::sprintf('COM_KINOARHIV', JText::_('COM_KA_MUSIC_ALBUM_TITLE') . ': ' . $title),
 				'play'
 			);
 
-			JToolbarHelper::apply('albums.saveAlbumTrack');
+			JToolbarHelper::apply('albums.saveTrack');
+			JToolbarHelper::custom('albums.saveTagsToFile', 'file-2', 'file-2', 'COM_KA_MUSIC_TRACK_SAVE_TAGS');
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}

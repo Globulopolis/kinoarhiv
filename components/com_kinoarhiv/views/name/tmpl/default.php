@@ -48,8 +48,8 @@ use Joomla\String\StringHelper;
 				<div class="poster">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=name&page=photos&id=' . $this->item->id); ?>"
 					   title="<?php echo $this->item->title; ?>">
-						<img src="<?php echo $this->item->poster; ?>" width="<?php echo $this->item->posterWidth; ?>"
-							 height="<?php echo $this->item->posterHeight; ?>"
+						<img src="<?php echo $this->item->photo->photo; ?>" width="<?php echo $this->item->photo->photoThumbWidth; ?>"
+							 height="<?php echo $this->item->photo->photoThumbHeight; ?>"
 							 alt="<?php echo JText::_('COM_KA_PHOTO_ALT') . $this->item->title; ?>"/>
 					</a>
 				</div>

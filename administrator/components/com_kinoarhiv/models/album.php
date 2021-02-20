@@ -136,8 +136,9 @@ class KinoarhivModelAlbum extends JModelForm
 		$query = $db->getQuery(true)
 			->select(
 				$db->quoteName(
-					array('a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.year', 'a.length', 'a.isrc',
-						'a.desc', 'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.tracks_path',
+					array(
+						'a.id', 'a.asset_id', 'a.title', 'a.alias', 'a.fs_alias', 'a.year', 'a.length', 'a.desc',
+						'a.rate', 'a.rate_sum', 'a.covers_path', 'a.covers_path_www', 'a.tracks_path',
 						'a.tracks_path_www', 'a.tracks_preview_path', 'a.buy_urls', 'a.attribs', 'a.created',
 						'a.created_by', 'a.modified', 'a.modified_by', 'a.publish_up', 'a.publish_down', 'a.ordering',
 						'a.metakey', 'a.metadesc', 'a.access', 'a.metadata', 'a.language', 'a.state'
@@ -297,7 +298,6 @@ class KinoarhivModelAlbum extends JModelForm
 				'introtext'           => $db->escape($introtext),
 				'year'                => $data['year'],
 				'length'              => $data['length'],
-				'isrc'                => $db->escape($data['isrc']),
 				'desc'                => $db->escape($data['desc']),
 				'rate'                => (int) $data['rate_loc'],
 				'rate_sum'            => (int) $data['rate_sum_loc'],
@@ -339,7 +339,6 @@ class KinoarhivModelAlbum extends JModelForm
 				->set($db->quoteName('introtext') . " = '" . $db->escape($introtext) . "'")
 				->set($db->quoteName('year') . " = '" . $data['year'] . "'")
 				->set($db->quoteName('length') . " = '" . $data['length'] . "'")
-				->set($db->quoteName('isrc') . " = '" . $db->escape($data['isrc']) . "'")
 				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
 				->set($db->quoteName('rate') . " = '" . (int) $data['rate'] . "'")
 				->set($db->quoteName('rate_sum') . " = '" . (int) $data['rate_sum'] . "'")
@@ -517,7 +516,8 @@ class KinoarhivModelAlbum extends JModelForm
 
 						foreach ($row as $key => $_item)
 						{
-							$crewStr .= '[name=' . $_item->name_id . ']' . KAContentHelper::formatItemTitle($_item->name, $_item->latin_name) . '[/name]';
+							$crewStr .= '[name=' . $_item->name_id . ']'
+								. KAContentHelper::formatItemTitle($_item->name, $_item->latin_name) . '[/name]';
 							$crewStr .= $rows > ($key + 1) ? ', ' : '';
 						}
 
@@ -558,7 +558,8 @@ class KinoarhivModelAlbum extends JModelForm
 					$genresStr .= StringHelper::strtolower($genre->name) . ', ';
 				}
 
-				$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+				$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: '
+					. StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
 			}
 			catch (RuntimeException $e)
 			{
@@ -1333,9 +1334,8 @@ class KinoarhivModelAlbum extends JModelForm
 		$query->select(
 			$db->quoteName(
 				array(
-					'id', 'album_id', 'artist_id', 'title', 'genre_rel_id', 'xgenre_id', 'year', 'composer',
-					'publisher', 'performer', 'label', 'isrc', 'length', 'cd_number', 'track_number', 'filename',
-					'buy_url', 'access', 'state'
+					'id', 'album_id', 'artist_id', 'title', 'xgenre_id', 'year', 'composer', 'publisher', 'performer',
+					'label', 'isrc', 'length', 'cd_number', 'track_number', 'filename', 'buy_url', 'access', 'state'
 				)
 			)
 		)
@@ -1356,6 +1356,132 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Removes album tracks. Doesn't delete files from filesystem.
+	 *
+	 * @param   array  $ids  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function removeTracks($ids)
+	{
+		$app   = JFactory::getApplication();
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__ka_music'))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Save album track to database.
+	 *
+	 * @param   array  $data  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function saveTrack($data)
+	{
+		$app  = JFactory::getApplication();
+		$user = JFactory::getUser();
+		$db   = $this->getDbo();
+
+		// Skip dupe checks, let user do this.
+		if (empty($data['id']))
+		{
+			$values = array(
+				'id'           => '',
+				'album_id'     => (int) $data['album_id'],
+				'artist_id'    => (int) $data['artist_id'],
+				'title'        => $db->escape($data['title']),
+				'xgenre_id'    => (int) $data['xgenre_id'],
+				'year'         => $db->escape($data['year']),
+				'composer'     => (int) $data['composer'],
+				'publisher'    => (int) $data['publisher'],
+				'performer'    => (int) $data['performer'],
+				'label'        => (int) $data['label'],
+				'isrc'         => $db->escape($data['isrc']),
+				'length'       => $db->escape($data['length']),
+				'cd_number'    => $db->escape($data['cd_number']),
+				'track_number' => $db->escape($data['track_number']),
+				'filename'     => $db->escape($data['filename']),
+				'buy_url'      => $db->escape($data['buy_url']),
+				'access'       => (int) $data['access'],
+				'state'        => (int) $data['state']
+			);
+
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__ka_music'))
+				->columns($db->quoteName(array_keys($values)))
+				->values("'" . implode("','", array_values($values)) . "'");
+		}
+		else
+		{
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__ka_music'))
+				->set($db->quoteName('album_id') . ' = ' . $db->quote((int) $data['album_id']))
+				->set($db->quoteName('artist_id') . ' = ' . $db->quote((int) $data['artist_id']))
+				->set($db->quoteName('title') . ' = ' . $db->quote($data['title']))
+				->set($db->quoteName('xgenre_id') . ' = ' . $db->quote((int) $data['xgenre_id']))
+				->set($db->quoteName('year') . ' = ' . $db->quote($data['year']))
+				->set($db->quoteName('composer') . ' = ' . $db->quote((int) $data['composer']))
+				->set($db->quoteName('publisher') . ' = ' . $db->quote((int) $data['publisher']))
+				->set($db->quoteName('performer') . ' = ' . $db->quote((int) $data['performer']))
+				->set($db->quoteName('label') . ' = ' . $db->quote((int) $data['label']))
+				->set($db->quoteName('isrc') . ' = ' . $db->quote($data['isrc']))
+				->set($db->quoteName('length') . ' = ' . $db->quote($data['length']))
+				->set($db->quoteName('cd_number') . ' = ' . $db->quote($data['cd_number']))
+				->set($db->quoteName('track_number') . ' = ' . $db->quote($data['track_number']))
+				->set($db->quoteName('filename') . ' = ' . $db->quote($data['filename']))
+				->set($db->quoteName('buy_url') . ' = ' . $db->quote($data['buy_url']))
+				->set($db->quoteName('access') . ' = ' . $db->quote((int) $data['access']))
+				->set($db->quoteName('state') . ' = ' . $db->quote((int) $data['state']))
+				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
+		}
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+
+			if (empty($data['id']))
+			{
+				$insertID = $db->insertid();
+				$sessionData = $app->getUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.tr_id');
+				$sessionData['id'] = $insertID;
+				$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.tr_id', $sessionData);
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -1462,6 +1588,22 @@ class KinoarhivModelAlbum extends JModelForm
 			->delete($db->quoteName('#__ka_reviews'))
 			->where($db->quoteName('item_id') . ' IN (' . implode(',', $ids) . ')')
 			->where($db->quoteName('item_type') . ' = 1');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		// Remove associated movies
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__ka_music_rel_movies'))
+			->where($db->quoteName('album_id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
 

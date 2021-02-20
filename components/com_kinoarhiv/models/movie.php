@@ -606,7 +606,7 @@ class KinoarhivModelMovie extends JModelForm
 						'name'       => $value->name,
 						'latin_name' => $value->latin_name,
 						'alias'      => $value->alias,
-						'poster'     => KAContentHelper::getPersonPoster(
+						'photo'      => KAContentHelper::getPersonPhoto(
 							(object) array(
 								'id'        => $value->id,
 								'fs_alias'  => $value->fs_alias,
@@ -634,7 +634,7 @@ class KinoarhivModelMovie extends JModelForm
 						'name'           => $value->name,
 						'latin_name'     => $value->latin_name,
 						'alias'          => $value->alias,
-						'poster'         => KAContentHelper::getPersonPoster(
+						'photo'          => KAContentHelper::getPersonPhoto(
 							(object) array(
 								'id'        => $value->id,
 								'fs_alias'  => $value->fs_alias,
@@ -650,7 +650,7 @@ class KinoarhivModelMovie extends JModelForm
 						'dub_name'       => $value->dub_name,
 						'dub_latin_name' => $value->dub_latin_name,
 						'dub_alias'      => $value->dub_alias,
-						'posterDub'      => KAContentHelper::getPersonPoster(
+						'photoDub'       => KAContentHelper::getPersonPhoto(
 							(object) array(
 								'id'        => $value->dub_id,
 								'fs_alias'  => $value->dub_fs_alias,
@@ -676,7 +676,7 @@ class KinoarhivModelMovie extends JModelForm
 						'name'       => $value->name,
 						'latin_name' => $value->latin_name,
 						'alias'      => $value->alias,
-						'poster'     => KAContentHelper::getPersonPoster(
+						'photo'      => KAContentHelper::getPersonPhoto(
 							(object) array(
 								'id'        => $value->id,
 								'fs_alias'  => $value->fs_alias,
@@ -1631,40 +1631,17 @@ class KinoarhivModelMovie extends JModelForm
 			return false;
 		}
 
-		// TODO Not yet ready
-		// Get tracks for albums
-		/*$query = $db->getQuery(true)
-			->select(
-				$db->quoteName(
-					array(
-						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
-						't.performer', 't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename'
-					)
-				)
-			)
-			->from($db->quoteName('#__ka_music', 't'));
+		// Get tracklist
+		jimport('components.com_kinoarhiv.models.album', JPATH_ROOT);
 
-			$subquery = $db->getQuery(true)
-				->select($db->quoteName('album_id'))
-				->from($db->quoteName('#__ka_music_rel_movies'))
-				->where($db->quoteName('movie_id') . ' = ' . (int) $movieID);
+		$albumModel = new KinoarhivModelAlbum;
 
-		$query->where('t.album_id IN (' . $subquery . ')')
-			->order('t.track_number ASC');
-
-		$db->setQuery($query);
-
-		try
+		foreach ($result as $key => $row)
 		{
-			$result->tracks = $db->loadObjectList();
+			$tracks = $albumModel->getTracks($row->id);
+			$result[$key]->tracks = $tracks->tracks;
+			$result[$key]->playlist = $tracks->playlist;
 		}
-		catch (RuntimeException $e)
-		{
-			$this->setError('');
-			KAComponentHelper::eventLog($e->getMessage());
-
-			return false;
-		}*/
 
 		return $result;
 	}

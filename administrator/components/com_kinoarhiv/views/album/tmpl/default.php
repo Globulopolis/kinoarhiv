@@ -144,6 +144,21 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				import_path_input.value = covers_path_input.value;
 			}
 		});
+
+		$.post('index.php?option=com_kinoarhiv&task=settings.validatePaths&format=json',
+			$('form .validate-path').serialize(), function(response){
+				$.each(response, function(key, message){
+					$('#jform_' + key).css({
+						'color': 'red',
+						'border': '1px solid red'
+					})
+						.attr('title', message);
+				});
+
+				$('input[title]').tooltip();
+			}).fail(function (xhr, status, error) {
+				Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
+		});
 	});
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_kinoarhiv&id=' . (int) $this->id); ?>" method="post" name="adminForm"
@@ -230,28 +245,6 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				<?php echo JHtml::_('bootstrap.endTab'); ?>
 				<?php echo JHtml::_('bootstrap.addTab', 'albums', 'page2', JText::_('COM_KA_MUSIC_TRACKS_TITLE')); ?>
 
-				<div class="row-fluid">
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<div class="control-group">
-								<div class="control-label"><?php echo $this->form->getLabel('tracks_path'); ?></div>
-								<div class="controls"><?php echo $this->form->getInput('tracks_path'); ?></div>
-							</div>
-							<div class="control-group">
-								<div class="control-label"><?php echo $this->form->getLabel('tracks_path_www'); ?></div>
-								<div class="controls"><?php echo $this->form->getInput('tracks_path_www'); ?></div>
-							</div>
-						</fieldset>
-					</div>
-					<div class="span6">
-						<fieldset class="form-horizontal">
-							<div class="control-group">
-								<div class="control-label"><?php echo $this->form->getLabel('tracks_preview_path'); ?></div>
-								<div class="controls"><?php echo $this->form->getInput('tracks_preview_path'); ?></div>
-							</div>
-						</fieldset>
-					</div>
-				</div>
 				<?php
 				if ($this->id != 0)
 				{

@@ -130,7 +130,8 @@ class KinoarhivViewRelease extends JViewLegacy
 				$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
 				$dimension = KAContentHelper::getImageSize(
 					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
-					false
+					true,
+					(int) $this->params->get('music_covers_size')
 				);
 				$item->coverWidth = $dimension['width'];
 				$item->coverHeight = $dimension['height'];
@@ -415,12 +416,11 @@ class KinoarhivViewRelease extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$menus      = $app->getMenu();
-		$menu       = $menus->getActive();
-		$menuParams = $menu->getParams();
-		$pathway    = $app->getPathway();
-		$title      = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_RELEASES');
+		$app     = JFactory::getApplication();
+		$menus   = $app->getMenu();
+		$menu    = $menus->getActive();
+		$pathway = $app->getPathway();
+		$title   = ($menu && $menu->title) ? $menu->title : JText::_('COM_KA_RELEASES');
 
 		// Create a new pathway object
 		$path = (object) array(
@@ -442,29 +442,25 @@ class KinoarhivViewRelease extends JViewLegacy
 		$pathway->setPathway(array($path));
 		$this->document->setTitle($title);
 
-		if ($menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->item->metadesc)
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
+			$this->document->setDescription($this->item->metadesc);
 		}
-		else
+		elseif ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($this->params->get('meta_description'));
-		}
-
-		if ($menu && $menuParams->get('menu-meta_keywords') != '')
-		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($menu && $menuParams->get('robots') != '')
+		if ($this->item->metakey)
 		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
+			$this->document->setMetadata('keywords', $this->item->metakey);
 		}
-		else
+		elseif ($this->params->get('menu-meta_keywords'))
+		{
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+		}
+
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

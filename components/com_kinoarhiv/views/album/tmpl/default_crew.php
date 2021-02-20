@@ -77,7 +77,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 											<div class="actor-photo">
 												<span class="number"><?php echo $key + 1; ?>. </span>
 												<span class="photo">
-										<img src="<?php echo $name['poster']->posterThumb; ?>" width="64"
+										<img src="<?php echo $name['photo']->photoThumb; ?>" width="64"
 											 class="<?php echo $name['gender'] ? 'm' : 'f'; ?>"/>
 									</span>
 											</div>

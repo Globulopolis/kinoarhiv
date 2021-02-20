@@ -15,6 +15,8 @@ defined('_JEXEC') or die;
 JHtml::_('stylesheet', 'media/com_kinoarhiv/players/videojs/video-js.min.css');
 JHtml::_('script', 'media/com_kinoarhiv/players/videojs/video.min.js');
 KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/lang');
+JHtml::_('script', 'media/com_kinoarhiv/players/videojs/plugins/videojs-playlist/videojs-playlist.js');
+// https://github.com/brightcove/videojs-playlist
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
@@ -84,7 +86,11 @@ KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/videojs/la
 		});
 	});
 </script>
-<div class="player">
-	<audio controls preload="none" style="width: 100%;" class="video-js vjs-default-skin vjs-b" height="30"
-		   id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
+<div class="player-layout">
+	<div class="row-fluid player">
+		<div class="span12">
+			<audio controls preload="none" style="width: 100%;" class="video-js vjs-default-skin vjs-b" height="30"
+				   id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
+		</div>
+	</div>
 </div>

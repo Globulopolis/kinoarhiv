@@ -177,10 +177,9 @@ class KinoarhivViewAwards extends JViewLegacy
 	 */
 	protected function prepareDocument()
 	{
-		$app        = JFactory::getApplication();
-		$pathway    = $app->getPathway();
-		$menuParams = $this->menu->getParams();
-		$id         = $app->input->get('id', null, 'int');
+		$app     = JFactory::getApplication();
+		$pathway = $app->getPathway();
+		$id      = $app->input->get('id', null, 'int');
 
 		if (!empty($id))
 		{
@@ -220,29 +219,17 @@ class KinoarhivViewAwards extends JViewLegacy
 		$pathway->setPathway($path);
 		$this->document->setTitle($title);
 
-		if ($this->menu && $menuParams->get('menu-meta_description') != '')
+		if ($this->params->get('menu-meta_description'))
 		{
-			$this->document->setDescription($menuParams->get('menu-meta_description'));
-		}
-		else
-		{
-			$this->document->setDescription($this->params->get('meta_description'));
+			$this->document->setDescription($this->params->get('menu-meta_description'));
 		}
 
-		if ($this->menu && $menuParams->get('menu-meta_keywords') != '')
+		if ($this->params->get('menu-meta_keywords'))
 		{
-			$this->document->setMetadata('keywords', $menuParams->get('menu-meta_keywords'));
-		}
-		else
-		{
-			$this->document->setMetadata('keywords', $this->params->get('meta_keywords'));
+			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 		}
 
-		if ($this->menu && $menuParams->get('robots') != '')
-		{
-			$this->document->setMetadata('robots', $menuParams->get('robots'));
-		}
-		else
+		if ($this->params->get('robots'))
 		{
 			$this->document->setMetadata('robots', $this->params->get('robots'));
 		}

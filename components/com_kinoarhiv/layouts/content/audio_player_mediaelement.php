@@ -16,9 +16,12 @@ $document = JFactory::getDocument();
 
 JHtml::_('jquery.framework');
 JHtml::_('stylesheet', 'media/com_kinoarhiv/players/mediaelement/mediaelementplayer.min.css');
+//JHtml::_('stylesheet', 'media/com_kinoarhiv/players/mediaelement/plugins/playlist/playlist.min.css');
 $document->addScriptDeclaration("mejs.i18n.language('" . substr(JFactory::getLanguage()->getTag(), 0, 2) . "');");
 JHtml::_('script', 'media/com_kinoarhiv/players/mediaelement/mediaelement-and-player.min.js');
 KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/mediaelement/lang', true, true);
+//JHtml::_('script', 'media/com_kinoarhiv/players/mediaelement/plugins/playlist/playlist.min.js');
+//JHtml::_('script', 'media/com_kinoarhiv/players/mediaelement/plugins/playlist/playlist-i18n.js');
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function ($) {
@@ -28,6 +31,8 @@ KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/mediaeleme
 			total    = <?php echo (int) $displayData['total'] - 1; ?>;
 
 		var player = new MediaElementPlayer('player_<?php echo $displayData['id']; ?>', {
+			//features: ['prevtrack', 'playpause', 'nexttrack', 'current', 'progress', 'duration', 'volume', 'playlist'],
+			//playlist: <?php echo $displayData['tracks']; ?>, // https://github.com/mediaelement/mediaelement-plugins/blob/master/docs/playlist.md
 			success: function(player, node, instance){
 				var container = document.querySelector('.mejs__container');
 
@@ -87,6 +92,10 @@ KAComponentHelper::getScriptLanguage('', 'media/com_kinoarhiv/players/mediaeleme
 		});
 	});
 </script>
-<div class="player">
-	<audio controls style="width: 100%;" id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
+<div class="player-layout">
+	<div class="row-fluid player">
+		<div class="span12">
+			<audio controls style="width: 100%;" id="player_<?php echo $displayData['id']; ?>">Your browser doesn't support HTML5 audio.</audio>
+		</div>
+	</div>
 </div>

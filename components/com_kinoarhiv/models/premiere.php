@@ -74,7 +74,8 @@ class KinoarhivModelPremiere extends JModelItem
 							array('m.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.year', 'm.plot', 'm.rate_loc', 'm.rate_sum_loc',
 									'm.imdb_votesum', 'm.imdb_votes', 'm.imdb_id', 'm.kp_votesum', 'm.kp_votes', 'm.kp_id',
 									'm.rate_fc', 'm.rottentm_id', 'm.metacritics', 'm.metacritics_id', 'm.rate_custom',
-									'm.attribs', 'm.created', 'm.modified', 'g.filename', 'g.dimension'
+									'm.attribs', 'm.created', 'm.created_by', 'm.metakey', 'm.metadesc', 'm.modified',
+									'g.filename', 'g.dimension'
 							)
 						)
 					)

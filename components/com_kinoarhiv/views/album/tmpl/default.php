@@ -10,14 +10,16 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Utilities\ArrayHelper;
+
+$totalGenres = count($this->item->genres);
 $totalTracks = count($this->item->tracks);
 ?>
 <div class="ka-content" itemscope itemtype="https://schema.org/MusicAlbum">
 	<meta content="<?php echo $totalTracks; ?>" itemprop="numTracks" />
-<?php if (isset($this->item->genres) && count($this->item->genres) > 0):
-	$totalGenres = count($this->item->genres);
-	$genres = $totalGenres > 1 ? implode(', ', $this->item->genres) : $this->item->genres; ?>
-	<meta content="<?php echo $genres; ?>" itemprop="genre" />
+<?php if ($totalGenres > 0):
+	$genres = ArrayHelper::getColumn($this->item->genres, 'name'); ?>
+	<meta content="<?php echo implode(',', $genres); ?>" itemprop="genre" />
 <?php endif; ?>
 
 	<?php if ($this->params->get('use_alphabet') == 1):
@@ -151,8 +153,21 @@ $totalTracks = count($this->item->tracks);
 		<div class="buy">
 			<p><?php echo $this->item->buy_urls; ?></p>
 		</div>
+		<br/>
 
 		<?php if ($totalTracks > 0 && $this->params->get('watch_trailer') == 1):
+			if (!$this->user->get('guest')):
+				$playerLayout = ($this->params->get('player_type') == '-1') ? 'player' : 'player_' . $this->params->get('player_type');
+
+				echo JLayoutHelper::render('layouts.content.audio_' . $playerLayout,
+					array(
+						'id' => $this->item->id,
+						'tracks' => json_encode($this->item->playlist),
+						'total' => count($this->item->playlist)),
+					JPATH_COMPONENT
+				);
+			endif;
+
 			echo JLayoutHelper::render('layouts.content.tracklist',
 				array(
 					'params' => $this->params,

@@ -51,8 +51,8 @@ class KAContentHelper
 		else
 		{
 			list($width, $height) = @getimagesize($path);
-			$image['width'] = $width;
-			$image['height'] = $height;
+			$image['width'] = !empty($width) ? $width : 0;
+			$image['height'] = !empty($height) ? $height : 0;
 		}
 
 		return $image;
@@ -665,7 +665,7 @@ class KAContentHelper
 	}
 
 	/**
-	 * Method to get poster image for person.
+	 * Method to get photo for person.
 	 *
 	 * @param   object  $item    Person data.
 	 * @param   object  $params  Component params.
@@ -674,7 +674,7 @@ class KAContentHelper
 	 *
 	 * @since   3.1
 	 */
-	public static function getPersonPoster($item, $params)
+	public static function getPersonPhoto($item, $params)
 	{
 		$itemid = JFactory::getApplication()->input->getInt('Itemid');
 		$data = (object) array();
@@ -688,15 +688,17 @@ class KAContentHelper
 
 			if (!is_file($checkingPath))
 			{
-				$data->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
-				$data->posterThumb = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
-				$dimension = self::getImageSize(
+				$data->photo            = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png';
+				$data->photoThumb       = $data->photo;
+				$dimension              = self::getImageSize(
 					JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/' . $noCover . '.png',
 					false
 				);
-				$data->dimension    = $dimension['width'] . 'x' . $dimension['height'];
-				$data->posterWidth  = $dimension['width'];
-				$data->posterHeight = $dimension['height'];
+				$data->dimension        = $dimension['width'] . 'x' . $dimension['height'];
+				$data->photoWidth       = $dimension['width'];
+				$data->photoHeight      = $dimension['height'];
+				$data->photoThumbWidth  = $dimension['width'];
+				$data->photoThumbHeight = $dimension['height'];
 			}
 			else
 			{
@@ -704,51 +706,64 @@ class KAContentHelper
 
 				if (StringHelper::substr($params->get('media_actor_photo_root_www'), 0, 1) == '/')
 				{
-					$data->poster = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1)
+					$data->photo = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1)
 						. '/' . $item->fs_alias . '/' . $item->id . '/photo/' . $item->filename;
-					$data->posterThumb = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1)
+					$data->photoThumb = JUri::base() . StringHelper::substr($params->get('media_actor_photo_root_www'), 1)
 						. '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename;
 				}
 				else
 				{
-					$data->poster = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias
+					$data->photo = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias
 						. '/' . $item->id . '/photo/' . $item->filename;
-					$data->posterThumb = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias
+					$data->photoThumb = $params->get('media_actor_photo_root_www') . '/' . $item->fs_alias
 						. '/' . $item->id . '/photo/thumb_' . $item->filename;
 				}
 
-				$dimension = self::getImageSize(
-					$checkingPath,
+				$dimension         = explode('x', $item->dimension);
+				$data->dimension   = $item->dimension;
+				$data->photoWidth  = $dimension[0];
+				$data->photoHeight = $dimension[1];
+
+				$dimensionThumb = self::getImageSize(
+					$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename,
 					true,
-					(int) $params->get('size_x_posters'),
+					(int) $params->get('size_x_photo'),
 					$item->dimension
 				);
-				$data->dimension    = $item->dimension;
-				$data->posterWidth  = $dimension['width'];
-				$data->posterHeight = $dimension['height'];
+				$data->dimensionThumb   = $dimensionThumb['width'] . 'x' . $dimensionThumb['height'];
+				$data->photoThumbWidth  = $dimensionThumb['width'];
+				$data->photoThumbHeight = $dimensionThumb['height'];
 			}
 		}
 		else
 		{
-			$data->poster = JRoute::_(
+			$data->photo = JRoute::_(
 				'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
 				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid .
 				'&thumbnail=0&gender=' . $item->gender
 			);
-			$data->posterThumb = JRoute::_(
+			$data->photoThumb = JRoute::_(
 				'index.php?option=com_kinoarhiv&task=media.view&element=name&content=image&type=3&id=' . $item->id .
 				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid .
 				'&thumbnail=1&gender=' . $item->gender
 			);
 			$dimension = self::getImageSize(
 				$checkingPath,
+				false
+			);
+			$data->dimension   = $item->dimension;
+			$data->photoWidth  = $dimension['width'];
+			$data->photoHeight = $dimension['height'];
+
+			$dimensionThumb = self::getImageSize(
+				$params->get('media_actor_photo_root') . '/' . $item->fs_alias . '/' . $item->id . '/photo/thumb_' . $item->filename,
 				true,
-				(int) $params->get('size_x_posters'),
+				(int) $params->get('size_x_photo'),
 				$item->dimension
 			);
-			$data->dimension    = $item->dimension;
-			$data->posterWidth  = $dimension['width'];
-			$data->posterHeight = $dimension['height'];
+			$data->dimensionThumb   = $dimensionThumb['width'] . 'x' . $dimensionThumb['height'];
+			$data->photoThumbWidth  = $dimensionThumb['width'];
+			$data->photoThumbHeight = $dimensionThumb['height'];
 		}
 
 		return $data;

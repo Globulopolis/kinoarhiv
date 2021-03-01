@@ -10,8 +10,6 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
 /**
  * Movies feed View class
  *
@@ -53,7 +51,7 @@ class KinoarhivViewMovies extends JViewLegacy
 		$feedEmail      = $app->get('feed_email', 'author');
 		$siteEmail      = $app->get('mailfrom');
 		$itemid         = $app->input->get('Itemid', 0, 'int');
-		$throttleEnable = $params->get('throttle_image_enable', 0);
+		$introtextLinks = $params->get('introtext_links', 1);
 
 		$document->setTitle(JText::_('COM_KA_MOVIES'));
 		$document->setDescription($params->get('meta_description'));
@@ -73,6 +71,9 @@ class KinoarhivViewMovies extends JViewLegacy
 		}
 
 		$app->input->set('limit', $app->get('feed_limit'));
+
+		// Get proper itemid for &view=?&Itemid=? links.
+		$namesItemid = KAContentHelper::getItemid('names');
 
 		// Prepare the data
 		foreach ($items as $row)
@@ -99,7 +100,6 @@ class KinoarhivViewMovies extends JViewLegacy
 			$row->text = preg_replace_callback('#\[country\s+ln=(.+?)\](.*?)\[/country\]#i', function ($matches)
 			{
 				$html = JText::_($matches[1]);
-
 				$cn = preg_replace('#\[cn=(.+?)\](.+?)\[/cn\]#', '<img src="media/com_kinoarhiv/images/icons/countries/$1.png" alt="$2" class="ui-icon-country" /> $2', $matches[2]);
 
 				return $html . $cn;
@@ -115,77 +115,35 @@ class KinoarhivViewMovies extends JViewLegacy
 				$row->text
 			);
 
-
 			// Replace person BB-code
-			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches)
-			{
+			$row->text = preg_replace_callback('#\[names\s+ln=(.+?)\](.*?)\[/names\]#i', function ($matches) use ($namesItemid, $introtextLinks) {
 				$html = JText::_($matches[1]);
 
-				$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
+				if ($introtextLinks)
+				{
+					$name = preg_replace(
+						'#\[name=(.+?)\](.+?)\[/name\]#',
+						'<a href="' . JRoute::_('index.php?option=com_kinoarhiv&view=name&id=$1&Itemid=' . $namesItemid, false) . '" title="$2">$2</a>',
+						$matches[2]
+					);
+				}
+				else
+				{
+					$name = preg_replace('#\[name=(.+?)\](.+?)\[/name\]#', '$2', $matches[2]);
+				}
 
 				return $html . $name;
 			},
 				$row->text
 			);
 
-			$checkingPath = JPath::clean($params->get('media_posters_root') . '/' . $row->fs_alias . '/' . $row->id . '/posters/' . $row->filename);
-
-			if ($throttleEnable == 0)
-			{
-				if (!is_file($checkingPath))
-				{
-					$row->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
-						false
-					);
-					$row->poster_width  = $dimension['width'];
-					$row->poster_height = $dimension['height'];
-				}
-				else
-				{
-					$row->fs_alias = rawurlencode($row->fs_alias);
-
-					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
-					{
-						$row->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
-							. $row->fs_alias . '/' . $row->id . '/posters/thumb_' . $row->filename;
-					}
-					else
-					{
-						$row->poster = $params->get('media_posters_root_www') . '/' . $row->fs_alias . '/'
-							. $row->id . '/posters/thumb_' . $row->filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $params->get('size_x_posters'),
-						$row->dimension
-					);
-					$row->poster_width  = $dimension['width'];
-					$row->poster_height = $dimension['height'];
-				}
-			}
-			else
-			{
-				$row->poster = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $row->id .
-					'&fa=' . urlencode($row->fs_alias) . '&fn=' . $row->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-				);
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $params->get('size_x_posters'),
-					$row->dimension
-				);
-				$row->poster_width  = $dimension['width'];
-				$row->poster_height = $dimension['height'];
-			}
-
+			$row->poster = KAContentHelper::getMoviePoster($row, $params);
 			$row->plot = '<div class="feed-plot">' . JHtml::_('string.truncate', $row->plot, $params->get('limit_text')) . '</div>';
 			$item->description = '<div class="feed-description">
-				<div class="poster"><img src="' . $row->poster . '" width="' . $row->poster_width . '" height="' . $row->poster_height . '" /></div>
+				<div class="poster">
+					<img src="' . $row->poster->posterThumb . '" width="' . $row->poster->posterThumbWidth . '"
+						 height="' . $row->poster->posterThumbHeight . '" />
+				</div>
 				<div class="introtext">' . $row->text . $row->plot . '</div>
 			</div>';
 

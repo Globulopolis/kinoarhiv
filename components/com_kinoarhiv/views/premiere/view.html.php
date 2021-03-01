@@ -10,10 +10,8 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\String\StringHelper;
-
 /**
- * Release View class
+ * Premiere view class
  *
  * @since  3.0
  */
@@ -96,40 +94,7 @@ class KinoarhivViewPremiere extends JViewLegacy
 			$item->text
 		);
 
-		if ($this->params->get('throttle_image_enable', 0) == 0)
-		{
-			$checkingPath = JPath::clean(
-				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
-			);
-
-			if (!is_file($checkingPath))
-			{
-				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
-			}
-			else
-			{
-				$item->fs_alias = rawurlencode($item->fs_alias);
-
-				if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
-				{
-					$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
-						. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-				}
-				else
-				{
-					$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
-						. $item->id . '/posters/thumb_' . $item->filename;
-				}
-			}
-		}
-		else
-		{
-			$item->poster = JRoute::_(
-				'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-			);
-		}
-
+		$item->poster = KAContentHelper::getMoviePoster($item, $this->params);
 		$item->plot = JHtml::_('string.truncate', $item->plot, $this->params->get('limit_text'));
 
 		if ($this->params->get('ratings_show_frontpage') == 1)

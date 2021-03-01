@@ -18,6 +18,8 @@ KAComponentHelper::getScriptLanguage('jquery.colorbox-', 'media/com_kinoarhiv/js
 /** @var array $displayData */
 $params = $displayData['params'];
 $item   = $displayData['item'];
+$lang   = JFactory::getLanguage();
+$namesItemid = KAContentHelper::getItemid('names');
 ?>
 <div class="player-layout">
 	<div class="row-fluid">
@@ -33,7 +35,13 @@ $item   = $displayData['item'];
 			<tbody>
 			<?php foreach ($item->tracks as $index => $track):
 				if ($track->album_id == $item->id):
-					$performer = !empty($track->performer) ? ' <span class="small">(' . $track->performer . ')</span>' : '';
+					// TODO Вывести поле комментария
+					$performer = '';
+
+					if (!empty($track->performed_by)):
+						$performerUrl = JRoute::_('index.php?option=com_kinoarhiv&view=name&id=' . $track->performed_by_id . '&Itemid=' . $namesItemid . '&lang=' . $lang->getTag());
+						$performer = ' <span class="small">(' . JText::sprintf('COM_KA_TRACK_PERFORMED_BY', $performerUrl, $track->performed_by) . ')</span>';
+					endif;
 					?>
 				<tr class="track-row" itemprop="track" itemscope itemtype="https://schema.org/MusicRecording">
 					<td class="track-number span1"><?php echo !empty($track->track_number) ? $track->track_number . '. ' : ''; ?></td>

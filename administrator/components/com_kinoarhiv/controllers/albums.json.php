@@ -99,6 +99,7 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 		$user   = JFactory::getUser();
 		$id     = $app->input->getInt('id', 0);
 		$ids    = $app->input->get('items', array(), 'array');
+		$type   = $app->input->getInt('item_type', 0);
 		$newIDs = array();
 
 		// Check if the user is authorized to do this.
@@ -128,7 +129,7 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 
 		/** @var KinoarhivModelAlbum $model */
 		$model = $this->getModel('album');
-		$result = $model->removeAlbumCrew($newIDs);
+		$result = $model->removeAlbumCrew($newIDs, $type);
 
 		if (!$result)
 		{

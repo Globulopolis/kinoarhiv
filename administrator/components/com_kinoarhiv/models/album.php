@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 JLoader::register('KAContentHelperBackend', JPath::clean(JPATH_COMPONENT_ADMINISTRATOR . '/helpers/content.php'));
+JLoader::register('KAContentHelper', JPath::clean(JPATH_ROOT . '/components/com_kinoarhiv/helpers/content.php'));
 
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
@@ -55,6 +56,7 @@ class KinoarhivModelAlbum extends JModelForm
 				break;
 			case 'editTrack':
 			case 'saveTrack':
+			case 'saveTagsToFile':
 				$form = $this->loadForm($formName, 'relations_track', $formOpts);
 				break;
 			default:
@@ -76,6 +78,10 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			$form->setFieldAttribute('item_id', 'label', 'COM_KA_FIELD_ALBUMS_FIELD_ID_LABEL');
 			$form->setValue('item_type', null, 1);
+		}
+		elseif ($task == 'editAlbumCrew')
+		{
+			$form->setValue('item_type', null, $input->getInt('item_type', 0));
 		}
 
 		return $form;
@@ -105,16 +111,19 @@ class KinoarhivModelAlbum extends JModelForm
 	/**
 	 * Method to get a single record.
 	 *
+	 * @param   string   $task  Task.
+	 * @param   integer  $id    Item ID.
+	 *
 	 * @return  mixed  Object on success, false on failure.
 	 *
 	 * @since   3.0
 	 */
-	public function getItem()
+	public function getItem($task = '', $id = 0)
 	{
 		$app  = JFactory::getApplication();
 		$db   = $this->getDbo();
-		$task = $app->input->get('task', '');
-		$id   = $app->input->get('id', 0, 'int');
+		$task = $task == '' ? $app->input->get('task', '') : $task;
+		$id   = !empty($id) ? $id : $app->input->get('id', 0, 'int');
 
 		if ($task == 'editAlbumAward')
 		{
@@ -524,7 +533,7 @@ class KinoarhivModelAlbum extends JModelForm
 						$crewStr .= '[/names]';
 					}
 
-					$introtext[] = '<span class="cr-list">' . $crewStr . '</span>';
+					$introtext[] = '<div class="cr-list">' . $crewStr . '</div>';
 				}
 			}
 			catch (RuntimeException $e)
@@ -558,8 +567,8 @@ class KinoarhivModelAlbum extends JModelForm
 					$genresStr .= StringHelper::strtolower($genre->name) . ', ';
 				}
 
-				$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: '
-					. StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+				$introtext[] = '<div class="gn-list">[genres ln=' . $languageConst . ']: '
+					. StringHelper::substr($genresStr, 0, -2) . '[/genres]</div>';
 			}
 			catch (RuntimeException $e)
 			{
@@ -573,13 +582,14 @@ class KinoarhivModelAlbum extends JModelForm
 	/**
 	 * Get list of genres for field.
 	 *
-	 * @param   integer  $id  Item ID.
+	 * @param   integer  $id    Item ID.
+	 * @param   integer  $type  Item type.
 	 *
 	 * @return  mixed    Array with data, false otherwise.
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	protected function getGenres($id)
+	protected function getGenres($id, $type = 0)
 	{
 		$app = JFactory::getApplication();
 		$db  = $this->getDbo();
@@ -589,7 +599,7 @@ class KinoarhivModelAlbum extends JModelForm
 			->from($db->quoteName('#__ka_music_rel_genres', 'rel'))
 			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON ' . $db->quoteName('g.id') . ' = ' . $db->quoteName('rel.genre_id'))
 			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id)
-			->where($db->quoteName('rel.type') . ' = 0')
+			->where($db->quoteName('rel.type') . ' = ' . (int) $type)
 			->order($db->quoteName('rel.ordering') . ' ASC');
 
 		$db->setQuery($query);
@@ -616,15 +626,62 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
-	 * Get list of labels(vendors) for field.
+	 * Get list of artist for field.
 	 *
-	 * @param   integer  $id  Item ID.
+	 * @param   integer  $id    Item ID.
+	 * @param   integer  $type  Item type.
 	 *
 	 * @return  mixed    Array with data, false otherwise.
 	 *
-	 * @since   3.0
+	 * @since   3.1
 	 */
-	protected function getVendors($id)
+	protected function getNames($id, $type = 0)
+	{
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->quoteName(array('n.id', 'n.name', 'n.latin_name')))
+			->from($db->quoteName('#__ka_music_rel_names', 'rel'))
+			->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON ' . $db->quoteName('n.id') . ' = ' . $db->quoteName('rel.name_id'))
+			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id)
+			->where($db->quoteName('rel.item_type') . ' = ' . (int) $type)
+			->order($db->quoteName('rel.ordering') . ' ASC');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$_names = $db->loadAssocList();
+			$names = array();
+
+			foreach ($_names as $key => $id)
+			{
+				$names['id'][$key] = $id['id'];
+				$names['title'][$key] = KAContentHelper::formatItemTitle($id['name'], $id['latin_name']);
+			}
+		}
+		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return $names;
+	}
+
+	/**
+	 * Get list of labels(vendors) for field.
+	 *
+	 * @param   integer  $id    Item ID.
+	 * @param   integer  $type  Item type.
+	 *
+	 * @return  mixed    Array with data, false otherwise.
+	 *
+	 * @since   3.1
+	 */
+	protected function getVendors($id, $type = 0)
 	{
 		$app = JFactory::getApplication();
 		$db  = $this->getDbo();
@@ -634,7 +691,7 @@ class KinoarhivModelAlbum extends JModelForm
 			->from($db->quoteName('#__ka_music_rel_vendors', 'rel'))
 			->leftJoin($db->quoteName('#__ka_vendors', 'v') . ' ON ' . $db->quoteName('v.id') . ' = ' . $db->quoteName('rel.vendor_id'))
 			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id)
-			->where($db->quoteName('rel.item_type') . ' = 0')
+			->where($db->quoteName('rel.item_type') . ' = ' . (int) $type)
 			->order($db->quoteName('rel.ordering') . ' ASC');
 
 		$db->setQuery($query);
@@ -664,17 +721,35 @@ class KinoarhivModelAlbum extends JModelForm
 	 * Save genres to relation table.
 	 *
 	 * @param   integer  $id      Item ID.
-	 * @param   string   $genres  Comma separated string with genre ID.
+	 * @param   mixed    $genres  Comma separated string with genres ID or array with IDs.
+	 * @param   integer  $type    Item type.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	protected function saveGenres($id, $genres)
+	protected function saveGenres($id, $genres, $type = 0)
 	{
-		$app         = JFactory::getApplication();
-		$db          = $this->getDbo();
-		$genres      = explode(',', $genres);
+		$app = JFactory::getApplication();
+		$db  = $this->getDbo();
+
+		if (!is_array($genres))
+		{
+			$genres = explode(',', $genres);
+		}
+
+		if (count($genres) == 1)
+		{
+			// Test if genres in format: array(1) { [0]=> string(5) "42,40" };
+			$_genres = explode(',', $genres[0]);
+
+			if (count($_genres) > 1)
+			{
+				$genres = $_genres;
+			}
+		}
+
+		$genres      = array_filter($genres);
 		$queryResult = true;
 
 		$db->lockTable('#__ka_music_rel_genres');
@@ -685,7 +760,7 @@ class KinoarhivModelAlbum extends JModelForm
 			$query = $db->getQuery(true)
 				->delete($db->quoteName('#__ka_music_rel_genres'))
 				->where($db->quoteName('item_id') . ' = ' . (int) $id)
-				->where($db->quoteName('type') . ' = 0');
+				->where($db->quoteName('type') . ' = ' . (int) $type);
 
 			$db->setQuery($query);
 
@@ -707,7 +782,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 			$query->insert($db->quoteName('#__ka_music_rel_genres'))
 				->columns($db->quoteName(array('genre_id', 'item_id', 'type', 'ordering')))
-				->values("'" . (int) $genreID . "', '" . (int) $id . "', '0', '" . $key . "'");
+				->values("'" . (int) $genreID . "', '" . (int) $id . "', '" . (int) $type . "', '" . $key . "'");
 			$db->setQuery($query . ';');
 
 			if ($db->execute() === false)
@@ -747,6 +822,7 @@ class KinoarhivModelAlbum extends JModelForm
 		$app         = JFactory::getApplication();
 		$db          = $this->getDbo();
 		$vendors     = explode(',', $vendors);
+		$vendors     = array_filter($vendors);
 		$queryResult = true;
 
 		$db->lockTable('#__ka_music_rel_vendors');
@@ -990,7 +1066,7 @@ class KinoarhivModelAlbum extends JModelForm
 	}
 
 	/**
-	 * Method to get a single record for track edit.
+	 * Method to get a single record for album crew edit.
 	 *
 	 * @return  mixed  Object on success, false on failure.
 	 *
@@ -1028,19 +1104,21 @@ class KinoarhivModelAlbum extends JModelForm
 	/**
 	 * Removes album crew.
 	 *
-	 * @param   array  $ids  Form data.
+	 * @param   array    $ids   Form data.
+	 * @param   integer  $type  Item type.
 	 *
 	 * @return  boolean
 	 *
 	 * @since   3.1
 	 */
-	public function removeAlbumCrew($ids)
+	public function removeAlbumCrew($ids, $type)
 	{
 		$app   = JFactory::getApplication();
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 
 		$query->delete($db->quoteName('#__ka_music_rel_names'))
+			->where($db->quoteName('item_type') . ' = ' . (int) $type)
 			->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
 		$db->setQuery($query);
@@ -1326,21 +1404,24 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	private function editTrack()
 	{
-		$app   = JFactory::getApplication();
-		$db    = $this->getDbo();
-		$id    = $app->input->get('row_id', 0, 'int');
-		$query = $db->getQuery(true);
+		$app     = JFactory::getApplication();
+		$db      = $this->getDbo();
+		$albumID = $app->input->get('item_id', 0, 'int');
+		$id      = $app->input->get('row_id', 0, 'int');
+		$query   = $db->getQuery(true);
 
 		$query->select(
 			$db->quoteName(
 				array(
-					'id', 'album_id', 'artist_id', 'title', 'xgenre_id', 'year', 'composer', 'publisher', 'performer',
-					'label', 'isrc', 'length', 'cd_number', 'track_number', 'filename', 'buy_url', 'access', 'state'
+					't.id', 't.title', 't.year', 't.publisher', 't.isrc', 't.length', 't.cd_number', 't.track_number',
+					't.filename', 't.buy_url', 't.comments', 't.access', 't.state', 'a.tracks_path'
 				)
 			)
 		)
-			->from($db->quoteName('#__ka_music'))
-			->where($db->quoteName('id') . ' = ' . (int) $id);
+			->from($db->quoteName('#__ka_music', 't'));
+
+		$query->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON a.id = ' . (int) $albumID)
+			->where($db->quoteName('t.id') . ' = ' . (int) $id);
 
 		$db->setQuery($query);
 
@@ -1353,6 +1434,23 @@ class KinoarhivModelAlbum extends JModelForm
 			$app->enqueueMessage($e->getMessage(), 'error');
 
 			return false;
+		}
+
+		$genres = $this->getGenres($id, 1);
+
+		if ($genres)
+		{
+			$genres = implode(',', $genres['id']);
+			$result->genres = $genres;
+			$result->genres_orig = $genres;
+		}
+
+		$vendors = $this->getVendors($id, 1);
+
+		if ($vendors)
+		{
+			$vendors = implode(',', $vendors['id']);
+			$result->label = $vendors;
 		}
 
 		return $result;
@@ -1403,23 +1501,35 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function saveTrack($data)
 	{
-		$app  = JFactory::getApplication();
-		$user = JFactory::getUser();
-		$db   = $this->getDbo();
+		$app     = JFactory::getApplication();
+		$user    = JFactory::getUser();
+		$db      = $this->getDbo();
+		$albumID = $app->input->getInt('item_id', 0);
 
-		// Skip dupe checks, let user do this.
 		if (empty($data['id']))
 		{
+			// Check if track with this title allready exists in database for this album.
+			$rowsQuery = $db->getQuery(true)
+				->select('COUNT(id)')
+				->from($db->quoteName('#__ka_music'))
+				->where($db->quoteName('title') . ' LIKE ' . $db->quote('%' . $data['title'] . '%'))
+				->where($db->quoteName('id') . ' = ' . (int) $albumID);
+
+			$db->setQuery($rowsQuery);
+			$count = $db->loadResult();
+
+			if ($count > 0)
+			{
+				$app->enqueueMessage(JText::_('COM_KA_MUSIC_TRACK_EXISTS'), 'error');
+
+				return false;
+			}
+
 			$values = array(
 				'id'           => '',
-				'album_id'     => (int) $data['album_id'],
-				'artist_id'    => (int) $data['artist_id'],
 				'title'        => $db->escape($data['title']),
-				'xgenre_id'    => (int) $data['xgenre_id'],
 				'year'         => $db->escape($data['year']),
-				'composer'     => (int) $data['composer'],
 				'publisher'    => (int) $data['publisher'],
-				'performer'    => (int) $data['performer'],
 				'label'        => (int) $data['label'],
 				'isrc'         => $db->escape($data['isrc']),
 				'length'       => $db->escape($data['length']),
@@ -1427,6 +1537,7 @@ class KinoarhivModelAlbum extends JModelForm
 				'track_number' => $db->escape($data['track_number']),
 				'filename'     => $db->escape($data['filename']),
 				'buy_url'      => $db->escape($data['buy_url']),
+				'comments'     => $db->escape($data['comments']),
 				'access'       => (int) $data['access'],
 				'state'        => (int) $data['state']
 			);
@@ -1440,14 +1551,9 @@ class KinoarhivModelAlbum extends JModelForm
 		{
 			$query = $db->getQuery(true)
 				->update($db->quoteName('#__ka_music'))
-				->set($db->quoteName('album_id') . ' = ' . $db->quote((int) $data['album_id']))
-				->set($db->quoteName('artist_id') . ' = ' . $db->quote((int) $data['artist_id']))
 				->set($db->quoteName('title') . ' = ' . $db->quote($data['title']))
-				->set($db->quoteName('xgenre_id') . ' = ' . $db->quote((int) $data['xgenre_id']))
 				->set($db->quoteName('year') . ' = ' . $db->quote($data['year']))
-				->set($db->quoteName('composer') . ' = ' . $db->quote((int) $data['composer']))
 				->set($db->quoteName('publisher') . ' = ' . $db->quote((int) $data['publisher']))
-				->set($db->quoteName('performer') . ' = ' . $db->quote((int) $data['performer']))
 				->set($db->quoteName('label') . ' = ' . $db->quote((int) $data['label']))
 				->set($db->quoteName('isrc') . ' = ' . $db->quote($data['isrc']))
 				->set($db->quoteName('length') . ' = ' . $db->quote($data['length']))
@@ -1455,6 +1561,7 @@ class KinoarhivModelAlbum extends JModelForm
 				->set($db->quoteName('track_number') . ' = ' . $db->quote($data['track_number']))
 				->set($db->quoteName('filename') . ' = ' . $db->quote($data['filename']))
 				->set($db->quoteName('buy_url') . ' = ' . $db->quote($data['buy_url']))
+				->set($db->quoteName('comments') . ' = ' . $db->quote($data['comments']))
 				->set($db->quoteName('access') . ' = ' . $db->quote((int) $data['access']))
 				->set($db->quoteName('state') . ' = ' . $db->quote((int) $data['state']))
 				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
@@ -1473,8 +1580,93 @@ class KinoarhivModelAlbum extends JModelForm
 				$sessionData['id'] = $insertID;
 				$app->setUserState('com_kinoarhiv.album.' . $user->id . '.edit_data.tr_id', $sessionData);
 			}
+
+			// Update genres.
+			if (!empty($data['genres']) && ($data['genres_orig'] !== implode(',', $data['genres'])))
+			{
+				$this->saveGenres($data['id'], $data['genres'], 1);
+			}
 		}
 		catch (RuntimeException $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Save tags to file.
+	 *
+	 * @param   array  $data  Form data.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.1
+	 */
+	public function saveTrackTags($data)
+	{
+		$app     = JFactory::getApplication();
+		$albumID = $app->input->getInt('item_id', 0);
+
+		if (empty($data['id']))
+		{
+			$app->enqueueMessage('Empty ID!', 'error');
+
+			return false;
+		}
+
+		jimport('components.com_kinoarhiv.libraries.vendor.getid3.getid3.getid3', JPATH_ROOT);
+
+		$getID3 = new getID3;
+		$getID3->setOption(array('encoding' => 'UTF-8'));
+
+		jimport('components.com_kinoarhiv.libraries.vendor.getid3.getid3.write', JPATH_ROOT);
+
+		try
+		{
+			$tagwriter                    = new getid3_writetags;
+			$tagwriter->filename          = JPath::clean('D:/2/01. Graceful Exit.mp3');
+			$tagwriter->tagformats        = array('id3v1', 'id3v2.3');
+			$tagwriter->overwrite_tags    = true;
+			$tagwriter->remove_other_tags = false;
+			$tagwriter->tag_encoding      = 'UTF-8';
+
+			$genres    = $this->getGenres($data['id'], 1);
+			$albumData = $this->getItem('', $data['id']);
+			$artists   = $this->getNames($data['id'], 1);
+
+
+			$tagData   = array(
+				'title'        => array($data['title']),
+				'artist'       => $artists['title'],
+				'album'        => array($albumData->title),
+				'year'         => array($data['year']),
+				'genre'        => $genres['title'],
+				'comment'      => array($data['comments']),
+				'track_number' => array($data['track_number'])
+			);
+			$tagwriter->tag_data = $tagData;
+
+			if ($tagwriter->WriteTags())
+			{
+				$app->enqueueMessage(JText::_('COM_KA_MUSIC_TRACK_SAVED_TAGS'));
+
+				if (!empty($tagwriter->warnings))
+				{
+					$app->enqueueMessage('There were some warnings:<br>' . implode('<br><br>', $tagwriter->warnings), 'warning');
+				}
+			}
+			else
+			{
+				$app->enqueueMessage('Failed to write tags!<br>' . implode('<br><br>', $tagwriter->errors), 'error');
+
+				return false;
+			}
+		}
+		catch (Exception $e)
 		{
 			$app->enqueueMessage($e->getMessage(), 'error');
 

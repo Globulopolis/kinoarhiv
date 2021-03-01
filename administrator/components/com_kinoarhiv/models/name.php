@@ -718,7 +718,7 @@ class KinoarhivModelName extends JModelForm
 				$careersStr .= StringHelper::strtolower($career->title) . ', ';
 			}
 
-			$introtext[] = '<span class="cr-list">[careers ln=COM_KA_NAMES_CAREER]: ' . StringHelper::substr($careersStr, 0, -2) . '[/careers]</span>';
+			$introtext[] = '<div class="cr-list">[careers ln=COM_KA_NAMES_CAREER]: ' . StringHelper::substr($careersStr, 0, -2) . '[/careers]</div>';
 		}
 
 		// Process intro text for genres
@@ -743,7 +743,7 @@ class KinoarhivModelName extends JModelForm
 				$genresStr .= StringHelper::strtolower($genre->name) . ', ';
 			}
 
-			$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+			$introtext[] = '<div class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</div>';
 		}
 
 		return implode('', $introtext);

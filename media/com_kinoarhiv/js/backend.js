@@ -440,16 +440,19 @@ jQuery(document).ready(function($){
 				}
 			};
 
-			if (isNaN(parseInt($this.data('height'), 10))) {
-				height = Math.round(($(window).height() - $($this.data('height')).offset().top) - 140);
-			} else {
-				height = $this.data('height');
+			// Check if DOM element is exists.
+			if ($($this.data('height')).length !== undefined) {
+				if (isNaN(parseInt($this.data('height'), 10))) {
+					height = Math.round(($(window).height() - $($this.data('height')).offset().top) - 140);
+				} else {
+					height = $this.data('height');
+				}
 			}
 
 			$this.jqGrid({
 				url: $this.data('url'),
 				datatype: 'json',
-				height: height < 100 ? 200 : height,
+				height: height < 100 ? 250 : height,
 				width: width,
 				shrinkToFit: true,
 				multiselect: true,
@@ -530,7 +533,12 @@ jQuery(document).ready(function($){
 					searchtext: navgrid.btn.lang.searchtext,
 					refreshtext: navgrid.btn.lang.refreshtext,
 					viewtext: navgrid.btn.lang.viewtext,
-					view: true
+					add: (navgrid.btn.add !== undefined) ? navgrid.btn.add : true,
+					edit: (navgrid.btn.edit !== undefined) ? navgrid.btn.edit : true,
+					del: (navgrid.btn.del !== undefined) ? navgrid.btn.del : true,
+					search: (navgrid.btn.search !== undefined) ? navgrid.btn.search : true,
+					refresh: (navgrid.btn.refresh !== undefined) ? navgrid.btn.refresh : true,
+					view: (navgrid.btn.view !== undefined) ? navgrid.btn.view : true
 				},
 				{},
 				{},

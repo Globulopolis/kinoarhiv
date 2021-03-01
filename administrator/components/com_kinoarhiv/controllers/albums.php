@@ -491,7 +491,7 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 		$model = $this->getModel('album');
 		$data  = $this->input->post->get('jform', array(), 'array');
 		$form  = $model->getForm($data, false);
-		$url   = 'index.php?option=com_kinoarhiv&task=albums.editAlbumCrew&item_id=' . $id;
+		$url   = 'index.php?option=com_kinoarhiv&task=albums.editAlbumCrew&item_id=' . $id . '&item_type=' . (int) $data['item_type'];
 
 		if ($rowid != 0)
 		{
@@ -503,6 +503,17 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
 
 			return;
+		}
+
+		// Because Select2 can't handle 'required' property and return 0 if field isn't filled, we need to do this hack.
+		if (empty($data['name_id']))
+		{
+			$data['name_id'] = null;
+		}
+
+		if (empty($data['career_id']))
+		{
+			$data['career_id'] = null;
 		}
 
 		$validData = $model->validate($form, $data);
@@ -727,5 +738,79 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 		}
 
 		$this->setRedirect($url, $message);
+	}
+
+	/**
+	 * Method to save tags to file.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function saveTagsToFile()
+	{
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$app       = JFactory::getApplication();
+		$user      = JFactory::getUser();
+		$id        = $app->input->get('item_id', 0, 'int');
+		$rowid     = $app->input->get('row_id', 0, 'int');
+		$inputName = $app->input->get('input_name', '', 'string');
+
+		// Check if the user is authorized to do this.
+		if (!$user->authorise('core.create', 'com_kinoarhiv.album.' . $id) && !$user->authorise('core.edit', 'com_kinoarhiv.album.' . $id))
+		{
+			JFactory::getApplication()->redirect('index.php', JText::_('JERROR_ALERTNOAUTHOR'));
+
+			return;
+		}
+
+		// TODO Check if file type is supported.
+		$data = $this->input->post->get('jform', array(), 'array');
+
+		/** @var KinoarhivModelAlbum $model */
+		$model = $this->getModel('album');
+
+		$form = $model->getForm($data, false);
+		$url  = 'index.php?option=com_kinoarhiv&task=albums.editTrack&item_id=' . $id;
+
+		if ($rowid != 0)
+		{
+			$url .= '&row_id=' . $rowid . '&input_name=' . $inputName;
+		}
+
+		if (!$form)
+		{
+			$app->enqueueMessage(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'), 'error');
+
+			return;
+		}
+
+		$validData = $model->validate($form, $data);
+
+		if ($validData === false)
+		{
+			KAComponentHelper::renderErrors($model->getErrors());
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		$result = $model->saveTrackTags($validData);
+
+		if (!$result)
+		{
+			// Errors enqueue in the model
+			$this->setRedirect($url);
+
+			return;
+		}
+
+		if ($rowid == 0)
+		{
+			$url .= '&row_id=' . $rowid . '&input_name=t_' . $rowid;
+		}
+
+		$this->setRedirect($url);
 	}
 }

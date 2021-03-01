@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
-use Joomla\String\StringHelper;
 
 /**
  * Releases View class
@@ -103,9 +102,6 @@ class KinoarhivViewReleases extends JViewLegacy
 		$namesItemid = KAContentHelper::getItemid('names');
 		$this->moviesItemid = KAContentHelper::getItemid('movies');
 
-		$itemid         = $this->itemid;
-		$throttleEnable = $this->params->get('throttle_image_enable', 0);
-
 		// Prepare the data
 		foreach ($this->items as $item)
 		{
@@ -151,63 +147,7 @@ class KinoarhivViewReleases extends JViewLegacy
 				$item->text
 			);
 
-			$checkingPath = JPath::clean(
-				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
-			);
-
-			if ($throttleEnable == 0)
-			{
-				if (!is_file($checkingPath))
-				{
-					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png',
-						false
-					);
-					$item->poster_width = $dimension['width'];
-					$item->poster_height = $dimension['height'];
-				}
-				else
-				{
-					$item->fs_alias = rawurlencode($item->fs_alias);
-
-					if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
-					{
-						$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
-							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-					}
-					else
-					{
-						$item->poster = $this->params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
-							. $item->id . '/posters/thumb_' . $item->filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $this->params->get('size_x_posters'),
-						$item->dimension
-					);
-					$item->poster_width = $dimension['width'];
-					$item->poster_height = $dimension['height'];
-				}
-			}
-			else
-			{
-				$item->poster = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-				);
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $this->params->get('size_x_posters'),
-					$item->dimension
-				);
-				$item->poster_width = $dimension['width'];
-				$item->poster_height = $dimension['height'];
-			}
-
+			$item->poster = KAContentHelper::getMoviePoster($item, $this->params);
 			$item->plot = JHtml::_('string.truncate', $item->plot, $this->params->get('limit_text'));
 
 			if ($this->params->get('ratings_show_frontpage') == 1)
@@ -289,13 +229,13 @@ class KinoarhivViewReleases extends JViewLegacy
 		$namesItemid = KAContentHelper::getItemid('names');
 		$this->albumsItemid = KAContentHelper::getItemid('albums');
 
-		$throttleEnable = $this->params->get('throttle_image_enable', 0);
 		$introtextLinks = $this->params->get('introtext_links', 1);
 
 		// Prepare the data
 		foreach ($this->items as $item)
 		{
-			$item->attribs  = json_decode($item->attribs);
+			$item->attribs = json_decode($item->attribs);
+			$item->cover   = KAContentHelper::getAlbumCover($item, $this->params);
 
 			// Replace genres BB-code
 			$item->text = preg_replace_callback('#\[genres\s+ln=(.+?)\](.*?)\[/genres\]#i', function ($matches)
@@ -327,83 +267,6 @@ class KinoarhivViewReleases extends JViewLegacy
 			},
 				$item->text
 			);
-
-			$checkingPath = KAContentHelper::getAlbumCheckingPath($item->covers_path, $this->params->get('media_music_images_root'), $item);
-
-			if ($throttleEnable == 0)
-			{
-				$item->fs_alias = rawurlencode($item->fs_alias);
-
-				if (!is_file($checkingPath))
-				{
-					$item->cover = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_album_cover.png',
-						true,
-						(int) $this->params->get('music_covers_size')
-					);
-					$item->coverWidth = $dimension['width'];
-					$item->coverHeight = $dimension['height'];
-				}
-				else
-				{
-					$filename = (!is_file(JPath::clean($checkingPath . '/thumb_' . $item->filename)))
-						? $item->filename : 'thumb_' . $item->filename;
-
-					if (!empty($item->covers_path))
-					{
-						if (StringHelper::substr($item->covers_path_www, 0, 1) == '/')
-						{
-							$item->cover = JUri::base() . StringHelper::substr($item->covers_path_www, 1) . '/' . $filename;
-						}
-						else
-						{
-							$item->cover = $item->covers_path_www . '/' . $filename;
-						}
-					}
-					else
-					{
-						if (StringHelper::substr($this->params->get('media_music_images_root_www'), 0, 1) == '/')
-						{
-							$item->cover = JUri::base() . StringHelper::substr($this->params->get('media_music_images_root_www'), 1) . '/'
-								. $item->fs_alias . '/' . $item->id . '/' . $filename;
-						}
-						else
-						{
-							$item->cover = $this->params->get('media_music_images_root_www') . '/' . $item->fs_alias
-								. '/' . $item->id . '/' . $filename;
-						}
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $this->params->get('music_covers_size'),
-						$item->dimension
-					);
-					$item->coverWidth = $dimension['width'];
-					$item->coverHeight = $dimension['height'];
-				}
-			}
-			else
-			{
-				// Check for thumbnail image. If not found when load full image.
-				$thumbnail = (!is_file(JPath::clean($checkingPath . '/thumb_' . $item->filename))) ? 0 : 1;
-
-				$item->cover = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=album&content=image&type=1&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $this->itemid .
-					'&thumbnail=' . $thumbnail
-				);
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $this->params->get('music_covers_size'),
-					$item->dimension
-				);
-				$item->coverWidth = $dimension['width'];
-				$item->coverHeight = $dimension['height'];
-			}
 
 			if ($this->params->get('ratings_show_frontpage') == 1)
 			{

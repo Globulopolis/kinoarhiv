@@ -135,6 +135,7 @@ jQuery(document).ready(function($){
 	$('.cmd-playlist-add').click(function(e){
 		e.preventDefault();
 
+		// TODO 'Not implemented.'
 		alert('Not implemented.');
 	});
 });

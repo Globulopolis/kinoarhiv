@@ -66,9 +66,9 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 					<div>
 						<div class="poster">
 							<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . substr($this->view, 0, -1) . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>" title="<?php echo $title; ?>">
-								<img data-original="<?php echo $item->poster; ?>" class="lazy"
+								<img data-original="<?php echo $item->poster->posterThumb; ?>" class="lazy"
 									 alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($item->title); ?>"
-									 width="<?php echo $item->poster_width; ?>" height="<?php echo $item->poster_height; ?>"/>
+									 width="<?php echo $item->poster->posterThumbWidth; ?>" height="<?php echo $item->poster->posterThumbHeight; ?>"/>
 							</a>
 						</div>
 						<div class="introtext <?php echo $hasPremiere; ?>">

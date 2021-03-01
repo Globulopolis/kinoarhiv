@@ -212,7 +212,7 @@ jQuery(document).ready(function($){
 				remote = $this.data('remote'),
 				sortable = $this.data('sortable'),
 				min_length = $this.data('minimum-input-length'),
-				max_selection = $this.data('maximum-selection-size'),
+				max_selection = $this.data('max-selection'),
 				ignore_ids = $this.data('ignore-ids') || '',
 				api_root = KA_vars.api_root || '',
 				img_root = KA_vars.img_root || '',
@@ -253,9 +253,14 @@ jQuery(document).ready(function($){
 					data_url = api_root + 'index.php?option=com_kinoarhiv&task=api.data&content=' + content + '&format=json&tmpl=component&lang=' + KA_vars.language.tag.substr(0, 2) + data_lang + ignore_ids + data_type + '&' + Kinoarhiv.getFormToken() + '=1';
 				}
 
-				// Require if ID from query results is not an `id` field.
+				// Required if ID from query results is not an `id` field.
 				config.id = function (item) {
-					return !empty($this.data('key')) ? item[$this.data('key')] : item.value;
+					// Check if an item has that key.
+					if (!empty($this.data('key')) && item[$this.data('key')] !== undefined) {
+						return item[$this.data('key')];
+					}
+
+					return item.value;
 				};
 
 				config.ajax = {
@@ -294,8 +299,9 @@ jQuery(document).ready(function($){
 					}
 				};
 			} else {
-				// Code bellow required only in configuration: data-remote="false" multiple="true" data-sortable="true"
+				// Required only in configuration: data-remote="false" multiple="true" data-sortable="true"
 				if (sortable === 'true' || sortable) {
+					// Property 'data-content-value' available only in hidden input.
 					var data_content = $this.data('content-value'),
 						data_count = data_content.length;
 
@@ -306,60 +312,56 @@ jQuery(document).ready(function($){
 					config.initSelection = function (element, callback) {
 						var data = [];
 
-						if (content === 'countries') {
-							$(element.val().split(',')).each(function () {
-								var i = 0;
+						$(element.val().split(',')).each(function () {
+							var i = 0;
 
-								for (i; i < data_count; i++) {
-									if (data_content[i]['value'] == this) {
+							for (i; i < data_count; i++) {
+								if (data_content[i]['value'] == this) {
+									if (content === 'countries') {
 										data.push({
 											value: data_content[i]['value'],
 											text: data_content[i]['text'],
 											code: data_content[i]['code']
 										});
-									}
-								}
-							});
-						} else {
-							$(element.val().split(',')).each(function () {
-								var i = 0;
-
-								for (i; i < data_count; i++) {
-									if (data_content[i]['value'] == this) {
+									} else {
 										data.push({
 											value: data_content[i]['value'],
 											text: data_content[i]['text']
 										});
 									}
 								}
-							});
-						}
+							}
+						});
 
 						callback(data);
 					};
 
-					// Require if ID from query results is not an `id` field.
+					// Required if ID from query results is not an `id` field.
 					config.id = function (item) {
-						return !empty($this.data('key')) ? item[$this.data('key')] : item.value;
+						// Check if an item has that key.
+						if (!empty($this.data('key')) && item[$this.data('key')] !== undefined) {
+							return item[$this.data('key')];
+						}
+
+						return item.value;
 					};
 
-					config.query = function (query) {
-						var result = {results: []},
-							i = 0;
+					config.query = function (options) {
+						var result_array = [];
 
 						if (content === 'countries') {
-							for (i; i < data_count; i++) {
-								result.results.push({
+							for (i = 0; i < data_count; i++) {
+								result_array.push({
 									value: data_content[i]['value'],
 									text: data_content[i]['text'],
 									code: data_content[i]['code']
 								});
 							}
 						} else {
-							result = data_content;
+							result_array = data_content;
 						}
 
-						query.callback(result);
+						options.callback({results: result_array});
 					}
 				}
 			}
@@ -417,7 +419,7 @@ jQuery(document).ready(function($){
 			try {
 				select = $this.select2(config);
 			} catch (e) {
-				console.error('Wrong data-content attribute value!');
+				console.error('Something went wrong!');
 
 				return false;
 			}

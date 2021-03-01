@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 if ($this->getLayout() !== 'modal')
 {
-	JHtml::_('formbehavior.chosen', 'select');
+	JHtml::_('formbehavior.chosen', 'select:not(.hasAutocomplete)');
 	KAComponentHelperBackend::loadMediamanagerAssets();
 	JHtml::_('stylesheet', 'media/com_kinoarhiv/css/select2.min.css');
 	JHtml::_('script', 'media/com_kinoarhiv/js/select2.min.js');

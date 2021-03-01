@@ -27,7 +27,7 @@
 			</field>
 			<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
 				   data-content="genres" data-allow-clear="true" data-key="id" multiple="true" data-type="0,1"
-				   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+				   data-max-selection="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 				<option value=""></option>
 			</field>
 			<field name="mpaa" type="list" label="COM_KA_MPAA" class="span11 uk-width-1-6" filter="string">
@@ -138,7 +138,7 @@
 			</field>
 			<field name="tags" type="autocomplete" label="JTAG" class="span10 uk-width-1-1" data-content="tags"
 				   data-allow-clear="true" data-key="id" multiple="true" data-placeholder="JGLOBAL_SELECT_AN_OPTION"
-				   data-maximum-selection-size="5" filter="array">
+				   data-max-selection="5" filter="array">
 				<option value=""></option>
 			</field>
 		</fieldset>
@@ -176,7 +176,7 @@
 		</field>
 		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1"
 			   data-content="genres" data-allow-clear="true" data-key="id" multiple="true"
-			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			   data-max-selection="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
 		</field>
 	</fields>
@@ -201,7 +201,7 @@
 		</field>
 		<field name="genre" type="autocomplete" label="COM_KA_GENRE" class="span10 uk-width-1-1" data-type="1"
 			   data-content="genres" data-allow-clear="true" data-key="id" multiple="true"
-			   data-maximum-selection-size="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
+			   data-max-selection="5" data-placeholder="JGLOBAL_SELECT_AN_OPTION">
 			<option value=""></option>
 		</field>
 
@@ -232,7 +232,7 @@
 		</field>
 		<field name="tags" type="autocomplete" label="JTAG" class="span10 uk-width-1-1" data-content="tags"
 			   data-allow-clear="true" data-key="id" multiple="true" data-placeholder="JGLOBAL_SELECT_AN_OPTION"
-			   data-maximum-selection-size="5" filter="array">
+			   data-max-selection="5" filter="array">
 			<option value=""></option>
 		</field>
 	</fields>

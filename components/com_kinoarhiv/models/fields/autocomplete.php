@@ -73,7 +73,9 @@ class JFormFieldAutocomplete extends JFormFieldList
 		$attr .= (string) $this->element['data-allow-clear'] == 'true' ? ' data-allow-clear="true"' : ' data-allow-clear="false"';
 
 		// A 'data-placeholder' must be always set
-		$attr .= $this->element['data-placeholder'] ? ' data-placeholder="' . JText::_($this->element['data-placeholder']) . '"' : ' data-placeholder=""';
+		$attr .= $this->element['data-placeholder']
+			? ' data-placeholder="' . JText::_($this->element['data-placeholder']) . '"'
+			: ' data-placeholder=""';
 
 		// Select2 3.5.x require hidden input instead of select for sorting support.
 		$attr .= ((string) $this->element['data-sortable'] == 'true') ? ' data-sortable="true"' : '';
@@ -81,8 +83,8 @@ class JFormFieldAutocomplete extends JFormFieldList
 		$attr .= $this->element['data-quiet-millis'] ? ' data-quiet-millis="' . (int) $this->element['data-quiet-millis'] . '"' : '';
 		$attr .= $this->element['data-minimum-input-length']
 			? ' data-minimum-input-length="' . (int) $this->element['data-minimum-input-length'] . '"' : '';
-		$attr .= $this->element['data-maximum-selection-size']
-			? ' data-maximum-selection-size="' . (int) $this->element['data-maximum-selection-size'] . '"' : '';
+		$attr .= $this->element['data-max-selection']
+			? ' data-max-selection="' . (int) $this->element['data-max-selection'] . '"' : '';
 		$attr .= $this->element['data-content'] ? ' data-content="' . (string) $this->element['data-content'] . '"' : '';
 		$attr .= $this->element['data-key'] ? ' data-key="' . (string) $this->element['data-key'] . '"' : '';
 		$attr .= $this->element['data-type'] ? ' data-type="' . (string) $this->element['data-type'] . '"' : '';
@@ -176,7 +178,16 @@ class JFormFieldAutocomplete extends JFormFieldList
 					}
 					else
 					{
-						$selected = ($this->value == $element->value) ? ' selected' : '';
+						$list = explode(',', $this->value);
+
+						if (in_array($element->value, $list))
+						{
+							$selected = ' selected';
+						}
+						else
+						{
+							$selected = ($this->value == $element->value) ? ' selected' : '';
+						}
 					}
 
 					$optionHtml .= '<option value="' . $element->value . '" ' . $optionAttr . $selected . ' >' . $text . '</option>';
@@ -233,7 +244,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 					$value = $this->value;
 				}
 
-				$html = '<input type="hidden" name="' . $this->name . '" value="' . $value . '" ' . trim($attr) . ' />';
+				$html = '<input type="hidden" name="' . $this->name . '" value="' . preg_replace('/,+/', ',', $value) . '" ' . trim($attr) . ' />';
 			}
 
 			return $html;
@@ -259,7 +270,7 @@ class JFormFieldAutocomplete extends JFormFieldList
 			$attr .= $this->element['data-remote'] ? ' data-remote="' . (string) $this->element['data-remote'] . '"' : '';
 			$attr .= $this->element['data-ignore-ids'] ? ' data-ignore-ids="[' . (string) $this->element['data-ignore-ids'] . ']"' : '';
 
-			return '<input type="hidden" name="' . $this->name . '" value="' . $value . '" ' . trim($attr) . ' />';
+			return '<input type="hidden" name="' . $this->name . '" value="' . preg_replace('/,+/', ',', $value) . '" ' . trim($attr) . ' />';
 		}
 	}
 
@@ -440,6 +451,11 @@ class JFormFieldAutocomplete extends JFormFieldList
 		if ($lang != '')
 		{
 			$query->where($lang);
+		}
+
+		if (!empty($this->element['data-type']))
+		{
+			$query->where($db->quoteName('type') . ' = ' . (int) $this->element['data-type']);
 		}
 
 		$query->order('name ASC');

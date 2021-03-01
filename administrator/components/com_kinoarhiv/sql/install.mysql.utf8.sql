@@ -131,14 +131,9 @@ CREATE TABLE IF NOT EXISTS `#__ka_movies_gallery` (
 
 CREATE TABLE IF NOT EXISTS `#__ka_music` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `album_id` int(11) NOT NULL,
-  `artist_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL DEFAULT '',
-  `xgenre_id` int(11) NOT NULL,
   `year` year(4) NOT NULL,
-  `composer` int(11) NOT NULL DEFAULT '0',
   `publisher` int(11) NOT NULL DEFAULT '0',
-  `performer` int(11) NOT NULL DEFAULT '0',
   `label` int(11) NOT NULL DEFAULT '0',
   `isrc` char(12) NOT NULL,
   `length` varchar(13) NOT NULL DEFAULT '000:00:00.000',
@@ -146,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music` (
   `track_number` varchar(6) NOT NULL DEFAULT '0',
   `filename` varchar(128) NOT NULL,
   `buy_url` mediumtext NOT NULL,
+  `comments` mediumtext NOT NULL,
   `access` int(11) NOT NULL,
   `state` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
@@ -201,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_rel_genres` (
   `item_id` bigint(20) NOT NULL,
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-album, 1-track, 2-artist',
   `ordering` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`genre_id`,`item_id`)
+  KEY `idx_all` (`genre_id`,`item_id`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__ka_music_rel_movies` (
@@ -209,6 +205,27 @@ CREATE TABLE IF NOT EXISTS `#__ka_music_rel_movies` (
   `album_id` int(11) NOT NULL,
   `ordering` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`movie_id`,`album_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__ka_music_rel_names` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name_id` int(11) NOT NULL DEFAULT '0',
+  `item_id` int(11) NOT NULL DEFAULT '0',
+  `item_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-album, 1-track',
+  `role` varchar(1024) NOT NULL DEFAULT '',
+  `career_id` int(11) NOT NULL DEFAULT '0' COMMENT 'Career ID from #__ka_names_career',
+  `ordering` int(11) NOT NULL DEFAULT '0',
+  `desc` mediumtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `#__ka_music_rel_vendors` (
+  `item_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-album, 1-track',
+  `item_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `vendor_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Aka Label',
+  `ordering` int(11) NOT NULL DEFAULT '0',
+  KEY `item_type` (`item_type`),
+  KEY `item_id` (`item_id`,`vendor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__ka_names` (

@@ -103,12 +103,12 @@ class KinoarhivModelRelease extends JModelItem
 					$query->select(
 						$db->quoteName(
 							array(
-								'm.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.year', 'm.length', 'm.rate',
-								'm.rate_sum', 'm.covers_path', 'm.covers_path_www', 'm.attribs', 'm.created',
-								'm.created_by', 'm.metakey', 'm.metadesc','m.modified'
+								'm.id', 'm.title', 'm.alias', 'm.fs_alias', 'm.length', 'm.rate', 'm.rate_sum',
+								'm.covers_path', 'm.covers_path_www', 'm.attribs', 'm.created', 'm.created_by',
+								'm.metakey', 'm.metadesc','m.modified'
 							)
 						)
-					);
+					)->select('DATE_FORMAT(m.year, "%Y") AS ' . $db->quoteName('year'));
 
 					$subQuery = $db->getQuery(true)
 						->select('COUNT(' . $db->quoteName('album_id') . ')')

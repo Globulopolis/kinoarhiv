@@ -318,8 +318,10 @@ class KinoarhivViewAlbum extends JViewLegacy
 	 */
 	protected function editTrack()
 	{
-		$this->form = $this->get('Form');
-		$errors = $this->get('Errors');
+		$this->form   = $this->get('Form');
+		$this->params = JComponentHelper::getParams('com_kinoarhiv');
+		$this->lang   = JFactory::getLanguage();
+		$errors       = $this->get('Errors');
 
 		if (count($errors))
 		{
@@ -337,12 +339,12 @@ class KinoarhivViewAlbum extends JViewLegacy
 			);
 
 			JToolbarHelper::apply('albums.saveTrack');
-			JToolbarHelper::custom('albums.saveTagsToFile', 'file-2', 'file-2', 'COM_KA_MUSIC_TRACK_SAVE_TAGS');
+			JToolbarHelper::custom('albums.saveTagsToFile', 'file-2', 'file-2', 'COM_KA_MUSIC_TRACK_SAVE_TAGS', false);
 			JToolbarHelper::divider();
 			JToolbarHelper::cancel('cancel', 'JTOOLBAR_CLOSE');
 		}
 
-		echo JLayoutHelper::render('layouts.edit.relations', array('form' => $this->form), JPATH_COMPONENT_ADMINISTRATOR);
+		parent::display('edit_track');
 
 		JFactory::getApplication()->input->set('hidemainmenu', true);
 	}

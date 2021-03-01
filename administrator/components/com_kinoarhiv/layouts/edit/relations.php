@@ -19,7 +19,7 @@ $form  = $displayData['form'];
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('formbehavior.chosen', 'select:not(.hasAutocomplete)');
 JHtml::_('script', 'media/com_kinoarhiv/js/validation-rules.min.js');
 ?>
 <script type="text/javascript">
@@ -40,17 +40,7 @@ JHtml::_('script', 'media/com_kinoarhiv/js/validation-rules.min.js');
 
 		<div class="span6">
 			<fieldset class="form-horizontal">
-				<?php foreach ($form->getFieldset('basic') as $field):
-					if ($field->getAttribute('name') == 'filename'): ?>
-
-					<div class="control-group">
-						<div class="control-label"><?php echo $field->label; ?></div>
-						<div class="controls"><?php echo $field->input; ?></div>
-					</div>
-					<?php else:
-						echo $field->renderField();
-					endif;
-				endforeach; ?>
+				<?php echo $form->renderFieldset('basic'); ?>
 			</fieldset>
 		</div>
 		<div class="span6">

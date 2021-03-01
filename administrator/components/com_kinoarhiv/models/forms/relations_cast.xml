@@ -4,17 +4,17 @@
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="type" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE" filter="integer"
 			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC" class="span12" data-content="careers"
-			   data-allow-clear="true" data-remote="true" data-key="id" data-sel-size="1" data-lang="*" required="true">
+			   data-allow-clear="true" data-remote="true" data-key="id" data-max-selection="1" data-lang="*" required="true">
 			<option value=""></option>
 		</field>
 		<field name="name_id" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" filter="integer"
 			   class="span12" required="true" data-content="names" data-allow-clear="true" data-remote="true"
-			   data-minimum-input-length="1" data-key="id" data-sel-size="1" data-lang="*">
+			   data-minimum-input-length="1" data-key="id" data-max-selection="1" data-lang="*">
 			<option value=""></option>
 		</field>
 		<field name="dub_id" type="autocomplete" default="0" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_DUB"
 			   filter="integer" class="span12" data-content="names" data-allow-clear="true" data-remote="true"
-			   data-key="id" data-minimum-input-length="1" data-sel-size="1" data-lang="*">
+			   data-key="id" data-minimum-input-length="1" data-max-selection="1" data-lang="*">
 			<option value=""></option>
 		</field>
 		<field name="role" type="text" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE"

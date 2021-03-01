@@ -56,9 +56,10 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 				<div class="poster">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=album&page=posters&id=' . $this->item->id . '&Itemid=' . $this->albumsItemid); ?>"
 					   title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>">
-						<img itemprop="image" src="<?php echo $this->item->cover; ?>"
+						<img itemprop="image" src="<?php echo $this->item->cover->coverThumb; ?>"
 							 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($this->item->title); ?>"
-							 width="<?php echo $this->item->coverWidth; ?>" height="<?php echo $this->item->coverHeight; ?>" />
+							 width="<?php echo $this->item->cover->coverThumbWidth; ?>"
+							 height="<?php echo $this->item->cover->coverThumbHeight; ?>" />
 					</a>
 				</div>
 				<div class="introtext">

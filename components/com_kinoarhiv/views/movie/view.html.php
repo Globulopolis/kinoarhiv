@@ -153,41 +153,8 @@ class KinoarhivViewMovie extends JViewLegacy
 		$item->tags      = new JHelperTags;
 		$item->tags->getItemTags('com_kinoarhiv.movie', $item->id);
 
+		$item->poster = KAContentHelper::getMoviePoster($item, $this->params);
 		$throttleEnable = $this->params->get('throttle_image_enable', 0);
-
-		if ($throttleEnable == 0)
-		{
-			$checkingPosterPath = JPath::clean(
-				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
-			);
-
-			if (!is_file($checkingPosterPath))
-			{
-				$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_movie_cover.png';
-			}
-			else
-			{
-				$posterFsAlias = rawurlencode($item->fs_alias);
-
-				if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
-				{
-					$item->poster = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1)
-						. '/' . $posterFsAlias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-				}
-				else
-				{
-					$item->poster = $this->params->get('media_posters_root_www') . '/' . $posterFsAlias . '/'
-						. $item->id . '/posters/thumb_' . $item->filename;
-				}
-			}
-		}
-		else
-		{
-			$item->poster = JRoute::_(
-				'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-				'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
-			);
-		}
 
 		if (!empty($item->desc))
 		{
@@ -561,74 +528,18 @@ class KinoarhivViewMovie extends JViewLegacy
 		}
 
 		$item->text = '';
-		$throttleEnable = $this->params->get('throttle_image_enable', 0);
-		$fsAlias = rawurlencode($item->fs_alias);
 
 		foreach ($items as $key => $_item)
 		{
-			$checkingPath = JPath::clean(
-				$this->params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $_item->filename
+			$items[$key]->poster = KAContentHelper::getMoviePoster(
+				(object) array(
+					'id'        => $item->id,
+					'fs_alias'  => $item->fs_alias,
+					'filename'  => $_item->filename,
+					'dimension' => $_item->dimension
+				),
+				$this->params
 			);
-
-			if ($throttleEnable == 0)
-			{
-				if (!is_file($checkingPath))
-				{
-					$items[$key]->image = 'javascript:void(0);';
-					$items[$key]->th_image = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_poster.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $this->params->get('ka_theme') . '/no_poster.png',
-						false
-					);
-					$items[$key]->th_image_width = $dimension['width'];
-					$items[$key]->th_image_height = $dimension['height'];
-				}
-				else
-				{
-					if (StringHelper::substr($this->params->get('media_posters_root_www'), 0, 1) == '/')
-					{
-						$items[$key]->image = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
-							. $fsAlias . '/' . $item->id . '/posters/' . $_item->filename;
-						$items[$key]->th_image = JUri::base() . StringHelper::substr($this->params->get('media_posters_root_www'), 1) . '/'
-							. $fsAlias . '/' . $item->id . '/posters/thumb_' . $_item->filename;
-					}
-					else
-					{
-						$items[$key]->image = $this->params->get('media_posters_root_www') . '/'
-							. $fsAlias . '/' . $item->id . '/posters/' . $_item->_filename;
-						$items[$key]->th_image = $this->params->get('media_posters_root_www') . '/'
-							. $fsAlias . '/'	. $item->id . '/posters/thumb_' . $_item->_filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						dirname($checkingPath) . '/thumb_' . $_item->filename,
-						true,
-						(int) $this->params->get('size_x_posters'),
-						$_item->dimension
-					);
-					$items[$key]->th_image_width = $dimension['width'];
-					$items[$key]->th_image_height = $dimension['height'];
-				}
-			}
-			else
-			{
-				$items[$key]->image = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid
-				);
-				$items[$key]->th_image = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $_item->filename . '&format=raw&Itemid=' . $this->itemid . '&thumbnail=1'
-				);
-				$dimension = KAContentHelper::getImageSize(
-					dirname($checkingPath) . '/thumb_' . $_item->filename,
-					true,
-					(int) $this->params->get('size_x_posters'),
-					$_item->dimension
-				);
-				$items[$key]->th_image_width = $dimension['width'];
-				$items[$key]->th_image_height = $dimension['height'];
-			}
 		}
 
 		$item->event = new stdClass;

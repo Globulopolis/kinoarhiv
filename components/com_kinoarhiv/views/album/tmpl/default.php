@@ -51,9 +51,10 @@ $totalTracks = count($this->item->tracks);
 		<div class="info">
 			<div class="left-col">
 				<div class="poster">
-					<img itemprop="image" src="<?php echo $this->item->cover; ?>"
+					<img itemprop="image" src="<?php echo $this->item->cover->coverThumb; ?>"
 						 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($this->item->title); ?>"
-						 width="<?php echo $this->item->coverWidth; ?>" height="<?php echo $this->item->coverHeight; ?>" />
+						 width="<?php echo $this->item->cover->coverThumbWidth; ?>"
+						 height="<?php echo $this->item->cover->coverThumbHeight; ?>" />
 				</div>
 			</div>
 			<div class="right-col">

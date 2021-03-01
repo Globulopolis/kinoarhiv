@@ -44,18 +44,18 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 
 		<div class="posters-list">
 			<?php if (count($this->items) > 0):
-				foreach ($this->items as $poster): ?>
+				foreach ($this->items as $image): ?>
 					<div class="thumb">
 						<div class="item">
-							<a href="<?php echo $poster->image; ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>" rel="posters">
-								<img data-original="<?php echo $poster->th_image; ?>"
-									 width="<?php echo $poster->th_image_width; ?>"
-									 height="<?php echo $poster->th_image_height; ?>" class="lazy"
+							<a href="<?php echo $image->poster->poster; ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>" rel="posters">
+								<img data-original="<?php echo $image->poster->posterThumb; ?>"
+									 width="<?php echo $image->poster->posterThumbWidth; ?>"
+									 height="<?php echo $image->poster->posterThumbHeight; ?>" class="lazy"
 									 alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>"/>
 							</a>
 						</div>
 						<ul>
-							<li class="size"><?php echo $poster->dimension; ?></li>
+							<li class="size"><?php echo $image->dimension; ?></li>
 						</ul>
 					</div>
 				<?php endforeach; ?>

@@ -54,7 +54,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/sortable.min.js');
 		<div class="content content-list clearfix">
 			<div>
 				<div class="poster">
-					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->moviesItemid); ?>" title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>"><img src="<?php echo $this->item->poster; ?>" alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>" itemprop="image"/></a>
+					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=movie&page=posters&id=' . $this->item->id . '&Itemid=' . $this->moviesItemid); ?>"
+					   title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>">
+						<img src="<?php echo $this->item->poster->posterThumb; ?>" itemprop="image"
+							 alt="<?php echo JText::_('COM_KA_POSTER_ALT') . $this->escape($this->item->title); ?>"
+							 width="<?php echo $this->item->poster->posterThumbWidth; ?>"
+							 height="<?php echo $this->item->poster->posterThumbHeight; ?>" />
+					</a>
 				</div>
 				<div class="introtext">
 					<div class="text"><?php echo $this->item->text; ?></div>

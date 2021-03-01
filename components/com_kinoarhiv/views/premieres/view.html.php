@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
-use Joomla\String\StringHelper;
 
 /**
  * Premieres View class
@@ -79,9 +78,6 @@ class KinoarhivViewPremieres extends JViewLegacy
 		$namesItemid = KAContentHelper::getItemid('names');
 		$this->moviesItemid = KAContentHelper::getItemid('movies');
 
-		$itemid         = $this->itemid;
-		$throttleEnable = $params->get('throttle_image_enable', 0);
-
 		// Prepare the data
 		foreach ($items as &$item)
 		{
@@ -127,63 +123,7 @@ class KinoarhivViewPremieres extends JViewLegacy
 				$item->text
 			);
 
-			$checkingPath = JPath::clean(
-				$params->get('media_posters_root') . '/' . $item->fs_alias . '/' . $item->id . '/posters/' . $item->filename
-			);
-
-			if ($throttleEnable == 0)
-			{
-				if (!is_file($checkingPath))
-				{
-					$item->poster = JUri::base() . 'media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png';
-					$dimension = KAContentHelper::getImageSize(
-						JPATH_ROOT . '/media/com_kinoarhiv/images/themes/' . $params->get('ka_theme') . '/no_movie_cover.png',
-						false
-					);
-					$item->poster_width = $dimension['width'];
-					$item->poster_height = $dimension['height'];
-				}
-				else
-				{
-					$item->fs_alias = rawurlencode($item->fs_alias);
-
-					if (StringHelper::substr($params->get('media_posters_root_www'), 0, 1) == '/')
-					{
-						$item->poster = JUri::base() . StringHelper::substr($params->get('media_posters_root_www'), 1) . '/'
-							. $item->fs_alias . '/' . $item->id . '/posters/thumb_' . $item->filename;
-					}
-					else
-					{
-						$item->poster = $params->get('media_posters_root_www') . '/' . $item->fs_alias . '/'
-							. $item->id . '/posters/thumb_' . $item->filename;
-					}
-
-					$dimension = KAContentHelper::getImageSize(
-						$checkingPath,
-						true,
-						(int) $params->get('size_x_posters'),
-						$item->dimension
-					);
-					$item->poster_width = $dimension['width'];
-					$item->poster_height = $dimension['height'];
-				}
-			}
-			else
-			{
-				$item->poster = JRoute::_(
-					'index.php?option=com_kinoarhiv&task=media.view&element=movie&content=image&type=2&id=' . $item->id .
-					'&fa=' . urlencode($item->fs_alias) . '&fn=' . $item->filename . '&format=raw&Itemid=' . $itemid . '&thumbnail=1'
-				);
-				$dimension = KAContentHelper::getImageSize(
-					$checkingPath,
-					true,
-					(int) $params->get('size_x_posters'),
-					$item->dimension
-				);
-				$item->poster_width = $dimension['width'];
-				$item->poster_height = $dimension['height'];
-			}
-
+			$item->poster = KAContentHelper::getMoviePoster($item, $params);
 			$item->plot = JHtml::_('string.truncate', $item->plot, $params->get('limit_text'));
 
 			if ($params->get('ratings_show_frontpage') == 1)

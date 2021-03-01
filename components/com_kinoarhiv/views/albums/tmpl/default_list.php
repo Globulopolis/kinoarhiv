@@ -34,9 +34,10 @@ foreach ($this->items as $item): ?>
 				<div class="poster">
 					<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . substr($this->view, 0, -1) . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
 					   title="<?php echo $this->escape($item->title); ?>">
-						<img data-original="<?php echo $item->cover; ?>" class="lazy"
+						<img data-original="<?php echo $item->cover->coverThumb; ?>" class="lazy"
 							 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($item->title); ?>"
-							 width="<?php echo $item->coverWidth; ?>" height="<?php echo $item->coverHeight; ?>" />
+							 width="<?php echo $item->cover->coverThumbWidth; ?>"
+							 height="<?php echo $item->cover->coverThumbHeight; ?>" />
 					</a>
 				</div>
 				<div class="introtext">

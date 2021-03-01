@@ -1390,7 +1390,8 @@ class KinoarhivModelAPI extends JModelLegacy
 		$query = $db->getQuery(true)
 			->select('COUNT(t.id)')
 			->from($db->quoteName('#__ka_music', 't'))
-			->where($db->quoteName('t.album_id') . ' = ' . (int) $id . $where);
+			->leftJoin($db->quoteName('#__ka_music_rel_albums', 'rel') . ' ON ' . $db->quoteName('rel.track_id') . ' = ' . $db->quoteName('t.id'))
+			->where($db->quoteName('rel.album_id') . ' = ' . (int) $id . $where);
 
 		$db->setQuery($query);
 
@@ -1412,12 +1413,13 @@ class KinoarhivModelAPI extends JModelLegacy
 			->select(
 				$db->quoteName(
 					array(
-						't.id', 't.album_id', 't.title', 't.year', 't.length', 't.cd_number', 't.track_number', 't.filename'
+						't.id', 't.title', 't.year', 't.length', 't.cd_number', 't.track_number', 't.filename'
 					)
 				)
 			)
 			->from($db->quoteName('#__ka_music', 't'))
-			->where($db->quoteName('t.album_id') . ' = ' . (int) $id . $where)
+			->leftJoin($db->quoteName('#__ka_music_rel_albums', 'rel') . ' ON ' . $db->quoteName('rel.track_id') . ' = ' . $db->quoteName('t.id'))
+			->where($db->quoteName('rel.album_id') . ' = ' . (int) $id . $where)
 			->order($db->quoteName($orderby) . ' ' . strtoupper($db->escape($order)))
 			->setLimit($limit, $limitstart);
 
@@ -1457,6 +1459,7 @@ class KinoarhivModelAPI extends JModelLegacy
 		$db      = JFactory::getDbo();
 		$id      = $this->input->get('id', 0, 'int');
 		$page    = $this->input->get('page', 0, 'int');
+		$type    = $this->input->get('item_type', 0, 'int');
 		$orderby = $this->input->get('sidx', '1', 'string');
 		$order   = $this->input->get('sord', 'asc', 'word');
 		$field   = $this->input->get('searchField', '');
@@ -1467,14 +1470,14 @@ class KinoarhivModelAPI extends JModelLegacy
 		$query->select($db->quoteName('n.id', 'name_id'))
 			->select($db->quoteName(array('n.name', 'n.latin_name', 'n.date_of_birth', 't.career_id', 't.id', 't.role', 't.ordering', 'c.title')))
 			->from($db->quoteName('#__ka_names', 'n'))
-			->leftJoin($db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id . ' AND t.item_type = 0')
+			->leftJoin($db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id . ' AND t.item_type = ' . (int) $type)
 			->leftJoin($db->quoteName('#__ka_names_career', 'c') . ' ON c.id = t.career_id');
 
 		$subqueryWhere = $db->getQuery(true)
 			->select($db->quoteName('name_id'))
 			->from($db->quoteName('#__ka_music_rel_names'))
 			->where($db->quoteName('item_id') . ' = ' . (int) $id)
-			->where($db->quoteName('item_type') . ' = 0');
+			->where($db->quoteName('item_type') . ' = ' . (int) $type);
 
 		$query->where($db->quoteName('n.id') . ' IN (' . $subqueryWhere . ')');
 

@@ -4,20 +4,20 @@
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
 		<field name="name_id" type="autocomplete" label="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_NAME" filter="integer"
 			   class="span12" required="true" data-content="names" data-allow-clear="true" data-remote="true"
-			   data-minimum-input-length="1" data-key="id" data-sel-size="1" data-lang="*">
+			   data-minimum-input-length="1" data-key="id" data-max-selection="1" data-lang="*">
 			<option value=""></option>
 		</field>
 		<field name="career_id" type="autocomplete" label="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_TYPE"
 			   description="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_TYPE_DESC" filter="integer" class="span12"
 			   required="true" data-content="careers" data-allow-clear="true" data-remote="true" data-key="id"
-			   data-sel-size="1" data-lang="*">
+			   data-max-selection="1" data-lang="*">
 			<option value=""></option>
 		</field>
 		<field name="role" type="textarea" label="COM_KA_MUSIC_NAMES_LAYOUT_ADD_FIELD_ROLE"
 			   description="COM_KA_MOVIES_NAMES_LAYOUT_ADD_FIELD_ROLE_DESC" class="span12" cols="60" rows="4"
 			   filter="KAComponentHelper::cleanHTML"/>
 		<field name="item_type" type="radio" default="0" label="COM_KA_FIELD_AW_TYPE" filter="integer" class="btn-group"
-			   size="1">
+			   size="1" readonly="true">
 			<option value="0">COM_KA_MUSIC_ALBUM_TITLE</option>
 			<option value="1">COM_KA_MUSIC_TRACK_TITLE</option>
 		</field>

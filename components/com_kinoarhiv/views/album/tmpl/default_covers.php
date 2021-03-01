@@ -43,24 +43,24 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.lazyload.min.js');
 		<?php echo $this->item->event->beforeDisplayContent; ?>
 
 		<div class="scr-list">
-			<?php if (count($this->items) > 0):
-				foreach ($this->items as $type => $item): ?>
+			<?php if (count($this->files) > 0):
+				foreach ($this->files as $type => $item): ?>
 					<div class="container-fluid">
 						<div class="cover-type"><?php echo JText::_('COM_KA_ALBUM_TAB_COVERS_' . $type); ?></div>
 
-						<?php foreach ($item as $cover): ?>
+						<?php foreach ($item as $image): ?>
 						<div class="thumb">
 							<div class="item">
-								<a href="<?php echo $cover['cover']; ?>" rel="covers"
+								<a href="<?php echo $image->cover; ?>" rel="covers"
 								   title="<?php echo $this->escape(KAContentHelper::formatItemTitle($this->item->title, '', $this->item->year)); ?>">
-									<img data-original="<?php echo $cover['th_cover']; ?>"
-										 width="<?php echo $cover['coverWidth']; ?>"
-										 height="<?php echo $cover['coverHeight']; ?>" class="lazy"
+									<img data-original="<?php echo $image->coverThumb; ?>"
+										 width="<?php echo $image->coverThumbWidth; ?>"
+										 height="<?php echo $image->coverThumbHeight; ?>" class="lazy"
 										 alt="<?php echo JText::_('COM_KA_SCR_ALT') . $this->escape($this->item->title); ?>"/>
 								</a>
 							</div>
 							<ul>
-								<li class="size"><?php echo $cover['dimension']; ?></li>
+								<li class="size"><?php echo $image->dimension; ?></li>
 							</ul>
 						</div>
 						<?php endforeach; ?>

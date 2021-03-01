@@ -198,18 +198,12 @@ class KinoarhivModelAlbum extends JModelForm
 
 		// Genres
 		$queryGenres = $db->getQuery(true)
-			->select('g.id, g.name, g.alias')
-			->from($db->quoteName('#__ka_genres', 'g'))
-			->leftJoin($db->quoteName('#__ka_music_rel_genres', 't') . ' ON t.genre_id = g.id AND t.item_id = ' . (int) $id);
-
-			$subqueryGenres = $db->getQuery(true)
-				->select($db->quoteName('genre_id'))
-				->from($db->quoteName('#__ka_music_rel_genres'))
-				->where($db->quoteName('type') . ' = 0')
-				->where($db->quoteName('item_id') . ' = ' . (int) $id);
-
-		$queryGenres->where('id IN (' . $subqueryGenres . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
-			->order('ordering ASC');
+			->select($db->quoteName(array('g.id', 'g.name', 'g.alias')))
+			->from($db->quoteName('#__ka_music_rel_genres', 'rel'))
+			->leftJoin($db->quoteName('#__ka_genres', 'g') . ' ON g.id = rel.genre_id')
+			->where($db->quoteName('rel.type') . ' = 0')
+			->where($db->quoteName('rel.item_id') . ' = ' . (int) $id)
+			->order($db->quoteName('ordering') . ' ASC');
 
 		$db->setQuery($queryGenres);
 
@@ -264,17 +258,11 @@ class KinoarhivModelAlbum extends JModelForm
 			}
 
 			$queryCrew = $db->getQuery(true)
-				->select('n.id, n.name, n.latin_name, n.alias, t.career_id')
-				->from($db->quoteName('#__ka_names', 'n'))
-				->leftJoin($db->quoteName('#__ka_music_rel_names', 't') . ' ON t.name_id = n.id AND t.item_id = ' . (int) $id . ' AND t.item_type = 0');
-
-			$subqueryCrew = $db->getQuery(true)
-				->select('name_id')
-				->from($db->quoteName('#__ka_music_rel_names'))
-				->where('item_id = ' . (int) $id);
-
-			$queryCrew->where('n.id IN (' . $subqueryCrew . ') AND state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN)
-				->order('t.ordering ASC');
+				->select($db->quoteName(array('rel.career_id', 'n.id', 'n.name', 'n.latin_name', 'n.alias')))
+				->from($db->quoteName('#__ka_music_rel_names', 'rel'))
+				->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON n.id = rel.name_id')
+				->where('rel.item_id = 1 AND rel.item_type = 0')
+				->order('rel.ordering ASC');
 
 			$db->setQuery($queryCrew);
 			$crew = $db->loadObjectList();
@@ -351,9 +339,18 @@ class KinoarhivModelAlbum extends JModelForm
 			$result->releases = array();
 		}
 
-		$tracks           = $this->getTracks($id);
-		$result->tracks   = $tracks->tracks;
-		$result->playlist = $tracks->playlist;
+		$tracks = $this->getTracks($id);
+
+		if ($tracks)
+		{
+			$result->tracks   = $tracks->tracks;
+			$result->playlist = $tracks->playlist;
+		}
+		else
+		{
+			$result->tracks = array();
+			$result->playlist = array();
+		}
 
 		return $result;
 	}
@@ -637,25 +634,26 @@ class KinoarhivModelAlbum extends JModelForm
 		$db = JFactory::getDbo();
 		$result = (object) array('tracks' => array(), 'playlist' => array());
 
-		// TODO Refactoring
 		$query = $db->getQuery(true)
 			->select(
 				$db->quoteName(
 					array(
-						't.id', 't.album_id', 't.artist_id', 't.title', 't.year', 't.composer', 't.publisher',
-						't.label', 't.isrc', 't.length', 't.cd_number', 't.track_number', 't.filename',
-						't.buy_url', 'rel.name_id', 'a.tracks_path', 'a.tracks_path_www', 'a.tracks_preview_path'
+						't.id', 't.title', 't.year', 't.publisher', 't.label', 't.isrc', 't.length', 't.cd_number',
+						't.track_number', 't.filename', 't.buy_url', 'a.tracks_path', 'a.tracks_path_www',
+						'a.tracks_preview_path', 'rel.album_id', 'rel_names.name_id', 'performer.name',
+						'performer.latin_name'
 					)
 				)
 			)
 			->select($db->quoteName('a.fs_alias', 'album_fs_alias'))
-			->select($db->quoteName('n.name', 'performer_name') . ',' . $db->quoteName('n.latin_name', 'performer_latin_name'))
 			->from($db->quoteName('#__ka_music', 't'));
 
-		$query->leftJoin($db->quoteName('#__ka_music_rel_names', 'rel') . ' ON rel.item_id = t.id AND rel.item_type = 1')
-			->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON a.id = t.album_id')
-			->leftJoin($db->quoteName('#__ka_names', 'n') . ' ON n.id = rel.name_id')
-			->where($db->quoteName('t.album_id') . ' = ' . (int) $id)
+		$query->leftJoin($db->quoteName('#__ka_music_rel_albums', 'rel') . ' ON rel.track_id = t.id')
+			->leftJoin($db->quoteName('#__ka_music_rel_names', 'rel_names') . ' ON rel_names.item_id = t.id AND rel_names.item_type = 1 AND rel_names.ordering = 0')
+			->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON a.id = rel.album_id')
+			->leftJoin($db->quoteName('#__ka_names', 'performer') . ' ON performer.id = rel_names.name_id')
+			->where($db->quoteName('rel.album_id') . ' = ' . (int) $id)
+			->group($db->quoteName('t.id'))
 			->order($db->quoteName('t.track_number') . ' ASC');
 
 		$db->setQuery($query);
@@ -670,9 +668,11 @@ class KinoarhivModelAlbum extends JModelForm
 				{
 					// TODO Need to change this.
 					$src = $track->tracks_path_www . '/' . $track->filename;
+
 					$_track = array(
 						'src' => $src,
-						'performer' => KAContentHelper::formatItemTitle($track->performer_name, $track->performer_latin_name)
+						'performed_by'    => KAContentHelper::formatItemTitle($track->name, $track->latin_name),
+						'performed_by_id' => $track->name_id
 					);
 					$result->tracks[$key] = (object) array_merge($_track, ArrayHelper::fromObject($track));
 
@@ -686,7 +686,7 @@ class KinoarhivModelAlbum extends JModelForm
 		}
 		catch (RuntimeException $e)
 		{
-			$this->setError($e->getMessage());
+			$this->setError('');
 			KAComponentHelper::eventLog($e->getMessage());
 
 			return false;

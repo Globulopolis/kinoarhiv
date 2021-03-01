@@ -149,7 +149,7 @@ class KinoarhivModelMovie extends JModelForm
 			->from($db->quoteName('#__ka_movies', 'm'));
 
 		// Join over gallery item
-		$query->select($db->quoteName('g.filename'))
+		$query->select($db->quoteName(array('g.filename', 'g.dimension')))
 			->join('LEFT', $db->quoteName('#__ka_movies_gallery', 'g') . ' ON g.movie_id = m.id AND g.type = 2 AND g.frontpage = 1 AND g.state = 1');
 
 		if (!$user->get('guest'))
@@ -1639,8 +1639,17 @@ class KinoarhivModelMovie extends JModelForm
 		foreach ($result as $key => $row)
 		{
 			$tracks = $albumModel->getTracks($row->id);
-			$result[$key]->tracks = $tracks->tracks;
-			$result[$key]->playlist = $tracks->playlist;
+
+			if ($tracks)
+			{
+				$result[$key]->tracks = $tracks->tracks;
+				$result[$key]->playlist = $tracks->playlist;
+			}
+			else
+			{
+				$result[$key]->tracks = array();
+				$result[$key]->playlist = array();
+			}
 		}
 
 		return $result;

@@ -35,19 +35,19 @@
 		<field name="albums" type="autocomplete" label="COM_KA_MOVIES_SOUNDS"
 			   class="span12" default="" data-content="albums"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-maximum-selection-size="10" data-minimum-input-length="1" data-lang="*"/>
+			   data-max-selection="10" data-minimum-input-length="1" data-lang="*"/>
 		<field name="albums_orig" type="hidden"/>
 
 		<field name="genres" type="autocomplete" label="COM_KA_FIELD_MOVIE_GENRES"
 			   description="COM_KA_FIELD_MOVIE_GENRES_DESC" class="span11" default="" data-content="genres"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-maximum-selection-size="5" data-type="0"/>
+			   data-max-selection="5" data-type="0"/>
 		<field name="genres_orig" type="hidden"/>
 
 		<field name="countries" type="autocomplete" label="COM_KA_FIELD_MOVIE_COUNTRIES"
 			   description="COM_KA_FIELD_MOVIE_COUNTRIES_DESC" class="span11" default="" data-content="countries"
 			   data-allow-clear="true" data-key="id" data-remote="true" multiple="true" data-sortable="true"
-			   data-maximum-selection-size="10" data-minimum-input-length="1" data-lang="*"/>
+			   data-max-selection="10" data-minimum-input-length="1" data-lang="*"/>
 		<field name="countries_orig" type="hidden"/>
 
 		<field name="mpaa" type="list" label="COM_KA_FIELD_MOVIE_RATES_MPAA"

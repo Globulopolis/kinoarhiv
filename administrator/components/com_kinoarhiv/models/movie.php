@@ -1568,7 +1568,7 @@ echo $query;
 				$countriesStr .= '[cn=' . $cn->code . ']' . $cn->name . '[/cn], ';
 			}
 
-			$introtext[] = '<span class="cn-list">[country ln=' . $languageConst . ']: ' . StringHelper::substr($countriesStr, 0, -2) . '[/country]</span>';
+			$introtext[] = '<div class="cn-list">[country ln=' . $languageConst . ']: ' . StringHelper::substr($countriesStr, 0, -2) . '[/country]</div>';
 		}
 
 		// Process intro text for genres
@@ -1593,7 +1593,7 @@ echo $query;
 				$genresStr .= StringHelper::strtolower($genre->name) . ', ';
 			}
 
-			$introtext[] = '<span class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</span>';
+			$introtext[] = '<div class="gn-list">[genres ln=' . $languageConst . ']: ' . StringHelper::substr($genresStr, 0, -2) . '[/genres]</div>';
 		}
 
 		// Process directors and cast
@@ -1625,7 +1625,7 @@ echo $query;
 					$directorsStr .= '[name=' . $director->name_id . ']' . KAContentHelper::formatItemTitle($director->name, $director->latin_name) . '[/name], ';
 				}
 
-				$introtext[] = '<span class="dc-list">[names ln=' . $languageConst . ']: ' . StringHelper::substr($directorsStr, 0, -2) . '[/names]</span>';
+				$introtext[] = '<div class="dc-list">[names ln=' . $languageConst . ']: ' . StringHelper::substr($directorsStr, 0, -2) . '[/names]</div>';
 			}
 
 			// End
@@ -1655,7 +1655,7 @@ echo $query;
 					$castStr .= '[name=' . $name->name_id . ']' . KAContentHelper::formatItemTitle($name->name, $name->latin_name) . '[/name], ';
 				}
 
-				$introtext[] = '<span class="cast-list">[names ln=COM_KA_CAST]: ' . StringHelper::substr($castStr, 0, -2) . '[/names]</span>';
+				$introtext[] = '<div class="cast-list">[names ln=COM_KA_CAST]: ' . StringHelper::substr($castStr, 0, -2) . '[/names]</div>';
 			}
 
 			// End

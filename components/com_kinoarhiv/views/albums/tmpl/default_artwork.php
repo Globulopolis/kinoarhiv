@@ -30,11 +30,13 @@ JHtml::_('script', 'media/com_kinoarhiv/js/jquery.more.min.js');
 		<div class="thumbnail">
 			<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . substr($this->view, 0, -1) . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
 			   title="<?php echo $this->escape($title); ?>">
-				<img data-original="<?php echo $item->cover; ?>" class="lazy"
+				<img data-original="<?php echo $item->cover->coverThumb; ?>" class="lazy"
 					 alt="<?php echo JText::_('COM_KA_ARTWORK_ALT') . $this->escape($title); ?>"
-					 width="<?php echo $item->coverWidth; ?>" height="<?php echo $item->coverHeight; ?>" />
+					 width="<?php echo $item->cover->coverThumbWidth; ?>"
+					 height="<?php echo $item->cover->coverThumbHeight; ?>" />
 			</a>
-			<h5><a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . substr($this->view, 0, -1) . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
+			<h5>
+				<a href="<?php echo JRoute::_('index.php?option=com_kinoarhiv&view=' . substr($this->view, 0, -1) . '&id=' . $item->id . '&Itemid=' . $this->itemid); ?>"
 				   title="<?php echo $this->escape($title); ?>"><?php echo $item->title; ?></a>
 			</h5>
 			<p>

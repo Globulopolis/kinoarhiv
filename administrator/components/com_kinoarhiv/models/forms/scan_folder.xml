@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="scan_audio">
+		<field name="path" type="text" default="" label="COM_KA_FIELD_TRACKS_PATH_LABEL"
+			   description="COM_KA_SCAN_TRACKS_PATH_DESC" class="span12" required="true"
+			   filter="string" size="45"/>
+		<field name="extensions" type="text" default="mp3|flac|aac|m4a|ogg|iso|ape|wv|wav|dff"
+			   label="COM_KA_SCAN_EXTENSIONS_LABEL" description="COM_KA_SCAN_EXTENSIONS_DESC" class="span3"
+			   filter="string" size="45"/>
+	</fieldset>
+</form>

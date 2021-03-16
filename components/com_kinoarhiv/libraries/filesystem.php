@@ -99,7 +99,7 @@ class KAFilesystem
 			@ini_set('zlib.output_compression', 'Off');
 		}
 
-		header('Content-type: ' . $this->detectMime($path), true);
+		header('Content-type: ' . $this->detectMime($path));
 
 		if ($disposition)
 		{
@@ -337,8 +337,6 @@ class KAFilesystem
 	 */
 	public function getFilesize($path)
 	{
-		$path = JPath::clean($path);
-
 		if (!file_exists($path))
 		{
 			return false;
@@ -557,5 +555,137 @@ class KAFilesystem
 			'srt'   => array('text/srt', 'text/plain'),
 			'vtt'   => 'text/vtt'
 		);
+	}
+
+	/**
+	 * Utility function to read the files in a folder.
+	 *
+	 * @param   string   $path           The path of the folder to read.
+	 * @param   string   $filter         A filter for file names.
+	 * @param   mixed    $recurse        True to recursively search into sub-folders, or an integer to specify the maximum depth.
+	 * @param   boolean  $full           True to return the full path to the file.
+	 * @param   array    $exclude        Array with names of files which should not be shown in the result.
+	 * @param   array    $excludeFilter  Array of filter to exclude
+	 * @param   boolean  $naturalSort    False for asort, true for natsort
+	 *
+	 * @return  array|boolean  Files in the given folder.
+	 *
+	 * @since   1.7.0
+	 */
+	public static function files($path, $filter = '.', $recurse = false, $full = false, $exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'), $excludeFilter = array('^\..*', '.*~'), $naturalSort = false)
+	{
+		// Do not clean path because it is broke UNC path. So '\\server\path' will not be '/server/path'.
+		// Is the path a folder?
+		if (!is_dir($path))
+		{
+			KAComponentHelper::eventLog(JText::sprintf('JLIB_FILESYSTEM_ERROR_PATH_IS_NOT_A_FOLDER_FILES', $path));
+
+			return false;
+		}
+
+		// Compute the excludefilter string
+		if (count($excludeFilter))
+		{
+			$excludefilterString = '/(' . implode('|', $excludeFilter) . ')/';
+		}
+		else
+		{
+			$excludefilterString = '';
+		}
+
+		// Get the files
+		$arr = self::filesystemItems($path, $filter, $recurse, $full, $exclude, $excludefilterString, true);
+
+		// Sort the files based on either natural or alpha method
+		if ($naturalSort)
+		{
+			natsort($arr);
+		}
+		else
+		{
+			asort($arr);
+		}
+
+		return array_values($arr);
+	}
+
+	/**
+	 * Function to read the files/folders in a folder.
+	 *
+	 * @param   string   $path                 The path of the folder to read.
+	 * @param   string   $filter               A filter for file names.
+	 * @param   mixed    $recurse              True to recursively search into sub-folders, or an integer to specify the maximum depth.
+	 * @param   boolean  $full                 True to return the full path to the file.
+	 * @param   array    $exclude              Array with names of files which should not be shown in the result.
+	 * @param   string   $excludeFilterString  Regexp of files to exclude
+	 * @param   boolean  $findFiles            True to read the files, false to read the folders
+	 *
+	 * @return  array  Files.
+	 *
+	 * @since   1.7.0
+	 */
+	protected static function filesystemItems($path, $filter, $recurse, $full, $exclude, $excludeFilterString, $findFiles)
+	{
+		@set_time_limit(ini_get('max_execution_time'));
+
+		$items = array();
+
+		// Read the source directory
+		if (!($handle = @opendir($path)))
+		{
+			return $items;
+		}
+
+		while (($file = readdir($handle)) !== false)
+		{
+			if ($file != '.' && $file != '..' && !in_array($file, $exclude)
+				&& (empty($excludeFilterString) || !preg_match($excludeFilterString, $file)))
+			{
+				// Compute the fullpath
+				$fullpath = $path . '/' . $file;
+
+				// Compute the isDir flag
+				$isDir = is_dir($fullpath);
+
+				if (($isDir xor $findFiles) && preg_match("/$filter/i", $file))
+				{
+					// (fullpath is dir and folders are searched or fullpath is not dir and files are searched) and file matches the filter
+					if ($full)
+					{
+						// Full path is requested
+						$items[] = $fullpath;
+					}
+					else
+					{
+						// Filename is requested
+						$items[] = $file;
+					}
+				}
+
+				if ($isDir && $recurse)
+				{
+					// Search recursively
+					if (is_int($recurse))
+					{
+						// Until depth 0 is reached
+						$items = array_merge(
+							$items,
+							self::filesystemItems($fullpath, $filter, $recurse - 1, $full, $exclude, $excludeFilterString, $findFiles)
+						);
+					}
+					else
+					{
+						$items = array_merge(
+							$items,
+							self::filesystemItems($fullpath, $filter, $recurse, $full, $exclude, $excludeFilterString, $findFiles)
+						);
+					}
+				}
+			}
+		}
+
+		closedir($handle);
+
+		return $items;
 	}
 }

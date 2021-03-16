@@ -813,4 +813,36 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 
 		$this->setRedirect($url);
 	}
+
+	/**
+	 * Method to show a template for folder scan.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function showScanFolderTemplate()
+	{
+		$view = $this->getView('albums', 'html');
+		$model = $this->getModel('album');
+		$view->setModel($model, true);
+		$view->display('scanfolder');
+	}
+
+	/**
+	 * Method to clean up scan results for albums.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.1
+	 */
+	public function clearScanTemp()
+	{
+		KAComponentHelper::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
+
+		JFolder::delete(JFactory::getConfig()->get('tmp_path') . '/scan_audio/');
+		JFolder::create(JFactory::getConfig()->get('tmp_path') . '/scan_audio/');
+
+		$this->setRedirect('index.php?option=com_kinoarhiv&task=albums.showScanFolderTemplate', JText::_('COM_KA_CLEARED'));
+	}
 }

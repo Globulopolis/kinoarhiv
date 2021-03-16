@@ -36,7 +36,6 @@
 	</fieldset>
 
 	<fieldset name="paths" label="COM_KA_PATHS_LABEL">
-		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red"/>
 		<field name="ffmpeg_path" type="text" default="bin/ffmpeg/" label="COM_KA_FIELD_PATHS_FFMPEG_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true" filter="string" size="100"
 			   class="span11 validate-path"/>
@@ -46,6 +45,12 @@
 		<field name="gnuplot_path" type="text" default="bin/gnuplot/" label="COM_KA_FIELD_PATHS_GNUPLOT_LABEL"
 			   description="COM_KA_FIELD_PATHS_GNUPLOT_LABEL_DEDC" required="true" filter="string" size="100"
 			   class="span11 validate-path"/>
+		<field name="getid3_helperapps" type="text" default="bin/getid3/" label="COM_KA_FIELD_PATHS_GETID3_LABEL"
+			   description="COM_KA_FIELD_PATHS_GETID3_LABEL_DEDC" required="true" filter="string" size="100"
+			   class="span11 validate-path"/>
+
+		<field type="spacer" name="path_warning" label="COM_KA_PATHS_LABEL_WARN" class="red"/>
+
 		<field name="def_cache" type="text" default="cache/com_kinoarhiv/DefinitionCache/Serializer/"
 			   label="COM_KA_FIELD_PATHS_CACHE_LABEL" description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" required="true"
 			   filter="string" size="100" class="span11 validate-path"/>
@@ -208,7 +213,7 @@
 	</fieldset>
 
 	<fieldset name="music_global" label="COM_KA_SETTINGS_MUSIC_GLOBAL_LABEL">
-		<field name="upload_mime_audio" type="text" default="mp3,flac,aac,ogg"
+		<field name="upload_mime_audio" type="text" default="mp3|flac|aac|ogg"
 			   label="COM_KA_FIELD_UPLOAD_MIME_AUDIO_LABEL" required="true" filter="string" size="64" class="span11"/>
 		<field name="upload_audio_preview" type="radio" class="btn-group" default="0"
 			   label="COM_KA_FIELD_UPLOAD_AUDIO_PREVIEW_LABEL"

@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * Media processing library class
  *
- * @since  3.0
+ * @since  3.1
  */
 class KAMedia
 {
@@ -22,7 +22,7 @@ class KAMedia
 	 *
 	 * @var  KAMedia
 	 *
-	 * @since 3.0
+	 * @since 3.1
 	 */
 	protected static $instance;
 
@@ -31,14 +31,14 @@ class KAMedia
 	 *
 	 * @var  object
 	 *
-	 * @since 3.0
+	 * @since 3.1
 	 */
 	protected $params;
 
 	/**
 	 * Class constructor.
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function __construct()
 	{
@@ -50,7 +50,7 @@ class KAMedia
 	 *
 	 * @return  KAMedia
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public static function getInstance()
 	{
@@ -72,7 +72,7 @@ class KAMedia
 	 *
 	 * @return  mixed   Array with results or false otherwise
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function createVideoScreenshot($folder, $filename, $time)
 	{
@@ -159,13 +159,13 @@ class KAMedia
 	 *
 	 * @return  string  JSON string.
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function getVideoInfo($path, $stream = 'v:0', $format = 'json')
 	{
 		if (!KAComponentHelper::functionExists('shell_exec'))
 		{
-			die('shell_exec() function not exists or safe mode or suhosin is on!');
+			die('shell_exec() function not exists or safe mode is on!');
 		}
 
 		if (!is_file($path))
@@ -203,13 +203,13 @@ class KAMedia
 	 *
 	 * @return  mixed   Array with results if error, string otherwise
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function getVideoDuration($path, $format = false)
 	{
 		if (!KAComponentHelper::functionExists('shell_exec'))
 		{
-			die('shell_exec() function not exists or safe mode or suhosin is on!');
+			die('shell_exec() function not exists or safe mode is on!');
 		}
 
 		if (!is_file($path))
@@ -258,7 +258,7 @@ class KAMedia
 	 *
 	 * @return  mixed   Array with results if error, true otherwise
 	 *
-	 * @since  3.0
+	 * @since  3.1
 	 */
 	public function checkLibrary($path)
 	{
@@ -273,5 +273,200 @@ class KAMedia
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if media library(ffmpeg, ffprobe) exists or available.
+	 *
+	 * @return  getID3
+	 *
+	 * @since  3.1
+	 */
+	public function getID3Lib()
+	{
+		$helperapps = JPath::clean(JComponentHelper::getParams('com_kinoarhiv')->get('getid3_helperapps'));
+
+		define('GETID3_HELPERAPPSDIR', $helperapps);
+
+		jimport('components.com_kinoarhiv.libraries.vendor.getid3.getid3.getid3', JPATH_ROOT);
+
+		return new getID3;
+	}
+
+	/**
+	 * Method to parse SACD using console util.
+	 * More info https://www.videohelp.com/software/sacd-extract
+	 *
+	 * @param   string   $path       Path to iso file.
+	 * @param   boolean  $exportCue  Export cue if can.
+	 *
+	 * @return  array
+	 *
+	 * @since  3.1
+	 */
+	public function getSACDInfo($path, $exportCue = true)
+	{
+		if (!KAComponentHelper::functionExists('shell_exec'))
+		{
+			die('shell_exec() function not exists or safe mode is on!');
+		}
+
+		$path = JPath::clean($path);
+		$exe  = JPath::clean(JComponentHelper::getParams('com_kinoarhiv')->get('getid3_helperapps'));
+
+		$exportCue = $exportCue ? '--export-cue' : '';
+		$cmd = $exe . ' --print ' . $exportCue . ' --input="' . $path . '"';
+
+		if (IS_WIN)
+		{
+			$cmd .= ' 2>&1';
+		}
+		else
+		{
+			$cmd .= ' 2>%1';
+		}
+
+		JFolder::create(JFactory::getConfig()->get('tmp_path') . '/scan_audio/');
+
+		// Change working directory to Joomla temp directory.
+		chdir(JFactory::getConfig()->get('tmp_path') . '/scan_audio/');
+
+		$output = shell_exec($cmd);
+
+		// Try to find cue path.
+		preg_match('#Exporting CUE sheet: \[(.*?)\]#is', $output, $matches);
+
+		return array(
+			'output' => $output,
+			'cue'    => !empty($matches[1]) ? $matches[1] : ''
+		);
+	}
+
+	/**
+	 * Analyze cue file using getID3.
+	 *
+	 * @param   getID3  $getID3    getID3 class.
+	 * @param   string  $filepath  Path to cue file.
+	 * @param   array   $finfo     pathinfo array.
+	 *
+	 * @return  array|boolean
+	 *
+	 * @since  3.1
+	 */
+	public function analyzeCue($getID3, $filepath, $finfo)
+	{
+		/**
+		 * Cue file can have different names.
+		 * E.g. 'Dire Straits - Brothers In Arms-51.cue' or 'Dire Straits - Brothers In Arms-51.dff.cue'.
+		 * Find first variant and if not found try to find second.
+		 */
+		if (is_file(dirname($filepath) . '/' . $finfo['filename'] . '.cue'))
+		{
+			$data = $getID3->analyze(dirname($filepath) . '/' . $finfo['filename'] . '.cue');
+		}
+		elseif (is_file($filepath . '.cue'))
+		{
+			$data = $getID3->analyze($filepath . '.cue');
+		}
+		else
+		{
+			// No cue sheet found, skip this file.
+			return false;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get short album data from getID3 class.
+	 *
+	 * @param   array    $data  Array with data from getID3 class.
+	 * @param   boolean  $cue   Get from cue.
+	 *
+	 * @return  array|boolean
+	 *
+	 * @since  3.1
+	 */
+	public function getAlbumData($data, $cue = false)
+	{
+		if ($cue)
+		{
+			$genres = !empty($data['cue']['comments']['genre']) ? $data['cue']['comments']['genre'][0] : '';
+			$album  = array(
+				'title'       => $data['cue']['title'],
+				'performer'   => $data['cue']['performer'],
+				'year'        => $data['cue']['comments']['date'][0],
+				'genres'      => preg_split('#,|/#', $genres),
+				'tracks_path' => $data['filepath']
+			);
+		}
+		else
+		{
+			$genres = !empty($data['comments']['genre']) ? $data['comments']['genre'][0] : '';
+			$album = array(
+				'title'       => $data['comments']['album'][0],
+				'performer'   => $data['comments']['artist'][0],
+				'year'        => $data['comments']['date'][0],
+				'genres'      => preg_split('#,|/#', $genres),
+				'tracks_path' => $data['filepath']
+			);
+		}
+
+		return $album;
+	}
+
+	/**
+	 * Get tracks from cue or array from getID3 class.
+	 *
+	 * @param   array    $data      Array with data from getID3 class.
+	 * @param   boolean  $cue       Analyze cue data.
+	 * @param   string   $filename  Original file name.
+	 *
+	 * @return  array
+	 *
+	 * @since  3.1
+	 */
+	public function getTracks($data, $cue = false, $filename = '')
+	{
+		$tracks = array();
+
+		if ($cue)
+		{
+			if (!empty($data['cue']['tracks']))
+			{
+				foreach ($data['cue']['tracks'] as $track)
+				{
+					$tracks[] = array(
+						'title'        => $track['title'],
+						'track_number' => $track['track_number'],
+						'length'       => '',
+						'isrc'         => !empty($track['isrc']) ? $track['isrc'] : '',
+						'filename'     => !empty($filename) ? $filename : $track['datafile']['filename'],
+						'is_playlist'  => true
+					);
+				}
+			}
+		}
+		else
+		{
+			if (!empty($data['comments']))
+			{
+				// Preformat seconds and time
+				$seconds = number_format($data['playtime_seconds'], 6, '.', '');
+				$datetime = DateTime::createFromFormat('U.u', $seconds);
+				$length = $datetime->format('H:i:s.u');
+
+				$tracks = array(
+					'title'        => $data['comments']['title'][0],
+					'track_number' => $data['comments']['track_number'][0],
+					'length'       => $length,
+					'isrc'         => !empty($data['comments']['isrc']) ? $data['comments']['isrc'][0] : '',
+					'filename'     => $data['filename'],
+					'is_playlist'  => true
+				);
+			}
+		}
+
+		return $tracks;
 	}
 }

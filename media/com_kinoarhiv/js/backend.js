@@ -490,7 +490,8 @@ jQuery(document).ready(function($){
 
 					Aurora.message([{text: response, type: 'error'}], '#system-message-container', msgOptions);
 				}
-			}).jqGrid('navGrid', $this.next('div').attr('id'),
+			})
+			.jqGrid('navGrid', $this.next('div').attr('id'),
 				{
 					// Bottom nav config
 					addfunc: function(){
@@ -549,7 +550,8 @@ jQuery(document).ready(function($){
 					closeAfterSearch: true, searchOnEnter: true, closeOnEscape: true
 				},
 				view_config
-			).jqGrid('gridResize', {});
+			)
+			.jqGrid('gridResize', {});
 		});
 	}
 

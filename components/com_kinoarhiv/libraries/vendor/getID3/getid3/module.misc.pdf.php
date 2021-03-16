@@ -20,7 +20,12 @@ if (!defined('GETID3_INCLUDEPATH')) { // prevent path-exposing attacks that acce
 
 class getid3_pdf extends getid3_handler
 {
-	public $returnXREF = false; // return full details of PDF Cross-Reference Table (XREF)
+	/** misc.pdf
+	 * return full details of PDF Cross-Reference Table (XREF)
+	 *
+	 * @var bool
+	 */
+	public $returnXREF = false;
 
 	/**
 	 * @return bool
@@ -75,7 +80,7 @@ class getid3_pdf extends getid3_handler
 								$this->fseek($offset + strlen($matches[0]));
 							}
 							$objectData  = '';
-							while (true) {
+							while (!$this->feof()) {
 								$line = $this->fgets();
 								if (rtrim($line) == 'endobj') {
 									break;
@@ -123,6 +128,7 @@ class getid3_pdf extends getid3_handler
 
 			$info['pdf']['xref']['xref_offsets'][$XREFoffset] = $XREFoffset;
 			list($firstObjectNumber, $XREFcount) = explode(' ', rtrim($this->fgets()));
+			$firstObjectNumber = (int) $firstObjectNumber;
 			$XREFcount = (int) $XREFcount;
 			$info['pdf']['xref']['count'] = $XREFcount + (!empty($info['pdf']['xref']['count']) ? $info['pdf']['xref']['count'] : 0);
 			for ($i = 0; $i < $XREFcount; $i++) {

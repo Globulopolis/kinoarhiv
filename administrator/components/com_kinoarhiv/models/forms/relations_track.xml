@@ -27,7 +27,7 @@
 		<field name="isrc" type="text" default="" label="COM_KA_FIELD_ALBUMS_FIELD_ISRC_LABEL" class="span6"
 			   filter="string" size="45"/>
 		<field name="buy_url" type="textarea" default="" label="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_LABEL"
-			   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" class="span12"
+			   description="COM_KA_FIELD_ALBUMS_FIELD_BUY_URL_DESC" class="span12" spellcheck="false"
 			   filter="KAComponentHelper::cleanHTML" cols="45" rows="5"/>
 		<field name="tracks_path" type="hidden" class="readonly" label="COM_KA_FIELD_TRACKS_PATH_LABEL"
 			   size="45" default="" readonly="true"/>

@@ -35,6 +35,7 @@ else
 $id      = str_replace('.', '', uniqid(rand(), true));
 $gridID  = 'grid_' . $id;
 $pagerID = 'grid_pager_' . $id;
+$class   = (array_key_exists('class', $data) && !empty($data['class'])) ? $data['class'] : '';
 
 if (array_key_exists('id', $data) && !empty($data['id']))
 {
@@ -79,5 +80,5 @@ $attr[] = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_ur
 $attr[] = array_key_exists('pgbuttons', $data) ? ' data-pgbuttons="' . (bool) $data['pgbuttons'] . '"' : ' data-pgbuttons="true"';
 $attr[] = array_key_exists('pginput', $data) ? ' data-pginput="' . (bool) $data['pginput'] . '"' : ' data-pginput="true"';
 ?>
-<table id="<?php echo $gridID; ?>" class="jqgrid" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
+<table id="<?php echo $gridID; ?>" class="jqgrid <?php echo $class; ?>" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
 <div id="<?php echo $pagerID; ?>"></div>

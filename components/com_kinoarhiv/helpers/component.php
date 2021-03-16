@@ -135,6 +135,8 @@ class KAComponentHelper
 			if (JFactory::getApplication()->isClient('administrator'))
 			{
 				$tags = $params->get('html_allowed_tags');
+				$purifierConfig->set('Attr.EnableID', true);
+				$purifierConfig->set('HTML.Trusted', true);
 			}
 		}
 

@@ -76,11 +76,21 @@ $namesItemid = KAContentHelper::getItemid('names');
 						   title="<?php echo JText::_('COM_KA_TRACK_INFO'); ?>"></a>
 						<span class="track-info" id="info_<?php echo $index; ?>">
 							<strong><?php echo !empty($track->track_number) ? $track->track_number . '. ' : ''; ?><?php echo $this->escape($track->title); ?></strong><br/>
+							<?php echo $track->isrc; ?><br/>
+							<?php echo $track->comments; ?>
 						</span>
 					<?php if (!empty($track->buy_url)):
-						// TODO Fix?
-						//echo $track->buy_url;
-					endif; ?>
+						$buyUrl = preg_replace_callback(
+							'#_(.*)_#u',
+							function ($matches)
+							{
+								return JText::_($matches[1]);
+							},
+							$track->buy_url
+						);
+						?>
+						<span class="buyurl"><?php echo $buyUrl; ?></span>
+					<?php endif; ?>
 					</td>
 				</tr>
 				<?php endif;

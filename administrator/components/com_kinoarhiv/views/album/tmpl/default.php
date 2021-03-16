@@ -29,7 +29,9 @@ $navgridOpts = array(
 			'addtext'     => JText::_('JTOOLBAR_ADD'), 'edittext' => JText::_('JTOOLBAR_EDIT'),
 			'deltext'     => JText::_('JTOOLBAR_REMOVE'), 'searchtext' => JText::_('JSEARCH_FILTER'),
 			'refreshtext' => JText::_('JTOOLBAR_REFRESH'), 'viewtext' => JText::_('JGLOBAL_PREVIEW')
-		)
+		),
+		'search' => false,
+		'view'   => false
 	)
 );
 $token       = JSession::getFormToken();
@@ -294,7 +296,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 								)
 							)
 						),
-						'navgrid' => $navgridOpts
+						'navgrid' => $navgridOpts,
+						'class'   => 'tracks-table'
 					);
 
 					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);

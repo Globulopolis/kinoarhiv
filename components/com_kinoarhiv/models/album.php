@@ -168,7 +168,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 		$query->select('user.name AS username')
 			->join('LEFT', $db->quoteName('#__users', 'user') . ' ON user.id = a.created_by')
-			->where('a.id = ' . (int) $id . ' AND a.state = 1 AND access IN (' . $groups . ') AND ' . $langQueryIN);
+			->where('a.id = ' . (int) $id . ' AND a.state = 1 AND a.access IN (' . $groups . ') AND ' . $langQueryIN);
 
 		$db->setQuery($query);
 
@@ -631,7 +631,9 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function getTracks($id)
 	{
-		$db = JFactory::getDbo();
+		$db     = JFactory::getDbo();
+		$user   = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
 		$result = (object) array('tracks' => array(), 'playlist' => array());
 
 		$query = $db->getQuery(true)
@@ -639,7 +641,7 @@ class KinoarhivModelAlbum extends JModelForm
 				$db->quoteName(
 					array(
 						't.id', 't.title', 't.year', 't.publisher', 't.label', 't.isrc', 't.length', 't.cd_number',
-						't.track_number', 't.filename', 't.buy_url', 'a.tracks_path', 'a.tracks_path_www',
+						't.track_number', 't.filename', 't.buy_url', 't.comments', 'a.tracks_path', 'a.tracks_path_www',
 						'a.tracks_preview_path', 'rel.album_id', 'rel_names.name_id', 'performer.name',
 						'performer.latin_name'
 					)
@@ -653,6 +655,8 @@ class KinoarhivModelAlbum extends JModelForm
 			->leftJoin($db->quoteName('#__ka_music_albums', 'a') . ' ON a.id = rel.album_id')
 			->leftJoin($db->quoteName('#__ka_names', 'performer') . ' ON performer.id = rel_names.name_id')
 			->where($db->quoteName('rel.album_id') . ' = ' . (int) $id)
+			->where($db->quoteName('t.state') . ' = 1')
+			->where($db->quoteName('t.access') . ' IN (' . $groups . ')')
 			->group($db->quoteName('t.id'))
 			->order($db->quoteName('t.track_number') . ' ASC');
 

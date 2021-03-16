@@ -59,6 +59,9 @@ class KinoarhivModelAlbum extends JModelForm
 			case 'saveTagsToFile':
 				$form = $this->loadForm($formName, 'relations_track', $formOpts);
 				break;
+			case 'showScanFolderTemplate':
+				$form = $this->loadForm($formName, 'scan_folder', $formOpts);
+				break;
 			default:
 				$form = $this->loadForm($formName, 'album', $formOpts);
 				break;
@@ -657,8 +660,10 @@ class KinoarhivModelAlbum extends JModelForm
 
 			foreach ($_names as $key => $id)
 			{
-				$names['id'][$key] = $id['id'];
-				$names['title'][$key] = KAContentHelper::formatItemTitle($id['name'], $id['latin_name']);
+				$names['id'][$key]          = $id['id'];
+				$names['title'][$key]       = KAContentHelper::formatItemTitle($id['name'], $id['latin_name']);
+				$names['names'][$key]       = $id['name'];
+				$names['latin_names'][$key] = $id['latin_name'];
 			}
 		}
 		catch (RuntimeException $e)
@@ -1608,8 +1613,7 @@ class KinoarhivModelAlbum extends JModelForm
 	 */
 	public function saveTrackTags($data)
 	{
-		$app     = JFactory::getApplication();
-		$albumID = $app->input->getInt('item_id', 0);
+		$app = JFactory::getApplication();
 
 		if (empty($data['id']))
 		{
@@ -1628,7 +1632,7 @@ class KinoarhivModelAlbum extends JModelForm
 		try
 		{
 			$tagwriter                    = new getid3_writetags;
-			$tagwriter->filename          = JPath::clean('D:/2/01. Graceful Exit.mp3');
+			$tagwriter->filename          = JPath::clean('D:/2/01. Graceful Exit.mp3'); // TODO For testing only
 			$tagwriter->tagformats        = array('id3v1', 'id3v2.3');
 			$tagwriter->overwrite_tags    = true;
 			$tagwriter->remove_other_tags = false;
@@ -1641,7 +1645,7 @@ class KinoarhivModelAlbum extends JModelForm
 
 			$tagData   = array(
 				'title'        => array($data['title']),
-				'artist'       => $artists['title'],
+				'artist'       => $artists['latin_names'],
 				'album'        => array($albumData->title),
 				'year'         => array($data['year']),
 				'genre'        => $genres['title'],

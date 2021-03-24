@@ -310,6 +310,7 @@ class KinoarhivModelAlbum extends JModelForm
 				'introtext'           => $db->escape($introtext),
 				'year'                => $data['year'],
 				'length'              => $data['length'],
+				'disc_id'             => $data['disc_id'],
 				'desc'                => $db->escape($data['desc']),
 				'rate'                => (int) $data['rate_loc'],
 				'rate_sum'            => (int) $data['rate_sum_loc'],
@@ -333,7 +334,7 @@ class KinoarhivModelAlbum extends JModelForm
 				'access'              => (int) $data['access'],
 				'metadata'            => $metadata,
 				'language'            => $data['language'],
-				'state'               => $data['state']
+				'state'               => (int) $data['state']
 			);
 
 			$query = $db->getQuery(true)
@@ -351,6 +352,7 @@ class KinoarhivModelAlbum extends JModelForm
 				->set($db->quoteName('introtext') . " = '" . $db->escape($introtext) . "'")
 				->set($db->quoteName('year') . " = '" . $data['year'] . "'")
 				->set($db->quoteName('length') . " = '" . $data['length'] . "'")
+				->set($db->quoteName('disc_id') . " = '" . $data['disc_id'] . "'")
 				->set($db->quoteName('desc') . " = '" . $db->escape($data['desc']) . "'")
 				->set($db->quoteName('rate') . " = '" . (int) $data['rate'] . "'")
 				->set($db->quoteName('rate_sum') . " = '" . (int) $data['rate_sum'] . "'")
@@ -374,7 +376,7 @@ class KinoarhivModelAlbum extends JModelForm
 				->set($db->quoteName('access') . " = '" . (int) $data['access'] . "'")
 				->set($db->quoteName('metadata') . " = '" . $metadata . "'")
 				->set($db->quoteName('language') . " = '" . $db->escape($data['language']) . "'")
-				->set($db->quoteName('state') . " = '" . $data['state'] . "'")
+				->set($db->quoteName('state') . " = '" . (int) $data['state'] . "'")
 				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
 
@@ -1419,7 +1421,7 @@ class KinoarhivModelAlbum extends JModelForm
 			$db->quoteName(
 				array(
 					't.id', 't.title', 't.year', 't.publisher', 't.isrc', 't.length', 't.cd_number', 't.track_number',
-					't.filename', 't.buy_url', 't.comments', 't.access', 't.state', 'a.tracks_path'
+					't.filename', 't.buy_url', 't.comments', 't.access', 't.state', 't.is_playlist', 'a.tracks_path'
 				)
 			)
 		)
@@ -1544,7 +1546,8 @@ class KinoarhivModelAlbum extends JModelForm
 				'buy_url'      => $db->escape($data['buy_url']),
 				'comments'     => $db->escape($data['comments']),
 				'access'       => (int) $data['access'],
-				'state'        => (int) $data['state']
+				'state'        => (int) $data['state'],
+				'is_playlist'  => (int) $data['is_playlist']
 			);
 
 			$query = $db->getQuery(true)
@@ -1569,6 +1572,7 @@ class KinoarhivModelAlbum extends JModelForm
 				->set($db->quoteName('comments') . ' = ' . $db->quote($data['comments']))
 				->set($db->quoteName('access') . ' = ' . $db->quote((int) $data['access']))
 				->set($db->quoteName('state') . ' = ' . $db->quote((int) $data['state']))
+				->set($db->quoteName('is_playlist') . ' = ' . $db->quote((int) $data['is_playlist']))
 				->where($db->quoteName('id') . ' = ' . (int) $data['id']);
 		}
 
@@ -1673,6 +1677,65 @@ class KinoarhivModelAlbum extends JModelForm
 		catch (Exception $e)
 		{
 			$app->enqueueMessage($e->getMessage(), 'error');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Method to perform batch operations on an item or a set of items.
+	 *
+	 * @param   array  $data  Tracks IDs.
+	 *
+	 * @return  boolean  Returns true on success, false on failure.
+	 *
+	 * @since   3.1
+	 */
+	public function tracksBatch($data)
+	{
+		$db = $this->getDbo();
+
+		if (empty($data))
+		{
+			$this->setError(JText::_('JLIB_FORM_ERROR_NO_DATA'));
+
+			return false;
+		}
+
+		$fields = array();
+
+		if (!empty($data['state']))
+		{
+			$fields[] = $db->quoteName('state') . " = '" . $db->escape((string) $data['state']) . "'";
+		}
+
+		if (!empty($data['assetgroup_id']))
+		{
+			$fields[] = $db->quoteName('access') . " = '" . (int) $data['assetgroup_id'] . "'";
+		}
+
+		if (empty($fields))
+		{
+			return false;
+		}
+
+		$query = $db->getQuery(true);
+
+		$query->update($db->quoteName('#__ka_music'))
+			->set(implode(', ', $fields))
+			->where($db->quoteName('id') . ' IN (' . implode(',', $data['ids']) . ')');
+
+		$db->setQuery($query);
+
+		try
+		{
+			$db->execute();
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
 
 			return false;
 		}

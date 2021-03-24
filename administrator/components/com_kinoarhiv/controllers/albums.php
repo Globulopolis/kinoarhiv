@@ -840,8 +840,14 @@ class KinoarhivControllerAlbums extends JControllerLegacy
 	{
 		KAComponentHelper::checkToken('get') or jexit(JText::_('JINVALID_TOKEN'));
 
-		JFolder::delete(JFactory::getConfig()->get('tmp_path') . '/scan_audio/');
-		JFolder::create(JFactory::getConfig()->get('tmp_path') . '/scan_audio/');
+		jimport('administrator.components.com_kinoarhiv.libraries.media', JPATH_ROOT);
+
+		$media = KAMedia::getInstance();
+
+		JFolder::delete($media->getTempScanFolder());
+		JFolder::create($media->getTempScanFolder());
+
+		JFactory::getSession()->set('scan_files_last_index', 0);
 
 		$this->setRedirect('index.php?option=com_kinoarhiv&task=albums.showScanFolderTemplate', JText::_('COM_KA_CLEARED'));
 	}

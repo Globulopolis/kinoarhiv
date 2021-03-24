@@ -39,7 +39,8 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if ((task === 'albums.cancel' || task === 'gallery') || document.formvalidator.isValid(document.getElementById('item-form'))) {
+		if ((task === 'albums.cancel' || task === 'gallery' || task === 'albums.tracksBatch')
+			|| document.formvalidator.isValid(document.getElementById('item-form'))) {
 			if (task === 'gallery') {
 				var tab = (task === 'gallery') ? '&tab=1' : '',
 					url = 'index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=' + task + tab
@@ -47,11 +48,62 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				Kinoarhiv.openWindow(url);
 
 				return false;
+			} else if (task === 'albums.tracksBatch') {
+				var data = jQuery('.batch-tracks').find('input,select').serializeArray();
+
+				data.push({'name': '<?php echo $token ?>', 'value': 1});
+
+				jQuery.ajax({
+					type: 'POST',
+					url: 'index.php?option=com_kinoarhiv&task=albums.tracksBatch&format=json',
+					data: data
+				}).done(function(response){
+					if (!response.success) {
+						if (!empty(response.message)) {
+							Aurora.message(
+								[{text: response.message ? response.message : jQuery(response).text()}],
+								'.batch-tracks',
+								{replace: true}
+							);
+						} else {
+							// User doesn't change select, so just close the modal.
+							jQuery('#tracksBatchModal .modal-footer button.cmd-close').trigger('click');
+						}
+					} else {
+						Aurora.message([{text: response.message}], '#system-message-container', {replace: true});
+						jQuery('#tracksBatchModal .modal-footer button.cmd-close').trigger('click');
+						jQuery('.tracks-table').trigger('reloadGrid');
+					}
+				}).fail(function (xhr, status, error) {
+					Aurora.message([{text: error, type: 'error'}], '#system-message-container', {replace: true});
+				});
+
+				return false;
 			}
 
 			Joomla.submitform(task, document.getElementById('item-form'));
 		}
 	};
+
+	/**
+	 * Call function on click custom buttom in jqGrid pager.
+	 *
+	 * @param  {array}  sel_rows  Array of IDs.
+	 *
+	 * @return  {boolean}
+	 */
+	window.jqgridNavBtnFn.batchbutton = function(sel_rows){
+		if (sel_rows.length < 1) {
+			alert('<?php echo JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'); ?>');
+
+			return false;
+		}
+
+		jQuery('#batch-tracks_id').val(sel_rows.join(','));
+
+		// Render modal with batch layout.
+		jQuery('#tracksBatchModal').modal('show');
+	}
 
 	jQuery(document).ready(function($){
 		// Bind 'remove poster' functional
@@ -251,7 +303,7 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 				if ($this->id != 0)
 				{
 					$options = array(
-						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=albumTraks&format=json'
+						'url'   => JRoute::_('index.php?option=com_kinoarhiv&task=api.data&content=albumTracks&format=json'
 							. '&lang=' . $languageTag . '&id=' . $this->id . '&' . $token . '=1'
 						),
 						'add_url'  => JRoute::_('index.php?option=com_kinoarhiv&task=albums.editTrack&item_id=' . $this->id),
@@ -294,10 +346,27 @@ $languageTag = substr($this->lang->getTag(), 0, 2);
 								'searchoptions' => (object) array(
 									'sopt' => array('cn', 'eq', 'le', 'ge')
 								)
+							),
+							'JSTATUS' => (object) array(
+								'name' => 'state', 'index' => 't.state', 'width' => 50, 'title' => false,
+								'sorttype' => 'int', 'search' => false
+							),
+							'JGRID_HEADING_ACCESS' => (object) array(
+								'name' => 'access', 'index' => 't.access', 'width' => 50, 'title' => false,
+								'sorttype' => 'int', 'search' => false
 							)
 						),
 						'navgrid' => $navgridOpts,
-						'class'   => 'tracks-table'
+						'navButtonAdd' => array(
+							(object) array(
+								'caption' => JText::_('JTOOLBAR_BATCH'),
+								'title' => JText::_('JTOOLBAR_BATCH'),
+								'buttonicon' => 'ui-icon ui-icon-copy',
+								// Must be a function in window.jqgridNavBtn namespace. E.g. window.jqgridNavBtn.batchbutton = function(){}
+								'onClickButton' => 'batchbutton'
+							)
+						),
+						'class' => 'tracks-table'
 					);
 
 					echo JLayoutHelper::render('administrator.components.com_kinoarhiv.layouts.edit.grid', $options, JPATH_ROOT);
@@ -651,4 +720,14 @@ echo JHtml::_(
 		'height' => '500',
 		'url' => 'index.php?option=com_kinoarhiv&view=mediamanager&section=album&type=gallery&tab=1&id=' . $this->id . '&layout=modal&tmpl=component'
 	)
+);
+
+echo JHtml::_(
+	'bootstrap.renderModal',
+	'tracksBatchModal',
+	array(
+		'title'  => JText::_('COM_KA_BATCH_OPTIONS'),
+		'footer' => $this->loadTemplate('tracks_batch_footer')
+	),
+	$this->loadTemplate('tracks_batch_body')
 );

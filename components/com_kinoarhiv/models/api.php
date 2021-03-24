@@ -1364,7 +1364,7 @@ class KinoarhivModelAPI extends JModelLegacy
 	 *
 	 * @since   3.1
 	 */
-	public function getAlbumTraks()
+	public function getAlbumTracks()
 	{
 		jimport('administrator.components.com_kinoarhiv.helpers.database', JPATH_ROOT);
 
@@ -1413,7 +1413,8 @@ class KinoarhivModelAPI extends JModelLegacy
 			->select(
 				$db->quoteName(
 					array(
-						't.id', 't.title', 't.year', 't.length', 't.cd_number', 't.track_number', 't.filename'
+						't.id', 't.title', 't.year', 't.length', 't.cd_number', 't.track_number', 't.filename',
+						't.access', 't.state', 't.is_playlist'
 					)
 				)
 			)

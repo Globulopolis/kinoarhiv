@@ -17,6 +17,7 @@
 			   datatype="date" dateformat="yy-mm-dd" data-sel-year="true" data-sel-month="true" filter="user_utc"/>
 		<field name="length" type="datetime" default="" label="COM_KA_MUSIC_ALBUMS_FIELD_LENGTH" class="span6"
 			   datatype="time" timeformat="HH:mm:ss"/>
+		<field name="disc_id" type="text" default="" label="COM_KA_FIELD_ALBUMS_DISCID" class="span3"/>
 
 		<field name="vendors" type="autocomplete" label="COM_KA_MUSIC_VENDORS"
 			   class="span12" default="" data-content="vendors"
@@ -94,12 +95,6 @@
 			   description="COM_KA_FIELD_PATHS_ROOT_WWW_LABEL_DESC" class="span12" default=""/>
 		<field name="tracks_preview_path" type="text" label="COM_KA_FIELD_TRACKS_PATH_PREVIEW_LABEL"
 			   description="COM_KA_FIELD_PATHS_ROOT_LABEL_DESC" class="span12 validate-path" default=""/>
-
-		<field name="is_playlist" type="list" label="COM_KA_MUSIC_TRACK_IS_PLAYLIST" class="chzn-color-state"
-			   filter="intval" size="1" default="0">
-			<option value="1">JYES</option>
-			<option value="0">JNO</option>
-		</field>
 
 		<field name="image_id" type="hidden" class="readonly" default="0" readonly="true"/>
 		<field name="filename" type="hidden" class="readonly" default="" readonly="true"/>

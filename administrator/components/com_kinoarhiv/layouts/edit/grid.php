@@ -79,6 +79,8 @@ $attr[] = array_key_exists('edit_url', $data) ? " data-edit_url='" . $data['edit
 $attr[] = array_key_exists('del_url', $data) ? " data-del_url='" . $data['del_url'] . "'" : '';
 $attr[] = array_key_exists('pgbuttons', $data) ? ' data-pgbuttons="' . (bool) $data['pgbuttons'] . '"' : ' data-pgbuttons="true"';
 $attr[] = array_key_exists('pginput', $data) ? ' data-pginput="' . (bool) $data['pginput'] . '"' : ' data-pginput="true"';
+$attr[] = array_key_exists('actionsNavOptions', $data) ? " data-actnavgrid_setup='" . json_encode($data['actionsNavOptions']) . "'" : '';
+$attr[] = array_key_exists('navButtonAdd', $data) ? " data-navbuttonadd_setup='" . json_encode($data['navButtonAdd']) . "'" : '';
 ?>
 <table id="<?php echo $gridID; ?>" class="jqgrid <?php echo $class; ?>" data-url="<?php echo $url; ?>" <?php echo implode('', $attr); ?>></table>
 <div id="<?php echo $pagerID; ?>"></div>

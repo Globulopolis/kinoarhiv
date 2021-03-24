@@ -37,6 +37,11 @@
 
 	<fieldset name="additional" label="COM_KA_MOVIES_TAB_PUB" addrulepath="/components/com_kinoarhiv/models/rules"
 			  addfieldpath="/components/com_kinoarhiv/models/fields">
+		<field name="is_playlist" type="radio" label="COM_KA_MUSIC_TRACK_IS_PLAYLIST"
+			   description="COM_KA_MUSIC_TRACK_IS_PLAYLIST_DESC" class="btn-group" filter="intval" size="1" default="0">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
 		<field name="track_number" type="text" default="" label="COM_KA_MUSIC_TRACKS_NUMBER" class="span3"
 			   filter="string" size="45"/>
 		<field name="cd_number" type="text" default="" label="COM_KA_MUSIC_TRACKS_CD_NUMBER" class="span3"
@@ -47,8 +52,6 @@
 			   filter="intval" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
-			<option value="2">JARCHIVED</option>
-			<option value="-2">JTRASHED</option>
 		</field>
 		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" size="1"/>
 		<field name="comments" type="textarea" default="" label="COM_KA_FIELD_TRACK_COMMENTS" class="span12"

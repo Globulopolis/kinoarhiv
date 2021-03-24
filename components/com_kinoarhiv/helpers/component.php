@@ -158,15 +158,16 @@ class KAComponentHelper
 	/**
 	 * Logger
 	 *
-	 * @param   string  $message  Text to log.
-	 * @param   mixed   $silent   Throw an exception or not. True - do not throw, false - throw, 'ui' - show message.
+	 * @param   string  $message   Text to log.
+	 * @param   mixed   $silent    Throw an exception or not. True - do not throw, false - throw, 'ui' - show message.
+	 * @param   string  $filename  Log filename.
 	 *
 	 * @return  void
 	 *
 	 * @since   3.0
 	 * @throws  Exception
 	 */
-	public static function eventLog($message, $silent = true)
+	public static function eventLog($message, $silent = true, $filename = '')
 	{
 		$params = JComponentHelper::getParams('com_kinoarhiv');
 		$uri    = JUri::getInstance();
@@ -192,8 +193,12 @@ class KAComponentHelper
 		{
 			jimport('joomla.log.log');
 
-			$isSite = JFactory::getApplication()->isClient('site');
-			$loggerFile = $isSite ? 'com_kinoarhiv.errors' : 'com_kinoarhiv.errors.administrator';
+			$loggerFile = !empty($filename) ? $filename : 'com_kinoarhiv.errors';
+
+			if (!JFactory::getApplication()->isClient('site'))
+			{
+				$loggerFile .= '.administrator';
+			}
 
 			JLog::addLogger(
 				array(

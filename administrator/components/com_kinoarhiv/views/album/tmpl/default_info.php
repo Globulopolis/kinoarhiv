@@ -60,6 +60,10 @@ defined('_JEXEC') or die;
 					<div class="control-label"><?php echo $this->form->getLabel('vendors'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('vendors'); ?></div>
 				</div>
+				<div class="control-group">
+					<div class="control-label"><?php echo $this->form->getLabel('disc_id'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('disc_id'); ?></div>
+				</div>
 			</fieldset>
 		</div>
 	</div>

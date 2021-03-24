@@ -11,6 +11,9 @@
 
 Kinoarhiv = window.Kinoarhiv || {};
 
+// Required to add a callback to custom buttons in pager.
+jqgridNavBtnFn = window.jqgridNavBtnFn || {};
+
 (function(Kinoarhiv, document){
 	'use strict';
 
@@ -489,7 +492,8 @@ jQuery(document).ready(function($){
 					}
 
 					Aurora.message([{text: response, type: 'error'}], '#system-message-container', msgOptions);
-				}
+				},
+				actionsNavOptions: $this.data('actnavgrid_setup')
 			})
 			.jqGrid('navGrid', $this.next('div').attr('id'),
 				{
@@ -552,6 +556,20 @@ jQuery(document).ready(function($){
 				view_config
 			)
 			.jqGrid('gridResize', {});
+
+			if ($this.data('navbuttonadd_setup')) {
+				$.each($this.data('navbuttonadd_setup'), function(i, obj){
+					$this.jqGrid('navButtonAdd', {
+						'caption': obj.caption,
+						'title': obj.title,
+						'buttonicon': obj.buttonicon,
+						'onClickButton': function(){
+							// Call function in window scope with selected rows as argument.
+							window['jqgridNavBtnFn'][obj.onClickButton]($this.jqGrid('getGridParam', 'selarrrow'));
+						}
+					});
+				});
+			}
 		});
 	}
 

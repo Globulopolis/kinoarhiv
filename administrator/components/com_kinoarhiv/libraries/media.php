@@ -392,22 +392,57 @@ class KAMedia
 		if ($cue)
 		{
 			$genres = !empty($data['cue']['comments']['genre']) ? $data['cue']['comments']['genre'][0] : '';
+
+			// Get year from cue
+			if (!empty($data['cue']['comments']['date'][0]))
+			{
+				$year = $data['cue']['comments']['date'][0];
+			}
+			else
+			{
+				// Try to get year from cue filename
+				preg_match('@\d{4}@', $data['filename'], $matches);
+
+				$year = !empty($matches[0]) ? $matches[0] : '';
+			}
+
 			$album  = array(
 				'title'       => $data['cue']['title'],
 				'performer'   => $data['cue']['performer'],
-				'year'        => $data['cue']['comments']['date'][0],
+				'year'        => $year,
 				'genres'      => preg_split('#,|/#', $genres),
+				'discid'      => !empty($data['cue']['comments']['discid'][0]) ? $data['cue']['comments']['discid'][0] : '',
 				'tracks_path' => $data['filepath']
 			);
 		}
 		else
 		{
 			$genres = !empty($data['comments']['genre']) ? $data['comments']['genre'][0] : '';
+			$year = '';
+
+			if (!empty($data['comments']['date'][0]))
+			{
+				$year = $data['comments']['date'][0];
+			}
+			elseif (!empty($data['comments']['year'][0]))
+			{
+				$year = $data['comments']['year'][0];
+			}
+			else
+			{
+				// File m4a may have a creation_date field. Try to get year from this.
+				if (JFile::getExt($data['filename']) === 'm4a')
+				{
+					$year = preg_match('@\d{4}@', $data['comments']['creation_date'][0]);
+				}
+			}
+
 			$album = array(
 				'title'       => $data['comments']['album'][0],
 				'performer'   => $data['comments']['artist'][0],
-				'year'        => $data['comments']['date'][0],
+				'year'        => $year,
 				'genres'      => preg_split('#,|/#', $genres),
+				'discid'      => !empty($data['comments']['discid'][0]) ? $data['comments']['discid'][0] : '',
 				'tracks_path' => $data['filepath']
 			);
 		}
@@ -442,7 +477,7 @@ class KAMedia
 						'length'       => '',
 						'isrc'         => !empty($track['isrc']) ? $track['isrc'] : '',
 						'filename'     => !empty($filename) ? $filename : $track['datafile']['filename'],
-						'is_playlist'  => true
+						'is_playlist'  => 1
 					);
 				}
 			}
@@ -462,11 +497,23 @@ class KAMedia
 					'length'       => $length,
 					'isrc'         => !empty($data['comments']['isrc']) ? $data['comments']['isrc'][0] : '',
 					'filename'     => $data['filename'],
-					'is_playlist'  => true
+					'is_playlist'  => 0
 				);
 			}
 		}
 
 		return $tracks;
+	}
+
+	/**
+	 * Get a temporary folder for scaning or converting files.
+	 *
+	 * @return  string
+	 *
+	 * @since  3.1
+	 */
+	public function getTempScanFolder()
+	{
+		return JFactory::getConfig()->get('tmp_path') . '/scan_audio/';
 	}
 }
